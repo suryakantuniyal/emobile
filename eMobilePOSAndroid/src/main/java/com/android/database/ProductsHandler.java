@@ -172,7 +172,7 @@ public class ProductsHandler {
                             "ei.prod_onhand as 'local_prod_onhand',i.prod_img_name," +
                             "CASE WHEN p.prod_taxcode='' THEN '0' ELSE IFNULL(s.taxcode_istaxable,'1')  " +
                             "END AS 'prod_istaxable' ");
-            sb.append(",p.prod_taxcode,p.prod_taxtype, p.prod_type,p.cat_id ");
+            sb.append(",p.prod_taxcode,p.prod_taxtype, p.prod_type,p.cat_id, c.cat_name as 'cat_name' ");
 
             if (myPref.isCustSelected() && myPref.getPreferences(MyPreferences.pref_filter_products_by_customer)) {
                 if (Global.isConsignment) {
@@ -263,7 +263,7 @@ public class ProductsHandler {
                     "CASE WHEN pl.pricelevel_type = 'FixedPercentage' THEN (p.prod_price+(p.prod_price*(pl.pricelevel_fixedpct/100))) ");
             sb.append(
                     "ELSE pli.pricelevel_price END AS 'pricelevel_price',p.prod_price_points,p.prod_value_points,p.prod_name,p.prod_desc,p.prod_extradesc,p.prod_onhand as 'master_prod_onhand',ei.prod_onhand as 'local_prod_onhand',i.prod_img_name, CASE WHEN p.prod_taxcode='' THEN '0' ELSE IFNULL(s.taxcode_istaxable,'1')  END AS 'prod_istaxable' ");
-            sb.append(",p.prod_taxcode,p.prod_taxtype, p.prod_type,p.cat_id ");
+            sb.append(",p.prod_taxcode,p.prod_taxtype, p.prod_type,p.cat_id, c.cat_name as 'cat_name' ");
 
             if (myPref.isCustSelected() && myPref.getPreferences(MyPreferences.pref_filter_products_by_customer)) {
                 if (Global.isConsignment) {
@@ -760,11 +760,11 @@ public class ProductsHandler {
                 "FROM Products p LEFT OUTER JOIN SalesTaxCodes s ON p.prod_taxcode = s.taxcode_id " +
                 "WHERE p.prod_type = 'Discount' AND prod_id LIKE ? ORDER BY p.prod_name ASC", new String[]{discount_id});
         if (cursor.moveToFirst()) {
-                data.setProductName(cursor.getString(cursor.getColumnIndex(prod_name)));
-                data.setProductDiscountType(cursor.getString(cursor.getColumnIndex(prod_disc_type)));
-                data.setProductPrice(cursor.getString(cursor.getColumnIndex(prod_price)));
-                data.setTaxCodeIsTaxable(cursor.getString(cursor.getColumnIndex("taxcode_istaxable")));
-                data.setProductId(cursor.getString(cursor.getColumnIndex(prod_id)));
+            data.setProductName(cursor.getString(cursor.getColumnIndex(prod_name)));
+            data.setProductDiscountType(cursor.getString(cursor.getColumnIndex(prod_disc_type)));
+            data.setProductPrice(cursor.getString(cursor.getColumnIndex(prod_price)));
+            data.setTaxCodeIsTaxable(cursor.getString(cursor.getColumnIndex("taxcode_istaxable")));
+            data.setProductId(cursor.getString(cursor.getColumnIndex(prod_id)));
         }
         cursor.close();
         return data;

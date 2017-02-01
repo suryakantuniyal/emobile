@@ -207,7 +207,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
                 btnProcess.setEnabled(false);
                 double enteredAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
                 double amountDueDbl = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDue));
-                if (enteredAmount <= 0 && amountDueDbl > 0) {
+                if (enteredAmount <= 0 && (amountDueDbl > 0 || isFromMainMenu)) {
                     paid.setBackgroundResource(R.drawable.edittext_wrong_input);
                     Global.showPrompt(activity, R.string.validation_failed, activity.getString(R.string.error_wrong_amount));
                 } else {

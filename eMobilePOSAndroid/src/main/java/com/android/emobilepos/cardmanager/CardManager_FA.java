@@ -30,6 +30,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.PaymentDetails;
+import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.PaymentMethod;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
@@ -504,44 +505,34 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
     private Payment payment;
 
     private void processInquiry() {
-        if (populateCardInfo()) {
+        String cardType = "GiftCard";
+        if (cardTypeCase == CASE_LOYALTY)
+            cardType = "LoyaltyCard";
+        else if (cardTypeCase == CASE_REWARD)
+            cardType = "Reward";
+        PaymentMethod paymentMethod = PaymentMethodDAO.getPaymentMethodByType(cardType);
+        if (populateCardInfo() && paymentMethod != null) {
             AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
             payment = new Payment(this);
-
             GenerateNewID generator = new GenerateNewID(this);
             String tempPay_id;
-
-
             tempPay_id = generator.getNextID(GenerateNewID.IdType.PAYMENT_ID);
             payment.setPay_id(tempPay_id);
-
             payment.setCust_id(myPref.getCustID());
             payment.setCustidkey(myPref.getCustIDKey());
             payment.setEmp_id(String.valueOf(assignEmployee.getEmpId()));
 
             payment.setPay_name(cardInfoManager.getCardOwnerName());
             payment.setPay_ccnum(cardInfoManager.getCardNumAESEncrypted());
-
             payment.setCcnum_last4(cardInfoManager.getCardLast4());
             payment.setPay_expmonth(cardInfoManager.getCardExpMonth());
             payment.setPay_expyear(cardInfoManager.getCardExpYear());
             payment.setPay_seccode(cardInfoManager.getCardEncryptedSecCode());
-
             payment.setTrack_one(cardInfoManager.getEncryptedAESTrack1());
             payment.setTrack_two(cardInfoManager.getEncryptedAESTrack2());
-
-            String cardType = "GiftCard";
-            if (cardTypeCase == CASE_LOYALTY)
-                cardType = "LoyaltyCard";
-            else if (cardTypeCase == CASE_REWARD)
-                cardType = "Reward";
-            PaymentMethod paymentMethod = PaymentMethodDAO.getPaymentMethodByType(cardType);
-//            Realm.getDefaultInstance().where(PaymentMethod.class).equalTo("paymentmethod_type", cardType).findFirst();
             payment.setPaymethod_id(paymentMethod.getPaymethod_id());
             payment.setCard_type(cardType);
-
             payment.setPay_type("0");
-
             switch (giftCardActions) {
                 case CASE_ACTIVATE:
                 case CASE_ADD_BALANCE:
@@ -555,15 +546,16 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
                     payment.setPay_amount(bd.toString());
                     break;
             }
-
             EMSPayGate_Default payGate = new EMSPayGate_Default(this, payment);
             String generatedURL;
-
             generatedURL = payGate.paymentWithAction(PAYMENT_ACTION, wasReadFromReader, cardType, cardInfoManager);
-
             new processAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, generatedURL);
         } else {
-            Global.showPrompt(activity, R.string.dlog_title_error, "Card has already been processed");
+            if (paymentMethod == null) {
+                Global.showPrompt(activity, R.string.dlog_title_error, getString(R.string.invalid_payment_type));
+            } else {
+                Global.showPrompt(activity, R.string.dlog_title_error, getString(R.string.card_already_processed));
+            }
         }
     }
 

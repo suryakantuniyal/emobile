@@ -748,7 +748,6 @@
     <string name="receipt_total_tip_paid">Total Tip Paid:</string>
     <string name="receipt_tip">Tip:</string>
     <string name="receipt_balance_due">Balance Due:</string>
-    <string name="receipt_cash_returned">Cash Returned:</string>
     <string name="receipt_idnum">Payment ID:</string>
     <string name="receipt_order_id">Order ID:</string>
     <string name="receipt_cardnum">Card Number:</string>
@@ -1235,6 +1234,7 @@
     <string name="unknown">Unknown</string>
     <string name="restaurant_table">Restaurant Table:</string>
     <string name="dlog_title_waiter_manager_signin">Waiter/Manager Signin</string>
+    <string name="card_already_processed">Card has already been processed</string>
 
 
 </resources>

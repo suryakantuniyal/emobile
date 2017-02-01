@@ -57,6 +57,7 @@ public class OrderProductsHandler {
     private static final String discount_id = "discount_id";
     private static final String discount_value = "discount_value";
     private static final String cat_id = "cat_id";
+    private static final String cat_name = "cat_name";
 
     private static final String prod_istaxable = "prod_istaxable";
     private static final String discount_is_taxable = "discount_is_taxable";
@@ -80,7 +81,7 @@ public class OrderProductsHandler {
             ord_id, prod_id, prod_sku, prod_upc, ordprod_qty, overwrite_price, reason_id, ordprod_name, ordprod_comment, ordprod_desc,
             pricelevel_id, prod_seq, uom_name, uom_conversion, uom_id, prod_taxId, prod_taxValue, discount_id,
             discount_value, prod_istaxable, discount_is_taxable, discount_is_fixed, onHand, imgURL, prod_price,
-            prod_type, itemTotal, itemSubtotal, addon_section_name, addon_position, hasAddons, cat_id, assignedSeat,
+            prod_type, itemTotal, itemSubtotal, addon_section_name, addon_position, hasAddons, cat_id, cat_name, assignedSeat,
             seatGroupId, addon_ordprod_id, prodPricePoints);
 
 
@@ -200,6 +201,7 @@ public class OrderProductsHandler {
                 insert.bindString(index(addon_position),
                         TextUtils.isEmpty(prod.getAddon_position()) ? "0" : prod.getAddon_position());
                 insert.bindString(index(cat_id), prod.getCat_id() == null ? "" : prod.getCat_id());
+                insert.bindString(index(cat_name), StringUtil.nullStringToEmpty(prod.getCat_name()));
                 insert.bindString(index(addon_ordprod_id), prod.getAddon_ordprod_id() == null ? "" : prod.getAddon_ordprod_id());
 
                 insert.bindString(index(assignedSeat), prod.getAssignedSeat() == null ? "" : prod.getAssignedSeat());
@@ -324,7 +326,7 @@ public class OrderProductsHandler {
                     insert.bindString(index(uom_conversion), getData(uom_conversion, i)); // cust_id
                     insert.bindString(index(uom_id), getData(uom_id, i));
                     insert.bindString(index(prod_taxId), getData(prod_taxId, i)); // cust_id
-                    insert.bindDouble(index(prod_taxValue), Double.parseDouble(TextUtils.isEmpty(getData(prod_taxValue, i))?"0":getData(prod_taxValue, i)));
+                    insert.bindDouble(index(prod_taxValue), Double.parseDouble(TextUtils.isEmpty(getData(prod_taxValue, i)) ? "0" : getData(prod_taxValue, i)));
                     insert.bindString(index(discount_id), getData(discount_id, i)); // cust_id
                     insert.bindString(index(discount_value), getData(discount_value, i)); // cust_id
                     insert.bindString(index(prod_istaxable), getData(prod_istaxable, i));
@@ -453,6 +455,7 @@ public class OrderProductsHandler {
         product.setAddon_section_name(cursor.getString(cursor.getColumnIndex(addon_section_name)));
         product.setAddon_position(cursor.getString(cursor.getColumnIndex(addon_position)));
         product.setCat_id(cursor.getString(cursor.getColumnIndex(cat_id)));
+        product.setCat_name(cursor.getString(cursor.getColumnIndex(cat_name)));
         product.setAssignedSeat(cursor.getString(cursor.getColumnIndex(assignedSeat)));
         product.setAddon(Boolean.parseBoolean(cursor.getString(cursor.getColumnIndex(addon))));
         String groupId = cursor.getString(cursor.getColumnIndex(seatGroupId));
