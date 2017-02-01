@@ -600,6 +600,11 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
 
     }
 
+    @Override
+    public boolean isConnected() {
+        return true;
+    }
+
     private Runnable runnableScannedData = new Runnable() {
         public void run() {
             try {

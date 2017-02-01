@@ -526,6 +526,11 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
     }
 
     @Override
+    public boolean isConnected() {
+        return true;
+    }
+
+    @Override
     public void deviceLogsReady(String s, Device device) {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");

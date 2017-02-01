@@ -326,4 +326,9 @@ public class EMSmePOS extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     public void submitSignature() {
 
     }
+
+    @Override
+    public boolean isConnected() {
+        return true;
+    }
 }
