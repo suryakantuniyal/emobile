@@ -628,6 +628,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         product.setProdIstaxable(c.getString(c.getColumnIndex("prod_istaxable")));
         product.setProdType(c.getString(c.getColumnIndex("prod_type")));
         product.setCatId(c.getString(c.getColumnIndex("cat_id")));
+        product.setCategoryName(c.getString(c.getColumnIndex("cat_name")));
         product.setProdPricePoints(c.getInt(c.getColumnIndex("prod_price_points")));
         product.setProdValuePoints(c.getInt(c.getColumnIndex("prod_value_points")));
         product.setProdTaxType(c.getString(c.getColumnIndex("prod_taxtype")));

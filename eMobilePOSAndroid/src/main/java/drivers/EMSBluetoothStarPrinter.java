@@ -137,10 +137,25 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
-            if ((port != null) && (!port.retreiveStatus().offline)) {
+            StarPrinterStatus status = null;
+            try {
+                status = port.retreiveStatus();
+            } catch (StarIOPortException e) {
+                try {
+                    StarIOPort.releasePort(port);
+                    port = getStarIOPort();
+                    Thread.sleep(1000);
+                    StarIOPort.releasePort(port);
+                    Thread.sleep(1000);
+                    port = getStarIOPort();
+                    Thread.sleep(1000);
+                    status = port.retreiveStatus();
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
+                }
+            }
+            if ((port != null) && (!status.offline)) {
                 didConnect = true;
-
             }
 
         } catch (StarIOPortException e) {
@@ -157,6 +172,10 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
     public String getPortName() {
         return portName;
+    }
+
+    public StarIOPort getPort() {
+        return port;
     }
 
     public class processConnectionAsync extends AsyncTask<Integer, String, String> {
@@ -199,9 +218,23 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-
-                StarPrinterStatus status = port.retreiveStatus();
-
+                StarPrinterStatus status = null;
+                try {
+                    status = port.retreiveStatus();
+                } catch (StarIOPortException e) {
+                    try {
+                        StarIOPort.releasePort(port);
+                        port = getStarIOPort();
+                        Thread.sleep(1000);
+                        StarIOPort.releasePort(port);
+                        Thread.sleep(1000);
+                        port = getStarIOPort();
+                        Thread.sleep(1000);
+                        status = port.retreiveStatus();
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
+                    }
+                }
                 if (!status.offline) {
                     didConnect = true;
 

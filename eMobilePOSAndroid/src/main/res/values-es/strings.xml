@@ -478,7 +478,6 @@
     <string name="receipt_amountpaid">Cant\u002E Pagada:</string>
     <string name="receipt_total_tip_paid">Prop\u002E Pagada:</string>
     <string name="receipt_balance_due">Balance Pend.:</string>
-    <string name="receipt_cash_returned">Cambio:</string>
     <string name="receipt_idnum">N\u00FAm\u002E de Ident\u002E:</string>
     <string name="receipt_cardnum">N\u00FAm\u002E de Tarjeta:</string>
     <string name="receipt_paid">Pagado:</string>
@@ -1302,6 +1301,7 @@
     <string name="unknown">Unknown</string>
     <string name="split_single">Single Receipt</string>
     <string name="config_printer_width">Printer Width</string>
+    <string name="card_already_processed">Card has already been processed</string>
 
 
 </resources>

@@ -748,7 +748,6 @@
     <string name="receipt_total_tip_paid">Total Tip Paid:</string>
     <string name="receipt_tip">Tip:</string>
     <string name="receipt_balance_due">Balance Due:</string>
-    <string name="receipt_cash_returned">Cash Returned:</string>
     <string name="receipt_idnum">Payment ID:</string>
     <string name="receipt_order_id">Order ID:</string>
     <string name="receipt_cardnum">Card Number:</string>
@@ -1233,6 +1232,7 @@
     <string name="sync_saving_settings">Saving settings...</string>
     <string name="device_name">Device Name</string>
     <string name="unknown">Unknown</string>
+    <string name="card_already_processed">Card has already been processed</string>
 
 
 </resources>

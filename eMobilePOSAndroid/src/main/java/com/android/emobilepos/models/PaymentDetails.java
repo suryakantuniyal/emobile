@@ -37,6 +37,7 @@ public class PaymentDetails {
     private String clerk_id;
 
     private EMVContainer emvContainer;
+    private String payType;
 
 
     public String getPaymethod_name() {
@@ -297,5 +298,13 @@ public class PaymentDetails {
 
     public boolean isVoid() {
         return getIsVoid().equals("1");
+    }
+
+    public void setPayType(String payType) {
+        this.payType = payType;
+    }
+
+    public String getPayType() {
+        return payType;
     }
 }
