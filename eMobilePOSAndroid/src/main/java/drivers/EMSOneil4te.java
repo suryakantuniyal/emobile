@@ -1064,6 +1064,11 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
     }
 
     @Override
+    public boolean isConnected() {
+        return true;
+    }
+
+    @Override
     public void printHeader() {
         super.printHeader(LINE_WIDTH);
     }

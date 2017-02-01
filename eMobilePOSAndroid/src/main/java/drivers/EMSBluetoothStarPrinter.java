@@ -679,6 +679,32 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
     }
 
+    @Override
+    public boolean isConnected() {
+        StarPrinterStatus status;
+        try {
+            status = port.retreiveStatus();
+        } catch (StarIOPortException e) {
+            try {
+                StarIOPort.releasePort(port);
+                port = getStarIOPort();
+                Thread.sleep(1000);
+                StarIOPort.releasePort(port);
+                Thread.sleep(1000);
+                port = getStarIOPort();
+                Thread.sleep(1000);
+                status = port.retreiveStatus();
+            } catch (InterruptedException e1) {
+                e1.printStackTrace();
+                return false;
+            } catch (StarIOPortException e1) {
+                e1.printStackTrace();
+                return false;
+            }
+        }
+        return !status.offline;
+    }
+
     private void starIoExtManagerConnect() {
         final Dialog mProgressDialog = new ProgressDialog(EMSBluetoothStarPrinter.this.activity);
         AsyncTask<Void, Void, Boolean> asyncTask = new AsyncTask<Void, Void, Boolean>() {

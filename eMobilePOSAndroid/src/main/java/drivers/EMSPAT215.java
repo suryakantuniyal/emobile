@@ -435,6 +435,11 @@ public class EMSPAT215 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     }
 
     @Override
+    public boolean isConnected() {
+        return true;
+    }
+
+    @Override
     public String printStationPrinter(List<Orders> orderProducts, String ordID, boolean cutPaper, boolean printHeader) {
         return "";
     }

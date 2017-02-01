@@ -45,17 +45,12 @@ import main.EMSDeviceManager;
  * Created by Guarionex on 5/3/2016.
  */
 public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate,
-        ErrorListener, OutputCompleteListener, StatusUpdateListener,DirectIOListener {
+        ErrorListener, OutputCompleteListener, StatusUpdateListener, DirectIOListener {
 
     private int LINE_WIDTH = 32;
-    private int PAPER_WIDTH;
-    private String portSettings, portName;
     private BXLConfigLoader bxlConfigLoader;
-    private EMSCallBack callBack;
-    private Handler handler;// = new Handler();
     private ProgressDialog myProgressDialog;
     private EMSDeviceDriver thisInstance;
-    private String portNumber = "";
     private EMSDeviceManager edm;
     private String logicalName;
 
@@ -66,8 +61,6 @@ public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrint
         thisInstance = this;
         LINE_WIDTH = paperSize;
 
-        portName = myPref.getPrinterMACAddress();
-        portNumber = myPref.getStarPort();
         bxlConfigLoader = new BXLConfigLoader(activity);
         try {
             bxlConfigLoader.openFile();
@@ -84,17 +77,6 @@ public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrint
             LINE_WIDTH = 32;
         } else {
             LINE_WIDTH = 48;
-        }
-        switch (LINE_WIDTH) {
-            case 32:
-                PAPER_WIDTH = 408;
-                break;
-            case 48:
-                PAPER_WIDTH = 576;
-                break;
-            case 69:
-                PAPER_WIDTH = 832;// 5400
-                break;
         }
     }
 
@@ -130,10 +112,10 @@ public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrint
         }
         logicalName = myPref.getPrinterName();
         String strProduce;
-        if (setProductName(logicalName).length() == 0) {
+        if (getProductName().length() == 0) {
             strProduce = logicalName;
         } else {
-            strProduce = setProductName(logicalName);
+            strProduce = getProductName();
         }
 
         try {
@@ -223,24 +205,24 @@ public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrint
         }
     }
 
-    private String setProductName(String name) {
+    private String getProductName() {
         String productName = null;
 
-        if ((logicalName.indexOf("SPP-R200II") >= 0)) {
+        if ((logicalName.contains("SPP-R200II"))) {
             if (logicalName.substring(10, 11).equals("I")) {
                 productName = BXLConst.SPP_R200III;
             } else {
                 productName = BXLConst.SPP_R200II;
             }
-        } else if ((logicalName.indexOf("SPP-R210") >= 0)) {
+        } else if ((logicalName.contains("SPP-R210"))) {
             productName = BXLConst.SPP_R210;
-        } else if ((logicalName.indexOf("SPP-R310") >= 0)) {
+        } else if ((logicalName.contains("SPP-R310"))) {
             productName = BXLConst.SPP_R310;
-        } else if ((logicalName.indexOf("SPP-R300") >= 0)) {
+        } else if ((logicalName.contains("SPP-R300"))) {
             productName = BXLConst.SPP_R300;
-        } else if ((logicalName.indexOf("SPP-R400") >= 0)) {
+        } else if ((logicalName.contains("SPP-R400"))) {
             productName = BXLConst.SPP_R400;
-        } else if ((logicalName.indexOf("SPP-R200") >= 0)) {
+        } else if ((logicalName.contains("SPP-R200"))) {
             productName = BXLConst.SPP_R300;
         }
 
@@ -453,6 +435,11 @@ public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrint
     @Override
     public void submitSignature() {
 
+    }
+
+    @Override
+    public boolean isConnected() {
+        return true;
     }
 
     @Override

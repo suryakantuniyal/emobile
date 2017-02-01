@@ -468,12 +468,14 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                 MixMatch mixMatch = mixMatches.get(0);
                 int mixMatchType = mixMatch.getMixMatchType();
                 if (mixMatchType == 1) {
-                    applyMixMatch(group, mixMatches);
+                    orderProducts.addAll(applyMixMatch(group, mixMatches));
                 } else {
                     if (mixMatches.size() == 2) {
                         orderProducts.addAll(applyXYZMixMatchToGroup(group, mixMatches, isGroupBySKU));
                     }
                 }
+            } else if (!group.getOrderProducts().isEmpty()) {
+                orderProducts.addAll(group.getOrderProducts());
             }
         }
         orderProducts.addAll(noMixMatchProducts);
@@ -726,7 +728,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                         discountSplitAmount = new BigDecimal(mixMatch.getPrice())
                                 .multiply(BigDecimal.valueOf(discount.getQty()));
                     } else {
-                        BigDecimal percent = new BigDecimal(100 - mixMatch.getPrice()).divide(new BigDecimal(100), 2, RoundingMode.HALF_UP);
+                        BigDecimal percent = new BigDecimal(100 - mixMatch.getPrice()).divide(new BigDecimal(100), 4, RoundingMode.HALF_UP);
                         discountSplitAmount = product.getMixMatchOriginalPrice()
                                 .multiply(percent)
                                 .multiply(BigDecimal.valueOf(discount.getQty()));
@@ -739,7 +741,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                             .multiply(product.getMixMatchOriginalPrice());
                     lineTotal = lineTotal.add(amountNotDiscounted);
                 }
-                String prod_price = lineTotal.divide(new BigDecimal(product.getOrdprod_qty()), 4, RoundingMode.HALF_UP).toString();
+                String prod_price = lineTotal.divide(new BigDecimal(product.getOrdprod_qty()), 2, RoundingMode.HALF_UP).toString();
                 product.setPrices(prod_price, product.getOrdprod_qty());
             }
         }

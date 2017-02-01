@@ -676,14 +676,15 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
             if (uniMagReader != null)
                 uniMagReader.release();
-            else if (magtekReader != null)
+            if (magtekReader != null)
                 magtekReader.closeDevice();
-            else if (Global.btSwiper != null && Global.btSwiper.getCurrentDevice() != null)
+            if (Global.btSwiper != null && Global.btSwiper.getCurrentDevice() != null)
                 Global.btSwiper.getCurrentDevice().releaseCardReader();
-            else if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
                 Global.mainPrinterManager.getCurrentDevice().releaseCardReader();
                 Global.mainPrinterManager.getCurrentDevice().loadScanner(null);
-            } else if (Global.btSled != null && Global.btSled.getCurrentDevice() != null)
+            }
+            if (Global.btSled != null && Global.btSled.getCurrentDevice() != null)
                 Global.btSled.getCurrentDevice().releaseCardReader();
         }
     }

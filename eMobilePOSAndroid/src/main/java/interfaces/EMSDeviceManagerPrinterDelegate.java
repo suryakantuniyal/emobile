@@ -86,4 +86,6 @@ public interface EMSDeviceManagerPrinterDelegate {
     void updateFirmware();
 
     void submitSignature();
+
+    boolean isConnected();
 }

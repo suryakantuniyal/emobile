@@ -749,6 +749,11 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
     }
 
     @Override
+    public boolean isConnected() {
+        return true;
+    }
+
+    @Override
     public void printHeader() {
         super.printHeader(LINE_WIDTH);
     }
