@@ -5,11 +5,9 @@ import android.text.TextUtils;
 
 import com.android.dao.DeviceTableDAO;
 import com.android.emobilepos.models.realms.Device;
-import com.starmicronics.stario.StarIOPortException;
 
 import java.util.HashMap;
 
-import drivers.EMSBluetoothStarPrinter;
 import io.realm.RealmResults;
 import main.EMSDeviceManager;
 
