@@ -268,6 +268,11 @@ public class EMSRP600 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     }
 
     @Override
+    public boolean isConnected() {
+        return true;
+    }
+
+    @Override
     public String printStationPrinter(List<Orders> orderProducts, String ordID, boolean cutPaper, boolean printHeader) {
         return "";
     }

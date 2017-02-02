@@ -239,5 +239,10 @@ public class EMSEM100 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
     }
 
+    @Override
+    public boolean isConnected() {
+        return true;
+    }
+
 
 }

@@ -326,6 +326,11 @@ public class EMSOT310 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
     }
 
+    @Override
+    public boolean isConnected() {
+        return true;
+    }
+
     private class MtHandlerCallback implements Handler.Callback {
         public boolean handleMessage(Message msg) {
 

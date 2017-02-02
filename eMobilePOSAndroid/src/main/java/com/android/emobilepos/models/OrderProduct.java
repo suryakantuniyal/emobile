@@ -742,6 +742,7 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     public void resetMixMatch() {
         this.setMixAndMatchDiscounts(null);
         this.setMixMatchQtyApplied(0);
+        this.setProd_price(String.valueOf(getMixMatchOriginalPrice()));
     }
 
     public String getProd_extradesc() {

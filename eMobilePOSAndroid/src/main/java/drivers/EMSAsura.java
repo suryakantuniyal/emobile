@@ -1356,6 +1356,11 @@ public class EMSAsura extends EMSDeviceDriver
     }
 
     @Override
+    public boolean isConnected() {
+        return true;
+    }
+
+    @Override
     public void msrError() {
         // TODO Auto-generated method stub
 

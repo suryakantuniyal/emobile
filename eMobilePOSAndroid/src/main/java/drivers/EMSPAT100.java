@@ -557,6 +557,11 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     public void submitSignature() {
 
     }
+
+    @Override
+    public boolean isConnected() {
+        return true;
+    }
     //
     // protected void printImage(int type) {
     // Bitmap myBitmap = null;
