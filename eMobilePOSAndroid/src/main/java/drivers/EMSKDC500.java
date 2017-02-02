@@ -363,6 +363,11 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
     }
 
+    @Override
+    public boolean isConnected() {
+        return true;
+    }
+
 
     @Override
     public void BarcodeDataReceived(KDCData kdcData) {

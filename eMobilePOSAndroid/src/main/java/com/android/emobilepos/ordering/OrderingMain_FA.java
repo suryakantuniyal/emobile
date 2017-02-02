@@ -6,7 +6,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.media.AudioManager;
@@ -676,14 +675,15 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
             if (uniMagReader != null)
                 uniMagReader.release();
-            else if (magtekReader != null)
+            if (magtekReader != null)
                 magtekReader.closeDevice();
-            else if (Global.btSwiper != null && Global.btSwiper.getCurrentDevice() != null)
+            if (Global.btSwiper != null && Global.btSwiper.getCurrentDevice() != null)
                 Global.btSwiper.getCurrentDevice().releaseCardReader();
-            else if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
                 Global.mainPrinterManager.getCurrentDevice().releaseCardReader();
                 Global.mainPrinterManager.getCurrentDevice().loadScanner(null);
-            } else if (Global.btSled != null && Global.btSled.getCurrentDevice() != null)
+            }
+            if (Global.btSled != null && Global.btSled.getCurrentDevice() != null)
                 Global.btSled.getCurrentDevice().releaseCardReader();
         }
     }

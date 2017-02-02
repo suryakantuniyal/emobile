@@ -5,11 +5,9 @@ import android.text.TextUtils;
 
 import com.android.dao.DeviceTableDAO;
 import com.android.emobilepos.models.realms.Device;
-import com.starmicronics.stario.StarIOPortException;
 
 import java.util.HashMap;
 
-import drivers.EMSBluetoothStarPrinter;
 import io.realm.RealmResults;
 import main.EMSDeviceManager;
 
@@ -115,18 +113,24 @@ public class DeviceUtils {
                     && myPref.getPrinterType() != Global.MIURA
                     && myPref.getPrinterType() != Global.ELOPAYPOINT
                     && myPref.getPrinterType() != Global.PAT215) {
-                if (myPref.getPrinterName().toUpperCase().contains("MPOP") && Global.mainPrinterManager != null) {
-                    EMSBluetoothStarPrinter mpop = (EMSBluetoothStarPrinter) Global.mainPrinterManager.getCurrentDevice();
-                    try {
-                        if (mpop.getPort().retreiveStatus().offline) {
-                            forceReload = true;
-                        }
-                    } catch (StarIOPortException e) {
-                        e.printStackTrace();
+                if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                    if (!Global.mainPrinterManager.getCurrentDevice().isConnected()) {
                         forceReload = true;
                     }
                 }
-                if (Global.mainPrinterManager == null || forceReload) {
+//                if (myPref.getPrinterName().toUpperCase().contains("MPOP") && Global.mainPrinterManager != null) {
+//                    EMSBluetoothStarPrinter mpop = (EMSBluetoothStarPrinter) Global.mainPrinterManager.getCurrentDevice();
+//                    try {
+//                        if (mpop.getPort().retreiveStatus().offline) {
+//                            forceReload = true;
+//                        }
+//                    } catch (StarIOPortException e) {
+//                        e.printStackTrace();
+//                        forceReload = true;
+//                    }
+//                }
+                if (Global.mainPrinterManager == null || Global.mainPrinterManager.getCurrentDevice() == null
+                        || forceReload) {
                     if (Global.mainPrinterManager == null) {
                         edm = new EMSDeviceManager();
                         Global.mainPrinterManager = edm.getManager();

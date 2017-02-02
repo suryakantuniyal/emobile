@@ -476,4 +476,9 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     public void submitSignature() {
 
     }
+
+    @Override
+    public boolean isConnected() {
+        return true;
+    }
 }

@@ -389,6 +389,11 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
     }
 
     @Override
+    public boolean isConnected() {
+        return true;
+    }
+
+    @Override
     public void onError(CoreError coreError, String s) {
         System.out.print(s);
         isReadingCard = false;
