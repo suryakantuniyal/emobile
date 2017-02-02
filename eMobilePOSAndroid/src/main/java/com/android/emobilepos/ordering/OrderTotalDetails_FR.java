@@ -23,6 +23,7 @@ import com.android.database.ProductsHandler;
 import com.android.database.TaxesGroupHandler;
 import com.android.database.TaxesHandler;
 import com.android.emobilepos.R;
+import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.Discount;
 import com.android.emobilepos.models.MixAndMatchDiscount;
@@ -66,12 +67,12 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
     private Activity activity;
     private MyPreferences myPref;
     private Global global;
-    private BigDecimal taxableSubtotal;
     private static OrderTotalDetails_FR myFrag;
 
     private TaxesHandler taxHandler;
     private TaxesGroupHandler taxGroupHandler;
     private AssignEmployee assignEmployee;
+    private boolean isToGo;
 
     public static OrderTotalDetails_FR init(int val) {
         OrderTotalDetails_FR frag = new OrderTotalDetails_FR();
@@ -100,7 +101,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.order_total_details_layout, container, false);
         assignEmployee = AssignEmployeeDAO.getAssignEmployee();
-
+        isToGo = ((OrderingMain_FA)getActivity()).isToGo;
         myFrag = this;
         taxSelected = 0;
         discountSelected = 0;
@@ -114,7 +115,6 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         activity = getActivity();
         global = (Global) activity.getApplication();
         myPref = new MyPreferences(activity);
-        taxableSubtotal = new BigDecimal("0");
 
         if (!myPref.getIsTablet() && leftHolder != null) {
             leftHolder.setVisibility(View.GONE);
@@ -208,8 +208,8 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         List<String[]> rightData = null;
         boolean isTax = false;
 
-        public MySpinnerAdapter(Activity activity, int resource, List<String> left, List<String[]> right,
-                                boolean isTax) {
+        MySpinnerAdapter(Activity activity, int resource, List<String> left, List<String[]> right,
+                         boolean isTax) {
             super(activity, resource, left);
             this.context = activity;
             this.leftData = left;
@@ -217,7 +217,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             this.isTax = isTax;
         }
 
-        public int getDiscountIdPosition(String discountId) {
+        int getDiscountIdPosition(String discountId) {
             for (int i = 0; i < rightData.size(); i++) {
                 if (rightData.get(i)[4].equalsIgnoreCase(discountId)) {
                     return i;
@@ -270,7 +270,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             return row;
         }
 
-        public void setValues(TextView taxValue, int position) {
+        void setValues(TextView taxValue, int position) {
             StringBuilder sb = new StringBuilder();
             if (isTax) {
                 sb.append("%").append(rightData.get(position - 1)[2]);
@@ -755,7 +755,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         }
 
         if (myPref.isMixAnMatch() && orderProducts != null && !orderProducts.isEmpty()) {
-            boolean isGroupBySKU = myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku);
+            boolean isGroupBySKU = myPref.isGroupReceiptBySku(isToGo);//myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku) && isToGo;
             calculateMixAndMatch(orderProducts, isGroupBySKU);
         }
 
@@ -763,7 +763,6 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         if (orderProducts != null) {
             size = orderProducts.size();
         }
-        taxableSubtotal = new BigDecimal("0.00");
         tempTaxableAmount = new BigDecimal("0");
         itemsDiscountTotal = new BigDecimal(0);
         setupTaxesHolder();

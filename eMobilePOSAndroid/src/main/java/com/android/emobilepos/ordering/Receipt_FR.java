@@ -1085,7 +1085,9 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         order.ord_type = Global.ord_type == null ? "" : Global.ord_type.getCodeString();
         order.tax_id = OrderTotalDetails_FR.taxID;
         order.ord_discount_id = OrderTotalDetails_FR.discountID;
-
+        if (global.order != null) {
+            order.ord_timecreated = global.order.ord_timecreated;
+        }
         if (assignEmployee.isVAT()) {
             order.VAT = "1";
         }

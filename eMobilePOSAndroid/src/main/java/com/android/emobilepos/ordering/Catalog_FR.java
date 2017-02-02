@@ -103,11 +103,13 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     private boolean isFastScanning = false;
     private long lastClickTime = 0;
     private int page = 1;
+    private boolean isToGo;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.order_catalog_layout, container, false);
         instance = this;
+        isToGo = ((OrderingMain_FA)getActivity()).isToGo;
         catButLayout = (LinearLayout) view.findViewById(R.id.categoriesButtonLayoutHolder);
         searchField = (MyEditText) view.findViewById(R.id.catalogSearchField);
         searchField.setIsForSearching(getActivity(), OrderingMain_FA.invisibleSearchMain);
@@ -640,7 +642,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
     private void performClickEvent() {
         Product product = populateDataForIntent(myCursor);
-        if (myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
+        if (myPref.isGroupReceiptBySku(isToGo)){//(myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
             List<OrderProduct> orderProductsGroupBySKU = OrderProductUtils.getOrderProductsGroupBySKU(global.orderProducts);
             global.orderProducts.clear();
             global.orderProducts.addAll(orderProductsGroupBySKU);
@@ -651,6 +653,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             product.setAssignedSeat(((OrderingMain_FA) getActivity()).getSelectedSeatNumber());
             String json = gson.toJson(new OrderProduct(product));
             intent.putExtra("orderProduct", json);
+            intent.putExtra("isToGo", isToGo);
 
             if (Global.isConsignment)
                 intent.putExtra("consignment_qty", myCursor.getString(myCursor.getColumnIndex("consignment_qty")));
@@ -661,7 +664,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             if (!orderingMain.validAutomaticAddQty(product)) {
                 Global.showPrompt(getActivity(), R.string.dlog_title_error, getActivity().getString(R.string.limit_onhand));
             } else {
-                if (myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
+                if (myPref.isGroupReceiptBySku(isToGo)){//(myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
                     int orderIndex = global.checkIfGroupBySKU(getActivity(), product.getId(), "1");
                     if (orderIndex != -1 && !OrderingMain_FA.returnItem) {
                         global.refreshParticularOrder(getActivity(), orderIndex, product);

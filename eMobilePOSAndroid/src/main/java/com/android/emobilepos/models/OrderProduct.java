@@ -103,6 +103,9 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         this.setProd_sku(product.getProd_sku());
         this.setProd_upc(product.getProd_upc());
         this.setProd_price(product.getProdPrice());
+        if (!TextUtils.isEmpty(product.getProdPrice())) {
+            this.setMixMatchOriginalPrice(new BigDecimal(product.getProdPrice()));
+        }
         this.setImgURL(product.getProdImgName());
         this.setProd_type(product.getProdType());
         this.setOnHand(product.getProdOnHand());
