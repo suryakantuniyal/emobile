@@ -130,6 +130,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
     private boolean isFromAddon = false;
     OrderProduct orderProduct = new OrderProduct();
     public static PickerProduct_FA instance;
+    private boolean isToGo;
 
 
     @Override
@@ -193,7 +194,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         options = new DisplayImageOptions.Builder().showImageOnLoading(R.drawable.loading_image).cacheInMemory(false).cacheOnDisc(true)
                 .showImageForEmptyUri(R.drawable.no_image).build();
 
-
+        isToGo = extras.getBoolean("isToGo", false);
         isModify = extras.getBoolean("isModify", false);
         isFromAddon = extras.getBoolean("isFromAddon", false);
         setOrderProductValues();
@@ -574,7 +575,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
 
     private void addProductToOrder() {
-        if (myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
+        if (myPref.isGroupReceiptBySku(isToGo)) {//(myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
             List<OrderProduct> orderProductsGroupBySKU = OrderProductUtils.getOrderProductsGroupBySKU(global.orderProducts);
             global.orderProducts.clear();
             global.orderProducts.addAll(orderProductsGroupBySKU);
@@ -826,7 +827,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
     private void preValidateSettings() {
         MyPreferences myPref = new MyPreferences(activity);
 
-        if (myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
+        if (myPref.isGroupReceiptBySku(isToGo)) {//(myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
             List<OrderProduct> orderProducts = OrderProductUtils.getOrderProducts(global.orderProducts, prodID);
             if (!orderProducts.isEmpty()) {
                 String value = orderProducts.get(0).getOrdprod_qty();//OrderProductUtils.getOrderProductQty(global.orderProducts, prodID);// global.qtyCounter.get(prodID);
