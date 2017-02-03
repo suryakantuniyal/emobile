@@ -302,7 +302,7 @@ public class GenerateXML {
         try {
             sb.append(value).append("?RegID=").append(URLEncoder.encode(info.getAcctNumber(), UTF_8));
             sb.append("&MSemployeeID=").append(URLEncoder.encode(String.valueOf(assignEmployee.getEmpId()), UTF_8));
-            sb.append("&MSZoneID=").append(URLEncoder.encode(assignEmployee.getZoneId(), UTF_8));
+            sb.append("&MSZoneID=").append(URLEncoder.encode(StringUtil.nullStringToEmpty(assignEmployee.getZoneId()), UTF_8));
             sb.append(ending.toString());
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
