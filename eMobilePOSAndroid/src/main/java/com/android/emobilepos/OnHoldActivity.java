@@ -3,11 +3,14 @@ package com.android.emobilepos;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.PowerManager;
 import android.support.v4.widget.CursorAdapter;
 import android.text.InputType;
@@ -31,8 +34,10 @@ import com.android.database.OrdersHandler;
 import com.android.database.ProductAddonsHandler;
 import com.android.database.ProductsHandler;
 import com.android.database.SalesTaxCodesHandler;
+import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.models.firebase.NotificationEvent;
 import com.android.emobilepos.models.realms.SalesAssociate;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.support.DateUtils;
@@ -86,6 +91,31 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         hasBeenCreated = true;
 
     }
+
+    private BroadcastReceiver messageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Handler handler = new Handler();
+            String eventAction = intent.getStringExtra(MainMenu_FA.NOTIFICATION_MESSAGE);
+            NotificationEvent.NotificationEventAction action = NotificationEvent.NotificationEventAction.getNotificationEventByCode(Integer.parseInt(eventAction));
+            switch (action) {
+                case SYNC_HOLDS:
+                    OrdersHandler ordersHandler = new OrdersHandler(activity);
+                    myCursor = ordersHandler.getOrderOnHold();
+                    myAdapter.swapCursor(myCursor);
+                    myAdapter.notifyDataSetChanged();
+                    break;
+                case SYNC_MESAS_CONFIG:
+                    break;
+            }
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                }
+            };
+            handler.post(runnable);
+        }
+    };
 
     private void askWaiterSignin() {
         final Dialog popDlog = new Dialog(this, R.style.TransparentDialogFullScreen);
@@ -151,6 +181,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
     public void onDestroy() {
         myCursor.close();
         super.onDestroy();
+        unregisterReceiver(messageReceiver);
     }
 
     @Override
@@ -163,6 +194,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                 global.getGlobalDlog().dismiss();
             global.promptForMandatoryLogin(activity);
         }
+        registerReceiver(messageReceiver, new IntentFilter(MainMenu_FA.NOTIFICATION_RECEIVED));
         super.onResume();
     }
 
@@ -607,6 +639,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
         HoldsCursorAdapter(Context context, Cursor c, int flags) {
             super(context, c, flags);
+
             inflater = LayoutInflater.from(context);
         }
 

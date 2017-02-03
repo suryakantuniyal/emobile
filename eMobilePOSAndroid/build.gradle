@@ -12,7 +12,7 @@ android {
             storePassword '1Enabler1'
         }
     }
-    compileSdkVersion 23
+    compileSdkVersion 25
     buildToolsVersion '24.0.3'
     dexOptions {
         preDexLibraries = false
@@ -227,8 +227,8 @@ dependencies {
     compile 'com.android.support:multidex:1.0.1'
     compile 'com.google.guava:guava:18.0'
     compile 'com.android.support:multidex:1.0.1'
-    compile 'com.android.support:support-v4:24.0.0'
-    compile 'com.android.support:support-v13:24.0.0'
+//    compile 'com.android.support:support-v4:24.0.0'
+//    compile 'com.android.support:support-v13:24.0.0'
     compile files('libs/bixolon_printer.jar')
     compile files('libs/jpos114-controls.jar')
     compile files('libs/xerces.jar')
@@ -252,7 +252,7 @@ dependencies {
 
 dependencies {
     compile 'com.google.firebase:firebase-core:9.2.1'
-    compile 'com.google.android.gms:play-services:9.2.1'
+    compile 'com.google.android.gms:play-services:10.0.1'
 }
 
 
@@ -278,4 +278,4 @@ dependencies {
 //    compile 'com.google.firebase:firebase-messaging:9.2.1'
 //    compile 'com.google.firebase:firebase-core:9.2.0'
 }
-apply plugin: 'com.google.gms.google-services'
+//apply plugin: 'com.google.gms.google-services'
