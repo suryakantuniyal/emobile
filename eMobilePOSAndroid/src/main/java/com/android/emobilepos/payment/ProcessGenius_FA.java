@@ -246,7 +246,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
         protected GeniusResponse doInBackground(String... params) {
             Gson gson = JsonUtils.getInstance();
             GeniusResponse geniusResponse = null;
-            if (pingGeniusDevice()) {
+//            if (pingGeniusDevice()) {
                 geniusConnected = true;
                 Post post = new Post();
                 SAXParserFactory spf = SAXParserFactory.newInstance();
@@ -277,7 +277,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                     geniusResponse.setErrorMessage(ex.getMessage());
                 }
 
-            }
+//            }
             return geniusResponse;
         }
 
@@ -383,7 +383,6 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
 
                 @Override
                 public void onClick(View v) {
-                    // TODO Auto-generated method stub
                     dlog.dismiss();
                     new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 }
@@ -392,7 +391,6 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
 
                 @Override
                 public void onClick(View v) {
-                    // TODO Auto-generated method stub
                     dlog.dismiss();
                     finish();
                 }

@@ -646,6 +646,10 @@ public class MyPreferences {
         return sharedPref.getBoolean(key, defaultValue);
     }
 
+    public boolean isGroupReceiptBySku(boolean isToGo) {
+        return getPreferences(pref_group_receipt_by_sku) && isToGo;
+    }
+
     public boolean getPreferences(String key) {
         return sharedPref.getBoolean(key, false);
     }

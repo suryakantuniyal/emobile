@@ -774,7 +774,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
                     if (myPref.getPreferences(MyPreferences.pref_fast_scanning_mode)) {
                         if (validAutomaticAddQty(product)) {
-                            if (myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
+                            if (myPref.isGroupReceiptBySku(isToGo)) {//(myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
                                 int foundPosition = global.checkIfGroupBySKU(this, product.getId(), "1");
                                 if (foundPosition != -1) // product already
                                 // exist in list
@@ -894,7 +894,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     if (product.getId() != null) {
                         if (myPref.getPreferences(MyPreferences.pref_fast_scanning_mode)) {
                             if (validAutomaticAddQty(product)) {
-                                if (myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
+                                if (myPref.isGroupReceiptBySku(isToGo)) {//(myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
                                     int foundPosition = global.checkIfGroupBySKU(OrderingMain_FA.this, product.getId(), "1");
                                     if (foundPosition != -1 && !OrderingMain_FA.returnItem) // product
                                     // already
@@ -982,7 +982,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
             if (myPref.getPreferences(MyPreferences.pref_fast_scanning_mode)) {
                 if (validAutomaticAddQty(product)) {
-                    if (myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
+                    if (myPref.isGroupReceiptBySku(isToGo)) {//(myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
                         int foundPosition = global.checkIfGroupBySKU(this, product.getId(), "1");
                         if (foundPosition != -1) // product already exist in
                         // list

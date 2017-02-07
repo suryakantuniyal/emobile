@@ -313,8 +313,8 @@ public class SynchMethods {
                 updateProgress("Updating Sync Time");
                 synchUpdateSyncTime();
 
-            } catch (Exception ignored) {
-
+            } catch (Exception e) {
+                e.printStackTrace();
             }
             return null;
         }
@@ -391,7 +391,7 @@ public class SynchMethods {
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);
             myProgressDialog.setMax(100);
-             myProgressDialog.show();
+            myProgressDialog.show();
 
         }
 

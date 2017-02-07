@@ -3,11 +3,14 @@ package com.android.emobilepos;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.PowerManager;
 import android.support.v4.widget.CursorAdapter;
 import android.text.InputType;
@@ -31,19 +34,26 @@ import com.android.database.OrdersHandler;
 import com.android.database.ProductAddonsHandler;
 import com.android.database.ProductsHandler;
 import com.android.database.SalesTaxCodesHandler;
+import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.models.firebase.NotificationEvent;
 import com.android.emobilepos.models.realms.SalesAssociate;
 import com.android.emobilepos.ordering.OrderingMain_FA;
+import com.android.support.DateUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NetworkUtils;
+import com.android.support.NumberUtils;
 import com.android.support.OnHoldsManager;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class OnHoldActivity extends BaseFragmentActivityActionBar {
     private Activity activity;
@@ -81,6 +91,31 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         hasBeenCreated = true;
 
     }
+
+    private BroadcastReceiver messageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Handler handler = new Handler();
+            String eventAction = intent.getStringExtra(MainMenu_FA.NOTIFICATION_MESSAGE);
+            NotificationEvent.NotificationEventAction action = NotificationEvent.NotificationEventAction.getNotificationEventByCode(Integer.parseInt(eventAction));
+            switch (action) {
+                case SYNC_HOLDS:
+                    OrdersHandler ordersHandler = new OrdersHandler(activity);
+                    myCursor = ordersHandler.getOrderOnHold();
+                    myAdapter.swapCursor(myCursor);
+                    myAdapter.notifyDataSetChanged();
+                    break;
+                case SYNC_MESAS_CONFIG:
+                    break;
+            }
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                }
+            };
+            handler.post(runnable);
+        }
+    };
 
     private void askWaiterSignin() {
         final Dialog popDlog = new Dialog(this, R.style.TransparentDialogFullScreen);
@@ -146,6 +181,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
     public void onDestroy() {
         myCursor.close();
         super.onDestroy();
+        unregisterReceiver(messageReceiver);
     }
 
     @Override
@@ -158,6 +194,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                 global.getGlobalDlog().dismiss();
             global.promptForMandatoryLogin(activity);
         }
+        registerReceiver(messageReceiver, new IntentFilter(MainMenu_FA.NOTIFICATION_RECEIVED));
         super.onResume();
     }
 
@@ -602,6 +639,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
         HoldsCursorAdapter(Context context, Cursor c, int flags) {
             super(context, c, flags);
+
             inflater = LayoutInflater.from(context);
         }
 
@@ -621,11 +659,26 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                 myHolder.offlineFlag.setVisibility(View.VISIBLE);
             }
             String table = cursor.getString(myHolder.i_assignedTable);
+            String seats = cursor.getString(myHolder.i_numberOfSeats);
+            String createdTime = cursor.getString(myHolder.i_timeCreated);
+            String total = Global.getCurrencyFormat(cursor.getString(myHolder.i_orderTotal));
+            Map<TimeUnit, Long> map = DateUtils.computeDiff(DateUtils.getDateStringAsDate(createdTime, DateUtils.DATE_yyyy_MM_ddTHH_mm_ss), new Date());
+            String timeOnSite = String.format("%02d:%02d", map.get(TimeUnit.HOURS), map.get(TimeUnit.MINUTES));
             if (TextUtils.isEmpty(table)) {
                 myHolder.tableTextView.setVisibility(View.INVISIBLE);
+                myHolder.guestsNumber.setVisibility(View.INVISIBLE);
+                myHolder.timeOnSite.setVisibility(View.INVISIBLE);
+                myHolder.orderTotal.setVisibility(View.INVISIBLE);
             } else {
-                myHolder.tableTextView.setText(table);
                 myHolder.tableTextView.setVisibility(View.VISIBLE);
+                myHolder.tableTextView.setVisibility(View.VISIBLE);
+                myHolder.guestsNumber.setVisibility(View.VISIBLE);
+                myHolder.timeOnSite.setVisibility(View.VISIBLE);
+                myHolder.orderTotal.setVisibility(View.VISIBLE);
+                myHolder.tableTextView.setText(table);
+                myHolder.guestsNumber.setText(seats);
+                myHolder.timeOnSite.setText(timeOnSite);
+                myHolder.orderTotal.setText(total);
             }
         }
 
@@ -637,19 +690,26 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             holder.holdID = (TextView) retView.findViewById(R.id.onHoldID);
             holder.tableTextView = (TextView) retView.findViewById(R.id.restaurantTabletextView);
             holder.holdName = (TextView) retView.findViewById(R.id.onHoldName);
+            holder.guestsNumber = (TextView) retView.findViewById(R.id.guestNumbertextView);
+            holder.orderTotal = (TextView) retView.findViewById(R.id.orderTotaltextView);
+            holder.timeOnSite = (TextView) retView.findViewById(R.id.timeOnSitetextView);
             holder.offlineFlag = (TextView) retView.findViewById(R.id.onHoldOfflineFlag);
             holder.i_holdID = cursor.getColumnIndex("_id");
             holder.i_holdName = cursor.getColumnIndex("ord_HoldName");
             holder.i_issync = cursor.getColumnIndex("ord_issync");
             holder.i_assignedTable = cursor.getColumnIndex("assignedTable");
+            holder.i_timeCreated = cursor.getColumnIndex("ord_timecreated");
+            holder.i_numberOfSeats = cursor.getColumnIndex("numberOfSeats");
+            holder.i_orderTotal = cursor.getColumnIndex("ord_total");
+
             retView.setTag(holder);
             return retView;
         }
 
         private class ViewHolder {
-            TextView holdID, holdName, offlineFlag;
+            TextView holdID, holdName, offlineFlag, guestsNumber, orderTotal, timeOnSite;
             TextView tableTextView;
-            int i_issync, i_holdID, i_holdName, i_assignedTable;
+            int i_issync, i_holdID, i_holdName, i_assignedTable, i_orderTotal, i_numberOfSeats, i_timeCreated;
         }
     }
 }

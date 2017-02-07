@@ -324,6 +324,11 @@ public class EMSMiura extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     }
 
     @Override
+    public boolean isConnected() {
+        return true;
+    }
+
+    @Override
     public void connected() {
 
     }
