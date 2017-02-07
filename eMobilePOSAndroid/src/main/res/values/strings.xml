@@ -1253,6 +1253,7 @@
     <string name="plus_sign">+</string>
     <string name="minus_sign">-</string>
     <string name="equal_sign">=</string>
+    <string name="tenCents">$0.10</string>
 
 
 </resources>

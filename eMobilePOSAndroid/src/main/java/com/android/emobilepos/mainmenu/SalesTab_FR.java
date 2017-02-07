@@ -53,6 +53,7 @@ import com.android.emobilepos.payment.TipAdjustmentFA;
 import com.android.emobilepos.settings.SettingListActivity;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.emobilepos.app.ShiftsActivity;
 
 import java.util.HashMap;
 
@@ -257,16 +258,14 @@ public class SalesTab_FR extends Fragment {
         global.resetOrderDetailsValues();
         global.clearListViewData();
         Intent intent;
-        if (isCustomerSelected) // customer is currently selected
-        {
+        if (isCustomerSelected) {
             switch (Global.TransactionType.getByCode(pos)) {
                 case TIP_ADJUSTMENT: {
                     intent = new Intent(activity, TipAdjustmentFA.class);
                     startActivity(intent);
                     break;
                 }
-                case SALE_RECEIPT: // Sales Receipt
-                {
+                case SALE_RECEIPT: {
                     if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
                         if (myPref.getPreferences(MyPreferences.pref_restaurant_mode) &&
                                 myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
@@ -283,46 +282,32 @@ public class SalesTab_FR extends Fragment {
                     }
                     break;
                 }
-                case ORDERS: // Orders
-                {
-                    //EasyTracker.getTracker().sendEvent("ui_action", "button_press", "Orders", null);
+                case ORDERS: {
                     intent = new Intent(activity, OrderingMain_FA.class);
-                    //intent = new Intent(activity, SalesReceiptSplitActivity.class);
                     intent.putExtra("option_number", Global.TransactionType.ORDERS);
                     startActivityForResult(intent, 0);
 
                     break;
                 }
-                case RETURN: // Return
-                {
-                    //EasyTracker.getTracker().sendEvent("ui_action", "button_press", "Return", null);
+                case RETURN: {
                     intent = new Intent(activity, OrderingMain_FA.class);
                     intent.putExtra("option_number", Global.TransactionType.RETURN);
                     startActivityForResult(intent, 0);
                     break;
                 }
-                case INVOICE: // Invoice
-                {
-                    //EasyTracker.getTracker().sendEvent("ui_action", "button_press", "Invoice", null);
+                case INVOICE: {
                     intent = new Intent(activity, OrderingMain_FA.class);
-                    //intent = new Intent(activity, SalesReceiptSplitActivity.class);
-
                     intent.putExtra("option_number", Global.TransactionType.INVOICE);
                     startActivityForResult(intent, 0);
                     break;
                 }
-                case ESTIMATE: // Estimate
-                {
-                    //EasyTracker.getTracker().sendEvent("ui_action", "button_press", "Estimate", null);
+                case ESTIMATE: {
                     intent = new Intent(activity, OrderingMain_FA.class);
-                    //intent = new Intent(activity, SalesReceiptSplitActivity.class);
                     intent.putExtra("option_number", Global.TransactionType.ESTIMATE);
                     startActivityForResult(intent, 0);
                     break;
                 }
-                case PAYMENT: // Payment
-                {
-                    //EasyTracker.getTracker().sendEvent("ui_action", "button_press", "Payment", null);
+                case PAYMENT: {
                     intent = new Intent(activity, SelectPayMethod_FA.class);
                     intent.putExtra("salespayment", true);
                     intent.putExtra("amount", "0.00");
@@ -337,20 +322,19 @@ public class SalesTab_FR extends Fragment {
                     startActivity(intent);
                     break;
                 }
-                case GIFT_CARD:    //Gift Card
+                case GIFT_CARD:
                     intent = new Intent(activity, GiftCard_FA.class);
                     startActivity(intent);
                     break;
-                case LOYALTY_CARD:    //Loyalty Card
+                case LOYALTY_CARD:
                     intent = new Intent(activity, LoyaltyCard_FA.class);
                     startActivity(intent);
                     break;
-                case REWARD_CARD:    //Reward Card
+                case REWARD_CARD:
                     intent = new Intent(activity, RewardCard_FA.class);
                     startActivity(intent);
                     break;
-                case REFUND: // Refund
-                {
+                case REFUND: {
                     //EasyTracker.getTracker().sendEvent("ui_action", "button_press", "Refund", null);
                     intent = new Intent(activity, SelectPayMethod_FA.class);
                     intent.putExtra("salesrefund", true);
@@ -366,21 +350,16 @@ public class SalesTab_FR extends Fragment {
                     startActivity(intent);
                     break;
                 }
-                case ROUTE:                //Route
-                {
+                case ROUTE: {
                     break;
                 }
-                case ON_HOLD:            //On Hold
-                {
+                case ON_HOLD: {
                     intent = new Intent(getActivity(), OnHoldActivity.class);
                     getActivity().startActivity(intent);
-//                    DBManager dbManager = new DBManager(activity);
-//                    SynchMethods sm = new SynchMethods(dbManager);
-//                    sm.synchSendOnHold(true, false, activity);
+
                     break;
                 }
-                case CONSIGNMENT:                //Consignment
-                {
+                case CONSIGNMENT: {
                     intent = new Intent(activity, ConsignmentMain_FA.class);
                     startActivity(intent);
                     break;
@@ -388,13 +367,16 @@ public class SalesTab_FR extends Fragment {
                 case LOCATION:
                     pickLocations(true);
                     break;
+                case SHIFTS: {
+                    intent = new Intent(activity, ShiftsActivity.class);
+                    startActivity(intent);
+                    break;
+                }
             }
 
         } else {
             switch (Global.TransactionType.getByCode(pos)) {
-
-                case SALE_RECEIPT: // Sales Receipt
-                {
+                case SALE_RECEIPT: {
                     if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
                         Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_select_customer));
                     } else {
@@ -407,11 +389,9 @@ public class SalesTab_FR extends Fragment {
                             startActivityForResult(intent, 0);
                         }
                     }
-
                     break;
                 }
-                case RETURN: // Return
-                {
+                case RETURN: {
                     if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
                         Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_select_customer));
                     } else {
@@ -421,9 +401,7 @@ public class SalesTab_FR extends Fragment {
                     }
                     break;
                 }
-                case PAYMENT: // Payment
-                {
-
+                case PAYMENT: {
                     if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
                         Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_select_customer));
                     } else {
@@ -432,25 +410,23 @@ public class SalesTab_FR extends Fragment {
                         intent.putExtra("amount", "0.00");
                         intent.putExtra("paid", "0.00");
                         intent.putExtra("isFromMainMenu", true);
-
                         startActivity(intent);
                     }
                     break;
                 }
-                case GIFT_CARD:        //Gift Card
+                case GIFT_CARD:
                     intent = new Intent(activity, GiftCard_FA.class);
                     startActivity(intent);
                     break;
-                case LOYALTY_CARD:    //Loyalty Card
+                case LOYALTY_CARD:
                     intent = new Intent(activity, LoyaltyCard_FA.class);
                     startActivity(intent);
                     break;
-                case REWARD_CARD:    //Reward Card
+                case REWARD_CARD:
                     intent = new Intent(activity, RewardCard_FA.class);
                     startActivity(intent);
                     break;
-                case REFUND: // Refund
-                {
+                case REFUND: {
                     intent = new Intent(activity, SelectPayMethod_FA.class);
                     intent.putExtra("salesrefund", true);
                     intent.putExtra("amount", "0.00");
@@ -463,13 +439,7 @@ public class SalesTab_FR extends Fragment {
                     startActivity(intent);
                     break;
                 }
-                case ON_HOLD://on Hold
-//                    DBManager dbManager = new DBManager(activity);
-//                    dbManager.synchSendOrdersOnHold(true, false);
-
-//                    DBManager dbManager = new DBManager(activity);
-//                    SynchMethods sm = new SynchMethods(dbManager);
-//                    sm.synchSendOnHold(true, false, activity);
+                case ON_HOLD:
                     intent = new Intent(getActivity(), OnHoldActivity.class);
                     getActivity().startActivity(intent);
                     break;
@@ -478,6 +448,11 @@ public class SalesTab_FR extends Fragment {
                     break;
                 case TIP_ADJUSTMENT: {
                     intent = new Intent(activity, TipAdjustmentFA.class);
+                    startActivity(intent);
+                    break;
+                }
+                case SHIFTS: {
+                    intent = new Intent(activity, ShiftsActivity.class);
                     startActivity(intent);
                     break;
                 }

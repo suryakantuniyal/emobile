@@ -1108,10 +1108,10 @@ public class MyPreferences {
     // }
 
     public boolean[] getMainMenuPreference() {
-        int NUM_OF_ITEMS = 15;
+        int NUM_OF_ITEMS = 16;
         boolean[] values = new boolean[NUM_OF_ITEMS];
         Set<String> selections = sharedPref.getStringSet("pref_configure_home_menu", null);
-        if (selections != null) {
+        if (selections != null && NUM_OF_ITEMS == selections.size()) {
             String[] selected = selections.toArray(new String[]{});
 
             Arrays.sort(selected);
@@ -1122,7 +1122,7 @@ public class MyPreferences {
             }
         } else
             values = new boolean[]{true, true, true, true, true, true, true, true, true, true, true, true, true,
-                    true, true};
+                    true, true, true};
 
         return values;
 

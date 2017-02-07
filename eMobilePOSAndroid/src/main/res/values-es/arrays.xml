@@ -17,6 +17,7 @@
         <item name="menu_consignment">Consignment</item>
         <item name="menu_transfer_inventory">Inventory Transfer</item>
         <item name="menu_tip_adjustment">Tip Adjustment</item>
+        <item name="menu_clerk_shifts">Shifts</item>
     </string-array>
 
     <string-array name="salesReceiptSplitTypes">
