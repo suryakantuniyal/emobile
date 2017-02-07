@@ -1304,6 +1304,18 @@
     <string name="restaurant_table">Restaurant Table:</string>
     <string name="dlog_title_waiter_manager_signin">Waiter/Manager Signin</string>
     <string name="card_already_processed">Card has already been processed</string>
+    <string name="clerk_name">Clerk Name</string>
+    <string name="shift_opened_at">Opened on</string>
+    <string name="notes">Notes</string>
+    <string name="coins">Coins</string>
+    <string name="currency">Currency</string>
+    <string name="fiveDollar">$5.00</string>
+    <string name="tenDollars">$10.00</string>
+    <string name="twentyDollars">$20.00</string>
+    <string name="fiftyDollars">$50.00</string>
+    <string name="hundredDollars">$100.00</string>
+    <string name="fiveCents">$0.05</string>
+    <string name="quarterCents">$0.25</string>
 
 
 </resources>

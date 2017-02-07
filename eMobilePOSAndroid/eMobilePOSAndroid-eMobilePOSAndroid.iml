@@ -33,6 +33,7 @@
       <sourceFolder url="file://$MODULE_DIR$/build/generated/source/rs/ems/debug" isTestSource="false" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/build/generated/source/apt/ems/debug" isTestSource="false" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/build/generated/fabric/res/ems/debug" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/google-services/ems/debug" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/build/generated/res/rs/ems/debug" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/build/generated/res/resValues/ems/debug" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/emsDebug/res" type="java-resource" />
@@ -106,14 +107,6 @@
       <sourceFolder url="file://$MODULE_DIR$/src/main/jni" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/rs" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/shaders" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/res" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/resources" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/assets" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/aidl" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/java" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/jni" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/rs" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/shaders" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/res" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/resources" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/assets" type="java-test-resource" />
@@ -122,12 +115,22 @@
       <sourceFolder url="file://$MODULE_DIR$/src/test/jni" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/rs" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/shaders" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/res" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/resources" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/assets" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/aidl" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/jni" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/rs" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/shaders" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/assets" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/blame" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/builds" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/classes" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/dependency-cache" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/Lib-Miura-SDK/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/MePOSConnect/jars" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support.constraint/constraint-layout/1.0.0-beta4/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support.test.espresso/espresso-contrib/2.2.2/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support.test.espresso/espresso-core/2.2.2/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support.test.espresso/espresso-idling-resource/2.2.2/jars" />
@@ -140,13 +143,14 @@
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support/multidex-instrumentation/1.0.1/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support/multidex/1.0.1/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support/palette-v7/24.0.0/jars" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support/recyclerview-v7/25.0.1/jars" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support/support-compat/25.0.1/jars" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support/support-core-ui/25.0.1/jars" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support/support-core-utils/25.0.1/jars" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support/support-fragment/25.0.1/jars" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support/support-media-compat/25.0.1/jars" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support/support-v4/25.0.1/jars" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support/recyclerview-v7/25.1.1/jars" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support/support-compat/25.1.1/jars" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support/support-core-ui/25.1.1/jars" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support/support-core-utils/25.1.1/jars" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support/support-fragment/25.1.1/jars" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support/support-media-compat/25.1.1/jars" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support/support-v13/25.1.1/jars" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support/support-v4/25.1.1/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support/support-vector-drawable/24.0.0/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.crashlytics.sdk.android/answers/1.3.6/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.crashlytics.sdk.android/beta/1.1.4/jars" />
@@ -195,7 +199,7 @@
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.google.firebase/firebase-auth/10.0.1/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.google.firebase/firebase-common/10.0.1/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.google.firebase/firebase-config/10.0.1/jars" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.google.firebase/firebase-core/9.2.1/jars" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.google.firebase/firebase-core/10.0.1/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.google.firebase/firebase-crash/10.0.1/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.google.firebase/firebase-database-connection/10.0.1/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.google.firebase/firebase-database/10.0.1/jars" />
@@ -240,6 +244,7 @@
     <orderEntry type="library" exported="" name="powapos-sdk-android-2.0.2" level="project" />
     <orderEntry type="library" exported="" name="play-services-10.0.1" level="project" />
     <orderEntry type="library" exported="" name="play-services-cast-10.0.1" level="project" />
+    <orderEntry type="library" exported="" name="constraint-layout-1.0.0-beta4" level="project" />
     <orderEntry type="library" exported="" name="firebase-config-10.0.1" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="accessibility-test-framework-2.0" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="hamcrest-library-1.3" level="project" />
@@ -253,7 +258,6 @@
     <orderEntry type="library" exported="" name="elotouchcashdrawer" level="project" />
     <orderEntry type="library" exported="" name="play-services-cast-framework-10.0.1" level="project" />
     <orderEntry type="library" exported="" name="dspread_1_2_1" level="project" />
-    <orderEntry type="library" exported="" name="support-core-ui-25.0.1" level="project" />
     <orderEntry type="library" exported="" name="PAT215Cashdrawer1.0.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-places-10.0.1" level="project" />
     <orderEntry type="library" exported="" name="bixolon_printer" level="project" />
@@ -279,8 +283,8 @@
     <orderEntry type="library" exported="" name="libuart" level="project" />
     <orderEntry type="library" exported="" name="pat100PrinterAndDisplay1.1" level="project" />
     <orderEntry type="library" exported="" name="StarIO_Extension" level="project" />
-    <orderEntry type="library" exported="" name="recyclerview-v7-25.0.1" level="project" />
     <orderEntry type="library" exported="" name="azure-notifications-handler-1.0.1" level="project" />
+    <orderEntry type="library" exported="" name="support-annotations-25.1.1" level="project" />
     <orderEntry type="library" exported="" name="mtscra" level="project" />
     <orderEntry type="library" exported="" name="spring-android-core-1.0.1.RELEASE" level="project" />
     <orderEntry type="library" exported="" name="play-services-games-10.0.1" level="project" />
@@ -291,13 +295,13 @@
     <orderEntry type="library" exported="" name="play-services-tasks-10.0.1" level="project" />
     <orderEntry type="library" exported="" name="play-services-identity-10.0.1" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="hamcrest-integration-1.3" level="project" />
-    <orderEntry type="library" exported="" name="firebase-core-9.2.1" level="project" />
     <orderEntry type="library" exported="" name="firebase-appindexing-10.0.1" level="project" />
     <orderEntry type="library" exported="" name="commons-codec-1.4.0" level="project" />
     <orderEntry type="library" exported="" name="pat215msr1.0.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-awareness-10.0.1" level="project" />
     <orderEntry type="library" exported="" name="honeywell-release-" level="project" />
     <orderEntry type="library" exported="" name="play-services-clearcut-10.0.1" level="project" />
+    <orderEntry type="library" exported="" name="support-v13-25.1.1" level="project" />
     <orderEntry type="library" exported="" name="firebase-storage-common-10.0.1" level="project" />
     <orderEntry type="library" exported="" name="play-services-ads-lite-10.0.1" level="project" />
     <orderEntry type="library" exported="" name="play-services-vision-10.0.1" level="project" />
@@ -305,7 +309,6 @@
     <orderEntry type="library" exported="" scope="TEST" name="jsr305-2.0.1" level="project" />
     <orderEntry type="library" exported="" name="evoSnapSDK" level="project" />
     <orderEntry type="library" exported="" name="UniMag_SDK_v5.0" level="project" />
-    <orderEntry type="library" exported="" name="support-annotations-25.0.1" level="project" />
     <orderEntry type="library" exported="" name="zbar" level="project" />
     <orderEntry type="library" exported="" name="play-services-tagmanager-api-10.0.1" level="project" />
     <orderEntry type="library" exported="" name="elotouchcfd" level="project" />
@@ -323,34 +326,37 @@
     <orderEntry type="library" exported="" name="nomad_1_2_3" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="hamcrest-core-1.3" level="project" />
     <orderEntry type="library" exported="" name="sqlcipher" level="project" />
+    <orderEntry type="library" exported="" name="recyclerview-v7-25.1.1" level="project" />
     <orderEntry type="library" exported="" name="mediarouter-v7-24.0.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-nearby-10.0.1" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="runner-0.5" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="espresso-idling-resource-2.2.2" level="project" />
+    <orderEntry type="library" exported="" name="firebase-core-10.0.1" level="project" />
     <orderEntry type="library" exported="" name="xerces" level="project" />
     <orderEntry type="library" exported="" name="play-services-tagmanager-v4-impl-10.0.1" level="project" />
     <orderEntry type="library" exported="" name="play-services-auth-base-10.0.1" level="project" />
     <orderEntry type="library" exported="" name="relinker-1.2.2" level="project" />
     <orderEntry type="library" exported="" name="play-services-gass-10.0.1" level="project" />
     <orderEntry type="library" exported="" name="powa-platform-android-1.5.1-SNAPSHOT" level="project" />
-    <orderEntry type="library" exported="" name="support-fragment-25.0.1" level="project" />
     <orderEntry type="library" exported="" name="hapi-android-3.2.5" level="project" />
     <orderEntry type="library" exported="" name="commons-lang3-3.4" level="project" />
     <orderEntry type="library" exported="" name="play-services-wallet-10.0.1" level="project" />
     <orderEntry type="library" exported="" name="play-services-maps-10.0.1" level="project" />
     <orderEntry type="library" exported="" name="spm2_1_2_1" level="project" />
     <orderEntry type="library" exported="" name="MePOSConnect-" level="project" />
-    <orderEntry type="library" exported="" name="support-core-utils-25.0.1" level="project" />
     <orderEntry type="library" exported="" name="jpos114-controls" level="project" />
     <orderEntry type="library" exported="" name="misccom" level="project" />
     <orderEntry type="library" exported="" name="beta-1.1.4" level="project" />
     <orderEntry type="library" exported="" name="POSSDKForAndroid" level="project" />
     <orderEntry type="library" exported="" name="firebase-common-10.0.1" level="project" />
     <orderEntry type="library" exported="" name="play-services-analytics-impl-10.0.1" level="project" />
+    <orderEntry type="library" exported="" name="support-v4-25.1.1" level="project" />
     <orderEntry type="library" exported="" name="kdcreader" level="project" />
+    <orderEntry type="library" exported="" name="support-compat-25.1.1" level="project" />
     <orderEntry type="library" exported="" name="firebase-database-10.0.1" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="javawriter-2.1.1" level="project" />
     <orderEntry type="library" exported="" name="do_androidsdk" level="project" />
+    <orderEntry type="library" exported="" name="support-media-compat-25.1.1" level="project" />
     <orderEntry type="library" exported="" name="powapos-sdk-android-accessory-1.3.7" level="project" />
     <orderEntry type="library" exported="" name="realm-annotations-2.2.2" level="project" />
     <orderEntry type="library" exported="" name="answers-1.3.6" level="project" />
@@ -359,13 +365,17 @@
     <orderEntry type="library" exported="" name="firebase-auth-10.0.1" level="project" />
     <orderEntry type="library" exported="" name="Lib-Miura-SDK-" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="espresso-contrib-2.2.2" level="project" />
+    <orderEntry type="library" exported="" name="constraint-layout-solver-1.0.0-beta4" level="project" />
     <orderEntry type="library" exported="" name="animated-vector-drawable-24.0.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-base-10.0.1" level="project" />
     <orderEntry type="library" exported="" name="firebase-database-connection-10.0.1" level="project" />
+    <orderEntry type="library" exported="" name="support-core-ui-25.1.1" level="project" />
     <orderEntry type="library" exported="" name="play-services-auth-10.0.1" level="project" />
     <orderEntry type="library" exported="" name="Android_Platform_Adapter" level="project" />
     <orderEntry type="library" exported="" name="firebase-iid-10.0.1" level="project" />
     <orderEntry type="library" exported="" name="firebase-storage-10.0.1" level="project" />
+    <orderEntry type="library" exported="" name="support-core-utils-25.1.1" level="project" />
+    <orderEntry type="library" exported="" name="support-fragment-25.1.1" level="project" />
     <orderEntry type="library" exported="" name="fabric-1.3.10" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="espresso-core-2.2.2" level="project" />
     <orderEntry type="library" exported="" name="play-services-tagmanager-10.0.1" level="project" />
@@ -375,14 +385,11 @@
     <orderEntry type="library" exported="" name="magtek-usb" level="project" />
     <orderEntry type="library" exported="" name="play-services-ads-10.0.1" level="project" />
     <orderEntry type="library" exported="" name="support-vector-drawable-24.0.0" level="project" />
-    <orderEntry type="library" exported="" name="support-compat-25.0.1" level="project" />
-    <orderEntry type="library" exported="" name="support-v4-25.0.1" level="project" />
     <orderEntry type="library" exported="" name="StarIOPort3.1" level="project" />
     <orderEntry type="library" exported="" name="RBA_SDK" level="project" />
     <orderEntry type="library" exported="" name="play-services-drive-10.0.1" level="project" />
     <orderEntry type="library" exported="" name="play-services-analytics-10.0.1" level="project" />
     <orderEntry type="library" exported="" name="play-services-safetynet-10.0.1" level="project" />
-    <orderEntry type="library" exported="" name="support-media-compat-25.0.1" level="project" />
     <orderEntry type="library" exported="" name="viewPagerIndicator-release-" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="junit-4.12" level="project" />
     <orderEntry type="library" exported="" name="gridHeaderLibrary-release-" level="project" />
