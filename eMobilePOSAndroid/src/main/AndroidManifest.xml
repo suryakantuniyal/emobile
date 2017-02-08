@@ -507,7 +507,7 @@
         <!-- </intent-filter> -->
         <!-- </service> -->
         <activity
-            android:name="com.emobilepos.app.ShiftsActivity"
+            android:name=".shifts.ShiftsActivity"
             android:label="@string/title_activity_shifts"
             android:windowSoftInputMode="stateAlwaysHidden" />
     </application>
