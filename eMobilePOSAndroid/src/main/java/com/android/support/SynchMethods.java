@@ -1498,7 +1498,7 @@ public class SynchMethods {
             reader.beginArray();
             int i = 0;
             while (reader.hasNext()) {
-                OrderAttributes attributes = gson.fromJson(reader, Product.class);
+                OrderAttributes attributes = gson.fromJson(reader, OrderAttributes.class);
                 orderAttributes.add(attributes);
                 i++;
                 if (i == 1000) {

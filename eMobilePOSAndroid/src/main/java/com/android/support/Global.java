@@ -1073,7 +1073,7 @@ public class Global extends MultiDexApplication {
         result.put("GetOrderProductsAttr", "getXMLOrderProductsAttr.aspx");
         result.put("GetLocations", "getXMLLocations.aspx");
         result.put("GetLocationsInventory", "getXMLLocationsInventory.aspx");
-        result.put("OrderAttributes", "getXMLOrdersAttributeList.aspx");
+        result.put("OrderAttributes", "getXMLOrdersAttributeList.ashx");
 
         return Collections.unmodifiableMap(result);
     }
