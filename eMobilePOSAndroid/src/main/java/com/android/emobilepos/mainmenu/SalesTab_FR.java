@@ -53,7 +53,7 @@ import com.android.emobilepos.payment.TipAdjustmentFA;
 import com.android.emobilepos.settings.SettingListActivity;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
-import com.emobilepos.app.ShiftsActivity;
+import com.android.emobilepos.shifts.ShiftsActivity;
 
 import java.util.HashMap;
 
