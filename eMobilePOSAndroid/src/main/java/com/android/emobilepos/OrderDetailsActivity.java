@@ -19,9 +19,11 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.android.dao.OrderAttributesDAO;
 import com.android.database.AddressHandler;
 import com.android.database.ShipMethodHandler;
 import com.android.database.TermsHandler;
+import com.android.emobilepos.models.realms.OrderAttributes;
 import com.android.support.Global;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
@@ -32,20 +34,19 @@ import java.util.List;
 
 public class OrderDetailsActivity extends BaseFragmentActivityActionBar
 {
-	private CustomAdapter adapter;
 	private String empStr = "";
 	private final String defaultVal = "None";
 	private List<String> leftMenuList;// = Arrays.asList(getString(R.string.details_shipping),getString(R.string.details_terms),getString(R.string.details_delivery),getString(R.string.details_address),getString(R.string.details_comments),getString(R.string.details_po));
 	private Activity activity;
 	private int shipmentSelected = 0,termsSelected = 0,addressSelected=0;
 	
-	private List<String[]>shippingMethodsDownloadedItems = new ArrayList<String[]>();
+	private List<String[]>shippingMethodsDownloadedItems = new ArrayList<>();
 	private String[] shipMethodItems = new String[]{};
 	
-	private List<String[]> termsDownloadedItems = new ArrayList<String[]>();
+	private List<String[]> termsDownloadedItems = new ArrayList<>();
 	private String[] termsItems = new String[]{};
 	
-	private List<String[]> addressDownloadedItems = new ArrayList<String[]>();
+	private List<String[]> addressDownloadedItems = new ArrayList<>();
 	private String[] addressItems = new String[]{};
 	
 	private ListView myListView;
@@ -69,7 +70,8 @@ public class OrderDetailsActivity extends BaseFragmentActivityActionBar
 		
 		leftMenuList = Arrays.asList(getString(R.string.details_shipping),getString(R.string.details_terms),
 				getString(R.string.details_delivery),getString(R.string.details_address),getString(R.string.details_comments),getString(R.string.details_po));
-		
+		List<String> orderAttributeNames = OrderAttributesDAO.getOrderAttributeNames();
+		leftMenuList.addAll(orderAttributeNames);
 		if(global.getSelectedAddressMethod()!=-1)
 			addressSelected = global.getSelectedAddressMethod();
 		if(global.getSelectedShippingMethod()!=-1)
@@ -86,8 +88,8 @@ public class OrderDetailsActivity extends BaseFragmentActivityActionBar
 		
 		initAllMenuValues();
 		myListView = (ListView) findViewById(R.id.orderDetailsListView);
-		
-		adapter = new CustomAdapter(this);
+
+		CustomAdapter adapter = new CustomAdapter(this);
 		myListView.setAdapter(adapter);
 		
 		
@@ -109,7 +111,6 @@ public class OrderDetailsActivity extends BaseFragmentActivityActionBar
 		
 		@Override
 		public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-			// TODO Auto-generated method stub
 			currYear = year;
 			currMonth = monthOfYear+1;
 			currDay = dayOfMonth;
@@ -386,7 +387,6 @@ public class OrderDetailsActivity extends BaseFragmentActivityActionBar
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				// TODO Auto-generated method stub
 				if(type==4)
 				{
 					inputComment = editTextField.getText().toString();
@@ -414,7 +414,6 @@ public class OrderDetailsActivity extends BaseFragmentActivityActionBar
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				// TODO Auto-generated method stub
 				dialog.dismiss();
 			}
 		});

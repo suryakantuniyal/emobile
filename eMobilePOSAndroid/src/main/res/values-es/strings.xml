@@ -1302,6 +1302,12 @@
     <string name="split_single">Single Receipt</string>
     <string name="config_printer_width">Printer Width</string>
     <string name="card_already_processed">Card has already been processed</string>
+    <string name="view_video">View Video</string>
+    <string name="no_video">No Video</string>
+    <string name="information">Information</string>
+    <string name="inventory">Inventory</string>
+    <string name="identification">Identification</string>
+    <string name="attributes">Attributes</string>
 
 
 </resources>
