@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
 
 /**
@@ -27,6 +28,22 @@ public class OrderAttributes extends RealmObject {
     @SerializedName("ord_attr_group_name")
     @Expose
     private String ordAttrGroupName;
+    @SerializedName("ord_attr_type")
+    @Expose
+    private String ordAttrType;
+
+    @Ignore
+    @Expose(deserialize = false, serialize = false)
+    private
+    String inputValue;
+
+    public OrderAttributes() {
+
+    }
+
+    public OrderAttributes(String attr) {
+        this.ordAttrName = attr;
+    }
 
     public String getIDK() {
         return iDK;
@@ -66,5 +83,21 @@ public class OrderAttributes extends RealmObject {
 
     public void setOrdAttrGroupName(String ordAttrGroupName) {
         this.ordAttrGroupName = ordAttrGroupName;
+    }
+
+    public String getOrdAttrType() {
+        return ordAttrType;
+    }
+
+    public void setOrdAttrType(String ordAttrType) {
+        this.ordAttrType = ordAttrType;
+    }
+
+    public String getInputValue() {
+        return inputValue;
+    }
+
+    public void setInputValue(String inputValue) {
+        this.inputValue = inputValue;
     }
 }

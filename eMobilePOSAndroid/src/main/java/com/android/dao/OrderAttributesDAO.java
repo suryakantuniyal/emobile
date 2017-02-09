@@ -23,13 +23,18 @@ public class OrderAttributesDAO {
         }
     }
 
-    public static List<OrderAttributes> getOrderAttributes() {
+    public static List<OrderAttributes> getOrderAttributes(boolean isManaged) {
         Realm r = Realm.getDefaultInstance();
-        return r.where(OrderAttributes.class).findAll();
+        if (isManaged) {
+            return r.where(OrderAttributes.class).findAll();
+        } else {
+            return r.copyFromRealm(r.where(OrderAttributes.class).findAll());
+        }
+
     }
 
     public static List<String> getOrderAttributeNames() {
-        List<OrderAttributes> orderAttributes = getOrderAttributes();
+        List<OrderAttributes> orderAttributes = getOrderAttributes(false);
         List<String> names = new ArrayList<>();
         for (OrderAttributes attributes : orderAttributes) {
             names.add(attributes.getOrdAttrName());

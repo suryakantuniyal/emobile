@@ -11,6 +11,7 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -510,7 +511,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 break;
             case R.id.detailsButton:
                 intent = new Intent(getActivity(), OrderDetailsActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, 0);
                 break;
             case R.id.signButton:
                 orientation = getResources().getConfiguration().orientation;
@@ -575,16 +576,16 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                 Intent intent = new Intent(getActivity(),
                                         PickerProduct_FA.class);
                                 Gson gson = JsonUtils.getInstance();
-                                if(onHoldOrder!=null){
+                                if (onHoldOrder != null) {
 
                                 }
                                 Product product = prodHandler.getProductDetails(orderSeatProduct.orderProduct.getProd_id());
-                                if(onHoldOrder!=null){
+                                if (onHoldOrder != null) {
                                     orderSeatProduct.orderProduct.setProd_price(product.getFinalPrice());
                                 }
                                 intent.putExtra("orderProduct", gson.toJson(orderSeatProduct.orderProduct));
                                 intent.putExtra("isModify", true);
-                                intent.putExtra("isFromAddon", onHoldOrder!=null);
+                                intent.putExtra("isFromAddon", onHoldOrder != null);
                                 intent.putExtra("modify_position", orderProductIdx);
                                 startActivityForResult(intent, 0);
                                 break;
