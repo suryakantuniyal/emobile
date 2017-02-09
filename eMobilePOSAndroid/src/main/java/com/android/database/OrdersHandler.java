@@ -8,18 +8,23 @@ import android.util.Log;
 
 import com.android.dao.DinningTableOrderDAO;
 import com.android.emobilepos.models.Order;
+import com.android.emobilepos.models.realms.OrderAttributes;
 import com.android.emobilepos.models.realms.ProductAttribute;
 import com.android.support.DateUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.google.gson.Gson;
 
 import net.sqlcipher.database.SQLiteStatement;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+
+import util.json.JsonUtils;
 
 public class OrdersHandler {
     private final static String ord_id = "ord_id";
@@ -57,8 +62,7 @@ public class OrdersHandler {
     private final static String c_email = "c_email";
     private final static String isOnHold = "isOnHold";
     private final static String ord_HoldName = "ord_HoldName";
-
-    // added
+    private final static String orderAttributes = "orderAttributes";
     private final static String clerk_id = "clerk_id";
     private final static String ord_discount_id = "ord_discount_id";
     private final static String ord_latitude = "ord_latitude";
@@ -76,7 +80,8 @@ public class OrdersHandler {
             ord_timesync, qb_synctime, emailed, processed, ord_type, ord_claimnumber, ord_rganumber, ord_returns_pu,
             ord_inventory, ord_issync, tax_id, ord_shipvia, ord_shipto, ord_terms, ord_custmsg, ord_class, ord_subtotal,
             ord_taxamount, ord_discount, ord_discount_id, ord_latitude, ord_longitude, tipAmount, isVoid, custidkey,
-            isOnHold, ord_HoldName, is_stored_fwd, VAT, assignedTable, numberOfSeats, associateID, ord_timeStarted);
+            isOnHold, ord_HoldName, is_stored_fwd, VAT, assignedTable, numberOfSeats, associateID,
+            ord_timeStarted, orderAttributes);
 
     private StringBuilder sb1, sb2;
     private HashMap<String, Integer> attrHash;
@@ -174,6 +179,11 @@ public class OrdersHandler {
                 insert.bindString(index(assignedTable), order.assignedTable == null ? "" : order.assignedTable);
                 insert.bindString(index(associateID), order.associateID == null ? "" : order.associateID);
                 insert.bindLong(index(numberOfSeats), order.numberOfSeats);
+                if (order.orderAttributes != null) {
+                    Gson gson = JsonUtils.getInstance();
+                    String json = gson.toJson(order.orderAttributes);
+                    insert.bindString(index(orderAttributes), json);
+                }
                 if (TextUtils.isEmpty(order.ord_timeStarted)) {
                     order.ord_timeStarted = DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss);
                 }
@@ -365,6 +375,13 @@ public class OrdersHandler {
         order.custidkey = cursor.getString(cursor.getColumnIndex(custidkey));
         CustomersHandler custHandler = new CustomersHandler(activity);
         order.customer = custHandler.getCustomer(order.cust_id);
+        String attributes = cursor.getString(cursor.getColumnIndex(orderAttributes));
+        if (!TextUtils.isEmpty(attributes)) {
+            Gson gson = JsonUtils.getInstance();
+            Type listType = new com.google.gson.reflect.TypeToken<List<OrderAttributes>>() {
+            }.getType();
+            order.orderAttributes = gson.fromJson(attributes, listType);
+        }
         return order;
     }
 

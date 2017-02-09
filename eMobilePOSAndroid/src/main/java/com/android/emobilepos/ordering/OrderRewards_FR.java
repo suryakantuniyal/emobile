@@ -101,19 +101,13 @@ public class OrderRewards_FR extends Fragment implements OnClickListener {
                 break;
             case R.id.btnPayWithRewards:
                 Global global = (Global) getActivity().getApplication();
-                Order order = Receipt_FR.buildOrder(getActivity(), global, "", "", ((OrderingMain_FA) getActivity()).getSelectedDinningTableNumber(), ((OrderingMain_FA) getActivity()).getAssociateId());
+                Order order = Receipt_FR.buildOrder(getActivity(), global, "", "",
+                        ((OrderingMain_FA) getActivity()).getSelectedDinningTableNumber(),
+                        ((OrderingMain_FA) getActivity()).getAssociateId(),((OrderingMain_FA) getActivity()).getOrderAttributes());
                 OrdersHandler ordersHandler = new OrdersHandler(getActivity());
                 ordersHandler.insert(order);
                 global.order = order;
                 new ProcessRewardPaymentTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new BigDecimal(subtotal));
-
-//                Global global = (Global) getActivity().getApplication();
-//                BigDecimal bdBalance = new BigDecimal(balance);
-//                OrderingMain_FA mainFa = (OrderingMain_FA) getActivity();
-//                BigDecimal rewardDiscount = mainFa.getLeftFragment().applyRewardDiscount(bdBalance, global.orderProducts);
-//                PaymentTask.processRewardPayment(getActivity(), rewardDiscount);
-
-
                 break;
         }
     }

@@ -49,9 +49,7 @@ import com.android.emobilepos.mainmenu.SalesTab_FR;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.OrderSeatProduct;
-import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Product;
-import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.models.realms.OrderAttributes;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.ProductAttribute;
@@ -1462,7 +1460,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             OrdersHandler dbOrders = new OrdersHandler(activity);
             if (order.ord_id.isEmpty()) {
                 Global global = (Global) activity.getApplication();
-                order = Receipt_FR.buildOrder(activity, global, "", "", ((OrderingMain_FA) activity).getSelectedDinningTableNumber(), ((OrderingMain_FA) activity).getAssociateId());
+                order = Receipt_FR.buildOrder(activity, global, "", "", ((OrderingMain_FA) activity).getSelectedDinningTableNumber(),
+                        ((OrderingMain_FA) activity).getAssociateId(), ((OrderingMain_FA) activity).getOrderAttributes());
                 OrderProductsHandler dbOrdProd = new OrderProductsHandler(activity);
                 OrderProductsAttr_DB dbOrdAttr = new OrderProductsAttr_DB(activity);
                 dbOrders.insert(order);
@@ -1572,4 +1571,12 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
         return true;
     }
+    public List<OrderAttributes> getOrderAttributes() {
+        return orderAttributes;
+    }
+
+    public void setOrderAttributes(List<OrderAttributes> orderAttributes) {
+        this.orderAttributes = orderAttributes;
+    }
+
 }
