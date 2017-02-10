@@ -94,7 +94,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -1584,12 +1583,16 @@ public class SynchMethods {
         SAXParserPost handler = new SAXParserPost();
         ShiftPeriodsDBHandler dbHandler = new ShiftPeriodsDBHandler(context);
         List<Shift> pendingSyncShifts = ShiftDAO.getPendingSyncShifts();
-        if (pendingSyncShifts!=null && !pendingSyncShifts.isEmpty()) {
+        if (pendingSyncShifts != null && !pendingSyncShifts.isEmpty()) {
             xml = post.postData(Global.S_SUBMIT_SHIFT, context, "");
             inSource = new InputSource(new StringReader(xml));
             xr.setContentHandler(handler);
             xr.parse(inSource);
             data = handler.getData();
+            for (Shift s : pendingSyncShifts) {
+                s.setSync(true);
+                ShiftDAO.insertOrUpdate(s);
+            }
             dbHandler.updateIsSync(data);
             if (data.isEmpty())
                 didSendData = false;

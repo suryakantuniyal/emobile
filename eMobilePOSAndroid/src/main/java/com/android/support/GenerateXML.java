@@ -18,7 +18,6 @@ import com.android.database.OrderProductsHandler;
 import com.android.database.OrdersHandler;
 import com.android.database.PaymentsHandler;
 import com.android.database.ShiftExpensesDBHandler;
-import com.android.database.ShiftPeriodsDBHandler;
 import com.android.database.TemplateHandler;
 import com.android.database.TimeClockHandler;
 import com.android.database.TransferInventory_DB;
@@ -39,6 +38,7 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -57,10 +57,25 @@ public class GenerateXML {
 
     public GenerateXML(Context activity) {
         info = new MyPreferences(activity);
-        assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+        myPref = new MyPreferences(activity);
+        AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee();
+        if (employee == null && !TextUtils.isEmpty(myPref.getEmpIdFromPreferences())) {
+            this.assignEmployee = new AssignEmployee();
+            this.assignEmployee.setEmpId(Integer.parseInt(myPref.getEmpIdFromPreferences()));
+
+            List<AssignEmployee> employees = new ArrayList<>();
+            employees.add(this.assignEmployee);
+            try {
+                AssignEmployeeDAO.insertAssignEmployee(employees);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            assignEmployee = employee;
+        }
 
         thisActivity = activity;
-        myPref = new MyPreferences(activity);
+
         if (thisActivity instanceof ClockInOut_FA) {
             try {
                 ending.append("&EmpID=")
@@ -73,7 +88,7 @@ public class GenerateXML {
             }
         } else {
             try {
-                ending.append("&EmpID=").append(URLEncoder.encode(String.valueOf(assignEmployee == null ? "" : assignEmployee.getEmpId()), UTF_8));
+                ending.append("&EmpID=").append(URLEncoder.encode(String.valueOf(this.assignEmployee == null ? "" : this.assignEmployee.getEmpId()), UTF_8));
                 ending.append("&ActivationKey=").append(URLEncoder.encode(info.getActivKey(), UTF_8));
                 ending.append("&DeviceID=").append(URLEncoder.encode(info.getDeviceID(), UTF_8));
                 ending.append("&BundleVersion=").append(URLEncoder.encode(info.getBundleVersion(), UTF_8));
@@ -2002,7 +2017,7 @@ public class GenerateXML {
 //        Cursor c = handler.getUnsyncShifts();
 //        c.moveToFirst();
 //        int size = c.getCount();
-        for (Shift s: shifts) {
+        for (Shift s : shifts) {
             try {
                 shiftID = s.getShift_id(); //c.getString(c.getColumnIndex("shift_id"));
 
@@ -2030,7 +2045,7 @@ public class GenerateXML {
                 serializer.endTag(empstr, "startTime");
 
 
-                if (s.getEndTime()!=null) {
+                if (s.getEndTime() != null) {
                     serializer.startTag(empstr, "endTime");
                     serializer.text(DateUtils.getDateAsString(s.getEndTime()));//c.getString(c.getColumnIndex("endTime")));
                     serializer.endTag(empstr, "endTime");

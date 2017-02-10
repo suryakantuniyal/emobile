@@ -1264,6 +1264,7 @@
     <string name="entered_open_amount">Open Shift Amount</string>
     <string name="shift_count_down_shift">Start Count Down</string>
     <string name="entered_count_down_amount">Count Down Amount</string>
+    <string name="error_sync_closed_shift">Synchronization error.</string>
 
 
 </resources>

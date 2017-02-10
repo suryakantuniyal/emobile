@@ -1,6 +1,8 @@
 package com.android.emobilepos.shifts;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -12,12 +14,15 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.dao.ShiftDAO;
+import com.android.database.DBManager;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.realms.Shift;
 import com.android.support.DateUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.NetworkUtils;
 import com.android.support.NumberUtils;
+import com.android.support.SynchMethods;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -344,7 +349,7 @@ public class ShiftsActivity extends Activity implements View.OnClickListener, Te
         shift.setEndTimeLocal(now);
         shift.setShiftStatus(Shift.ShiftStatus.CLOSED);
         ShiftDAO.insertOrUpdate(shift);
-        finish();
+        new CloseShiftTask().execute();
     }
 
     private void startCountDownShift() {
@@ -425,8 +430,43 @@ public class ShiftsActivity extends Activity implements View.OnClickListener, Te
         } else if (hashCode == hundredDollarEditText.getText().hashCode()) {
             hundredDollars = Integer.parseInt(hundredDollarEditText.getText().toString());
         }
-//        currentEditText.removeTextChangedListener(this);
         recalculate();
-//        currentEditText.addTextChangedListener(this);
+    }
+
+    private class CloseShiftTask extends AsyncTask<Void, Void, Boolean> {
+        ProgressDialog dialog;
+
+        @Override
+        protected void onPreExecute() {
+            dialog = new ProgressDialog(ShiftsActivity.this);
+            dialog.setTitle(getString(R.string.shift_title));
+            dialog.setMessage(getString(R.string.sync_sending_shifts));
+            dialog.show();
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            DBManager dbManager = new DBManager(ShiftsActivity.this);
+            SynchMethods sm = new SynchMethods(dbManager);
+            if (NetworkUtils.isConnectedToInternet(ShiftsActivity.this)) {
+                try {
+                    sm.postShift(ShiftsActivity.this);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            dialog.dismiss();
+            if (result) {
+                finish();
+            } else {
+                Global.showPrompt(ShiftsActivity.this, R.string.dlog_title_error, getString(R.string.error_sync_closed_shift));
+            }
+        }
     }
 }

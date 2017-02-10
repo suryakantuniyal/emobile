@@ -39,6 +39,10 @@ public class ShiftDAO {
 
     public static List<Shift> getPendingSyncShifts() {
         Realm r = Realm.getDefaultInstance();
-        return r.copyFromRealm(r.where(Shift.class).equalTo("sync", false).findAll());
+        RealmResults<Shift> sync = r.where(Shift.class)
+                .equalTo("sync", false)
+                .equalTo("shiftStatusCode", 2)
+                .findAll();
+        return r.copyFromRealm(sync);
     }
 }
