@@ -21,6 +21,7 @@ import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.DeviceTableDAO;
 import com.android.dao.DinningTableDAO;
 import com.android.dao.MixMatchDAO;
+import com.android.dao.OrderAttributesDAO;
 import com.android.dao.OrderProductAttributeDAO;
 import com.android.dao.SalesAssociateDAO;
 import com.android.dao.UomDAO;
@@ -58,6 +59,7 @@ import com.android.emobilepos.models.ProductAlias;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.DinningTable;
 import com.android.emobilepos.models.realms.MixMatch;
+import com.android.emobilepos.models.realms.OrderAttributes;
 import com.android.emobilepos.models.realms.PaymentMethod;
 import com.android.emobilepos.models.realms.SalesAssociate;
 import com.android.emobilepos.models.salesassociates.DinningLocationConfiguration;
@@ -247,6 +249,7 @@ public class SynchMethods {
                 updateProgress(context.getString(R.string.sync_dload_products));
                 synchProducts();
                 updateProgress(context.getString(R.string.sync_dload_product_aliases));
+                synchOrderAttributes();
                 synchProductAliases();
                 updateProgress(context.getString(R.string.sync_dload_products_images));
                 synchProductImages();
@@ -287,6 +290,8 @@ public class SynchMethods {
                 synchDownloadCustomerInventory();
                 updateProgress(context.getString(R.string.sync_dload_consignment_transaction));
                 synchDownloadConsignmentTransaction();
+                updateProgress(context.getString(R.string.sync_dload_shifts));
+                synchShifts();
                 updateProgress(context.getString(R.string.sync_dload_clerks));
                 synchDownloadClerks();
                 updateProgress(context.getString(R.string.sync_dload_salesassociate));
@@ -1123,6 +1128,36 @@ public class SynchMethods {
         }
     }
 
+    private void synchShifts() throws IOException, SAXException {
+        try {
+            ProductAliases_DB productAliasesDB = new ProductAliases_DB(context);
+            Gson gson = JsonUtils.getInstance();
+            GenerateXML xml = new GenerateXML(context);
+            InputStream inputStream = client.httpInputStreamRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                    xml.downloadAll("Shifts"));
+            JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
+            List<ProductAlias> productAliases = new ArrayList<>();
+            productAliasesDB.emptyTable();
+            reader.beginArray();
+            int i = 0;
+            while (reader.hasNext()) {
+                ProductAlias alias = gson.fromJson(reader, Product.class);
+                productAliases.add(alias);
+                i++;
+                if (i == 1000) {
+                    productAliasesDB.insert(productAliases);
+                    productAliases.clear();
+                    i = 0;
+                }
+            }
+            productAliasesDB.insert(productAliases);
+            reader.endArray();
+            reader.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private void sendShifts(Object task) throws IOException, SAXException, ParserConfigurationException {
         SAXParserPost handler = new SAXParserPost();
         ShiftPeriodsDBHandler dbHandler = new ShiftPeriodsDBHandler(context);
@@ -1513,6 +1548,34 @@ public class SynchMethods {
             e.printStackTrace();
         }
     }
+    private void synchOrderAttributes() throws IOException, SAXException {
+        try {
+            Gson gson = JsonUtils.getInstance();
+            GenerateXML xml = new GenerateXML(context);
+            InputStream inputStream = client.httpInputStreamRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                    xml.downloadAll("OrderAttributes"));
+            JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
+            List<OrderAttributes> orderAttributes = new ArrayList<>();
+            reader.beginArray();
+            int i = 0;
+            while (reader.hasNext()) {
+                OrderAttributes attributes = gson.fromJson(reader, OrderAttributes.class);
+                orderAttributes.add(attributes);
+                i++;
+                if (i == 1000) {
+                    OrderAttributesDAO.insert(orderAttributes);
+                    orderAttributes.clear();
+                    i = 0;
+                }
+            }
+            OrderAttributesDAO.insert(orderAttributes);
+            reader.endArray();
+            reader.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     public static void postSalesAssociatesConfiguration(Activity activity, List<SalesAssociate> salesAssociates) throws Exception {
         List<DinningLocationConfiguration> configurations = new ArrayList<>();
@@ -1585,11 +1648,9 @@ public class SynchMethods {
             ProductAliases_DB productAliasesDB = new ProductAliases_DB(context);
             Gson gson = JsonUtils.getInstance();
             GenerateXML xml = new GenerateXML(context);
-            Log.d("GSon Start", new Date().toString());
             InputStream inputStream = client.httpInputStreamRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
                     xml.downloadAll("ProductAliases"));
             JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
-            Log.d("GSon Start Reading", new Date().toString());
             List<ProductAlias> productAliases = new ArrayList<>();
             productAliasesDB.emptyTable();
             reader.beginArray();
@@ -1602,18 +1663,14 @@ public class SynchMethods {
                     productAliasesDB.insert(productAliases);
                     productAliases.clear();
                     i = 0;
-                    Log.d("GSon Insert 1000", new Date().toString());
                 }
             }
             productAliasesDB.insert(productAliases);
             reader.endArray();
             reader.close();
-            Log.d("GSon Finish", new Date().toString());
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     private void synchProductImages() throws IOException, SAXException {

@@ -117,7 +117,7 @@ public class MyPreferences {
     public static final String pref_pay_with_tupyx = "pref_pay_with_tupyx";
     public static final String pref_mw_with_genius = "pref_mw_with_genius";
     public static final String pref_config_genius_peripheral = "pref_config_genius_peripheral";
-    public static final String pref_use_clerks = "pref_use_clerks";
+    private static final String pref_use_clerks = "pref_use_clerks";
     public static final String pref_enable_location_inventory = "pref_enable_location_inventory";
 
     public static final String pref_block_price_level_change = "pref_block_price_level_change";
@@ -1167,6 +1167,9 @@ public class MyPreferences {
     public boolean isStoredAndForward() {
         String is_store_forward = "is_store_forward";
         return prefs.getBoolean(is_store_forward, false);
+    }
+    public boolean isUseClerks(){
+        return getPreferences(MyPreferences.pref_use_clerks);
     }
 
     public void setGeniusIP(String ip) {

@@ -1316,6 +1316,13 @@
     <string name="hundredDollars">$100.00</string>
     <string name="fiveCents">$0.05</string>
     <string name="quarterCents">$0.25</string>
+    <string name="view_video">View Video</string>
+    <string name="no_video">No Video</string>
+    <string name="information">Information</string>
+    <string name="inventory">Inventory</string>
+    <string name="identification">Identification</string>
+    <string name="attributes">Attributes</string>
+    <string name="sync_dload_shifts">Downloading Shifts</string>
 
 
 </resources>

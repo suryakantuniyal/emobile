@@ -704,7 +704,7 @@ public class EMSDeviceDriver {
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
                     Global.formatToDisplayDate(anOrder.ord_timecreated, 3), lineWidth, 0));
 
-            if (!myPref.getShiftIsOpen() || myPref.getPreferences(MyPreferences.pref_use_clerks)) {
+            if (!myPref.getShiftIsOpen() || myPref.isUseClerks()) {
                 String clerk_id = anOrder.clerk_id;
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_clerk),
                         clerkHandler.getClerkName(clerk_id) + "(" + clerk_id + ")", lineWidth, 0));

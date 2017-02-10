@@ -617,7 +617,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         String clerkId = null;
         if (!myPref.getShiftIsOpen())
             clerkId = myPref.getShiftClerkID();
-        else if (myPref.getPreferences(MyPreferences.pref_use_clerks))
+        else if (myPref.isUseClerks())
             clerkId = myPref.getClerkID();
 
 
@@ -745,7 +745,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         String clerkId = null;
         if (!myPref.getShiftIsOpen())
             clerkId = myPref.getShiftClerkID();
-        else if (myPref.getPreferences(MyPreferences.pref_use_clerks))
+        else if (myPref.isUseClerks())
             clerkId = myPref.getClerkID();
         String invoiceId = "";
 

@@ -429,7 +429,7 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
 
         if (!myPref.getShiftIsOpen())
             payment.setClerk_id(myPref.getShiftClerkID());
-        else if (myPref.getPreferences(MyPreferences.pref_use_clerks))
+        else if (myPref.isUseClerks())
             payment.setClerk_id(myPref.getClerkID());
 
         payment.setRef_num(field[CHECK_REFERENCE].getText().toString());
@@ -625,7 +625,7 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
 
         if (!myPref.getShiftIsOpen())
             payment.setClerk_id(myPref.getShiftClerkID());
-        else if (myPref.getPreferences(MyPreferences.pref_use_clerks))
+        else if (myPref.isUseClerks())
             payment.setClerk_id(myPref.getClerkID());
 
         payment.setRef_num(field[CHECK_REFERENCE].getText().toString());

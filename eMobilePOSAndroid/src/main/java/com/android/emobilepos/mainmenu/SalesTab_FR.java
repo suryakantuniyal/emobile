@@ -213,7 +213,7 @@ public class SalesTab_FR extends Fragment {
         public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
             final int adapterPos = (Integer) myAdapter.getItem(position);
 
-            if (myPref.getPreferences(MyPreferences.pref_use_clerks)) {
+            if (myPref.isUseClerks()) {
                 promptClerkPassword(adapterPos);
             } else if (myPref.getPreferences(MyPreferences.pref_require_shift_transactions) && myPref.getShiftIsOpen()) {
                 Global.showPrompt(activity, R.string.dlog_title_error, getString(R.string.dlog_msg_error_shift_needs_to_be_open));

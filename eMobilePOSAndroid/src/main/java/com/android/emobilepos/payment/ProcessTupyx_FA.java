@@ -240,7 +240,7 @@ public class ProcessTupyx_FA extends FragmentActivity implements OnClickListener
 
         if (!myPref.getShiftIsOpen())
             payment.setClerk_id(myPref.getShiftClerkID());
-        else if (myPref.getPreferences(MyPreferences.pref_use_clerks))
+        else if (myPref.isUseClerks())
             payment.setClerk_id(myPref.getClerkID());
 
         payment.setCust_id(extras.getString("cust_id") != null ? extras.getString("cust_id") : "");
