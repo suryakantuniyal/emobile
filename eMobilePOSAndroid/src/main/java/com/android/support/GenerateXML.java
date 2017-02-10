@@ -998,21 +998,23 @@ public class GenerateXML {
         if(order.orderAttributes!=null) {
             serializer.startTag(empstr, "OrderAttributes");
             for (OrderAttributes attributes : order.orderAttributes) {
-                serializer.startTag(empstr, "OrderAttribute");
+                if(!TextUtils.isEmpty(attributes.getInputValue())) {
+                    serializer.startTag(empstr, "OrderAttribute");
 
-                serializer.startTag(empstr, "ord_attr_id");
-                serializer.text(attributes.getIDK());
-                serializer.endTag(empstr, "ord_attr_id");
+                    serializer.startTag(empstr, "ord_attr_id");
+                    serializer.text(StringUtil.nullStringToEmpty(attributes.getIDK()));
+                    serializer.endTag(empstr, "ord_attr_id");
 
-                serializer.startTag(empstr, "ord_attr_name");
-                serializer.text(attributes.getOrdAttrName());
-                serializer.endTag(empstr, "ord_attr_name");
+                    serializer.startTag(empstr, "ord_attr_name");
+                    serializer.text(StringUtil.nullStringToEmpty(attributes.getOrdAttrName()));
+                    serializer.endTag(empstr, "ord_attr_name");
 
-                serializer.startTag(empstr, "ord_attr_value");
-                serializer.text(attributes.getInputValue());
-                serializer.endTag(empstr, "ord_attr_value");
+                    serializer.startTag(empstr, "ord_attr_value");
+                    serializer.text(StringUtil.nullStringToEmpty(attributes.getInputValue()));
+                    serializer.endTag(empstr, "ord_attr_value");
 
-                serializer.endTag(empstr, "OrderAttribute");
+                    serializer.endTag(empstr, "OrderAttribute");
+                }
             }
             serializer.endTag(empstr, "OrderAttributes");
         }

@@ -163,7 +163,7 @@ public class OrderDetailsActivity extends BaseFragmentActivityActionBar {
     public void onBackPressed() {
         Gson gson = JsonUtils.getInstance();
         Intent data = getIntent();
-        data.putExtra("orderAttributesValue", gson.toJson(orderAttributesValues));
+        data.putExtra("orderAttributesValue", gson.toJson(orderAttributesValues.subList(6, orderAttributesValues.size())));
         setResult(Global.FROM_ORDER_ATTRIBUTES_ACTIVITY, data);
         finish();
     }
