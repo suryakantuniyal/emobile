@@ -1261,6 +1261,9 @@
     <string name="identification">Identification</string>
     <string name="attributes">Attributes</string>
     <string name="sync_dload_shifts">Downloading Shifts</string>
+    <string name="entered_open_amount">Open Shift Amount</string>
+    <string name="shift_count_down_shift">Start Count Down</string>
+    <string name="entered_count_down_amount">Count Down Amount</string>
 
 
 </resources>

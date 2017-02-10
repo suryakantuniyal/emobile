@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import android.util.Xml;
 
 import com.android.dao.AssignEmployeeDAO;
+import com.android.dao.ShiftDAO;
 import com.android.database.AddressHandler;
 import com.android.database.ConsignmentTransactionHandler;
 import com.android.database.CustomerInventoryHandler;
@@ -28,6 +29,7 @@ import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.OrderAttributes;
+import com.android.emobilepos.models.realms.Shift;
 import com.android.emobilepos.shifts.ClockInOut_FA;
 
 import org.xmlpull.v1.XmlSerializer;
@@ -1967,7 +1969,6 @@ public class GenerateXML {
     public String synchShift() {
         XmlSerializer serializer = Xml.newSerializer();
         StringWriter writer = new StringWriter();
-
         try {
             serializer.setOutput(writer);
             serializer.startDocument("UTF-8", true);
@@ -1989,6 +1990,7 @@ public class GenerateXML {
     }
 
     private void buildShiftPeriods(XmlSerializer serializer) {
+        List<Shift> shifts = ShiftDAO.getPendingSyncShifts();
         Long lExpenseDateCreated;
         Date dExpenseDateCreated;
         String sExpenseDateCreated;
@@ -1996,13 +1998,13 @@ public class GenerateXML {
         ShiftExpensesDBHandler shiftExpensesDBHandler;
         shiftExpensesDBHandler = new ShiftExpensesDBHandler(thisActivity);
         Cursor expensesByShift;
-        ShiftPeriodsDBHandler handler = new ShiftPeriodsDBHandler(thisActivity);
-        Cursor c = handler.getUnsyncShifts();
-        c.moveToFirst();
-        int size = c.getCount();
-        for (int i = 0; i < size; i++) {
+//        ShiftPeriodsDBHandler handler = new ShiftPeriodsDBHandler(thisActivity);
+//        Cursor c = handler.getUnsyncShifts();
+//        c.moveToFirst();
+//        int size = c.getCount();
+        for (Shift s: shifts) {
             try {
-                shiftID = c.getString(c.getColumnIndex("shift_id"));
+                shiftID = s.getShift_id(); //c.getString(c.getColumnIndex("shift_id"));
 
                 serializer.startTag(empstr, "shift");
 
@@ -2011,32 +2013,32 @@ public class GenerateXML {
                 serializer.endTag(empstr, "shift_id");
 
                 serializer.startTag(empstr, "assignee_id");
-                serializer.text(c.getString(c.getColumnIndex("assignee_id")));
+                serializer.text(s.getAssignee_id());//c.getString(c.getColumnIndex("assignee_id")));
                 serializer.endTag(empstr, "assignee_id");
 
                 serializer.startTag(empstr, "assignee_name");
-                serializer.text(c.getString(c.getColumnIndex("assignee_name")));
+                serializer.text(s.getAssignee_name());//c.getString(c.getColumnIndex("assignee_name")));
                 serializer.endTag(empstr, "assignee_name");
 
                 serializer.startTag(empstr, "creationDate");
-                serializer.text(c.getString(c.getColumnIndex("creationDate")));
+                serializer.text(DateUtils.getDateAsString(s.getCreationDate()));//c.getString(c.getColumnIndex("creationDate")));
                 serializer.endTag(empstr, "creationDate");
 
 
                 serializer.startTag(empstr, "startTime");
-                serializer.text(c.getString(c.getColumnIndex("startTime")));
+                serializer.text(DateUtils.getDateAsString(s.getStartTime()));//c.getString(c.getColumnIndex("startTime")));
                 serializer.endTag(empstr, "startTime");
 
 
-                if (!c.getString(c.getColumnIndex("endTime")).isEmpty()) {
+                if (s.getEndTime()!=null) {
                     serializer.startTag(empstr, "endTime");
-                    serializer.text(c.getString(c.getColumnIndex("endTime")));
+                    serializer.text(DateUtils.getDateAsString(s.getEndTime()));//c.getString(c.getColumnIndex("endTime")));
                     serializer.endTag(empstr, "endTime");
                 }
 
 
                 serializer.startTag(empstr, "beginning_petty_cash");
-                serializer.text(c.getString(c.getColumnIndex("beginning_petty_cash")));
+                serializer.text(s.getBeginning_petty_cash());//c.getString(c.getColumnIndex("beginning_petty_cash")));
                 serializer.endTag(empstr, "beginning_petty_cash");
 
                 serializer.startTag(empstr, "total_expenses");
@@ -2044,19 +2046,19 @@ public class GenerateXML {
                 serializer.endTag(empstr, "total_expenses");
 
                 serializer.startTag(empstr, "ending_petty_cash");
-                serializer.text(c.getString(c.getColumnIndex("ending_petty_cash")));
+                serializer.text(s.getEnding_petty_cash());//c.getString(c.getColumnIndex("ending_petty_cash")));
                 serializer.endTag(empstr, "ending_petty_cash");
 
                 serializer.startTag(empstr, "ending_cash");
-                serializer.text(c.getString(c.getColumnIndex("total_ending_cash")));
+                serializer.text(s.getTotal_ending_cash());//c.getString(c.getColumnIndex("total_ending_cash")));
                 serializer.endTag(empstr, "ending_cash");
 
                 serializer.startTag(empstr, "entered_close_amount");
-                serializer.text(c.getString(c.getColumnIndex("entered_close_amount")));
+                serializer.text(s.getEntered_close_amount());//c.getString(c.getColumnIndex("entered_close_amount")));
                 serializer.endTag(empstr, "entered_close_amount");
 
                 serializer.startTag(empstr, "total_transactions_cash");
-                serializer.text(c.getString(c.getColumnIndex("total_transaction_cash")));
+                serializer.text(s.getTotal_transaction_cash());//c.getString(c.getColumnIndex("total_transaction_cash")));
                 serializer.endTag(empstr, "total_transactions_cash");
 
 
@@ -2102,12 +2104,12 @@ public class GenerateXML {
                 }
                 serializer.endTag(empstr, "Expenses");
                 serializer.endTag(empstr, "shift");
-                c.moveToNext();
+//                c.moveToNext();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
-        c.close();
+//        c.close();
     }
 
     public String synchWalletReceipts() {

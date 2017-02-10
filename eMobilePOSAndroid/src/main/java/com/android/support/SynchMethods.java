@@ -12,7 +12,6 @@ import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,6 +23,7 @@ import com.android.dao.MixMatchDAO;
 import com.android.dao.OrderAttributesDAO;
 import com.android.dao.OrderProductAttributeDAO;
 import com.android.dao.SalesAssociateDAO;
+import com.android.dao.ShiftDAO;
 import com.android.dao.UomDAO;
 import com.android.database.ConsignmentTransactionHandler;
 import com.android.database.CustomerInventoryHandler;
@@ -62,6 +62,7 @@ import com.android.emobilepos.models.realms.MixMatch;
 import com.android.emobilepos.models.realms.OrderAttributes;
 import com.android.emobilepos.models.realms.PaymentMethod;
 import com.android.emobilepos.models.realms.SalesAssociate;
+import com.android.emobilepos.models.realms.Shift;
 import com.android.emobilepos.models.salesassociates.DinningLocationConfiguration;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.saxhandler.SAXParserPost;
@@ -93,6 +94,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -476,7 +478,7 @@ public class SynchMethods {
 
                     if (didSendData) {
                         synchStage = context.getString(R.string.sync_sending_shifts);
-                        sendShifts(this);
+                        postShift(activity);
                     }
 
                     if (didSendData) {
@@ -616,7 +618,7 @@ public class SynchMethods {
                 e.printStackTrace();
             }
             try {
-                sendShifts(this);
+                postShift(activity);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -1158,26 +1160,26 @@ public class SynchMethods {
         }
     }
 
-    private void sendShifts(Object task) throws IOException, SAXException, ParserConfigurationException {
-        SAXParserPost handler = new SAXParserPost();
-        ShiftPeriodsDBHandler dbHandler = new ShiftPeriodsDBHandler(context);
-
-        if (dbHandler.getNumUnsyncShifts() > 0) {
-            if (Global.isForceUpload)
-                ((ForceSendAsync) task).updateProgress(context.getString(R.string.sync_sending_shifts));
-            else
-                ((SendAsync) task).updateProgress(context.getString(R.string.sync_sending_shifts));
-            xml = post.postData(Global.S_SUBMIT_SHIFT, context, "");
-            inSource = new InputSource(new StringReader(xml));
-            xr.setContentHandler(handler);
-            xr.parse(inSource);
-            data = handler.getData();
-            dbHandler.updateIsSync(data);
-            if (data.isEmpty())
-                didSendData = false;
-            data.clear();
-        }
-    }
+//    private void sendShifts(Object task) throws IOException, SAXException, ParserConfigurationException {
+//        SAXParserPost handler = new SAXParserPost();
+//        ShiftPeriodsDBHandler dbHandler = new ShiftPeriodsDBHandler(context);
+//
+//        if (dbHandler.getNumUnsyncShifts() > 0) {
+//            if (Global.isForceUpload)
+//                ((ForceSendAsync) task).updateProgress(context.getString(R.string.sync_sending_shifts));
+//            else
+//                ((SendAsync) task).updateProgress(context.getString(R.string.sync_sending_shifts));
+//            xml = post.postData(Global.S_SUBMIT_SHIFT, context, "");
+//            inSource = new InputSource(new StringReader(xml));
+//            xr.setContentHandler(handler);
+//            xr.parse(inSource);
+//            data = handler.getData();
+//            dbHandler.updateIsSync(data);
+//            if (data.isEmpty())
+//                didSendData = false;
+//            data.clear();
+//        }
+//    }
 
     private void sendWalletOrders(Object task) throws IOException, SAXException, ParserConfigurationException {
         SAXParserPost handler = new SAXParserPost();
@@ -1548,6 +1550,7 @@ public class SynchMethods {
             e.printStackTrace();
         }
     }
+
     private void synchOrderAttributes() throws IOException, SAXException {
         try {
             Gson gson = JsonUtils.getInstance();
@@ -1574,6 +1577,23 @@ public class SynchMethods {
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public void postShift(Context context) throws Exception {
+        SAXParserPost handler = new SAXParserPost();
+        ShiftPeriodsDBHandler dbHandler = new ShiftPeriodsDBHandler(context);
+        List<Shift> pendingSyncShifts = ShiftDAO.getPendingSyncShifts();
+        if (pendingSyncShifts!=null && !pendingSyncShifts.isEmpty()) {
+            xml = post.postData(Global.S_SUBMIT_SHIFT, context, "");
+            inSource = new InputSource(new StringReader(xml));
+            xr.setContentHandler(handler);
+            xr.parse(inSource);
+            data = handler.getData();
+            dbHandler.updateIsSync(data);
+            if (data.isEmpty())
+                didSendData = false;
+            data.clear();
         }
     }
 

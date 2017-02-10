@@ -1,17 +1,26 @@
 package com.android.emobilepos.shifts;
 
 import android.app.Activity;
-import android.icu.math.BigDecimal;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.android.dao.ShiftDAO;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.realms.Shift;
+import com.android.support.DateUtils;
 import com.android.support.Global;
+import com.android.support.MyPreferences;
+import com.android.support.NumberUtils;
+
+import java.util.ArrayList;
+import java.util.Date;
 
 public class ShiftsActivity extends Activity implements View.OnClickListener, TextWatcher {
 
@@ -48,13 +57,31 @@ public class ShiftsActivity extends Activity implements View.OnClickListener, Te
     private int fiftyDollars;
     private int hundredDollars;
     private TextView totalAmountEditText;
+    private Shift shift;
+    private Button submitShiftbutton;
+    private TextView openOnLbl;
+    private TextView openOnDate;
+    private TextView closeAmountLbl;
+    private TextView pettyCashLbl;
+    private TextView pettyCash;
+    private MyPreferences preferences;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shifts);
+        preferences = new MyPreferences(this);
+        TextView clerkName = (TextView) findViewById(R.id.clerkNameShifttextView);
+        clerkName.setText(preferences.getClerkName());
+        shift = ShiftDAO.getCurrentShift(preferences.getClerkID());
         totalAmountEditText = (TextView) findViewById(R.id.totalAmounteditText);
+        openOnLbl = (TextView) findViewById(R.id.openOnLbltextView25);
+        openOnDate = (TextView) findViewById(R.id.openOnDatetextView26);
+        closeAmountLbl = (TextView) findViewById(R.id.closeAmountLbltextView21);
+        pettyCashLbl = (TextView) findViewById(R.id.pettyCashLbltextView27);
+        pettyCash = (TextView) findViewById(R.id.beginningPettyCashtextView);
+
         oneDollarEditText = (EditText) findViewById(R.id.oneDollareditText);
         fiveDollarEditText = (EditText) findViewById(R.id.fiveDollareditText);
         tenDollarEditText = (EditText) findViewById(R.id.tenDollareditText);
@@ -97,7 +124,7 @@ public class ShiftsActivity extends Activity implements View.OnClickListener, Te
         Button plusFiveCent = (Button) findViewById(R.id.fiveCentsPlusbutton);
         Button plusTenCent = (Button) findViewById(R.id.tenCentsPlusbutton);
         Button plusQuarterCent = (Button) findViewById(R.id.quartesCentsPlusbutton);
-        Button submitShiftbutton = (Button) findViewById(R.id.submitShiftbutton);
+        submitShiftbutton = (Button) findViewById(R.id.submitShiftbutton);
         submitShiftbutton.setOnClickListener(this);
         minusOneCent.setOnClickListener(this);
         minusFiveCent.setOnClickListener(this);
@@ -129,12 +156,82 @@ public class ShiftsActivity extends Activity implements View.OnClickListener, Te
         twentyDollarEditText.addTextChangedListener(this);
         fiftyDollarEditText.addTextChangedListener(this);
         hundredDollarEditText.addTextChangedListener(this);
+        setShiftUI();
+
+    }
+
+    private void setShiftUI() {
+        if (shift == null || shift.getShiftStatus() == Shift.ShiftStatus.CLOSED) {
+            enableCurrencies(true);
+            submitShiftbutton.setText(getString(R.string.admin_open_shift));
+            openOnLbl.setVisibility(View.INVISIBLE);
+            openOnDate.setVisibility(View.INVISIBLE);
+            pettyCashLbl.setVisibility(View.INVISIBLE);
+            pettyCash.setVisibility(View.INVISIBLE);
+            closeAmountLbl.setText(getString(R.string.entered_open_amount));
+        } else if (shift.getShiftStatus() == Shift.ShiftStatus.OPEN) {
+            enableCurrencies(false);
+            submitShiftbutton.setText(getString(R.string.shift_count_down_shift));
+            openOnLbl.setVisibility(View.VISIBLE);
+            openOnDate.setVisibility(View.VISIBLE);
+            pettyCashLbl.setVisibility(View.VISIBLE);
+            pettyCash.setVisibility(View.VISIBLE);
+            closeAmountLbl.setText(getString(R.string.entered_count_down_amount));
+            openOnDate.setText(DateUtils.getDateAsString(shift.getCreationDate(), DateUtils.DATE_MMM_dd_yyyy_h_mm_a));
+            pettyCash.setText(Global.formatDoubleStrToCurrency(shift.getBeginning_petty_cash()));
+        } else if (shift.getShiftStatus() == Shift.ShiftStatus.PENDING) {
+            enableCurrencies(true);
+            submitShiftbutton.setText(getString(R.string.shift_close_shift));
+            openOnLbl.setVisibility(View.VISIBLE);
+            openOnDate.setVisibility(View.VISIBLE);
+            pettyCashLbl.setVisibility(View.VISIBLE);
+            pettyCash.setVisibility(View.VISIBLE);
+            closeAmountLbl.setText(getString(R.string.entered_close_amount));
+            openOnDate.setText(DateUtils.getDateAsString(shift.getCreationDate(), DateUtils.DATE_MMM_dd_yyyy_h_mm_a));
+            pettyCash.setText(Global.formatDoubleStrToCurrency(shift.getBeginning_petty_cash()));
+        }
+
+    }
+
+    private void enableCurrencies(boolean enable) {
+        LinearLayout currenciesLl = (LinearLayout) findViewById(R.id.currencieslinearLayout4);
+        ArrayList<View> allChildren = getAllChildren(currenciesLl);
+        for (View child : allChildren) {
+            if (child instanceof Button || child instanceof EditText) {
+                child.setEnabled(enable);
+            }
+        }
+    }
+
+    private ArrayList<View> getAllChildren(View v) {
+        if (!(v instanceof ViewGroup)) {
+            ArrayList<View> viewArrayList = new ArrayList<>();
+            viewArrayList.add(v);
+            return viewArrayList;
+        }
+        ArrayList<View> result = new ArrayList<>();
+        ViewGroup vg = (ViewGroup) v;
+        for (int i = 0; i < vg.getChildCount(); i++) {
+            View child = vg.getChildAt(i);
+            ArrayList<View> viewArrayList = new ArrayList<>();
+            viewArrayList.add(v);
+            viewArrayList.addAll(getAllChildren(child));
+            result.addAll(viewArrayList);
+        }
+        return result;
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.submitShiftbutton:
+                if (shift == null || shift.getShiftStatus() == Shift.ShiftStatus.CLOSED) {
+                    openShift();
+                } else if (shift.getShiftStatus() == Shift.ShiftStatus.OPEN) {
+                    startCountDownShift();
+                } else if (shift.getShiftStatus() == Shift.ShiftStatus.PENDING) {
+                    closeShift();
+                }
                 break;
             case R.id.oneCentMinusbutton:
                 if (oneCent > 0) {
@@ -240,6 +337,40 @@ public class ShiftsActivity extends Activity implements View.OnClickListener, Te
         recalculate();
     }
 
+    private void closeShift() {
+        Date now = new Date();
+        shift.setEntered_close_amount(NumberUtils.cleanCurrencyFormatedNumber(totalAmountEditText.getText().toString()));
+        shift.setEndTime(now);
+        shift.setEndTimeLocal(now);
+        shift.setShiftStatus(Shift.ShiftStatus.CLOSED);
+        ShiftDAO.insertOrUpdate(shift);
+        finish();
+    }
+
+    private void startCountDownShift() {
+        shift.setShiftStatus(Shift.ShiftStatus.PENDING);
+        ShiftDAO.insertOrUpdate(shift);
+        setShiftUI();
+    }
+
+    private void openShift() {
+        Date now = new Date();
+        shift = new Shift();
+        shift.setShiftStatus(Shift.ShiftStatus.OPEN);
+        shift.setAssignee_id(preferences.getClerkID());
+        shift.setAssignee_name(preferences.getClerkName());
+        shift.setBeginning_petty_cash(NumberUtils.cleanCurrencyFormatedNumber(totalAmountEditText.getText().toString()));
+        shift.setCreationDate(now);
+        shift.setStartTime(now);
+        shift.setStartTimeLocal(now);
+
+        //set the ending petty cash equal to the beginning petty cash, decrease the ending petty cash every time there is an expense
+        shift.setEnding_petty_cash(totalAmountEditText.getText().toString());
+        shift.setTotal_ending_cash("0");
+        ShiftDAO.insertOrUpdate(shift);
+        finish();
+    }
+
     private void recalculate() {
         Double total = (oneCent * .01) + (fiveCents * 5 * .01) + (tenCents * 10 * .01) + (quarterCents * 25 * .01) +
                 oneDollar + (fiveDollars * 5) + (tenDollars * 10) + (twentyDollars * 20) +
@@ -269,7 +400,7 @@ public class ShiftsActivity extends Activity implements View.OnClickListener, Te
 
     @Override
     public void afterTextChanged(Editable s) {
-        if(s.length()==0){
+        if (s.length() == 0) {
             s.append("0");
         }
         int hashCode = s.hashCode();

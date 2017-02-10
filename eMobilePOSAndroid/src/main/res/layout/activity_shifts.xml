@@ -57,7 +57,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/textView25"
+                android:id="@+id/openOnLbltextView25"
                 style="@style/black_text_appearance_unbold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -67,24 +67,24 @@
                 app:layout_constraintTop_toBottomOf="@+id/textView16" />
 
             <TextView
-                android:id="@+id/textView26"
+                android:id="@+id/openOnDatetextView26"
                 style="@style/black_text_appearance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="01/12/2017 8:15 am"
                 app:layout_constraintLeft_toLeftOf="@+id/beginningPettyCashtextView"
-                app:layout_constraintTop_toTopOf="@+id/textView25"
+                app:layout_constraintTop_toTopOf="@+id/openOnLbltextView25"
                 tools:ignore="HardcodedText" />
 
             <TextView
-                android:id="@+id/textView27"
+                android:id="@+id/pettyCashLbltextView27"
                 style="@style/black_text_appearance_unbold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="@string/begging_petty_cash"
-                app:layout_constraintLeft_toLeftOf="@+id/textView25"
-                app:layout_constraintTop_toBottomOf="@+id/textView25" />
+                app:layout_constraintLeft_toLeftOf="@+id/openOnLbltextView25"
+                app:layout_constraintTop_toBottomOf="@+id/openOnLbltextView25" />
 
             <TextView
                 android:id="@+id/beginningPettyCashtextView"
@@ -94,20 +94,20 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginStart="10dp"
                 android:text="$100.00"
-                app:layout_constraintBottom_toBottomOf="@+id/textView27"
-                app:layout_constraintLeft_toRightOf="@+id/textView27"
+                app:layout_constraintBottom_toBottomOf="@+id/pettyCashLbltextView27"
+                app:layout_constraintLeft_toRightOf="@+id/pettyCashLbltextView27"
                 tools:ignore="HardcodedText" />
 
             <LinearLayout
-                android:id="@+id/linearLayout4"
+                android:id="@+id/currencieslinearLayout4"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:baselineAligned="false"
                 android:orientation="horizontal"
-                app:layout_constraintLeft_toLeftOf="@+id/textView27"
+                app:layout_constraintLeft_toLeftOf="@+id/pettyCashLbltextView27"
                 app:layout_constraintRight_toRightOf="@+id/textView24"
-                app:layout_constraintTop_toBottomOf="@+id/textView27">
+                app:layout_constraintTop_toBottomOf="@+id/pettyCashLbltextView27">
 
                 <TableLayout
                     android:layout_width="match_parent"
@@ -845,7 +845,7 @@
                     android:layout_marginRight="10dp">
 
                     <TextView
-                        android:id="@+id/textView21"
+                        android:id="@+id/closeAmountLbltextView21"
                         style="@style/black_text_appearance"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
