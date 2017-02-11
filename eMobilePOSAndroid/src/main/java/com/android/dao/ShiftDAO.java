@@ -12,10 +12,10 @@ import io.realm.RealmResults;
  */
 
 public class ShiftDAO {
-    public static Shift getCurrentShift(String clerkId) {
+    public static Shift getCurrentShift(int clerkId) {
         Realm r = Realm.getDefaultInstance();
         Shift shift = r.where(Shift.class)
-                .equalTo("assignee_id", clerkId)
+                .equalTo("assigneeId", clerkId)
                 .findAll().where()
                 .equalTo("shiftStatusCode", 0)
                 .or()
@@ -26,7 +26,17 @@ public class ShiftDAO {
         }
         return null;
     }
-
+    public static Shift getOpenShift(int clerkId) {
+        Realm r = Realm.getDefaultInstance();
+        Shift shift = r.where(Shift.class)
+                .equalTo("assigneeId", clerkId)
+                .equalTo("shiftStatusCode", 0)
+                .findFirst();
+        if (shift != null) {
+            return r.copyFromRealm(shift);
+        }
+        return null;
+    }
     public static void insertOrUpdate(Shift shift) {
         Realm r = Realm.getDefaultInstance();
         try {
@@ -39,10 +49,25 @@ public class ShiftDAO {
 
     public static List<Shift> getPendingSyncShifts() {
         Realm r = Realm.getDefaultInstance();
+        r.beginTransaction();
+        r.commitTransaction();
         RealmResults<Shift> sync = r.where(Shift.class)
                 .equalTo("sync", false)
+                .findAll().where()
                 .equalTo("shiftStatusCode", 2)
+                .or()
+                .equalTo("shiftStatusCode", 1)
                 .findAll();
         return r.copyFromRealm(sync);
+    }
+
+    public static void insertOrUpdate(List<Shift> shifts) {
+        Realm r = Realm.getDefaultInstance();
+        try {
+            r.beginTransaction();
+            r.insertOrUpdate(shifts);
+        } finally {
+            r.commitTransaction();
+        }
     }
 }

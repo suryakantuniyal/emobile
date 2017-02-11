@@ -1996,7 +1996,6 @@ public class GenerateXML {
             serializer.endTag(empstr, "ShiftPeriods");
             serializer.endDocument();
 
-            String myString = writer.toString();
             return writer.toString();
 
         } catch (Exception e) {
@@ -2019,7 +2018,7 @@ public class GenerateXML {
 //        int size = c.getCount();
         for (Shift s : shifts) {
             try {
-                shiftID = s.getShift_id(); //c.getString(c.getColumnIndex("shift_id"));
+                shiftID = s.getShiftId(); //c.getString(c.getColumnIndex("shift_id"));
 
                 serializer.startTag(empstr, "shift");
 
@@ -2027,12 +2026,17 @@ public class GenerateXML {
                 serializer.text(shiftID);
                 serializer.endTag(empstr, "shift_id");
 
+                serializer.startTag(empstr, "shift_status");
+                serializer.text(String.valueOf(s.getShiftStatusCode()));
+                serializer.endTag(empstr, "shift_status");
+
+
                 serializer.startTag(empstr, "assignee_id");
-                serializer.text(s.getAssignee_id());//c.getString(c.getColumnIndex("assignee_id")));
+                serializer.text(String.valueOf(s.getAssigneeId()));//c.getString(c.getColumnIndex("assignee_id")));
                 serializer.endTag(empstr, "assignee_id");
 
                 serializer.startTag(empstr, "assignee_name");
-                serializer.text(s.getAssignee_name());//c.getString(c.getColumnIndex("assignee_name")));
+                serializer.text(s.getAssigneeName());//c.getString(c.getColumnIndex("assignee_name")));
                 serializer.endTag(empstr, "assignee_name");
 
                 serializer.startTag(empstr, "creationDate");
@@ -2053,7 +2057,7 @@ public class GenerateXML {
 
 
                 serializer.startTag(empstr, "beginning_petty_cash");
-                serializer.text(s.getBeginning_petty_cash());//c.getString(c.getColumnIndex("beginning_petty_cash")));
+                serializer.text(String.valueOf(s.getBeginningPettyCash()));//c.getString(c.getColumnIndex("beginning_petty_cash")));
                 serializer.endTag(empstr, "beginning_petty_cash");
 
                 serializer.startTag(empstr, "total_expenses");
@@ -2061,7 +2065,7 @@ public class GenerateXML {
                 serializer.endTag(empstr, "total_expenses");
 
                 serializer.startTag(empstr, "ending_petty_cash");
-                serializer.text(s.getEnding_petty_cash());//c.getString(c.getColumnIndex("ending_petty_cash")));
+                serializer.text(String.valueOf(s.getEndingCash()));//c.getString(c.getColumnIndex("ending_petty_cash")));
                 serializer.endTag(empstr, "ending_petty_cash");
 
                 serializer.startTag(empstr, "ending_cash");
@@ -2069,11 +2073,11 @@ public class GenerateXML {
                 serializer.endTag(empstr, "ending_cash");
 
                 serializer.startTag(empstr, "entered_close_amount");
-                serializer.text(s.getEntered_close_amount());//c.getString(c.getColumnIndex("entered_close_amount")));
+                serializer.text(String.valueOf(s.getEnteredCloseAmount()));//c.getString(c.getColumnIndex("entered_close_amount")));
                 serializer.endTag(empstr, "entered_close_amount");
 
                 serializer.startTag(empstr, "total_transactions_cash");
-                serializer.text(s.getTotal_transaction_cash());//c.getString(c.getColumnIndex("total_transaction_cash")));
+                serializer.text(s.getTotal_ending_cash());//c.getString(c.getColumnIndex("total_transaction_cash")));
                 serializer.endTag(empstr, "total_transactions_cash");
 
 

@@ -57,6 +57,7 @@ import com.android.emobilepos.models.Product;
 import com.android.emobilepos.models.ProductAddons;
 import com.android.emobilepos.models.ProductAlias;
 import com.android.emobilepos.models.realms.AssignEmployee;
+import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.models.realms.DinningTable;
 import com.android.emobilepos.models.realms.MixMatch;
 import com.android.emobilepos.models.realms.OrderAttributes;
@@ -1131,29 +1132,14 @@ public class SynchMethods {
 
     private void synchShifts() throws IOException, SAXException {
         try {
-            ProductAliases_DB productAliasesDB = new ProductAliases_DB(context);
             Gson gson = JsonUtils.getInstance();
             GenerateXML xml = new GenerateXML(context);
-            InputStream inputStream = client.httpInputStreamRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+            String jsonRequest = client.httpJsonRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
                     xml.downloadAll("Shifts"));
-            JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
-            List<ProductAlias> productAliases = new ArrayList<>();
-            productAliasesDB.emptyTable();
-            reader.beginArray();
-            int i = 0;
-            while (reader.hasNext()) {
-                ProductAlias alias = gson.fromJson(reader, Product.class);
-                productAliases.add(alias);
-                i++;
-                if (i == 1000) {
-                    productAliasesDB.insert(productAliases);
-                    productAliases.clear();
-                    i = 0;
-                }
-            }
-            productAliasesDB.insert(productAliases);
-            reader.endArray();
-            reader.close();
+            Type listType = new com.google.gson.reflect.TypeToken<List<Shift>>() {
+            }.getType();
+            List<Shift> shifts = gson.fromJson(jsonRequest, listType);
+            ShiftDAO.insertOrUpdate(shifts);
         } catch (Exception e) {
             e.printStackTrace();
         }

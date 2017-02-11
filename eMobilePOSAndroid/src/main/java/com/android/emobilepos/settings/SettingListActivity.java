@@ -43,6 +43,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.dao.PayMethodsDAO;
+import com.android.dao.ShiftDAO;
 import com.android.database.CategoriesHandler;
 import com.android.database.DBManager;
 import com.android.database.PayMethodsHandler;
@@ -51,7 +52,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.country.CountryPicker;
 import com.android.emobilepos.country.CountryPickerListener;
 import com.android.emobilepos.models.realms.PaymentMethod;
-import com.android.emobilepos.shifts.OpenShift_FA;
+import com.android.emobilepos.models.realms.Shift;
 import com.android.emobilepos.shifts.ShiftExpensesList_FA;
 import com.android.support.DateUtils;
 import com.android.support.DeviceUtils;
@@ -81,74 +82,19 @@ import main.EMSDeviceManager;
  */
 public class SettingListActivity extends BaseFragmentActivityActionBar {
 
+    public final static int CASE_ADMIN = 0, CASE_MANAGER = 1, CASE_GENERAL = 2;
+    private static int settingsType = 0;
+    private static FragmentManager supportFragmentManager;
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
      */
     private boolean mTwoPane;
     private boolean hasBeenCreated;
-    private static int settingsType = 0;
-    public final static int CASE_ADMIN = 0, CASE_MANAGER = 1, CASE_GENERAL = 2;
-    private static FragmentManager supportFragmentManager;
 
     public static void loadDefaultValues(Activity context) {
         PreferenceManager.setDefaultValues(context, R.xml.settings_admin_layout, false);
     }
-
-    public enum SettingSection {
-        GENERAL(0), RESTAURANT(1), GIFTCARD(2), PAYMENT_METHODS(3), PAYMENT_PROCESSING(4), PRINTING(5), PRODUCTS(6),
-        ACCOUNT(7), CASH_DRAWER(8), KIOSK(9), SHIFTS(10), SHIPPING_CALCULATION(11),
-        TRANSACTION(12), HANPOINT(13), SUPPORT(14), OTHERS(15);
-        int code;
-
-        SettingSection(int code) {
-            this.code = code;
-        }
-
-        public int getCode() {
-            return code;
-        }
-
-        public static SettingSection getInstance(int code) {
-            switch (code) {
-                case 0:
-                    return GENERAL;
-                case 1:
-                    return RESTAURANT;
-                case 2:
-                    return GIFTCARD;
-                case 3:
-                    return PAYMENT_METHODS;
-                case 4:
-                    return PAYMENT_PROCESSING;
-                case 5:
-                    return PRINTING;
-                case 6:
-                    return PRODUCTS;
-                case 7:
-                    return ACCOUNT;
-                case 8:
-                    return CASH_DRAWER;
-                case 9:
-                    return KIOSK;
-                case 10:
-                    return SHIFTS;
-                case 11:
-                    return SHIPPING_CALCULATION;
-                case 12:
-                    return TRANSACTION;
-                case 13:
-                    return HANPOINT;
-                case 14:
-                    return SUPPORT;
-                case 15:
-                    return OTHERS;
-                default:
-                    return GENERAL;
-            }
-        }
-    }
-
 
     @Override
     public void onResume() {
@@ -220,72 +166,59 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
 
     }
 
-    public class SimpleItemRecyclerViewAdapter
-            extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
+    public enum SettingSection {
+        GENERAL(0), RESTAURANT(1), GIFTCARD(2), PAYMENT_METHODS(3), PAYMENT_PROCESSING(4), PRINTING(5), PRODUCTS(6),
+        ACCOUNT(7), CASH_DRAWER(8), KIOSK(9), SHIFTS(10), SHIPPING_CALCULATION(11),
+        TRANSACTION(12), HANPOINT(13), SUPPORT(14), OTHERS(15);
+        int code;
 
-        private final List<String> mValues;
-
-        public SimpleItemRecyclerViewAdapter(List<String> items) {
-            mValues = items;
+        SettingSection(int code) {
+            this.code = code;
         }
 
-        @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.setting_list_content, parent, false);
-            return new ViewHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(final ViewHolder holder, final int position) {
-            holder.mItem = mValues.get(position);
-            holder.mIdView.setText(mValues.get(position));
-
-            holder.mView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mTwoPane) {
-                        PrefsFragment fragment = new PrefsFragment();
-                        Bundle args = new Bundle();
-                        args.putInt("section", SettingSection.getInstance(position).getCode());
-                        fragment.setArguments(args);
-                        getFragmentManager().beginTransaction()
-                                .replace(R.id.setting_detail_container, fragment)
-                                .commit();
-                    } else {
-                        Context context = v.getContext();
-                        Intent intent = new Intent(context, SettingDetailActivity.class);
-                        intent.putExtra("section", SettingSection.getInstance(position).getCode());
-
-                        context.startActivity(intent);
-                    }
-                }
-            });
-        }
-
-        @Override
-        public int getItemCount() {
-            return mValues.size();
-        }
-
-        public class ViewHolder extends RecyclerView.ViewHolder {
-            public final View mView;
-            public final TextView mIdView;
-            public String mItem;
-
-            public ViewHolder(View view) {
-                super(view);
-                mView = view;
-                mIdView = (TextView) view.findViewById(R.id.id);
+        public static SettingSection getInstance(int code) {
+            switch (code) {
+                case 0:
+                    return GENERAL;
+                case 1:
+                    return RESTAURANT;
+                case 2:
+                    return GIFTCARD;
+                case 3:
+                    return PAYMENT_METHODS;
+                case 4:
+                    return PAYMENT_PROCESSING;
+                case 5:
+                    return PRINTING;
+                case 6:
+                    return PRODUCTS;
+                case 7:
+                    return ACCOUNT;
+                case 8:
+                    return CASH_DRAWER;
+                case 9:
+                    return KIOSK;
+                case 10:
+                    return SHIFTS;
+                case 11:
+                    return SHIPPING_CALCULATION;
+                case 12:
+                    return TRANSACTION;
+                case 13:
+                    return HANPOINT;
+                case 14:
+                    return SUPPORT;
+                case 15:
+                    return OTHERS;
+                default:
+                    return GENERAL;
             }
+        }
 
-            @Override
-            public String toString() {
-                return super.toString();
-            }
+        public int getCode() {
+            return code;
         }
     }
-
 
     public static class PrefsFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener, HttpClient.DownloadFileCallBack {
         private Dialog promptDialog;
@@ -606,17 +539,17 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     break;
                 case R.string.config_attribute_to_display:
                     break;
-                case R.string.config_open_shift:
-                    if (myPref.getShiftIsOpen()) {
-                        intent = new Intent(getActivity(), OpenShift_FA.class);
-                        startActivityForResult(intent, 0);
-                    } else
-                        promptCloseShift(true, 0);
-                    break;
+//                case R.string.config_open_shift:
+//                    if (myPref.getShiftIsOpen()) {
+//                        intent = new Intent(getActivity(), OpenShift_FA.class);
+//                        startActivityForResult(intent, 0);
+//                    } else
+//                        promptCloseShift(true, 0);
+//                    break;
                 case R.string.config_expenses:
-                    String spID = myPref.getShiftID();
+                    Shift openShift = ShiftDAO.getOpenShift(Integer.parseInt(myPref.getClerkID()));
                     //if shift is open then show the expenses option
-                    if (spID.isEmpty()) {
+                    if (openShift == null) {
                         Toast.makeText(getActivity(), "A shift must be opened before an expense can be added!", Toast.LENGTH_LONG).show();
                     } else {
                         intent = new Intent(getActivity(), ShiftExpensesList_FA.class);
@@ -1171,7 +1104,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                                 Global.mainPrinterManager = edm.getManager();
                                 Global.mainPrinterManager.loadDrivers(getActivity(), Global.MIURA, false);
 
-                            }else if (val[pos].toUpperCase(Locale.getDefault()).contains("STAR")) {
+                            } else if (val[pos].toUpperCase(Locale.getDefault()).contains("STAR")) {
                                 myPref.setPrinterType(Global.STAR);
                                 myPref.setPrinterMACAddress("BT:" + macAddressList.get(pos));
                                 myPref.setPrinterName(strDeviceName);
@@ -1360,6 +1293,17 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
             Global.showPrompt(getActivity(), R.string.dlog_title_error, getString(R.string.check_update_fail));
         }
 
+        @Override
+        public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+            if (resultCode == 1) {
+                if (!myPref.getShiftIsOpen()) {
+                    CharSequence c = "\t\t" + getString(R.string.admin_close_shift) + " <" + myPref.getShiftClerkName() + ">";
+                    openShiftPref.setSummary(c);
+                }
+            }
+        }
+
         private class autoConnectPrinter extends AsyncTask<Void, Void, String> {
             private ProgressDialog progressDlog;
 
@@ -1386,16 +1330,71 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
             }
         }
 
-        @Override
-        public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    }
 
-            if (resultCode == 1) {
-                if (!myPref.getShiftIsOpen()) {
-                    CharSequence c = "\t\t" + getString(R.string.admin_close_shift) + " <" + myPref.getShiftClerkName() + ">";
-                    openShiftPref.setSummary(c);
-                }
-            }
+    public class SimpleItemRecyclerViewAdapter
+            extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
+
+        private final List<String> mValues;
+
+        public SimpleItemRecyclerViewAdapter(List<String> items) {
+            mValues = items;
         }
 
+        @Override
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.setting_list_content, parent, false);
+            return new ViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(final ViewHolder holder, final int position) {
+            holder.mItem = mValues.get(position);
+            holder.mIdView.setText(mValues.get(position));
+
+            holder.mView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mTwoPane) {
+                        PrefsFragment fragment = new PrefsFragment();
+                        Bundle args = new Bundle();
+                        args.putInt("section", SettingSection.getInstance(position).getCode());
+                        fragment.setArguments(args);
+                        getFragmentManager().beginTransaction()
+                                .replace(R.id.setting_detail_container, fragment)
+                                .commit();
+                    } else {
+                        Context context = v.getContext();
+                        Intent intent = new Intent(context, SettingDetailActivity.class);
+                        intent.putExtra("section", SettingSection.getInstance(position).getCode());
+
+                        context.startActivity(intent);
+                    }
+                }
+            });
+        }
+
+        @Override
+        public int getItemCount() {
+            return mValues.size();
+        }
+
+        public class ViewHolder extends RecyclerView.ViewHolder {
+            public final View mView;
+            public final TextView mIdView;
+            public String mItem;
+
+            public ViewHolder(View view) {
+                super(view);
+                mView = view;
+                mIdView = (TextView) view.findViewById(R.id.id);
+            }
+
+            @Override
+            public String toString() {
+                return super.toString();
+            }
+        }
     }
 }

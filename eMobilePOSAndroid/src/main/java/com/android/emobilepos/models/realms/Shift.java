@@ -1,5 +1,8 @@
 package com.android.emobilepos.models.realms;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import java.util.Date;
 import java.util.UUID;
 
@@ -14,81 +17,114 @@ import io.realm.annotations.PrimaryKey;
 
 public class Shift extends RealmObject {
 
-    public enum ShiftStatus {
-        OPEN(0), PENDING(1), CLOSED(2);
-
-        public int code;
-
-        ShiftStatus(int code) {
-            this.code = code;
-        }
-
-        public static ShiftStatus valueOf(int code) {
-            switch (code) {
-                case 0:
-                    return OPEN;
-                case 1:
-                    return PENDING;
-                case 2:
-                    return CLOSED;
-                default:
-                    return CLOSED;
-            }
-        }
-    }
-
+    @SerializedName("shift_id")
+    @Expose
     @PrimaryKey
-    private String shift_id;
+    private String shiftId;
+    @SerializedName("assignee_id")
+    @Expose
     @Index
-    private String assignee_id;
-    private String assignee_name;
+    private int assigneeId;
+    @SerializedName("assignee_name")
+    @Expose
+    private String assigneeName;
+    @SerializedName("creationDate")
+    @Expose
     private Date creationDate;
+    @SerializedName("creationDateLocal")
+    @Expose
     private Date creationDateLocal;
+    @SerializedName("startTime")
+    @Expose
     private Date startTime;
+    @SerializedName("startTimeLocal")
+    @Expose
     private Date startTimeLocal;
+    @SerializedName("endTime")
+    @Expose
     private Date endTime;
+    @SerializedName("endTimeLocal")
+    @Expose
     private Date endTimeLocal;
-    private String beginning_petty_cash = "0";
-    private String ending_petty_cash = "0";
-    private String entered_close_amount = "0";
-    private String total_transaction_cash = "0";
-    private String shift_issync = "0";
-    private String total_expenses = "0";
+    @SerializedName("beginning_petty_cash")
+    @Expose
+    private String beginningPettyCash = "0";
+    @SerializedName("total_expenses")
+    @Expose
+    private String totalExpenses = "0";
+    @SerializedName("ending_petty_cash")
+    @Expose
+    private String endingPettyCash = "0";
+    @SerializedName("ending_cash")
+    @Expose
+    private String endingCash;
+    @SerializedName("entered_close_amount")
+    @Expose
+    private String enteredCloseAmount = "0";
+    @SerializedName("total_transactions_cash")
+    @Expose
+    private String totalTransactionsCash = "0";
+    @SerializedName("emp_id")
+    @Expose
+    private int empId;
+    @SerializedName("Shift_status")
+    @Expose
+    @Index
+    private int shiftStatusCode;
+    @Expose(deserialize = false, serialize = false)
+
+
     private String total_ending_cash = "0";
     private String over_short = "0";
     private boolean sync;
     @Ignore
     private ShiftStatus shiftStatus;
-    @Index
-    private int shiftStatusCode;
-
     public Shift() {
-        shift_id = UUID.randomUUID().toString();
+        setShiftId(UUID.randomUUID().toString());
         setShiftStatus(ShiftStatus.CLOSED);
     }
 
-    public String getShift_id() {
-        return shift_id;
+    public ShiftStatus getShiftStatus() {
+        shiftStatus = ShiftStatus.valueOf(getShiftStatusCode());
+        return shiftStatus;
     }
 
-    public void setShift_id(String shift_id) {
-        this.shift_id = shift_id;
+    public void setShiftStatus(ShiftStatus shiftStatus) {
+        shiftStatusCode = shiftStatus.code;
+        this.shiftStatus = shiftStatus;
     }
 
-    public String getAssignee_id() {
-        return assignee_id;
+    public int getShiftStatusCode() {
+        return shiftStatusCode;
     }
 
-    public void setAssignee_id(String assignee_id) {
-        this.assignee_id = assignee_id;
+    public void setShiftStatusCode(int shiftStatusCode) {
+        shiftStatus = ShiftStatus.valueOf(shiftStatusCode);
+        this.shiftStatusCode = shiftStatusCode;
     }
 
-    public String getAssignee_name() {
-        return assignee_name;
+    public String getShiftId() {
+        return shiftId;
     }
 
-    public void setAssignee_name(String assignee_name) {
-        this.assignee_name = assignee_name;
+    public void setShiftId(String shiftId) {
+        this.shiftId = shiftId;
+    }
+
+    public int getAssigneeId() {
+        return assigneeId;
+    }
+
+    public void setAssigneeId(int assigneeId) {
+        this.assigneeId = assigneeId;
+    }
+
+    public String getAssigneeName() {
+        return assigneeName;
+    }
+
+    public void setAssigneeName(String assigneeName) {
+        this.assigneeName = assigneeName;
     }
 
     public Date getCreationDate() {
@@ -139,52 +175,60 @@ public class Shift extends RealmObject {
         this.endTimeLocal = endTimeLocal;
     }
 
-    public String getBeginning_petty_cash() {
-        return beginning_petty_cash;
+    public String getBeginningPettyCash() {
+        return beginningPettyCash;
     }
 
-    public void setBeginning_petty_cash(String beginning_petty_cash) {
-        this.beginning_petty_cash = beginning_petty_cash;
+    public void setBeginningPettyCash(String beginningPettyCash) {
+        this.beginningPettyCash = beginningPettyCash;
     }
 
-    public String getEnding_petty_cash() {
-        return ending_petty_cash;
+    public String getTotalExpenses() {
+        return totalExpenses;
     }
 
-    public void setEnding_petty_cash(String ending_petty_cash) {
-        this.ending_petty_cash = ending_petty_cash;
+    public void setTotalExpenses(String totalExpenses) {
+        this.totalExpenses = totalExpenses;
     }
 
-    public String getEntered_close_amount() {
-        return entered_close_amount;
+    public String getEndingPettyCash() {
+        return endingPettyCash;
     }
 
-    public void setEntered_close_amount(String entered_close_amount) {
-        this.entered_close_amount = entered_close_amount;
+    public void setEndingPettyCash(String endingPettyCash) {
+        this.endingPettyCash = endingPettyCash;
     }
 
-    public String getTotal_transaction_cash() {
-        return total_transaction_cash;
+    public String getEndingCash() {
+        return endingCash;
     }
 
-    public void setTotal_transaction_cash(String total_transaction_cash) {
-        this.total_transaction_cash = total_transaction_cash;
+    public void setEndingCash(String endingCash) {
+        this.endingCash = endingCash;
     }
 
-    public String getShift_issync() {
-        return shift_issync;
+    public String getEnteredCloseAmount() {
+        return enteredCloseAmount;
     }
 
-    public void setShift_issync(String shift_issync) {
-        this.shift_issync = shift_issync;
+    public void setEnteredCloseAmount(String enteredCloseAmount) {
+        this.enteredCloseAmount = enteredCloseAmount;
     }
 
-    public String getTotal_expenses() {
-        return total_expenses;
+    public String getTotalTransactionsCash() {
+        return totalTransactionsCash;
     }
 
-    public void setTotal_expenses(String total_expenses) {
-        this.total_expenses = total_expenses;
+    public void setTotalTransactionsCash(String totalTransactionsCash) {
+        this.totalTransactionsCash = totalTransactionsCash;
+    }
+
+    public int getEmpId() {
+        return empId;
+    }
+
+    public void setEmpId(int empId) {
+        this.empId = empId;
     }
 
     public String getTotal_ending_cash() {
@@ -203,30 +247,34 @@ public class Shift extends RealmObject {
         this.over_short = over_short;
     }
 
-    public ShiftStatus getShiftStatus() {
-        shiftStatus = ShiftStatus.valueOf(shiftStatusCode);
-        return shiftStatus;
-    }
-
-    public void setShiftStatus(ShiftStatus shiftStatus) {
-        shiftStatusCode = shiftStatus.code;
-        this.shiftStatus = shiftStatus;
-    }
-
-    public int getShiftStatusCode() {
-        return shiftStatusCode;
-    }
-
-    public void setShiftStatusCode(int shiftStatusCode) {
-        shiftStatus = ShiftStatus.valueOf(shiftStatusCode);
-        this.shiftStatusCode = shiftStatusCode;
-    }
-
     public boolean isSync() {
         return sync;
     }
 
     public void setSync(boolean sync) {
         this.sync = sync;
+    }
+
+    public enum ShiftStatus {
+        OPEN(0), PENDING(1), CLOSED(2);
+
+        public int code;
+
+        ShiftStatus(int code) {
+            this.code = code;
+        }
+
+        public static ShiftStatus valueOf(int code) {
+            switch (code) {
+                case 0:
+                    return OPEN;
+                case 1:
+                    return PENDING;
+                case 2:
+                    return CLOSED;
+                default:
+                    return CLOSED;
+            }
+        }
     }
 }

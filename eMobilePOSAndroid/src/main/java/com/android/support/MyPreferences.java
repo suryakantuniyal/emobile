@@ -21,15 +21,98 @@ import java.util.Set;
 import util.json.UIUtils;
 
 public class MyPreferences {
-    private SharedPreferences.Editor prefEditor;
-    private SharedPreferences prefs;
-    private Context context;
+    public static final String pref_restaurant_mode = "pref_restaurant_mode";
+    public static final String pref_enable_togo_eatin = "pref_enable_togo_eatin";
+    public static final String pref_require_waiter_signin = "pref_require_waiter_signin";
 //    private Global global;
-
+    public static final String pref_enable_table_selection = "pref_enable_table_selection";
+    public static final String pref_ask_seats = "pref_ask_seats";
+    public static final String pref_use_navigationbar = "pref_use_navigationbar";
+    public static final String pref_automatic_sync = "pref_automatic_sync";
+    public static final String pref_fast_scanning_mode = "pref_fast_scanning_mode";
+    public static final String pref_signature_required_mode = "pref_signature_required_mode";
+    public static final String pref_qr_code_reading = "pref_qr_code_reading";
+    public static final String pref_enable_multi_category = "pref_enable_multi_category";
+    public static final String pref_ask_order_comments = "pref_ask_order_comments";
+    public static final String pref_skip_email_phone = "pref_skip_email_phone";
+//    private final String zone_id = "zone_id";
+//    private final String VAT = "VAT";
+    public static final String pref_show_only_group_taxes = "pref_show_only_group_taxes";
+    public static final String pref_retail_taxes = "pref_retail_taxes";
+    public static final String pref_mix_match = "pref_mix_match";
+    public static final String pref_require_customer = "pref_require_customer";
+    public static final String pref_show_confirmation_screen = "pref_show_confirmation_screen";
+    public static final String pref_direct_customer_selection = "pref_direct_customer_selection";
+    public static final String pref_display_customer_account_number = "pref_display_customer_account_number";
+    public static final String pref_skip_want_add_more_products = "pref_skip_want_add_more_products";
+//    private final String MSLastTransferID = "MSLastTransferID";
+    public static final String pref_require_shift_transactions = "pref_require_shift_transactions";
+    public static final String pref_allow_customer_creation = "pref_allow_customer_creation";
+    public static final String pref_scope_bar_in_restaurant_mode = "pref_scope_bar_in_restaurant_mode";
+    public static final String pref_display_also_redeem = "pref_display_also_redeem";
+    public static final String pref_display_redeem_all = "pref_display_redeem_all";
+    public static final String pref_use_loyal_patron = "pref_use_loyal_patron";
+    public static final String pref_pay_with_tupyx = "pref_pay_with_tupyx";
+    public static final String pref_mw_with_genius = "pref_mw_with_genius";
+    public static final String pref_config_genius_peripheral = "pref_config_genius_peripheral";
+    public static final String pref_enable_location_inventory = "pref_enable_location_inventory";
+    public static final String pref_block_price_level_change = "pref_block_price_level_change";
+    public static final String pref_require_address = "pref_require_address";
+    public static final String pref_require_po = "pref_require_po";
+    public static final String pref_skip_manager_price_override = "pref_skip_manager_price_override";
+    public static final String pref_require_password_to_clockout = "pref_require_password_to_clockout";
+    public static final String pref_maps_inside_app = "pref_maps_inside_app";
+    public static final String pref_process_check_online = "pref_process_check_online";
+    public static final String pref_allow_manual_credit_card = "pref_allow_manual_credit_card";
+    public static final String pref_show_tips_for_cash = "pref_show_tips_for_cash";
+    public static final String pref_audio_card_reader = "pref_audio_card_reader";
+    public static final String pref_prefill_total_amount = "pref_prefill_total_amount";
+    public static final String pref_use_store_and_forward = "pref_use_store_and_forward";
+    public static final String pref_return_require_refund = "pref_return_require_refund";
+    public static final String pref_convert_to_reward = "pref_convert_to_reward";
+    public static final String pref_invoice_require_payment = "pref_invoice_require_payment";
+    public static final String pref_invoice_require_full_payment = "pref_invoice_require_full_payment";
+    public static final String pref_printek_info = "pref_printek_info";
+    public static final String pref_automatic_printing = "pref_automatic_printing";
+    public static final String pref_split_stationprint_by_categories = "pref_split_stationprint_by_categories";
+    public static final String pref_enable_printing = "pref_enable_printing";
+    public static final String pref_wholesale_printout = "pref_wholesale_printout";
+    public static final String pref_handwritten_signature = "pref_handwritten_signature";
+    public static final String pref_prompt_customer_copy = "pref_prompt_customer_copy";
+    public static final String pref_print_receipt_transaction_payment = "pref_print_receipt_transaction_payment";
+    public static final String pref_allow_decimal_quantities = "pref_allow_decimal_quantities";
+    public static final String pref_group_receipt_by_sku = "pref_group_receipt_by_sku";
+    public static final String pref_require_password_to_remove_void = "pref_require_password_to_remove_void";
+    public static final String pref_show_removed_void_items_in_printout = "pref_show_removed_void_items_in_printout";
+    public static final String pref_limit_products_on_hand = "pref_limit_products_on_hand";
+    public static final String pref_attribute_to_display = "pref_attribute_to_display";
+    public static final String pref_printer_width = "pref_printer_width";
+    public static final String pref_group_in_catalog_by_name = "pref_group_in_catalog_by_name";
+    public static final String pref_filter_products_by_customer = "pref_filter_products_by_customer";
+    public static final String pref_use_nexternal = "pref_use_nexternal";
+    public static final String pref_require_manager_pass_to_void_trans = "pref_require_manager_pass_to_void_trans";
+    public static final String pref_default_country = "pref_default_country";
+    public static final String pref_default_transaction = "pref_default_transaction";
+    public static final String pref_default_category = "pref_default_category";
+    public static final String pref_default_payment_method = "pref_default_payment_method";
+    public static final String print_header = "print_header";
+    public static final String print_shiptoinfo = "print_shiptoinfo";
+    public static final String print_terms = "print_terms";
+    public static final String print_customer_id = "print_customer_id";
+    public static final String print_order_comments = "print_order_comments";
+    public static final String print_addons = "print_addons";
+    public static final String print_tax_details = "print_tax_details";
+    public static final String print_discount_details = "print_discount_details";
+    public static final String print_descriptions = "print_descriptions";
+    public static final String print_prod_comments = "print_prod_comments";
+    public static final String print_sale_attributes = "print_sale_attributes";
+    public static final String print_payment_comments = "print_payment_comments";
+    public static final String print_footer = "print_footer";
+    public static final String print_terms_conditions = "print_terms_conditions";
+    public static final String print_emobilepos_website = "print_emobilepos_website";
+    public static final String print_ivuloto_qr = "print_ivuloto_qr";
+    private static final String pref_use_clerks = "pref_use_clerks";
     private final String MY_SHARED_PREF = "MY_SHARED_PREF";
-
-    public enum PrinterPreviewWidth {SMALL, MEDIUM, LARGE}
-
     private final String db_path = "db_path";
     //    private final String emp_id = "emp_id";
     private final String ActivationKey = "ActivationKey";
@@ -39,9 +122,6 @@ public class MyPreferences {
     private final String AccountNumber = "AccountNumber";
     private final String AccountPassword = "AccountPassword";
     private final String LoginPass = "LoginPass";
-//    private final String zone_id = "zone_id";
-//    private final String VAT = "VAT";
-
     //    private final String emp_name = "emp_name";
 //    private final String emp_lastlogin = "emp_lastlogin";
 //    private final String emp_pos = "emp_pos";
@@ -60,8 +140,6 @@ public class MyPreferences {
     private final String cust_pricelevel_id = "cust_pricelevel_id";
     private final String cust_email = "cust_email";
     private final String ConsTrans_ID = "ConsTrans_ID";
-//    private final String MSLastTransferID = "MSLastTransferID";
-
     // Settings from the 'Settings' app menu
     private final String fast_scanning = "fast_scanning";
     private final String signa_required = "signa_required";
@@ -72,119 +150,21 @@ public class MyPreferences {
     private final String block_pricelevel = "block_pricelevel";
     private final String require_addr = "require_addr";
     private final String admin_override = "admin_override";
-
     private final String is_tablet = "is_tablet";
     private final String bluebamboo_mac_address = "bluebamboo_mac_address";
-
     // Synch window
     private final String last_send_sync = "last_send_sync";
     private final String last_receive_sync = "last_receive_sync";
-
     // keys
     private final String rsa_priv_key = "rsa_priv_key";
     private final String rsa_pub_key = "rsa_pub_key";
     private final String aes_key = "aes_key";
     private final String aes_iv = "aes_iv";
-
-    public static final String pref_restaurant_mode = "pref_restaurant_mode";
-    public static final String pref_enable_togo_eatin = "pref_enable_togo_eatin";
-    public static final String pref_require_waiter_signin = "pref_require_waiter_signin";
-    public static final String pref_enable_table_selection = "pref_enable_table_selection";
-    public static final String pref_ask_seats = "pref_ask_seats";
-    public static final String pref_use_navigationbar = "pref_use_navigationbar";
-
-    public static final String pref_automatic_sync = "pref_automatic_sync";
-    public static final String pref_fast_scanning_mode = "pref_fast_scanning_mode";
-    public static final String pref_signature_required_mode = "pref_signature_required_mode";
-    public static final String pref_qr_code_reading = "pref_qr_code_reading";
-    public static final String pref_enable_multi_category = "pref_enable_multi_category";
-    public static final String pref_ask_order_comments = "pref_ask_order_comments";
-    public static final String pref_skip_email_phone = "pref_skip_email_phone";
-    public static final String pref_show_only_group_taxes = "pref_show_only_group_taxes";
-    public static final String pref_retail_taxes = "pref_retail_taxes";
-    public static final String pref_mix_match = "pref_mix_match";
-    public static final String pref_require_customer = "pref_require_customer";
-    public static final String pref_show_confirmation_screen = "pref_show_confirmation_screen";
-    public static final String pref_direct_customer_selection = "pref_direct_customer_selection";
-    public static final String pref_display_customer_account_number = "pref_display_customer_account_number";
-    public static final String pref_skip_want_add_more_products = "pref_skip_want_add_more_products";
-    public static final String pref_require_shift_transactions = "pref_require_shift_transactions";
-    public static final String pref_allow_customer_creation = "pref_allow_customer_creation";
-    public static final String pref_scope_bar_in_restaurant_mode = "pref_scope_bar_in_restaurant_mode";
-    public static final String pref_display_also_redeem = "pref_display_also_redeem";
-    public static final String pref_display_redeem_all = "pref_display_redeem_all";
-    public static final String pref_use_loyal_patron = "pref_use_loyal_patron";
-    public static final String pref_pay_with_tupyx = "pref_pay_with_tupyx";
-    public static final String pref_mw_with_genius = "pref_mw_with_genius";
-    public static final String pref_config_genius_peripheral = "pref_config_genius_peripheral";
-    private static final String pref_use_clerks = "pref_use_clerks";
-    public static final String pref_enable_location_inventory = "pref_enable_location_inventory";
-
-    public static final String pref_block_price_level_change = "pref_block_price_level_change";
-    public static final String pref_require_address = "pref_require_address";
-    public static final String pref_require_po = "pref_require_po";
-    public static final String pref_skip_manager_price_override = "pref_skip_manager_price_override";
-    public static final String pref_require_password_to_clockout = "pref_require_password_to_clockout";
-    public static final String pref_maps_inside_app = "pref_maps_inside_app";
-    public static final String pref_process_check_online = "pref_process_check_online";
-    public static final String pref_allow_manual_credit_card = "pref_allow_manual_credit_card";
-    public static final String pref_show_tips_for_cash = "pref_show_tips_for_cash";
-    public static final String pref_audio_card_reader = "pref_audio_card_reader";
-    public static final String pref_prefill_total_amount = "pref_prefill_total_amount";
-    public static final String pref_use_store_and_forward = "pref_use_store_and_forward";
-
-    public static final String pref_return_require_refund = "pref_return_require_refund";
-    public static final String pref_convert_to_reward = "pref_convert_to_reward";
-    public static final String pref_invoice_require_payment = "pref_invoice_require_payment";
-    public static final String pref_invoice_require_full_payment = "pref_invoice_require_full_payment";
-    public static final String pref_printek_info = "pref_printek_info";
-    public static final String pref_automatic_printing = "pref_automatic_printing";
-    public static final String pref_split_stationprint_by_categories = "pref_split_stationprint_by_categories";
-    public static final String pref_enable_printing = "pref_enable_printing";
-
-    public static final String pref_wholesale_printout = "pref_wholesale_printout";
-    public static final String pref_handwritten_signature = "pref_handwritten_signature";
-    public static final String pref_prompt_customer_copy = "pref_prompt_customer_copy";
-    public static final String pref_print_receipt_transaction_payment = "pref_print_receipt_transaction_payment";
-
-    public static final String pref_allow_decimal_quantities = "pref_allow_decimal_quantities";
-    public static final String pref_group_receipt_by_sku = "pref_group_receipt_by_sku";
-    public static final String pref_require_password_to_remove_void = "pref_require_password_to_remove_void";
-    public static final String pref_show_removed_void_items_in_printout = "pref_show_removed_void_items_in_printout";
-    public static final String pref_limit_products_on_hand = "pref_limit_products_on_hand";
-    public static final String pref_attribute_to_display = "pref_attribute_to_display";
-    public static final String pref_printer_width = "pref_printer_width";
-
-    public static final String pref_group_in_catalog_by_name = "pref_group_in_catalog_by_name";
-    public static final String pref_filter_products_by_customer = "pref_filter_products_by_customer";
-    public static final String pref_use_nexternal = "pref_use_nexternal";
-    public static final String pref_require_manager_pass_to_void_trans = "pref_require_manager_pass_to_void_trans";
-    public static final String pref_default_country = "pref_default_country";
-
-    public static final String pref_default_transaction = "pref_default_transaction";
-    public static final String pref_default_category = "pref_default_category";
-    public static final String pref_default_payment_method = "pref_default_payment_method";
-
-    public static final String print_header = "print_header";
-    public static final String print_shiptoinfo = "print_shiptoinfo";
-    public static final String print_terms = "print_terms";
-    public static final String print_customer_id = "print_customer_id";
-    public static final String print_order_comments = "print_order_comments";
-    public static final String print_addons = "print_addons";
-    public static final String print_tax_details = "print_tax_details";
-    public static final String print_discount_details = "print_discount_details";
-    public static final String print_descriptions = "print_descriptions";
-    public static final String print_prod_comments = "print_prod_comments";
-    public static final String print_sale_attributes = "print_sale_attributes";
-    public static final String print_payment_comments = "print_payment_comments";
-    public static final String print_footer = "print_footer";
-    public static final String print_terms_conditions = "print_terms_conditions";
-    public static final String print_emobilepos_website = "print_emobilepos_website";
-    public static final String print_ivuloto_qr = "print_ivuloto_qr";
-
+    private SharedPreferences.Editor prefEditor;
+    private SharedPreferences prefs;
+    private Context context;
     private SharedPreferences sharedPref;
     private String defaultUnitsName;
-
     public MyPreferences(Context context) {
         this.context = context;
         // prefEditor =
@@ -200,17 +180,12 @@ public class MyPreferences {
         // prefEditor.commit();
     }
 
-    public void setApplicationPassword(String pass) {
-        prefEditor.putString(ApplicationPassword, pass);
-        prefEditor.commit();
-    }
-
     public String getApplicationPassword() {
         return (prefs.getString(ApplicationPassword, ""));
     }
 
-    public void setAccountLogoPath(String path) {
-        prefEditor.putString("logo_path", path);
+    public void setApplicationPassword(String pass) {
+        prefEditor.putString(ApplicationPassword, pass);
         prefEditor.commit();
     }
 
@@ -218,8 +193,8 @@ public class MyPreferences {
         return (prefs.getString("logo_path", ""));
     }
 
-    public void setDBpath(String path) {
-        prefEditor.putString(db_path, path);
+    public void setAccountLogoPath(String path) {
+        prefEditor.putString("logo_path", path);
         prefEditor.commit();
     }
 
@@ -227,13 +202,18 @@ public class MyPreferences {
         return (prefs.getString(db_path, ""));
     }
 
-    public void setCacheDir(String path) {
-        prefEditor.putString("cache_dir", path);
+    public void setDBpath(String path) {
+        prefEditor.putString(db_path, path);
         prefEditor.commit();
     }
 
     public String getCacheDir() {
         return (prefs.getString("cache_dir", ""));
+    }
+
+    public void setCacheDir(String path) {
+        prefEditor.putString("cache_dir", path);
+        prefEditor.commit();
     }
 
     public String defaultCountryCode(boolean isGet, String val) {
@@ -258,6 +238,11 @@ public class MyPreferences {
         return "";
     }
 
+    public String getAcctNumber() {
+        // return "150255140221";
+        return (prefs.getString(AccountNumber, ""));
+    }
+
 //    public String getZoneID() {
 //        // return "1";
 //        return (prefs.getString(zone_id, ""));
@@ -279,9 +264,8 @@ public class MyPreferences {
         prefEditor.commit();
     }
 
-    public String getAcctNumber() {
-        // return "150255140221";
-        return (prefs.getString(AccountNumber, ""));
+    public String getActivKey() {
+        return (prefs.getString(ActivationKey, ""));
     }
 
     /* Set/Get Activation Key */
@@ -290,23 +274,13 @@ public class MyPreferences {
         prefEditor.commit();
     }
 
-    public String getActivKey() {
-        return (prefs.getString(ActivationKey, ""));
+    public String getDeviceID() {
+        return (prefs.getString(DeviceID, ""));
     }
 
     /* Set/Get Device ID */
     public void setDeviceID(String id) {
         prefEditor.putString(DeviceID, id);
-        prefEditor.commit();
-    }
-
-    public String getDeviceID() {
-        return (prefs.getString(DeviceID, ""));
-    }
-
-    /* Set/Get Bundle Version */
-    public void setBundleVersion(String version) {
-        prefEditor.putString(BundleVersion, version);
         prefEditor.commit();
     }
 
@@ -322,8 +296,9 @@ public class MyPreferences {
         return (version);
     }
 
-    public void setAcctPassword(String pass) {
-        prefEditor.putString(AccountPassword, pass);
+    /* Set/Get Bundle Version */
+    public void setBundleVersion(String version) {
+        prefEditor.putString(BundleVersion, version);
         prefEditor.commit();
     }
 
@@ -331,13 +306,22 @@ public class MyPreferences {
         return (prefs.getString("AccountPassword", ""));
     }
 
-    public void setLoginPass(String password) {
-        prefEditor.putString(LoginPass, "");
+    public void setAcctPassword(String pass) {
+        prefEditor.putString(AccountPassword, pass);
         prefEditor.commit();
     }
 
     public String getLoginPass() {
         return (prefs.getString(LoginPass, ""));
+    }
+
+    public void setLoginPass(String password) {
+        prefEditor.putString(LoginPass, "");
+        prefEditor.commit();
+    }
+
+    public String getLastPayID() {
+        return (prefs.getString(pay_id, ""));
     }
 
 //    public void setAllEmpData(List<String[]> emp_data) {
@@ -400,36 +384,14 @@ public class MyPreferences {
         prefEditor.commit();
     }
 
-    public String getLastPayID() {
-        return (prefs.getString(pay_id, ""));
+    public String getLastConsTransID() {
+        return (prefs.getString(ConsTrans_ID, ""));
     }
 
     public void setLastConsTransID(String id) {
         prefEditor.putString(ConsTrans_ID, getValidID(getLastConsTransID(), id));
         prefEditor.commit();
     }
-
-    public String getLastConsTransID() {
-        return (prefs.getString(ConsTrans_ID, ""));
-    }
-
-//    public void setLastTransferID(String id) {
-//        prefEditor.putString(MSLastTransferID, getValidID(getLastTransferID(), id));
-//        prefEditor.commit();
-//    }
-//
-//    public String getLastTransferID() {
-//        return (prefs.getString(MSLastTransferID, ""));
-//    }
-//
-//    public void setLastOrdID(String id) {
-//        prefEditor.putString(MSLastOrderID, getValidID(getLastOrdID(), id));
-//        prefEditor.commit();
-//    }
-
-//    public String getLastOrdID() {
-//        return (prefs.getString(MSLastOrderID, ""));
-//    }
 
     private String getValidID(String curr_id, String new_id) {
         if (new_id == null) {
@@ -463,6 +425,28 @@ public class MyPreferences {
         }
 
         return curr_id;
+    }
+
+//    public void setLastTransferID(String id) {
+//        prefEditor.putString(MSLastTransferID, getValidID(getLastTransferID(), id));
+//        prefEditor.commit();
+//    }
+//
+//    public String getLastTransferID() {
+//        return (prefs.getString(MSLastTransferID, ""));
+//    }
+//
+//    public void setLastOrdID(String id) {
+//        prefEditor.putString(MSLastOrderID, getValidID(getLastOrdID(), id));
+//        prefEditor.commit();
+//    }
+
+//    public String getLastOrdID() {
+//        return (prefs.getString(MSLastOrderID, ""));
+//    }
+
+    public boolean getLogIn() {
+        return prefs.getBoolean(isLoggedIn, false);
     }
 
     // private String getValidID(String curr_id, String new_id) {
@@ -516,8 +500,8 @@ public class MyPreferences {
         prefEditor.commit();
     }
 
-    public boolean getLogIn() {
-        return prefs.getBoolean(isLoggedIn, false);
+    public String getCustID() {
+        return prefs.getString(cust_id, "");
     }
 
     public void setCustID(String id) {
@@ -525,8 +509,8 @@ public class MyPreferences {
         prefEditor.commit();
     }
 
-    public String getCustID() {
-        return prefs.getString(cust_id, "");
+    public String getCustIDKey() {
+        return prefs.getString("custidkey", "");
     }
 
     public void setCustIDKey(String id) {
@@ -534,8 +518,8 @@ public class MyPreferences {
         prefEditor.commit();
     }
 
-    public String getCustIDKey() {
-        return prefs.getString("custidkey", "");
+    public boolean isCustSelected() {
+        return prefs.getBoolean(cust_selected, false);
     }
 
     public void setCustSelected(boolean val) {
@@ -543,22 +527,14 @@ public class MyPreferences {
         prefEditor.commit();
     }
 
-    public boolean isCustSelected() {
-        return prefs.getBoolean(cust_selected, false);
+    public String getCustName() {
+        return prefs.getString(cust_name, "");
     }
 
     public void setCustName(String name) {
         prefEditor.putString(cust_name, name);
         prefEditor.commit();
     }
-
-    public String getCustName() {
-        return prefs.getString(cust_name, "");
-    }
-
-//    public boolean getIsVAT() {
-//        return prefs.getBoolean(VAT, false);
-//    }
 
     public int getPrintPreviewLayoutWidth() {
         String width = sharedPref.getString(pref_printer_width, "MEDIUM");
@@ -575,10 +551,9 @@ public class MyPreferences {
         }
     }
 
-    public void setCustPriceLevel(String id) {
-        prefEditor.putString(cust_pricelevel_id, id);
-        prefEditor.commit();
-    }
+//    public boolean getIsVAT() {
+//        return prefs.getBoolean(VAT, false);
+//    }
 
     public boolean isMixAnMatch() {
         return getPreferences(pref_mix_match);
@@ -596,8 +571,8 @@ public class MyPreferences {
         return prefs.getString(cust_pricelevel_id, "");
     }
 
-    public void setCustTaxCode(String id) {
-        prefEditor.putString("cust_salestaxcode", id);
+    public void setCustPriceLevel(String id) {
+        prefEditor.putString(cust_pricelevel_id, id);
         prefEditor.commit();
     }
 
@@ -622,13 +597,18 @@ public class MyPreferences {
         return prefs.getString("cust_salestaxcode", null);
     }
 
-    public void setCustEmail(String value) {
-        prefEditor.putString(cust_email, value);
+    public void setCustTaxCode(String id) {
+        prefEditor.putString("cust_salestaxcode", id);
         prefEditor.commit();
     }
 
     public String getCustEmail() {
         return prefs.getString(cust_email, "");
+    }
+
+    public void setCustEmail(String value) {
+        prefEditor.putString(cust_email, value);
+        prefEditor.commit();
     }
 
     public void resetCustInfo(String value) {
@@ -704,6 +684,11 @@ public class MyPreferences {
         prefEditor.commit();
     }
 
+    public String getPrinterMACAddress() {
+        String printer_mac_address = "printer_mac_address";
+        return prefs.getString(printer_mac_address, "");
+    }
+
 //    public String swiperMACAddress(boolean isGet, String value) {
 //        String swiper_mac_address = "swiper_mac_address";
 //        if (isGet)
@@ -721,9 +706,15 @@ public class MyPreferences {
         prefEditor.commit();
     }
 
-    public String getPrinterMACAddress() {
-        String printer_mac_address = "printer_mac_address";
-        return prefs.getString(printer_mac_address, "");
+    public String sledMACAddress(boolean isGet, String value) {
+        String sled_mac_address = "sled_mac_address";
+        if (isGet)
+            return prefs.getString(sled_mac_address, "");
+        else {
+            prefEditor.putString(sled_mac_address, value);
+            prefEditor.commit();
+        }
+        return "";
     }
 
 //    public String printerMACAddress(boolean isGet, String value) {
@@ -737,17 +728,6 @@ public class MyPreferences {
 //        return "";
 //    }
 
-    public String sledMACAddress(boolean isGet, String value) {
-        String sled_mac_address = "sled_mac_address";
-        if (isGet)
-            return prefs.getString(sled_mac_address, "");
-        else {
-            prefEditor.putString(sled_mac_address, value);
-            prefEditor.commit();
-        }
-        return "";
-    }
-
     public int getSwiperType() {
         String swiper_type = "swiper_type";
         return prefs.getInt(swiper_type, -1);
@@ -758,16 +738,6 @@ public class MyPreferences {
         prefEditor.putInt(swiper_type, type);
         prefEditor.commit();
     }
-//    public int swiperType(boolean isGet, int value) {
-//        String swiper_type = "swiper_type";
-//        if (isGet)
-//            return prefs.getInt(swiper_type, -1);
-//        else {
-//            prefEditor.putInt(swiper_type, value);
-//            prefEditor.commit();
-//        }
-//        return -1;
-//    }
 
     public String cdtLine1(boolean get, String value) {
         String cdt_line1 = "cdt_line1";
@@ -779,6 +749,16 @@ public class MyPreferences {
         }
         return "Welcome to";
     }
+//    public int swiperType(boolean isGet, int value) {
+//        String swiper_type = "swiper_type";
+//        if (isGet)
+//            return prefs.getInt(swiper_type, -1);
+//        else {
+//            prefEditor.putInt(swiper_type, value);
+//            prefEditor.commit();
+//        }
+//        return -1;
+//    }
 
     public String cdtLine2(boolean get, String value) {
         String cdt_line2 = "cdt_line2";
@@ -802,22 +782,22 @@ public class MyPreferences {
         prefEditor.commit();
     }
 
+    public String getPrinterName() {
+        return prefs.getString("printer_name", "");
+    }
+
     public void setPrinterName(String value) {
         prefEditor.putString("printer_name", value);
         prefEditor.commit();
     }
 
-    public String getPrinterName() {
-        return prefs.getString("printer_name", "");
+    public String getSwiperName() {
+        return prefs.getString("swiper_name", "");
     }
 
     public void setSwiperName(String value) {
         prefEditor.putString("swiper_name", value);
         prefEditor.commit();
-    }
-
-    public String getSwiperName() {
-        return prefs.getString("swiper_name", "");
     }
 
     public int sledType(boolean isGet, int value) {
@@ -843,13 +823,6 @@ public class MyPreferences {
         prefEditor.commit();
     }
 
-	/*
-     * public void setIsMagtekReader(boolean val) {
-	 * prefEditor.putBoolean("isMagtekReader", val); prefEditor.commit(); }
-	 * public boolean getisMagtekReader() { return
-	 * prefs.getBoolean("isMagtekReader", false); }
-	 */
-
     public boolean isET1(boolean isGet, boolean value) {
         String device_et1 = "device_et1";
         if (isGet)
@@ -860,6 +833,13 @@ public class MyPreferences {
         }
         return false;
     }
+
+	/*
+     * public void setIsMagtekReader(boolean val) {
+	 * prefEditor.putBoolean("isMagtekReader", val); prefEditor.commit(); }
+	 * public boolean getisMagtekReader() { return
+	 * prefs.getBoolean("isMagtekReader", false); }
+	 */
 
     public boolean isMC40(boolean isGet, boolean value) {
         String device_mc40 = "device_mc40";
@@ -1037,17 +1017,12 @@ public class MyPreferences {
         prefEditor.commit();
     }
 
-    public void setStarIPAddress(String val) {
-        prefEditor.putString("star_ip_address", val);
-        prefEditor.commit();
-    }
-
     public String getStarIPAddress() {
         return prefs.getString("star_ip_address", "");
     }
 
-    public void setStarPort(String value) {
-        prefEditor.putString("star_port", value);
+    public void setStarIPAddress(String val) {
+        prefEditor.putString("star_ip_address", val);
         prefEditor.commit();
     }
 
@@ -1055,8 +1030,8 @@ public class MyPreferences {
         return prefs.getString("star_port", "9100");
     }
 
-    public void setIsTablet(boolean val) {
-        prefEditor.putBoolean(is_tablet, val);
+    public void setStarPort(String value) {
+        prefEditor.putString("star_port", value);
         prefEditor.commit();
     }
 
@@ -1064,8 +1039,8 @@ public class MyPreferences {
         return (prefs.getBoolean(is_tablet, false));
     }
 
-    public void setLastSendSync(String date) {
-        prefEditor.putString(last_send_sync, date);
+    public void setIsTablet(boolean val) {
+        prefEditor.putBoolean(is_tablet, val);
         prefEditor.commit();
     }
 
@@ -1073,13 +1048,23 @@ public class MyPreferences {
         return (prefs.getString(last_send_sync, "N/A"));
     }
 
-    public void setLastReceiveSync(String date) {
-        prefEditor.putString(last_receive_sync, date);
+    public void setLastSendSync(String date) {
+        prefEditor.putString(last_send_sync, date);
         prefEditor.commit();
     }
 
     public String getLastReceiveSync() {
         return (prefs.getString(last_receive_sync, "N/A"));
+    }
+
+    public void setLastReceiveSync(String date) {
+        prefEditor.putString(last_receive_sync, date);
+        prefEditor.commit();
+    }
+
+    public void updateMainMenuSettings(String keyVal, boolean isPicked) {
+        prefEditor.putBoolean(keyVal, isPicked);
+        prefEditor.commit();
     }
 
     // public void setMainMenuSettings(boolean[] values)
@@ -1096,24 +1081,8 @@ public class MyPreferences {
     // prefEditor.commit();
     // }
 
-    public void updateMainMenuSettings(String keyVal, boolean isPicked) {
-        prefEditor.putBoolean(keyVal, isPicked);
-        prefEditor.commit();
-    }
-
-    // public boolean[] getMainMenuSettings(){
-    // String[] mainMenuList = global.getSalesMainMenuList();
-    // int size = mainMenuList.length;
-    // boolean[] values = new boolean[size];
-    //
-    // for(int i = 0 ; i < size; i++)
-    // values[i] = prefs.getBoolean(mainMenuList[i], true);
-    //
-    // return values;
-    // }
-
     public boolean[] getMainMenuPreference() {
-        int NUM_OF_ITEMS = 16;
+        int NUM_OF_ITEMS = 17;
         boolean[] values = new boolean[NUM_OF_ITEMS];
         Set<String> selections = sharedPref.getStringSet("pref_configure_home_menu", null);
         if (selections != null && NUM_OF_ITEMS == selections.size()) {
@@ -1127,11 +1096,22 @@ public class MyPreferences {
             }
         } else
             values = new boolean[]{true, true, true, true, true, true, true, true, true, true, true, true, true,
-                    true, true, true};
+                    true, true, true, true};
 
         return values;
 
     }
+
+    // public boolean[] getMainMenuSettings(){
+    // String[] mainMenuList = global.getSalesMainMenuList();
+    // int size = mainMenuList.length;
+    // boolean[] values = new boolean[size];
+    //
+    // for(int i = 0 ; i < size; i++)
+    // values[i] = prefs.getBoolean(mainMenuList[i], true);
+    //
+    // return values;
+    // }
 
     public List<String> getPrintingPreferences() {
         Set<String> selections = sharedPref.getStringSet("pref_set_printing_preferences", null);
@@ -1139,18 +1119,12 @@ public class MyPreferences {
         return list;
     }
 
-    public void setPOSAdminPass(String pass) {
-        prefEditor.putString("posAdminPassword", pass);
-        prefEditor.commit();
-    }
-
     public String getPOSAdminPass() {
         return (prefs.getString("posAdminPassword", ""));
     }
 
-    public void setPosManagerPass(String value) {
-        String posManagerPassword = "posManagerPassword";
-        prefEditor.putString(posManagerPassword, value);
+    public void setPOSAdminPass(String pass) {
+        prefEditor.putString("posAdminPassword", pass);
         prefEditor.commit();
     }
 
@@ -1159,9 +1133,9 @@ public class MyPreferences {
         return prefs.getString(posManagerPassword, "");
     }
 
-    public void setStoredAndForward(boolean storeAndForward) {
-        String is_store_forward = "is_store_forward";
-        prefEditor.putBoolean(is_store_forward, storeAndForward);
+    public void setPosManagerPass(String value) {
+        String posManagerPassword = "posManagerPassword";
+        prefEditor.putString(posManagerPassword, value);
         prefEditor.commit();
     }
 
@@ -1174,8 +1148,18 @@ public class MyPreferences {
         return prefs.getBoolean(is_store_forward, false);
     }
 
+    public void setStoredAndForward(boolean storeAndForward) {
+        String is_store_forward = "is_store_forward";
+        prefEditor.putBoolean(is_store_forward, storeAndForward);
+        prefEditor.commit();
+    }
+
     public boolean isUseClerks() {
         return getPreferences(MyPreferences.pref_use_clerks);
+    }
+
+    public String getGeniusIP() {
+        return (prefs.getString("genius_ip", ""));
     }
 
     public void setGeniusIP(String ip) {
@@ -1183,8 +1167,8 @@ public class MyPreferences {
         prefEditor.commit();
     }
 
-    public String getGeniusIP() {
-        return (prefs.getString("genius_ip", ""));
+    public boolean getShiftIsOpen() {
+        return prefs.getBoolean("open_shift", true);
     }
 
     public void setShiftIsOpen(boolean value) {
@@ -1192,8 +1176,8 @@ public class MyPreferences {
         prefEditor.commit();
     }
 
-    public boolean getShiftIsOpen() {
-        return prefs.getBoolean("open_shift", true);
+    public String getShiftClerkName() {
+        return prefs.getString("shift_clerk_name", "");
     }
 
     public void setShiftClerkName(String value) {
@@ -1201,13 +1185,8 @@ public class MyPreferences {
         prefEditor.commit();
     }
 
-    public String getShiftClerkName() {
-        return prefs.getString("shift_clerk_name", "");
-    }
-
-    public void setShiftClerkID(String value) {
-        prefEditor.putString("shift_clerk_id", value);
-        prefEditor.commit();
+    public String getShiftID() {
+        return prefs.getString("shift_id", "");
     }
 
     public void setShiftID(String value) {
@@ -1215,17 +1194,17 @@ public class MyPreferences {
         prefEditor.commit();
     }
 
-    public String getShiftID() {
-        return prefs.getString("shift_id", "");
-    }
-
     public String getShiftClerkID() {
         return prefs.getString("shift_clerk_id", "");
     }
 
-    public void setClerkID(String value) {
-        prefEditor.putString("clerk_id", value);
+    public void setShiftClerkID(String value) {
+        prefEditor.putString("shift_clerk_id", value);
         prefEditor.commit();
+    }
+
+    public String getClerkName() {
+        return prefs.getString("clerk_name", "");
     }
 
     public void setClerkName(String value) {
@@ -1234,12 +1213,13 @@ public class MyPreferences {
 
     }
 
-    public String getClerkName() {
-        return prefs.getString("clerk_name", "");
-    }
-
     public String getClerkID() {
         return (prefs.getString("clerk_id", ""));
+    }
+
+    public void setClerkID(String value) {
+        prefEditor.putString("clerk_id", value);
+        prefEditor.commit();
     }
 
     public void deleteStoredEncryptionKeys() {
@@ -1276,6 +1256,13 @@ public class MyPreferences {
         return gobj;
     }
 
+    public GuardedObject getAESKey() {
+        Guard guard = new PropertyPermission("java.home", "read");
+        GuardedObject gobj = new GuardedObject(Base64.decode(prefs.getString(aes_key, ""), Base64.DEFAULT), guard);
+
+        return gobj;
+    }
+
     public void setAESKey(GuardedObject gobj) {
         try {
             prefEditor.putString(aes_key, (String) gobj.getObject()); // Stored
@@ -1294,9 +1281,9 @@ public class MyPreferences {
         }
     }
 
-    public GuardedObject getAESKey() {
+    public GuardedObject getAESIV() {
         Guard guard = new PropertyPermission("java.home", "read");
-        GuardedObject gobj = new GuardedObject(Base64.decode(prefs.getString(aes_key, ""), Base64.DEFAULT), guard);
+        GuardedObject gobj = new GuardedObject(Base64.decode(prefs.getString(aes_iv, ""), Base64.DEFAULT), guard);
 
         return gobj;
     }
@@ -1319,15 +1306,12 @@ public class MyPreferences {
         }
     }
 
-    public GuardedObject getAESIV() {
-        Guard guard = new PropertyPermission("java.home", "read");
-        GuardedObject gobj = new GuardedObject(Base64.decode(prefs.getString(aes_iv, ""), Base64.DEFAULT), guard);
-
-        return gobj;
-    }
-
     public boolean isPrintWebSiteFooterEnabled() {
         return getPrintingPreferences().contains("print_emobilepos_website");
+    }
+
+    public String getDefaultUnitsName() {
+        return prefs.getString("defaultUnitsName", "");
     }
 
     public void setDefaultUnitsName(String defaultUnitsName) {
@@ -1335,8 +1319,6 @@ public class MyPreferences {
         prefEditor.commit();
     }
 
-    public String getDefaultUnitsName() {
-        return prefs.getString("defaultUnitsName", "");
-    }
+    public enum PrinterPreviewWidth {SMALL, MEDIUM, LARGE}
 
 }

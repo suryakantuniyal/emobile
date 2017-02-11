@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -70,16 +71,17 @@ public class ShiftsActivity extends Activity implements View.OnClickListener, Te
     private TextView pettyCashLbl;
     private TextView pettyCash;
     private MyPreferences preferences;
-
+    Global global;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shifts);
         preferences = new MyPreferences(this);
+        global = (Global) this.getApplication();
         TextView clerkName = (TextView) findViewById(R.id.clerkNameShifttextView);
         clerkName.setText(preferences.getClerkName());
-        shift = ShiftDAO.getCurrentShift(preferences.getClerkID());
+        shift = ShiftDAO.getCurrentShift(Integer.parseInt(preferences.getClerkID()));
         totalAmountEditText = (TextView) findViewById(R.id.totalAmounteditText);
         openOnLbl = (TextView) findViewById(R.id.openOnLbltextView25);
         openOnDate = (TextView) findViewById(R.id.openOnDatetextView26);
@@ -183,7 +185,7 @@ public class ShiftsActivity extends Activity implements View.OnClickListener, Te
             pettyCash.setVisibility(View.VISIBLE);
             closeAmountLbl.setText(getString(R.string.entered_count_down_amount));
             openOnDate.setText(DateUtils.getDateAsString(shift.getCreationDate(), DateUtils.DATE_MMM_dd_yyyy_h_mm_a));
-            pettyCash.setText(Global.formatDoubleStrToCurrency(shift.getBeginning_petty_cash()));
+            pettyCash.setText(Global.formatDoubleStrToCurrency(shift.getBeginningPettyCash()));
         } else if (shift.getShiftStatus() == Shift.ShiftStatus.PENDING) {
             enableCurrencies(true);
             submitShiftbutton.setText(getString(R.string.shift_close_shift));
@@ -193,7 +195,7 @@ public class ShiftsActivity extends Activity implements View.OnClickListener, Te
             pettyCash.setVisibility(View.VISIBLE);
             closeAmountLbl.setText(getString(R.string.entered_close_amount));
             openOnDate.setText(DateUtils.getDateAsString(shift.getCreationDate(), DateUtils.DATE_MMM_dd_yyyy_h_mm_a));
-            pettyCash.setText(Global.formatDoubleStrToCurrency(shift.getBeginning_petty_cash()));
+            pettyCash.setText(Global.formatDoubleStrToCurrency(shift.getBeginningPettyCash()));
         }
 
     }
@@ -344,33 +346,34 @@ public class ShiftsActivity extends Activity implements View.OnClickListener, Te
 
     private void closeShift() {
         Date now = new Date();
-        shift.setEntered_close_amount(NumberUtils.cleanCurrencyFormatedNumber(totalAmountEditText.getText().toString()));
+        shift.setEnteredCloseAmount(NumberUtils.cleanCurrencyFormatedNumber(totalAmountEditText.getText().toString()));
         shift.setEndTime(now);
         shift.setEndTimeLocal(now);
         shift.setShiftStatus(Shift.ShiftStatus.CLOSED);
         ShiftDAO.insertOrUpdate(shift);
-        new CloseShiftTask().execute();
+        new SendShiftTask().execute();
     }
 
     private void startCountDownShift() {
         shift.setShiftStatus(Shift.ShiftStatus.PENDING);
         ShiftDAO.insertOrUpdate(shift);
         setShiftUI();
+        new SendShiftTask().execute();
     }
 
     private void openShift() {
         Date now = new Date();
         shift = new Shift();
         shift.setShiftStatus(Shift.ShiftStatus.OPEN);
-        shift.setAssignee_id(preferences.getClerkID());
-        shift.setAssignee_name(preferences.getClerkName());
-        shift.setBeginning_petty_cash(NumberUtils.cleanCurrencyFormatedNumber(totalAmountEditText.getText().toString()));
+        shift.setAssigneeId(Integer.parseInt(preferences.getClerkID()));
+        shift.setAssigneeName(preferences.getClerkName());
+        shift.setBeginningPettyCash(NumberUtils.cleanCurrencyFormatedNumber(totalAmountEditText.getText().toString()));
         shift.setCreationDate(now);
         shift.setStartTime(now);
         shift.setStartTimeLocal(now);
 
         //set the ending petty cash equal to the beginning petty cash, decrease the ending petty cash every time there is an expense
-        shift.setEnding_petty_cash(totalAmountEditText.getText().toString());
+        shift.setEndingPettyCash(totalAmountEditText.getText().toString());
         shift.setTotal_ending_cash("0");
         ShiftDAO.insertOrUpdate(shift);
         finish();
@@ -391,6 +394,31 @@ public class ShiftsActivity extends Activity implements View.OnClickListener, Te
         fiftyDollarTextView.setText(Global.getCurrencyFormat(String.valueOf(fiftyDollars * 50)));
         hundredDollarTextView.setText(Global.getCurrencyFormat(String.valueOf(hundredDollars * 100)));
         totalAmountEditText.setText(Global.getCurrencyFormat(total.toString()));
+    }
+
+    @Override
+    public void onResume() {
+
+        if (global.isApplicationSentToBackground(this))
+            global.loggedIn = false;
+        global.stopActivityTransitionTimer();
+
+        if (!global.loggedIn) {
+            if (global.getGlobalDlog() != null)
+                global.getGlobalDlog().dismiss();
+            global.promptForMandatoryLogin(this);
+        }
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+        boolean isScreenOn = powerManager.isScreenOn();
+        if (!isScreenOn)
+            global.loggedIn = false;
+        global.startActivityTransitionTimer();
     }
 
     @Override
@@ -433,7 +461,7 @@ public class ShiftsActivity extends Activity implements View.OnClickListener, Te
         recalculate();
     }
 
-    private class CloseShiftTask extends AsyncTask<Void, Void, Boolean> {
+    private class SendShiftTask extends AsyncTask<Void, Void, Boolean> {
         ProgressDialog dialog;
 
         @Override

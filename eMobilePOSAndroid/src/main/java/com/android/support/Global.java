@@ -165,7 +165,7 @@ public class Global extends MultiDexApplication {
     public enum TransactionType {
         SALE_RECEIPT(0), ORDERS(1), RETURN(2), INVOICE(3), ESTIMATE(4),
         PAYMENT(5), GIFT_CARD(6), LOYALTY_CARD(7), REWARD_CARD(8), REFUND(9),
-        ROUTE(10), ON_HOLD(11), CONSIGNMENT(12), LOCATION(13), TIP_ADJUSTMENT(14), SHIFTS(15);
+        ROUTE(10), ON_HOLD(11), CONSIGNMENT(12), LOCATION(13), TIP_ADJUSTMENT(14), SHIFTS(15),SHIFT_EXPENSES(16);
         private int code;
 
         TransactionType(int code) {
@@ -210,6 +210,8 @@ public class Global extends MultiDexApplication {
                     return TIP_ADJUSTMENT;
                 case 15:
                     return SHIFTS;
+                case 16:
+                    return SHIFT_EXPENSES;
                 default:
                     return null;
             }
@@ -1079,7 +1081,7 @@ public class Global extends MultiDexApplication {
         result.put("GetLocations", "getXMLLocations.aspx");
         result.put("GetLocationsInventory", "getXMLLocationsInventory.aspx");
         result.put("OrderAttributes", "getXMLOrdersAttributeList.ashx");
-        result.put("Shifts", "getXMLShifts.ashx");
+        result.put("Shifts", "getXMLShift.ashx");
 
         return Collections.unmodifiableMap(result);
     }
