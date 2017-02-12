@@ -8,21 +8,13 @@
 
     <RelativeLayout
         android:id="@+id/header_bar"
-        android:layout_width="0dp"
+        android:layout_width="1264dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginStart="8dp"
         android:background="@drawable/blue_gradient_header_horizontal"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_constraintLeft_creator="1"
-        tools:layout_constraintRight_creator="1"
-        tools:layout_constraintTop_creator="1">
+        tools:layout_editor_absoluteY="0dp"
+        tools:layout_editor_absoluteX="8dp">
 
         <TextView
             android:id="@+id/add_main_title"
@@ -37,89 +29,128 @@
     </RelativeLayout>
 
     <LinearLayout
-        android:layout_width="0dp"
+        android:orientation="vertical"
+        android:layout_width="1264dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        app:layout_constraintLeft_toLeftOf="@+id/header_bar"
-        app:layout_constraintRight_toRightOf="@+id/header_bar"
         app:layout_constraintTop_toBottomOf="@+id/header_bar"
-        android:background="@drawable/light_grey_background">
+        app:layout_constraintLeft_toLeftOf="@+id/header_bar"
+        app:layout_constraintRight_toRightOf="@+id/header_bar">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp"
+            app:layout_constraintLeft_toLeftOf="@+id/header_bar"
+            app:layout_constraintRight_toRightOf="@+id/header_bar"
+            app:layout_constraintTop_toBottomOf="@+id/header_bar"
+            android:background="@drawable/light_grey_background">
+
+
+            <TextView
+                android:id="@+id/textExpense"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center|left"
+                android:layout_weight="1"
+                android:paddingRight="10dp"
+                android:text="@string/shift_expense"
+                android:textAppearance="@style/black_text_appearance_unbold"
+                android:textSize="@dimen/list_view_general_txt_size"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp" />
+
+            <Spinner
+                android:id="@+id/expenseSpinner"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp" />
+
+
+            <TextView
+                android:id="@+id/textCashAmount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingRight="10dp"
+                android:text="@string/cash_amount"
+                android:textAppearance="@style/black_text_appearance_unbold"
+                android:textSize="@dimen/list_view_general_txt_size"
+                android:gravity="right|center_horizontal"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp" />
+
+            <com.android.support.MyEditText
+                android:id="@+id/cashAmount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="1"
+                android:digits="0123456789"
+                android:ellipsize="start"
+                android:enabled="true"
+                android:imeOptions="flagNoExtractUi|actionNext"
+                android:inputType="numberDecimal"
+                android:singleLine="true"
+                android:text="@string/amount_zero_lbl"
+                android:textAppearance="@style/black_text_appearance_unbold"
+                android:textColor="#000000"
+                android:textSize="@dimen/field_general_txt_size"
+                android:layout_marginRight="10dp"></com.android.support.MyEditText>
+
+            <Button
+                android:id="@+id/buttonSubmit"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/ordering_checkout_btn_height_size"
+                android:layout_gravity="center"
+                android:layout_margin="5dp"
+                android:background="@drawable/blue_btn_selector"
+                android:paddingLeft="5dp"
+                android:paddingRight="14dp"
+                android:text="@string/button_submit"
+                android:textAppearance="@style/black_text_appearance"
+                android:textSize="@dimen/ordering_checkout_btn_txt_size"
+                android:layout_marginStart="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp" />
+
+            <Button
+                android:id="@+id/buttonCancel"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/ordering_checkout_btn_height_size"
+                android:layout_gravity="center"
+                android:layout_margin="5dp"
+                android:background="@drawable/blue_btn_selector"
+                android:paddingLeft="5dp"
+                android:paddingRight="14dp"
+                android:text="@string/button_cancel"
+                android:textAppearance="@style/black_text_appearance"
+                android:textSize="@dimen/ordering_checkout_btn_txt_size"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp" />
+
+        </LinearLayout>
 
         <TextView
-            android:id="@+id/textExpense"
-            android:layout_width="0dp"
+            android:text="@string/comments"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center|left"
-            android:layout_weight="1"
-            android:paddingRight="10dp"
-            android:text="@string/shift_expense"
-            android:textAppearance="@style/black_text_appearance_unbold"
-            android:textSize="@dimen/list_view_general_txt_size" />
+            android:id="@+id/textView21"
+            android:textSize="@dimen/list_view_general_txt_size"
+            style="@style/black_text_appearance"
+            android:layout_marginLeft="10dp"
+            android:padding="10dp" />
 
-        <Spinner
-            android:id="@+id/expenseSpinner"
-            android:layout_width="0dp"
+        <EditText
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
-
-
-        <TextView
-            android:id="@+id/textCashAmount"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center|left"
-            android:layout_weight="1"
-            android:paddingRight="10dp"
-            android:text="@string/cash_amount"
-            android:textAppearance="@style/black_text_appearance_unbold"
-            android:textSize="@dimen/list_view_general_txt_size" />
-
-        <com.android.support.MyEditText
-            android:id="@+id/cashAmount"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="3dp"
-            android:layout_weight="1"
-            android:digits="0123456789"
-            android:ellipsize="start"
-            android:enabled="true"
-            android:imeOptions="flagNoExtractUi|actionNext"
-            android:inputType="numberDecimal"
-            android:singleLine="true"
-            android:text="@string/amount_zero_lbl"
-            android:textAppearance="@style/black_text_appearance_unbold"
-            android:textColor="#000000"
-            android:textSize="@dimen/field_general_txt_size"></com.android.support.MyEditText>
-
-        <Button
-            android:id="@+id/buttonSubmit"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/ordering_checkout_btn_height_size"
-            android:layout_gravity="center"
-            android:layout_margin="5dp"
-            android:layout_weight="1"
-            android:background="@drawable/blue_btn_selector"
-            android:paddingLeft="5dp"
-            android:paddingRight="14dp"
-            android:text="@string/button_submit"
-            android:textAppearance="@style/black_text_appearance"
-            android:textSize="@dimen/ordering_checkout_btn_txt_size" />
-
-        <Button
-            android:id="@+id/buttonCancel"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/ordering_checkout_btn_height_size"
-            android:layout_gravity="center"
-            android:layout_margin="5dp"
-            android:layout_weight="1"
-            android:background="@drawable/blue_btn_selector"
-            android:paddingLeft="5dp"
-            android:paddingRight="14dp"
-            android:text="@string/button_cancel"
-            android:textAppearance="@style/black_text_appearance"
-            android:textSize="@dimen/ordering_checkout_btn_txt_size" />
-
+            android:inputType="textMultiLine"
+            android:ems="10"
+            android:id="@+id/expenseCommentseditText"
+            android:lines="3"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp" />
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

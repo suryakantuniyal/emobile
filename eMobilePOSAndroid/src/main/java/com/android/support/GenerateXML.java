@@ -7,6 +7,7 @@ import android.util.Xml;
 
 import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.ShiftDAO;
+import com.android.dao.ShiftExpensesDAO;
 import com.android.database.AddressHandler;
 import com.android.database.ConsignmentTransactionHandler;
 import com.android.database.CustomerInventoryHandler;
@@ -17,7 +18,6 @@ import com.android.database.OrderProductsAttr_DB;
 import com.android.database.OrderProductsHandler;
 import com.android.database.OrdersHandler;
 import com.android.database.PaymentsHandler;
-import com.android.database.ShiftExpensesDBHandler;
 import com.android.database.TemplateHandler;
 import com.android.database.TimeClockHandler;
 import com.android.database.TransferInventory_DB;
@@ -29,6 +29,7 @@ import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.OrderAttributes;
 import com.android.emobilepos.models.realms.Shift;
+import com.android.emobilepos.models.realms.ShiftExpense;
 import com.android.emobilepos.shifts.ClockInOut_FA;
 
 import org.xmlpull.v1.XmlSerializer;
@@ -48,11 +49,11 @@ import util.StringUtil;
 public class GenerateXML {
 
     public static final String UTF_8 = "utf-8";
+    private static String empstr = "";
     private final AssignEmployee assignEmployee;
     private MyPreferences info;
     private StringBuilder ending = new StringBuilder();
     private Context thisActivity;
-    private static String empstr = "";
     private MyPreferences myPref;
 
     public GenerateXML(Context activity) {
@@ -97,6 +98,24 @@ public class GenerateXML {
             }
 
         }
+    }
+
+    public static XmlSerializer getXmlSerializer() {
+        XmlSerializer serializer = Xml.newSerializer();
+        StringWriter writer = new StringWriter();
+        try {
+            serializer.setOutput(writer);
+            serializer.startDocument("UTF-8", true);
+            serializer.startTag(empstr, "ASXML");
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return serializer;
     }
 
     public String getAuth() {
@@ -310,7 +329,6 @@ public class GenerateXML {
 
         return (sb.toString());
     }
-
 
     public String downloadAll(String key) {
         String value = Global.xmlActions.get(key);
@@ -1963,24 +1981,6 @@ public class GenerateXML {
         c.close();
     }
 
-    public static XmlSerializer getXmlSerializer() {
-        XmlSerializer serializer = Xml.newSerializer();
-        StringWriter writer = new StringWriter();
-        try {
-            serializer.setOutput(writer);
-            serializer.startDocument("UTF-8", true);
-            serializer.startTag(empstr, "ASXML");
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (IllegalStateException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return serializer;
-    }
-
     public String synchShift() {
         XmlSerializer serializer = Xml.newSerializer();
         StringWriter writer = new StringWriter();
@@ -2009,15 +2009,17 @@ public class GenerateXML {
         Date dExpenseDateCreated;
         String sExpenseDateCreated;
         String shiftID;
-        ShiftExpensesDBHandler shiftExpensesDBHandler;
-        shiftExpensesDBHandler = new ShiftExpensesDBHandler(thisActivity);
-        Cursor expensesByShift;
+//        ShiftExpensesDBHandler shiftExpensesDBHandler;
+//        shiftExpensesDBHandler = new ShiftExpensesDBHandler(thisActivity);
+//        Cursor expensesByShift;
 //        ShiftPeriodsDBHandler handler = new ShiftPeriodsDBHandler(thisActivity);
 //        Cursor c = handler.getUnsyncShifts();
 //        c.moveToFirst();
 //        int size = c.getCount();
+
         for (Shift s : shifts) {
             try {
+                List<ShiftExpense> shiftExpenses = ShiftExpensesDAO.getShiftExpenses(s.getShiftId());
                 shiftID = s.getShiftId(); //c.getString(c.getColumnIndex("shift_id"));
 
                 serializer.startTag(empstr, "shift");
@@ -2082,44 +2084,52 @@ public class GenerateXML {
 
 
                 //get cursor with expenses for this shift
-                expensesByShift = shiftExpensesDBHandler.getShiftExpenses(shiftID);
+//                expensesByShift = shiftExpensesDBHandler.getShiftExpenses(shiftID);
 
                 serializer.startTag(empstr, "Expenses");
-
-                while (!expensesByShift.isAfterLast()) {
+                for (ShiftExpense expense : shiftExpenses) {
+//
+//                }
+//                while (!expensesByShift.isAfterLast()) {
                     serializer.startTag(empstr, "Expense");
 
                     serializer.startTag(empstr, "expense_id");
-                    serializer.text(expensesByShift.getString(expensesByShift.getColumnIndex("_id")));
+                    serializer.text(expense.getExpenseId());//expensesByShift.getString(expensesByShift.getColumnIndex("_id")));
                     serializer.endTag(empstr, "expense_id");
 
                     serializer.startTag(empstr, "shift_id");
-                    serializer.text(expensesByShift.getString(expensesByShift.getColumnIndex("shiftPeriodID")));
+                    serializer.text(expense.getShiftId());//expensesByShift.getString(expensesByShift.getColumnIndex("shiftPeriodID")));
                     serializer.endTag(empstr, "shift_id");
 
                     serializer.startTag(empstr, "creationDate");
                     //the expenseID is the number of milliseconds from 1970
                     //use it to find when the expense was created
-                    lExpenseDateCreated = Long.valueOf(expensesByShift.getString(expensesByShift.getColumnIndex("_id")));
-                    dExpenseDateCreated = new Date(lExpenseDateCreated);
-                    sExpenseDateCreated = dExpenseDateCreated.toLocaleString();
-                    serializer.text(sExpenseDateCreated);
+//                    lExpenseDateCreated = Long.valueOf(expensesByShift.getString(expensesByShift.getColumnIndex("_id")));
+//                    dExpenseDateCreated = new Date(lExpenseDateCreated);
+//                    sExpenseDateCreated = dExpenseDateCreated.toLocaleString();
+                    serializer.text(DateUtils.getDateAsString(expense.getCreationDate()));
                     serializer.endTag(empstr, "creationDate");
 
 
                     serializer.startTag(empstr, "cash_amount");
-                    serializer.text(expensesByShift.getString(expensesByShift.getColumnIndex("cashAmount")));
+                    serializer.text(expense.getCashAmount());//expensesByShift.getString(expensesByShift.getColumnIndex("cashAmount")));
                     serializer.endTag(empstr, "cash_amount");
 
 
                     serializer.startTag(empstr, "product_id");
-                    serializer.text(expensesByShift.getString(expensesByShift.getColumnIndex("productID")));
+                    serializer.text(String.valueOf(expense.getProductId()));//expensesByShift.getString(expensesByShift.getColumnIndex("productID")));
                     serializer.endTag(empstr, "product_id");
+                    serializer.startTag(empstr, "product_option");
+                    serializer.text(String.valueOf(expense.getProductOption()));//expensesByShift.getString(expensesByShift.getColumnIndex("productID")));
+                    serializer.endTag(empstr, "product_option");
+                    serializer.startTag(empstr, "product_desc");
+                    serializer.text(String.valueOf(expense.getProductDescription()));//expensesByShift.getString(expensesByShift.getColumnIndex("productID")));
+                    serializer.endTag(empstr, "product_desc");
 
 
                     serializer.endTag(empstr, "Expense");
 
-                    expensesByShift.moveToNext();
+//                    expensesByShift.moveToNext();
                 }
                 serializer.endTag(empstr, "Expenses");
                 serializer.endTag(empstr, "shift");

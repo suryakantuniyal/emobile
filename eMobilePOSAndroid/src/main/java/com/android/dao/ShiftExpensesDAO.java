@@ -1,5 +1,6 @@
 package com.android.dao;
 
+import com.android.emobilepos.models.realms.Shift;
 import com.android.emobilepos.models.realms.ShiftExpense;
 
 import java.util.List;
@@ -17,6 +18,8 @@ public class ShiftExpensesDAO {
         Realm r = Realm.getDefaultInstance();
         try {
             r.beginTransaction();
+            Shift shift = r.where(Shift.class).equalTo("shiftId", expense.getShiftId()).findFirst();
+            shift.setSync(false);
             r.insertOrUpdate(expense);
         } finally {
             r.commitTransaction();

@@ -26,6 +26,7 @@ public class ShiftDAO {
         }
         return null;
     }
+
     public static Shift getOpenShift(int clerkId) {
         Realm r = Realm.getDefaultInstance();
         Shift shift = r.where(Shift.class)
@@ -34,14 +35,16 @@ public class ShiftDAO {
                 .findFirst();
         if (shift != null) {
             return r.copyFromRealm(shift);
-        }else {
+        } else {
             return null;
         }
     }
+
     public static void insertOrUpdate(Shift shift) {
         Realm r = Realm.getDefaultInstance();
         try {
             r.beginTransaction();
+            shift.setSync(false);
             r.insertOrUpdate(shift);
         } finally {
             r.commitTransaction();
@@ -65,6 +68,9 @@ public class ShiftDAO {
     public static void insertOrUpdate(List<Shift> shifts) {
         Realm r = Realm.getDefaultInstance();
         try {
+            for (Shift s : shifts) {
+                s.setSync(false);
+            }
             r.beginTransaction();
             r.insertOrUpdate(shifts);
         } finally {

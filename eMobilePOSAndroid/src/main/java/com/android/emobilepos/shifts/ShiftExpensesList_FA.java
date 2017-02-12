@@ -31,6 +31,7 @@ public class ShiftExpensesList_FA extends BaseFragmentActivityActionBar implemen
     private ListView lView;
     //    private Global global;
     private List<ShiftExpense> expenses;
+    private Shift openShift;
 
 
     @Override
@@ -49,7 +50,7 @@ public class ShiftExpensesList_FA extends BaseFragmentActivityActionBar implemen
 //        expensesByShift = shiftExpensesDBHandler.getShiftExpenses(spID);
         //bing expenses to list view
 //        adapter = new CustomCursorAdapter(activity, expensesByShift, CursorAdapter.NO_SELECTION);
-        Shift openShift = ShiftDAO.getOpenShift(Integer.parseInt(myPref.getClerkID()));
+        openShift = ShiftDAO.getOpenShift(Integer.parseInt(myPref.getClerkID()));
         expenses = ShiftExpensesDAO.getShiftExpenses(openShift.getShiftId());
         adapter = new ShiftExpensesListAdapter(this, R.layout.shift_expenses_lvadapter, expenses);
         lView.setAdapter(adapter);
@@ -63,8 +64,11 @@ public class ShiftExpensesList_FA extends BaseFragmentActivityActionBar implemen
         //get cursor with expenses for this shift
 //        expensesByShift = shiftExpensesDBHandler.getShiftExpenses(spID);
         //bing expenses to list view
-        adapter = new ShiftExpensesListAdapter(this, R.layout.shift_expenses_lvadapter, expenses);
-        lView.setAdapter(adapter);
+        expenses.clear();
+        expenses.addAll(ShiftExpensesDAO.getShiftExpenses(openShift.getShiftId()));
+        adapter.notifyDataSetChanged();
+//        adapter = new ShiftExpensesListAdapter(this, R.layout.shift_expenses_lvadapter, expenses);
+//        lView.setAdapter(adapter);
     }
 
 

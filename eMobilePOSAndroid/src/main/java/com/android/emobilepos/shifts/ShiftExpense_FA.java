@@ -40,8 +40,7 @@ public class ShiftExpense_FA extends BaseFragmentActivityActionBar implements Vi
     private Intent intent;
     private ProductsHandler productExpenses;
     private String[] theSpinnerNames;
-    private int[] theSpinnerValues;
-    private int expenseProductIDSelected = 0;
+    private int expenseProductIDSelected = 1;
     private String expenseName = "";
     AdapterView.OnItemSelectedListener onItemSelectedListenerSpinner =
             new AdapterView.OnItemSelectedListener() {
@@ -54,7 +53,7 @@ public class ShiftExpense_FA extends BaseFragmentActivityActionBar implements Vi
 
                     //textViewSelected =(TextView)findViewById(R.id.textViewSelected);
                     //map the selected name and find the product ID value from the array
-                    expenseProductIDSelected = theSpinnerValues[position];
+                    expenseProductIDSelected = position+1;
                     //textViewSelected.setText("Product id selected: " + expenseProductIDSelected);
                 }
 
@@ -62,8 +61,7 @@ public class ShiftExpense_FA extends BaseFragmentActivityActionBar implements Vi
                 public void onNothingSelected(AdapterView<?> parent) {
                 }
             };
-    private EditText cashAmount;
-    private NumberUtils numberUtils = new NumberUtils();
+    private EditText cashAmount, comments;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -71,6 +69,8 @@ public class ShiftExpense_FA extends BaseFragmentActivityActionBar implements Vi
         setContentView(R.layout.shift_add_expense);
         activity = this;
         cashAmount = (EditText) findViewById(R.id.cashAmount);
+        comments = (EditText) findViewById(R.id.expenseCommentseditText);
+
         Button btnCancel = (Button) findViewById(R.id.buttonCancel);
         btnCancel.setOnClickListener(this);
         Button btnSubmit = (Button) findViewById(R.id.buttonSubmit);
@@ -80,11 +80,8 @@ public class ShiftExpense_FA extends BaseFragmentActivityActionBar implements Vi
 //        productExpensesCursor.moveToFirst();
         theSpinnerNames = getResources().getStringArray(R.array.expenseTypes);
         //new String[productExpensesCursor.getCount()];
-        theSpinnerValues = new int[theSpinnerNames.length];
         int i = 0;
-        for (String str : theSpinnerNames) {
-            theSpinnerValues[i] = i + 1; //get the expense ids
-        }
+      
 //        while (!productExpensesCursor.isAfterLast()) {
 //            theSpinnerValues[i] = productExpensesCursor.getString(0); //get the expense ids
 //            theSpinnerNames[i] = productExpensesCursor.getString(1); //get the expense name
@@ -93,7 +90,7 @@ public class ShiftExpense_FA extends BaseFragmentActivityActionBar implements Vi
 //        }
 
         Spinner spinnerView = (Spinner) findViewById(R.id.expenseSpinner);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, theSpinnerNames);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, theSpinnerNames);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerView.setAdapter(adapter);
         spinnerView.setOnItemSelectedListener(onItemSelectedListenerSpinner);
@@ -157,8 +154,9 @@ public class ShiftExpense_FA extends BaseFragmentActivityActionBar implements Vi
         expense.setProductId(expenseProductIDSelected);
         expense.setExpenseId(UUID.randomUUID().toString());
         expense.setProductName(expenseName);
-        expense.setShiftId(openShift.getShiftId());
+        expense.setShiftId(openShift != null ? openShift.getShiftId() : null);
         expense.setCreationDate(now);
+        expense.setProductDescription(comments.getText().toString());
         expense.setProductOption(expenseName);
         ShiftExpensesDAO.insertOrUpdate(expense);
 //        shiftExpensesDBHandler.insert(expenseProductIDSelected, expenseName, theAmount, spID);
