@@ -1327,6 +1327,11 @@
     <string name="shift_count_down_shift">Start Count Down</string>
     <string name="entered_count_down_amount">Count Down Amount</string>
     <string name="error_sync_closed_shift">Synchronization error.</string>
+    <string name="safe_drop">Safe Drop</string>
+    <string name="cash_drop">Cash Drop</string>
+    <string name="cash_in">Cash In</string>
+    <string name="buy_goods_services">Buy Goods Services</string>
+    <string name="non_cash_gratuity">Non Cash Gratuity</string>
 
 
 </resources>

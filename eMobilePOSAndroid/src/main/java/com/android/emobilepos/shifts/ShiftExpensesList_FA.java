@@ -49,7 +49,7 @@ public class ShiftExpensesList_FA extends BaseFragmentActivityActionBar implemen
 //        expensesByShift = shiftExpensesDBHandler.getShiftExpenses(spID);
         //bing expenses to list view
 //        adapter = new CustomCursorAdapter(activity, expensesByShift, CursorAdapter.NO_SELECTION);
-        Shift openShift = ShiftDAO.getOpenShift(Integer.parseInt(myPref.getShiftID()));
+        Shift openShift = ShiftDAO.getOpenShift(Integer.parseInt(myPref.getClerkID()));
         expenses = ShiftExpensesDAO.getShiftExpenses(openShift.getShiftId());
         adapter = new ShiftExpensesListAdapter(this, R.layout.shift_expenses_lvadapter, expenses);
         lView.setAdapter(adapter);

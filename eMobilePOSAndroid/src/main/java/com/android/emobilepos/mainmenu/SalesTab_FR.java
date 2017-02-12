@@ -51,6 +51,7 @@ import com.android.emobilepos.ordering.SplittedOrderSummary_FA;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.emobilepos.payment.TipAdjustmentFA;
 import com.android.emobilepos.settings.SettingListActivity;
+import com.android.emobilepos.shifts.ShiftExpensesList_FA;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.emobilepos.shifts.ShiftsActivity;
@@ -372,6 +373,11 @@ public class SalesTab_FR extends Fragment {
                     startActivity(intent);
                     break;
                 }
+                case SHIFT_EXPENSES: {
+                    intent = new Intent(activity, ShiftExpensesList_FA.class);
+                    startActivity(intent);
+                    break;
+                }
             }
 
         } else {
@@ -453,6 +459,11 @@ public class SalesTab_FR extends Fragment {
                 }
                 case SHIFTS: {
                     intent = new Intent(activity, ShiftsActivity.class);
+                    startActivity(intent);
+                    break;
+                }
+                case SHIFT_EXPENSES: {
+                    intent = new Intent(activity, ShiftExpensesList_FA.class);
                     startActivity(intent);
                     break;
                 }

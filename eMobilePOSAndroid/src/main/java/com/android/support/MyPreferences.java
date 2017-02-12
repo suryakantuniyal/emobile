@@ -1214,7 +1214,7 @@ public class MyPreferences {
     }
 
     public String getClerkID() {
-        return (prefs.getString("clerk_id", ""));
+        return (prefs.getString("clerk_id", "0"));
     }
 
     public void setClerkID(String value) {

@@ -54,6 +54,8 @@ public class SalesMenuAdapter extends BaseAdapter implements Filterable {
         mainMenuIconsMap.put(Global.TransactionType.LOCATION.getCode(), "list");
         mainMenuIconsMap.put(Global.TransactionType.TIP_ADJUSTMENT.getCode(), "order");
         mainMenuIconsMap.put(Global.TransactionType.SHIFTS.getCode(), "shifts");
+        mainMenuIconsMap.put(Global.TransactionType.SHIFT_EXPENSES.getCode(), "shift_expenses");
+
 
         MyPreferences myPref = new MyPreferences(activity);
         boolean[] temp = myPref.getMainMenuPreference();
@@ -62,7 +64,9 @@ public class SalesMenuAdapter extends BaseAdapter implements Filterable {
         if (custSelected) {
             enabledSettings = temp;
         } else {
-            enabledSettings = new boolean[]{temp[0], false, temp[2], false, false, temp[5], temp[6], temp[7], temp[8], temp[9], false, temp[11], false, temp[13], temp[14], temp[15]};
+            enabledSettings = new boolean[]{temp[0], false, temp[2], false, false, temp[5], temp[6],
+                    temp[7], temp[8], temp[9], false, temp[11], false,
+                    temp[13], temp[14], temp[15], temp[16]};
         }
 
         int size = mainMenuList.length;

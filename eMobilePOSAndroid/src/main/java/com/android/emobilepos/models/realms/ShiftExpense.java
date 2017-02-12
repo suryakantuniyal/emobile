@@ -20,7 +20,7 @@ public class ShiftExpense extends RealmObject {
     private int productId;
     private String productOption;
     private String productDescription;
-    private int productName;
+    private String productName;
 
     public String getExpenseId() {
         return expenseId;
@@ -78,11 +78,11 @@ public class ShiftExpense extends RealmObject {
         this.productDescription = productDescription;
     }
 
-    public int getProductName() {
+    public String getProductName() {
         return productName;
     }
 
-    public void setProductName(int productName) {
+    public void setProductName(String productName) {
         this.productName = productName;
     }
 }

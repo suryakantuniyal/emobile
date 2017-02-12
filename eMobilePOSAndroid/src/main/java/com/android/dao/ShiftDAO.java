@@ -30,12 +30,13 @@ public class ShiftDAO {
         Realm r = Realm.getDefaultInstance();
         Shift shift = r.where(Shift.class)
                 .equalTo("assigneeId", clerkId)
-                .equalTo("shiftStatusCode", 0)
+                .equalTo("shiftStatusCode", 1)
                 .findFirst();
         if (shift != null) {
             return r.copyFromRealm(shift);
+        }else {
+            return null;
         }
-        return null;
     }
     public static void insertOrUpdate(Shift shift) {
         Realm r = Realm.getDefaultInstance();
