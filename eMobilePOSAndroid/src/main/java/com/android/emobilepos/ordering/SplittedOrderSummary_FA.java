@@ -37,6 +37,7 @@ import com.android.emobilepos.models.SplitedOrder;
 import com.android.emobilepos.models.Tax;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
+import com.android.emobilepos.security.SecurityManager;
 import com.android.support.GenerateNewID;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -60,9 +61,13 @@ import util.json.JsonUtils;
  */
 public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar implements AdapterView.OnItemSelectedListener, View.OnClickListener {
 
-    private Global global;
+    public int checkoutCount = 0;
+    public SalesReceiptSplitTypes splitType;
     List<OrderSeatProduct> orderSeatProducts;
     Spinner splitTypeSpinner;
+    MyPreferences preferences;
+    GenerateNewID generateNewID;
+    private Global global;
     private String tableNumber;
     private SplittedOrderSummaryFR orderSummaryFR;
     private SplittedOrderDetailsFR orderDetailsFR;
@@ -72,13 +77,8 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
     private BigDecimal itemsDiscountTotal;
     //    private List<HashMap<String, String>> listMapTaxes;
     private Tax tax;
-    public int checkoutCount = 0;
     private BigDecimal globalDiscountPercentge = new BigDecimal(0);
     private BigDecimal globalDiscountAmount = new BigDecimal(0);
-
-    MyPreferences preferences;
-    GenerateNewID generateNewID;
-    public SalesReceiptSplitTypes splitType;
     private Button splitEquallyQtyBtn;
     private AssignEmployee assignEmployee;
 
@@ -130,28 +130,6 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
         }
     }
 
-//    public List<HashMap<String, String>> getListMapTaxes() {
-//        return listMapTaxes;
-//    }
-//
-//    public void setListMapTaxes(List<HashMap<String, String>> listMapTaxes) {
-//        this.listMapTaxes = listMapTaxes;
-//    }
-
-    public enum NavigationResult {
-        PAYMENT_COMPLETED(-1), PAYMENT_SELECTION_VOID(3), BACK_SELECT_PAYMENT(1901), PARTIAL_PAYMENT(1902), VOID_HOLD_TRANSACTION(1903),
-        TABLE_SELECTION(1904), SEAT_SELECTION(1905);
-        int code;
-
-        NavigationResult(int code) {
-            this.code = code;
-        }
-
-        public int getCode() {
-            return code;
-        }
-    }
-
     public SplittedOrderDetailsFR getOrderDetailsFR() {
         return orderDetailsFR;
     }
@@ -166,36 +144,6 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
 
     public void setOrderSummaryFR(SplittedOrderSummaryFR orderSummaryFR) {
         this.orderSummaryFR = orderSummaryFR;
-    }
-
-    public enum SalesReceiptSplitTypes {
-        SPLIT_BY_SEATS(0), SPLIT_EQUALLY(1), SPLIT_SINGLE(2); //, SPLIT_BY_SEAT_GROUP(2);
-        private int code;
-
-        SalesReceiptSplitTypes(int code) {
-            this.code = code;
-        }
-
-        public static SalesReceiptSplitTypes getSpinnerSelection(String name) {
-            return valueOf(name.toUpperCase());
-        }
-
-        public static SalesReceiptSplitTypes getByCode(int code) {
-            switch (code) {
-                case 0:
-                    return SPLIT_BY_SEATS;
-                case 1:
-                    return SPLIT_EQUALLY;
-                case 2:
-                    return SPLIT_SINGLE;
-                default:
-                    return SPLIT_BY_SEATS;
-            }
-        }
-
-        public int getByCode() {
-            return code;
-        }
     }
 
     @Override
@@ -230,8 +178,10 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                 setDiscount(Discount.getDefaultInstance());
             }
         }
+        boolean hasPermissions = SecurityManager.hasPermissions(this, SecurityManager.SecurityAction.SPLIT_ORDER);
         splitTypeSpinner = (Spinner) findViewById(R.id.splitTypesSpinner);
         splitTypeSpinner.setOnItemSelectedListener(this);
+        splitTypeSpinner.setEnabled(hasPermissions);
         splitEquallyQtyBtn = (Button) findViewById(R.id.splitEquallyQtyeditButton);
         splitEquallyQtyBtn.setVisibility(View.GONE);
         splitEquallyQtyBtn.setOnClickListener(this);
@@ -604,6 +554,50 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
             ordTaxesDB.insert(global.listOrderTaxes, global.order.ord_id);
         }
         new VoidTransaction().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, global.order.ord_id);
+    }
+
+    public enum NavigationResult {
+        PAYMENT_COMPLETED(-1), PAYMENT_SELECTION_VOID(3), BACK_SELECT_PAYMENT(1901), PARTIAL_PAYMENT(1902), VOID_HOLD_TRANSACTION(1903),
+        TABLE_SELECTION(1904), SEAT_SELECTION(1905);
+        int code;
+
+        NavigationResult(int code) {
+            this.code = code;
+        }
+
+        public int getCode() {
+            return code;
+        }
+    }
+
+    public enum SalesReceiptSplitTypes {
+        SPLIT_BY_SEATS(0), SPLIT_EQUALLY(1), SPLIT_SINGLE(2); //, SPLIT_BY_SEAT_GROUP(2);
+        private int code;
+
+        SalesReceiptSplitTypes(int code) {
+            this.code = code;
+        }
+
+        public static SalesReceiptSplitTypes getSpinnerSelection(String name) {
+            return valueOf(name.toUpperCase());
+        }
+
+        public static SalesReceiptSplitTypes getByCode(int code) {
+            switch (code) {
+                case 0:
+                    return SPLIT_BY_SEATS;
+                case 1:
+                    return SPLIT_EQUALLY;
+                case 2:
+                    return SPLIT_SINGLE;
+                default:
+                    return SPLIT_BY_SEATS;
+            }
+        }
+
+        public int getByCode() {
+            return code;
+        }
     }
 
     private class VoidTransaction extends AsyncTask<String, Void, Void> {

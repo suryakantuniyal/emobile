@@ -27,7 +27,6 @@ import android.widget.TextView;
 
 import com.android.dao.DinningTableDAO;
 import com.android.dao.SalesAssociateDAO;
-import com.android.database.ClerksHandler;
 import com.android.database.CustomersHandler;
 import com.android.database.SalesTaxCodesHandler;
 import com.android.emobilepos.OnHoldActivity;
@@ -50,15 +49,18 @@ import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.emobilepos.ordering.SplittedOrderSummary_FA;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.emobilepos.payment.TipAdjustmentFA;
+import com.android.emobilepos.security.SecurityManager;
 import com.android.emobilepos.settings.SettingListActivity;
 import com.android.emobilepos.shifts.ShiftExpensesList_FA;
+import com.android.emobilepos.shifts.ShiftsActivity;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
-import com.android.emobilepos.shifts.ShiftsActivity;
 
 import java.util.HashMap;
 
 public class SalesTab_FR extends Fragment {
+    public static Activity activity;
+    boolean validPassword = true;
     private SalesMenuAdapter myAdapter;
     private GridView myListview;
     private Context thisContext;
@@ -66,12 +68,40 @@ public class SalesTab_FR extends Fragment {
     private TextView selectedCust;
     private MyPreferences myPref;
     private Button salesInvoices;
-    public static Activity activity;
     private EditText hiddenField;
     private DinningTable selectedDinningTable;
     private int selectedSeatsAmount;
     private String associateId;
-    boolean validPassword = true;
+
+    public static void startDefault(Activity activity, String type) {
+        if (activity != null) {
+            int transType;
+            try {
+                if (type == null || type.isEmpty())
+                    type = "-1";
+                transType = Integer.parseInt(type);
+            } catch (NumberFormatException e) {
+                transType = -1;
+            }
+
+            Intent intent;
+            if (transType != -1) {
+                switch (transType) {
+                    case 0:
+                        intent = new Intent(activity, OrderingMain_FA.class);
+                        intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
+                        activity.startActivityForResult(intent, 0);
+                        break;
+                    case 2:
+                        intent = new Intent(activity, OrderingMain_FA.class);
+                        intent.putExtra("option_number", Global.TransactionType.RETURN);
+                        activity.startActivityForResult(intent, 0);
+                        break;
+                }
+            }
+        }
+
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -208,52 +238,6 @@ public class SalesTab_FR extends Fragment {
         }
     }
 
-    public class MyListener implements AdapterView.OnItemClickListener {
-
-        @Override
-        public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-            final int adapterPos = (Integer) myAdapter.getItem(position);
-
-            if (myPref.isUseClerks()) {
-                promptClerkPassword(adapterPos);
-            } else if (myPref.getPreferences(MyPreferences.pref_require_shift_transactions) && myPref.getShiftIsOpen()) {
-                Global.showPrompt(activity, R.string.dlog_title_error, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
-            } else {
-                performListViewClick(adapterPos);
-            }
-        }
-    }
-
-    public static void startDefault(Activity activity, String type) {
-        if (activity != null) {
-            int transType;
-            try {
-                if (type == null || type.isEmpty())
-                    type = "-1";
-                transType = Integer.parseInt(type);
-            } catch (NumberFormatException e) {
-                transType = -1;
-            }
-
-            Intent intent;
-            if (transType != -1) {
-                switch (transType) {
-                    case 0:
-                        intent = new Intent(activity, OrderingMain_FA.class);
-                        intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
-                        activity.startActivityForResult(intent, 0);
-                        break;
-                    case 2:
-                        intent = new Intent(activity, OrderingMain_FA.class);
-                        intent.putExtra("option_number", Global.TransactionType.RETURN);
-                        activity.startActivityForResult(intent, 0);
-                        break;
-                }
-            }
-        }
-
-    }
-
     private void performListViewClick(final int pos) {
         Global global = (Global) activity.getApplication();
         global.resetOrderDetailsValues();
@@ -262,44 +246,68 @@ public class SalesTab_FR extends Fragment {
         if (isCustomerSelected) {
             switch (Global.TransactionType.getByCode(pos)) {
                 case TIP_ADJUSTMENT: {
-                    intent = new Intent(activity, TipAdjustmentFA.class);
-                    startActivity(intent);
-                    break;
-                }
-                case SALE_RECEIPT: {
-                    if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
-                        if (myPref.getPreferences(MyPreferences.pref_restaurant_mode) &&
-                                myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
-                            askEatInToGo();
-                        } else {
-                            intent = new Intent(activity, OrderingMain_FA.class);
-                            intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.TO_GO);
-                            intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
-                            startActivityForResult(intent, 0);
-                        }
-
+                    boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.TIP_ADJUSTMENT);
+                    if (hasPermissions) {
+                        intent = new Intent(activity, TipAdjustmentFA.class);
+                        startActivity(intent);
                     } else {
                         promptWithCustomer();
                     }
                     break;
                 }
-                case ORDERS: {
-                    intent = new Intent(activity, OrderingMain_FA.class);
-                    intent.putExtra("option_number", Global.TransactionType.ORDERS);
-                    startActivityForResult(intent, 0);
+                case SALE_RECEIPT: {
+                    boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
+                    if (hasPermissions) {
+                        if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
+                            if (myPref.getPreferences(MyPreferences.pref_restaurant_mode) &&
+                                    myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
+                                askEatInToGo();
+                            } else {
+                                intent = new Intent(activity, OrderingMain_FA.class);
+                                intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.TO_GO);
+                                intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
+                                startActivityForResult(intent, 0);
+                            }
 
+                        } else {
+                            promptWithCustomer();
+                        }
+                    } else {
+                        Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
+                    }
+                    break;
+                }
+                case ORDERS: {
+                    boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
+                    if (hasPermissions) {
+                        intent = new Intent(activity, OrderingMain_FA.class);
+                        intent.putExtra("option_number", Global.TransactionType.ORDERS);
+                        startActivityForResult(intent, 0);
+                    } else {
+                        Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
+                    }
                     break;
                 }
                 case RETURN: {
-                    intent = new Intent(activity, OrderingMain_FA.class);
-                    intent.putExtra("option_number", Global.TransactionType.RETURN);
-                    startActivityForResult(intent, 0);
+                    boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
+                    if (hasPermissions) {
+                        intent = new Intent(activity, OrderingMain_FA.class);
+                        intent.putExtra("option_number", Global.TransactionType.RETURN);
+                        startActivityForResult(intent, 0);
+                    } else {
+                        Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
+                    }
                     break;
                 }
                 case INVOICE: {
-                    intent = new Intent(activity, OrderingMain_FA.class);
-                    intent.putExtra("option_number", Global.TransactionType.INVOICE);
-                    startActivityForResult(intent, 0);
+                    boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
+                    if (hasPermissions) {
+                        intent = new Intent(activity, OrderingMain_FA.class);
+                        intent.putExtra("option_number", Global.TransactionType.INVOICE);
+                        startActivityForResult(intent, 0);
+                    } else {
+                        Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
+                    }
                     break;
                 }
                 case ESTIMATE: {
@@ -309,46 +317,79 @@ public class SalesTab_FR extends Fragment {
                     break;
                 }
                 case PAYMENT: {
-                    intent = new Intent(activity, SelectPayMethod_FA.class);
-                    intent.putExtra("salespayment", true);
-                    intent.putExtra("amount", "0.00");
-                    intent.putExtra("paid", "0.00");
-                    intent.putExtra("isFromMainMenu", true);
+                    boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
+                            SecurityManager.SecurityAction.TAKE_PAYMENT);
+                    if (hasPermissions) {
+                        intent = new Intent(activity, SelectPayMethod_FA.class);
+                        intent.putExtra("salespayment", true);
+                        intent.putExtra("amount", "0.00");
+                        intent.putExtra("paid", "0.00");
+                        intent.putExtra("isFromMainMenu", true);
 
-                    if (isCustomerSelected) {
-                        intent.putExtra("cust_id", myPref.getCustID());
-                        intent.putExtra("custidkey", myPref.getCustIDKey());
+                        if (isCustomerSelected) {
+                            intent.putExtra("cust_id", myPref.getCustID());
+                            intent.putExtra("custidkey", myPref.getCustIDKey());
+                        }
+
+                        startActivity(intent);
+                    } else {
+                        Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                     }
-
-                    startActivity(intent);
                     break;
                 }
-                case GIFT_CARD:
-                    intent = new Intent(activity, GiftCard_FA.class);
-                    startActivity(intent);
-                    break;
-                case LOYALTY_CARD:
-                    intent = new Intent(activity, LoyaltyCard_FA.class);
-                    startActivity(intent);
-                    break;
-                case REWARD_CARD:
-                    intent = new Intent(activity, RewardCard_FA.class);
-                    startActivity(intent);
-                    break;
-                case REFUND: {
-                    //EasyTracker.getTracker().sendEvent("ui_action", "button_press", "Refund", null);
-                    intent = new Intent(activity, SelectPayMethod_FA.class);
-                    intent.putExtra("salesrefund", true);
-                    intent.putExtra("amount", "0.00");
-                    intent.putExtra("paid", "0.00");
-                    intent.putExtra("isFromMainMenu", true);
-
-                    if (myPref.isCustSelected()) {
-                        intent.putExtra("cust_id", myPref.getCustID());
-                        intent.putExtra("custidkey", myPref.getCustIDKey());
+                case GIFT_CARD: {
+                    boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
+                            SecurityManager.SecurityAction.TAKE_PAYMENT);
+                    if (hasPermissions) {
+                        intent = new Intent(activity, GiftCard_FA.class);
+                        startActivity(intent);
+                    } else {
+                        Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                     }
+                    break;
+                }
+                case LOYALTY_CARD: {
+                    boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
+                            SecurityManager.SecurityAction.TAKE_PAYMENT);
+                    if (hasPermissions) {
+                        intent = new Intent(activity, LoyaltyCard_FA.class);
+                        startActivity(intent);
+                    } else {
+                        Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
+                    }
+                    break;
+                }
+                case REWARD_CARD: {
+                    boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
+                            SecurityManager.SecurityAction.TAKE_PAYMENT);
+                    if (hasPermissions) {
+                        intent = new Intent(activity, RewardCard_FA.class);
+                        startActivity(intent);
+                    } else {
+                        Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
+                    }
+                    break;
+                }
+                case REFUND: {
+                    boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
+                            SecurityManager.SecurityAction.OPEN_ORDER);
+                    if (hasPermissions) {
+                        //EasyTracker.getTracker().sendEvent("ui_action", "button_press", "Refund", null);
+                        intent = new Intent(activity, SelectPayMethod_FA.class);
+                        intent.putExtra("salesrefund", true);
+                        intent.putExtra("amount", "0.00");
+                        intent.putExtra("paid", "0.00");
+                        intent.putExtra("isFromMainMenu", true);
 
-                    startActivity(intent);
+                        if (myPref.isCustSelected()) {
+                            intent.putExtra("cust_id", myPref.getCustID());
+                            intent.putExtra("custidkey", myPref.getCustIDKey());
+                        }
+
+                        startActivity(intent);
+                    } else {
+                        Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
+                    }
                     break;
                 }
                 case ROUTE: {
@@ -369,13 +410,25 @@ public class SalesTab_FR extends Fragment {
                     pickLocations(true);
                     break;
                 case SHIFTS: {
-                    intent = new Intent(activity, ShiftsActivity.class);
-                    startActivity(intent);
+                    boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
+                            SecurityManager.SecurityAction.SHIFT_CLERK);
+                    if (hasPermissions) {
+                        intent = new Intent(activity, ShiftsActivity.class);
+                        startActivity(intent);
+                    } else {
+                        Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
+                    }
                     break;
                 }
                 case SHIFT_EXPENSES: {
-                    intent = new Intent(activity, ShiftExpensesList_FA.class);
-                    startActivity(intent);
+                    boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
+                            SecurityManager.SecurityAction.SHIFT_CLERK);
+                    if (hasPermissions) {
+                        intent = new Intent(activity, ShiftExpensesList_FA.class);
+                        startActivity(intent);
+                    } else {
+                        Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
+                    }
                     break;
                 }
             }
@@ -383,66 +436,111 @@ public class SalesTab_FR extends Fragment {
         } else {
             switch (Global.TransactionType.getByCode(pos)) {
                 case SALE_RECEIPT: {
-                    if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
-                        Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_select_customer));
-                    } else {
-                        if (myPref.getPreferences(MyPreferences.pref_restaurant_mode) &&
-                                myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
-                            askEatInToGo();
+                    boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
+                            SecurityManager.SecurityAction.OPEN_ORDER);
+                    if (hasPermissions) {
+                        if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
+                            Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_select_customer));
                         } else {
-                            intent = new Intent(activity, OrderingMain_FA.class);
-                            intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
-                            startActivityForResult(intent, 0);
+                            if (myPref.getPreferences(MyPreferences.pref_restaurant_mode) &&
+                                    myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
+                                askEatInToGo();
+                            } else {
+                                intent = new Intent(activity, OrderingMain_FA.class);
+                                intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
+                                startActivityForResult(intent, 0);
+                            }
                         }
+                    } else {
+                        Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                     }
                     break;
                 }
                 case RETURN: {
-                    if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
-                        Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_select_customer));
+                    boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
+                            SecurityManager.SecurityAction.OPEN_ORDER);
+                    if (hasPermissions) {
+                        if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
+                            Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_select_customer));
+                        } else {
+                            intent = new Intent(activity, OrderingMain_FA.class);
+                            intent.putExtra("option_number", Global.TransactionType.RETURN);
+                            startActivityForResult(intent, 0);
+                        }
                     } else {
-                        intent = new Intent(activity, OrderingMain_FA.class);
-                        intent.putExtra("option_number", Global.TransactionType.RETURN);
-                        startActivityForResult(intent, 0);
+                        Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                     }
                     break;
                 }
                 case PAYMENT: {
-                    if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
-                        Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_select_customer));
+                    boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
+                            SecurityManager.SecurityAction.TAKE_PAYMENT);
+                    if (hasPermissions) {
+                        if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
+                            Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_select_customer));
+                        } else {
+                            intent = new Intent(activity, SelectPayMethod_FA.class);
+                            intent.putExtra("salespayment", true);
+                            intent.putExtra("amount", "0.00");
+                            intent.putExtra("paid", "0.00");
+                            intent.putExtra("isFromMainMenu", true);
+                            startActivity(intent);
+                        }
                     } else {
-                        intent = new Intent(activity, SelectPayMethod_FA.class);
-                        intent.putExtra("salespayment", true);
-                        intent.putExtra("amount", "0.00");
-                        intent.putExtra("paid", "0.00");
-                        intent.putExtra("isFromMainMenu", true);
-                        startActivity(intent);
+                        Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                     }
                     break;
                 }
-                case GIFT_CARD:
-                    intent = new Intent(activity, GiftCard_FA.class);
-                    startActivity(intent);
-                    break;
-                case LOYALTY_CARD:
-                    intent = new Intent(activity, LoyaltyCard_FA.class);
-                    startActivity(intent);
-                    break;
-                case REWARD_CARD:
-                    intent = new Intent(activity, RewardCard_FA.class);
-                    startActivity(intent);
-                    break;
-                case REFUND: {
-                    intent = new Intent(activity, SelectPayMethod_FA.class);
-                    intent.putExtra("salesrefund", true);
-                    intent.putExtra("amount", "0.00");
-                    intent.putExtra("paid", "0.00");
-                    intent.putExtra("isFromMainMenu", true);
-                    if (myPref.isCustSelected()) {
-                        intent.putExtra("cust_id", myPref.getCustID());
-                        intent.putExtra("custidkey", myPref.getCustIDKey());
+                case GIFT_CARD: {
+                    boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
+                            SecurityManager.SecurityAction.TAKE_PAYMENT);
+                    if (hasPermissions) {
+                        intent = new Intent(activity, GiftCard_FA.class);
+                        startActivity(intent);
+                    } else {
+                        Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                     }
-                    startActivity(intent);
+                    break;
+                }
+                case LOYALTY_CARD: {
+                    boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
+                            SecurityManager.SecurityAction.TAKE_PAYMENT);
+                    if (hasPermissions) {
+                        intent = new Intent(activity, LoyaltyCard_FA.class);
+                        startActivity(intent);
+                    } else {
+                        Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
+                    }
+                    break;
+                }
+                case REWARD_CARD: {
+                    boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
+                            SecurityManager.SecurityAction.TAKE_PAYMENT);
+                    if (hasPermissions) {
+                        intent = new Intent(activity, RewardCard_FA.class);
+                        startActivity(intent);
+                    } else {
+                        Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
+                    }
+                    break;
+                }
+                case REFUND: {
+                    boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
+                            SecurityManager.SecurityAction.OPEN_ORDER);
+                    if (hasPermissions) {
+                        intent = new Intent(activity, SelectPayMethod_FA.class);
+                        intent.putExtra("salesrefund", true);
+                        intent.putExtra("amount", "0.00");
+                        intent.putExtra("paid", "0.00");
+                        intent.putExtra("isFromMainMenu", true);
+                        if (myPref.isCustSelected()) {
+                            intent.putExtra("cust_id", myPref.getCustID());
+                            intent.putExtra("custidkey", myPref.getCustIDKey());
+                        }
+                        startActivity(intent);
+                    } else {
+                        Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
+                    }
                     break;
                 }
                 case ON_HOLD:
@@ -453,23 +551,42 @@ public class SalesTab_FR extends Fragment {
                     pickLocations(true);
                     break;
                 case TIP_ADJUSTMENT: {
-                    intent = new Intent(activity, TipAdjustmentFA.class);
-                    startActivity(intent);
+                    boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
+                            SecurityManager.SecurityAction.TIP_ADJUSTMENT);
+                    if (hasPermissions) {
+                        intent = new Intent(activity, TipAdjustmentFA.class);
+                        startActivity(intent);
+                    } else {
+                        Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
+                    }
                     break;
                 }
                 case SHIFTS: {
-                    intent = new Intent(activity, ShiftsActivity.class);
-                    startActivity(intent);
+                    boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
+                            SecurityManager.SecurityAction.SHIFT_CLERK);
+                    if (hasPermissions) {
+                        intent = new Intent(activity, ShiftsActivity.class);
+                        startActivity(intent);
+                    } else {
+                        Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
+                    }
                     break;
                 }
                 case SHIFT_EXPENSES: {
-                    intent = new Intent(activity, ShiftExpensesList_FA.class);
-                    startActivity(intent);
+                    boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
+                            SecurityManager.SecurityAction.SHIFT_CLERK);
+                    if (hasPermissions) {
+                        intent = new Intent(activity, ShiftExpensesList_FA.class);
+                        startActivity(intent);
+                    } else {
+                        Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
+                    }
                     break;
                 }
             }
         }
     }
+
 
     private void askEatInToGo() {
         final Dialog popDlog = new Dialog(activity, R.style.TransparentDialog);
@@ -508,7 +625,6 @@ public class SalesTab_FR extends Fragment {
         });
         popDlog.show();
     }
-
 
     private void showWaiterSignin() {
         final Dialog popDlog = new Dialog(getActivity(), R.style.TransparentDialogFullScreen);
@@ -681,48 +797,48 @@ public class SalesTab_FR extends Fragment {
         globalDlog.show();
     }
 
-    private void promptClerkPassword(final int adapterPos) {
-
-        final Dialog globalDlog = new Dialog(activity, R.style.Theme_TransparentTest);
-        globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        globalDlog.setCancelable(true);
-        globalDlog.setCanceledOnTouchOutside(true);
-        globalDlog.setContentView(R.layout.dlog_field_single_layout);
-
-        final EditText viewField = (EditText) globalDlog.findViewById(R.id.dlogFieldSingle);
-        viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        TextView viewTitle = (TextView) globalDlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) globalDlog.findViewById(R.id.dlogMessage);
-        viewTitle.setText(R.string.dlog_title_confirm);
-
-        viewMsg.setText(R.string.dlog_title_enter_clerk_password);
-        Button btnCancel = (Button) globalDlog.findViewById(R.id.btnCancelDlogSingle);
-        btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                globalDlog.dismiss();
-            }
-        });
-        Button btnOk = (Button) globalDlog.findViewById(R.id.btnDlogSingle);
-        btnOk.setText(R.string.button_ok);
-        btnOk.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                globalDlog.dismiss();
-                String enteredPass = viewField.getText().toString().trim();
-                ClerksHandler clerkHandler = new ClerksHandler(activity);
-                String[] clerkData = clerkHandler.getClerkID(enteredPass);
-                if (clerkData != null && !clerkData[0].isEmpty()) {
-                    myPref.setClerkID(clerkData[0]);
-                    myPref.setClerkName(clerkData[1]);
-                    performListViewClick(adapterPos);
-                } else
-                    promptClerkPassword(adapterPos);
-            }
-        });
-        globalDlog.show();
-    }
+//    private void promptClerkPassword(final int adapterPos) {
+//
+//        final Dialog globalDlog = new Dialog(activity, R.style.Theme_TransparentTest);
+//        globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+//        globalDlog.setCancelable(true);
+//        globalDlog.setCanceledOnTouchOutside(true);
+//        globalDlog.setContentView(R.layout.dlog_field_single_layout);
+//
+//        final EditText viewField = (EditText) globalDlog.findViewById(R.id.dlogFieldSingle);
+//        viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+//        TextView viewTitle = (TextView) globalDlog.findViewById(R.id.dlogTitle);
+//        TextView viewMsg = (TextView) globalDlog.findViewById(R.id.dlogMessage);
+//        viewTitle.setText(R.string.dlog_title_confirm);
+//
+//        viewMsg.setText(R.string.dlog_title_enter_clerk_password);
+//        Button btnCancel = (Button) globalDlog.findViewById(R.id.btnCancelDlogSingle);
+//        btnCancel.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                globalDlog.dismiss();
+//            }
+//        });
+//        Button btnOk = (Button) globalDlog.findViewById(R.id.btnDlogSingle);
+//        btnOk.setText(R.string.button_ok);
+//        btnOk.setOnClickListener(new View.OnClickListener() {
+//
+//            @Override
+//            public void onClick(View v) {
+//                globalDlog.dismiss();
+//                String enteredPass = viewField.getText().toString().trim();
+//                ClerksHandler clerkHandler = new ClerksHandler(activity);
+//                String[] clerkData = clerkHandler.getClerkID(enteredPass);
+//                if (clerkData != null && !clerkData[0].isEmpty()) {
+//                    myPref.setClerkID(clerkData[0]);
+//                    myPref.setClerkName(clerkData[1]);
+//                    performListViewClick(adapterPos);
+//                } else
+//                    promptClerkPassword(adapterPos);
+//            }
+//        });
+//        globalDlog.show();
+//    }
 
     private void startSaleRceipt(Global.RestaurantSaleType restaurantSaleType, int selectedSeatsAmount, String tableNumber) {
         Intent intent = new Intent(activity, OrderingMain_FA.class);
@@ -847,7 +963,7 @@ public class SalesTab_FR extends Fragment {
 
     private TextWatcher textWatcher() {
 
-        TextWatcher tw = new TextWatcher() {
+        return new TextWatcher() {
             private boolean doneScanning = false;
             private String val = "";
             private CustomersHandler custHandler = new CustomersHandler(activity);
@@ -915,7 +1031,23 @@ public class SalesTab_FR extends Fragment {
                 }
             }
         };
-        return tw;
+    }
+
+    public class MyListener implements AdapterView.OnItemClickListener {
+
+        @Override
+        public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+            final int adapterPos = (Integer) myAdapter.getItem(position);
+
+//            if (myPref.isUseClerks()) {
+//                promptClerkPassword(adapterPos);
+//            } else
+//            if (myPref.getPreferences(MyPreferences.pref_require_shift_transactions) && myPref.getShiftIsOpen()) {
+//                Global.showPrompt(activity, R.string.dlog_title_error, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
+//            } else {
+            performListViewClick(adapterPos);
+//            }
+        }
     }
 
 }

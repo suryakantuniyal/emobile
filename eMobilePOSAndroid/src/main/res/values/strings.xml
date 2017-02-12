@@ -1270,6 +1270,8 @@
     <string name="cash_in">Cash In</string>
     <string name="buy_goods_services">Buy Goods Services</string>
     <string name="non_cash_gratuity">Non Cash Gratuity</string>
+    <string name="security_alert">Secutity Alert</string>
+    <string name="permission_denied">Permission denied to this area.</string>
 
 
 </resources>

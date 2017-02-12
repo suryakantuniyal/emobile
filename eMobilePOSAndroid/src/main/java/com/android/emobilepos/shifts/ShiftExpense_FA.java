@@ -81,7 +81,7 @@ public class ShiftExpense_FA extends BaseFragmentActivityActionBar implements Vi
         theSpinnerNames = getResources().getStringArray(R.array.expenseTypes);
         //new String[productExpensesCursor.getCount()];
         int i = 0;
-      
+
 //        while (!productExpensesCursor.isAfterLast()) {
 //            theSpinnerValues[i] = productExpensesCursor.getString(0); //get the expense ids
 //            theSpinnerNames[i] = productExpensesCursor.getString(1); //get the expense name
