@@ -595,7 +595,7 @@ public class SynchMethods {
         }
     }
 
-    private void synchShifts() throws IOException, SAXException {
+    public void synchShifts() throws IOException, SAXException {
         try {
             Gson gson = JsonUtils.getInstance();
             GenerateXML xml = new GenerateXML(context);
@@ -973,8 +973,8 @@ public class SynchMethods {
             data = handler.getData();
             for (Shift s : pendingSyncShifts) {
                 s.setSync(true);
-                ShiftDAO.insertOrUpdate(s);
             }
+            ShiftDAO.updateShiftToSync(pendingSyncShifts);
             dbHandler.updateIsSync(data);
             if (data.isEmpty())
                 didSendData = false;

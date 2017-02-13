@@ -31,7 +31,7 @@ public class ShiftDAO {
         Realm r = Realm.getDefaultInstance();
         Shift shift = r.where(Shift.class)
                 .equalTo("assigneeId", clerkId)
-                .equalTo("shiftStatusCode", 1)
+                .equalTo("shiftStatusCode", 0)
                 .findFirst();
         if (shift != null) {
             return r.copyFromRealm(shift);
@@ -39,6 +39,7 @@ public class ShiftDAO {
             return null;
         }
     }
+
 
     public static void insertOrUpdate(Shift shift) {
         Realm r = Realm.getDefaultInstance();
@@ -71,6 +72,16 @@ public class ShiftDAO {
             for (Shift s : shifts) {
                 s.setSync(false);
             }
+            r.beginTransaction();
+            r.insertOrUpdate(shifts);
+        } finally {
+            r.commitTransaction();
+        }
+    }
+
+    public static void updateShiftToSync(List<Shift> shifts) {
+        Realm r = Realm.getDefaultInstance();
+        try {
             r.beginTransaction();
             r.insertOrUpdate(shifts);
         } finally {

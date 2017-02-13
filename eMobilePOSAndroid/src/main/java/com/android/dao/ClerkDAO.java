@@ -1,6 +1,7 @@
 package com.android.dao;
 
 import com.android.emobilepos.models.realms.Clerk;
+import com.android.support.MyPreferences;
 
 import java.util.List;
 
@@ -31,15 +32,16 @@ public class ClerkDAO {
         }
     }
 
-    public static Clerk login(int clerkID, String password) {
+    public static Clerk login(String password, MyPreferences preferences) {
         Realm r = Realm.getDefaultInstance();
         Clerk clerk = r.where(Clerk.class)
-                .equalTo("empId", clerkID)
                 .equalTo("empPwd", password)
+                .equalTo("isactive", 1)
                 .findFirst();
-        if (clerk != null)
+        if (clerk != null) {
+            preferences.setClerkID(String.valueOf(clerk.getEmpId()));
             return r.copyFromRealm(clerk);
-        else
+        } else
             return null;
     }
 }

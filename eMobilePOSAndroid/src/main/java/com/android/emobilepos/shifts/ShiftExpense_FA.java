@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -28,6 +27,7 @@ import com.android.support.MyPreferences;
 import com.android.support.NumberUtils;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.UUID;
 
@@ -37,7 +37,6 @@ import java.util.UUID;
 public class ShiftExpense_FA extends BaseFragmentActivityActionBar implements View.OnClickListener {
     private Activity activity;
     private boolean hasBeenCreated = false;
-    private Intent intent;
     private ProductsHandler productExpenses;
     private String[] theSpinnerNames;
     private int expenseProductIDSelected = 1;
@@ -49,12 +48,7 @@ public class ShiftExpense_FA extends BaseFragmentActivityActionBar implements Vi
                 public void onItemSelected(AdapterView<?> parent, View view,
                                            int position, long id) {
                     expenseName = (String) parent.getItemAtPosition(position);
-                    //TextView textViewSelected;
-
-                    //textViewSelected =(TextView)findViewById(R.id.textViewSelected);
-                    //map the selected name and find the product ID value from the array
-                    expenseProductIDSelected = position+1;
-                    //textViewSelected.setText("Product id selected: " + expenseProductIDSelected);
+                    expenseProductIDSelected = position + 1;
                 }
 
                 @Override
@@ -76,25 +70,12 @@ public class ShiftExpense_FA extends BaseFragmentActivityActionBar implements Vi
         Button btnSubmit = (Button) findViewById(R.id.buttonSubmit);
         btnSubmit.setOnClickListener(this);
         productExpenses = new ProductsHandler(activity);
-//        productExpensesCursor = productExpenses.getProductsTypeExpense();
-//        productExpensesCursor.moveToFirst();
         theSpinnerNames = getResources().getStringArray(R.array.expenseTypes);
-        //new String[productExpensesCursor.getCount()];
-        int i = 0;
-
-//        while (!productExpensesCursor.isAfterLast()) {
-//            theSpinnerValues[i] = productExpensesCursor.getString(0); //get the expense ids
-//            theSpinnerNames[i] = productExpensesCursor.getString(1); //get the expense name
-//            i++;
-//            productExpensesCursor.moveToNext();
-//        }
-
         Spinner spinnerView = (Spinner) findViewById(R.id.expenseSpinner);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, theSpinnerNames);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerView.setAdapter(adapter);
         spinnerView.setOnItemSelectedListener(onItemSelectedListenerSpinner);
-
         this.cashAmount.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
             }
@@ -106,10 +87,7 @@ public class ShiftExpense_FA extends BaseFragmentActivityActionBar implements Vi
                 NumberUtils.parseInputedCurrency(s, cashAmount);
             }
         });
-
-
         hasBeenCreated = true;
-
     }
 
     @Override
@@ -146,11 +124,9 @@ public class ShiftExpense_FA extends BaseFragmentActivityActionBar implements Vi
         MyPreferences myPref;
         myPref = new MyPreferences(this);
         Shift openShift = ShiftDAO.getOpenShift(Integer.parseInt(myPref.getClerkID()));
-//        String spID = openShift.getShiftId();
-//        ShiftExpensesDBHandler shiftExpensesDBHandler = new ShiftExpensesDBHandler(activity);
-        double theAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(cashAmount));
+        double amount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(cashAmount));
         ShiftExpense expense = new ShiftExpense();
-        expense.setCashAmount(String.valueOf(theAmount));
+        expense.setCashAmount(String.valueOf(amount));
         expense.setProductId(expenseProductIDSelected);
         expense.setExpenseId(UUID.randomUUID().toString());
         expense.setProductName(expenseName);
@@ -159,7 +135,12 @@ public class ShiftExpense_FA extends BaseFragmentActivityActionBar implements Vi
         expense.setProductDescription(comments.getText().toString());
         expense.setProductOption(expenseName);
         ShiftExpensesDAO.insertOrUpdate(expense);
-//        shiftExpensesDBHandler.insert(expenseProductIDSelected, expenseName, theAmount, spID);
+        BigDecimal totalExpense = new BigDecimal(openShift != null ? openShift.getTotalExpenses() : "0");
+        totalExpense = totalExpense.add(BigDecimal.valueOf(amount));
+        if (openShift != null) {
+            openShift.setTotalExpenses(String.valueOf(totalExpense));
+        }
+        ShiftDAO.insertOrUpdate(openShift);
         Toast.makeText(activity, "Expense Added", Toast.LENGTH_LONG).show();
         finish();
     }

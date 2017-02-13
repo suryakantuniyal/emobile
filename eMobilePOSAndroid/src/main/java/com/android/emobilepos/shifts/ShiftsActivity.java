@@ -76,95 +76,9 @@ public class ShiftsActivity extends Activity implements View.OnClickListener, Te
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_shifts);
         preferences = new MyPreferences(this);
         global = (Global) this.getApplication();
-        TextView clerkName = (TextView) findViewById(R.id.clerkNameShifttextView);
-        clerkName.setText(preferences.getClerkName());
-        shift = ShiftDAO.getCurrentShift(Integer.parseInt(preferences.getClerkID()));
-        totalAmountEditText = (TextView) findViewById(R.id.totalAmounteditText);
-        openOnLbl = (TextView) findViewById(R.id.openOnLbltextView25);
-        openOnDate = (TextView) findViewById(R.id.openOnDatetextView26);
-        closeAmountLbl = (TextView) findViewById(R.id.closeAmountLbltextView21);
-        pettyCashLbl = (TextView) findViewById(R.id.pettyCashLbltextView27);
-        pettyCash = (TextView) findViewById(R.id.beginningPettyCashtextView);
-
-        oneDollarEditText = (EditText) findViewById(R.id.oneDollareditText);
-        fiveDollarEditText = (EditText) findViewById(R.id.fiveDollareditText);
-        tenDollarEditText = (EditText) findViewById(R.id.tenDollareditText);
-        twentyDollarEditText = (EditText) findViewById(R.id.twentyDollareditText);
-        fiftyDollarEditText = (EditText) findViewById(R.id.fiftyDollareditText);
-        hundredDollarEditText = (EditText) findViewById(R.id.hundredDollareditText);
-        oneCentEditText = (EditText) findViewById(R.id.oneCenteditText);
-        fiveCentsEditText = (EditText) findViewById(R.id.fiveCentseditText);
-        tenCentsEditText = (EditText) findViewById(R.id.tenCentseditText);
-        quarterCentsEditText = (EditText) findViewById(R.id.quartesCentseditText);
-
-        oneDollarTextView = (TextView) findViewById(R.id.oneDollarTotaltextView35);
-        fiveDollarTextView = (TextView) findViewById(R.id.fiveDollarTotaltextView35);
-        tenDollarTextView = (TextView) findViewById(R.id.tenDollarTotaltextView35);
-        twentyDollarTextView = (TextView) findViewById(R.id.twentyDollarTotaltextView35);
-        fiftyDollarTextView = (TextView) findViewById(R.id.fiftyDollarTotaltextView35);
-        hundredDollarTextView = (TextView) findViewById(R.id.hundredDollarTotaltextView35);
-        oneCentTextView = (TextView) findViewById(R.id.oneCentTotaltextView35);
-        fiveCentsTextView = (TextView) findViewById(R.id.fiveCentsTotaltextView35);
-        tenCentsTextView = (TextView) findViewById(R.id.tenCentsTotaltextView35);
-        quarterCentsTextView = (TextView) findViewById(R.id.quartesCentsTotaltextView35);
-
-        Button minusOneDollar = (Button) findViewById(R.id.oneDollarMinusbutton);
-        Button minusFiveDollar = (Button) findViewById(R.id.fiveDollarMinusbutton);
-        Button minusTenDollar = (Button) findViewById(R.id.tenDollarMinusbutton);
-        Button minusTwentyDollar = (Button) findViewById(R.id.twentyDollarMinusbutton);
-        Button minusFiftyDollar = (Button) findViewById(R.id.fiftyDollarMinusbutton);
-        Button minusHundredDollar = (Button) findViewById(R.id.hundredDollarMinusbutton);
-        Button minusOneCent = (Button) findViewById(R.id.oneCentMinusbutton);
-        Button minusFiveCent = (Button) findViewById(R.id.fiveCentsMinusbutton);
-        Button minusTenCent = (Button) findViewById(R.id.tenCentsMinusbutton);
-        Button minusQuarterCent = (Button) findViewById(R.id.quartesCentsMinusbutton);
-        Button plusOneDollar = (Button) findViewById(R.id.oneDollarPlusbutton);
-        Button plusFiveDollar = (Button) findViewById(R.id.fiveDollarPlusbutton);
-        Button plusTenDollar = (Button) findViewById(R.id.tenDollarPlusbutton);
-        Button plusTwentyDollar = (Button) findViewById(R.id.twentyDollarPlusbutton);
-        Button plusFiftyDollar = (Button) findViewById(R.id.fiftyDollarPlusbutton);
-        Button plusHundredDollar = (Button) findViewById(R.id.hundredDollarPlusbutton);
-        Button plusOneCent = (Button) findViewById(R.id.oneCentPlusbutton);
-        Button plusFiveCent = (Button) findViewById(R.id.fiveCentsPlusbutton);
-        Button plusTenCent = (Button) findViewById(R.id.tenCentsPlusbutton);
-        Button plusQuarterCent = (Button) findViewById(R.id.quartesCentsPlusbutton);
-        submitShiftbutton = (Button) findViewById(R.id.submitShiftbutton);
-        submitShiftbutton.setOnClickListener(this);
-        minusOneCent.setOnClickListener(this);
-        minusFiveCent.setOnClickListener(this);
-        minusTenCent.setOnClickListener(this);
-        minusQuarterCent.setOnClickListener(this);
-        minusOneDollar.setOnClickListener(this);
-        minusFiveDollar.setOnClickListener(this);
-        minusTenDollar.setOnClickListener(this);
-        minusTwentyDollar.setOnClickListener(this);
-        minusFiftyDollar.setOnClickListener(this);
-        minusHundredDollar.setOnClickListener(this);
-        plusOneCent.setOnClickListener(this);
-        plusFiveCent.setOnClickListener(this);
-        plusTenCent.setOnClickListener(this);
-        plusQuarterCent.setOnClickListener(this);
-        plusOneDollar.setOnClickListener(this);
-        plusFiveDollar.setOnClickListener(this);
-        plusTenDollar.setOnClickListener(this);
-        plusTwentyDollar.setOnClickListener(this);
-        plusFiftyDollar.setOnClickListener(this);
-        plusHundredDollar.setOnClickListener(this);
-        oneCentEditText.addTextChangedListener(this);
-        fiveCentsEditText.addTextChangedListener(this);
-        tenCentsEditText.addTextChangedListener(this);
-        quarterCentsEditText.addTextChangedListener(this);
-        oneDollarEditText.addTextChangedListener(this);
-        fiveDollarEditText.addTextChangedListener(this);
-        tenDollarEditText.addTextChangedListener(this);
-        twentyDollarEditText.addTextChangedListener(this);
-        fiftyDollarEditText.addTextChangedListener(this);
-        hundredDollarEditText.addTextChangedListener(this);
-        setShiftUI();
-
+        new GetShiftTask().execute();
     }
 
     private void setShiftUI() {
@@ -398,7 +312,6 @@ public class ShiftsActivity extends Activity implements View.OnClickListener, Te
 
     @Override
     public void onResume() {
-
         if (global.isApplicationSentToBackground(this))
             global.loggedIn = false;
         global.stopActivityTransitionTimer();
@@ -459,6 +372,128 @@ public class ShiftsActivity extends Activity implements View.OnClickListener, Te
             hundredDollars = Integer.parseInt(hundredDollarEditText.getText().toString());
         }
         recalculate();
+    }
+
+    private class GetShiftTask extends AsyncTask<Void, Void, Void> {
+        ProgressDialog dialog;
+
+        @Override
+        protected void onPreExecute() {
+            dialog = new ProgressDialog(ShiftsActivity.this);
+            dialog.setTitle(getString(R.string.shift_title));
+            dialog.setMessage(getString(R.string.sync_dload_shifts));
+            dialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            DBManager dbManager = new DBManager(ShiftsActivity.this);
+            SynchMethods sm = new SynchMethods(dbManager);
+            if (NetworkUtils.isConnectedToInternet(ShiftsActivity.this)) {
+                try {
+                    sm.synchShifts();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            dialog.dismiss();
+            openUI();
+        }
+    }
+
+    private void openUI() {
+        setContentView(R.layout.activity_shifts);
+
+        TextView clerkName = (TextView) findViewById(R.id.clerkNameShifttextView);
+        clerkName.setText(preferences.getClerkName());
+        shift = ShiftDAO.getCurrentShift(Integer.parseInt(preferences.getClerkID()));
+        totalAmountEditText = (TextView) findViewById(R.id.totalAmounteditText);
+        openOnLbl = (TextView) findViewById(R.id.openOnLbltextView25);
+        openOnDate = (TextView) findViewById(R.id.openOnDatetextView26);
+        closeAmountLbl = (TextView) findViewById(R.id.closeAmountLbltextView21);
+        pettyCashLbl = (TextView) findViewById(R.id.pettyCashLbltextView27);
+        pettyCash = (TextView) findViewById(R.id.beginningPettyCashtextView);
+
+        oneDollarEditText = (EditText) findViewById(R.id.oneDollareditText);
+        fiveDollarEditText = (EditText) findViewById(R.id.fiveDollareditText);
+        tenDollarEditText = (EditText) findViewById(R.id.tenDollareditText);
+        twentyDollarEditText = (EditText) findViewById(R.id.twentyDollareditText);
+        fiftyDollarEditText = (EditText) findViewById(R.id.fiftyDollareditText);
+        hundredDollarEditText = (EditText) findViewById(R.id.hundredDollareditText);
+        oneCentEditText = (EditText) findViewById(R.id.oneCenteditText);
+        fiveCentsEditText = (EditText) findViewById(R.id.fiveCentseditText);
+        tenCentsEditText = (EditText) findViewById(R.id.tenCentseditText);
+        quarterCentsEditText = (EditText) findViewById(R.id.quartesCentseditText);
+
+        oneDollarTextView = (TextView) findViewById(R.id.oneDollarTotaltextView35);
+        fiveDollarTextView = (TextView) findViewById(R.id.fiveDollarTotaltextView35);
+        tenDollarTextView = (TextView) findViewById(R.id.tenDollarTotaltextView35);
+        twentyDollarTextView = (TextView) findViewById(R.id.twentyDollarTotaltextView35);
+        fiftyDollarTextView = (TextView) findViewById(R.id.fiftyDollarTotaltextView35);
+        hundredDollarTextView = (TextView) findViewById(R.id.hundredDollarTotaltextView35);
+        oneCentTextView = (TextView) findViewById(R.id.oneCentTotaltextView35);
+        fiveCentsTextView = (TextView) findViewById(R.id.fiveCentsTotaltextView35);
+        tenCentsTextView = (TextView) findViewById(R.id.tenCentsTotaltextView35);
+        quarterCentsTextView = (TextView) findViewById(R.id.quartesCentsTotaltextView35);
+
+        Button minusOneDollar = (Button) findViewById(R.id.oneDollarMinusbutton);
+        Button minusFiveDollar = (Button) findViewById(R.id.fiveDollarMinusbutton);
+        Button minusTenDollar = (Button) findViewById(R.id.tenDollarMinusbutton);
+        Button minusTwentyDollar = (Button) findViewById(R.id.twentyDollarMinusbutton);
+        Button minusFiftyDollar = (Button) findViewById(R.id.fiftyDollarMinusbutton);
+        Button minusHundredDollar = (Button) findViewById(R.id.hundredDollarMinusbutton);
+        Button minusOneCent = (Button) findViewById(R.id.oneCentMinusbutton);
+        Button minusFiveCent = (Button) findViewById(R.id.fiveCentsMinusbutton);
+        Button minusTenCent = (Button) findViewById(R.id.tenCentsMinusbutton);
+        Button minusQuarterCent = (Button) findViewById(R.id.quartesCentsMinusbutton);
+        Button plusOneDollar = (Button) findViewById(R.id.oneDollarPlusbutton);
+        Button plusFiveDollar = (Button) findViewById(R.id.fiveDollarPlusbutton);
+        Button plusTenDollar = (Button) findViewById(R.id.tenDollarPlusbutton);
+        Button plusTwentyDollar = (Button) findViewById(R.id.twentyDollarPlusbutton);
+        Button plusFiftyDollar = (Button) findViewById(R.id.fiftyDollarPlusbutton);
+        Button plusHundredDollar = (Button) findViewById(R.id.hundredDollarPlusbutton);
+        Button plusOneCent = (Button) findViewById(R.id.oneCentPlusbutton);
+        Button plusFiveCent = (Button) findViewById(R.id.fiveCentsPlusbutton);
+        Button plusTenCent = (Button) findViewById(R.id.tenCentsPlusbutton);
+        Button plusQuarterCent = (Button) findViewById(R.id.quartesCentsPlusbutton);
+        submitShiftbutton = (Button) findViewById(R.id.submitShiftbutton);
+        submitShiftbutton.setOnClickListener(this);
+        minusOneCent.setOnClickListener(this);
+        minusFiveCent.setOnClickListener(this);
+        minusTenCent.setOnClickListener(this);
+        minusQuarterCent.setOnClickListener(this);
+        minusOneDollar.setOnClickListener(this);
+        minusFiveDollar.setOnClickListener(this);
+        minusTenDollar.setOnClickListener(this);
+        minusTwentyDollar.setOnClickListener(this);
+        minusFiftyDollar.setOnClickListener(this);
+        minusHundredDollar.setOnClickListener(this);
+        plusOneCent.setOnClickListener(this);
+        plusFiveCent.setOnClickListener(this);
+        plusTenCent.setOnClickListener(this);
+        plusQuarterCent.setOnClickListener(this);
+        plusOneDollar.setOnClickListener(this);
+        plusFiveDollar.setOnClickListener(this);
+        plusTenDollar.setOnClickListener(this);
+        plusTwentyDollar.setOnClickListener(this);
+        plusFiftyDollar.setOnClickListener(this);
+        plusHundredDollar.setOnClickListener(this);
+        oneCentEditText.addTextChangedListener(this);
+        fiveCentsEditText.addTextChangedListener(this);
+        tenCentsEditText.addTextChangedListener(this);
+        quarterCentsEditText.addTextChangedListener(this);
+        oneDollarEditText.addTextChangedListener(this);
+        fiveDollarEditText.addTextChangedListener(this);
+        tenDollarEditText.addTextChangedListener(this);
+        twentyDollarEditText.addTextChangedListener(this);
+        fiftyDollarEditText.addTextChangedListener(this);
+        hundredDollarEditText.addTextChangedListener(this);
+        setShiftUI();
     }
 
     private class SendShiftTask extends AsyncTask<Void, Void, Boolean> {

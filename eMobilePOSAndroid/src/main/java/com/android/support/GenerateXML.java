@@ -2005,117 +2005,68 @@ public class GenerateXML {
 
     private void buildShiftPeriods(XmlSerializer serializer) {
         List<Shift> shifts = ShiftDAO.getPendingSyncShifts();
-        Long lExpenseDateCreated;
-        Date dExpenseDateCreated;
-        String sExpenseDateCreated;
         String shiftID;
-//        ShiftExpensesDBHandler shiftExpensesDBHandler;
-//        shiftExpensesDBHandler = new ShiftExpensesDBHandler(thisActivity);
-//        Cursor expensesByShift;
-//        ShiftPeriodsDBHandler handler = new ShiftPeriodsDBHandler(thisActivity);
-//        Cursor c = handler.getUnsyncShifts();
-//        c.moveToFirst();
-//        int size = c.getCount();
-
         for (Shift s : shifts) {
             try {
                 List<ShiftExpense> shiftExpenses = ShiftExpensesDAO.getShiftExpenses(s.getShiftId());
                 shiftID = s.getShiftId(); //c.getString(c.getColumnIndex("shift_id"));
-
                 serializer.startTag(empstr, "shift");
-
                 serializer.startTag(empstr, "shift_id");
                 serializer.text(shiftID);
                 serializer.endTag(empstr, "shift_id");
-
                 serializer.startTag(empstr, "shift_status");
                 serializer.text(String.valueOf(s.getShiftStatusCode()));
                 serializer.endTag(empstr, "shift_status");
-
-
                 serializer.startTag(empstr, "assignee_id");
                 serializer.text(String.valueOf(s.getAssigneeId()));//c.getString(c.getColumnIndex("assignee_id")));
                 serializer.endTag(empstr, "assignee_id");
-
                 serializer.startTag(empstr, "assignee_name");
                 serializer.text(s.getAssigneeName());//c.getString(c.getColumnIndex("assignee_name")));
                 serializer.endTag(empstr, "assignee_name");
-
                 serializer.startTag(empstr, "creationDate");
                 serializer.text(DateUtils.getDateAsString(s.getCreationDate()));//c.getString(c.getColumnIndex("creationDate")));
                 serializer.endTag(empstr, "creationDate");
-
-
                 serializer.startTag(empstr, "startTime");
                 serializer.text(DateUtils.getDateAsString(s.getStartTime()));//c.getString(c.getColumnIndex("startTime")));
                 serializer.endTag(empstr, "startTime");
-
-
                 if (s.getEndTime() != null) {
                     serializer.startTag(empstr, "endTime");
                     serializer.text(DateUtils.getDateAsString(s.getEndTime()));//c.getString(c.getColumnIndex("endTime")));
                     serializer.endTag(empstr, "endTime");
                 }
-
-
                 serializer.startTag(empstr, "beginning_petty_cash");
                 serializer.text(String.valueOf(s.getBeginningPettyCash()));//c.getString(c.getColumnIndex("beginning_petty_cash")));
                 serializer.endTag(empstr, "beginning_petty_cash");
-
                 serializer.startTag(empstr, "total_expenses");
-                serializer.text("0");
+                serializer.text(s.getTotalExpenses());
                 serializer.endTag(empstr, "total_expenses");
-
                 serializer.startTag(empstr, "ending_petty_cash");
                 serializer.text(String.valueOf(s.getEndingCash()));//c.getString(c.getColumnIndex("ending_petty_cash")));
                 serializer.endTag(empstr, "ending_petty_cash");
-
                 serializer.startTag(empstr, "ending_cash");
                 serializer.text(s.getTotal_ending_cash());//c.getString(c.getColumnIndex("total_ending_cash")));
                 serializer.endTag(empstr, "ending_cash");
-
                 serializer.startTag(empstr, "entered_close_amount");
                 serializer.text(String.valueOf(s.getEnteredCloseAmount()));//c.getString(c.getColumnIndex("entered_close_amount")));
                 serializer.endTag(empstr, "entered_close_amount");
-
                 serializer.startTag(empstr, "total_transactions_cash");
                 serializer.text(s.getTotal_ending_cash());//c.getString(c.getColumnIndex("total_transaction_cash")));
                 serializer.endTag(empstr, "total_transactions_cash");
-
-
-                //get cursor with expenses for this shift
-//                expensesByShift = shiftExpensesDBHandler.getShiftExpenses(shiftID);
-
                 serializer.startTag(empstr, "Expenses");
                 for (ShiftExpense expense : shiftExpenses) {
-//
-//                }
-//                while (!expensesByShift.isAfterLast()) {
                     serializer.startTag(empstr, "Expense");
-
                     serializer.startTag(empstr, "expense_id");
                     serializer.text(expense.getExpenseId());//expensesByShift.getString(expensesByShift.getColumnIndex("_id")));
                     serializer.endTag(empstr, "expense_id");
-
                     serializer.startTag(empstr, "shift_id");
                     serializer.text(expense.getShiftId());//expensesByShift.getString(expensesByShift.getColumnIndex("shiftPeriodID")));
                     serializer.endTag(empstr, "shift_id");
-
                     serializer.startTag(empstr, "creationDate");
-                    //the expenseID is the number of milliseconds from 1970
-                    //use it to find when the expense was created
-//                    lExpenseDateCreated = Long.valueOf(expensesByShift.getString(expensesByShift.getColumnIndex("_id")));
-//                    dExpenseDateCreated = new Date(lExpenseDateCreated);
-//                    sExpenseDateCreated = dExpenseDateCreated.toLocaleString();
                     serializer.text(DateUtils.getDateAsString(expense.getCreationDate()));
                     serializer.endTag(empstr, "creationDate");
-
-
                     serializer.startTag(empstr, "cash_amount");
                     serializer.text(expense.getCashAmount());//expensesByShift.getString(expensesByShift.getColumnIndex("cashAmount")));
                     serializer.endTag(empstr, "cash_amount");
-
-
                     serializer.startTag(empstr, "product_id");
                     serializer.text(String.valueOf(expense.getProductId()));//expensesByShift.getString(expensesByShift.getColumnIndex("productID")));
                     serializer.endTag(empstr, "product_id");
@@ -2125,20 +2076,14 @@ public class GenerateXML {
                     serializer.startTag(empstr, "product_desc");
                     serializer.text(String.valueOf(expense.getProductDescription()));//expensesByShift.getString(expensesByShift.getColumnIndex("productID")));
                     serializer.endTag(empstr, "product_desc");
-
-
                     serializer.endTag(empstr, "Expense");
-
-//                    expensesByShift.moveToNext();
                 }
                 serializer.endTag(empstr, "Expenses");
                 serializer.endTag(empstr, "shift");
-//                c.moveToNext();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
-//        c.close();
     }
 
     public String synchWalletReceipts() {

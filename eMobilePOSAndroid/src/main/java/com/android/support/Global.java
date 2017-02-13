@@ -1332,7 +1332,7 @@ public class Global extends MultiDexApplication {
                     MyPreferences myPref = new MyPreferences(activity);
                     String enteredPass = viewField.getText().toString().trim();
                     if (myPref.isUseClerks()) {
-                        Clerk clerk = ClerkDAO.login(Integer.parseInt(myPref.getClerkID()), enteredPass);
+                        Clerk clerk = ClerkDAO.login(enteredPass, myPref);
                         if (clerk == null) {
                             validPassword[0] = false;
                             promptForMandatoryLogin(activity);

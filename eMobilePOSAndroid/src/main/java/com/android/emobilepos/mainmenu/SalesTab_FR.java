@@ -27,6 +27,7 @@ import android.widget.TextView;
 
 import com.android.dao.DinningTableDAO;
 import com.android.dao.SalesAssociateDAO;
+import com.android.dao.ShiftDAO;
 import com.android.database.CustomersHandler;
 import com.android.database.SalesTaxCodesHandler;
 import com.android.emobilepos.OnHoldActivity;
@@ -45,6 +46,7 @@ import com.android.emobilepos.locations.LocationsPicker_Listener;
 import com.android.emobilepos.mainmenu.restaurant.DinningTablesActivity;
 import com.android.emobilepos.models.realms.DinningTable;
 import com.android.emobilepos.models.realms.SalesAssociate;
+import com.android.emobilepos.models.realms.Shift;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.emobilepos.ordering.SplittedOrderSummary_FA;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
@@ -311,9 +313,14 @@ public class SalesTab_FR extends Fragment {
                     break;
                 }
                 case ESTIMATE: {
-                    intent = new Intent(activity, OrderingMain_FA.class);
-                    intent.putExtra("option_number", Global.TransactionType.ESTIMATE);
-                    startActivityForResult(intent, 0);
+                    boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
+                    if (hasPermissions) {
+                        intent = new Intent(activity, OrderingMain_FA.class);
+                        intent.putExtra("option_number", Global.TransactionType.ESTIMATE);
+                        startActivityForResult(intent, 0);
+                    } else {
+                        Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
+                    }
                     break;
                 }
                 case PAYMENT: {
@@ -396,14 +403,23 @@ public class SalesTab_FR extends Fragment {
                     break;
                 }
                 case ON_HOLD: {
-                    intent = new Intent(getActivity(), OnHoldActivity.class);
-                    getActivity().startActivity(intent);
-
+                    boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
+                    if (hasPermissions) {
+                        intent = new Intent(getActivity(), OnHoldActivity.class);
+                        getActivity().startActivity(intent);
+                    } else {
+                        Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
+                    }
                     break;
                 }
                 case CONSIGNMENT: {
-                    intent = new Intent(activity, ConsignmentMain_FA.class);
-                    startActivity(intent);
+                    boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
+                    if (hasPermissions) {
+                        intent = new Intent(activity, ConsignmentMain_FA.class);
+                        startActivity(intent);
+                    } else {
+                        Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
+                    }
                     break;
                 }
                 case LOCATION:
@@ -543,10 +559,16 @@ public class SalesTab_FR extends Fragment {
                     }
                     break;
                 }
-                case ON_HOLD:
-                    intent = new Intent(getActivity(), OnHoldActivity.class);
-                    getActivity().startActivity(intent);
+                case ON_HOLD: {
+                    boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
+                    if (hasPermissions) {
+                        intent = new Intent(getActivity(), OnHoldActivity.class);
+                        getActivity().startActivity(intent);
+                    } else {
+                        Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
+                    }
                     break;
+                }
                 case LOCATION:
                     pickLocations(true);
                     break;
@@ -576,8 +598,13 @@ public class SalesTab_FR extends Fragment {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.SHIFT_CLERK);
                     if (hasPermissions) {
-                        intent = new Intent(activity, ShiftExpensesList_FA.class);
-                        startActivity(intent);
+                        Shift openShift = ShiftDAO.getOpenShift(Integer.parseInt(myPref.getClerkID()));
+                        if (openShift != null) {
+                            intent = new Intent(activity, ShiftExpensesList_FA.class);
+                            startActivity(intent);
+                        } else {
+                            Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
+                        }
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                     }
