@@ -18,7 +18,7 @@
         <item name="menu_transfer_inventory">Inventory Transfer</item>
         <item name="menu_tip_adjustment">Tip Adjustment</item>
         <item name="menu_clerk_shifts">Shifts</item>
-        <item name="menu_shift_expense">Shift Expenses</item>
+        <item name="menu_shift_expense">Shift Noi Sale</item>
 
     </string-array>
 
