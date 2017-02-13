@@ -377,7 +377,6 @@
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".shifts.ShiftExpense_FA"
-            android:configChanges="orientation|screenSize"
             android:exported="false"
             android:theme="@style/LightTheme"
             android:windowSoftInputMode="stateHidden|adjustResize" />

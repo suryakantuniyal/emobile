@@ -8,13 +8,15 @@
 
     <RelativeLayout
         android:id="@+id/header_bar"
-        android:layout_width="1264dp"
         android:layout_height="wrap_content"
         android:background="@drawable/blue_gradient_header_horizontal"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         tools:layout_editor_absoluteY="0dp"
-        tools:layout_editor_absoluteX="8dp">
+        tools:layout_editor_absoluteX="0dp"
+        android:layout_width="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
         <TextView
             android:id="@+id/add_main_title"
@@ -30,11 +32,11 @@
 
     <LinearLayout
         android:orientation="vertical"
-        android:layout_width="1264dp"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@+id/header_bar"
         app:layout_constraintLeft_toLeftOf="@+id/header_bar"
-        app:layout_constraintRight_toRightOf="@+id/header_bar">
+        app:layout_constraintRight_toRightOf="@+id/header_bar"
+        android:layout_width="0dp">
 
         <LinearLayout
             android:layout_width="match_parent"

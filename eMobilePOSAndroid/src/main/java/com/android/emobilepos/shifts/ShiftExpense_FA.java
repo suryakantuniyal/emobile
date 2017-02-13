@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -41,6 +42,9 @@ public class ShiftExpense_FA extends BaseFragmentActivityActionBar implements Vi
     private String[] theSpinnerNames;
     private int expenseProductIDSelected = 1;
     private String expenseName = "";
+    private EditText cashAmount, comments;
+    private Global global;
+
     AdapterView.OnItemSelectedListener onItemSelectedListenerSpinner =
             new AdapterView.OnItemSelectedListener() {
 
@@ -55,7 +59,7 @@ public class ShiftExpense_FA extends BaseFragmentActivityActionBar implements Vi
                 public void onNothingSelected(AdapterView<?> parent) {
                 }
             };
-    private EditText cashAmount, comments;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -64,7 +68,7 @@ public class ShiftExpense_FA extends BaseFragmentActivityActionBar implements Vi
         activity = this;
         cashAmount = (EditText) findViewById(R.id.cashAmount);
         comments = (EditText) findViewById(R.id.expenseCommentseditText);
-
+        global = (Global) getApplication();
         Button btnCancel = (Button) findViewById(R.id.buttonCancel);
         btnCancel.setOnClickListener(this);
         Button btnSubmit = (Button) findViewById(R.id.buttonSubmit);
@@ -148,4 +152,28 @@ public class ShiftExpense_FA extends BaseFragmentActivityActionBar implements Vi
         finish();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (global.isApplicationSentToBackground(this))
+            global.loggedIn = false;
+        global.stopActivityTransitionTimer();
+
+        if (!global.loggedIn) {
+            if (global.getGlobalDlog() != null)
+                global.getGlobalDlog().dismiss();
+            global.promptForMandatoryLogin(this);
+        }
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+        boolean isScreenOn = powerManager.isScreenOn();
+        if (!isScreenOn)
+            global.loggedIn = false;
+        global.startActivityTransitionTimer();
+    }
 }
