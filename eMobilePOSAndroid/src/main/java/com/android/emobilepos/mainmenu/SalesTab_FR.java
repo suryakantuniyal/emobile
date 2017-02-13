@@ -438,10 +438,15 @@ public class SalesTab_FR extends Fragment {
                 }
                 case SHIFT_EXPENSES: {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
-                            SecurityManager.SecurityAction.SHIFT_CLERK);
+                            SecurityManager.SecurityAction.NO_SALE);
                     if (hasPermissions) {
-                        intent = new Intent(activity, ShiftExpensesList_FA.class);
-                        startActivity(intent);
+                        Shift openShift = ShiftDAO.getOpenShift(Integer.parseInt(myPref.getClerkID()));
+                        if (openShift != null) {
+                            intent = new Intent(activity, ShiftExpensesList_FA.class);
+                            startActivity(intent);
+                        } else {
+                            Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
+                        }
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                     }
@@ -596,7 +601,7 @@ public class SalesTab_FR extends Fragment {
                 }
                 case SHIFT_EXPENSES: {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
-                            SecurityManager.SecurityAction.SHIFT_CLERK);
+                            SecurityManager.SecurityAction.NO_SALE);
                     if (hasPermissions) {
                         Shift openShift = ShiftDAO.getOpenShift(Integer.parseInt(myPref.getClerkID()));
                         if (openShift != null) {

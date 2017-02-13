@@ -1310,12 +1310,16 @@ public class Global extends MultiDexApplication {
             globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             globalDlog.setCancelable(false);
             globalDlog.setContentView(R.layout.dlog_field_single_layout);
-
+            final MyPreferences myPref = new MyPreferences(activity);
             final EditText viewField = (EditText) globalDlog.findViewById(R.id.dlogFieldSingle);
             viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
             TextView viewTitle = (TextView) globalDlog.findViewById(R.id.dlogTitle);
             TextView viewMsg = (TextView) globalDlog.findViewById(R.id.dlogMessage);
-            viewTitle.setText(R.string.dlog_title_confirm);
+            if (myPref.isUseClerks()) {
+                viewTitle.setText(R.string.dlog_title_enter_clerk_password);
+            }else {
+                viewTitle.setText(R.string.dlog_title_confirm);
+            }
             final boolean[] validPassword = {true};
             if (!validPassword[0])
                 viewMsg.setText(R.string.invalid_password);
@@ -1329,7 +1333,6 @@ public class Global extends MultiDexApplication {
                 @Override
                 public void onClick(View v) {
                     globalDlog.dismiss();
-                    MyPreferences myPref = new MyPreferences(activity);
                     String enteredPass = viewField.getText().toString().trim();
                     if (myPref.isUseClerks()) {
                         Clerk clerk = ClerkDAO.login(enteredPass, myPref);

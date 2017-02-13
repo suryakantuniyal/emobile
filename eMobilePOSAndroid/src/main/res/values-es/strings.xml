@@ -872,9 +872,9 @@
 
     <string name="shift_close_shift">Close Shift</string>
     <string name="shift_open_shift">Open Shift</string>
-    <string name="shift_expenses">Shift Expenses</string>
-    <string name="shift_expense">Expense</string>
-    <string name="shift_add_expense">Add Expense</string>
+    <string name="shift_expenses">Shift No Sale</string>
+    <string name="shift_expense">No Sale</string>
+    <string name="shift_add_expense">Add No Sale</string>
     <string name="shift_title">Shift</string>
 
     <string name="shift_details">Shift Details</string>
@@ -1334,6 +1334,7 @@
     <string name="non_cash_gratuity">Non Cash Gratuity</string>
     <string name="security_alert">Permission denied to this area.</string>
     <string name="permission_denied">Permission denied to this area.</string>
+    <string name="expense_id">No Sale ID</string>
 
 
 </resources>

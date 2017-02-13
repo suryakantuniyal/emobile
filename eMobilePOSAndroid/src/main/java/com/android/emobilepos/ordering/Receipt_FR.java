@@ -136,6 +136,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     private RecalculateCallback callBackRecalculate;
     private UpdateHeaderTitleCallback callBackUpdateHeaderTitle;
     private String order_email = "";
+
     public Receipt_FR() {
 
     }
@@ -579,6 +580,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             mainLVAdapter.notifyDataSetChanged();
         } else {
             final boolean hasRemoveItemPermission = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.REMOVE_ITEM);
+            final boolean hasOverwritePermission = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.CHANGE_PRICE);
 
             String isVoidedItem = orderSeatProduct.orderProduct.getItem_void();
             final HashMap<Integer, String> subMenus = new HashMap<>();
@@ -649,15 +651,14 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                 }
                                 break;
                             case R.id.overridePrice:
-                                if (SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.CHANGE_PRICE)) {
+                                if (hasOverwritePermission) {
                                     if (myPref.getPreferences(MyPreferences.pref_skip_manager_price_override)) {
                                         overridePrice(orderProductIdx);
                                     } else {
                                         showPromptManagerPassword(OVERWRITE_PRICE, orderProductIdx, orderProductIdx);
                                     }
                                 } else {
-                                    Global.showPrompt(activity, R.string.dlog_title_error,
-                                            "Points claimed");
+                                    Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                                 }
                                 break;
                             case R.id.cancel:
@@ -675,6 +676,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         return true;
                     }
                 });
+                popup.getMenu().findItem(R.id.overridePrice).setEnabled(hasOverwritePermission);
                 popup.getMenu().findItem(R.id.removeProduct).setEnabled(hasRemoveItemPermission);
                 popup.getMenu().findItem(R.id.payWithLoyalty).setEnabled(Double.parseDouble(orderSeatProduct.orderProduct.getProd_price_points()) > 0);
                 popup.show();

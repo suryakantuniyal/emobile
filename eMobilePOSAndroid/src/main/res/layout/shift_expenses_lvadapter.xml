@@ -41,7 +41,7 @@
 
             <TextView
                 android:id="@+id/expenseID"
-                android:text="Expense ID"
+                android:text="@string/expense_id"
                 style="@style/text_shadow"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

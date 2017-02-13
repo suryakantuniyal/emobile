@@ -27,19 +27,17 @@ public class SettingsTab_FR extends Fragment implements OnClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.settings_layout, container, false);
-        boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.SYSTEM_SETTINGS);
+        boolean hasAdminPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.SYSTEM_SETTINGS);
+        boolean hasManagerPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.MANAGE_SHIFT);
         Button btnAdmin = (Button) view.findViewById(R.id.btnAdminSetting);
         Button btnManager = (Button) view.findViewById(R.id.btnManagerSetting);
         Button btnGeneral = (Button) view.findViewById(R.id.btnGeneralSetting);
         btnAdmin.setOnClickListener(this);
         btnManager.setOnClickListener(this);
         btnGeneral.setOnClickListener(this);
-        btnAdmin.setEnabled(hasPermissions);
-        btnManager.setEnabled(hasPermissions);
-        btnGeneral.setEnabled(hasPermissions);
-        if (!hasPermissions) {
-            Toast.makeText(getActivity(), R.string.permission_denied, Toast.LENGTH_LONG);
-        }
+        btnAdmin.setEnabled(hasAdminPermissions);
+        btnManager.setEnabled(hasManagerPermissions);
+
         return view;
     }
 
