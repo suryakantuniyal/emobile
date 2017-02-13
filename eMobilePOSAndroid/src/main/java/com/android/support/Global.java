@@ -85,6 +85,12 @@ import main.EMSDeviceManager;
 public class Global extends MultiDexApplication {
     public static final String EVOSNAP_PACKAGE_NAME = "com.emobilepos.icmpevo.app";
     private static com.android.support.LocationServices locationServices;
+    // Handle application transition for background
+    private Timer mActivityTransitionTimer;
+    private TimerTask mActivityTransitionTimerTask;
+    private boolean wasInBackground;
+    private final long MAX_ACTIVITY_TRANSITION_TIME_MS = 3000;
+
     //Load JNI from the library project. Refer MainActivity.java from library project elotouchCashDrawer.
     // In constructor we are loading .so file for Cash Drawer.
 //    static {
@@ -1193,7 +1199,6 @@ public class Global extends MultiDexApplication {
         }
 
         orderedProducts.setItemTotal(Double.toString(total.doubleValue() - discountRate));
-//        orderedProducts.setOverwrite_price(priceLevel.toString());
         orderedProducts.setProd_price_updated("0");
 
 
@@ -1231,9 +1236,7 @@ public class Global extends MultiDexApplication {
                 // retrieve PAN
                 // from track 1
                 {
-
                     card_number = tracks[0].replace("B", "").substring(1, startIndex - 2);
-
                     cardManager.setCardType(ProcessCreditCard_FA.getCardType(card_number));
 
                     if (card_number.length() > 4) {
@@ -1332,19 +1335,6 @@ public class Global extends MultiDexApplication {
 
         return cardManager;
     }
-
-
-    public static Object getFormatedNumber(boolean isDecimal, String val) {
-        Object returnedVal;
-        if (isDecimal) {
-            returnedVal = Double.parseDouble(val);
-        } else {
-            returnedVal = Integer.parseInt(val);
-        }
-
-        return returnedVal;
-    }
-
 
     public List<HashMap<String, Integer>> dictionary;
 
@@ -1505,11 +1495,7 @@ public class Global extends MultiDexApplication {
                 || _device_type == Global.KDC500 || _device_type == Global.OT310 || _device_type == Global.ELOPAYPOINT);
     }
 
-    // Handle application transition for background
-    private Timer mActivityTransitionTimer;
-    private TimerTask mActivityTransitionTimerTask;
-    private boolean wasInBackground;
-    private final long MAX_ACTIVITY_TRANSITION_TIME_MS = 3000;
+
 
     public void startActivityTransitionTimer() {
         this.mActivityTransitionTimer = new Timer();
