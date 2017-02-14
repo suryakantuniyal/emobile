@@ -1225,15 +1225,18 @@ public class SynchMethods {
             JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
             List<Order> orders = new ArrayList<>();
             OrdersHandler ordersHandler = new OrdersHandler(activity);
-            ordersHandler.emptyTable();
+            ordersHandler.deleteOnHoldsTable();
             reader.beginArray();
             int i = 0;
             while (reader.hasNext()) {
                 Order order = gson.fromJson(reader, Order.class);
                 order.ord_issync = "1";
                 order.isOnHold = "1";
-                orders.add(order);
-                i++;
+                Order onHoldOrder = ordersHandler.getOrder(order.ord_id);
+                if (onHoldOrder == null || onHoldOrder.isOnHold.equals("1")) {
+                    orders.add(order);
+                    i++;
+                }
                 if (i == 1000) {
                     ordersHandler.insert(orders);
                     orders.clear();

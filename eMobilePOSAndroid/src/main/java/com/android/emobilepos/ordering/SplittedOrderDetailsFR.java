@@ -378,8 +378,9 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                 splitedOrder.isOnHold = "0";
                 global.order.isOnHold = "0";
                 global.order.processed = "10";
+                splitedOrder.total_lines = String.valueOf(splitedOrder.getOrderProducts().size());
                 global.order.total_lines = String.valueOf(splitedOrder.getOrderProducts().size());
-                splitedOrder.ord_id = global.order.ord_id;
+//                splitedOrder.ord_id = global.order.ord_id;
 
                 if (summaryFa.splitType == SplittedOrderSummary_FA.SalesReceiptSplitTypes.SPLIT_EQUALLY) {
                     for (OrderSeatProduct seatProduct : summaryFa.orderSeatProducts) {
@@ -387,9 +388,9 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                             splitedOrder.getOrderProducts().add(seatProduct.orderProduct);
                         }
                     }
-                    splitedOrder.total_lines = String.valueOf(splitedOrder.getOrderProducts().size());
+
                     splitedOrder.syncOrderProductIds();
-                    ordersHandler.insert(global.order);
+                    ordersHandler.insert(splitedOrder);
                 } else {
                     splitedOrder.total_lines = String.valueOf(splitedOrder.getOrderProducts().size());
                     splitedOrder.syncOrderProductIds();
@@ -404,13 +405,16 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                 SynchMethods sm = new SynchMethods(dbManager);
                 sm.synchSendOnHold(false, true, getActivity());
             } else if (summaryFa.splitType == SplittedOrderSummary_FA.SalesReceiptSplitTypes.SPLIT_EQUALLY) {
-                splitedOrder.ord_id = global.order.ord_id;
-                splitedOrder.syncOrderProductIds();
-            } else {
-                nextOrderID = idGen.getNextID(GenerateNewID.IdType.ORDER_ID);
-                splitedOrder.ord_id = nextOrderID;
                 splitedOrder.processed = "10";
-                splitedOrder.isOnHold = "1";
+                splitedOrder.isOnHold = "0";
+                splitedOrder.syncOrderProductIds();
+                ordersHandler.insert(splitedOrder);
+                productsHandler.insert(splitedOrder.getOrderProducts());
+            } else {
+//                nextOrderID = idGen.getNextID(GenerateNewID.IdType.ORDER_ID);
+//                splitedOrder.ord_id = nextOrderID;
+                splitedOrder.processed = "10";
+                splitedOrder.isOnHold = "0";
                 splitedOrder.syncOrderProductIds();
                 ordersHandler.insert(splitedOrder);
                 productsHandler.insert(splitedOrder.getOrderProducts());

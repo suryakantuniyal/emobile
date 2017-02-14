@@ -277,8 +277,8 @@ public class OrdersHandler {
 //        }
 //    }
 
-    public void emptyTable() {
-        DBManager.getDatabase().execSQL("DELETE FROM " + table_name);
+    public void deleteOnHoldsTable() {
+        DBManager.getDatabase().execSQL("DELETE FROM " + table_name+ " isOnHold = '1'");
         DinningTableOrderDAO.truncate();
     }
 
@@ -459,19 +459,19 @@ public class OrdersHandler {
     public String getLastOrderId(int deviceId, int year) {
         AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
         String lastOrdID = assignEmployee.getMSLastOrderID();
-        boolean getIdFromDB = false;
+        boolean getIdFromDB = true;
         StringBuilder sb = new StringBuilder();
-        if (TextUtils.isEmpty(lastOrdID) || lastOrdID.length() <= 4) {
-            getIdFromDB = true;
-        } else {
-            String[] tokens = assignEmployee.getMSLastOrderID().split("-");
-            if (!tokens[2].equalsIgnoreCase(String.valueOf(year))) {
-                getIdFromDB = true;
-            }
-        }
+//        if (TextUtils.isEmpty(lastOrdID) || lastOrdID.length() <= 4) {
+//            getIdFromDB = true;
+//        } else {
+//            String[] tokens = assignEmployee.getMSLastOrderID().split("-");
+//            if (!tokens[2].equalsIgnoreCase(String.valueOf(year))) {
+//                getIdFromDB = true;
+//            }
+//        }
 
         if (getIdFromDB) {
-            sb.append("select max(ord_id) from ").append(table_name).append(" WHERE ord_id like '").append(deviceId)
+            sb.append("select max(ord_id) from ").append(table_name).append(" WHERE ord_id like '").append(assignEmployee.getEmpId())
                     .append("-%-").append(year).append("'");
 
             SQLiteStatement stmt = DBManager.getDatabase().compileStatement(sb.toString());

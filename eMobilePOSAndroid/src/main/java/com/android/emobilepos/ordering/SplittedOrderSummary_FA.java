@@ -315,8 +315,8 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                         }
                         SplitedOrder splitedOrder;
                         splitedOrder = new SplitedOrder(this, order);
-                        nextID = generateNewID.getNextID(nextID);
-                        splitedOrder.ord_id = nextID;
+//                        nextID = generateNewID.getNextID(nextID);
+//                        splitedOrder.ord_id = nextID;
                         List<OrderProduct> orderProducts = getProductsSingleReceipt();
                         BigDecimal orderSubTotal = new BigDecimal(0);
                         for (OrderProduct product : orderProducts) {
@@ -364,6 +364,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                     GenerateNewID generateNewID = new GenerateNewID(this);
                     nextID = generateNewID.getNextID(GenerateNewID.IdType.ORDER_ID);
                 }
+                int i = 0;
                 for (OrderSeatProduct seatProduct : orderSeatProducts) {
                     if (seatProduct.rowType == OrderProductListAdapter.RowType.TYPE_HEADER &&
                             !joinedGroupIds.contains(seatProduct.getSeatGroupId())) {
@@ -375,7 +376,11 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                             Crashlytics.logException(e);
                         }
                         SplitedOrder splitedOrder = new SplitedOrder(this, order);
-                        nextID = generateNewID.getNextID(nextID);
+                        if (i == 0) {
+                            nextID = splitedOrder.ord_id;
+                        } else {
+                            nextID = generateNewID.getNextID(nextID);
+                        }
                         splitedOrder.ord_id = nextID;
                         List<OrderProduct> orderProducts = getProductsBySeatsGroup(seatProduct.getSeatGroupId());
                         BigDecimal orderSubTotal = new BigDecimal(0);
@@ -391,6 +396,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                             splitedOrders.add(splitedOrder);
                         }
                         joinedGroupIds.add(seatProduct.getSeatGroupId());
+                        i++;
                     }
                 }
                 SplittedOrderSummaryAdapter summaryAdapter = new SplittedOrderSummaryAdapter(this, splitedOrders);
@@ -402,7 +408,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
     }
 
     private void setSplitEquallyReceipt(int splitQty) {
-        String nextID = assignEmployee.getMSLastOrderID();
+        String nextID = null;
         final List<SplitedOrder> splitedOrders = new ArrayList<>();
         for (OrderSeatProduct seatProduct : orderSeatProducts) {
             if (seatProduct.rowType == OrderProductListAdapter.RowType.TYPE_HEADER) {
@@ -415,7 +421,13 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                 }
                 for (int i = 0; i < splitQty; i++) {
                     SplitedOrder splitedOrder = new SplitedOrder(SplittedOrderSummary_FA.this, order);
-                    nextID = generateNewID.getNextID(nextID);
+                    if (i == 0) {
+                        nextID = order.ord_id;
+                    } else if (i == 1) {
+                        nextID = generateNewID.getNextID(GenerateNewID.IdType.ORDER_ID);
+                    } else {
+                        nextID = generateNewID.getNextID(nextID);
+                    }
                     splitedOrder.ord_id = nextID;
                     List<OrderProduct> orderProducts = getProductsSingleReceipt();
                     BigDecimal orderSubTotal = new BigDecimal(0);
