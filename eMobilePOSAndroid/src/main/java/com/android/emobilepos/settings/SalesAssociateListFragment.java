@@ -60,7 +60,7 @@ public class SalesAssociateListFragment extends Fragment implements AdapterView.
         String[] vals = new String[associates.size()];
         int i = 0;
         for (SalesAssociate associate : associates) {
-            vals[i] = String.format("%s (%s)", associate.getEmp_name(), String.valueOf(associate.getEmp_id()));
+            vals[i] = String.format("%s (%s)", associate.getEmpName(), String.valueOf(associate.getEmpId()));
             i++;
         }
         return vals;
@@ -74,7 +74,7 @@ public class SalesAssociateListFragment extends Fragment implements AdapterView.
     private void reloadGrid(int i) {
         adapter.selectedIdx = i;
         if (associates != null && !associates.isEmpty()) {
-            SalesAssociate associate = SalesAssociateDAO.getByEmpId(associates.get(i).getEmp_id());
+            SalesAssociate associate = SalesAssociateDAO.getByEmpId(associates.get(i).getEmpId());
             SalesAssociateConfigurationActivity activity = (SalesAssociateConfigurationActivity) getActivity();
             activity.setSelectedSalesAssociate(associate);
             activity.getDinningTablesGridFragment().refreshGrid();

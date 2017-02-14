@@ -30,8 +30,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.crashreport.ExceptionHandler;
-import com.android.dao.ClerkDAO;
 import com.android.dao.RealmModule;
+import com.android.dao.SalesAssociateDAO;
 import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.holders.Locations_Holder;
@@ -41,8 +41,8 @@ import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.Product;
-import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.ProductAttribute;
+import com.android.emobilepos.models.realms.SalesAssociate;
 import com.android.emobilepos.ordering.Catalog_FR;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
@@ -1335,8 +1335,8 @@ public class Global extends MultiDexApplication {
                     globalDlog.dismiss();
                     String enteredPass = viewField.getText().toString().trim();
                     if (myPref.isUseClerks()) {
-                        Clerk clerk = ClerkDAO.login(enteredPass, myPref);
-                        if (clerk == null) {
+                        SalesAssociate associate = SalesAssociateDAO.login(enteredPass, myPref);
+                        if (associate == null) {
                             validPassword[0] = false;
                             promptForMandatoryLogin(activity);
                         } else {

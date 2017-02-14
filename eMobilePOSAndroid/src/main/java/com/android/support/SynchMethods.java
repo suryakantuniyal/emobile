@@ -16,7 +16,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.dao.AssignEmployeeDAO;
-import com.android.dao.ClerkDAO;
 import com.android.dao.DeviceTableDAO;
 import com.android.dao.DinningTableDAO;
 import com.android.dao.EmployeePermissionDAO;
@@ -181,15 +180,18 @@ public class SynchMethods {
             JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
             List<Order> orders = new ArrayList<>();
             OrdersHandler ordersHandler = new OrdersHandler(activity);
-            ordersHandler.emptyTable();
+            ordersHandler.deleteOnHoldsOrders();
             reader.beginArray();
             int i = 0;
             while (reader.hasNext()) {
                 Order order = gson.fromJson(reader, Order.class);
                 order.ord_issync = "1";
                 order.isOnHold = "1";
-                orders.add(order);
-                i++;
+                Order onHold = ordersHandler.getOrder(order.ord_id);
+                if (onHold == null || TextUtils.isEmpty(onHold.ord_id)) {
+                    orders.add(order);
+                    i++;
+                }
                 if (i == 1000) {
                     ordersHandler.insert(orders);
                     orders.clear();
@@ -583,12 +585,12 @@ public class SynchMethods {
             GenerateXML xml = new GenerateXML(context);
             String jsonRequest = client.httpJsonRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
                     xml.downloadAll("ClerkPermissions"));
-//            Type listType = new com.google.gson.reflect.TypeToken<List<Shift>>() {
-//            }.getType();
             ClerkEmployeePermissionResponse response = gson.fromJson(jsonRequest, ClerkEmployeePermissionResponse.class);
-            ClerkDAO.truncate();
+//            ClerkDAO.truncate();
             EmployeePermissionDAO.truncate();
-            ClerkDAO.inserOrUpdate(response.getClerks());
+//            ClerkDAO.inserOrUpdate(response.getClerks());
+            SalesAssociateDAO.truncate();
+            SalesAssociateDAO.insert(response.getClerks());
             EmployeePermissionDAO.insertOrUpdate(response.getEmployeePersmissions());
         } catch (Exception e) {
             e.printStackTrace();
@@ -1454,8 +1456,8 @@ public class SynchMethods {
                 updateProgress(context.getString(R.string.sync_dload_clerks));
                 synchDownloadClerks();
                 synchClerkPersmissions();
-                updateProgress(context.getString(R.string.sync_dload_salesassociate));
-                synchDownloadSalesAssociate();
+//                updateProgress(context.getString(R.string.sync_dload_salesassociate));
+//                synchDownloadSalesAssociate();
                 updateProgress(context.getString(R.string.sync_dload_dinnertables));
                 synchDownloadDinnerTable();
                 synchSalesAssociateDinnindTablesConfiguration(context);
