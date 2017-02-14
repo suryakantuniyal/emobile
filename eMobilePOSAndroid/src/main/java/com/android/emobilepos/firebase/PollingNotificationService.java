@@ -133,7 +133,7 @@ public class PollingNotificationService extends Service {
 
             StringBuilder sb = new StringBuilder(context.getString(R.string.sync_enablermobile_deviceasxmltrans));
             sb.append("pollnotification.ashx?RegID=").append(URLEncoder.encode(accountNumber, "utf-8"));
-            sb.append("&fromdate=").append(DateUtils.getDateAsString(lastPolled));
+            sb.append("&fromdate=").append(URLEncoder.encode(DateUtils.getDateAsString(lastPolled), "utf-8"));
 
             InputStream inputStream = client.httpInputStreamRequest(sb.toString());
             JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
