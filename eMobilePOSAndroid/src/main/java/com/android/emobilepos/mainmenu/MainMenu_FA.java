@@ -5,12 +5,15 @@ import android.app.ActionBar.Tab;
 import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.PowerManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -26,7 +29,9 @@ import com.android.database.DBManager;
 import com.android.emobilepos.R;
 import com.android.emobilepos.firebase.NotificationHandler;
 import com.android.emobilepos.firebase.NotificationSettings;
+import com.android.emobilepos.firebase.PollingNotificationService;
 import com.android.emobilepos.firebase.RegistrationIntentService;
+import com.android.emobilepos.models.firebase.NotificationEvent;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -43,8 +48,12 @@ import java.util.ArrayList;
 import drivers.EMSsnbc;
 import main.EMSDeviceManager;
 
+import static com.android.emobilepos.models.firebase.NotificationEvent.*;
+
 public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
+    public static final String NOTIFICATION_RECEIVED = "NOTIFICATION_RECEIVED";
+    public static final String NOTIFICATION_MESSAGE = "NOTIFICATION_MESSAGE";
     public static Activity activity;
     private Global global;
     private boolean hasBeenCreated = false;
@@ -119,8 +128,8 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
         if (resultCode != ConnectionResult.SUCCESS) {
             if (apiAvailability.isUserResolvableError(resultCode)) {
-                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
-                        .show();
+//                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+//                        .show();
             } else {
                 Log.i("checkPlayServices", "This device is not supported by Google Play Services.");
 //                ToastNotify("This device is not supported by Google Play Services.");
@@ -144,15 +153,18 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
     public void registerWithNotificationHubs() {
         if (checkPlayServices()) {
+//            if (false) {
 //            String accountNumber = myPref.getAcctNumber();
 //            FirebaseMessaging.getInstance().subscribeToTopic(accountNumber);
             // Start IntentService to register this application with FCM.
             Intent intent = new Intent(this, RegistrationIntentService.class);
             startService(intent);
+        } else {
+            startPollingService();
         }
     }
 
-//    private void sendFirebaseMessage() {
+    //    private void sendFirebaseMessage() {
 //        FirebaseMessaging messaging = FirebaseMessaging.getInstance();
 //        messaging.send(new RemoteMessage.Builder(new NotificationSettings().getSenderId() + "@gcm.googleapis.com")
 //                .setMessageId(String.valueOf(SystemClock.currentThreadTimeMillis()))
@@ -180,6 +192,31 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 //
 //        }
 //    }
+    private BroadcastReceiver messageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Handler handler = new Handler();
+            String eventAction = intent.getStringExtra(NOTIFICATION_MESSAGE);
+            NotificationEventAction action = NotificationEventAction.getNotificationEventByCode(Integer.parseInt(eventAction));
+            switch (action) {
+                case SYNC_HOLDS:
+                    getSynchTextView().setText(getString(R.string.sync_dload_ordersonhold));
+                    getSynchTextView().setVisibility(View.VISIBLE);
+                    break;
+                case SYNC_MESAS_CONFIG:
+                    getSynchTextView().setText(getString(R.string.sync_dload_dinnertables));
+                    getSynchTextView().setVisibility(View.VISIBLE);
+                    break;
+            }
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    getSynchTextView().setVisibility(View.GONE);
+                }
+            };
+            handler.postDelayed(runnable, 5000);
+        }
+    };
 
     @Override
     public void onResume() {
@@ -189,6 +226,8 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 //                sendFirebaseMessage();
 //            }
 //        }).start();
+        registerReceiver(messageReceiver, new IntentFilter(NOTIFICATION_RECEIVED));
+
         if (global.isApplicationSentToBackground(activity)) {
             global.loggedIn = false;
         }
@@ -223,6 +262,18 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         forceTabs();
+    }
+
+    private void startPollingService() {
+        Intent startIntent = new Intent(this, PollingNotificationService.class);
+        startIntent.setAction(PollingNotificationService.START_ACTION);
+        startService(startIntent);
+    }
+
+    private void stopPollingService() {
+        Intent stopIntent = new Intent(this, PollingNotificationService.class);
+        stopIntent.setAction(PollingNotificationService.STOP_ACTION);
+        startService(stopIntent);
     }
 
     public void forceTabs() {
@@ -265,6 +316,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
     @Override
     public void onPause() {
         super.onPause();
+        unregisterReceiver(messageReceiver);
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         boolean isScreenOn = powerManager.isScreenOn();
         if (!isScreenOn)

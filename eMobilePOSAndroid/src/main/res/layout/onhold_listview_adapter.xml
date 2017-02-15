@@ -42,6 +42,33 @@
         android:textAppearance="@style/black_text_appearance_unbold"
         android:textSize="@dimen/listview_text_size" />
 
+    <TextView
+        android:text="4"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/guestNumbertextView"
+        android:drawableLeft="@drawable/ic_group_black_18dp"
+        android:layout_marginLeft="10dp"
+        android:layout_weight="1" />
+
+    <TextView
+        android:text="0:24"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/timeOnSitetextView"
+        android:drawableLeft="@drawable/ic_access_time_black_18dp"
+        android:layout_marginLeft="10dp"
+        android:layout_weight="1" />
+
+    <TextView
+        android:text="$24.54"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/orderTotaltextView"
+        android:drawableLeft="@drawable/ic_attach_money_black_18dp"
+        android:layout_marginLeft="10dp"
+        android:layout_weight="1" />
+
     <FrameLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -53,7 +80,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/restaurantTabletextView"
             android:gravity="center"
-            android:drawableLeft="@drawable/table_round_sm"
+            android:drawableLeft="@drawable/ic_local_dining_black_18dp"
             android:layout_marginLeft="10dp"/>
 
     </FrameLayout>

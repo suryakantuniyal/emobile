@@ -8,6 +8,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
@@ -31,18 +32,19 @@ public class NotificationHandler extends NotificationsHandler {
     @Override
     public void onReceive(final Context context, Bundle bundle) {
         ctx = context;
-        String eventAction = bundle.getString("action");
+        final String eventAction = bundle.getString("action");
         if (eventAction != null) {
             if (NetworkUtils.isConnectedToInternet(context)) {
                 NotificationEvent.NotificationEventAction action = NotificationEvent.NotificationEventAction.getNotificationEventByCode(Integer.parseInt(eventAction));
-//                sendNotification(eventAction);
                 switch (action) {
                     case SYNC_HOLDS:
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
                                 try {
+                                    Log.d("NotificationHandler", "synchOrdersOnHoldList");
                                     SynchMethods.synchOrdersOnHoldList(context);
+                                    updateMainActivity(context, eventAction);
                                 } catch (SAXException e) {
                                     e.printStackTrace();
                                 } catch (IOException e) {
@@ -56,7 +58,9 @@ public class NotificationHandler extends NotificationsHandler {
                             @Override
                             public void run() {
                                 try {
+                                    Log.d("NotificationHandler", "synchSalesAssociateDinnindTablesConfiguration");
                                     SynchMethods.synchSalesAssociateDinnindTablesConfiguration(context);
+                                    updateMainActivity(context, eventAction);
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 } catch (SAXException e) {
@@ -68,6 +72,13 @@ public class NotificationHandler extends NotificationsHandler {
                 }
             }
         }
+    }
+
+    static void updateMainActivity(Context context, String message) {
+        Intent intent = new Intent(MainMenu_FA.NOTIFICATION_RECEIVED);
+        intent.putExtra(MainMenu_FA.NOTIFICATION_MESSAGE, message);
+        context.sendBroadcast(intent);
+        Log.d("NotificationHandler", "sendBroadcast");
     }
 
     private void sendNotification(String msg) {
