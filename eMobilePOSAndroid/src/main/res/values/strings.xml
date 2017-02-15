@@ -1240,19 +1240,19 @@
     <string name="notes">Notes</string>
     <string name="coins">Coins</string>
     <string name="currency">Currency</string>
-    <string name="oneDollar">$1.00</string>
-    <string name="fiveDollar">$5.00</string>
-    <string name="tenDollars">$10.00</string>
-    <string name="twentyDollars">$20.00</string>
-    <string name="fiftyDollars">$50.00</string>
-    <string name="hundredDollars">$100.00</string>
-    <string name="oneCent">$0.01</string>
-    <string name="fiveCents">$0.05</string>
-    <string name="quarterCents">$0.25</string>
-    <string name="plus_sign">+</string>
-    <string name="minus_sign">-</string>
-    <string name="equal_sign">=</string>
-    <string name="tenCents">$0.10</string>
+    <string name="oneDollar" translatable="false">$1.00</string>
+    <string name="fiveDollar" translatable="false">$5.00</string>
+    <string name="tenDollars" translatable="false">$10.00</string>
+    <string name="twentyDollars" translatable="false">$20.00</string>
+    <string name="fiftyDollars" translatable="false">$50.00</string>
+    <string name="hundredDollars" translatable="false">$100.00</string>
+    <string name="oneCent" translatable="false">$0.01</string>
+    <string name="fiveCents" translatable="false">$0.05</string>
+    <string name="quarterCents" translatable="false">$0.25</string>
+    <string name="plus_sign" translatable="false">+</string>
+    <string name="minus_sign" translatable="false">-</string>
+    <string name="equal_sign" translatable="false">=</string>
+    <string name="tenCents" translatable="false">$0.10</string>
     <string name="view_video">View Video</string>
     <string name="no_video">No Video</string>
     <string name="information">Information</string>
