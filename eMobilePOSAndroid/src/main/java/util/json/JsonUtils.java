@@ -1,12 +1,15 @@
 package util.json;
 
 import com.android.emobilepos.models.realms.DinningTable;
+import com.android.emobilepos.models.realms.OrderAttributes;
 import com.android.support.DateUtils;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+
+import java.util.ArrayList;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;

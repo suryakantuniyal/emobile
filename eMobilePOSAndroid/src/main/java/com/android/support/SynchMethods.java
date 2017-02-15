@@ -20,6 +20,7 @@ import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.DeviceTableDAO;
 import com.android.dao.DinningTableDAO;
 import com.android.dao.MixMatchDAO;
+import com.android.dao.OrderAttributesDAO;
 import com.android.dao.OrderProductAttributeDAO;
 import com.android.dao.SalesAssociateDAO;
 import com.android.dao.UomDAO;
@@ -57,6 +58,7 @@ import com.android.emobilepos.models.ProductAddons;
 import com.android.emobilepos.models.ProductAlias;
 import com.android.emobilepos.models.realms.DinningTable;
 import com.android.emobilepos.models.realms.MixMatch;
+import com.android.emobilepos.models.realms.OrderAttributes;
 import com.android.emobilepos.models.realms.PaymentMethod;
 import com.android.emobilepos.models.realms.SalesAssociate;
 import com.android.emobilepos.models.salesassociates.DinningLocationConfiguration;
@@ -243,6 +245,8 @@ public class SynchMethods {
                 synchProdAddon(this);
 
                 synchProducts(this);
+
+                synchOrderAttributes(this);
 
                 synchProductAliases(this);
 
@@ -1475,6 +1479,35 @@ public class SynchMethods {
                 }
             }
             productsHandler.insert(products);
+            reader.endArray();
+            reader.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private void synchOrderAttributes(resynchAsync task) throws IOException, SAXException {
+        try {
+            task.updateProgress(activity.getString(R.string.sync_dload_products));
+            Gson gson = JsonUtils.getInstance();
+            GenerateXML xml = new GenerateXML(activity);
+            InputStream inputStream = client.httpInputStreamRequest(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                    xml.downloadAll("OrderAttributes"));
+            JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
+            List<OrderAttributes> orderAttributes = new ArrayList<>();
+            reader.beginArray();
+            int i = 0;
+            while (reader.hasNext()) {
+                OrderAttributes attributes = gson.fromJson(reader, OrderAttributes.class);
+                orderAttributes.add(attributes);
+                i++;
+                if (i == 1000) {
+                    OrderAttributesDAO.insert(orderAttributes);
+                    orderAttributes.clear();
+                    i = 0;
+                }
+            }
+            OrderAttributesDAO.insert(orderAttributes);
             reader.endArray();
             reader.close();
 

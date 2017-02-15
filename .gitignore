@@ -4,6 +4,10 @@ eMobilePOSAndroid/.idea/
 .idea/
 local.properties
 build/
-.gradle/
+eMobilePOSAndroid.iml
+gradlew.bat
 projectFilesBackup/
-gradle/
+.gradle/
+emobileposblm/
+eMobilePOSAndroid-eMobilePOSAndroid.iml
+
