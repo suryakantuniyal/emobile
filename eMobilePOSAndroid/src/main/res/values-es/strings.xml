@@ -1309,6 +1309,12 @@
     <string name="notes">Notes</string>
     <string name="coins">Coins</string>
     <string name="currency">Currency</string>
+    <string name="view_video">View Video</string>
+    <string name="no_video">No Video</string>
+    <string name="information">Information</string>
+    <string name="inventory">Inventory</string>
+    <string name="identification">Identification</string>
+    <string name="attributes">Attributes</string>
 
 
 </resources>

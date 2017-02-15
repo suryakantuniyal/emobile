@@ -1252,6 +1252,12 @@
     <string name="plus_sign" translatable="false">+</string>
     <string name="minus_sign" translatable="false">-</string>
     <string name="equal_sign" translatable="false">=</string>
+    <string name="view_video">View Video</string>
+    <string name="no_video">No Video</string>
+    <string name="information">Information</string>
+    <string name="inventory">Inventory</string>
+    <string name="identification">Identification</string>
+    <string name="attributes">Attributes</string>
 
 
 </resources>

@@ -372,8 +372,8 @@ public class Global extends MultiDexApplication {
     public final static int FROM_LOGIN_ACTIVITTY = 109;
     public final static int FROM_REGISTRATION_ACTIVITY = 110;
     public final static int FROM_SYNCH_ACTIVITY = 111;
+    public final static int FROM_ORDER_ATTRIBUTES_ACTIVITY = 112;
 
-    public final static int FROM_ADDING_ORDERS = 112;
 
     public final static int BLUEBAMBOO = 0;
     public final static int BLUESTAR = 1;
@@ -1082,6 +1082,7 @@ public class Global extends MultiDexApplication {
         result.put("GetOrderProductsAttr", "getXMLOrderProductsAttr.aspx");
         result.put("GetLocations", "getXMLLocations.aspx");
         result.put("GetLocationsInventory", "getXMLLocationsInventory.aspx");
+        result.put("OrderAttributes", "getXMLOrdersAttributeList.ashx");
 
         return Collections.unmodifiableMap(result);
     }

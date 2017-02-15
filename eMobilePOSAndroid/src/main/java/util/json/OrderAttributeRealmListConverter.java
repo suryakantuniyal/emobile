@@ -1,6 +1,6 @@
 package util.json;
 
-import com.android.emobilepos.models.realms.DinningTable;
+import com.android.emobilepos.models.realms.OrderAttributes;
 import com.android.support.DateUtils;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
@@ -21,7 +21,7 @@ import io.realm.RealmObject;
  * Created by guarionex on 9/27/16.
  */
 
-public class DinningTableRealmListConverter implements JsonSerializer<RealmList<DinningTable>> {
+public class OrderAttributeRealmListConverter implements JsonSerializer<RealmList<OrderAttributes>> {
     Realm realm = Realm.getDefaultInstance();
     Gson gson = new GsonBuilder()
             .setExclusionStrategies(new ExclusionStrategy() {
@@ -38,13 +38,13 @@ public class DinningTableRealmListConverter implements JsonSerializer<RealmList<
             .create();
 
     @Override
-    public JsonElement serialize(RealmList<DinningTable> dinningTables, Type type, JsonSerializationContext jsonSerializationContext) {
+    public JsonElement serialize(RealmList<OrderAttributes> orderAttributes, Type type, JsonSerializationContext jsonSerializationContext) {
         JsonArray ja = new JsonArray();
-        for (DinningTable table : dinningTables) {
-            if (table.isValid() && table.isManaged()) {
-                ja.add(gson.toJsonTree(realm.copyFromRealm(table), DinningTable.class));
+        for (OrderAttributes attributes : orderAttributes) {
+            if (attributes.isValid() && attributes.isManaged()) {
+                ja.add(gson.toJsonTree(realm.copyFromRealm(attributes), OrderAttributes.class));
             } else {
-                ja.add(gson.toJsonTree(table, DinningTable.class));
+                ja.add(gson.toJsonTree(attributes, OrderAttributes.class));
             }
         }
         return ja;

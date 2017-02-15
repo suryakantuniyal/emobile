@@ -27,6 +27,7 @@ import com.android.database.VoidTransactionsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.models.realms.OrderAttributes;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.shifts.ClockInOut_FA;
 
@@ -610,6 +611,8 @@ public class GenerateXML {
                 serializer.text(order.ord_po);
                 serializer.endTag(empstr, "ord_po");
 
+                buildOrderAttributes(serializer, order);
+
                 serializer.startTag(empstr, "total_lines");
                 serializer.text(order.total_lines);
                 serializer.endTag(empstr, "total_lines");
@@ -867,6 +870,8 @@ public class GenerateXML {
         serializer.text(order.ord_po);
         serializer.endTag(empstr, "ord_po");
 
+        buildOrderAttributes(serializer, order);
+
         serializer.startTag(empstr, "total_lines");
         serializer.text(order.total_lines);
         serializer.endTag(empstr, "total_lines");
@@ -993,6 +998,32 @@ public class GenerateXML {
         serializer.endTag(empstr, "OrderProducts");
         serializer.endTag(empstr, "Order");
 
+    }
+
+    private void buildOrderAttributes(XmlSerializer serializer, Order order) throws IOException {
+        if(order.orderAttributes!=null) {
+            serializer.startTag(empstr, "OrderAttributes");
+            for (OrderAttributes attributes : order.orderAttributes) {
+                if(!TextUtils.isEmpty(attributes.getInputValue())) {
+                    serializer.startTag(empstr, "OrderAttribute");
+
+                    serializer.startTag(empstr, "ord_attr_id");
+                    serializer.text(StringUtil.nullStringToEmpty(attributes.getIDK()));
+                    serializer.endTag(empstr, "ord_attr_id");
+
+                    serializer.startTag(empstr, "ord_attr_name");
+                    serializer.text(StringUtil.nullStringToEmpty(attributes.getOrdAttrName()));
+                    serializer.endTag(empstr, "ord_attr_name");
+
+                    serializer.startTag(empstr, "ord_attr_value");
+                    serializer.text(StringUtil.nullStringToEmpty(attributes.getInputValue()));
+                    serializer.endTag(empstr, "ord_attr_value");
+
+                    serializer.endTag(empstr, "OrderAttribute");
+                }
+            }
+            serializer.endTag(empstr, "OrderAttributes");
+        }
     }
 
     private String getCustAddr(HashMap<String, String> map, String key) {
