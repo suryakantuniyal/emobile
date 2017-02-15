@@ -78,6 +78,8 @@
         <item name="menu_consignment">12</item>
         <item name="menu_transfer_inventory">13</item>
         <item name="menu_tip_adjustment">14</item>
+        <item name="menu_clerk_shifts">15</item>
+        <item name="menu_shift_expense">16</item>
     </string-array>
 
     <string-array name="mainMenuKey">
@@ -96,6 +98,8 @@
         <item name="menu_consignment">12</item>
         <item name="menu_transfer_inventory">13</item>
         <item name="menu_tip_adjustment">14</item>
+        <item name="menu_clerk_shifts">15</item>
+        <item name="menu_shift_expense">16</item>
     </string-array>
 
     <string-array name="printPrefArray">
