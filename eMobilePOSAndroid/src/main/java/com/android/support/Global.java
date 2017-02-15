@@ -305,7 +305,7 @@ public class Global extends MultiDexApplication {
     public String lastInvID = "";
     public int lastProdOrdID = 0;
     public boolean isSubcategory = false, hasSubcategory = false;
-    public boolean loggedIn = false;
+    public static boolean loggedIn = false;
     public List<HashMap<String, Integer>> dictionary;
     // ---------- Used to store order details selected info -----//
     private int selectedShippingMethod;

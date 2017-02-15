@@ -299,6 +299,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
         private void setPrefManager(SettingListActivity.SettingSection section, PreferenceManager prefManager) {
             switch (section) {
                 case GENERAL:
+                    prefManager.findPreference("pref_use_clerks").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_transaction_num_prefix").setOnPreferenceClickListener(this);
                     break;
                 case RESTAURANT:
@@ -462,6 +463,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
         public boolean onPreferenceClick(Preference preference) {
             Intent intent;
             switch (preference.getTitleRes()) {
+
                 case R.string.config_mw_with_genius:
                     CheckBoxPreference checkBoxPreference = (CheckBoxPreference) preference;
                     if (checkBoxPreference.isChecked()) {
@@ -478,6 +480,8 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                         PayMethodsDAO.delete("Wallet");
                     }
                     break;
+                case R.string.config_use_clerks:
+                    Global.loggedIn = false;
                 case R.string.config_use_navigationbar:
                     getActivity().finish();
                     getActivity().startActivity(getActivity().getIntent());
