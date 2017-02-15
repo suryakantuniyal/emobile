@@ -483,19 +483,26 @@
             android:label="@string/title_activity_sales_associate_configuration" />
 
         <!--<service android:name=".firebase.FirebaseInstanceIdSrv">-->
-            <!--<intent-filter>-->
-                <!--<action android:name="com.google.firebase.INSTANCE_ID_EVENT" />-->
-            <!--</intent-filter>-->
+        <!--<intent-filter>-->
+        <!--<action android:name="com.google.firebase.INSTANCE_ID_EVENT" />-->
+        <!--</intent-filter>-->
         <!--</service>-->
-        <!--<service-->
-            <!--android:name=".firebase.RegistrationIntentService"-->
-            <!--android:exported="false" />-->
+
+        <service
+            android:name=".firebase.RegistrationIntentService"
+            android:exported="false" />
+
+        <service
+            android:name=".firebase.PollingNotificationService"
+            android:exported="false"
+            android:stopWithTask="true" />
 
         <receiver
             android:name="com.microsoft.windowsazure.notifications.NotificationsBroadcastReceiver"
             android:permission="com.google.android.c2dm.permission.SEND">
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <action android:name="pollingNotificationService.action.main" />
 
                 <category android:name="com.emobilepos.app" />
             </intent-filter>
@@ -505,10 +512,7 @@
         <!-- <action android:name="com.google.firebase.MESSAGING_EVENT" /> -->
         <!-- </intent-filter> -->
         <!-- </service> -->
-        <activity
-            android:name=".shifts.ShiftsActivity"
-            android:label="@string/title_activity_shifts"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity android:name="com.emobilepos.app.ShiftsActivity" />
     </application>
 
 </manifest>

@@ -167,77 +167,8 @@ public class SynchMethods {
         return OAuthManager.getInstance(activity, preferences.getAcctNumber(), preferences.getAcctPassword());
     }
 
-    public static String getTagValue(String xml, String tagName) {
-        return xml.split("<" + tagName + ">")[1].split("</" + tagName + ">")[0];
-    }
 
-    public static void synchOrdersOnHoldList(Context activity) throws SAXException, IOException {
-        try {
-            Gson gson = JsonUtils.getInstance();
-            GenerateXML xml = new GenerateXML(activity);
-            InputStream inputStream = new HttpClient().httpInputStreamRequest(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                    xml.downloadAll("GetOrdersOnHoldList"));
-            JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
-            List<Order> orders = new ArrayList<>();
-            OrdersHandler ordersHandler = new OrdersHandler(activity);
-            ordersHandler.deleteOnHoldsOrders();
-            reader.beginArray();
-            int i = 0;
-            while (reader.hasNext()) {
-                Order order = gson.fromJson(reader, Order.class);
-                order.ord_issync = "1";
-                order.isOnHold = "1";
-                Order onHold = ordersHandler.getOrder(order.ord_id);
-                if (onHold == null || TextUtils.isEmpty(onHold.ord_id)) {
-                    orders.add(order);
-                    i++;
-                }
-                if (i == 1000) {
-                    ordersHandler.insert(orders);
-                    orders.clear();
-                    i = 0;
-                }
-            }
-            ordersHandler.insert(orders);
-            reader.endArray();
-            reader.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
-    public static void synchOrdersOnHoldDetails(Context activity, String ordID) throws SAXException, IOException {
-        try {
-            HttpClient client = new HttpClient();
-            Gson gson = JsonUtils.getInstance();
-            GenerateXML xml = new GenerateXML(activity);
-            InputStream inputStream = client.httpInputStreamRequest(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                    xml.getOnHold(Global.S_ORDERS_ON_HOLD_DETAILS, ordID));
-            JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
-            List<OrderProduct> orderProducts = new ArrayList<>();
-            OrderProductsHandler orderProductsHandler = new OrderProductsHandler(activity);
-            reader.beginArray();
-            int i = 0;
-            while (reader.hasNext()) {
-                OrderProduct product = gson.fromJson(reader, OrderProduct.class);
-                orderProducts.add(product);
-                i++;
-                if (i == 1000) {
-                    OrderProductUtils.assignAddonsOrderProduct(orderProducts);
-                    orderProductsHandler.insert(orderProducts);
-                    orderProducts.clear();
-                    i = 0;
-                }
-            }
-            OrderProductUtils.assignAddonsOrderProduct(orderProducts);
-            orderProductsHandler.completeProductFields(orderProducts, activity);
-            orderProductsHandler.insert(orderProducts);
-            reader.endArray();
-            reader.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     public static void postSalesAssociatesConfiguration(Activity activity, List<SalesAssociate> salesAssociates) throws Exception {
         List<DinningLocationConfiguration> configurations = new ArrayList<>();
@@ -699,6 +630,78 @@ public class SynchMethods {
             }
         }
         return "";
+    }
+
+    public static String getTagValue(String xml, String tagName) {
+        return xml.split("<" + tagName + ">")[1].split("</" + tagName + ">")[0];
+    }
+
+    public static void synchOrdersOnHoldList(Context activity) throws SAXException, IOException {
+        try {
+            Gson gson = JsonUtils.getInstance();
+            GenerateXML xml = new GenerateXML(activity);
+            InputStream inputStream = new HttpClient().httpInputStreamRequest(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                    xml.downloadAll("GetOrdersOnHoldList"));
+            JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
+            List<Order> orders = new ArrayList<>();
+            OrdersHandler ordersHandler = new OrdersHandler(activity);
+            ordersHandler.deleteOnHoldsTable();
+            reader.beginArray();
+            int i = 0;
+            while (reader.hasNext()) {
+                Order order = gson.fromJson(reader, Order.class);
+                order.ord_issync = "1";
+                order.isOnHold = "1";
+                Order onHoldOrder = ordersHandler.getOrder(order.ord_id);
+                if (onHoldOrder == null || onHoldOrder.isOnHold.equals("1")) {
+                    orders.add(order);
+                    i++;
+                }
+                if (i == 1000) {
+                    ordersHandler.insert(orders);
+                    orders.clear();
+                    i = 0;
+                }
+            }
+            ordersHandler.insert(orders);
+            reader.endArray();
+            reader.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void synchOrdersOnHoldDetails(Context activity, String ordID) throws SAXException, IOException {
+        try {
+            HttpClient client = new HttpClient();
+            Gson gson = JsonUtils.getInstance();
+            GenerateXML xml = new GenerateXML(activity);
+            InputStream inputStream = client.httpInputStreamRequest(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                    xml.getOnHold(Global.S_ORDERS_ON_HOLD_DETAILS, ordID));
+            JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
+            List<OrderProduct> orderProducts = new ArrayList<>();
+            OrderProductsHandler orderProductsHandler = new OrderProductsHandler(activity);
+            reader.beginArray();
+            int i = 0;
+            while (reader.hasNext()) {
+                OrderProduct product = gson.fromJson(reader, OrderProduct.class);
+                orderProducts.add(product);
+                i++;
+                if (i == 1000) {
+                    OrderProductUtils.assignAddonsOrderProduct(orderProducts);
+                    orderProductsHandler.insert(orderProducts);
+                    orderProducts.clear();
+                    i = 0;
+                }
+            }
+            OrderProductUtils.assignAddonsOrderProduct(orderProducts);
+            orderProductsHandler.completeProductFields(orderProducts, activity);
+            orderProductsHandler.insert(orderProducts);
+            reader.endArray();
+            reader.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /************************************

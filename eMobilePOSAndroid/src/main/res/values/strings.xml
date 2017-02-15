@@ -1228,14 +1228,13 @@
     <string name="yes_void">Yes, void it.</string>
     <string name="dlog_msg_cant_open_claimed_hold">Claimed orders can not be opened.</string>
     <string name="loading_orders">Loading orders. Please wait.</string>
-    <string name="sync_dload_settings">Loading settings...</string>
-    <string name="sync_saving_settings">Saving settings...</string>
+    <string name="sync_dload_settings">Loading settings…</string>
+    <string name="sync_saving_settings">Saving settings…</string>
     <string name="device_name">Device Name</string>
     <string name="unknown">Unknown</string>
     <string name="restaurant_table">Restaurant Table:</string>
     <string name="dlog_title_waiter_manager_signin">Waiter/Manager Signin</string>
     <string name="card_already_processed">Card has already been processed</string>
-    <string name="title_activity_shifts">ShiftsActivity</string>
     <string name="clerk_name">Clerk Name</string>
     <string name="shift_opened_at">Opened on</string>
     <string name="notes">Notes</string>

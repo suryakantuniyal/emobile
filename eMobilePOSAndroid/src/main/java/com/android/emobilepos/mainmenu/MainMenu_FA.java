@@ -29,8 +29,8 @@ import com.android.database.DBManager;
 import com.android.emobilepos.R;
 import com.android.emobilepos.firebase.NotificationHandler;
 import com.android.emobilepos.firebase.NotificationSettings;
+import com.android.emobilepos.firebase.PollingNotificationService;
 import com.android.emobilepos.firebase.RegistrationIntentService;
-import com.android.emobilepos.models.firebase.NotificationEvent;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -47,7 +47,7 @@ import java.util.ArrayList;
 import drivers.EMSsnbc;
 import main.EMSDeviceManager;
 
-import static com.android.emobilepos.models.firebase.NotificationEvent.*;
+import static com.android.emobilepos.models.firebase.NotificationEvent.NotificationEventAction;
 
 public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
@@ -127,8 +127,8 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
         if (resultCode != ConnectionResult.SUCCESS) {
             if (apiAvailability.isUserResolvableError(resultCode)) {
-                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
-                        .show();
+//                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+//                        .show();
             } else {
                 Log.i("checkPlayServices", "This device is not supported by Google Play Services.");
 //                ToastNotify("This device is not supported by Google Play Services.");
@@ -152,11 +152,14 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
     public void registerWithNotificationHubs() {
         if (checkPlayServices()) {
+//            if (false) {
 //            String accountNumber = myPref.getAcctNumber();
 //            FirebaseMessaging.getInstance().subscribeToTopic(accountNumber);
             // Start IntentService to register this application with FCM.
             Intent intent = new Intent(this, RegistrationIntentService.class);
             startService(intent);
+        } else {
+            startPollingService();
         }
     }
 
@@ -223,6 +226,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 //            }
 //        }).start();
         registerReceiver(messageReceiver, new IntentFilter(NOTIFICATION_RECEIVED));
+
         if (global.isApplicationSentToBackground(activity)) {
             global.loggedIn = false;
         }
@@ -257,6 +261,18 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         forceTabs();
+    }
+
+    private void startPollingService() {
+        Intent startIntent = new Intent(this, PollingNotificationService.class);
+        startIntent.setAction(PollingNotificationService.START_ACTION);
+        startService(startIntent);
+    }
+
+    private void stopPollingService() {
+        Intent stopIntent = new Intent(this, PollingNotificationService.class);
+        stopIntent.setAction(PollingNotificationService.STOP_ACTION);
+        startService(stopIntent);
     }
 
     public void forceTabs() {

@@ -18,6 +18,7 @@ import android.support.annotation.Nullable;
 import android.support.multidex.MultiDexApplication;
 import android.text.Html;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
@@ -30,6 +31,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.crashreport.ExceptionHandler;
+import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.RealmModule;
 import com.android.dao.SalesAssociateDAO;
 import com.android.database.VolumePricesHandler;
@@ -41,6 +43,7 @@ import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.Product;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.ProductAttribute;
 import com.android.emobilepos.models.realms.SalesAssociate;
 import com.android.emobilepos.ordering.Catalog_FR;
@@ -86,6 +89,13 @@ import main.EMSDeviceManager;
 
 public class Global extends MultiDexApplication {
     public static final String EVOSNAP_PACKAGE_NAME = "com.emobilepos.icmpevo.app";
+    private static com.android.support.LocationServices locationServices;
+    // Handle application transition for background
+    private Timer mActivityTransitionTimer;
+    private TimerTask mActivityTransitionTimerTask;
+    private boolean wasInBackground;
+    private final long MAX_ACTIVITY_TRANSITION_TIME_MS = 3000;
+
     public static final int MAGTEK = 0;
     //Load JNI from the library project. Refer MainActivity.java from library project elotouchCashDrawer.
     // In constructor we are loading .so file for Cash Drawer.
@@ -278,9 +288,7 @@ public class Global extends MultiDexApplication {
     public static double addonTotalAmount = 0;
     public static boolean isFromOnHold = false;
     public static Map<String, String> paymentIconsMap = paymentIconMap();
-    private static com.android.support.LocationServices locationServices;
     private static Dialog popDlog;
-    private final long MAX_ACTIVITY_TRANSITION_TIME_MS = 3000;
     public int searchType = 0;
     public String encodedImage = "";
     public int orientation;
@@ -310,11 +318,7 @@ public class Global extends MultiDexApplication {
     private String selectedComments;
     private String selectedPO;
     private Dialog globalDlog;
-    // -------------------end----------------------//
-    // Handle application transition for background
-    private Timer mActivityTransitionTimer;
-    private TimerTask mActivityTransitionTimerTask;
-    private boolean wasInBackground;
+
 
     public static String getPeripheralName(int type) {
         String _name = "Unknown";
@@ -724,6 +728,97 @@ public class Global extends MultiDexApplication {
         return returnedVal;
     }
 
+    public int checkIfGroupBySKU(Activity activity, String prodID, String pickedQty) {
+        int orderIndex = -1;
+        MyPreferences myPref = new MyPreferences(activity);
+        int size = this.orderProducts.size();
+        boolean found = false;
+
+        for (int i = size - 1; i >= 0; i--) {
+            if (this.orderProducts.get(i).getProd_id().equals(prodID) && !orderProducts.get(i).isReturned()) {
+                orderIndex = i;
+                found = true;
+                break;
+            }
+        }
+
+        if (found && !OrderingMain_FA.returnItem) {
+            String value = OrderProductUtils.getOrderProductQty(this.orderProducts, prodID);//this.qtyCounter.get(prodID);
+            double previousQty = 0.0;
+            if (value != null && !value.isEmpty())
+                previousQty = Double.parseDouble(value);
+            double sum = Double.parseDouble(pickedQty) + previousQty;
+            sum = OrderingMain_FA.returnItem ? sum * -1 : sum;
+
+            if (myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities)) {
+                value = Global.formatNumber(true, sum);
+                this.orderProducts.get(orderIndex).setOrdprod_qty(value);
+                // this.cur_orders.get(0).setQty(value);
+//                this.qtyCounter.put(prodID, Double.toString(sum));
+            } else {
+                value = Global.formatNumber(false, sum);
+                this.orderProducts.get(orderIndex).setOrdprod_qty(value);
+                // this.cur_orders.get(0).setQty(value);
+//                this.qtyCounter.put(prodID, Integer.toString((int) sum));
+            }
+        }
+        return orderIndex;
+    }
+
+    public void refreshParticularOrder(Activity activity, int position, Product product) {
+        OrderProduct orderedProducts = this.orderProducts.get(position);
+        MyPreferences myPref = new MyPreferences(activity);
+        String newPickedOrders = orderedProducts.getOrdprod_qty();
+        double sum;
+
+        if (myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities))
+            sum = Double.parseDouble(newPickedOrders);
+        else
+            sum = Integer.parseInt(newPickedOrders);
+        VolumePricesHandler volPriceHandler = new VolumePricesHandler(activity);
+        String[] volumePrice = volPriceHandler.getVolumePrice(String.valueOf(newPickedOrders), product.getId());
+
+        String prLevTotal;
+        if (volumePrice[1] != null && !volumePrice[1].isEmpty()) {
+            prLevTotal = Global.formatNumToLocale(Double.parseDouble(volumePrice[1]));
+        } else {
+            prLevTotal = product.getProdPrice();
+        }
+        BigDecimal priceLevel = new BigDecimal(prLevTotal).setScale(2, RoundingMode.HALF_UP);
+
+        BigDecimal total = new BigDecimal(0);// = sum*Double.parseDouble(prLevTotal);
+
+        try {
+
+            total = priceLevel.multiply(new BigDecimal(sum));
+        } catch (NumberFormatException e) {
+        }
+
+        double itemTotal = total.doubleValue();
+
+        if (itemTotal < 0)
+            itemTotal = 0.00;
+
+        orderedProducts.setItemSubtotal(Double.toString(itemTotal));
+        double discountRate = 0;
+        if (orderedProducts.getDiscount_is_fixed().equals("1")) {
+            discountRate = Double.parseDouble(orderedProducts.getDiscount_value());
+        } else {
+            double val = total.multiply(new BigDecimal(Global.formatNumFromLocale(orderedProducts.getDiscount_value()))).doubleValue();
+            discountRate = (val / 100);
+        }
+
+        orderedProducts.setItemTotal(Double.toString(total.doubleValue() - discountRate));
+        orderedProducts.setProd_price_updated("0");
+
+
+        StringBuilder sb = new StringBuilder();
+        String row1 = product.getProdName();
+        String row2 = sb.append(Global.formatDoubleStrToCurrency(product.getProdPrice())).toString();
+        TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
+
+    }
+
     public static CreditCardInfo parseSimpleMSR(Context activity, String data) {
         CreditCardInfo cardManager = new CreditCardInfo();
         Encrypt encrypt = new Encrypt(activity);
@@ -751,9 +846,7 @@ public class Global extends MultiDexApplication {
                 // retrieve PAN
                 // from track 1
                 {
-
                     card_number = tracks[0].replace("B", "").substring(1, startIndex - 2);
-
                     cardManager.setCardType(ProcessCreditCard_FA.getCardType(card_number));
 
                     if (card_number.length() > 4) {
@@ -852,25 +945,6 @@ public class Global extends MultiDexApplication {
 
         return cardManager;
     }
-
-    public static Object getFormatedNumber(boolean isDecimal, String val) {
-        Object returnedVal;
-        if (isDecimal) {
-            returnedVal = Double.parseDouble(val);
-        } else {
-            returnedVal = Integer.parseInt(val);
-        }
-
-        return returnedVal;
-    }
-
-    // private AlertDialog adb;
-    //
-    //
-    // public AlertDialog getPromptDialog()
-    // {
-    // return this.adb;
-    // }
 
     public static OnTouchListener opaqueImageOnClick() {
         return (new OnTouchListener() {
@@ -1029,6 +1103,30 @@ public class Global extends MultiDexApplication {
                 || _device_type == Global.KDC500 || _device_type == Global.OT310 || _device_type == Global.ELOPAYPOINT);
     }
 
+
+    public void startActivityTransitionTimer() {
+        this.mActivityTransitionTimer = new Timer();
+        this.mActivityTransitionTimerTask = new TimerTask() {
+            public void run() {
+                wasInBackground = true;
+            }
+        };
+
+        mActivityTransitionTimer.schedule(mActivityTransitionTimerTask, MAX_ACTIVITY_TRANSITION_TIME_MS);
+    }
+
+    public void stopActivityTransitionTimer() {
+        if (this.mActivityTransitionTimerTask != null) {
+            this.mActivityTransitionTimerTask.cancel();
+        }
+
+        if (this.mActivityTransitionTimer != null) {
+            this.mActivityTransitionTimer.cancel();
+        }
+
+        this.wasInBackground = false;
+    }
+
     public static boolean isIpAvailable(String ip, int port) {
         boolean exists = false;
         Socket sock;
@@ -1146,6 +1244,21 @@ public class Global extends MultiDexApplication {
                 .modules(Realm.getDefaultModule(), new RealmModule())
                 .build();
         Realm.setDefaultConfiguration(config);
+        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+        if (assignEmployee == null) {
+            assignEmployee = new AssignEmployee();
+            MyPreferences preferences = new MyPreferences(this);
+            if (!TextUtils.isEmpty(preferences.getEmpIdFromPreferences())) {
+                assignEmployee.setEmpId(Integer.parseInt(preferences.getEmpIdFromPreferences()));
+                List<AssignEmployee> employees = new ArrayList<>();
+                employees.add(assignEmployee);
+                try {
+                    AssignEmployeeDAO.insertAssignEmployee(employees);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     public void resetOrderDetailsValues() {
@@ -1317,7 +1430,7 @@ public class Global extends MultiDexApplication {
             TextView viewMsg = (TextView) globalDlog.findViewById(R.id.dlogMessage);
             if (myPref.isUseClerks()) {
                 viewTitle.setText(R.string.dlog_title_enter_clerk_password);
-            }else {
+            } else {
                 viewTitle.setText(R.string.dlog_title_confirm);
             }
             final boolean[] validPassword = {true};
@@ -1360,121 +1473,6 @@ public class Global extends MultiDexApplication {
     public boolean isApplicationSentToBackground(final Context context) {
 
         return wasInBackground;
-    }
-
-    public int checkIfGroupBySKU(Activity activity, String prodID, String pickedQty) {
-        int orderIndex = -1;
-        MyPreferences myPref = new MyPreferences(activity);
-        int size = this.orderProducts.size();
-        boolean found = false;
-
-        for (int i = size - 1; i >= 0; i--) {
-            if (this.orderProducts.get(i).getProd_id().equals(prodID) && !orderProducts.get(i).isReturned()) {
-                orderIndex = i;
-                found = true;
-                break;
-            }
-        }
-
-        if (found && !OrderingMain_FA.returnItem) {
-            String value = OrderProductUtils.getOrderProductQty(this.orderProducts, prodID);//this.qtyCounter.get(prodID);
-            double previousQty = 0.0;
-            if (value != null && !value.isEmpty())
-                previousQty = Double.parseDouble(value);
-            double sum = Double.parseDouble(pickedQty) + previousQty;
-            sum = OrderingMain_FA.returnItem ? sum * -1 : sum;
-
-            if (myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities)) {
-                value = Global.formatNumber(true, sum);
-                this.orderProducts.get(orderIndex).setOrdprod_qty(value);
-                // this.cur_orders.get(0).setQty(value);
-//                this.qtyCounter.put(prodID, Double.toString(sum));
-            } else {
-                value = Global.formatNumber(false, sum);
-                this.orderProducts.get(orderIndex).setOrdprod_qty(value);
-                // this.cur_orders.get(0).setQty(value);
-//                this.qtyCounter.put(prodID, Integer.toString((int) sum));
-            }
-        }
-        return orderIndex;
-    }
-
-    public void refreshParticularOrder(Activity activity, int position, Product product) {
-        OrderProduct orderedProducts = this.orderProducts.get(position);
-        MyPreferences myPref = new MyPreferences(activity);
-        String newPickedOrders = orderedProducts.getOrdprod_qty();
-        double sum;
-
-        if (myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities))
-            sum = Double.parseDouble(newPickedOrders);
-        else
-            sum = Integer.parseInt(newPickedOrders);
-        VolumePricesHandler volPriceHandler = new VolumePricesHandler(activity);
-        String[] volumePrice = volPriceHandler.getVolumePrice(String.valueOf(newPickedOrders), product.getId());
-
-        String prLevTotal;
-        if (volumePrice[1] != null && !volumePrice[1].isEmpty()) {
-            prLevTotal = Global.formatNumToLocale(Double.parseDouble(volumePrice[1]));
-        } else {
-            prLevTotal = product.getProdPrice();
-        }
-        BigDecimal priceLevel = new BigDecimal(prLevTotal).setScale(2, RoundingMode.HALF_UP);
-
-        BigDecimal total = new BigDecimal(0);// = sum*Double.parseDouble(prLevTotal);
-
-        try {
-
-            total = priceLevel.multiply(new BigDecimal(sum));
-        } catch (NumberFormatException e) {
-        }
-
-        double itemTotal = total.doubleValue();
-
-        if (itemTotal < 0)
-            itemTotal = 0.00;
-
-        orderedProducts.setItemSubtotal(Double.toString(itemTotal));
-        double discountRate = 0;
-        if (orderedProducts.getDiscount_is_fixed().equals("1")) {
-            discountRate = Double.parseDouble(orderedProducts.getDiscount_value());
-        } else {
-            double val = total.multiply(new BigDecimal(Global.formatNumFromLocale(orderedProducts.getDiscount_value()))).doubleValue();
-            discountRate = (val / 100);
-        }
-
-        orderedProducts.setItemTotal(Double.toString(total.doubleValue() - discountRate));
-//        orderedProducts.setOverwrite_price(priceLevel.toString());
-        orderedProducts.setProd_price_updated("0");
-
-
-        StringBuilder sb = new StringBuilder();
-        String row1 = product.getProdName();
-        String row2 = sb.append(Global.formatDoubleStrToCurrency(product.getProdPrice())).toString();
-        TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
-
-    }
-
-    public void startActivityTransitionTimer() {
-        this.mActivityTransitionTimer = new Timer();
-        this.mActivityTransitionTimerTask = new TimerTask() {
-            public void run() {
-                wasInBackground = true;
-            }
-        };
-
-        mActivityTransitionTimer.schedule(mActivityTransitionTimerTask, MAX_ACTIVITY_TRANSITION_TIME_MS);
-    }
-
-    public void stopActivityTransitionTimer() {
-        if (this.mActivityTransitionTimerTask != null) {
-            this.mActivityTransitionTimerTask.cancel();
-        }
-
-        if (this.mActivityTransitionTimer != null) {
-            this.mActivityTransitionTimer.cancel();
-        }
-
-        this.wasInBackground = false;
     }
 
     public enum BuildModel {
