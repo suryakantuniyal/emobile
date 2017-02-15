@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.InputType;
-import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -359,11 +358,11 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
 //                    nextID = generateNewID.getNextID(GenerateNewID.IdType.ORDER_ID);
 //                }
                 HashSet<Integer> joinedGroupIds = new HashSet<>();
-                String nextID = assignEmployee.getMSLastOrderID();
-                if (TextUtils.isEmpty(nextID)) {
-                    GenerateNewID generateNewID = new GenerateNewID(this);
-                    nextID = generateNewID.getNextID(GenerateNewID.IdType.ORDER_ID);
-                }
+                String nextID = null;// = assignEmployee.getMSLastOrderID();
+//                if (TextUtils.isEmpty(nextID)) {
+//                    GenerateNewID generateNewID = new GenerateNewID(this);
+//                    nextID = generateNewID.getNextID(GenerateNewID.IdType.ORDER_ID);
+//                }
                 int i = 0;
                 for (OrderSeatProduct seatProduct : orderSeatProducts) {
                     if (seatProduct.rowType == OrderProductListAdapter.RowType.TYPE_HEADER &&
@@ -377,7 +376,9 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                         }
                         SplitedOrder splitedOrder = new SplitedOrder(this, order);
                         if (i == 0) {
-                            nextID = splitedOrder.ord_id;
+                            nextID = order.ord_id;
+                        } else if (i == 1) {
+                            nextID = generateNewID.getNextID(GenerateNewID.IdType.ORDER_ID);
                         } else {
                             nextID = generateNewID.getNextID(nextID);
                         }
