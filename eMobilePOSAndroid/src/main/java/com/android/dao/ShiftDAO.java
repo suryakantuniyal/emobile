@@ -88,4 +88,9 @@ public class ShiftDAO {
             r.commitTransaction();
         }
     }
+
+    public static boolean isShiftOpen(String clerkID) {
+        Shift shift = getOpenShift(Integer.parseInt(clerkID));
+        return shift != null;
+    }
 }

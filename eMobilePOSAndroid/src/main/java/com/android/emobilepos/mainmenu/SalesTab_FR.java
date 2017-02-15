@@ -260,31 +260,40 @@ public class SalesTab_FR extends Fragment {
                 case SALE_RECEIPT: {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
-                        if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
-                            if (myPref.getPreferences(MyPreferences.pref_restaurant_mode) &&
-                                    myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
-                                askEatInToGo();
-                            } else {
-                                intent = new Intent(activity, OrderingMain_FA.class);
-                                intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.TO_GO);
-                                intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
-                                startActivityForResult(intent, 0);
-                            }
+                        if (ShiftDAO.isShiftOpen(myPref.getClerkID())) {
+                            if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
+                                if (myPref.getPreferences(MyPreferences.pref_restaurant_mode) &&
+                                        myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
+                                    askEatInToGo();
+                                } else {
+                                    intent = new Intent(activity, OrderingMain_FA.class);
+                                    intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.TO_GO);
+                                    intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
+                                    startActivityForResult(intent, 0);
+                                }
 
+                            } else {
+                                promptWithCustomer();
+                            }
                         } else {
-                            promptWithCustomer();
+                            Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
                         }
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                     }
+
                     break;
                 }
                 case ORDERS: {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
-                        intent = new Intent(activity, OrderingMain_FA.class);
-                        intent.putExtra("option_number", Global.TransactionType.ORDERS);
-                        startActivityForResult(intent, 0);
+                        if (ShiftDAO.isShiftOpen(myPref.getClerkID())) {
+                            intent = new Intent(activity, OrderingMain_FA.class);
+                            intent.putExtra("option_number", Global.TransactionType.ORDERS);
+                            startActivityForResult(intent, 0);
+                        } else {
+                            Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
+                        }
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                     }
@@ -293,9 +302,13 @@ public class SalesTab_FR extends Fragment {
                 case RETURN: {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
-                        intent = new Intent(activity, OrderingMain_FA.class);
-                        intent.putExtra("option_number", Global.TransactionType.RETURN);
-                        startActivityForResult(intent, 0);
+                        if (ShiftDAO.isShiftOpen(myPref.getClerkID())) {
+                            intent = new Intent(activity, OrderingMain_FA.class);
+                            intent.putExtra("option_number", Global.TransactionType.RETURN);
+                            startActivityForResult(intent, 0);
+                        } else {
+                            Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
+                        }
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                     }
@@ -304,9 +317,13 @@ public class SalesTab_FR extends Fragment {
                 case INVOICE: {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
-                        intent = new Intent(activity, OrderingMain_FA.class);
-                        intent.putExtra("option_number", Global.TransactionType.INVOICE);
-                        startActivityForResult(intent, 0);
+                        if (ShiftDAO.isShiftOpen(myPref.getClerkID())) {
+                            intent = new Intent(activity, OrderingMain_FA.class);
+                            intent.putExtra("option_number", Global.TransactionType.INVOICE);
+                            startActivityForResult(intent, 0);
+                        } else {
+                            Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
+                        }
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                     }
@@ -315,9 +332,13 @@ public class SalesTab_FR extends Fragment {
                 case ESTIMATE: {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
-                        intent = new Intent(activity, OrderingMain_FA.class);
-                        intent.putExtra("option_number", Global.TransactionType.ESTIMATE);
-                        startActivityForResult(intent, 0);
+                        if (ShiftDAO.isShiftOpen(myPref.getClerkID())) {
+                            intent = new Intent(activity, OrderingMain_FA.class);
+                            intent.putExtra("option_number", Global.TransactionType.ESTIMATE);
+                            startActivityForResult(intent, 0);
+                        } else {
+                            Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
+                        }
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                     }
@@ -327,18 +348,22 @@ public class SalesTab_FR extends Fragment {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.TAKE_PAYMENT);
                     if (hasPermissions) {
-                        intent = new Intent(activity, SelectPayMethod_FA.class);
-                        intent.putExtra("salespayment", true);
-                        intent.putExtra("amount", "0.00");
-                        intent.putExtra("paid", "0.00");
-                        intent.putExtra("isFromMainMenu", true);
+                        if (ShiftDAO.isShiftOpen(myPref.getClerkID())) {
+                            intent = new Intent(activity, SelectPayMethod_FA.class);
+                            intent.putExtra("salespayment", true);
+                            intent.putExtra("amount", "0.00");
+                            intent.putExtra("paid", "0.00");
+                            intent.putExtra("isFromMainMenu", true);
 
-                        if (isCustomerSelected) {
-                            intent.putExtra("cust_id", myPref.getCustID());
-                            intent.putExtra("custidkey", myPref.getCustIDKey());
+                            if (isCustomerSelected) {
+                                intent.putExtra("cust_id", myPref.getCustID());
+                                intent.putExtra("custidkey", myPref.getCustIDKey());
+                            }
+
+                            startActivity(intent);
+                        } else {
+                            Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
                         }
-
-                        startActivity(intent);
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                     }
@@ -348,10 +373,14 @@ public class SalesTab_FR extends Fragment {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.TAKE_PAYMENT);
                     if (hasPermissions) {
-                        intent = new Intent(activity, GiftCard_FA.class);
-                        startActivity(intent);
+                        if (ShiftDAO.isShiftOpen(myPref.getClerkID())) {
+                            intent = new Intent(activity, GiftCard_FA.class);
+                            startActivity(intent);
+                        } else {
+                            Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
+                        }
                     } else {
-                        Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
+                        Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
                     }
                     break;
                 }
@@ -359,8 +388,12 @@ public class SalesTab_FR extends Fragment {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.TAKE_PAYMENT);
                     if (hasPermissions) {
-                        intent = new Intent(activity, LoyaltyCard_FA.class);
-                        startActivity(intent);
+                        if (ShiftDAO.isShiftOpen(myPref.getClerkID())) {
+                            intent = new Intent(activity, LoyaltyCard_FA.class);
+                            startActivity(intent);
+                        } else {
+                            Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
+                        }
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                     }
@@ -370,8 +403,12 @@ public class SalesTab_FR extends Fragment {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.TAKE_PAYMENT);
                     if (hasPermissions) {
-                        intent = new Intent(activity, RewardCard_FA.class);
-                        startActivity(intent);
+                        if (ShiftDAO.isShiftOpen(myPref.getClerkID())) {
+                            intent = new Intent(activity, RewardCard_FA.class);
+                            startActivity(intent);
+                        } else {
+                            Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
+                        }
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                     }
@@ -381,19 +418,21 @@ public class SalesTab_FR extends Fragment {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
-                        //EasyTracker.getTracker().sendEvent("ui_action", "button_press", "Refund", null);
-                        intent = new Intent(activity, SelectPayMethod_FA.class);
-                        intent.putExtra("salesrefund", true);
-                        intent.putExtra("amount", "0.00");
-                        intent.putExtra("paid", "0.00");
-                        intent.putExtra("isFromMainMenu", true);
-
-                        if (myPref.isCustSelected()) {
-                            intent.putExtra("cust_id", myPref.getCustID());
-                            intent.putExtra("custidkey", myPref.getCustIDKey());
+                        if (ShiftDAO.isShiftOpen(myPref.getClerkID())) {
+                            //EasyTracker.getTracker().sendEvent("ui_action", "button_press", "Refund", null);
+                            intent = new Intent(activity, SelectPayMethod_FA.class);
+                            intent.putExtra("salesrefund", true);
+                            intent.putExtra("amount", "0.00");
+                            intent.putExtra("paid", "0.00");
+                            intent.putExtra("isFromMainMenu", true);
+                            if (myPref.isCustSelected()) {
+                                intent.putExtra("cust_id", myPref.getCustID());
+                                intent.putExtra("custidkey", myPref.getCustIDKey());
+                            }
+                            startActivity(intent);
+                        } else {
+                            Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
                         }
-
-                        startActivity(intent);
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                     }
@@ -405,8 +444,12 @@ public class SalesTab_FR extends Fragment {
                 case ON_HOLD: {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
-                        intent = new Intent(getActivity(), OnHoldActivity.class);
-                        getActivity().startActivity(intent);
+                        if (ShiftDAO.isShiftOpen(myPref.getClerkID())) {
+                            intent = new Intent(getActivity(), OnHoldActivity.class);
+                            getActivity().startActivity(intent);
+                        } else {
+                            Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
+                        }
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                     }
@@ -415,8 +458,12 @@ public class SalesTab_FR extends Fragment {
                 case CONSIGNMENT: {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
-                        intent = new Intent(activity, ConsignmentMain_FA.class);
-                        startActivity(intent);
+                        if (ShiftDAO.isShiftOpen(myPref.getClerkID())) {
+                            intent = new Intent(activity, ConsignmentMain_FA.class);
+                            startActivity(intent);
+                        } else {
+                            Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
+                        }
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                     }
@@ -440,8 +487,7 @@ public class SalesTab_FR extends Fragment {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.NO_SALE);
                     if (hasPermissions) {
-                        Shift openShift = ShiftDAO.getOpenShift(Integer.parseInt(myPref.getClerkID()));
-                        if (openShift != null) {
+                        if (ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                             intent = new Intent(activity, ShiftExpensesList_FA.class);
                             startActivity(intent);
                         } else {
@@ -460,17 +506,21 @@ public class SalesTab_FR extends Fragment {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
-                        if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
-                            Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_select_customer));
-                        } else {
-                            if (myPref.getPreferences(MyPreferences.pref_restaurant_mode) &&
-                                    myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
-                                askEatInToGo();
+                        if (ShiftDAO.isShiftOpen(myPref.getClerkID())) {
+                            if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
+                                Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_select_customer));
                             } else {
-                                intent = new Intent(activity, OrderingMain_FA.class);
-                                intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
-                                startActivityForResult(intent, 0);
+                                if (myPref.getPreferences(MyPreferences.pref_restaurant_mode) &&
+                                        myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
+                                    askEatInToGo();
+                                } else {
+                                    intent = new Intent(activity, OrderingMain_FA.class);
+                                    intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
+                                    startActivityForResult(intent, 0);
+                                }
                             }
+                        } else {
+                            Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
                         }
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
@@ -481,12 +531,16 @@ public class SalesTab_FR extends Fragment {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
-                        if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
-                            Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_select_customer));
+                        if (ShiftDAO.isShiftOpen(myPref.getClerkID())) {
+                            if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
+                                Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_select_customer));
+                            } else {
+                                intent = new Intent(activity, OrderingMain_FA.class);
+                                intent.putExtra("option_number", Global.TransactionType.RETURN);
+                                startActivityForResult(intent, 0);
+                            }
                         } else {
-                            intent = new Intent(activity, OrderingMain_FA.class);
-                            intent.putExtra("option_number", Global.TransactionType.RETURN);
-                            startActivityForResult(intent, 0);
+                            Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
                         }
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
@@ -497,15 +551,19 @@ public class SalesTab_FR extends Fragment {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.TAKE_PAYMENT);
                     if (hasPermissions) {
-                        if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
-                            Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_select_customer));
+                        if (ShiftDAO.isShiftOpen(myPref.getClerkID())) {
+                            if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
+                                Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_select_customer));
+                            } else {
+                                intent = new Intent(activity, SelectPayMethod_FA.class);
+                                intent.putExtra("salespayment", true);
+                                intent.putExtra("amount", "0.00");
+                                intent.putExtra("paid", "0.00");
+                                intent.putExtra("isFromMainMenu", true);
+                                startActivity(intent);
+                            }
                         } else {
-                            intent = new Intent(activity, SelectPayMethod_FA.class);
-                            intent.putExtra("salespayment", true);
-                            intent.putExtra("amount", "0.00");
-                            intent.putExtra("paid", "0.00");
-                            intent.putExtra("isFromMainMenu", true);
-                            startActivity(intent);
+                            Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
                         }
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
@@ -516,8 +574,12 @@ public class SalesTab_FR extends Fragment {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.TAKE_PAYMENT);
                     if (hasPermissions) {
-                        intent = new Intent(activity, GiftCard_FA.class);
-                        startActivity(intent);
+                        if (ShiftDAO.isShiftOpen(myPref.getClerkID())) {
+                            intent = new Intent(activity, GiftCard_FA.class);
+                            startActivity(intent);
+                        } else {
+                            Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
+                        }
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                     }
@@ -527,8 +589,12 @@ public class SalesTab_FR extends Fragment {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.TAKE_PAYMENT);
                     if (hasPermissions) {
-                        intent = new Intent(activity, LoyaltyCard_FA.class);
-                        startActivity(intent);
+                        if (ShiftDAO.isShiftOpen(myPref.getClerkID())) {
+                            intent = new Intent(activity, LoyaltyCard_FA.class);
+                            startActivity(intent);
+                        } else {
+                            Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
+                        }
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                     }
@@ -538,8 +604,12 @@ public class SalesTab_FR extends Fragment {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.TAKE_PAYMENT);
                     if (hasPermissions) {
-                        intent = new Intent(activity, RewardCard_FA.class);
-                        startActivity(intent);
+                        if (ShiftDAO.isShiftOpen(myPref.getClerkID())) {
+                            intent = new Intent(activity, RewardCard_FA.class);
+                            startActivity(intent);
+                        } else {
+                            Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
+                        }
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                     }
@@ -549,16 +619,20 @@ public class SalesTab_FR extends Fragment {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
-                        intent = new Intent(activity, SelectPayMethod_FA.class);
-                        intent.putExtra("salesrefund", true);
-                        intent.putExtra("amount", "0.00");
-                        intent.putExtra("paid", "0.00");
-                        intent.putExtra("isFromMainMenu", true);
-                        if (myPref.isCustSelected()) {
-                            intent.putExtra("cust_id", myPref.getCustID());
-                            intent.putExtra("custidkey", myPref.getCustIDKey());
+                        if (ShiftDAO.isShiftOpen(myPref.getClerkID())) {
+                            intent = new Intent(activity, SelectPayMethod_FA.class);
+                            intent.putExtra("salesrefund", true);
+                            intent.putExtra("amount", "0.00");
+                            intent.putExtra("paid", "0.00");
+                            intent.putExtra("isFromMainMenu", true);
+                            if (myPref.isCustSelected()) {
+                                intent.putExtra("cust_id", myPref.getCustID());
+                                intent.putExtra("custidkey", myPref.getCustIDKey());
+                            }
+                            startActivity(intent);
+                        } else {
+                            Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
                         }
-                        startActivity(intent);
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                     }
@@ -567,8 +641,12 @@ public class SalesTab_FR extends Fragment {
                 case ON_HOLD: {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
-                        intent = new Intent(getActivity(), OnHoldActivity.class);
-                        getActivity().startActivity(intent);
+                        if (ShiftDAO.isShiftOpen(myPref.getClerkID())) {
+                            intent = new Intent(getActivity(), OnHoldActivity.class);
+                            getActivity().startActivity(intent);
+                        } else {
+                            Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
+                        }
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                     }
@@ -581,8 +659,12 @@ public class SalesTab_FR extends Fragment {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.TIP_ADJUSTMENT);
                     if (hasPermissions) {
-                        intent = new Intent(activity, TipAdjustmentFA.class);
-                        startActivity(intent);
+                        if (ShiftDAO.isShiftOpen(myPref.getClerkID())) {
+                            intent = new Intent(activity, TipAdjustmentFA.class);
+                            startActivity(intent);
+                        } else {
+                            Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
+                        }
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                     }
