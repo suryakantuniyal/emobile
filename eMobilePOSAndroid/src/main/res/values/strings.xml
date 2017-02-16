@@ -1272,6 +1272,7 @@
     <string name="security_alert">Secutity Alert</string>
     <string name="permission_denied">Permission denied to this area.</string>
     <string name="expense_id">No Sale ID</string>
+    <string name="logout_menu">Logout</string>
 
 
 </resources>
