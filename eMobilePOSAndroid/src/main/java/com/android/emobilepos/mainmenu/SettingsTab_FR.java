@@ -13,7 +13,6 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.emobilepos.R;
 import com.android.emobilepos.security.SecurityManager;
@@ -21,8 +20,11 @@ import com.android.emobilepos.settings.SettingListActivity;
 import com.android.support.MyPreferences;
 
 public class SettingsTab_FR extends Fragment implements OnClickListener {
+    public enum SettingsRoles {
+        ADMIN, MANAGER, GENERAL
+    }
 
-    public final static int CASE_ADMIN = 0, CASE_MANAGER = 1, CASE_GENERAL = 2;
+    MyPreferences preferences;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -37,7 +39,7 @@ public class SettingsTab_FR extends Fragment implements OnClickListener {
         btnGeneral.setOnClickListener(this);
         btnAdmin.setEnabled(hasAdminPermissions);
         btnManager.setEnabled(hasManagerPermissions);
-
+        preferences = new MyPreferences(getActivity());
         return view;
     }
 
@@ -45,25 +47,31 @@ public class SettingsTab_FR extends Fragment implements OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btnAdminSetting:
-                promptPassword(CASE_ADMIN);
+                if (!preferences.isUseClerks()) {
+                    promptPassword(SettingsRoles.ADMIN);
+                } else {
+                    openSettings(SettingsRoles.ADMIN);
+                }
                 break;
             case R.id.btnManagerSetting:
-                promptPassword(CASE_MANAGER);
+                if (!preferences.isUseClerks()) {
+                    promptPassword(SettingsRoles.MANAGER);
+                } else {
+                    openSettings(SettingsRoles.MANAGER);
+                }
                 break;
             case R.id.btnGeneralSetting:
-                Intent intent = new Intent(getActivity(), SettingListActivity.class);
-                intent.putExtra("settings_type", CASE_GENERAL);
-                startActivity(intent);
+                openSettings(SettingsRoles.GENERAL);
+//                Intent intent = new Intent(getActivity(), SettingListActivity.class);
+//                intent.putExtra("settings_type", SettingsRoles.GENERAL);
+//                startActivity(intent);
                 break;
         }
 
     }
 
-    private void promptPassword(final int type) {
-
-
+    private void promptPassword(final SettingsRoles role) {
         final Dialog globalDlog = new Dialog(getActivity(), R.style.Theme_TransparentTest);
-        final MyPreferences myPref = new MyPreferences(getActivity());
         globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         globalDlog.setCancelable(true);
         globalDlog.setCanceledOnTouchOutside(true);
@@ -74,7 +82,7 @@ public class SettingsTab_FR extends Fragment implements OnClickListener {
         TextView viewTitle = (TextView) globalDlog.findViewById(R.id.dlogTitle);
         TextView viewMsg = (TextView) globalDlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_confirm);
-        if (type == CASE_ADMIN)
+        if (role == SettingsRoles.ADMIN)
             viewMsg.setText(R.string.dlog_title_enter_admin_password);
         else
             viewMsg.setText(R.string.dlog_title_enter_manager_password);
@@ -94,21 +102,27 @@ public class SettingsTab_FR extends Fragment implements OnClickListener {
                 globalDlog.dismiss();
                 String pass = viewField.getText().toString();
                 if (!pass.isEmpty()) {
-                    Intent intent = new Intent(getActivity(), SettingListActivity.class);
-                    if (type == CASE_ADMIN && myPref.getPOSAdminPass().equals(pass.trim())) {
-                        intent.putExtra("settings_type", CASE_ADMIN);
-                        startActivity(intent);
-
-                    } else if (type == CASE_MANAGER && myPref.getPosManagerPass().equals(pass.trim())) {
-                        intent.putExtra("settings_type", CASE_MANAGER);
-                        startActivity(intent);
-                    } else {
-                        promptPassword(type);
-                    }
+                    openSettings(role);
+//                    Intent intent = new Intent(getActivity(), SettingListActivity.class);
+//                    if (role == SettingsRoles.ADMIN && myPref.getPOSAdminPass().equals(pass.trim())) {
+//                        intent.putExtra("settings_type", SettingsRoles.ADMIN);
+//                        startActivity(intent);
+//
+//                    } else if (role == SettingsRoles.MANAGER && myPref.getPosManagerPass().equals(pass.trim())) {
+//                        intent.putExtra("settings_type", SettingsRoles.MANAGER);
+//                        startActivity(intent);
+//                    } else {
+//                        promptPassword(role);
+//                    }
                 }
             }
         });
         globalDlog.show();
     }
 
+    private void openSettings(SettingsRoles role) {
+        Intent intent = new Intent(getActivity(), SettingListActivity.class);
+        intent.putExtra("settings_type", role);
+        startActivity(intent);
+    }
 }

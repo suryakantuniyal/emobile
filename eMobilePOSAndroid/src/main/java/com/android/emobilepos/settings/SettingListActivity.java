@@ -51,6 +51,7 @@ import com.android.database.ShiftPeriodsDBHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.country.CountryPicker;
 import com.android.emobilepos.country.CountryPickerListener;
+import com.android.emobilepos.mainmenu.SettingsTab_FR;
 import com.android.emobilepos.models.realms.PaymentMethod;
 import com.android.emobilepos.models.realms.Shift;
 import com.android.emobilepos.shifts.ShiftExpensesList_FA;
@@ -83,7 +84,7 @@ import main.EMSDeviceManager;
 public class SettingListActivity extends BaseFragmentActivityActionBar {
 
     public final static int CASE_ADMIN = 0, CASE_MANAGER = 1, CASE_GENERAL = 2;
-    private static int settingsType = 0;
+    private static SettingsTab_FR.SettingsRoles settingsType;
     private static FragmentManager supportFragmentManager;
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
@@ -127,7 +128,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting_list);
         Bundle extras = this.getIntent().getExtras();
-        settingsType = extras.getInt("settings_type");
+        settingsType = (SettingsTab_FR.SettingsRoles) extras.get("settings_type");
         View recyclerView = findViewById(R.id.setting_list);
         assert recyclerView != null;
         setupRecyclerView((RecyclerView) recyclerView);
@@ -151,13 +152,13 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
         switch (settingsType) {
-            case CASE_ADMIN:
+            case ADMIN:
                 recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(Arrays.asList(getResources().getStringArray(R.array.settingsSectionsAdminArray))));
                 break;
-            case CASE_MANAGER:
+            case MANAGER:
                 recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(Arrays.asList(getResources().getStringArray(R.array.settingsSectionsManagerArray))));
                 break;
-            case CASE_GENERAL:
+            case GENERAL:
                 recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(Arrays.asList(getResources().getStringArray(R.array.settingsSectionsGeneralArray))));
                 break;
             default:
@@ -240,7 +241,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     return R.xml.settings_admin_payments_layout;
                 case PAYMENT_PROCESSING:
                     switch (settingsType) {
-                        case CASE_GENERAL:
+                        case GENERAL:
                             return R.xml.settings_general_payment_layout;
                         default:
                             return R.xml.settings_admin_payments_processing_layout;
@@ -249,7 +250,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     return R.xml.settings_admin_account_layout;
                 case CASH_DRAWER:
                     switch (settingsType) {
-                        case CASE_MANAGER:
+                        case MANAGER:
                             return R.xml.settings_manager_cashdrawer_layout;
                         default:
                             return R.xml.settings_admin_cashdrawer_layout;
@@ -258,7 +259,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     return R.xml.settings_admin_kiosk_layout;
                 case SHIFTS:
                     switch (settingsType) {
-                        case CASE_MANAGER:
+                        case MANAGER:
                             return R.xml.settings_manager_shifts_layout;
                         default:
                             return R.xml.settings_admin_shifts_layout;
@@ -273,9 +274,9 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     return R.xml.settings_admin_support_layout;
                 case PRINTING:
                     switch (settingsType) {
-                        case CASE_MANAGER:
+                        case MANAGER:
                             return R.xml.settings_manager_printing_layout;
-                        case CASE_GENERAL:
+                        case GENERAL:
                             return R.xml.settings_general_printing_layout;
                         default:
                             return R.xml.settings_admin_printing_layout;
@@ -284,9 +285,9 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     return R.xml.settings_admin_products_layout;
                 case OTHERS:
                     switch (settingsType) {
-                        case CASE_MANAGER:
+                        case MANAGER:
                             return R.xml.settings_manager_other_layout;
-                        case CASE_GENERAL:
+                        case GENERAL:
                             return R.xml.settings_general_other_layout;
                         default:
                             return R.xml.settings_admin_others_layout;
@@ -318,7 +319,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
 
                     break;
                 case PAYMENT_PROCESSING:
-                    if (settingsType == CASE_ADMIN) {
+                    if (settingsType == SettingsTab_FR.SettingsRoles.ADMIN) {
                         configureDefaultPaymentMethod();
                         storeForwardTransactions = prefManager
                                 .findPreference("pref_store_and_forward_transactions");
@@ -333,7 +334,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     }
                     break;
                 case PRINTING:
-                    if (settingsType == CASE_ADMIN) {
+                    if (settingsType == SettingsTab_FR.SettingsRoles.ADMIN) {
                         prefManager.findPreference("pref_printek_info").setOnPreferenceClickListener(this);
                         prefManager.findPreference("pref_star_info").setOnPreferenceClickListener(this);
                         prefManager.findPreference("pref_snbc_setup").setOnPreferenceClickListener(this);
@@ -353,7 +354,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     break;
                 case CASH_DRAWER:
                     prefManager.findPreference("pref_open_cash_drawer").setOnPreferenceClickListener(this);
-                    if (settingsType == CASE_ADMIN) {
+                    if (settingsType == SettingsTab_FR.SettingsRoles.ADMIN) {
                         prefManager.findPreference("pref_configure_cash_drawer").setOnPreferenceClickListener(this);
                     }
                     break;
@@ -387,12 +388,12 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     prefManager.findPreference("pref_check_updates").setOnPreferenceClickListener(this);
                     break;
                 case OTHERS:
-                    if (settingsType == CASE_GENERAL) {
+                    if (settingsType == SettingsTab_FR.SettingsRoles.GENERAL) {
                         prefManager.findPreference("pref_toggle_elo_bcr").setOnPreferenceClickListener(this);
                         prefManager.findPreference("pref_use_navigationbar").setOnPreferenceClickListener(this);
                     }
                     prefManager.findPreference("pref_clear_images_cache").setOnPreferenceClickListener(this);
-                    if (settingsType == CASE_ADMIN) {
+                    if (settingsType == SettingsTab_FR.SettingsRoles.ADMIN) {
                         CheckBoxPreference _cbp_use_location_inv = (CheckBoxPreference) prefManager
                                 .findPreference("pref_enable_location_inventory");
                         _cbp_use_location_inv.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
@@ -416,11 +417,11 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
 
         }
 
-        private SettingSection getSettingSectionBy(SettingSection section, int settingType) {
-            switch (settingType) {
-                case CASE_ADMIN:
+        private SettingSection getSettingSectionBy(SettingSection section, SettingsTab_FR.SettingsRoles role) {
+            switch (role) {
+                case ADMIN:
                     return section;
-                case CASE_MANAGER:
+                case MANAGER:
                     switch (section.getCode()) {
                         case 0:
                             return SettingSection.PRINTING;
@@ -432,7 +433,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                             return SettingSection.OTHERS;
                     }
                     break;
-                case CASE_GENERAL:
+                case GENERAL:
                     switch (section.getCode()) {
                         case 0:
                             return SettingSection.PAYMENT_PROCESSING;
