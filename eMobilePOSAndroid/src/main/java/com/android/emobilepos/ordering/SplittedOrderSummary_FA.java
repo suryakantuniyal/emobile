@@ -189,9 +189,13 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
         setOrderDetailsFR(new SplittedOrderDetailsFR());
         if (global.order.ord_discount != null && !global.order.ord_discount.isEmpty()) {
             globalDiscountAmount = Global.getBigDecimalNum(global.order.ord_discount);
-            setGlobalDiscountPercentge(new BigDecimal(global.order.ord_discount).setScale(4, RoundingMode.HALF_UP)
-                    .divide(new BigDecimal(global.order.ord_subtotal).setScale(4, RoundingMode.HALF_UP), 6, RoundingMode.HALF_UP)
-                    .setScale(6, RoundingMode.HALF_UP));
+            if (Double.parseDouble(global.order.ord_subtotal) == 0) {
+                setGlobalDiscountPercentge(new BigDecimal(0));
+            } else {
+                setGlobalDiscountPercentge(new BigDecimal(global.order.ord_discount).setScale(4, RoundingMode.HALF_UP)
+                        .divide(new BigDecimal(global.order.ord_subtotal).setScale(4, RoundingMode.HALF_UP), 6, RoundingMode.HALF_UP)
+                        .setScale(6, RoundingMode.HALF_UP));
+            }
         }
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.add(R.id.splitedOrderSummaryFrameLayout, getOrderSummaryFR());
