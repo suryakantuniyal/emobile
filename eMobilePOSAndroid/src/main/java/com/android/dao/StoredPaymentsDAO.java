@@ -6,8 +6,8 @@ import android.text.TextUtils;
 
 import com.android.database.DBManager;
 import com.android.database.PaymentsHandler;
-import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.PaymentDetails;
+import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.StoreAndForward;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -74,10 +74,13 @@ public class StoredPaymentsDAO {
     public PaymentDetails getPrintingForPaymentDetails(String payID, int type) {
         StringBuilder sb = new StringBuilder();
         Realm realm = Realm.getDefaultInstance();
-        Payment payment;
+        Payment payment = null;
         try {
             realm.beginTransaction();
-            payment = realm.where(StoreAndForward.class).equalTo("payment.pay_id", payID).findFirst().getPayment();
+            StoreAndForward first = realm.where(StoreAndForward.class).equalTo("payment.pay_id", payID).findFirst();
+            if (first != null) {
+                payment = first.getPayment();
+            }
         } finally {
             realm.commitTransaction();
         }
