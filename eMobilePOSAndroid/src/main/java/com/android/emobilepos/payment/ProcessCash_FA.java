@@ -40,6 +40,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -408,6 +410,12 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
 
 
     public static void setTaxLabels(List<GroupTax> groupTaxRate, TextView tax1Lbl, TextView tax2Lbl) {
+        Collections.sort(groupTaxRate, new Comparator<GroupTax>() {
+            @Override
+            public int compare(GroupTax o1, GroupTax o2) {
+                return o1.getPrTax().compareTo(o2.getPrTax());
+            }
+        });
         if (groupTaxRate.size() > 0)
             tax1Lbl.setText(groupTaxRate.get(0).getTaxName());
         if (groupTaxRate.size() > 1)
