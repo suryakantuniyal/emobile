@@ -1412,6 +1412,7 @@ public class SynchMethods {
                 synchProdAddon();
                 updateProgress(context.getString(R.string.sync_dload_products));
                 synchProducts();
+                synchOrderAttributes();
                 updateProgress(context.getString(R.string.sync_dload_product_aliases));
                 synchOrderAttributes();
                 synchProductAliases();
