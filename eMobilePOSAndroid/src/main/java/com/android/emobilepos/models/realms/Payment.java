@@ -165,7 +165,7 @@ public class Payment extends RealmObject {
         setIsVoid("0");
         setStatus("1");
 
-        String date = DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss);
+        String date = DateUtils.getDateAsString(new Date(), DateUtils.DATE_PATTERN);
         setPay_timecreated(date);
         setPay_date(date);
         assignEmployee = AssignEmployeeDAO.getAssignEmployee();
@@ -201,7 +201,7 @@ public class Payment extends RealmObject {
         this.setTrack_one(trackOne);
         this.setTrack_two(trackTwo);
 
-        String date = DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss);
+        String date = DateUtils.getDateAsString(new Date(), DateUtils.DATE_PATTERN);
         setPay_timecreated(date);
         setPay_date(date);
 
