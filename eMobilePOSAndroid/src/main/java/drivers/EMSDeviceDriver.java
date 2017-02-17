@@ -944,7 +944,7 @@ public class EMSDeviceDriver {
                 }
                 sb.setLength(0);
             }
-            printOrderAttributes(lineWidth, anOrder);
+//            printOrderAttributes(lineWidth, anOrder);
             if (printPref.contains(MyPreferences.print_footer))
                 printFooter(lineWidth);
 
