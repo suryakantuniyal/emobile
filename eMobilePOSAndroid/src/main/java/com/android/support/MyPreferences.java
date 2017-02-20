@@ -666,6 +666,11 @@ public class MyPreferences {
         return prefs.getString("emp_id", "");
     }
 
+    public void setEmpIdFromPreferences(String value) {
+        prefEditor.putString("emp_id", value);
+        prefEditor.commit();
+    }
+
     public boolean posPrinter(boolean isGet, boolean value) {
         String is_pos_printer = "is_pos_printer";
         if (isGet)

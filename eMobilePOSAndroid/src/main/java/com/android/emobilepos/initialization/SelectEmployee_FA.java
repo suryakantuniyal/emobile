@@ -52,7 +52,7 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
     private Context thisContext;
     private Activity activity;
     private ProgressDialog myProgressDialog;
-
+MyPreferences preferences;
     private int error_msg_id = 0;
 
     @Override
@@ -62,6 +62,7 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
         setContentView(R.layout.initialization_select_employee);
         thisContext = this;
         activity = this;
+        preferences = new MyPreferences(this);
         new validateEmployeesAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
     }
 
@@ -345,6 +346,7 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
                     List<AssignEmployee> assignEmployees= new ArrayList<>();
                     assignEmployees.add(assignEmployee);
                     AssignEmployeeDAO.insertAssignEmployee(assignEmployees);
+                    preferences.setEmpIdFromPreferences(String.valueOf(assignEmployee.getEmpId()));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
