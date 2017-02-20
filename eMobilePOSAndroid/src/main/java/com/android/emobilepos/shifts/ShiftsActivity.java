@@ -287,7 +287,7 @@ public class ShiftsActivity extends Activity implements View.OnClickListener, Te
         shift.setStartTimeLocal(now);
 
         //set the ending petty cash equal to the beginning petty cash, decrease the ending petty cash every time there is an expense
-        shift.setEndingPettyCash(totalAmountEditText.getText().toString());
+        shift.setEndingPettyCash(NumberUtils.cleanCurrencyFormatedNumber(totalAmountEditText.getText().toString()));
         shift.setTotal_ending_cash("0");
         ShiftDAO.insertOrUpdate(shift);
         finish();

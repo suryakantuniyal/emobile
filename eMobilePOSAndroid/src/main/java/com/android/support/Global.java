@@ -572,7 +572,7 @@ public class Global extends MultiDexApplication {
     public static String formatDoubleStrToCurrency(String val) {
         if (val == null || val.isEmpty())
             return (Global.getCurrencyFormat(Global.formatNumToLocale(0.00)));
-        return (Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(val))));
+        return (Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(NumberUtils.cleanCurrencyFormatedNumber(val)))));
 
     }
 

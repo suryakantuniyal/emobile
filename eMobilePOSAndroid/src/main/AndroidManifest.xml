@@ -380,12 +380,7 @@
             android:exported="false"
             android:theme="@style/LightTheme"
             android:windowSoftInputMode="stateHidden|adjustResize" />
-        <activity
-            android:name=".shifts.OpenShift_FA"
-            android:configChanges="orientation|screenSize"
-            android:exported="false"
-            android:theme="@style/Theme.TransparentTest"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+
         <activity
             android:name=".shifts.ShiftReportDetails_FA"
             android:configChanges="orientation|screenSize"

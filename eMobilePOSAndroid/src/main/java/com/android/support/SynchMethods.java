@@ -39,7 +39,6 @@ import com.android.database.PriceLevelItemsHandler;
 import com.android.database.ProductAddonsHandler;
 import com.android.database.ProductAliases_DB;
 import com.android.database.ProductsHandler;
-import com.android.database.ShiftPeriodsDBHandler;
 import com.android.database.TemplateHandler;
 import com.android.database.TimeClockHandler;
 import com.android.database.TransferLocations_DB;
@@ -166,8 +165,6 @@ public class SynchMethods {
         MyPreferences preferences = new MyPreferences(activity);
         return OAuthManager.getInstance(activity, preferences.getAcctNumber(), preferences.getAcctPassword());
     }
-
-
 
 
     public static void postSalesAssociatesConfiguration(Activity activity, List<SalesAssociate> salesAssociates) throws Exception {
@@ -968,22 +965,22 @@ public class SynchMethods {
 
     public void postShift(Context context) throws Exception {
         SAXParserPost handler = new SAXParserPost();
-        ShiftPeriodsDBHandler dbHandler = new ShiftPeriodsDBHandler(context);
+//        ShiftPeriodsDBHandler dbHandler = new ShiftPeriodsDBHandler(context);
         List<Shift> pendingSyncShifts = ShiftDAO.getPendingSyncShifts();
         if (pendingSyncShifts != null && !pendingSyncShifts.isEmpty()) {
             xml = post.postData(Global.S_SUBMIT_SHIFT, context, "");
             inSource = new InputSource(new StringReader(xml));
             xr.setContentHandler(handler);
             xr.parse(inSource);
-            data = handler.getData();
+//            data = handler.getData();
             for (Shift s : pendingSyncShifts) {
                 s.setSync(true);
             }
             ShiftDAO.updateShiftToSync(pendingSyncShifts);
-            dbHandler.updateIsSync(data);
-            if (data.isEmpty())
-                didSendData = false;
-            data.clear();
+//            dbHandler.updateIsSync(data);
+//            if (data.isEmpty())
+//                didSendData = false;
+//            data.clear();
         }
     }
 

@@ -23,10 +23,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.dao.AssignEmployeeDAO;
+import com.android.dao.ShiftDAO;
 import com.android.database.CustomersHandler;
 import com.android.database.InvoicePaymentsHandler;
 import com.android.database.PaymentsHandler;
-import com.android.database.ShiftPeriodsDBHandler;
 import com.android.database.TaxesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.GroupTax;
@@ -789,19 +789,36 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
 
 
     private void updateShiftAmount() {
-
         if (!myPref.getShiftIsOpen()) {
             double actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDue));
             double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
+            double amountToApply;
             boolean isReturn = false;
             if (Global.ord_type == Global.OrderType.RETURN || isRefund)
                 isReturn = true;
-            ShiftPeriodsDBHandler handler = new ShiftPeriodsDBHandler(activity);
             if (amountToBePaid <= actualAmount) {
-                handler.updateShiftAmounts(myPref.getShiftID(), amountToBePaid, isReturn);
+                amountToApply = amountToBePaid;
             } else {
-                handler.updateShiftAmounts(myPref.getShiftID(), actualAmount, isReturn);
+                amountToApply = actualAmount;
             }
+//            Shift openShift = ShiftDAO.getOpenShift(Integer.parseInt(myPref.getClerkID()));
+            ShiftDAO.updateShiftAmounts(Integer.parseInt(myPref.getClerkID()), amountToApply, isReturn);
+
+
+//            if (!isReturn) {
+//                openShift.setTotalTransactionsCash(String.valueOf(Global.getBigDecimalNum(openShift.getTotalTransactionsCash())
+//                        .add(BigDecimal.valueOf(amountToApply))));
+//            } else {
+//                openShift.setTotalTransactionsCash(String.valueOf(Global.getBigDecimalNum(openShift.getTotalTransactionsCash())
+//                        .subtract(BigDecimal.valueOf(amountToApply))));
+//            }
+//            ShiftDAO.insertOrUpdate(openShift);
+//
+//            if (amountToBePaid <= actualAmount) {
+//                handler.updateShiftAmounts(myPref.getShiftID(), amountToBePaid, isReturn);
+//            } else {
+//                handler.updateShiftAmounts(myPref.getShiftID(), actualAmount, isReturn);
+//            }
         }
 
     }

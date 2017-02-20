@@ -16,9 +16,13 @@ import java.util.concurrent.TimeUnit;
 public class DateUtils {
     public static final String DATE_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
     public static final String DATE_yyyy_MM_ddTHH_mm_ss = "yyyy-MM-dd'T'HH:mm:ss";
-
+    public static final String DATE_yyyy_MM_dd = "yyyy-MM-dd";
     public static final String DATE_MMM_dd_yyyy_h_mm_a = "MMM dd,yyyy h:mm a";
+
     public static String getDateAsString(Date date, String pattern) {
+        if (date == null) {
+            return "";
+        }
         SimpleDateFormat format = new SimpleDateFormat(pattern);
         return format.format(date);
     }
@@ -58,22 +62,22 @@ public class DateUtils {
     }
 
 
-    public static Map<TimeUnit,Long> computeDiff(Date date1, Date date2) {
+    public static Map<TimeUnit, Long> computeDiff(Date date1, Date date2) {
         long diffInMilliSeconds = date2.getTime() - date1.getTime();
         List<TimeUnit> units = new ArrayList<TimeUnit>(EnumSet.allOf(TimeUnit.class));
         Collections.reverse(units);
-        Map<TimeUnit,Long> result = new LinkedHashMap<TimeUnit, Long>();
+        Map<TimeUnit, Long> result = new LinkedHashMap<TimeUnit, Long>();
         long milliSecondsRest = diffInMilliSeconds;
         for (TimeUnit unit : units) {
-            long diff = unit.convert(milliSecondsRest,TimeUnit.MILLISECONDS);
+            long diff = unit.convert(milliSecondsRest, TimeUnit.MILLISECONDS);
             long diffInMilliSecondsForUnit = unit.toMillis(diff);
             milliSecondsRest = milliSecondsRest - diffInMilliSecondsForUnit;
-            result.put(unit,diff);
+            result.put(unit, diff);
         }
         return result;
     }
 
-    public static String getYearAdd(int value){
+    public static String getYearAdd(int value) {
         SimpleDateFormat df = new SimpleDateFormat("yyyy", Locale.getDefault());
         String now = df.format(new Date());
         Date date;

@@ -1329,6 +1329,8 @@
     <string name="permission_denied">Permission denied to this area.</string>
     <string name="expense_id">No Sale ID</string>
     <string name="logout_menu">Logout</string>
+    <string name="clock_out">OUT</string>
+    <string name="clock_in">IN</string>
 
 
 </resources>
