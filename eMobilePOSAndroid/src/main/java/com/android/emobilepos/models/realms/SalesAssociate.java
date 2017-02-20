@@ -1,142 +1,177 @@
 package com.android.emobilepos.models.realms;
 
-import com.android.emobilepos.models.realms.DinningTable;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by Guarionex on 3/8/2016.
  */
 public class SalesAssociate extends RealmObject {
+    @SerializedName("emp_id")
+    @Expose
     @PrimaryKey
-    private int emp_id;
-    private String zone_id;
-    private String emp_name;
-    private String emp_init;
-    private String emp_pcs;
-    private String emp_lastlogin;
-    private int emp_pos;
-    private String qb_emp_id;
-    private String qb_salesrep_id;
+    private int empId;
+    @SerializedName("emp_name")
+    @Expose
+    private String empName;
+    @SerializedName("emp_lastlogin")
+    @Expose
+    private String empLastlogin;
+    @SerializedName("emp_cleanup")
+    @Expose
+    private int empCleanup;
+    @SerializedName("emp_pos")
+    @Expose
+    private int empPos;
+    @SerializedName("qb_emp_id")
+    @Expose
+    private String qbEmpId;
+    @SerializedName("emp_pwd")
+    @Expose
+    @Index
+    private String empPwd;
+    @SerializedName("isactive")
+    @Expose
+    @Index
     private int isactive;
-    private String tax_default;
-    private boolean loc_items;
-    private String _rowversion;
+    @SerializedName("loc_items")
+    @Expose
+    private boolean locItems;
+    @SerializedName("_rowversion")
+    @Expose
+    private String rowversion;
+    @SerializedName("lastSync")
+    @Expose
     private String lastSync;
-    private boolean TupyWalletDevice;
-    private boolean VAT;
+    @SerializedName("TupyWalletDevice")
+    @Expose
+    private boolean tupyWalletDevice;
+    @SerializedName("VAT")
+    @Expose
+    private boolean vAT;
+    @SerializedName("isUnenryptedSwipeAllowed")
+    @Expose
+    private boolean isUnenryptedSwipeAllowed;
+    @SerializedName("role_id")
+    @Expose
+    private int roleId;
+    @SerializedName("qb_salesrep_id")
+    @Expose
+    private String qbSalesrepId;
+    @SerializedName("email")
+    @Expose
+    private String email;
+    @SerializedName("zone_id")
+    @Expose
+    private String zoneId;
+    @SerializedName("tax_default")
+    @Expose
+    private String taxDefault;
+    @SerializedName("pricelevel_id")
+    @Expose
+    private String pricelevelId;
     private RealmList<DinningTable> assignedDinningTables;
 
 
-    public int getEmp_id() {
-        return emp_id;
+    @Override
+    public String toString() {
+        return String.format("%s (%s)", getEmpName(), String.valueOf(getEmpId()));
     }
 
-    public void setEmp_id(int emp_id) {
-        this.emp_id = emp_id;
+    public RealmList<DinningTable> getAssignedDinningTables() {
+        if (assignedDinningTables == null) {
+            assignedDinningTables = new RealmList<>();
+        }
+        return assignedDinningTables;
     }
 
-    public String getZone_id() {
-        return zone_id;
+    public void setAssignedDinningTables(RealmList<DinningTable> assignedDinningTables) {
+        this.assignedDinningTables = assignedDinningTables;
     }
 
-    public void setZone_id(String zone_id) {
-        this.zone_id = zone_id;
+    public int getEmpId() {
+        return empId;
     }
 
-    public String getEmp_name() {
-        return emp_name;
+    public void setEmpId(int empId) {
+        this.empId = empId;
     }
 
-    public void setEmp_name(String emp_name) {
-        this.emp_name = emp_name;
+    public String getEmpName() {
+        return empName;
     }
 
-    public String getEmp_init() {
-        return emp_init;
+    public void setEmpName(String empName) {
+        this.empName = empName;
     }
 
-    public void setEmp_init(String emp_init) {
-        this.emp_init = emp_init;
+    public String getEmpLastlogin() {
+        return empLastlogin;
     }
 
-    public String getEmp_pcs() {
-        return emp_pcs;
+    public void setEmpLastlogin(String empLastlogin) {
+        this.empLastlogin = empLastlogin;
     }
 
-    public void setEmp_pcs(String emp_pcs) {
-        this.emp_pcs = emp_pcs;
+    public int getEmpCleanup() {
+        return empCleanup;
     }
 
-    public String getEmp_lastlogin() {
-        return emp_lastlogin;
+    public void setEmpCleanup(int empCleanup) {
+        this.empCleanup = empCleanup;
     }
 
-    public void setEmp_lastlogin(String emp_lastlogin) {
-        this.emp_lastlogin = emp_lastlogin;
+    public int getEmpPos() {
+        return empPos;
     }
 
-    public int getEmp_pos() {
-        return emp_pos;
+    public void setEmpPos(int empPos) {
+        this.empPos = empPos;
     }
 
-    public void setEmp_pos(int emp_pos) {
-        this.emp_pos = emp_pos;
+    public String getQbEmpId() {
+        return qbEmpId;
     }
 
-    public String getQb_emp_id() {
-        return qb_emp_id;
+    public void setQbEmpId(String qbEmpId) {
+        this.qbEmpId = qbEmpId;
     }
 
-    public void setQb_emp_id(String qb_emp_id) {
-        this.qb_emp_id = qb_emp_id;
+    public String getEmpPwd() {
+        return empPwd;
     }
 
-    public String getQb_salesrep_id() {
-        return qb_salesrep_id;
+    public void setEmpPwd(String empPwd) {
+        this.empPwd = empPwd;
     }
 
-    public void setQb_salesrep_id(String qb_salesrep_id) {
-        this.qb_salesrep_id = qb_salesrep_id;
-    }
-
-    public int isactive() {
+    public int getIsactive() {
         return isactive;
     }
-
-    public boolean isActive() {
-        return isactive == 1;
-    }
-
 
     public void setIsactive(int isactive) {
         this.isactive = isactive;
     }
 
-    public String getTax_default() {
-        return tax_default;
+    public boolean isLocItems() {
+        return locItems;
     }
 
-    public void setTax_default(String tax_default) {
-        this.tax_default = tax_default;
+    public void setLocItems(boolean locItems) {
+        this.locItems = locItems;
     }
 
-    public boolean isLoc_items() {
-        return loc_items;
+    public String getRowversion() {
+        return rowversion;
     }
 
-    public void setLoc_items(boolean loc_items) {
-        this.loc_items = loc_items;
-    }
-
-    public String get_rowversion() {
-        return _rowversion;
-    }
-
-    public void set_rowversion(String _rowversion) {
-        this._rowversion = _rowversion;
+    public void setRowversion(String rowversion) {
+        this.rowversion = rowversion;
     }
 
     public String getLastSync() {
@@ -148,35 +183,74 @@ public class SalesAssociate extends RealmObject {
     }
 
     public boolean isTupyWalletDevice() {
-        return TupyWalletDevice;
+        return tupyWalletDevice;
     }
 
     public void setTupyWalletDevice(boolean tupyWalletDevice) {
-        TupyWalletDevice = tupyWalletDevice;
+        this.tupyWalletDevice = tupyWalletDevice;
     }
 
-    public boolean isVAT() {
-        return VAT;
+    public boolean isvAT() {
+        return vAT;
     }
 
-    public void setVAT(boolean VAT) {
-        this.VAT = VAT;
+    public void setvAT(boolean vAT) {
+        this.vAT = vAT;
     }
 
-
-    @Override
-    public String toString() {
-        return String.format("%s (%s)", getEmp_name(), String.valueOf(getEmp_id()));
+    public boolean isUnenryptedSwipeAllowed() {
+        return isUnenryptedSwipeAllowed;
     }
 
-    public RealmList<DinningTable> getAssignedDinningTables() {
-        if(assignedDinningTables==null){
-            assignedDinningTables = new RealmList<>();
-        }
-        return assignedDinningTables;
+    public void setUnenryptedSwipeAllowed(boolean unenryptedSwipeAllowed) {
+        isUnenryptedSwipeAllowed = unenryptedSwipeAllowed;
     }
 
-    public void setAssignedDinningTables(RealmList<DinningTable> assignedDinningTables) {
-        this.assignedDinningTables = assignedDinningTables;
+    public int getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(int roleId) {
+        this.roleId = roleId;
+    }
+
+    public String getQbSalesrepId() {
+        return qbSalesrepId;
+    }
+
+    public void setQbSalesrepId(String qbSalesrepId) {
+        this.qbSalesrepId = qbSalesrepId;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getZoneId() {
+        return zoneId;
+    }
+
+    public void setZoneId(String zoneId) {
+        this.zoneId = zoneId;
+    }
+
+    public String getTaxDefault() {
+        return taxDefault;
+    }
+
+    public void setTaxDefault(String taxDefault) {
+        this.taxDefault = taxDefault;
+    }
+
+    public String getPricelevelId() {
+        return pricelevelId;
+    }
+
+    public void setPricelevelId(String pricelevelId) {
+        this.pricelevelId = pricelevelId;
     }
 }

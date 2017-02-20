@@ -31,7 +31,6 @@ import com.android.emobilepos.firebase.NotificationHandler;
 import com.android.emobilepos.firebase.NotificationSettings;
 import com.android.emobilepos.firebase.PollingNotificationService;
 import com.android.emobilepos.firebase.RegistrationIntentService;
-import com.android.emobilepos.models.firebase.NotificationEvent;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -48,7 +47,7 @@ import java.util.ArrayList;
 import drivers.EMSsnbc;
 import main.EMSDeviceManager;
 
-import static com.android.emobilepos.models.firebase.NotificationEvent.*;
+import static com.android.emobilepos.models.firebase.NotificationEvent.NotificationEventAction;
 
 public class MainMenu_FA extends BaseFragmentActivityActionBar {
 

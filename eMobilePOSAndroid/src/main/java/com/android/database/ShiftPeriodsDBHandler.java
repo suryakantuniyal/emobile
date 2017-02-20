@@ -1,6 +1,5 @@
 package com.android.database;
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -33,10 +32,12 @@ public class ShiftPeriodsDBHandler {
     private final String total_transaction_cash = "total_transaction_cash";
     private final String total_ending_cash = "total_ending_cash";
     private final String shift_issync = "shift_issync";
+    private final String shift_status = "v";
+
 
     public final List<String> attr = Arrays.asList(shift_id, assignee_id, assignee_name, creationDate,
             creationDateLocal, startTime, startTimeLocal, endTime, endTimeLocal, beginning_petty_cash,
-            ending_petty_cash, entered_close_amount, total_transaction_cash, shift_issync);
+            ending_petty_cash, entered_close_amount, total_transaction_cash, shift_issync, shift_status);
 
     public StringBuilder sb1, sb2;
     public final String empStr = "";
@@ -48,7 +49,6 @@ public class ShiftPeriodsDBHandler {
     private Context activity;
 
     public ShiftPeriodsDBHandler(Context activity) {
-//        global = (Global) activity.getApplication();
         attrHash = new HashMap<>();
         sb1 = new StringBuilder();
         sb2 = new StringBuilder();
@@ -76,20 +76,12 @@ public class ShiftPeriodsDBHandler {
     }
 
     public void insert(ShiftPeriods periods) {
-        // SQLiteDatabase db =
-        // SQLiteDatabase.openDatabase(myPref.getDBpath(),Global.dbPass, null,
-        // SQLiteDatabase.NO_LOCALIZED_COLLATORS|
-        // SQLiteDatabase.OPEN_READWRITE);
-        // SQLiteDatabase db = dbManager.openWritableDB();
         DBManager.getDatabase().beginTransaction();
         try {
-
-            SQLiteStatement insert = null;
-            StringBuilder sb = new StringBuilder();
-            sb.append("INSERT INTO ").append(table_name).append(" (").append(sb1.toString()).append(") ")
-                    .append("VALUES (").append(sb2.toString()).append(")");
-            insert = DBManager.getDatabase().compileStatement(sb.toString());
-
+            SQLiteStatement insert;
+            String sb = "INSERT INTO " + table_name + " (" + sb1.toString() + ") " +
+                    "VALUES (" + sb2.toString() + ")";
+            insert = DBManager.getDatabase().compileStatement(sb);
             insert.bindString(index(shift_id), periods.shift_id == null ? "" : periods.shift_id); // shift_id
             insert.bindString(index(assignee_id), periods.assignee_id == null ? "" : periods.assignee_id); // assignee_id
             insert.bindString(index(assignee_name), periods.assignee_name == null ? "" : periods.assignee_name); // assignee_name
@@ -109,54 +101,36 @@ public class ShiftPeriodsDBHandler {
             insert.bindString(index(total_transaction_cash),
                     periods.total_transaction_cash == null ? "0" : periods.total_transaction_cash); // total_transaction_cash
             insert.bindString(index(shift_issync), periods.shift_issync == null ? "" : periods.shift_issync);
-
+            insert.bindDouble(index(shift_status), periods.getShiftStatus() == null
+                    ? ShiftPeriods.ShiftStatus.CLOSED.code : periods.getShiftStatus().code);
             insert.execute();
             insert.clearBindings();
             insert.close();
             DBManager.getDatabase().setTransactionSuccessful();
 
         } catch (Exception e) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(e.getMessage()).append(" [com.android.emobilepos.ShiftPeriodsDBHandler (at Class.insert)]");
 
-//			Tracker tracker = EasyTracker.getInstance(activity);
-//			tracker.send(MapBuilder.createException(sb.toString(), false).build());
         } finally {
             DBManager.getDatabase().endTransaction();
         }
-        // db.close();
     }
 
     public void emptyTable() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("DELETE FROM ").append(table_name);
-        DBManager.getDatabase().execSQL(sb.toString());
+        DBManager.getDatabase().execSQL("DELETE FROM " + table_name);
     }
 
-    // public void emptyTable() {
-    // StringBuilder sb = new StringBuilder();
-    // SQLiteDatabase db = dbManager.openWritableDB();
-    // sb.append("DELETE FROM ").append(table_name);
-    // db.execSQL(sb.toString());
-    // db.close();
-    // }
 
     public void updateShiftAmounts(String shiftID, double amount, boolean isReturn) {
-        // SQLiteDatabase db = dbManager.openWritableDB();
         StringBuilder sb = new StringBuilder();
-
         sb.append("SELECT total_transaction_cash,ending_petty_cash FROM ").append(table_name)
                 .append(" WHERE shift_id=?");
         Cursor c = DBManager.getDatabase().rawQuery(sb.toString(), new String[]{shiftID});
-
         if (c.moveToFirst()) {
             double totalTransactionCash = c.getDouble(c.getColumnIndex("total_transaction_cash"));
-
             if (!isReturn)
                 totalTransactionCash += amount;
             else
                 totalTransactionCash -= amount;
-
             sb.setLength(0);
             sb.append(shift_id).append(" = ?");
             ContentValues args = new ContentValues();
@@ -166,14 +140,11 @@ public class ShiftPeriodsDBHandler {
         }
     }
 
-    public void decreaseEndingPettyCash(String shiftID, double amount) {
-        // SQLiteDatabase db = dbManager.openWritableDB();
+    void decreaseEndingPettyCash(String shiftID, double amount) {
         StringBuilder sb = new StringBuilder();
-
         sb.append("SELECT ending_petty_cash FROM ").append(table_name)
                 .append(" WHERE shift_id=?");
         Cursor c = DBManager.getDatabase().rawQuery(sb.toString(), new String[]{shiftID});
-
         if (c.moveToFirst()) {
             double endingPettyCash = c.getDouble(c.getColumnIndex("ending_petty_cash"));
             endingPettyCash -= amount;
@@ -187,50 +158,34 @@ public class ShiftPeriodsDBHandler {
     }
 
     public void updateShift(String shiftID, String attr, String val) {
-        // SQLiteDatabase db = dbManager.openWritableDB();
-        StringBuilder sb = new StringBuilder();
-
-        sb.append(shift_id).append(" = ?");
-
         ContentValues args = new ContentValues();
-
         args.put(attr, val);
-        DBManager.getDatabase().update(table_name, args, sb.toString(), new String[]{shiftID});
-
-        // db.close();
+        DBManager.getDatabase().update(table_name, args, shift_id + " = ?", new String[]{shiftID});
     }
 
     public SparseArray<String> getShiftDetails(String shiftID) {
-        // SQLiteDatabase db = dbManager.openReadableDB();
-        SparseArray<String> map = new SparseArray<String>();
+        SparseArray<String> map = new SparseArray<>();
         StringBuilder sb = new StringBuilder();
-
         sb.append(
                 "SELECT assignee_name,beginning_petty_cash,ending_petty_cash,total_transaction_cash," +
                         "ROUND(ending_petty_cash+total_transaction_cash,2) as 'total_ending_cash', " +
                         "startTime, endTime, entered_close_amount, " +
                         "CASE WHEN endTime != '' THEN endTime ELSE 'Open' END AS 'end_type' FROM ")
                 .append(table_name).append(" WHERE shift_id = ? ");
-
         Cursor c = DBManager.getDatabase().rawQuery(sb.toString(), new String[]{shiftID});
-
         ShiftExpensesDBHandler shiftExpensesDBHandler = new ShiftExpensesDBHandler(activity);
         String theTotalExpenses;
         //find out the total expenses for the shift
         theTotalExpenses = shiftExpensesDBHandler.getShiftTotalExpenses(shiftID);
-
         if (c.moveToFirst()) {
-
             map.put(0, c.getString(c.getColumnIndex(assignee_name)));
             map.put(1, Global.formatDoubleStrToCurrency(c.getString(c.getColumnIndex(beginning_petty_cash))));
             map.put(2, Global.formatDoubleStrToCurrency(theTotalExpenses));
             map.put(3, Global.formatDoubleStrToCurrency(c.getString(c.getColumnIndex(ending_petty_cash))));
             map.put(4, Global.formatDoubleStrToCurrency(c.getString(c.getColumnIndex(total_transaction_cash))));
             map.put(5, Global.formatDoubleStrToCurrency(c.getString(c.getColumnIndex(total_ending_cash))));
-
             if (!c.getString(c.getColumnIndex("end_type")).equals("Open")) {
                 sb.setLength(0);
-
                 double temp1 = Double.parseDouble(c.getString(c.getColumnIndex(total_ending_cash)));
                 double temp2 = Double.parseDouble(c.getString(c.getColumnIndex(entered_close_amount)));
                 if (temp1 == temp2)
@@ -244,7 +199,6 @@ public class ShiftPeriodsDBHandler {
                     sb.append(Global.formatDoubleToCurrency(temp2 - temp1)).append(" is Over)");
                     map.put(6, sb.toString());
                 }
-
             } else {
                 map.put(6, Global.formatDoubleStrToCurrency(c.getString(c.getColumnIndex(entered_close_amount))));
             }
@@ -253,46 +207,29 @@ public class ShiftPeriodsDBHandler {
             map.put(9, c.getString(c.getColumnIndex("end_type")));
         }
         c.close();
-        // db.close();
         return map;
     }
 
     public Cursor getAllShiftsReport(String date) {
-        // SQLiteDatabase db = dbManager.openReadableDB();
-        StringBuilder sb = new StringBuilder();
-
-        sb.append(
-                "SELECT shift_id,startTime,date(creationDate,'localtime') as 'date', CASE WHEN endTime != '' THEN endTime ELSE 'Open' END AS 'end_type',"
-                        + "assignee_name,beginning_petty_cash FROM ")
-                .append(table_name).append(" WHERE date = ? ORDER BY startTime DESC");
-
-        Cursor c = DBManager.getDatabase().rawQuery(sb.toString(), new String[]{date});
-
+        String sb = ("SELECT shift_id,startTime,date(creationDate,'localtime') as 'date', CASE WHEN endTime != '' THEN endTime ELSE 'Open' END AS 'end_type',"
+                + "assignee_name,beginning_petty_cash FROM ") +
+                table_name + " WHERE date = ? ORDER BY startTime DESC";
+        Cursor c = DBManager.getDatabase().rawQuery(sb, new String[]{date});
         c.moveToFirst();
-        // db.close();
         return c;
     }
 
     public long getNumUnsyncShifts() {
-        // SQLiteDatabase db = dbManager.openReadableDB();
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT Count(*) FROM ").append(table_name).append(" WHERE shift_issync = '0'");
-
-        SQLiteStatement stmt = DBManager.getDatabase().compileStatement(sb.toString());
+        SQLiteStatement stmt = DBManager.getDatabase().compileStatement("SELECT Count(*) FROM " + table_name + " WHERE shift_issync = '0'");
         long count = stmt.simpleQueryForLong();
         stmt.close();
-        // db.close();
         return count;
     }
 
     public void updateIsSync(List<String[]> list) {
-        // SQLiteDatabase db = dbManager.openWritableDB();
-
         StringBuilder sb = new StringBuilder();
         sb.append(shift_id).append(" = ?");
-
         ContentValues args = new ContentValues();
-
         int size = list.size();
         for (int i = 0; i < size; i++) {
             if (isShiftFinished(list.get(i)[1]) == 1) {
@@ -303,44 +240,36 @@ public class ShiftPeriodsDBHandler {
                 DBManager.getDatabase().update(table_name, args, sb.toString(), new String[]{list.get(i)[1]});
             }
         }
-        // db.close();
     }
 
     private long isShiftFinished(String _shiftID) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT Count(*) FROM ").append(table_name).append(" WHERE shift_id = '");
-        sb.append(_shiftID).append("' AND endTime != ''");
-
-        SQLiteStatement stmt = DBManager.getDatabase().compileStatement(sb.toString());
+        String sb = "SELECT Count(*) FROM " + table_name + " WHERE shift_id = '" +
+                _shiftID + "' AND endTime != ''";
+        SQLiteStatement stmt = DBManager.getDatabase().compileStatement(sb);
         long count = stmt.simpleQueryForLong();
         stmt.close();
         return count;
     }
 
     public Cursor getUnsyncShifts() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT *,ROUND(ending_petty_cash+total_transaction_cash,2) as 'total_ending_cash' FROM ")
-                .append(table_name).append(" WHERE shift_issync = '0'");
-        Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
-        return cursor;
+        String sb = "SELECT *,ROUND(ending_petty_cash+total_transaction_cash,2) as 'total_ending_cash' FROM " +
+                table_name + " WHERE shift_issync = '0'";
+        return DBManager.getDatabase().rawQuery(sb, null);
     }
 
     public List<ShiftPeriods> getShiftDayReport(String clerk_id, String date) {
         StringBuilder query = new StringBuilder();
-        List<ShiftPeriods> listShifts = new ArrayList<ShiftPeriods>();
-
+        List<ShiftPeriods> listShifts = new ArrayList<>();
         query.append(
-                "SELECT shift_id, assignee_name,beginning_petty_cash,'0' as 'total_expenses',ending_petty_cash,total_transaction_cash,");
+                "SELECT shift_id, assignee_name,beginning_petty_cash,'0' as 'total_expenses',ending_petty_cash,total_transaction_cash, shift_status,");
         query.append(
                 "ROUND(ending_petty_cash+total_transaction_cash,2) as 'total_ending_cash',entered_close_amount, startTime,");
         query.append(
                 "CASE WHEN endTime != '' THEN endTime ELSE 'Open' END AS 'end_type',date(startTime,'localtime') as 'date' FROM ShiftPeriods ");
-
         String[] where_values = null;
         if (clerk_id != null && !clerk_id.isEmpty()) {
             query.append("WHERE assignee_id = ? ");
             where_values = new String[]{clerk_id};
-
             if (date != null && !date.isEmpty()) {
                 query.append(" AND date = ? ");
                 where_values = new String[]{clerk_id, date};
@@ -367,14 +296,13 @@ public class ShiftPeriodsDBHandler {
             int i_entered_close_amount = c.getColumnIndex(entered_close_amount);
             int i_start_time = c.getColumnIndex(startTime);
             int i_end_type = c.getColumnIndex("end_type");
+            int i_shift_status = c.getColumnIndex(shift_status);
 
             do {
                 ShiftPeriods shift = new ShiftPeriods(true);
-
                 //find out the total expenses for the shift
                 theShiftID = c.getString(i_shift_id);
                 theTotalExpenses = shiftExpensesDBHandler.getShiftTotalExpenses(theShiftID);
-
                 shift.assignee_name = c.getString(i_assignee_name);
                 shift.startTime = c.getString(i_start_time);
                 shift.endTime = c.getString(i_end_type);
@@ -384,33 +312,26 @@ public class ShiftPeriodsDBHandler {
                 shift.total_transaction_cash = c.getString(i_total_transaction_cash);
                 shift.total_ending_cash = c.getString(i_total_ending_cash);
                 shift.entered_close_amount = c.getString(i_entered_close_amount);
-
+                shift.setShiftStatusCode(c.getInt(i_shift_status));
                 if (!shift.endTime.equals("Open")) {
                     query.setLength(0);
 
                     double temp1 = Double.parseDouble(shift.total_ending_cash);
                     double temp2 = Double.parseDouble(shift.entered_close_amount);
-//					shift.entered_close_amount = Global.formatDoubleToCurrency(temp2);
                     if (temp2 < temp1) {
                         query.append(Global.formatDoubleToCurrency(temp2)).append(" (");
                         query.append(Global.formatDoubleToCurrency(temp1 - temp2)).append(" Short)");
-//						shift.over_short = query.toString();
                         shift.entered_close_amount = query.toString();
                     } else {
                         query.append(Global.formatDoubleToCurrency(temp2)).append(" (");
                         query.append(Global.formatDoubleToCurrency(temp2 - temp1)).append(" Over)");
-//						shift.over_short = query.toString();
                         shift.entered_close_amount = query.toString();
                     }
                 }
-
                 listShifts.add(shift);
             } while (c.moveToNext());
-
         }
-
         c.close();
         return listShifts;
     }
-
 }

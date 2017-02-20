@@ -145,13 +145,8 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
                 DBManager dbManager = new DBManager(getActivity(), Global.FROM_SYNCH_ACTIVITY);
                 SynchMethods sm = new SynchMethods(dbManager);
                 if (NetworkUtils.isConnectedToInternet(getActivity())) {
-//                    dbManager.synchSend(false, true, activity);
                     sm.synchSend(Global.FROM_SYNCH_ACTIVITY, true, getActivity());
                 }
-//                DBManager dbManager = new DBManager(getActivity(), Global.FROM_SYNCH_ACTIVITY);
-////                dbManager.synchSend(false, false, getActivity());
-//                SynchMethods sm = new SynchMethods(dbManager);
-//                sm.synchSend(Global.FROM_SYNCH_ACTIVITY, false, getActivity());
                 break;
             case R.id.syncReceiveButton:
                 dbManager = new DBManager(getActivity(), Global.FROM_SYNCH_ACTIVITY);
@@ -160,7 +155,6 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
                 } else {
                     sm = new SynchMethods(dbManager);
                     sm.synchReceive(Global.FROM_SYNCH_ACTIVITY, getActivity());
-//                    dbManager.synchReceive(getActivity());
                 }
                 break;
         }

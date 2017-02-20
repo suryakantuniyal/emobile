@@ -44,7 +44,7 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle extras = getIntent().getExtras();
-        associateId = extras.getString("associateId");
+        associateId = String.valueOf(extras.getInt("associateId"));
         setContentView(R.layout.activity_dinning_tables);
 //        new SynchOnHoldOrders().execute();
         refresh(0);

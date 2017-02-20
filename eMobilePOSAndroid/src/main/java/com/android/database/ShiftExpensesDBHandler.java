@@ -1,7 +1,6 @@
 
 package com.android.database;
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -79,30 +78,21 @@ public class ShiftExpensesDBHandler {
 
         DBManager.getDatabase().beginTransaction();
         try {
-
-            SQLiteStatement insert = null;
-            StringBuilder sb = new StringBuilder();
-            sb.append("INSERT INTO ").append(table_name).append(" (").append(sb1.toString()).append(") ")
-                    .append("VALUES (").append(sb2.toString()).append(")");
-            insert = DBManager.getDatabase().compileStatement(sb.toString());
-
+            SQLiteStatement insert;
+            String sb = "INSERT INTO " + table_name + " (" + sb1.toString() + ") " +
+                    "VALUES (" + sb2.toString() + ")";
+            insert = DBManager.getDatabase().compileStatement(sb);
             insert.bindString(index(expenseID), expID == null ? "" : expID);
             insert.bindString(index(shiftPeriodID), spID == null ? "" : spID);
             insert.bindDouble(index(cashAmount), cAmount);
             insert.bindString(index(productID), pID == null ? "" : pID);
             insert.bindString(index(productName), pName == null ? "" : pName);
-
             insert.execute();
             insert.clearBindings();
             insert.close();
             DBManager.getDatabase().setTransactionSuccessful();
 
         } catch (Exception e) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(e.getMessage()).append(" [com.android.emobilepos.ShiftExpensesDBHandler (at Class.insert)]");
-
-//			Tracker tracker = EasyTracker.getInstance(activity);
-//			tracker.send(MapBuilder.createException(sb.toString(), false).build());
         } finally {
             DBManager.getDatabase().endTransaction();
         }

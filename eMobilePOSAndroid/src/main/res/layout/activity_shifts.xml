@@ -57,7 +57,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/textView25"
+                android:id="@+id/openOnLbltextView25"
                 style="@style/black_text_appearance_unbold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -67,24 +67,24 @@
                 app:layout_constraintTop_toBottomOf="@+id/textView16" />
 
             <TextView
-                android:id="@+id/textView26"
+                android:id="@+id/openOnDatetextView26"
                 style="@style/black_text_appearance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="01/12/2017 8:15 am"
                 app:layout_constraintLeft_toLeftOf="@+id/beginningPettyCashtextView"
-                app:layout_constraintTop_toTopOf="@+id/textView25"
+                app:layout_constraintTop_toTopOf="@+id/openOnLbltextView25"
                 tools:ignore="HardcodedText" />
 
             <TextView
-                android:id="@+id/textView27"
+                android:id="@+id/pettyCashLbltextView27"
                 style="@style/black_text_appearance_unbold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="@string/begging_petty_cash"
-                app:layout_constraintLeft_toLeftOf="@+id/textView25"
-                app:layout_constraintTop_toBottomOf="@+id/textView25" />
+                app:layout_constraintLeft_toLeftOf="@+id/openOnLbltextView25"
+                app:layout_constraintTop_toBottomOf="@+id/openOnLbltextView25" />
 
             <TextView
                 android:id="@+id/beginningPettyCashtextView"
@@ -94,20 +94,20 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginStart="10dp"
                 android:text="$100.00"
-                app:layout_constraintBottom_toBottomOf="@+id/textView27"
-                app:layout_constraintLeft_toRightOf="@+id/textView27"
+                app:layout_constraintBottom_toBottomOf="@+id/pettyCashLbltextView27"
+                app:layout_constraintLeft_toRightOf="@+id/pettyCashLbltextView27"
                 tools:ignore="HardcodedText" />
 
             <LinearLayout
-                android:id="@+id/linearLayout4"
+                android:id="@+id/currencieslinearLayout4"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:baselineAligned="false"
-                android:orientation="horizontal"
-                app:layout_constraintLeft_toLeftOf="@+id/textView27"
+                android:orientation="vertical"
+                app:layout_constraintLeft_toLeftOf="@+id/pettyCashLbltextView27"
                 app:layout_constraintRight_toRightOf="@+id/textView24"
-                app:layout_constraintTop_toBottomOf="@+id/textView27">
+                app:layout_constraintTop_toBottomOf="@+id/closeAmountLynearLayout">
 
                 <TableLayout
                     android:layout_width="match_parent"
@@ -183,7 +183,9 @@
                             android:layout_marginRight="10dp"
                             android:layout_weight="1"
                             android:ems="10"
-                            android:inputType="number" />
+                            android:gravity="center_vertical|center_horizontal"
+                            android:inputType="number"
+                            android:text="0" />
 
                         <Button
                             android:id="@+id/oneDollarPlusbutton"
@@ -206,6 +208,7 @@
 
                         <TextView
                             android:id="@+id/oneDollarTotaltextView35"
+                            style="@style/black_text_appearance"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/add_main_hint2"
@@ -244,7 +247,9 @@
                             android:layout_marginRight="10dp"
                             android:layout_weight="1"
                             android:ems="10"
-                            android:inputType="number" />
+                            android:gravity="center_vertical|center_horizontal"
+                            android:inputType="number"
+                            android:text="0" />
 
                         <Button
                             android:id="@+id/fiveDollarPlusbutton"
@@ -267,6 +272,7 @@
 
                         <TextView
                             android:id="@+id/fiveDollarTotaltextView35"
+                            style="@style/black_text_appearance"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/add_main_hint2"
@@ -305,7 +311,9 @@
                             android:layout_marginRight="10dp"
                             android:layout_weight="1"
                             android:ems="10"
-                            android:inputType="number" />
+                            android:gravity="center_vertical|center_horizontal"
+                            android:inputType="number"
+                            android:text="0" />
 
                         <Button
                             android:id="@+id/tenDollarPlusbutton"
@@ -327,6 +335,7 @@
 
                         <TextView
                             android:id="@+id/tenDollarTotaltextView35"
+                            style="@style/black_text_appearance"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/add_main_hint2"
@@ -365,7 +374,9 @@
                             android:layout_marginRight="10dp"
                             android:layout_weight="1"
                             android:ems="10"
-                            android:inputType="number" />
+                            android:gravity="center_vertical|center_horizontal"
+                            android:inputType="number"
+                            android:text="0" />
 
                         <Button
                             android:id="@+id/twentyDollarPlusbutton"
@@ -387,6 +398,7 @@
 
                         <TextView
                             android:id="@+id/twentyDollarTotaltextView35"
+                            style="@style/black_text_appearance"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/add_main_hint2"
@@ -425,7 +437,9 @@
                             android:layout_marginRight="10dp"
                             android:layout_weight="1"
                             android:ems="10"
-                            android:inputType="number" />
+                            android:gravity="center_vertical|center_horizontal"
+                            android:inputType="number"
+                            android:text="0" />
 
                         <Button
                             android:id="@+id/fiftyDollarPlusbutton"
@@ -447,6 +461,7 @@
 
                         <TextView
                             android:id="@+id/fiftyDollarTotaltextView35"
+                            style="@style/black_text_appearance"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/add_main_hint2"
@@ -485,7 +500,9 @@
                             android:layout_marginRight="10dp"
                             android:layout_weight="1"
                             android:ems="10"
-                            android:inputType="number" />
+                            android:gravity="center_vertical|center_horizontal"
+                            android:inputType="number"
+                            android:text="0" />
 
                         <Button
                             android:id="@+id/hundredDollarPlusbutton"
@@ -507,6 +524,7 @@
 
                         <TextView
                             android:id="@+id/hundredDollarTotaltextView35"
+                            style="@style/black_text_appearance"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/add_main_hint2"
@@ -586,7 +604,9 @@
                             android:layout_marginRight="10dp"
                             android:layout_weight="1"
                             android:ems="10"
-                            android:inputType="number" />
+                            android:gravity="center_vertical|center_horizontal"
+                            android:inputType="number"
+                            android:text="0" />
 
                         <Button
                             android:id="@+id/oneCentPlusbutton"
@@ -608,6 +628,7 @@
 
                         <TextView
                             android:id="@+id/oneCentTotaltextView35"
+                            style="@style/black_text_appearance"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/add_main_hint2"
@@ -646,7 +667,9 @@
                             android:layout_marginRight="10dp"
                             android:layout_weight="1"
                             android:ems="10"
-                            android:inputType="number" />
+                            android:gravity="center_vertical|center_horizontal"
+                            android:inputType="number"
+                            android:text="0" />
 
                         <Button
                             android:id="@+id/fiveCentsPlusbutton"
@@ -668,6 +691,70 @@
 
                         <TextView
                             android:id="@+id/fiveCentsTotaltextView35"
+                            style="@style/black_text_appearance"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/add_main_hint2"
+                            tools:ignore="HardcodedText" />
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:paddingEnd="10dp"
+                        android:paddingStart="10dp">
+
+                        <TextView
+                            android:id="@+id/tenCentsTextView"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="10dp"
+                            android:layout_marginRight="10dp"
+                            android:layout_weight="1"
+                            android:text="@string/tenCents" />
+
+                        <Button
+                            android:id="@+id/tenCentsMinusbutton"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="10dp"
+                            android:layout_marginRight="10dp"
+                            android:layout_weight="1"
+                            android:text="@string/minus_sign" />
+
+                        <EditText
+                            android:id="@+id/tenCentseditText"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="10dp"
+                            android:layout_marginRight="10dp"
+                            android:layout_weight="1"
+                            android:ems="10"
+                            android:gravity="center_vertical|center_horizontal"
+                            android:inputType="number"
+                            android:text="0" />
+
+                        <Button
+                            android:id="@+id/tenCentsPlusbutton"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="10dp"
+                            android:layout_marginRight="10dp"
+                            android:layout_weight="1"
+                            android:text="@string/plus_sign" />
+
+                        <TextView
+                            android:id="@+id/tenCentstextView365"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="10dp"
+                            android:layout_marginRight="10dp"
+                            android:layout_weight="1"
+                            android:text="@string/equal_sign" />
+
+                        <TextView
+                            android:id="@+id/tenCentsTotaltextView35"
+                            style="@style/black_text_appearance"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/add_main_hint2"
@@ -706,7 +793,9 @@
                             android:layout_marginRight="10dp"
                             android:layout_weight="1"
                             android:ems="10"
-                            android:inputType="number" />
+                            android:gravity="center_vertical|center_horizontal"
+                            android:inputType="number"
+                            android:text="0" />
 
                         <Button
                             android:id="@+id/quartesCentsPlusbutton"
@@ -728,6 +817,7 @@
 
                         <TextView
                             android:id="@+id/quartesCentsTotaltextView35"
+                            style="@style/black_text_appearance"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/add_main_hint2"
@@ -739,42 +829,50 @@
 
             <LinearLayout
                 android:id="@+id/closeAmountLynearLayout"
-                android:layout_width="wrap_content"
+                android:layout_width="395dp"
                 android:layout_height="wrap_content"
+                android:gravity="center_vertical"
                 android:orientation="horizontal"
-                app:layout_constraintRight_toRightOf="@+id/textView24"
-                app:layout_constraintTop_toTopOf="@+id/clerkNameShifttextView"
-                android:gravity="center_vertical">
+                app:layout_constraintTop_toBottomOf="@+id/beginningPettyCashtextView"
+                tools:layout_editor_absoluteX="8dp"
+                app:layout_constraintLeft_toLeftOf="@+id/pettyCashLbltextView27"
+                android:layout_marginTop="10dp"
+                app:layout_constraintRight_toRightOf="@+id/textView24">
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_weight="1">
 
                     <TextView
-                        android:id="@+id/textView21"
+                        android:id="@+id/closeAmountLbltextView21"
                         style="@style/black_text_appearance"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="center_horizontal"
                         android:text="@string/entered_close_amount" />
 
-                    <com.android.support.MyEditText
-                        android:id="@+id/editText"
+                    <TextView
+                        android:id="@+id/totalAmounteditText"
                         android:layout_width="wrap_content"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:ems="10"
-                        android:hint="@string/add_main_hint2"
-                        android:inputType="numberDecimal" />
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical|center_horizontal"
+                        style="@style/black_text_appearance"
+                        android:text="@string/add_main_hint2"
+                        android:textSize="@dimen/history_title_text_size"
+                        android:layout_margin="10dp" />
                 </LinearLayout>
 
                 <Button
-                    android:id="@+id/button2"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/submitShiftbutton"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:text="@string/shift_close_shift" />
+                    android:text="@string/shift_close_shift"
+                    android:layout_weight="1" />
             </LinearLayout>
         </android.support.constraint.ConstraintLayout>
     </LinearLayout>

@@ -49,7 +49,7 @@ android {
         ems {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.2.1.8"
+            versionName "1.2.1.13"
             versionCode 122
             targetSdkVersion 23
             multiDexEnabled = true
@@ -63,7 +63,7 @@ android {
         icmpevo {
             minSdkVersion 15
             applicationId 'com.emobilepos.icmpevo.app'
-            versionName "1.2.1.8"
+            versionName "1.2.1.13"
             versionCode 122
             targetSdkVersion 23
             multiDexEnabled = true
@@ -91,7 +91,7 @@ android {
         ivupos {
             minSdkVersion 15
             applicationId 'com.emobilepos.ivupos.app'
-            versionName "1.2.1.8"
+            versionName "1.2.1.13"
             versionCode 122
             targetSdkVersion 23
             multiDexEnabled = true
@@ -270,6 +270,7 @@ dependencies {
         exclude group: 'com.android.support', module: 'recyclerview-v7'
     }
     compile 'com.google.code.gson:gson:2.6.2'
+    compile 'net.zetetic:android-database-sqlcipher:3.5.4@aar'
 }
 dependencies {
     compile 'com.microsoft.azure:notification-hubs-android-sdk:0.4@aar'

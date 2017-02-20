@@ -814,9 +814,9 @@
 
     <string name="shift_close_shift">Close Shift</string>
     <string name="shift_open_shift">Open Shift</string>
-    <string name="shift_expenses">Shift Expenses</string>
-    <string name="shift_expense">Expense</string>
-    <string name="shift_add_expense">Add Expense</string>
+    <string name="shift_expenses">Shift No Sale</string>
+    <string name="shift_expense">No Sale</string>
+    <string name="shift_add_expense">Add No Sale</string>
     <string name="shift_title">Shift</string>
 
     <string name="report_per_shift">Per-Shift</string>
@@ -1252,6 +1252,27 @@
     <string name="plus_sign" translatable="false">+</string>
     <string name="minus_sign" translatable="false">-</string>
     <string name="equal_sign" translatable="false">=</string>
+    <string name="tenCents" translatable="false">$0.10</string>
+    <string name="view_video">View Video</string>
+    <string name="no_video">No Video</string>
+    <string name="information">Information</string>
+    <string name="inventory">Inventory</string>
+    <string name="identification">Identification</string>
+    <string name="attributes">Attributes</string>
+    <string name="sync_dload_shifts">Downloading Shifts</string>
+    <string name="entered_open_amount">Open Shift Amount</string>
+    <string name="shift_count_down_shift">Start Count Down</string>
+    <string name="entered_count_down_amount">Count Down Amount</string>
+    <string name="error_sync_closed_shift">Synchronization error.</string>
+    <string name="safe_drop">Safe Drop</string>
+    <string name="cash_drop">Cash Drop</string>
+    <string name="cash_in">Cash In</string>
+    <string name="buy_goods_services">Buy Goods Services</string>
+    <string name="non_cash_gratuity">Non Cash Gratuity</string>
+    <string name="security_alert">Secutity Alert</string>
+    <string name="permission_denied">Permission denied to this area.</string>
+    <string name="expense_id">No Sale ID</string>
+    <string name="logout_menu">Logout</string>
 
 
 </resources>

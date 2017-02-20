@@ -50,6 +50,7 @@ import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.OrderSeatProduct;
 import com.android.emobilepos.models.Product;
+import com.android.emobilepos.models.realms.OrderAttributes;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.ProductAttribute;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
@@ -80,6 +81,7 @@ import org.xml.sax.XMLReader;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -146,6 +148,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     public boolean openFromHold;
     OrderingAction orderingAction = OrderingAction.NONE;
     private String associateId;
+    private List<OrderAttributes> orderAttributes;
 
 
     public enum OrderingAction {
@@ -576,7 +579,12 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == Global.FROM_DRAW_RECEIPT_PORTRAIT) {
+        if (resultCode == Global.FROM_ORDER_ATTRIBUTES_ACTIVITY) {
+            Gson gson = JsonUtils.getInstance();
+            Type listType = new com.google.gson.reflect.TypeToken<List<OrderAttributes>>() {
+            }.getType();
+            orderAttributes = gson.fromJson(data.getStringExtra("orderAttributesValue"), listType);
+        } else if (resultCode == Global.FROM_DRAW_RECEIPT_PORTRAIT) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         } else if (resultCode == 1) {
             Bundle extras = data.getExtras();
@@ -1455,7 +1463,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             OrdersHandler dbOrders = new OrdersHandler(activity);
             if (order.ord_id.isEmpty()) {
                 Global global = (Global) activity.getApplication();
-                order = Receipt_FR.buildOrder(activity, global, "", "", ((OrderingMain_FA) activity).getSelectedDinningTableNumber(), ((OrderingMain_FA) activity).getAssociateId());
+                order = Receipt_FR.buildOrder(activity, global, "", "", ((OrderingMain_FA) activity).getSelectedDinningTableNumber(),
+                        ((OrderingMain_FA) activity).getAssociateId(), ((OrderingMain_FA) activity).getOrderAttributes());
                 OrderProductsHandler dbOrdProd = new OrderProductsHandler(activity);
                 OrderProductsAttr_DB dbOrdAttr = new OrderProductsAttr_DB(activity);
                 dbOrders.insert(order);
@@ -1565,4 +1574,12 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
         return true;
     }
+    public List<OrderAttributes> getOrderAttributes() {
+        return orderAttributes;
+    }
+
+    public void setOrderAttributes(List<OrderAttributes> orderAttributes) {
+        this.orderAttributes = orderAttributes;
+    }
+
 }

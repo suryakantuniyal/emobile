@@ -48,6 +48,9 @@
         <item name="menu_consignment">Consignment</item>
         <item name="menu_transfer_inventory">Inventory Transfer</item>
         <item name="menu_tip_adjustment">Tip Adjustment</item>
+        <item name="menu_clerk_shifts">Shifts</item>
+        <item name="menu_shift_expense">Shift No Sale</item>
+
     </string-array>
 
     <string-array name="salesReceiptSplitTypes">
@@ -56,6 +59,14 @@
         <item name="split_single">@string/split_single</item>
     </string-array>
 
+    <string-array name="expenseTypes">
+        <item name="safe_drop">@string/safe_drop</item>
+        <item name="cash_drop">@string/cash_drop</item>
+        <item name="cash_in">@string/cash_in</item>
+        <item name="buy_goods_services">@string/buy_goods_services</item>
+        <item name="non_cash_gratuity">@string/non_cash_gratuity</item>
+
+    </string-array>
 
     <integer-array name="dinningTableSeatsArray">
         <item name="1">1</item>
@@ -106,6 +117,8 @@
         <item name="menu_consignment">12</item>
         <item name="menu_transfer_inventory">13</item>
         <item name="menu_tip_adjustment">14</item>
+        <item name="menu_clerk_shifts">15</item>
+        <item name="menu_shift_expense">16</item>
     </string-array>
 
     <string-array name="mainMenuKey">
@@ -124,6 +137,8 @@
         <item name="menu_consignment">12</item>
         <item name="menu_transfer_inventory">13</item>
         <item name="menu_tip_adjustment">14</item>
+        <item name="menu_clerk_shifts">15</item>
+        <item name="menu_shift_expense">16</item>
     </string-array>
 
     <string-array name="printPrefArray">

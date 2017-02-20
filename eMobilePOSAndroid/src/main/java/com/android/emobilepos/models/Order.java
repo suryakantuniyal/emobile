@@ -5,12 +5,14 @@ import android.content.Context;
 
 import com.android.dao.AssignEmployeeDAO;
 import com.android.emobilepos.models.realms.AssignEmployee;
+import com.android.emobilepos.models.realms.OrderAttributes;
 import com.android.support.Customer;
 import com.android.support.DateUtils;
 import com.android.support.MyPreferences;
 import com.google.gson.Gson;
 
 import java.util.Date;
+import java.util.List;
 
 import util.json.JsonUtils;
 
@@ -72,6 +74,7 @@ public class Order implements Cloneable {
     public String associateID;
     public int numberOfSeats;
     public String ord_timeStarted;
+    public List<OrderAttributes> orderAttributes;
 
     public Order() {
         ord_issync = "0";

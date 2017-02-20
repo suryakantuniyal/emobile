@@ -214,7 +214,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
 
         if (!myPref.getShiftIsOpen())
             payment.setClerk_id(myPref.getShiftClerkID());
-        else if (myPref.getPreferences(MyPreferences.pref_use_clerks))
+        else if (myPref.isUseClerks())
             payment.setClerk_id(myPref.getClerkID());
 
         payment.setCust_id(extras.getString("cust_id"));

@@ -37,6 +37,7 @@ import com.android.database.PaymentsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.PaymentDetails;
 import com.android.emobilepos.models.realms.Payment;
+import com.android.emobilepos.security.SecurityManager;
 import com.android.payments.EMSPayGate_Default;
 import com.android.payments.EMSPayGate_Default.EAction;
 import com.android.saxhandler.SAXProcessCardPayHandler;
@@ -94,6 +95,8 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
         setContentView(R.layout.histpay_detailslv_layout);
         global = (Global) getApplication();
         activity = this;
+        boolean hasRePrintPermissions = SecurityManager.hasPermissions(this, SecurityManager.SecurityAction.REPRINT_ORDER);
+        boolean hasVoidPermissions = SecurityManager.hasPermissions(this, SecurityManager.SecurityAction.VOID_ORDER);
 
         Bundle extras = activity.getIntent().getExtras();
         myPref = new MyPreferences(activity);
@@ -118,7 +121,7 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
 
         payHandler = new PaymentsHandler(activity);
         PaymentDetails paymentDetails = payHandler.getPaymentDetails(pay_id, isDeclined);
-        voidButton.setEnabled(!paymentDetails.isVoid() && TextUtils.isEmpty(paymentDetails.getJob_id()));
+        voidButton.setEnabled(hasVoidPermissions&& !paymentDetails.isVoid() && TextUtils.isEmpty(paymentDetails.getJob_id()));
         if (extras.getBoolean("histpay")) {
             if (paymentDetails.getJob_id() != null && paymentDetails.getJob_id().isEmpty()) {
                 if (paymentDetails.getInv_id().isEmpty()) {
@@ -172,8 +175,8 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
         }
         //Handle the click event and begin the process for Printing the transaction
         MyPreferences myPref = new MyPreferences(activity);
-        printButton.setEnabled(myPref.getPreferences(MyPreferences.pref_enable_printing));
-        if (myPref.getPreferences(MyPreferences.pref_enable_printing)) {
+        printButton.setEnabled(hasRePrintPermissions && myPref.getPreferences(MyPreferences.pref_enable_printing));
+        if (hasRePrintPermissions && myPref.getPreferences(MyPreferences.pref_enable_printing)) {
             printButton.setOnClickListener(this);
         }
         hasBeenCreated = true;

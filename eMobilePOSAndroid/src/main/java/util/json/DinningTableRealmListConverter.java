@@ -36,10 +36,6 @@ public class DinningTableRealmListConverter implements JsonSerializer<RealmList<
                 }
             }).setDateFormat(DateUtils.DATE_yyyy_MM_ddTHH_mm_ss)
             .create();
-//    @Override
-//    public RealmList<DinningTable> deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) {
-//        return null;
-//    }
 
     @Override
     public JsonElement serialize(RealmList<DinningTable> dinningTables, Type type, JsonSerializationContext jsonSerializationContext) {

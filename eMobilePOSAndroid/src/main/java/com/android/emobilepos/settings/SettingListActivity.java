@@ -43,6 +43,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.dao.PayMethodsDAO;
+import com.android.dao.ShiftDAO;
 import com.android.database.CategoriesHandler;
 import com.android.database.DBManager;
 import com.android.database.PayMethodsHandler;
@@ -50,8 +51,9 @@ import com.android.database.ShiftPeriodsDBHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.country.CountryPicker;
 import com.android.emobilepos.country.CountryPickerListener;
+import com.android.emobilepos.mainmenu.SettingsTab_FR;
 import com.android.emobilepos.models.realms.PaymentMethod;
-import com.android.emobilepos.shifts.OpenShift_FA;
+import com.android.emobilepos.models.realms.Shift;
 import com.android.emobilepos.shifts.ShiftExpensesList_FA;
 import com.android.support.DateUtils;
 import com.android.support.DeviceUtils;
@@ -81,18 +83,88 @@ import main.EMSDeviceManager;
  */
 public class SettingListActivity extends BaseFragmentActivityActionBar {
 
+    public final static int CASE_ADMIN = 0, CASE_MANAGER = 1, CASE_GENERAL = 2;
+    private static SettingsTab_FR.SettingsRoles settingsType;
+    private static FragmentManager supportFragmentManager;
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
      */
     private boolean mTwoPane;
     private boolean hasBeenCreated;
-    private static int settingsType = 0;
-    public final static int CASE_ADMIN = 0, CASE_MANAGER = 1, CASE_GENERAL = 2;
-    private static FragmentManager supportFragmentManager;
 
     public static void loadDefaultValues(Activity context) {
         PreferenceManager.setDefaultValues(context, R.xml.settings_admin_layout, false);
+    }
+
+    @Override
+    public void onResume() {
+        Global global = (Global) getApplication();
+        if (global.isApplicationSentToBackground(this))
+            global.loggedIn = false;
+        global.stopActivityTransitionTimer();
+
+        if (hasBeenCreated && !global.loggedIn) {
+            if (global.getGlobalDlog() != null)
+                global.getGlobalDlog().dismiss();
+            global.promptForMandatoryLogin(this);
+        }
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Global global = (Global) getApplication();
+        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+        boolean isScreenOn = powerManager.isScreenOn();
+        if (!isScreenOn)
+            global.loggedIn = false;
+        global.startActivityTransitionTimer();
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_setting_list);
+        Bundle extras = this.getIntent().getExtras();
+        settingsType = (SettingsTab_FR.SettingsRoles) extras.get("settings_type");
+        View recyclerView = findViewById(R.id.setting_list);
+        assert recyclerView != null;
+        setupRecyclerView((RecyclerView) recyclerView);
+        supportFragmentManager = getSupportFragmentManager();
+        if (findViewById(R.id.setting_detail_container) != null) {
+            // The detail container view will be present only in the
+            // large-screen layouts (res/values-w900dp).
+            // If this view is present, then the
+            // activity should be in two-pane mode.
+            mTwoPane = true;
+            PrefsFragment fragment = new PrefsFragment();
+            Bundle args = new Bundle();
+            args.putInt("section", SettingSection.getInstance(0).getCode());
+            fragment.setArguments(args);
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.setting_detail_container, fragment)
+                    .commit();
+        }
+        hasBeenCreated = true;
+    }
+
+    private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
+        switch (settingsType) {
+            case ADMIN:
+                recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(Arrays.asList(getResources().getStringArray(R.array.settingsSectionsAdminArray))));
+                break;
+            case MANAGER:
+                recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(Arrays.asList(getResources().getStringArray(R.array.settingsSectionsManagerArray))));
+                break;
+            case GENERAL:
+                recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(Arrays.asList(getResources().getStringArray(R.array.settingsSectionsGeneralArray))));
+                break;
+            default:
+                recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(Arrays.asList(getResources().getStringArray(R.array.settingsSectionsAdminArray))));
+        }
+
     }
 
     public enum SettingSection {
@@ -103,10 +175,6 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
 
         SettingSection(int code) {
             this.code = code;
-        }
-
-        public int getCode() {
-            return code;
         }
 
         public static SettingSection getInstance(int code) {
@@ -147,145 +215,11 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     return GENERAL;
             }
         }
-    }
 
-
-    @Override
-    public void onResume() {
-        Global global = (Global) getApplication();
-        if (global.isApplicationSentToBackground(this))
-            global.loggedIn = false;
-        global.stopActivityTransitionTimer();
-
-        if (hasBeenCreated && !global.loggedIn) {
-            if (global.getGlobalDlog() != null)
-                global.getGlobalDlog().dismiss();
-            global.promptForMandatoryLogin(this);
-        }
-        super.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        Global global = (Global) getApplication();
-        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-        boolean isScreenOn = powerManager.isScreenOn();
-        if (!isScreenOn)
-            global.loggedIn = false;
-        global.startActivityTransitionTimer();
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_setting_list);
-        Bundle extras = this.getIntent().getExtras();
-        settingsType = extras.getInt("settings_type");
-        View recyclerView = findViewById(R.id.setting_list);
-        assert recyclerView != null;
-        setupRecyclerView((RecyclerView) recyclerView);
-        supportFragmentManager = getSupportFragmentManager();
-        if (findViewById(R.id.setting_detail_container) != null) {
-            // The detail container view will be present only in the
-            // large-screen layouts (res/values-w900dp).
-            // If this view is present, then the
-            // activity should be in two-pane mode.
-            mTwoPane = true;
-            PrefsFragment fragment = new PrefsFragment();
-            Bundle args = new Bundle();
-            args.putInt("section", SettingSection.getInstance(0).getCode());
-            fragment.setArguments(args);
-            getFragmentManager().beginTransaction()
-                    .replace(R.id.setting_detail_container, fragment)
-                    .commit();
-        }
-        hasBeenCreated = true;
-    }
-
-    private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        switch (settingsType) {
-            case CASE_ADMIN:
-                recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(Arrays.asList(getResources().getStringArray(R.array.settingsSectionsAdminArray))));
-                break;
-            case CASE_MANAGER:
-                recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(Arrays.asList(getResources().getStringArray(R.array.settingsSectionsManagerArray))));
-                break;
-            case CASE_GENERAL:
-                recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(Arrays.asList(getResources().getStringArray(R.array.settingsSectionsGeneralArray))));
-                break;
-            default:
-                recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(Arrays.asList(getResources().getStringArray(R.array.settingsSectionsAdminArray))));
-        }
-
-    }
-
-    public class SimpleItemRecyclerViewAdapter
-            extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
-
-        private final List<String> mValues;
-
-        public SimpleItemRecyclerViewAdapter(List<String> items) {
-            mValues = items;
-        }
-
-        @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.setting_list_content, parent, false);
-            return new ViewHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(final ViewHolder holder, final int position) {
-            holder.mItem = mValues.get(position);
-            holder.mIdView.setText(mValues.get(position));
-
-            holder.mView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mTwoPane) {
-                        PrefsFragment fragment = new PrefsFragment();
-                        Bundle args = new Bundle();
-                        args.putInt("section", SettingSection.getInstance(position).getCode());
-                        fragment.setArguments(args);
-                        getFragmentManager().beginTransaction()
-                                .replace(R.id.setting_detail_container, fragment)
-                                .commit();
-                    } else {
-                        Context context = v.getContext();
-                        Intent intent = new Intent(context, SettingDetailActivity.class);
-                        intent.putExtra("section", SettingSection.getInstance(position).getCode());
-
-                        context.startActivity(intent);
-                    }
-                }
-            });
-        }
-
-        @Override
-        public int getItemCount() {
-            return mValues.size();
-        }
-
-        public class ViewHolder extends RecyclerView.ViewHolder {
-            public final View mView;
-            public final TextView mIdView;
-            public String mItem;
-
-            public ViewHolder(View view) {
-                super(view);
-                mView = view;
-                mIdView = (TextView) view.findViewById(R.id.id);
-            }
-
-            @Override
-            public String toString() {
-                return super.toString();
-            }
+        public int getCode() {
+            return code;
         }
     }
-
 
     public static class PrefsFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener, HttpClient.DownloadFileCallBack {
         private Dialog promptDialog;
@@ -307,7 +241,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     return R.xml.settings_admin_payments_layout;
                 case PAYMENT_PROCESSING:
                     switch (settingsType) {
-                        case CASE_GENERAL:
+                        case GENERAL:
                             return R.xml.settings_general_payment_layout;
                         default:
                             return R.xml.settings_admin_payments_processing_layout;
@@ -316,7 +250,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     return R.xml.settings_admin_account_layout;
                 case CASH_DRAWER:
                     switch (settingsType) {
-                        case CASE_MANAGER:
+                        case MANAGER:
                             return R.xml.settings_manager_cashdrawer_layout;
                         default:
                             return R.xml.settings_admin_cashdrawer_layout;
@@ -325,7 +259,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     return R.xml.settings_admin_kiosk_layout;
                 case SHIFTS:
                     switch (settingsType) {
-                        case CASE_MANAGER:
+                        case MANAGER:
                             return R.xml.settings_manager_shifts_layout;
                         default:
                             return R.xml.settings_admin_shifts_layout;
@@ -340,9 +274,9 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     return R.xml.settings_admin_support_layout;
                 case PRINTING:
                     switch (settingsType) {
-                        case CASE_MANAGER:
+                        case MANAGER:
                             return R.xml.settings_manager_printing_layout;
-                        case CASE_GENERAL:
+                        case GENERAL:
                             return R.xml.settings_general_printing_layout;
                         default:
                             return R.xml.settings_admin_printing_layout;
@@ -351,9 +285,9 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     return R.xml.settings_admin_products_layout;
                 case OTHERS:
                     switch (settingsType) {
-                        case CASE_MANAGER:
+                        case MANAGER:
                             return R.xml.settings_manager_other_layout;
-                        case CASE_GENERAL:
+                        case GENERAL:
                             return R.xml.settings_general_other_layout;
                         default:
                             return R.xml.settings_admin_others_layout;
@@ -366,6 +300,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
         private void setPrefManager(SettingListActivity.SettingSection section, PreferenceManager prefManager) {
             switch (section) {
                 case GENERAL:
+                    prefManager.findPreference("pref_use_clerks").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_transaction_num_prefix").setOnPreferenceClickListener(this);
                     break;
                 case RESTAURANT:
@@ -384,7 +319,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
 
                     break;
                 case PAYMENT_PROCESSING:
-                    if (settingsType == CASE_ADMIN) {
+                    if (settingsType == SettingsTab_FR.SettingsRoles.ADMIN) {
                         configureDefaultPaymentMethod();
                         storeForwardTransactions = prefManager
                                 .findPreference("pref_store_and_forward_transactions");
@@ -399,7 +334,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     }
                     break;
                 case PRINTING:
-                    if (settingsType == CASE_ADMIN) {
+                    if (settingsType == SettingsTab_FR.SettingsRoles.ADMIN) {
                         prefManager.findPreference("pref_printek_info").setOnPreferenceClickListener(this);
                         prefManager.findPreference("pref_star_info").setOnPreferenceClickListener(this);
                         prefManager.findPreference("pref_snbc_setup").setOnPreferenceClickListener(this);
@@ -419,7 +354,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     break;
                 case CASH_DRAWER:
                     prefManager.findPreference("pref_open_cash_drawer").setOnPreferenceClickListener(this);
-                    if (settingsType == CASE_ADMIN) {
+                    if (settingsType == SettingsTab_FR.SettingsRoles.ADMIN) {
                         prefManager.findPreference("pref_configure_cash_drawer").setOnPreferenceClickListener(this);
                     }
                     break;
@@ -453,12 +388,12 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     prefManager.findPreference("pref_check_updates").setOnPreferenceClickListener(this);
                     break;
                 case OTHERS:
-                    if (settingsType == CASE_GENERAL) {
+                    if (settingsType == SettingsTab_FR.SettingsRoles.GENERAL) {
                         prefManager.findPreference("pref_toggle_elo_bcr").setOnPreferenceClickListener(this);
                         prefManager.findPreference("pref_use_navigationbar").setOnPreferenceClickListener(this);
                     }
                     prefManager.findPreference("pref_clear_images_cache").setOnPreferenceClickListener(this);
-                    if (settingsType == CASE_ADMIN) {
+                    if (settingsType == SettingsTab_FR.SettingsRoles.ADMIN) {
                         CheckBoxPreference _cbp_use_location_inv = (CheckBoxPreference) prefManager
                                 .findPreference("pref_enable_location_inventory");
                         _cbp_use_location_inv.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
@@ -482,11 +417,11 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
 
         }
 
-        private SettingSection getSettingSectionBy(SettingSection section, int settingType) {
-            switch (settingType) {
-                case CASE_ADMIN:
+        private SettingSection getSettingSectionBy(SettingSection section, SettingsTab_FR.SettingsRoles role) {
+            switch (role) {
+                case ADMIN:
                     return section;
-                case CASE_MANAGER:
+                case MANAGER:
                     switch (section.getCode()) {
                         case 0:
                             return SettingSection.PRINTING;
@@ -498,7 +433,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                             return SettingSection.OTHERS;
                     }
                     break;
-                case CASE_GENERAL:
+                case GENERAL:
                     switch (section.getCode()) {
                         case 0:
                             return SettingSection.PAYMENT_PROCESSING;
@@ -529,6 +464,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
         public boolean onPreferenceClick(Preference preference) {
             Intent intent;
             switch (preference.getTitleRes()) {
+
                 case R.string.config_mw_with_genius:
                     CheckBoxPreference checkBoxPreference = (CheckBoxPreference) preference;
                     if (checkBoxPreference.isChecked()) {
@@ -545,6 +481,8 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                         PayMethodsDAO.delete("Wallet");
                     }
                     break;
+                case R.string.config_use_clerks:
+                    Global.loggedIn = false;
                 case R.string.config_use_navigationbar:
                     getActivity().finish();
                     getActivity().startActivity(getActivity().getIntent());
@@ -606,17 +544,17 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     break;
                 case R.string.config_attribute_to_display:
                     break;
-                case R.string.config_open_shift:
-                    if (myPref.getShiftIsOpen()) {
-                        intent = new Intent(getActivity(), OpenShift_FA.class);
-                        startActivityForResult(intent, 0);
-                    } else
-                        promptCloseShift(true, 0);
-                    break;
+//                case R.string.config_open_shift:
+//                    if (myPref.getShiftIsOpen()) {
+//                        intent = new Intent(getActivity(), OpenShift_FA.class);
+//                        startActivityForResult(intent, 0);
+//                    } else
+//                        promptCloseShift(true, 0);
+//                    break;
                 case R.string.config_expenses:
-                    String spID = myPref.getShiftID();
+                    Shift openShift = ShiftDAO.getOpenShift(Integer.parseInt(myPref.getClerkID()));
                     //if shift is open then show the expenses option
-                    if (spID.isEmpty()) {
+                    if (openShift == null) {
                         Toast.makeText(getActivity(), "A shift must be opened before an expense can be added!", Toast.LENGTH_LONG).show();
                     } else {
                         intent = new Intent(getActivity(), ShiftExpensesList_FA.class);
@@ -1171,7 +1109,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                                 Global.mainPrinterManager = edm.getManager();
                                 Global.mainPrinterManager.loadDrivers(getActivity(), Global.MIURA, false);
 
-                            }else if (val[pos].toUpperCase(Locale.getDefault()).contains("STAR")) {
+                            } else if (val[pos].toUpperCase(Locale.getDefault()).contains("STAR")) {
                                 myPref.setPrinterType(Global.STAR);
                                 myPref.setPrinterMACAddress("BT:" + macAddressList.get(pos));
                                 myPref.setPrinterName(strDeviceName);
@@ -1360,6 +1298,17 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
             Global.showPrompt(getActivity(), R.string.dlog_title_error, getString(R.string.check_update_fail));
         }
 
+        @Override
+        public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+            if (resultCode == 1) {
+                if (!myPref.getShiftIsOpen()) {
+                    CharSequence c = "\t\t" + getString(R.string.admin_close_shift) + " <" + myPref.getShiftClerkName() + ">";
+                    openShiftPref.setSummary(c);
+                }
+            }
+        }
+
         private class autoConnectPrinter extends AsyncTask<Void, Void, String> {
             private ProgressDialog progressDlog;
 
@@ -1386,16 +1335,71 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
             }
         }
 
-        @Override
-        public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    }
 
-            if (resultCode == 1) {
-                if (!myPref.getShiftIsOpen()) {
-                    CharSequence c = "\t\t" + getString(R.string.admin_close_shift) + " <" + myPref.getShiftClerkName() + ">";
-                    openShiftPref.setSummary(c);
-                }
-            }
+    public class SimpleItemRecyclerViewAdapter
+            extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
+
+        private final List<String> mValues;
+
+        public SimpleItemRecyclerViewAdapter(List<String> items) {
+            mValues = items;
         }
 
+        @Override
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.setting_list_content, parent, false);
+            return new ViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(final ViewHolder holder, final int position) {
+            holder.mItem = mValues.get(position);
+            holder.mIdView.setText(mValues.get(position));
+
+            holder.mView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mTwoPane) {
+                        PrefsFragment fragment = new PrefsFragment();
+                        Bundle args = new Bundle();
+                        args.putInt("section", SettingSection.getInstance(position).getCode());
+                        fragment.setArguments(args);
+                        getFragmentManager().beginTransaction()
+                                .replace(R.id.setting_detail_container, fragment)
+                                .commit();
+                    } else {
+                        Context context = v.getContext();
+                        Intent intent = new Intent(context, SettingDetailActivity.class);
+                        intent.putExtra("section", SettingSection.getInstance(position).getCode());
+
+                        context.startActivity(intent);
+                    }
+                }
+            });
+        }
+
+        @Override
+        public int getItemCount() {
+            return mValues.size();
+        }
+
+        public class ViewHolder extends RecyclerView.ViewHolder {
+            public final View mView;
+            public final TextView mIdView;
+            public String mItem;
+
+            public ViewHolder(View view) {
+                super(view);
+                mView = view;
+                mIdView = (TextView) view.findViewById(R.id.id);
+            }
+
+            @Override
+            public String toString() {
+                return super.toString();
+            }
+        }
     }
 }

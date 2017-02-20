@@ -11,6 +11,7 @@ import android.view.Window;
 import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
+import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.crashlytics.android.Crashlytics;
 
@@ -26,8 +27,8 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
     private static String[] navigationbarByModels;
 
     protected void setActionBar() {
-        showNavigationbar = myPref.getPreferences(MyPreferences.pref_use_navigationbar) || isNavigationBarModel();
-        if (this instanceof MainMenu_FA || showNavigationbar) {
+        showNavigationbar = myPref.getPreferences(MyPreferences.pref_use_navigationbar) || isNavigationBarModel() || this instanceof MainMenu_FA;
+        if (showNavigationbar) {
             myBar = this.getActionBar();
             if (myBar != null) {
                 myBar.setDisplayShowTitleEnabled(true);
@@ -78,8 +79,9 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        if (showNavigationbar)
+        if (this instanceof MainMenu_FA) {
+            getMenuInflater().inflate(R.menu.clerk_logout_menu, menu);
+        } else if (showNavigationbar)
             getMenuInflater().inflate(R.menu.activity_main_menu, menu);
         return true;
     }
@@ -93,6 +95,12 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
         switch (id) {
             case R.id.menu_back: {
                 onBackPressed();
+                break;
+            }
+            case R.id.logoutMenuItem: {
+                Global global = (Global) this.getApplication();
+                Global.loggedIn = false;
+                global.promptForMandatoryLogin(this);
                 break;
             }
         }
