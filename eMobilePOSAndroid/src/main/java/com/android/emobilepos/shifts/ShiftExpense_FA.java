@@ -130,7 +130,6 @@ public class ShiftExpense_FA extends BaseFragmentActivityActionBar implements Vi
         Shift openShift = ShiftDAO.getOpenShift(Integer.parseInt(myPref.getClerkID()));
         double amount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(cashAmount));
         ShiftExpense expense = new ShiftExpense();
-        expense.setCashAmount(String.valueOf(amount));
         expense.setProductId(expenseProductIDSelected);
         expense.setExpenseId(UUID.randomUUID().toString());
         expense.setProductName(expenseName);
@@ -138,10 +137,16 @@ public class ShiftExpense_FA extends BaseFragmentActivityActionBar implements Vi
         expense.setCreationDate(now);
         expense.setProductDescription(comments.getText().toString());
         expense.setProductOption(expenseName);
-        ShiftExpensesDAO.insertOrUpdate(expense);
         BigDecimal totalExpense = new BigDecimal(openShift != null ? openShift.getTotalExpenses() : "0");
-        totalExpense = expenseProductIDSelected == 3 ? totalExpense.add(BigDecimal.valueOf(amount))
-                : totalExpense.subtract(BigDecimal.valueOf(amount));
+        if (expenseProductIDSelected == 3) {
+            expense.setCashAmount(String.valueOf(amount));
+            totalExpense.add(BigDecimal.valueOf(amount));
+        } else {
+            expense.setCashAmount(String.valueOf(amount * -1));
+            totalExpense.subtract(BigDecimal.valueOf(amount));
+        }
+        ShiftExpensesDAO.insertOrUpdate(expense);
+
         if (openShift != null) {
             openShift.setTotalExpenses(String.valueOf(totalExpense));
         }
