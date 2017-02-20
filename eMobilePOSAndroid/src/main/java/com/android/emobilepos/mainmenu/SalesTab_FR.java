@@ -257,7 +257,7 @@ public class SalesTab_FR extends Fragment {
                 case SALE_RECEIPT: {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
-                        if (ShiftDAO.isShiftOpen(myPref.getClerkID())) {
+                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                             if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
                                 if (myPref.getPreferences(MyPreferences.pref_restaurant_mode) &&
                                         myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
@@ -284,7 +284,7 @@ public class SalesTab_FR extends Fragment {
                 case ORDERS: {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
-                        if (ShiftDAO.isShiftOpen(myPref.getClerkID())) {
+                        if (!myPref.isUseClerks() ||  ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                             intent = new Intent(activity, OrderingMain_FA.class);
                             intent.putExtra("option_number", Global.TransactionType.ORDERS);
                             startActivityForResult(intent, 0);
@@ -299,7 +299,7 @@ public class SalesTab_FR extends Fragment {
                 case RETURN: {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
-                        if (ShiftDAO.isShiftOpen(myPref.getClerkID())) {
+                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                             intent = new Intent(activity, OrderingMain_FA.class);
                             intent.putExtra("option_number", Global.TransactionType.RETURN);
                             startActivityForResult(intent, 0);
@@ -314,7 +314,7 @@ public class SalesTab_FR extends Fragment {
                 case INVOICE: {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
-                        if (ShiftDAO.isShiftOpen(myPref.getClerkID())) {
+                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                             intent = new Intent(activity, OrderingMain_FA.class);
                             intent.putExtra("option_number", Global.TransactionType.INVOICE);
                             startActivityForResult(intent, 0);
@@ -329,7 +329,7 @@ public class SalesTab_FR extends Fragment {
                 case ESTIMATE: {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
-                        if (ShiftDAO.isShiftOpen(myPref.getClerkID())) {
+                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                             intent = new Intent(activity, OrderingMain_FA.class);
                             intent.putExtra("option_number", Global.TransactionType.ESTIMATE);
                             startActivityForResult(intent, 0);
@@ -345,7 +345,7 @@ public class SalesTab_FR extends Fragment {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.TAKE_PAYMENT);
                     if (hasPermissions) {
-                        if (ShiftDAO.isShiftOpen(myPref.getClerkID())) {
+                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                             intent = new Intent(activity, SelectPayMethod_FA.class);
                             intent.putExtra("salespayment", true);
                             intent.putExtra("amount", "0.00");
@@ -370,7 +370,7 @@ public class SalesTab_FR extends Fragment {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.TAKE_PAYMENT);
                     if (hasPermissions) {
-                        if (ShiftDAO.isShiftOpen(myPref.getClerkID())) {
+                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                             intent = new Intent(activity, GiftCard_FA.class);
                             startActivity(intent);
                         } else {
@@ -385,7 +385,7 @@ public class SalesTab_FR extends Fragment {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.TAKE_PAYMENT);
                     if (hasPermissions) {
-                        if (ShiftDAO.isShiftOpen(myPref.getClerkID())) {
+                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                             intent = new Intent(activity, LoyaltyCard_FA.class);
                             startActivity(intent);
                         } else {
@@ -400,7 +400,7 @@ public class SalesTab_FR extends Fragment {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.TAKE_PAYMENT);
                     if (hasPermissions) {
-                        if (ShiftDAO.isShiftOpen(myPref.getClerkID())) {
+                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                             intent = new Intent(activity, RewardCard_FA.class);
                             startActivity(intent);
                         } else {
@@ -415,7 +415,7 @@ public class SalesTab_FR extends Fragment {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
-                        if (ShiftDAO.isShiftOpen(myPref.getClerkID())) {
+                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                             //EasyTracker.getTracker().sendEvent("ui_action", "button_press", "Refund", null);
                             intent = new Intent(activity, SelectPayMethod_FA.class);
                             intent.putExtra("salesrefund", true);
@@ -441,7 +441,7 @@ public class SalesTab_FR extends Fragment {
                 case ON_HOLD: {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
-                        if (ShiftDAO.isShiftOpen(myPref.getClerkID())) {
+                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                             intent = new Intent(getActivity(), OnHoldActivity.class);
                             getActivity().startActivity(intent);
                         } else {
@@ -455,7 +455,7 @@ public class SalesTab_FR extends Fragment {
                 case CONSIGNMENT: {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
-                        if (ShiftDAO.isShiftOpen(myPref.getClerkID())) {
+                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                             intent = new Intent(activity, ConsignmentMain_FA.class);
                             startActivity(intent);
                         } else {
@@ -484,7 +484,7 @@ public class SalesTab_FR extends Fragment {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.NO_SALE);
                     if (hasPermissions) {
-                        if (ShiftDAO.isShiftOpen(myPref.getClerkID())) {
+                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                             intent = new Intent(activity, ShiftExpensesList_FA.class);
                             startActivity(intent);
                         } else {
@@ -503,7 +503,7 @@ public class SalesTab_FR extends Fragment {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
-                        if (ShiftDAO.isShiftOpen(myPref.getClerkID())) {
+                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                             if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
                                 Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_select_customer));
                             } else {
@@ -528,7 +528,7 @@ public class SalesTab_FR extends Fragment {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
-                        if (ShiftDAO.isShiftOpen(myPref.getClerkID())) {
+                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                             if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
                                 Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_select_customer));
                             } else {
@@ -548,7 +548,7 @@ public class SalesTab_FR extends Fragment {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.TAKE_PAYMENT);
                     if (hasPermissions) {
-                        if (ShiftDAO.isShiftOpen(myPref.getClerkID())) {
+                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                             if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
                                 Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_select_customer));
                             } else {
@@ -571,7 +571,7 @@ public class SalesTab_FR extends Fragment {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.TAKE_PAYMENT);
                     if (hasPermissions) {
-                        if (ShiftDAO.isShiftOpen(myPref.getClerkID())) {
+                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                             intent = new Intent(activity, GiftCard_FA.class);
                             startActivity(intent);
                         } else {
@@ -586,7 +586,7 @@ public class SalesTab_FR extends Fragment {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.TAKE_PAYMENT);
                     if (hasPermissions) {
-                        if (ShiftDAO.isShiftOpen(myPref.getClerkID())) {
+                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                             intent = new Intent(activity, LoyaltyCard_FA.class);
                             startActivity(intent);
                         } else {
@@ -601,7 +601,7 @@ public class SalesTab_FR extends Fragment {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.TAKE_PAYMENT);
                     if (hasPermissions) {
-                        if (ShiftDAO.isShiftOpen(myPref.getClerkID())) {
+                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                             intent = new Intent(activity, RewardCard_FA.class);
                             startActivity(intent);
                         } else {
@@ -616,7 +616,7 @@ public class SalesTab_FR extends Fragment {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
-                        if (ShiftDAO.isShiftOpen(myPref.getClerkID())) {
+                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                             intent = new Intent(activity, SelectPayMethod_FA.class);
                             intent.putExtra("salesrefund", true);
                             intent.putExtra("amount", "0.00");
@@ -638,7 +638,7 @@ public class SalesTab_FR extends Fragment {
                 case ON_HOLD: {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
-                        if (ShiftDAO.isShiftOpen(myPref.getClerkID())) {
+                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                             intent = new Intent(getActivity(), OnHoldActivity.class);
                             getActivity().startActivity(intent);
                         } else {
@@ -656,7 +656,7 @@ public class SalesTab_FR extends Fragment {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.TIP_ADJUSTMENT);
                     if (hasPermissions) {
-                        if (ShiftDAO.isShiftOpen(myPref.getClerkID())) {
+                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                             intent = new Intent(activity, TipAdjustmentFA.class);
                             startActivity(intent);
                         } else {
