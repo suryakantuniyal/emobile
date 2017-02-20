@@ -140,45 +140,45 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
             global.loggedIn = false;
         global.startActivityTransitionTimer();
     }
-
-    private class SynchOnHoldOrders extends AsyncTask<Void, String, Void> {
-        ProgressDialog progressDialog;
-
-        @Override
-        protected void onPreExecute() {
-            progressDialog = new ProgressDialog(DinningTablesActivity.this);
-            progressDialog.setMessage(getString(R.string.loading_orders));
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            progressDialog.setCancelable(false);
-            progressDialog.show();
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            try {
-                if (NetworkUtils.isConnectedToInternet(DinningTablesActivity.this)) {
-                    SynchMethods.synchSalesAssociateDinnindTablesConfiguration(DinningTablesActivity.this);
-                    updateProgress(getString(R.string.sync_dload_ordersonhold));
-                    SynchMethods.synchOrdersOnHoldList(DinningTablesActivity.this);
-                }
-            } catch (SAXException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        public void updateProgress(String msg) {
-            publishProgress(msg);
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            progressDialog.dismiss();
-            refresh(0);
-        }
-    }
+//
+//    private class SynchOnHoldOrders extends AsyncTask<Void, String, Void> {
+//        ProgressDialog progressDialog;
+//
+//        @Override
+//        protected void onPreExecute() {
+//            progressDialog = new ProgressDialog(DinningTablesActivity.this);
+//            progressDialog.setMessage(getString(R.string.loading_orders));
+//            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+//            progressDialog.setCancelable(false);
+//            progressDialog.show();
+//        }
+//
+//        @Override
+//        protected Void doInBackground(Void... params) {
+//            try {
+//                if (NetworkUtils.isConnectedToInternet(DinningTablesActivity.this)) {
+//                    SynchMethods.synchSalesAssociateDinnindTablesConfiguration(DinningTablesActivity.this);
+//                    updateProgress(getString(R.string.sync_dload_ordersonhold));
+//                    SynchMethods.synchOrdersOnHoldList(DinningTablesActivity.this);
+//                }
+//            } catch (SAXException e) {
+//                e.printStackTrace();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//            return null;
+//        }
+//
+//        public void updateProgress(String msg) {
+//            publishProgress(msg);
+//        }
+//
+//        @Override
+//        protected void onPostExecute(Void aVoid) {
+//            progressDialog.dismiss();
+//            refresh(0);
+//        }
+//    }
 
     public class OpenOnHoldOrderTask extends AsyncTask<Object, Void, Boolean> {
 

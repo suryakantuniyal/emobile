@@ -27,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.dao.SalesAssociateDAO;
+import com.android.dao.ShiftDAO;
 import com.android.database.CustomersHandler;
 import com.android.database.DBManager;
 import com.android.database.OrderProductsHandler;
@@ -39,12 +40,12 @@ import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.firebase.NotificationEvent;
 import com.android.emobilepos.models.realms.SalesAssociate;
+import com.android.emobilepos.models.realms.Shift;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.support.DateUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NetworkUtils;
-import com.android.support.NumberUtils;
 import com.android.support.OnHoldsManager;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
@@ -118,63 +119,117 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
     };
 
     private void askWaiterSignin() {
-        final Dialog popDlog = new Dialog(this, R.style.TransparentDialogFullScreen);
-        popDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        popDlog.setCancelable(true);
-        popDlog.setCanceledOnTouchOutside(false);
-        popDlog.setContentView(R.layout.dlog_field_single_layout);
-        final EditText viewField = (EditText) popDlog.findViewById(R.id.dlogFieldSingle);
-        viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        TextView viewTitle = (TextView) popDlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) popDlog.findViewById(R.id.dlogMessage);
-        viewTitle.setText(R.string.dlog_title_waiter_manager_signin);
-        if (!validPassword)
-            viewMsg.setText(R.string.invalid_password);
-        else
-            viewMsg.setText(R.string.enter_password);
-        Button btnOk = (Button) popDlog.findViewById(R.id.btnDlogSingle);
-        Button btnCancel = (Button) popDlog.findViewById(R.id.btnCancelDlogSingle);
+        if (myPref.isUseClerks()) {
+            Shift openShift = ShiftDAO.getOpenShift(Integer.parseInt(myPref.getClerkID()));
+            SalesAssociate associate = SalesAssociateDAO.getByEmpId(openShift.getAssigneeId());
+            long count = associate == null ? 0 : associate.getAssignedDinningTables().where().equalTo("number", myCursor.getString(myCursor.getColumnIndex("assignedTable"))).count();
+            if (associate != null && count > 0) {
+                validPassword = true;
+                new checkHoldStatus().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            } else {
+                final Dialog popDlog = new Dialog(this, R.style.TransparentDialogFullScreen);
+                popDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                popDlog.setCancelable(true);
+                popDlog.setCanceledOnTouchOutside(false);
+                popDlog.setContentView(R.layout.dlog_field_single_layout);
+                final EditText viewField = (EditText) popDlog.findViewById(R.id.dlogFieldSingle);
+                viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                TextView viewTitle = (TextView) popDlog.findViewById(R.id.dlogTitle);
+                TextView viewMsg = (TextView) popDlog.findViewById(R.id.dlogMessage);
+                viewTitle.setText(R.string.dlog_title_enter_manager_password);
+                if (!validPassword)
+                    viewMsg.setText(R.string.invalid_password);
+                else
+                    viewMsg.setText(R.string.enter_password);
+                Button btnOk = (Button) popDlog.findViewById(R.id.btnDlogSingle);
+                Button btnCancel = (Button) popDlog.findViewById(R.id.btnCancelDlogSingle);
 
-        btnOk.setText(R.string.button_ok);
-        btnOk.setOnClickListener(new View.OnClickListener() {
+                btnOk.setText(R.string.button_ok);
+                btnOk.setOnClickListener(new View.OnClickListener() {
 
-            @Override
-            public void onClick(View v) {
-                popDlog.dismiss();
-                myCursor.moveToPosition(selectedPos);
-                String enteredPass = viewField.getText().toString().trim();
-                enteredPass = TextUtils.isEmpty(enteredPass) ? "0" : enteredPass;
-                boolean isDigits = org.apache.commons.lang3.math.NumberUtils.isDigits(enteredPass);
-                SalesAssociate salesAssociates = null;
-                if (isDigits) {
-                    salesAssociates = SalesAssociateDAO.getByEmpId(Integer.parseInt(enteredPass)); //SalesAssociateHandler.getSalesAssociate(enteredPass);
-                }
-                long count = salesAssociates == null ? 0 : salesAssociates.getAssignedDinningTables().where().equalTo("number", myCursor.getString(myCursor.getColumnIndex("assignedTable"))).count();
-                if (salesAssociates != null && count > 0) {
-                    validPassword = true;
-                    new checkHoldStatus().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                } else {
-                    if (enteredPass.equals(myPref.getPosManagerPass())) // validate manager password
-                    {
+                    @Override
+                    public void onClick(View v) {
+                        popDlog.dismiss();
+                        myCursor.moveToPosition(selectedPos);
+                        String enteredPass = viewField.getText().toString().trim();
+                        enteredPass = TextUtils.isEmpty(enteredPass) ? "0" : enteredPass;
+                        if (enteredPass.equals(myPref.getPosManagerPass())) // validate manager password
+                        {
+                            validPassword = true;
+                            isUpdateOnHold = true;
+                            new checkHoldStatus().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                        } else {
+                            validPassword = false;
+                            askWaiterSignin();
+                        }
+                    }
+                });
+                btnCancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        popDlog.dismiss();
+                    }
+                });
+                popDlog.show();
+            }
+        } else {
+            final Dialog popDlog = new Dialog(this, R.style.TransparentDialogFullScreen);
+            popDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            popDlog.setCancelable(true);
+            popDlog.setCanceledOnTouchOutside(false);
+            popDlog.setContentView(R.layout.dlog_field_single_layout);
+            final EditText viewField = (EditText) popDlog.findViewById(R.id.dlogFieldSingle);
+            viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            TextView viewTitle = (TextView) popDlog.findViewById(R.id.dlogTitle);
+            TextView viewMsg = (TextView) popDlog.findViewById(R.id.dlogMessage);
+            viewTitle.setText(R.string.dlog_title_waiter_manager_signin);
+            if (!validPassword)
+                viewMsg.setText(R.string.invalid_password);
+            else
+                viewMsg.setText(R.string.enter_password);
+            Button btnOk = (Button) popDlog.findViewById(R.id.btnDlogSingle);
+            Button btnCancel = (Button) popDlog.findViewById(R.id.btnCancelDlogSingle);
+
+            btnOk.setText(R.string.button_ok);
+            btnOk.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    popDlog.dismiss();
+                    myCursor.moveToPosition(selectedPos);
+                    String enteredPass = viewField.getText().toString().trim();
+                    enteredPass = TextUtils.isEmpty(enteredPass) ? "0" : enteredPass;
+                    boolean isDigits = org.apache.commons.lang3.math.NumberUtils.isDigits(enteredPass);
+                    SalesAssociate salesAssociates = null;
+                    if (isDigits) {
+                        salesAssociates = SalesAssociateDAO.getByEmpId(Integer.parseInt(enteredPass)); //SalesAssociateHandler.getSalesAssociate(enteredPass);
+                    }
+                    long count = salesAssociates == null ? 0 : salesAssociates.getAssignedDinningTables().where().equalTo("number", myCursor.getString(myCursor.getColumnIndex("assignedTable"))).count();
+                    if (salesAssociates != null && count > 0) {
                         validPassword = true;
-                        isUpdateOnHold = true;
                         new checkHoldStatus().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                     } else {
-                        validPassword = false;
-                        askWaiterSignin();
+                        if (enteredPass.equals(myPref.getPosManagerPass())) // validate manager password
+                        {
+                            validPassword = true;
+                            isUpdateOnHold = true;
+                            new checkHoldStatus().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                        } else {
+                            validPassword = false;
+                            askWaiterSignin();
+                        }
                     }
                 }
-            }
-        });
+            });
 
-        btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                popDlog.dismiss();
-            }
-        });
-        popDlog.show();
-
+            btnCancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    popDlog.dismiss();
+                }
+            });
+            popDlog.show();
+        }
     }
 
     @Override
