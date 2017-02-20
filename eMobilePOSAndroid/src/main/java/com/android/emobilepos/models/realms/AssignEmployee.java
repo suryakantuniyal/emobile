@@ -69,6 +69,7 @@ public class AssignEmployee extends RealmObject {
     @Index
     private String defaultLocation;
     private String MSLastTransferID;
+    String temp;
 
     /**
      * @return The empId

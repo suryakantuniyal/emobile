@@ -16,10 +16,8 @@ public class AssignEmployeeDAO {
         Realm r = Realm.getDefaultInstance();
         AssignEmployee employee;
         try {
-//            r.beginTransaction();
             employee = r.where(AssignEmployee.class).findFirst();
         }finally {
-//            r.commitTransaction();
         }
         return employee;
     }

@@ -13,7 +13,6 @@ import com.android.emobilepos.cardmanager.CardManager_FA.GiftCardActions;
 
 public class GiftLoyaltyRewardLV_Adapter extends BaseAdapter {
 
-	private ViewHolder holder;
 	private LayoutInflater inflater;
 	private GiftCardActions[] giftCardActions;
 	private Activity activity;
@@ -32,25 +31,22 @@ public class GiftLoyaltyRewardLV_Adapter extends BaseAdapter {
 
 	@Override
 	public int getCount() {
-		// TODO Auto-generated method stub
 		return giftCardActions.length;
 	}
 
 	@Override
 	public Object getItem(int arg0) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public long getItemId(int arg0) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public View getView(int pos, View view, ViewGroup arg2) {
-		// TODO Auto-generated method stub
+		ViewHolder holder;
 		if (view == null) {
 			view = inflater.inflate(R.layout.adapter_two_column_with_icon, null);
 			holder = new ViewHolder();

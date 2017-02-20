@@ -819,7 +819,7 @@ public class EMSPayGate_Default {
 
         value = myPref.getClerkID();
         if (value != null && !value.isEmpty()
-                && (!myPref.getShiftIsOpen() || myPref.getPreferences(MyPreferences.pref_use_clerks))) {
+                && (!myPref.getShiftIsOpen() || myPref.isUseClerks())) {
             serializer.startTag(empstr, "clerkID");
             serializer.text(value);
             serializer.endTag(empstr, "clerkID");

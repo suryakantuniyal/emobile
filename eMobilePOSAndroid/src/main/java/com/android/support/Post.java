@@ -284,9 +284,7 @@ public class Post {
                     }
                 else
                     response = getRequestUnsecure(new URI(url.toString()));
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (URISyntaxException e) {
+            } catch (MalformedURLException | URISyntaxException e) {
                 e.printStackTrace();
             }
         } else {

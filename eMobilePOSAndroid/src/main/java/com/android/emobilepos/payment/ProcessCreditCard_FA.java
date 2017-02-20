@@ -572,7 +572,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         String clerkId = null;
         if (!myPref.getShiftIsOpen())
             clerkId = myPref.getShiftClerkID();
-        else if (myPref.getPreferences(MyPreferences.pref_use_clerks))
+        else if (myPref.isUseClerks())
             clerkId = myPref.getClerkID();
 
         double amountTender = Global
@@ -720,7 +720,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         String clerkId = null;
         if (!myPref.getShiftIsOpen())
             clerkId = myPref.getShiftClerkID();
-        else if (myPref.getPreferences(MyPreferences.pref_use_clerks))
+        else if (myPref.isUseClerks())
             clerkId = myPref.getClerkID();
 
         double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));

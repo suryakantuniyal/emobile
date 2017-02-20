@@ -2,6 +2,7 @@ package com.android.dao;
 
 import com.android.emobilepos.models.realms.DinningTable;
 import com.android.emobilepos.models.realms.SalesAssociate;
+import com.android.support.MyPreferences;
 import com.google.gson.Gson;
 
 import java.lang.reflect.Type;
@@ -70,7 +71,7 @@ public class SalesAssociateDAO {
     public static SalesAssociate getByEmpId(int empId) {
         Realm realm = Realm.getDefaultInstance();
         RealmQuery<SalesAssociate> where = realm.where(SalesAssociate.class);
-        return where.equalTo("emp_id", empId).findFirst();
+        return where.equalTo("empId", empId).findFirst();
     }
 
     public static void removeAssignedTable(SalesAssociate selectedSalesAssociate, DinningTable table) {
@@ -87,7 +88,7 @@ public class SalesAssociateDAO {
         Realm realm = Realm.getDefaultInstance();
         try {
             realm.beginTransaction();
-            getByEmpId(selectedSalesAssociate.getEmp_id()).getAssignedDinningTables().add(table);
+            getByEmpId(selectedSalesAssociate.getEmpId()).getAssignedDinningTables().add(table);
         } finally {
             realm.commitTransaction();
         }
@@ -97,7 +98,7 @@ public class SalesAssociateDAO {
         Realm realm = Realm.getDefaultInstance();
         try {
             realm.beginTransaction();
-            getByEmpId(associate.getEmp_id()).getAssignedDinningTables().clear();
+            getByEmpId(associate.getEmpId()).getAssignedDinningTables().clear();
         } finally {
             realm.commitTransaction();
         }
@@ -131,5 +132,18 @@ public class SalesAssociateDAO {
 
         }
         return locationHashMap;
+    }
+
+    public static SalesAssociate login(String password, MyPreferences preferences) {
+        Realm r = Realm.getDefaultInstance();
+        SalesAssociate associate = r.where(SalesAssociate.class)
+                .equalTo("empPwd", password)
+                .equalTo("isactive", 1)
+                .findFirst();
+        if (associate != null) {
+            preferences.setClerkID(String.valueOf(associate.getEmpId()));
+            return r.copyFromRealm(associate);
+        } else
+            return null;
     }
 }

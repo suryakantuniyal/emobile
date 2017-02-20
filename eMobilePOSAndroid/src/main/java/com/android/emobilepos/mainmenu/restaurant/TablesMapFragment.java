@@ -108,7 +108,7 @@ public class TablesMapFragment extends Fragment implements View.OnClickListener,
                         ImageView isSelectedCheckBox = (ImageView) tableItem.findViewById(R.id.selectedCheckboximageView);
                         TextView guestsTxt = (TextView) tableItem.findViewById(R.id.gueststextView16);
                         TextView amountxt = (TextView) tableItem.findViewById(R.id.amounttextView23);
-                        if (!preferences.requiresWaiterLogin() || (associate != null && associate.getAssignedDinningTables().contains(table))) {
+                        if ((associate != null && associate.getAssignedDinningTables().contains(table))) {
                             isSelectedCheckBox.setVisibility(View.VISIBLE);
                         } else {
                             isSelectedCheckBox.setVisibility(View.GONE);

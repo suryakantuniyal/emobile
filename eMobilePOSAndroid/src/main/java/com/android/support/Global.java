@@ -18,6 +18,7 @@ import android.support.annotation.Nullable;
 import android.support.multidex.MultiDexApplication;
 import android.text.Html;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
@@ -30,7 +31,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.crashreport.ExceptionHandler;
+import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.RealmModule;
+import com.android.dao.SalesAssociateDAO;
 import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.holders.Locations_Holder;
@@ -40,7 +43,9 @@ import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.Product;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.ProductAttribute;
+import com.android.emobilepos.models.realms.SalesAssociate;
 import com.android.emobilepos.ordering.Catalog_FR;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
@@ -91,6 +96,7 @@ public class Global extends MultiDexApplication {
     private boolean wasInBackground;
     private final long MAX_ACTIVITY_TRANSITION_TIME_MS = 3000;
 
+    public static final int MAGTEK = 0;
     //Load JNI from the library project. Refer MainActivity.java from library project elotouchCashDrawer.
     // In constructor we are loading .so file for Cash Drawer.
 //    static {
@@ -99,35 +105,6 @@ public class Global extends MultiDexApplication {
 //        System.loadLibrary("barcodereaderjni");
 //        System.loadLibrary("serial_port");
 //    }
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
-        Realm.init(this);
-        isIvuLoto = getPackageName().contains(getString(R.string.ivupos_packageid));
-        RealmConfiguration config = new RealmConfiguration.Builder()
-                .deleteRealmIfMigrationNeeded()
-                .modules(Realm.getDefaultModule(), new RealmModule())
-                .build();
-        Realm.setDefaultConfiguration(config);
-    }
-
-
-    public static String loyaltyPointsAvailable;
-    public static boolean isIvuLoto = false;
-    public static boolean isForceUpload = false;
-    public static boolean isEncryptSwipe = true;
-
-    public static EMSDeviceManager btSwiper;
-    public static EMSDeviceManager btSled;
-    public static EMSDeviceManager mainPrinterManager;
-    public static EMSDeviceManager embededMSR;
-
-    public static HashMap<String, Integer> multiPrinterMap = new HashMap<>();
-    public static List<EMSDeviceManager> multiPrinterManager = new ArrayList<>();
-
-    public static final int MAGTEK = 0;
     public static final int STAR = 1;
     public static final int ZEBRA = 2;
     public static final int BAMBOO = 3;
@@ -149,146 +126,10 @@ public class Global extends MultiDexApplication {
     public static final int PAT215 = 19;
     public static final int MEPOS = 20;
     public static final int MIURA = 21;
-
-    public enum BuildModel {
-        ET1, MC40N0, M2MX60P, M2MX6OP, JE971, Asura, Dolphin_Black_70e, PAT215, PAT100, EM100, EM70, OT_310, PayPoint_ESY13P1;
-
-        @Override
-        public String toString() {
-            return super.toString();
-        }
-    }
-
     public static final String AUDIO_MSR_UNIMAG = "0";
     public static final String AUDIO_MSR_MAGTEK = "1";
     public static final String AUDIO_MSR_ROVER = "2";
     public static final String AUDIO_MSR_WALKER = "3";
-
-    public enum RestaurantSaleType {
-        EAT_IN, TO_GO
-    }
-
-    public enum TransactionType {
-        SALE_RECEIPT(0), ORDERS(1), RETURN(2), INVOICE(3), ESTIMATE(4),
-        PAYMENT(5), GIFT_CARD(6), LOYALTY_CARD(7), REWARD_CARD(8), REFUND(9),
-        ROUTE(10), ON_HOLD(11), CONSIGNMENT(12), LOCATION(13), TIP_ADJUSTMENT(14);
-        private int code;
-
-        TransactionType(int code) {
-            this.code = code;
-        }
-
-        public int getCode() {
-            return code;
-        }
-
-        public static TransactionType getByCode(int code) {
-            switch (code) {
-                case 0:
-                    return SALE_RECEIPT;
-                case 1:
-                    return ORDERS;
-                case 2:
-                    return RETURN;
-                case 3:
-                    return INVOICE;
-                case 4:
-                    return ESTIMATE;
-                case 5:
-                    return PAYMENT;
-                case 6:
-                    return GIFT_CARD;
-                case 7:
-                    return LOYALTY_CARD;
-                case 8:
-                    return REWARD_CARD;
-                case 9:
-                    return REFUND;
-                case 10:
-                    return ROUTE;
-                case 11:
-                    return ON_HOLD;
-                case 12:
-                    return CONSIGNMENT;
-                case 13:
-                    return LOCATION;
-                case 14:
-                    return TIP_ADJUSTMENT;
-                default:
-                    return null;
-            }
-        }
-    }
-
-    public enum OrderType {
-        ORDER(0), RETURN(1), INVOICE(2), ESTIMATE(3), CONSIGNMENT_FILLUP(4), SALES_RECEIPT(5), CONSIGNMENT_PICKUP(6),
-        CONSIGNMENT_INVOICE(7), CONSIGNMENT_RETURN(8);
-        int code;
-
-        OrderType(int code) {
-            this.code = code;
-        }
-
-        public int getCode() {
-            return code;
-        }
-
-        public String getCodeString() {
-            return String.valueOf(code);
-        }
-
-        public String toTitleCase(){
-            switch (this.code) {
-                case 0:
-                    return StringUtils.toTitleCase(ORDER.toString());
-                case 1:
-                    return StringUtils.toTitleCase(RETURN.toString());
-                case 2:
-                    return StringUtils.toTitleCase(INVOICE.toString());
-                case 3:
-                    return StringUtils.toTitleCase(ESTIMATE.toString());
-                case 4:
-                    return StringUtils.toTitleCase(CONSIGNMENT_FILLUP.toString());
-                case 5:
-                    return StringUtils.toTitleCase(SALES_RECEIPT.toString());
-                case 6:
-                    return StringUtils.toTitleCase(CONSIGNMENT_PICKUP.toString());
-                case 7:
-                    return StringUtils.toTitleCase(CONSIGNMENT_INVOICE.toString());
-                case 8:
-                    return StringUtils.toTitleCase(CONSIGNMENT_RETURN.toString());
-                default:
-                    return StringUtils.toTitleCase(ORDER.toString());
-            }
-        }
-
-        public static OrderType getByCode(int code) {
-            switch (code) {
-                case 0:
-                    return ORDER;
-                case 1:
-                    return RETURN;
-                case 2:
-                    return INVOICE;
-                case 3:
-                    return ESTIMATE;
-                case 4:
-                    return CONSIGNMENT_FILLUP;
-                case 5:
-                    return SALES_RECEIPT;
-                case 6:
-                    return CONSIGNMENT_PICKUP;
-                case 7:
-                    return CONSIGNMENT_INVOICE;
-                case 8:
-                    return CONSIGNMENT_RETURN;
-                default:
-                    return ORDER;
-            }
-        }
-    }
-
-
     public final static int S_CUSTOMERS = 1;
     public final static int S_ADDRESS = 2;
     public final static int S_CATEGORIES = 3;
@@ -340,12 +181,10 @@ public class Global extends MultiDexApplication {
     public final static int S_GET_TIME_CLOCK = 49;
     public final static int S_SUBMIT_TIME_CLOCK = 50;
     public final static int S_SUBMIT_SHIFT = 51;
-
     public final static int S_SUBMIT_TUPYX = 52;
     public final static int S_SUBMIT_WALLET_RECEIPTS = 53;
     public final static int S_GET_ORDER_PRODUCTS_ATTR = 54;
     public final static int S_PRODUCT_ALIASES = 55;
-
     public final static int S_GET_ASSIGN_EMPLOYEES = 4;
     public final static int S_GET_SERVER_TIME = 56;
     public final static int S_UPDATE_SYNC_TIME = 57;
@@ -356,9 +195,6 @@ public class Global extends MultiDexApplication {
     public final static int S_GET_ASSIGN_EMPLOYEE = 4;
     public final static int S_SUBMIT_TIP_ADJUSTMENT = 62;
     public final static int S_SUBMIT_WORKINGKEY_REQUEST = 63;
-
-    // public final static int S_LOCATIONS_INVENTORY = 59;
-
     public final static int FROM_OPEN_INVOICES = 100;
     public final static int FROM_OPEN_INVOICES_DETAILS = 104;
     public final static int FROM_CASH_PAYMENT = 101;
@@ -368,74 +204,56 @@ public class Global extends MultiDexApplication {
     public final static int FROM_DRAW_RECEIPT_PORTRAIT = 106;
     public final static int FROM_DRAW_RECEIPT_LANDSCAPE = 107;
     public final static int FROM_JOB_SALES_RECEIPT = 108;
-
     public final static int FROM_LOGIN_ACTIVITTY = 109;
     public final static int FROM_REGISTRATION_ACTIVITY = 110;
     public final static int FROM_SYNCH_ACTIVITY = 111;
     public final static int FROM_ORDER_ATTRIBUTES_ACTIVITY = 112;
-
-
     public final static int BLUEBAMBOO = 0;
     public final static int BLUESTAR = 1;
-
     public final static String TIME_OUT = "1";
+
+    // public final static int S_LOCATIONS_INVENTORY = 59;
     public final static String NOT_VALID_URL = "2";
-
-
+    public static final Map<String, String> xmlActions = createMap();
+    public static String loyaltyPointsAvailable;
+    public static boolean isIvuLoto = false;
+    public static boolean isForceUpload = false;
+    public static boolean isEncryptSwipe = true;
+    public static EMSDeviceManager btSwiper;
+    public static EMSDeviceManager btSled;
+    public static EMSDeviceManager mainPrinterManager;
+    public static EMSDeviceManager embededMSR;
+    public static HashMap<String, Integer> multiPrinterMap = new HashMap<>();
+    public static List<EMSDeviceManager> multiPrinterManager = new ArrayList<>();
     public static OrderType consignmentType = OrderType.ORDER;
     public static OrderType ord_type = OrderType.ORDER;
     public static String amountPaid = "";
     public static double subtotalAmount;
     public static String tipPaid = "0";
     public static double overallPaidAmount = 0;
-    public int searchType = 0;
-
-    public String encodedImage = "";
-
-    public int orientation;
-
     public static boolean isConsignment = false;
     public static boolean isInventoryTransfer = false;
-//    public static List<HashMap<String, String>> productParentAddons;
-//    public static HashMap<String, Integer> productParentAddonsDictionary;
-//    public HashMap<String, String[]> addonSelectionType;
-//    public static Map<String, HashMap<String, String[]>> addonSelectionMap;
-//    public static HashMap<String, List<OrderProduct>> orderProductAddonsMap;
-
     public static Locations_Holder locationFrom, locationTo;
     public static TransferLocations_Holder transferLocation;
     public static List<TransferInventory_Holder> transferInventory = new ArrayList<TransferInventory_Holder>();
-
     public static String imgFrontCheck = "", imgBackCheck = "";
-
     // Loyalty Data
     public static String loyaltyCharge = "";
     public static String loyaltyAddAmount = "";
     public static CreditCardInfo loyaltyCardInfo;
-
     // Reward data
     public static BigDecimal rewardChargeAmount = new BigDecimal("0");
+    //    public static List<HashMap<String, String>> productParentAddons;
+//    public static HashMap<String, Integer> productParentAddonsDictionary;
+//    public HashMap<String, String[]> addonSelectionType;
+//    public static Map<String, HashMap<String, String[]>> addonSelectionMap;
+//    public static HashMap<String, List<OrderProduct>> orderProductAddonsMap;
     public static CreditCardInfo rewardCardInfo;
     public static BigDecimal rewardAccumulableSubtotal = new BigDecimal("0");
-
-    // For new addon views
-    public List<DataTaxes> listOrderTaxes = new ArrayList<DataTaxes>();
-
-    public List<ProductAttribute> ordProdAttrPending;
-    public RealmList<ProductAttribute> ordProdAttr = new RealmList<>();
-    public List<OrderProduct> orderProducts = new ArrayList<OrderProduct>();
-//    public List<OrderProduct> orderProductAddons = new ArrayList<OrderProduct>();
-    // public static HashMap<String,List<OrderProduct>>orderProductsAddonsMap;
-    public Order order;
-    // public List<Orders> cur_orders = new ArrayList<Orders>();
-//    public HashMap<String, String> qtyCounter = new HashMap<String, String>();
-
     // ----- Consignment Variables
     public static List<CustomerInventory> custInventoryList;
     public static HashMap<String, String[]> custInventoryMap;
     public static List<String> custInventoryKey;
-    // public static List<ConsignmentTransaction>consTransactionList;
-
     public static List<String> consignMapKey;
     public static HashMap<String, HashMap<String, String>> consignSummaryMap;
     public static List<OrderProduct> consignment_products = new ArrayList<OrderProduct>();
@@ -443,104 +261,64 @@ public class Global extends MultiDexApplication {
     // public static List<Orders>consignment_cur_order = new
     // ArrayList<Orders>();
     public static HashMap<String, String> consignment_qtyCounter = new HashMap<String, String>();
-
     public static List<OrderProduct> cons_fillup_products = new ArrayList<OrderProduct>();
     public static Order cons_fillup_order;
     // public static List<Orders>cons_fillup_cur_order = new
     // ArrayList<Orders>();
     public static HashMap<String, String> cons_fillup_qtyCounter = new HashMap<String, String>();
-
     public static List<OrderProduct> cons_issue_products = new ArrayList<OrderProduct>();
     public static Order cons_issue_order;
+    // public List<Orders> cur_orders = new ArrayList<Orders>();
+//    public HashMap<String, String> qtyCounter = new HashMap<String, String>();
     // public static List<Orders>cons_issue_cur_order = new ArrayList<Orders>();
     public static HashMap<String, String> cons_issue_qtyCounter = new HashMap<String, String>();
-
     public static List<OrderProduct> cons_return_products = new ArrayList<OrderProduct>();
     public static Order cons_return_order;
+    // public static List<ConsignmentTransaction>consTransactionList;
     // public static List<Orders>cons_return_cur_order = new
     // ArrayList<Orders>();
     public static HashMap<String, String> cons_return_qtyCounter = new HashMap<String, String>();
-
-    public static final Map<String, String> xmlActions = createMap();
-    // public static final Map<String, String> transactionType =
-    // createTransactionsMap();
-    public String lastInvID = "";
     public static String lastOrdID = "";
-    public int lastProdOrdID = 0;
-
     // public int discountPos = 0, taxPos = 0;
     public static String cat_id = "0";
-    public boolean isSubcategory = false, hasSubcategory = false;
     public static int sqlLimitTransaction = 1000;
     public static String taxID = "";
-
     public static int taxPosition = 0, discountPosition;
     public static BigDecimal taxAmount = new BigDecimal("0"), discountAmount = new BigDecimal("0");
     public static double addonTotalAmount = 0;
     public static boolean isFromOnHold = false;
-
-    public boolean loggedIn = false;
-
+    public static Map<String, String> paymentIconsMap = paymentIconMap();
+    private static Dialog popDlog;
+    public int searchType = 0;
+    public String encodedImage = "";
+    public int orientation;
+    // For new addon views
+    public List<DataTaxes> listOrderTaxes = new ArrayList<DataTaxes>();
+    public List<ProductAttribute> ordProdAttrPending;
+    public RealmList<ProductAttribute> ordProdAttr = new RealmList<>();
+    public List<OrderProduct> orderProducts = new ArrayList<OrderProduct>();
+    //    public List<OrderProduct> orderProductAddons = new ArrayList<OrderProduct>();
+    // public static HashMap<String,List<OrderProduct>>orderProductsAddonsMap;
+    public Order order;
+    // public static final Map<String, String> transactionType =
+    // createTransactionsMap();
+    public String lastInvID = "";
+    public int lastProdOrdID = 0;
+    public boolean isSubcategory = false, hasSubcategory = false;
+    public static boolean loggedIn = false;
+    public List<HashMap<String, Integer>> dictionary;
     // ---------- Used to store order details selected info -----//
     private int selectedShippingMethod;
     private String selectedShippingMethodString;
-
     private int selectedTermsMethod;
     private String selectedTermsMethodString;
-
     private int selectedAddressMethod;
     private String selectedAddressMethodString;
-
     private String selectedDeliveryDate;
     private String selectedComments;
     private String selectedPO;
-    // -------------------end----------------------//
+    private Dialog globalDlog;
 
-    public void resetOrderDetailsValues() {
-        selectedShippingMethod = -1;
-        selectedShippingMethodString = "";
-        selectedTermsMethod = -1;
-        selectedTermsMethodString = "";
-        selectedAddressMethod = -1;
-        selectedAddressMethodString = "";
-        selectedDeliveryDate = "";
-        selectedComments = "";
-        selectedPO = "";
-        taxID = "";
-        taxPosition = 0;
-
-        ord_type = null;
-        cat_id = "0";
-        Catalog_FR._typeCase = -1;
-        Catalog_FR.btnListID.clear();
-        Catalog_FR.btnListName.clear();
-        isSubcategory = false;
-        hasSubcategory = false;
-        Global.isFromOnHold = false;
-        isConsignment = false;
-        isInventoryTransfer = false;
-        consignmentType = OrderType.ORDER;
-        consignment_order = null;
-        cons_issue_order = null;
-        cons_return_order = null;
-        cons_fillup_order = null;
-//        if (productParentAddons != null)
-//            productParentAddons.clear();
-//        if (productParentAddonsDictionary != null)
-//            productParentAddonsDictionary.clear();
-//        if (addonSelectionMap != null)
-//            addonSelectionMap.clear();
-//        if (orderProductAddonsMap != null)
-//            orderProductAddonsMap.clear();
-        loyaltyCardInfo = new CreditCardInfo();
-        loyaltyAddAmount = "";
-        loyaltyCharge = "";
-
-        rewardCardInfo = new CreditCardInfo();
-        rewardChargeAmount = new BigDecimal("0");
-        Global.lastOrdID = "";
-        encodedImage = "";
-    }
 
     public static String getPeripheralName(int type) {
         String _name = "Unknown";
@@ -605,28 +383,6 @@ public class Global extends MultiDexApplication {
         }
         return _name;
 
-    }
-
-    public void clearListViewData() {
-        // if(this.cur_orders!=null)
-        // this.cur_orders.clear();
-        if (this.orderProducts != null)
-            this.orderProducts.clear();
-//        if (this.qtyCounter != null)
-//            this.qtyCounter.clear();
-
-        if (ordProdAttr != null)
-            ordProdAttr.clear();
-//        if (ordProdAttrPending != null)
-//            ordProdAttrPending.clear();
-
-//        if (this.orderProductAddons != null)
-//            this.orderProductAddons.clear();
-
-        if (this.listOrderTaxes != null)
-            this.listOrderTaxes.clear();
-
-        // this.
     }
 
     public static Location getCurrLocation(Context activity, boolean reload) {
@@ -707,152 +463,11 @@ public class Global extends MultiDexApplication {
         return "";
     }
 
-    public void setSelectedComments(String val) {
-        this.selectedComments = val;
-    }
-
-    public String getSelectedComments() {
-        if (this.selectedComments == null)
-            return "";
-        return this.selectedComments;
-    }
-
-    public void setSelectedPO(String val) {
-        this.selectedPO = val;
-    }
-
-    public String getSelectedPO() {
-        if (this.selectedPO == null)
-            return "";
-        return this.selectedPO;
-    }
-
-    public void setSelectedShippingMethod(int val) {
-        this.selectedShippingMethod = val;
-    }
-
-    public int getSelectedShippingMethod() {
-        return this.selectedShippingMethod;
-    }
-
-    public void setSelectedShippingMethodString(String val) {
-        this.selectedShippingMethodString = val;
-    }
-
-    public String getSelectedShippingMethodString() {
-        if (this.selectedAddressMethodString == null)
-            return "";
-        return this.selectedShippingMethodString;
-    }
-
-    public void setSelectedTermsMethod(int val) {
-        this.selectedTermsMethod = val;
-    }
-
-    public int getSelectedTermsMethod() {
-        return this.selectedTermsMethod;
-    }
-
-    public void setSelectedTermsMethodString(String val) {
-        this.selectedTermsMethodString = val;
-    }
-
-    public String getSelectedTermsMethodsString() {
-        if (this.selectedTermsMethodString == null)
-            return "";
-        return this.selectedTermsMethodString;
-    }
-
-    public void setSelectedAddress(int val) {
-        this.selectedAddressMethod = val;
-    }
-
-    public int getSelectedAddressMethod() {
-        return this.selectedAddressMethod;
-    }
-
-    public void setSelectedAddressString(String val) {
-        this.selectedAddressMethodString = val;
-    }
-
-    public String getSelectedAddressString() {
-        if (this.selectedAddressMethodString == null)
-            return "";
-        return this.selectedAddressMethodString;
-    }
-
-    public void setSelectedDeliveryDate(String val) {
-        this.selectedDeliveryDate = val;
-    }
-
-    public String getSelectedDeliveryDate() {
-        if (this.selectedDeliveryDate == null)
-            return "";
-        return this.selectedDeliveryDate;
-    }
-
-    // private AlertDialog adb;
-    //
-    //
-    // public AlertDialog getPromptDialog()
-    // {
-    // return this.adb;
-    // }
-
-    private Dialog globalDlog;
-
-    public Dialog getGlobalDlog() {
-        return this.globalDlog;
-    }
-
     public static String getValidString(String value) {
         if (value == null)
             return "";
         return value;
     }
-
-
-    public void promptForMandatoryLogin(final Activity activity) {
-        if (!loggedIn) {
-            globalDlog = new Dialog(activity, R.style.Theme_TransparentTest);
-            globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            globalDlog.setCancelable(false);
-            globalDlog.setContentView(R.layout.dlog_field_single_layout);
-
-            final EditText viewField = (EditText) globalDlog.findViewById(R.id.dlogFieldSingle);
-            viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-            TextView viewTitle = (TextView) globalDlog.findViewById(R.id.dlogTitle);
-            TextView viewMsg = (TextView) globalDlog.findViewById(R.id.dlogMessage);
-            viewTitle.setText(R.string.dlog_title_confirm);
-            final boolean[] validPassword = {true};
-            if (!validPassword[0])
-                viewMsg.setText(R.string.invalid_password);
-            else
-                viewMsg.setText(R.string.enter_password);
-
-            Button btnOk = (Button) globalDlog.findViewById(R.id.btnDlogSingle);
-            btnOk.setText(R.string.button_ok);
-            btnOk.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    globalDlog.dismiss();
-                    MyPreferences myPref = new MyPreferences(activity);
-                    String enteredPass = viewField.getText().toString().trim();
-                    if (enteredPass.equals(myPref.getApplicationPassword())) {
-                        loggedIn = true;
-                        validPassword[0] = true;
-                    } else {
-                        validPassword[0] = false;
-                        promptForMandatoryLogin(activity);
-                    }
-                }
-            });
-            globalDlog.show();
-        }
-    }
-
-    private static Dialog popDlog;
 
     public static void showPrompt(Context activity, int title, String msg) {
         if (popDlog == null)
@@ -881,8 +496,6 @@ public class Global extends MultiDexApplication {
         });
         popDlog.show();
     }
-
-    public static Map<String, String> paymentIconsMap = paymentIconMap();
 
     private static Map<String, String> paymentIconMap() {
         HashMap<String, String> result = new HashMap<>();
@@ -934,12 +547,6 @@ public class Global extends MultiDexApplication {
             formatedDate = "";
         }
         return formatedDate;
-    }
-
-
-    public boolean isApplicationSentToBackground(final Context context) {
-
-        return wasInBackground;
     }
 
     public static String formatLocaleToCurrency(String value) {
@@ -1083,6 +690,8 @@ public class Global extends MultiDexApplication {
         result.put("GetLocations", "getXMLLocations.aspx");
         result.put("GetLocationsInventory", "getXMLLocationsInventory.aspx");
         result.put("OrderAttributes", "getXMLOrdersAttributeList.ashx");
+        result.put("Shifts", "getXMLShift.ashx");
+        result.put("ClerkPermissions", "getXMLClerks2.ashx");
 
         return Collections.unmodifiableMap(result);
     }
@@ -1337,8 +946,6 @@ public class Global extends MultiDexApplication {
         return cardManager;
     }
 
-    public List<HashMap<String, Integer>> dictionary;
-
     public static OnTouchListener opaqueImageOnClick() {
         return (new OnTouchListener() {
 
@@ -1497,7 +1104,6 @@ public class Global extends MultiDexApplication {
     }
 
 
-
     public void startActivityTransitionTimer() {
         this.mActivityTransitionTimer = new Timer();
         this.mActivityTransitionTimerTask = new TimerTask() {
@@ -1625,6 +1231,385 @@ public class Global extends MultiDexApplication {
         return (context.getResources().getConfiguration().screenLayout
                 & Configuration.SCREENLAYOUT_SIZE_MASK)
                 >= Configuration.SCREENLAYOUT_SIZE_LARGE;
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
+        Realm.init(this);
+        isIvuLoto = getPackageName().contains(getString(R.string.ivupos_packageid));
+        RealmConfiguration config = new RealmConfiguration.Builder()
+                .deleteRealmIfMigrationNeeded()
+                .modules(Realm.getDefaultModule(), new RealmModule())
+                .build();
+        Realm.setDefaultConfiguration(config);
+        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+        if (assignEmployee == null) {
+            assignEmployee = new AssignEmployee();
+            MyPreferences preferences = new MyPreferences(this);
+            if (!TextUtils.isEmpty(preferences.getEmpIdFromPreferences())) {
+                assignEmployee.setEmpId(Integer.parseInt(preferences.getEmpIdFromPreferences()));
+                List<AssignEmployee> employees = new ArrayList<>();
+                employees.add(assignEmployee);
+                try {
+                    AssignEmployeeDAO.insertAssignEmployee(employees);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public void resetOrderDetailsValues() {
+        selectedShippingMethod = -1;
+        selectedShippingMethodString = "";
+        selectedTermsMethod = -1;
+        selectedTermsMethodString = "";
+        selectedAddressMethod = -1;
+        selectedAddressMethodString = "";
+        selectedDeliveryDate = "";
+        selectedComments = "";
+        selectedPO = "";
+        taxID = "";
+        taxPosition = 0;
+
+        ord_type = null;
+        cat_id = "0";
+        Catalog_FR._typeCase = -1;
+        Catalog_FR.btnListID.clear();
+        Catalog_FR.btnListName.clear();
+        isSubcategory = false;
+        hasSubcategory = false;
+        Global.isFromOnHold = false;
+        isConsignment = false;
+        isInventoryTransfer = false;
+        consignmentType = OrderType.ORDER;
+        consignment_order = null;
+        cons_issue_order = null;
+        cons_return_order = null;
+        cons_fillup_order = null;
+//        if (productParentAddons != null)
+//            productParentAddons.clear();
+//        if (productParentAddonsDictionary != null)
+//            productParentAddonsDictionary.clear();
+//        if (addonSelectionMap != null)
+//            addonSelectionMap.clear();
+//        if (orderProductAddonsMap != null)
+//            orderProductAddonsMap.clear();
+        loyaltyCardInfo = new CreditCardInfo();
+        loyaltyAddAmount = "";
+        loyaltyCharge = "";
+
+        rewardCardInfo = new CreditCardInfo();
+        rewardChargeAmount = new BigDecimal("0");
+        Global.lastOrdID = "";
+        encodedImage = "";
+    }
+
+    public void clearListViewData() {
+        // if(this.cur_orders!=null)
+        // this.cur_orders.clear();
+        if (this.orderProducts != null)
+            this.orderProducts.clear();
+//        if (this.qtyCounter != null)
+//            this.qtyCounter.clear();
+
+        if (ordProdAttr != null)
+            ordProdAttr.clear();
+//        if (ordProdAttrPending != null)
+//            ordProdAttrPending.clear();
+
+//        if (this.orderProductAddons != null)
+//            this.orderProductAddons.clear();
+
+        if (this.listOrderTaxes != null)
+            this.listOrderTaxes.clear();
+
+        // this.
+    }
+
+    public String getSelectedComments() {
+        if (this.selectedComments == null)
+            return "";
+        return this.selectedComments;
+    }
+
+    public void setSelectedComments(String val) {
+        this.selectedComments = val;
+    }
+
+    public String getSelectedPO() {
+        if (this.selectedPO == null)
+            return "";
+        return this.selectedPO;
+    }
+
+    public void setSelectedPO(String val) {
+        this.selectedPO = val;
+    }
+
+    public int getSelectedShippingMethod() {
+        return this.selectedShippingMethod;
+    }
+
+    public void setSelectedShippingMethod(int val) {
+        this.selectedShippingMethod = val;
+    }
+
+    public String getSelectedShippingMethodString() {
+        if (this.selectedAddressMethodString == null)
+            return "";
+        return this.selectedShippingMethodString;
+    }
+
+    public void setSelectedShippingMethodString(String val) {
+        this.selectedShippingMethodString = val;
+    }
+
+    public int getSelectedTermsMethod() {
+        return this.selectedTermsMethod;
+    }
+
+    public void setSelectedTermsMethod(int val) {
+        this.selectedTermsMethod = val;
+    }
+
+    public void setSelectedTermsMethodString(String val) {
+        this.selectedTermsMethodString = val;
+    }
+
+    public String getSelectedTermsMethodsString() {
+        if (this.selectedTermsMethodString == null)
+            return "";
+        return this.selectedTermsMethodString;
+    }
+
+    public void setSelectedAddress(int val) {
+        this.selectedAddressMethod = val;
+    }
+
+    public int getSelectedAddressMethod() {
+        return this.selectedAddressMethod;
+    }
+
+    public String getSelectedAddressString() {
+        if (this.selectedAddressMethodString == null)
+            return "";
+        return this.selectedAddressMethodString;
+    }
+
+    public void setSelectedAddressString(String val) {
+        this.selectedAddressMethodString = val;
+    }
+
+    public String getSelectedDeliveryDate() {
+        if (this.selectedDeliveryDate == null)
+            return "";
+        return this.selectedDeliveryDate;
+    }
+
+    public void setSelectedDeliveryDate(String val) {
+        this.selectedDeliveryDate = val;
+    }
+
+    public Dialog getGlobalDlog() {
+        return this.globalDlog;
+    }
+
+    public void promptForMandatoryLogin(final Activity activity) {
+        if (!loggedIn) {
+            globalDlog = new Dialog(activity, R.style.Theme_TransparentTest);
+            globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            globalDlog.setCancelable(false);
+            globalDlog.setContentView(R.layout.dlog_field_single_layout);
+            final MyPreferences myPref = new MyPreferences(activity);
+            final EditText viewField = (EditText) globalDlog.findViewById(R.id.dlogFieldSingle);
+            viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            TextView viewTitle = (TextView) globalDlog.findViewById(R.id.dlogTitle);
+            TextView viewMsg = (TextView) globalDlog.findViewById(R.id.dlogMessage);
+            if (myPref.isUseClerks()) {
+                viewTitle.setText(R.string.dlog_title_enter_clerk_password);
+            } else {
+                viewTitle.setText(R.string.dlog_title_confirm);
+            }
+            final boolean[] validPassword = {true};
+            if (!validPassword[0])
+                viewMsg.setText(R.string.invalid_password);
+            else
+                viewMsg.setText(R.string.enter_password);
+
+            Button btnOk = (Button) globalDlog.findViewById(R.id.btnDlogSingle);
+            btnOk.setText(R.string.button_ok);
+            btnOk.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    globalDlog.dismiss();
+                    String enteredPass = viewField.getText().toString().trim();
+                    if (myPref.isUseClerks()) {
+                        SalesAssociate associate = SalesAssociateDAO.login(enteredPass, myPref);
+                        if (associate == null) {
+                            validPassword[0] = false;
+                            promptForMandatoryLogin(activity);
+                        } else {
+                            loggedIn = true;
+                            validPassword[0] = true;
+                        }
+                    } else if (enteredPass.equals(myPref.getApplicationPassword())) {
+                        loggedIn = true;
+                        validPassword[0] = true;
+                    } else {
+                        validPassword[0] = false;
+                        promptForMandatoryLogin(activity);
+                    }
+                }
+            });
+            globalDlog.show();
+        }
+    }
+
+
+    public boolean isApplicationSentToBackground(final Context context) {
+
+        return wasInBackground;
+    }
+
+    public enum BuildModel {
+        ET1, MC40N0, M2MX60P, M2MX6OP, JE971, Asura, Dolphin_Black_70e, PAT215, PAT100, EM100, EM70, OT_310, PayPoint_ESY13P1;
+
+        @Override
+        public String toString() {
+            return super.toString();
+        }
+    }
+
+    public enum RestaurantSaleType {
+        EAT_IN, TO_GO
+    }
+
+    public enum TransactionType {
+        SALE_RECEIPT(0), ORDERS(1), RETURN(2), INVOICE(3), ESTIMATE(4),
+        PAYMENT(5), GIFT_CARD(6), LOYALTY_CARD(7), REWARD_CARD(8), REFUND(9),
+        ROUTE(10), ON_HOLD(11), CONSIGNMENT(12), LOCATION(13), TIP_ADJUSTMENT(14), SHIFTS(15), SHIFT_EXPENSES(16);
+        private int code;
+
+        TransactionType(int code) {
+            this.code = code;
+        }
+
+        public static TransactionType getByCode(int code) {
+            switch (code) {
+                case 0:
+                    return SALE_RECEIPT;
+                case 1:
+                    return ORDERS;
+                case 2:
+                    return RETURN;
+                case 3:
+                    return INVOICE;
+                case 4:
+                    return ESTIMATE;
+                case 5:
+                    return PAYMENT;
+                case 6:
+                    return GIFT_CARD;
+                case 7:
+                    return LOYALTY_CARD;
+                case 8:
+                    return REWARD_CARD;
+                case 9:
+                    return REFUND;
+                case 10:
+                    return ROUTE;
+                case 11:
+                    return ON_HOLD;
+                case 12:
+                    return CONSIGNMENT;
+                case 13:
+                    return LOCATION;
+                case 14:
+                    return TIP_ADJUSTMENT;
+                case 15:
+                    return SHIFTS;
+                case 16:
+                    return SHIFT_EXPENSES;
+                default:
+                    return null;
+            }
+        }
+
+        public int getCode() {
+            return code;
+        }
+    }
+
+    public enum OrderType {
+        ORDER(0), RETURN(1), INVOICE(2), ESTIMATE(3), CONSIGNMENT_FILLUP(4), SALES_RECEIPT(5), CONSIGNMENT_PICKUP(6),
+        CONSIGNMENT_INVOICE(7), CONSIGNMENT_RETURN(8);
+        int code;
+
+        OrderType(int code) {
+            this.code = code;
+        }
+
+        public static OrderType getByCode(int code) {
+            switch (code) {
+                case 0:
+                    return ORDER;
+                case 1:
+                    return RETURN;
+                case 2:
+                    return INVOICE;
+                case 3:
+                    return ESTIMATE;
+                case 4:
+                    return CONSIGNMENT_FILLUP;
+                case 5:
+                    return SALES_RECEIPT;
+                case 6:
+                    return CONSIGNMENT_PICKUP;
+                case 7:
+                    return CONSIGNMENT_INVOICE;
+                case 8:
+                    return CONSIGNMENT_RETURN;
+                default:
+                    return ORDER;
+            }
+        }
+
+        public int getCode() {
+            return code;
+        }
+
+        public String getCodeString() {
+            return String.valueOf(code);
+        }
+
+        public String toTitleCase() {
+            switch (this.code) {
+                case 0:
+                    return StringUtils.toTitleCase(ORDER.toString());
+                case 1:
+                    return StringUtils.toTitleCase(RETURN.toString());
+                case 2:
+                    return StringUtils.toTitleCase(INVOICE.toString());
+                case 3:
+                    return StringUtils.toTitleCase(ESTIMATE.toString());
+                case 4:
+                    return StringUtils.toTitleCase(CONSIGNMENT_FILLUP.toString());
+                case 5:
+                    return StringUtils.toTitleCase(SALES_RECEIPT.toString());
+                case 6:
+                    return StringUtils.toTitleCase(CONSIGNMENT_PICKUP.toString());
+                case 7:
+                    return StringUtils.toTitleCase(CONSIGNMENT_INVOICE.toString());
+                case 8:
+                    return StringUtils.toTitleCase(CONSIGNMENT_RETURN.toString());
+                default:
+                    return StringUtils.toTitleCase(ORDER.toString());
+            }
+        }
     }
 
 }

@@ -47,6 +47,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.realms.Payment;
+import com.android.emobilepos.security.SecurityManager;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.CreditCardInfo;
@@ -124,6 +125,9 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         myPref = new MyPreferences(activity);
         ListView myListView = (ListView) findViewById(R.id.orderDetailsLV);
         btnPrint = (Button) findViewById(R.id.printButton);
+        boolean hasRePrintPermissions = SecurityManager.hasPermissions(this, SecurityManager.SecurityAction.REPRINT_ORDER);
+        boolean hasVoidPermissions = SecurityManager.hasPermissions(this, SecurityManager.SecurityAction.VOID_ORDER);
+        btnPrint.setEnabled(hasRePrintPermissions);
         btnVoid = (Button) findViewById(R.id.btnVoid);
         btnVoid.setOnClickListener(this);
         TextView headerTitle = (TextView) findViewById(R.id.ordDetailsHeaderTitle);
@@ -203,11 +207,11 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         String curDate = sdf.format(new Date());
         if (order.isVoid != null && (order.isVoid.equals("1") ||
                 !curDate.equals(Global.formatToDisplayDate(order.ord_timecreated,  0)))) {
-            btnVoid.setEnabled(false);
-            btnVoid.setClickable(false);
+            btnVoid.setEnabled(false && hasVoidPermissions);
+            btnVoid.setClickable(false && hasVoidPermissions);
         } else {
-            btnVoid.setEnabled(true);
-            btnVoid.setClickable(true);
+            btnVoid.setEnabled(true && hasVoidPermissions);
+            btnVoid.setClickable(true && hasVoidPermissions);
         }
         myPref = new MyPreferences(activity);
         ListViewAdapter myAdapter = new ListViewAdapter(activity);

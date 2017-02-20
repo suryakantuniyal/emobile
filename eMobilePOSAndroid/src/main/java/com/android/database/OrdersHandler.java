@@ -14,7 +14,6 @@ import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.OrderAttributes;
 import com.android.emobilepos.models.realms.ProductAttribute;
 import com.android.support.DateUtils;
-import com.android.support.GenerateNewID;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.google.gson.Gson;
@@ -288,7 +287,7 @@ public class OrdersHandler {
 //    }
 
     public void deleteOnHoldsTable() {
-        DBManager.getDatabase().execSQL("DELETE FROM " + table_name+ " isOnHold = '1'");
+        DBManager.getDatabase().execSQL("DELETE FROM " + table_name + " isOnHold = '1'");
         DinningTableOrderDAO.truncate();
     }
 
@@ -841,5 +840,10 @@ public class OrdersHandler {
 
     public void insert(Order order) {
         insert(Arrays.asList(order));
+    }
+
+    public int deleteOnHoldsOrders() {
+        int delete = DBManager.getDatabase().delete(table_name, "isOnHold = ?", new String[]{"1"});
+        return delete;
     }
 }

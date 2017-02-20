@@ -37,22 +37,24 @@ public class SalesMenuAdapter extends BaseAdapter implements Filterable {
 
         mainMenuList = activity.getResources().getStringArray(R.array.mainMenuArray);
 
-        mainMenuIconsMap = new SparseArray<String>();
-        mainMenuIconsMap.put(Global.TransactionType.SALE_RECEIPT.getCode(), "list");    //Sales Receipt
-        mainMenuIconsMap.put(Global.TransactionType.ORDERS.getCode(), "order");    //Order
-        mainMenuIconsMap.put(Global.TransactionType.RETURN.getCode(), "return_icon");    //Return
-        mainMenuIconsMap.put(Global.TransactionType.INVOICE.getCode(), "invoice");    //Invoice
-        mainMenuIconsMap.put(Global.TransactionType.ESTIMATE.getCode(), "estimate");    //Estimate
-        mainMenuIconsMap.put(Global.TransactionType.PAYMENT.getCode(), "payment");    //Payment
-        mainMenuIconsMap.put(Global.TransactionType.GIFT_CARD.getCode(), "gift_card");    //Gift Card
-        mainMenuIconsMap.put(Global.TransactionType.LOYALTY_CARD.getCode(), "loyalty_card");    //Loyalty Card
-        mainMenuIconsMap.put(Global.TransactionType.REWARD_CARD.getCode(), "gift_card");    //Reward Card
-        mainMenuIconsMap.put(Global.TransactionType.REFUND.getCode(), "return_icon");    //Refund
-        mainMenuIconsMap.put(Global.TransactionType.ROUTE.getCode(), "routes");    //Route
-        mainMenuIconsMap.put(Global.TransactionType.ON_HOLD.getCode(), "list_red");    //On Hold
-        mainMenuIconsMap.put(Global.TransactionType.CONSIGNMENT.getCode(), "list");    //Consignment
-        mainMenuIconsMap.put(Global.TransactionType.LOCATION.getCode(), "list"); //Transfer Inventory
-        mainMenuIconsMap.put(Global.TransactionType.TIP_ADJUSTMENT.getCode(), "order"); //Transfer Inventory
+        mainMenuIconsMap = new SparseArray<>();
+        mainMenuIconsMap.put(Global.TransactionType.SALE_RECEIPT.getCode(), "list");
+        mainMenuIconsMap.put(Global.TransactionType.ORDERS.getCode(), "order");
+        mainMenuIconsMap.put(Global.TransactionType.RETURN.getCode(), "return_icon");
+        mainMenuIconsMap.put(Global.TransactionType.INVOICE.getCode(), "invoice");
+        mainMenuIconsMap.put(Global.TransactionType.ESTIMATE.getCode(), "estimate");
+        mainMenuIconsMap.put(Global.TransactionType.PAYMENT.getCode(), "payment");
+        mainMenuIconsMap.put(Global.TransactionType.GIFT_CARD.getCode(), "gift_card");
+        mainMenuIconsMap.put(Global.TransactionType.LOYALTY_CARD.getCode(), "loyalty_card");
+        mainMenuIconsMap.put(Global.TransactionType.REWARD_CARD.getCode(), "gift_card");
+        mainMenuIconsMap.put(Global.TransactionType.REFUND.getCode(), "return_icon");
+        mainMenuIconsMap.put(Global.TransactionType.ROUTE.getCode(), "routes");
+        mainMenuIconsMap.put(Global.TransactionType.ON_HOLD.getCode(), "list_red");
+        mainMenuIconsMap.put(Global.TransactionType.CONSIGNMENT.getCode(), "list");
+        mainMenuIconsMap.put(Global.TransactionType.LOCATION.getCode(), "list");
+        mainMenuIconsMap.put(Global.TransactionType.TIP_ADJUSTMENT.getCode(), "order");
+        mainMenuIconsMap.put(Global.TransactionType.SHIFTS.getCode(), "shifts");
+        mainMenuIconsMap.put(Global.TransactionType.SHIFT_EXPENSES.getCode(), "shift_expenses");
 
 
         MyPreferences myPref = new MyPreferences(activity);
@@ -62,7 +64,9 @@ public class SalesMenuAdapter extends BaseAdapter implements Filterable {
         if (custSelected) {
             enabledSettings = temp;
         } else {
-            enabledSettings = new boolean[]{temp[0], false, temp[2], false, false, temp[5], temp[6], temp[7], temp[8], temp[9], false, temp[11], false, temp[13], temp[14]};
+            enabledSettings = new boolean[]{temp[0], false, temp[2], false, false, temp[5], temp[6],
+                    temp[7], temp[8], temp[9], false, temp[11], false,
+                    temp[13], temp[14], temp[15], temp[16]};
         }
 
         int size = mainMenuList.length;
@@ -96,14 +100,10 @@ public class SalesMenuAdapter extends BaseAdapter implements Filterable {
             holder = (ViewHolder) convertView.getTag();
         }
 
-//		int gradientId = R.drawable.shadow_layer;
         String resourceName = mainMenuIconsMap.get(indexOfEnabled.get(position));
         int iconId = activity.getResources().getIdentifier(resourceName, "drawable", activity.getPackageName());
         holder.iconLine.setImageResource(iconId);
-
         holder.textLine.setText(mainMenuList[indexOfEnabled.get(position)]);
-
-//		convertView.setBackgroundResource(gradientId);
 
         return convertView;
     }
