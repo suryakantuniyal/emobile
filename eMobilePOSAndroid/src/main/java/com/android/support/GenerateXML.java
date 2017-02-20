@@ -1003,7 +1003,8 @@ public class GenerateXML {
     private void buildOrderAttributes(XmlSerializer serializer, Order order) throws IOException {
         if(order.orderAttributes!=null) {
             serializer.startTag(empstr, "OrderAttributes");
-            for (OrderAttributes attributes : order.orderAttributes) {
+            List<OrderAttributes> subList = order.orderAttributes.subList(6, order.orderAttributes.size());
+            for (OrderAttributes attributes : subList) {
                 if(!TextUtils.isEmpty(attributes.getInputValue())) {
                     serializer.startTag(empstr, "OrderAttribute");
 

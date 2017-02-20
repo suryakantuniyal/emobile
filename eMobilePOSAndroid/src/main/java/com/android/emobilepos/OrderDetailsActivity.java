@@ -30,9 +30,7 @@ import com.android.support.Global;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.google.gson.Gson;
 
-import org.w3c.dom.Attr;
-import org.w3c.dom.Text;
-
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -141,8 +139,20 @@ public class OrderDetailsActivity extends BaseFragmentActivityActionBar {
             }
             i++;
         }
-        List<OrderAttributes> orderAttributes = OrderAttributesDAO.getOrderAttributes(false);
-        orderAttributesValues.addAll(orderAttributes);
+        Bundle extras = getIntent().getExtras();
+        if (getIntent().hasExtra("orderAttributes")) {
+            Type listType = new com.google.gson.reflect.TypeToken<List<OrderAttributes>>() {
+            }.getType();
+            String json = extras.getString("orderAttributes");
+            Gson gson = JsonUtils.getInstance();
+            List<OrderAttributes> list = gson.fromJson(json, listType);
+            orderAttributesValues.clear();
+            orderAttributesValues.addAll(list);
+
+        } else {
+            List<OrderAttributes> orderAttributes = OrderAttributesDAO.getOrderAttributes(false);
+            orderAttributesValues.addAll(orderAttributes);
+        }
     }
 
     private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDialog.OnDateSetListener() {
@@ -163,7 +173,7 @@ public class OrderDetailsActivity extends BaseFragmentActivityActionBar {
     public void onBackPressed() {
         Gson gson = JsonUtils.getInstance();
         Intent data = getIntent();
-        data.putExtra("orderAttributesValue", gson.toJson(orderAttributesValues.subList(6, orderAttributesValues.size())));
+        data.putExtra("orderAttributesValue", gson.toJson(orderAttributesValues));
         setResult(Global.FROM_ORDER_ATTRIBUTES_ACTIVITY, data);
         finish();
     }
@@ -385,7 +395,7 @@ public class OrderDetailsActivity extends BaseFragmentActivityActionBar {
         adb.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                orderAttributesValues.get(type).setInputValue( editTextField.getText().toString());
+                orderAttributesValues.get(type).setInputValue(editTextField.getText().toString());
                 switch (AttributeType.valueOf(type)) {
                     case COMMENTS:
                         inputComment = editTextField.getText().toString();
