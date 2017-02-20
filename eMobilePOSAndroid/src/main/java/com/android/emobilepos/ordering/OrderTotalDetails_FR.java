@@ -23,7 +23,6 @@ import com.android.database.ProductsHandler;
 import com.android.database.TaxesGroupHandler;
 import com.android.database.TaxesHandler;
 import com.android.emobilepos.R;
-import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.Discount;
 import com.android.emobilepos.models.MixAndMatchDiscount;
@@ -441,7 +440,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             } else {
                 product.setMixAndMatchDiscounts(new ArrayList<MixAndMatchDiscount>());
                 if (product.getMixMatchOriginalPrice() == null || product.getMixMatchOriginalPrice().compareTo(new BigDecimal(0)) == 0) {
-                    product.setMixMatchOriginalPrice(new BigDecimal(product.getProd_price()));
+                    product.setMixMatchOriginalPrice(Global.getBigDecimalNum(product.getProd_price()));
                 }
                 MixMatchProductGroup mixMatchProductGroup = mixMatchProductGroupHashMap.get(product.getPricesXGroupid());
                 if (mixMatchProductGroup != null) {
