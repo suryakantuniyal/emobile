@@ -43,6 +43,7 @@ import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.PaymentDetails;
 import com.android.emobilepos.models.ShiftPeriods;
 import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.realms.OrderAttributes;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.payment.ProcessGenius_FA;
 import com.android.support.ConsignmentTransaction;
@@ -943,7 +944,7 @@ public class EMSDeviceDriver {
                 }
                 sb.setLength(0);
             }
-
+//            printOrderAttributes(lineWidth, anOrder);
             if (printPref.contains(MyPreferences.print_footer))
                 printFooter(lineWidth);
 
@@ -986,6 +987,15 @@ public class EMSDeviceDriver {
             e.printStackTrace();
         }
 
+    }
+
+    private void printOrderAttributes(int lineWidth, Order order) {
+        StringBuilder sb = new StringBuilder();
+        sb.setLength(0);
+        for (OrderAttributes attr : order.orderAttributes) {
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(attr.getOrdAttrName(), attr.getInputValue(), lineWidth, 0));
+        }
+        print(sb.toString());
     }
 
     private void printIVULoto(String ivuLottoNumber, int lineWidth) {

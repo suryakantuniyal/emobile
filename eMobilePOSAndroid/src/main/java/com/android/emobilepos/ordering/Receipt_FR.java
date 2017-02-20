@@ -470,7 +470,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
     @Override
     public void onClick(View v) {
-        Intent intent;
+        Intent intent = null;
         if (SystemClock.elapsedRealtime() - lastClickTime < 500) {
             return;
         }
@@ -514,6 +514,11 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 break;
             case R.id.detailsButton:
                 intent = new Intent(getActivity(), OrderDetailsActivity.class);
+                List<OrderAttributes> orderAttributes = ((OrderingMain_FA) activity).getOrderAttributes();
+                if(orderAttributes!=null){
+                    Gson gson = JsonUtils.getInstance();
+                    intent.putExtra("orderAttributes", gson.toJson(orderAttributes));
+                }
                 startActivityForResult(intent, 0);
                 break;
             case R.id.signButton:
