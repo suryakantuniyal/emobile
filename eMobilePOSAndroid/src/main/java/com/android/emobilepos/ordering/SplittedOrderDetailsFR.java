@@ -197,6 +197,8 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                         orderSummaryFa.getTax(), orderSummaryFa.getDiscount(), Global.getBigDecimalNum(splitedOrder.ord_subtotal),
                         Global.getBigDecimalNum(splitedOrder.ord_discount));
                 orderTaxes = orderTaxes.add(taxesCalculator.getTaxableAmount());
+                splitedOrder.setListOrderTaxes(taxesCalculator.getListOrderTaxes());
+
             }
         }
         orderGranTotal = orderSubtotal.subtract(itemDiscountTotal).setScale(6, RoundingMode.HALF_UP)
@@ -253,6 +255,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                         orderSummaryFa.getTax(), orderSummaryFa.getDiscount(), Global.getBigDecimalNum(splitedOrder.ord_subtotal),
                         Global.getBigDecimalNum(splitedOrder.ord_discount));
                 orderTaxes = orderTaxes.add(taxesCalculator.getTaxableAmount());
+                splitedOrder.setListOrderTaxes(taxesCalculator.getListOrderTaxes());
             }
             orderProductSection.addView(productSectionLL);
         }
@@ -346,9 +349,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB();
         Global global = (Global) getActivity().getApplication();
         OrderProductsHandler productsHandler = new OrderProductsHandler(getActivity());
-        GenerateNewID idGen = new GenerateNewID(getActivity());
         SplittedOrderSummary_FA summaryFa = (SplittedOrderSummary_FA) getActivity();
-        String nextOrderID;
         if (summaryFa.getOrderSummaryFR().getGridView().getAdapter().getCount() > 1) {
             for (OrderProduct product : splitedOrder.getOrderProducts()) {
                 if (global.orderProducts.contains(product)) {
@@ -380,15 +381,12 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                 global.order.processed = "10";
                 splitedOrder.total_lines = String.valueOf(splitedOrder.getOrderProducts().size());
                 global.order.total_lines = String.valueOf(splitedOrder.getOrderProducts().size());
-//                splitedOrder.ord_id = global.order.ord_id;
-
                 if (summaryFa.splitType == SplittedOrderSummary_FA.SalesReceiptSplitTypes.SPLIT_EQUALLY) {
                     for (OrderSeatProduct seatProduct : summaryFa.orderSeatProducts) {
                         if (seatProduct.rowType == OrderProductListAdapter.RowType.TYPE_ITEM && seatProduct.orderProduct != null) {
                             splitedOrder.getOrderProducts().add(seatProduct.orderProduct);
                         }
                     }
-
                     splitedOrder.syncOrderProductIds();
                     ordersHandler.insert(splitedOrder);
                 } else {
@@ -398,8 +396,8 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                 }
                 global.encodedImage = "";
                 productsHandler.insert(splitedOrder.getOrderProducts());
-                if (global.listOrderTaxes != null && global.listOrderTaxes.size() > 0) {
-                    ordTaxesDB.insert(global.listOrderTaxes, global.order.ord_id);
+                if (splitedOrder.getListOrderTaxes() != null && splitedOrder.getListOrderTaxes().size() > 0) {
+                    ordTaxesDB.insert(splitedOrder.getListOrderTaxes(), splitedOrder.ord_id);
                 }
                 DBManager dbManager = new DBManager(getActivity());
                 SynchMethods sm = new SynchMethods(dbManager);
@@ -411,14 +409,12 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                 ordersHandler.insert(splitedOrder);
                 productsHandler.insert(splitedOrder.getOrderProducts());
             } else {
-//                nextOrderID = idGen.getNextID(GenerateNewID.IdType.ORDER_ID);
-//                splitedOrder.ord_id = nextOrderID;
                 splitedOrder.processed = "10";
                 splitedOrder.isOnHold = "0";
                 splitedOrder.syncOrderProductIds();
                 ordersHandler.insert(splitedOrder);
                 productsHandler.insert(splitedOrder.getOrderProducts());
-                ordTaxesDB.insert(global.listOrderTaxes, splitedOrder.ord_id);
+                ordTaxesDB.insert(splitedOrder.getListOrderTaxes(), splitedOrder.ord_id);
             }
             Receipt_FR.updateLocalInventory(getActivity(), splitedOrder.getOrderProducts(), false);
             if (Global.getBigDecimalNum(splitedOrder.gran_total).compareTo(new BigDecimal(0)) != -1) {
@@ -496,7 +492,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
             OrderProductsHandler productsHandler = new OrderProductsHandler(getActivity());
             ordersHandler.insert(global.order);
             productsHandler.insert(restaurantSplitedOrder.getOrderProducts());
-            orderTaxesDB.insert(global.listOrderTaxes, global.order.ord_id);
+            orderTaxesDB.insert(global.order.getListOrderTaxes(), global.order.ord_id);
             ordersHandler.deleteOrder(restaurantSplitedOrder.ord_id);
 
         }
@@ -509,6 +505,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         if (!adapter.isEmpty()) {
             adapter.setSelectedIndex(0);
             restaurantSplitedOrder = (SplitedOrder) adapter.getItem(0);
+            summaryFa.getOrderDetailsFR().setReceiptOrder(restaurantSplitedOrder);
         }
     }
 

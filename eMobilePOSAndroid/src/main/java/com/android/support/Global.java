@@ -293,7 +293,7 @@ public class Global extends MultiDexApplication {
     public String encodedImage = "";
     public int orientation;
     // For new addon views
-    public List<DataTaxes> listOrderTaxes = new ArrayList<>();
+//    public List<DataTaxes> listOrderTaxes = new ArrayList<>();
     public List<ProductAttribute> ordProdAttrPending;
     public RealmList<ProductAttribute> ordProdAttr = new RealmList<>();
     public List<OrderProduct> orderProducts = new ArrayList<>();
@@ -1323,8 +1323,8 @@ public class Global extends MultiDexApplication {
 //        if (this.orderProductAddons != null)
 //            this.orderProductAddons.clear();
 
-        if (this.listOrderTaxes != null)
-            this.listOrderTaxes.clear();
+//        if (this.listOrderTaxes != null)
+//            this.listOrderTaxes.clear();
 
         // this.
     }

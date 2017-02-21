@@ -72,6 +72,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
     private TaxesGroupHandler taxGroupHandler;
     private AssignEmployee assignEmployee;
     private boolean isToGo;
+    private BigDecimal tempTaxableAmount = new BigDecimal("0");
 
     public static OrderTotalDetails_FR init(int val) {
         OrderTotalDetails_FR frag = new OrderTotalDetails_FR();
@@ -395,11 +396,13 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
     }
 
     private List<HashMap<String, String>> listMapTaxes = new ArrayList<>();
-
+    private OrderingMain_FA getOrderingMainFa(){
+        return (OrderingMain_FA) getActivity();
+    }
 
     private void setupTaxesHolder() {
         int size = listMapTaxes.size();
-        global.listOrderTaxes = new ArrayList<>();
+        getOrderingMainFa().setListOrderTaxes(new ArrayList<DataTaxes>());
         DataTaxes tempTaxes;
         for (int i = 0; i < size; i++) {
             tempTaxes = new DataTaxes();
@@ -407,7 +410,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             tempTaxes.setOrd_id("");
             tempTaxes.setTax_amount("0");
             tempTaxes.setTax_rate(listMapTaxes.get(i).get("tax_rate"));
-            global.listOrderTaxes.add(tempTaxes);
+            getOrderingMainFa().getListOrderTaxes().add(tempTaxes);
         }
     }
 
@@ -420,11 +423,9 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             TaxesCalculator taxesCalculator = new TaxesCalculator(activity, orderProduct, Global.taxID,
                     taxList.get(taxSelected - 1), dis, discountable_sub_total, itemsDiscountTotal);
             tempTaxableAmount = tempTaxableAmount.add(taxesCalculator.getTaxableAmount());
+            getOrderingMainFa().setListOrderTaxes(taxesCalculator.getListOrderTaxes());
         }
     }
-
-    private BigDecimal tempTaxableAmount = new BigDecimal("0");
-
 
     private static void calculateMixAndMatch(List<OrderProduct> orderProducts, boolean isGroupBySKU) {
         List<OrderProduct> noMixMatchProducts = new ArrayList<>();

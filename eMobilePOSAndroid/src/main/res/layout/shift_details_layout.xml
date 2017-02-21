@@ -70,7 +70,7 @@ android:orientation="vertical" >
                 android:text="@string/begging_petty_cash"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:id="@+id/textView27"
+                android:id="@+id/textView27a"
                 style="@style/black_text_appearance_unbold"
                 android:layout_weight="1" />
 
@@ -89,7 +89,7 @@ android:orientation="vertical" >
                 android:text="@string/total_expenses"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:id="@+id/textView27"
+                android:id="@+id/textView27b"
                 style="@style/black_text_appearance_unbold"
                 android:layout_weight="1" />
 
@@ -108,7 +108,7 @@ android:orientation="vertical" >
                 android:text="@string/ending_petty_cash"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:id="@+id/textView27"
+                android:id="@+id/textView27c"
                 style="@style/black_text_appearance_unbold"
                 android:layout_weight="1" />
 
@@ -127,7 +127,7 @@ android:orientation="vertical" >
                 android:text="@string/total_transactions_cash"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:id="@+id/textView27"
+                android:id="@+id/textView27d"
                 style="@style/black_text_appearance_unbold"
                 android:layout_weight="1" />
 
@@ -146,7 +146,7 @@ android:orientation="vertical" >
                 android:text="@string/total_ending_cash"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:id="@+id/textView27"
+                android:id="@+id/textView27e"
                 style="@style/black_text_appearance_unbold"
                 android:layout_weight="1" />
 
@@ -166,7 +166,7 @@ android:orientation="vertical" >
                 android:text="@string/entered_close_amount"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:id="@+id/textView27"
+                android:id="@+id/textView27f"
                 style="@style/black_text_appearance_unbold"
                 android:layout_weight="1" />
 

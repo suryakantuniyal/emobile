@@ -9,6 +9,7 @@ import android.util.Log;
 
 import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.DinningTableOrderDAO;
+import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.OrderAttributes;
@@ -383,6 +384,9 @@ public class OrdersHandler {
             }.getType();
             order.orderAttributes = gson.fromJson(attributes, listType);
         }
+        OrderTaxes_DB taxes_db = new OrderTaxes_DB();
+        List<DataTaxes> orderTaxes = taxes_db.getOrderTaxes(order.ord_id);
+        order.setListOrderTaxes(orderTaxes);
         return order;
     }
 
