@@ -75,7 +75,7 @@ public class Order implements Cloneable {
     public int numberOfSeats;
     public String ord_timeStarted;
     public List<OrderAttributes> orderAttributes;
-
+    private List<DataTaxes> listOrderTaxes;
     public Order() {
         ord_issync = "0";
         isVoid = "0";
@@ -106,4 +106,11 @@ public class Order implements Cloneable {
         return json;
     }
 
+    public List<DataTaxes> getListOrderTaxes() {
+        return listOrderTaxes;
+    }
+
+    public void setListOrderTaxes(List<DataTaxes> listOrderTaxes) {
+        this.listOrderTaxes = listOrderTaxes;
+    }
 }

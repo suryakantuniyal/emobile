@@ -301,7 +301,7 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
             _order_total = _order_total.add(_tax_amount).setScale(4, RoundingMode.HALF_UP);
         } else {
             global.order.ord_taxamount = "0.00";
-            for (DataTaxes taxes : global.listOrderTaxes) {
+            for (DataTaxes taxes : global.order.getListOrderTaxes()) {
                 _tax_amount = _tax_amount.add(new BigDecimal(taxes.getTax_rate()).
                         divide(new BigDecimal(100)).multiply(new BigDecimal(ordTotal))).setScale(4, RoundingMode.HALF_UP);
                 taxes.setTax_amount(new BigDecimal(taxes.getTax_rate()).
@@ -335,11 +335,11 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
         ordersHandler.insert(global.order);
 
         orderProductsHandler.insert(global.orderProducts);
-        if (global.listOrderTaxes != null
-                && global.listOrderTaxes.size() > 0
+        if (global.order.getListOrderTaxes() != null
+                && global.order.getListOrderTaxes().size() > 0
                 ) {
             OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB();
-            ordTaxesDB.insert(global.listOrderTaxes, global.order.ord_id);
+            ordTaxesDB.insert(global.order.getListOrderTaxes(), global.order.ord_id);
         }
     }
 

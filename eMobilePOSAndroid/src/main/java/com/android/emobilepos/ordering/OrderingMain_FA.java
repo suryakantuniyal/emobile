@@ -46,6 +46,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.OrderProductListAdapter;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.mainmenu.SalesTab_FR;
+import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.OrderSeatProduct;
@@ -149,6 +150,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     OrderingAction orderingAction = OrderingAction.NONE;
     private String associateId;
     private List<OrderAttributes> orderAttributes;
+    private ArrayList<DataTaxes> listOrderTaxes;
 
 
     public enum OrderingAction {
@@ -1284,6 +1286,14 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     }
 
+    public ArrayList<DataTaxes> getListOrderTaxes() {
+        return listOrderTaxes;
+    }
+
+    public void setListOrderTaxes(ArrayList<DataTaxes> listOrderTaxes) {
+        this.listOrderTaxes = listOrderTaxes;
+    }
+
     public Global.RestaurantSaleType getRestaurantSaleType() {
         return restaurantSaleType;
     }
@@ -1464,7 +1474,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             if (order.ord_id.isEmpty()) {
                 Global global = (Global) activity.getApplication();
                 order = Receipt_FR.buildOrder(activity, global, "", "", ((OrderingMain_FA) activity).getSelectedDinningTableNumber(),
-                        ((OrderingMain_FA) activity).getAssociateId(), ((OrderingMain_FA) activity).getOrderAttributes());
+                        ((OrderingMain_FA) activity).getAssociateId(), ((OrderingMain_FA) activity).getOrderAttributes(),
+                        ((OrderingMain_FA) activity).getListOrderTaxes());
                 OrderProductsHandler dbOrdProd = new OrderProductsHandler(activity);
                 OrderProductsAttr_DB dbOrdAttr = new OrderProductsAttr_DB(activity);
                 dbOrders.insert(order);
@@ -1574,6 +1585,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
         return true;
     }
+
     public List<OrderAttributes> getOrderAttributes() {
         return orderAttributes;
     }

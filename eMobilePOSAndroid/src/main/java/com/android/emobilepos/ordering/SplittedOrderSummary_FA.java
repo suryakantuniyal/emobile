@@ -570,8 +570,8 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
         global.encodedImage = "";
         orderProductsHandler.insert(orderProducts);
         productsAttrDb.insert(global.ordProdAttr);
-        if (global.listOrderTaxes != null && global.listOrderTaxes.size() > 0) {
-            ordTaxesDB.insert(global.listOrderTaxes, order.ord_id);
+        if (order.getListOrderTaxes() != null && order.getListOrderTaxes().size() > 0) {
+            ordTaxesDB.insert(order.getListOrderTaxes(), order.ord_id);
         }
         new VoidTransaction().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, order.ord_id);
     }

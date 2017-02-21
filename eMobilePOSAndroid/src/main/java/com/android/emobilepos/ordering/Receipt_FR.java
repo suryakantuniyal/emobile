@@ -62,6 +62,7 @@ import com.android.emobilepos.customer.ViewCustomers_FA;
 import com.android.emobilepos.holders.TransferInventory_Holder;
 import com.android.emobilepos.holders.TransferLocations_Holder;
 import com.android.emobilepos.mainmenu.SalesTab_FR;
+import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.OrderSeatProduct;
@@ -149,7 +150,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
     public static Order buildOrder(Activity activity, Global global,
                                    String _email, String ord_HoldName, String assignedTable, String associateId,
-                                   List<OrderAttributes> orderAttributes) {
+                                   List<OrderAttributes> orderAttributes, List<DataTaxes> orderTaxes) {
         MyPreferences myPref = new MyPreferences(activity);
         AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
 
@@ -163,6 +164,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             GenerateNewID generator = new GenerateNewID(activity);
             Global.lastOrdID = generator.getNextID(IdType.ORDER_ID);
         }
+        order.setListOrderTaxes(orderTaxes);
         order.ord_id = Global.lastOrdID;
         order.ord_signature = global.encodedImage;
         order.qbord_id = GenerateNewID.getQBOrderId(Global.lastOrdID);
@@ -517,7 +519,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 if (global.orderProducts != null && global.orderProducts.size() > 0) {
                     Order order = buildOrder(getActivity(), global, "", ord_HoldName,
                             ((OrderingMain_FA) activity).getSelectedDinningTableNumber(),
-                            ((OrderingMain_FA) activity).getAssociateId(), ((OrderingMain_FA) activity).getOrderAttributes());
+                            ((OrderingMain_FA) activity).getAssociateId(), ((OrderingMain_FA) activity).getOrderAttributes(),
+                            ((OrderingMain_FA) activity).getListOrderTaxes());
                     processOrder(order, "", OrderingMain_FA.OrderingAction.HOLD, Global.isFromOnHold, false);
 
                 } else
@@ -715,7 +718,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 if (myPref.getPreferences(MyPreferences.pref_skip_email_phone) && !myPref.getPreferences(MyPreferences.pref_ask_order_comments)) {
                     Order order = buildOrder(getActivity(), global, "", ord_HoldName,
                             ((OrderingMain_FA) activity).getSelectedDinningTableNumber(),
-                            ((OrderingMain_FA) activity).getAssociateId(), ((OrderingMain_FA) activity).getOrderAttributes());
+                            ((OrderingMain_FA) activity).getAssociateId(), ((OrderingMain_FA) activity).getOrderAttributes(),
+                            ((OrderingMain_FA) activity).getListOrderTaxes());
                     if (isToGo) {
                         processOrder(order, "", OrderingMain_FA.OrderingAction.CHECKOUT, Global.isFromOnHold, false);
                     } else {
@@ -777,14 +781,16 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         if (isToGo) {
                             Order order = buildOrder(getActivity(), global, emailInput.getText().toString(), ord_HoldName,
                                     ((OrderingMain_FA) activity).getSelectedDinningTableNumber(),
-                                    ((OrderingMain_FA) activity).getAssociateId(), ((OrderingMain_FA) activity).getOrderAttributes());
+                                    ((OrderingMain_FA) activity).getAssociateId(), ((OrderingMain_FA) activity).getOrderAttributes(),
+                                    ((OrderingMain_FA) activity).getListOrderTaxes());
                             processOrder(order, emailInput.getText().toString(), OrderingMain_FA.OrderingAction.CHECKOUT,
                                     Global.isFromOnHold, false);
                         } else {
                             if (global.orderProducts != null && global.orderProducts.size() > 0) {
                                 Order order = buildOrder(getActivity(), global, emailInput.getText().toString(), ord_HoldName,
                                         ((OrderingMain_FA) activity).getSelectedDinningTableNumber(),
-                                        ((OrderingMain_FA) activity).getAssociateId(), ((OrderingMain_FA) activity).getOrderAttributes());
+                                        ((OrderingMain_FA) activity).getAssociateId(), ((OrderingMain_FA) activity).getOrderAttributes(),
+                                        ((OrderingMain_FA) activity).getListOrderTaxes());
                                 processOrder(order, emailInput.getText().toString(), OrderingMain_FA.OrderingAction.HOLD,
                                         Global.isFromOnHold, false);
 
@@ -801,13 +807,15 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     if (isToGo) {
                         Order order = buildOrder(getActivity(), global, emailInput.getText().toString(), ord_HoldName,
                                 ((OrderingMain_FA) activity).getSelectedDinningTableNumber(),
-                                ((OrderingMain_FA) activity).getAssociateId(), ((OrderingMain_FA) activity).getOrderAttributes());
+                                ((OrderingMain_FA) activity).getAssociateId(), ((OrderingMain_FA) activity).getOrderAttributes(),
+                                ((OrderingMain_FA) activity).getListOrderTaxes());
                         processOrder(order, emailInput.getText().toString(), OrderingMain_FA.OrderingAction.CHECKOUT, Global.isFromOnHold, false);
                     } else {
                         if (global.orderProducts != null && global.orderProducts.size() > 0) {
                             Order order = buildOrder(getActivity(), global, "", ord_HoldName,
                                     ((OrderingMain_FA) activity).getSelectedDinningTableNumber(),
-                                    ((OrderingMain_FA) activity).getAssociateId(), ((OrderingMain_FA) activity).getOrderAttributes());
+                                    ((OrderingMain_FA) activity).getAssociateId(), ((OrderingMain_FA) activity).getOrderAttributes(),
+                                    ((OrderingMain_FA) activity).getListOrderTaxes());
                             processOrder(order, "", OrderingMain_FA.OrderingAction.HOLD, Global.isFromOnHold, false);
 
                         } else
@@ -851,7 +859,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 if (myPref.getPreferences(MyPreferences.pref_skip_email_phone) && !myPref.getPreferences(MyPreferences.pref_ask_order_comments)) {
                     Order order = buildOrder(getActivity(), global, "", ord_HoldName,
                             ((OrderingMain_FA) activity).getSelectedDinningTableNumber(),
-                            ((OrderingMain_FA) activity).getAssociateId(), ((OrderingMain_FA) activity).getOrderAttributes());
+                            ((OrderingMain_FA) activity).getAssociateId(), ((OrderingMain_FA) activity).getOrderAttributes(),
+                            ((OrderingMain_FA) activity).getListOrderTaxes());
                     if (isToGo) {
                         processOrder(order, "", OrderingMain_FA.OrderingAction.CHECKOUT, Global.isFromOnHold, false);
                     } else {
@@ -932,10 +941,10 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     orderProductsHandler.insert(global.orderProducts);
                     productsAttrDb.insert(global.ordProdAttr);
 
-                    if (global.listOrderTaxes != null
-                            && global.listOrderTaxes.size() > 0
+                    if (global.order.getListOrderTaxes() != null
+                            && global.order.getListOrderTaxes().size() > 0
                             && typeOfProcedure != Global.TransactionType.REFUND)
-                        ordTaxesDB.insert(global.listOrderTaxes,
+                        ordTaxesDB.insert(global.order.getListOrderTaxes(),
                                 global.order.ord_id);
                     if (myPref
                             .getPreferences(MyPreferences.pref_restaurant_mode))
@@ -952,10 +961,10 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     orderProductsHandler.insert(global.orderProducts);
                     productsAttrDb.insert(global.ordProdAttr);
 
-                    if (global.listOrderTaxes != null
-                            && global.listOrderTaxes.size() > 0
+                    if (global.order.getListOrderTaxes() != null
+                            && global.order.getListOrderTaxes().size() > 0
                             && typeOfProcedure != Global.TransactionType.REFUND)
-                        ordTaxesDB.insert(global.listOrderTaxes,
+                        ordTaxesDB.insert(global.order.getListOrderTaxes(),
                                 global.order.ord_id);
                     new OnHoldAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, CHECK_OUT_HOLD, voidOnHold);
                 }
@@ -976,10 +985,10 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                             orderProductsHandler.insert(global.orderProducts);
                         }
                         productsAttrDb.insert(global.ordProdAttr);
-                        if (global.listOrderTaxes != null
-                                && global.listOrderTaxes.size() > 0
+                        if (global.order.getListOrderTaxes() != null
+                                && global.order.getListOrderTaxes().size() > 0
                                 && typeOfProcedure != Global.TransactionType.REFUND) {
-                            ordTaxesDB.insert(global.listOrderTaxes,
+                            ordTaxesDB.insert(global.order.getListOrderTaxes(),
                                     global.order.ord_id);
                         }
                     }
