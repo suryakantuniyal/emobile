@@ -1186,7 +1186,7 @@ public class MyPreferences {
     }
 
     public String getShiftID() {
-        return prefs.getString("shift_id", "");
+        return prefs.getString("shift_id", "0");
     }
 
     public void setShiftID(String value) {

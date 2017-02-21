@@ -642,7 +642,7 @@ public class SynchMethods {
             JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
             List<Order> orders = new ArrayList<>();
             OrdersHandler ordersHandler = new OrdersHandler(activity);
-            ordersHandler.deleteOnHoldsTable();
+            ordersHandler.deleteOnHoldsOrders();
             reader.beginArray();
             int i = 0;
             while (reader.hasNext()) {
@@ -650,7 +650,7 @@ public class SynchMethods {
                 order.ord_issync = "1";
                 order.isOnHold = "1";
                 Order onHoldOrder = ordersHandler.getOrder(order.ord_id);
-                if (onHoldOrder == null || onHoldOrder.isOnHold.equals("1")) {
+                if (onHoldOrder == null || TextUtils.isEmpty(onHoldOrder.ord_id) || onHoldOrder.isOnHold.equals("1")) {
                     orders.add(order);
                     i++;
                 }

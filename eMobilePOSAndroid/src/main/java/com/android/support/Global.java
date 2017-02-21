@@ -293,10 +293,10 @@ public class Global extends MultiDexApplication {
     public String encodedImage = "";
     public int orientation;
     // For new addon views
-    public List<DataTaxes> listOrderTaxes = new ArrayList<DataTaxes>();
+    public List<DataTaxes> listOrderTaxes = new ArrayList<>();
     public List<ProductAttribute> ordProdAttrPending;
     public RealmList<ProductAttribute> ordProdAttr = new RealmList<>();
-    public List<OrderProduct> orderProducts = new ArrayList<OrderProduct>();
+    public List<OrderProduct> orderProducts = new ArrayList<>();
     //    public List<OrderProduct> orderProductAddons = new ArrayList<OrderProduct>();
     // public static HashMap<String,List<OrderProduct>>orderProductsAddonsMap;
     public Order order;

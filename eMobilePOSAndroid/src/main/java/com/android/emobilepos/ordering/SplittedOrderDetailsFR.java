@@ -270,7 +270,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         taxTotal.setText(Global.formatDoubleStrToCurrency(orderTaxes.toString()));
         granTotal.setText(Global.formatDoubleStrToCurrency(orderGranTotal.toString()));
         orderId.setText(splitedOrder.ord_id);
-        globalDiscountTextView.setText(Global.formatDoubleStrToCurrency(globalDiscountTotal.toString()));
+        globalDiscountTextView.setText(Global.formatDoubleToCurrency(globalDiscountTotal.doubleValue()));
     }
 
     @Override
@@ -455,7 +455,8 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         SplittedOrderSummary_FA summaryFa = (SplittedOrderSummary_FA) getActivity();
         summaryFa.checkoutCount++;
         if (resultCode == SplittedOrderSummary_FA.NavigationResult.PAYMENT_SELECTION_VOID.getCode()) {
-            summaryFa.voidTransaction(false);
+            summaryFa.voidTransaction(false, restaurantSplitedOrder.ord_id);
+            removeCheckoutOrder(summaryFa);
         } else if (summaryFa.splitType == SplittedOrderSummary_FA.SalesReceiptSplitTypes.SPLIT_EQUALLY
                 && resultCode != SplittedOrderSummary_FA.NavigationResult.BACK_SELECT_PAYMENT.getCode()) {
             removeCheckoutOrder(summaryFa);

@@ -19,6 +19,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.android.dao.AssignEmployeeDAO;
+import com.android.dao.DinningTableOrderDAO;
 import com.android.database.OrderProductsAttr_DB;
 import com.android.database.OrderProductsHandler;
 import com.android.database.OrderTaxes_DB;
@@ -496,7 +497,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                     promptManagerPassword(voidPayments);
                 } else {
                     dialog.dismiss();
-                    voidTransaction(voidPayments);
+                    voidTransaction(voidPayments, getOrderDetailsFR().restaurantSplitedOrder.ord_id);
                 }
             }
         });
@@ -540,7 +541,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                 MyPreferences myPref = new MyPreferences(SplittedOrderSummary_FA.this);
                 String pass = viewField.getText().toString();
                 if (!pass.isEmpty() && myPref.getPosManagerPass().equals(pass.trim())) {
-                    voidTransaction(voidPayments);
+                    voidTransaction(voidPayments, getOrderDetailsFR().restaurantSplitedOrder.ord_id);
                 } else {
                     promptManagerPassword(voidPayments);
                 }
@@ -549,7 +550,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
         globalDlog.show();
     }
 
-    public void voidTransaction(boolean voidPayments) {
+    public void voidTransaction(boolean voidPayments, String orderId) {
         if (voidPayments) {
             SelectPayMethod_FA.voidTransaction(SplittedOrderSummary_FA.this, global.order.ord_id, global.order.ord_type);
         }
@@ -558,19 +559,21 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
         OrderProductsHandler orderProductsHandler = new OrderProductsHandler(SplittedOrderSummary_FA.this);
         OrderProductsAttr_DB productsAttrDb = new OrderProductsAttr_DB(SplittedOrderSummary_FA.this);
         OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB();
-        ordersHandler.updateFinishOnHold(global.order.ord_id);
-        global.order.isVoid = "1";
-        global.order.processed = "9";
-        global.order.isOnHold = "0";
-        global.orderProducts = orderDetailsFR.restaurantSplitedOrder.getOrderProducts();
-        ordersHandler.insert(global.order);
+//        ordersHandler.updateFinishOnHold(orderId);
+        Order order = ordersHandler.getOrder(orderId);
+        order.isVoid = "1";
+        order.processed = "9";
+        order.isOnHold = "0";
+        List<OrderProduct> orderProducts = orderDetailsFR.restaurantSplitedOrder.getOrderProducts();
+        ordersHandler.insert(order);
+        DinningTableOrderDAO.deleteByOrderId(order.ord_id);
         global.encodedImage = "";
-        orderProductsHandler.insert(global.orderProducts);
+        orderProductsHandler.insert(orderProducts);
         productsAttrDb.insert(global.ordProdAttr);
         if (global.listOrderTaxes != null && global.listOrderTaxes.size() > 0) {
-            ordTaxesDB.insert(global.listOrderTaxes, global.order.ord_id);
+            ordTaxesDB.insert(global.listOrderTaxes, order.ord_id);
         }
-        new VoidTransaction().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, global.order.ord_id);
+        new VoidTransaction().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, order.ord_id);
     }
 
     public enum NavigationResult {
@@ -642,8 +645,11 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
         @Override
         protected void onPostExecute(Void aVoid) {
             myProgressDialog.dismiss();
-            setResult(-1);
-            finish();
+            SplittedOrderSummaryAdapter adapter = (SplittedOrderSummaryAdapter) getOrderSummaryFR().getGridView().getAdapter();
+            if (adapter.getCount() == 0) {
+                setResult(-1);
+                finish();
+            }
         }
 
     }

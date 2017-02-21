@@ -101,6 +101,10 @@ public class ShiftDAO {
 
     public static void updateShiftAmounts(int clerkID, double amountToApply, boolean isReturn) {
         Shift openShift = getOpenShift(clerkID);
+        if(openShift==null) {
+            return;
+        }
+
         if (isReturn) {
             openShift.setTotalTransactionsCash(String.valueOf(Global.getBigDecimalNum(openShift != null
                     ? openShift.getTotalTransactionsCash() :

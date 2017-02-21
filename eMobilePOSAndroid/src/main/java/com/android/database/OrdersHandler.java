@@ -286,10 +286,6 @@ public class OrdersHandler {
 //        }
 //    }
 
-    public void deleteOnHoldsTable() {
-        DBManager.getDatabase().execSQL("DELETE FROM " + table_name + " isOnHold = '1'");
-        DinningTableOrderDAO.truncate();
-    }
 
     public static void deleteTransaction(Activity activity, String orderId) {
         if (!orderId.isEmpty()) {
