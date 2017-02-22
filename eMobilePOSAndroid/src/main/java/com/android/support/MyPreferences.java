@@ -1085,7 +1085,7 @@ public class MyPreferences {
         int NUM_OF_ITEMS = 17;
         boolean[] values = new boolean[NUM_OF_ITEMS];
         Set<String> selections = sharedPref.getStringSet("pref_configure_home_menu", null);
-        if (selections != null && NUM_OF_ITEMS == selections.size()) {
+        if (selections != null) {
             String[] selected = selections.toArray(new String[]{});
 
             Arrays.sort(selected);
