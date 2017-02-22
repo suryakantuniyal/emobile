@@ -615,7 +615,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                 break;
                             case R.id.removeProduct:
                                 if (hasRemoveItemPermission) {
-                                    if (myPref
+                                    boolean printed = orderSeatProduct.orderProduct.isPrinted();
+                                    if (printed || myPref
                                             .getPreferences(MyPreferences.pref_require_password_to_remove_void)) {
                                         showPromptManagerPassword(REMOVE_ITEM, orderProductIdx, orderProductIdx);
                                     } else {

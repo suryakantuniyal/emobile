@@ -15,7 +15,7 @@
 
     <string name="header_title_customers">Clientes</string>
 
-    <string name="sales_receipt_title">Sales Receipt</string>
+    <string name="sales_receipt_title">Start Check</string>
 
     <string name="enter_password">Entre Contrase\u00F1a</string>
 
@@ -696,7 +696,7 @@
     <string name="sync_saving_products_attributes">Saving ProductsAttributes\u002E\u002E\u002E</string>
     <string name="sync_saving_clerks">Saving Clerks\u002E\u002E\u002E</string>
     <string name="sync_saving_termsandconditions">Saving TermsAndConditions\u002E\u002E\u002E</string>
-    <string name="sync_saving_ordersonhold">Saving Orders On Hold\u002E\u002E\u002E</string>
+    <string name="sync_saving_ordersonhold">Saving Orders Recall Check\u002E\u002E\u002E</string>
     <string name="sync_saving_dinnertables">Saving Dinner Tables\u002E\u002E\u002E</string>
     <string name="sync_saving_salesassociate">Saving Sales Associate\u002E\u002E\u002E</string>
 
@@ -1151,8 +1151,8 @@
     <string name="config_enable_table_selection">Enable table selection</string>
     <string name="config_ask_numbers_seats">Ask number of seats</string>
     <string name="config_ask_split_equally">Ask to split payment equally</string>
-    <string name="select_togo_eatin">Select To-Go or Eat-In</string>
-    <string name="eatin_btn">Eat-In</string>
+    <string name="select_togo_eatin">Select To-Go or Dine-In</string>
+    <string name="eatin_btn">Dine-In</string>
     <string name="toGo_btn">To-Go</string>
     <string name="select_table_number">Select table number</string>
     <string name="select_table_seats_amount">Select the amount of seats</string>
@@ -1254,7 +1254,7 @@
     <string name="eod_report_return">Return</string>
     <string name="eod_report_estimate">Estimate</string>
     <string name="eod_report_order">Order</string>
-    <string name="eod_report_salesreceipt">Sales Receipt</string>
+    <string name="eod_report_salesreceipt">Start Check</string>
     <string name="eod_report_invoice">Invoice</string>
     <string name="eod_report_summary">Summary</string>
     <string name="eod_report_ordertypes">Shifts</string>

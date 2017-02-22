@@ -33,7 +33,7 @@
     </string-array>
 
     <string-array name="mainMenuArray">
-        <item name="menu_sales_receipt">Sales Receipt</item>
+        <item name="menu_sales_receipt">Start Check</item>
         <item name="menu_order">Order</item>
         <item name="menu_return">Return</item>
         <item name="menu_invoice">Invoice</item>
@@ -44,7 +44,7 @@
         <item name="menu_rewardcard">Reward Card</item>
         <item name="menu_refund">Refund</item>
         <item name="menu_route">Route</item>
-        <item name="menu_on_hold">On Hold</item>
+        <item name="menu_on_hold">Recall Check</item>
         <item name="menu_consignment">Consignment</item>
         <item name="menu_transfer_inventory">Inventory Transfer</item>
         <item name="menu_tip_adjustment">Tip Adjustment</item>
@@ -199,7 +199,7 @@
     </string-array>
     <string-array name="defaultTransEntries">
         <item name="default_trans_none">None</item>
-        <item name="default_trans_sales_receipt">Sales Receipt</item>
+        <item name="default_trans_sales_receipt">Start Check</item>
         <item name="default_trans_return">Return</item>
     </string-array>
     <string-array name="defaultTransKey">

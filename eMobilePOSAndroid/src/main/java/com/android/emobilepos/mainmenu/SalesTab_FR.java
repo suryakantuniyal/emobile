@@ -23,6 +23,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.DinningTableDAO;
 import com.android.dao.SalesAssociateDAO;
 import com.android.dao.ShiftDAO;
@@ -821,7 +822,12 @@ public class SalesTab_FR extends Fragment {
 
     public void selectDinnerTable() {
         Intent intent = new Intent(getActivity(), DinningTablesActivity.class);
-        int empId = ShiftDAO.getOpenShift(Integer.parseInt(myPref.getClerkID())).getAssigneeId();
+        int empId;
+        if(myPref.isUseClerks()) {
+            empId = ShiftDAO.getOpenShift(Integer.parseInt(myPref.getClerkID())).getAssigneeId();
+        }else{
+            empId = AssignEmployeeDAO.getAssignEmployee().getEmpId();
+        }
         intent.putExtra("associateId", empId);
         startActivityForResult(intent, 0);
     }

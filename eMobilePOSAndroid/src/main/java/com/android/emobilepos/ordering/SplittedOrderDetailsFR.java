@@ -268,10 +268,10 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         splitedOrder.ord_taxamount = orderTaxes.toString();
         splitedOrder.ord_discount = globalDiscountTotal.toString();
         splitedOrder.ord_lineItemDiscount = itemDiscountTotal.toString();
-        subtotal.setText(Global.formatDoubleStrToCurrency(orderSubtotal.toString()));
-        lineItemDiscountTotal.setText(Global.formatDoubleStrToCurrency(itemDiscountTotal.toString()));
-        taxTotal.setText(Global.formatDoubleStrToCurrency(orderTaxes.toString()));
-        granTotal.setText(Global.formatDoubleStrToCurrency(orderGranTotal.toString()));
+        subtotal.setText(Global.formatDoubleToCurrency(orderSubtotal.doubleValue()));
+        lineItemDiscountTotal.setText(Global.formatDoubleToCurrency(itemDiscountTotal.doubleValue()));
+        taxTotal.setText(Global.formatDoubleToCurrency(orderTaxes.doubleValue()));
+        granTotal.setText(Global.formatDoubleToCurrency(orderGranTotal.doubleValue()));
         orderId.setText(splitedOrder.ord_id);
         globalDiscountTextView.setText(Global.formatDoubleToCurrency(globalDiscountTotal.doubleValue()));
     }

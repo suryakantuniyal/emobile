@@ -15,6 +15,7 @@ import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.OrderAttributes;
 import com.android.emobilepos.models.realms.ProductAttribute;
 import com.android.support.DateUtils;
+import com.android.support.GenerateNewID;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.google.gson.Gson;
@@ -132,7 +133,6 @@ public class OrdersHandler {
         try {
 //            GenerateNewID generateNewID = new GenerateNewID(activity);
             for (Order order : orders) {
-//                Order o = getOrder(order.ord_id);
                 SQLiteStatement insert;
                 String sb = "INSERT OR REPLACE INTO " + table_name + " (" + sb1.toString() + ") " +
                         "VALUES (" + sb2.toString() + ")";
@@ -200,8 +200,9 @@ public class OrdersHandler {
                 insert.close();
                 Log.d("Order Insert:", order.toString());
                 DinningTableOrderDAO.createDinningTableOrder(order);
-                AssignEmployeeDAO.updateLastOrderId(order.ord_id);
-//                myPref.setLastOrdID(order.ord_id);
+                if (GenerateNewID.isValidLastId(order.ord_id, GenerateNewID.IdType.ORDER_ID)) {
+                    AssignEmployeeDAO.updateLastOrderId(order.ord_id);
+                }
             }
             DBManager.getDatabase().setTransactionSuccessful();
         } catch (Exception e) {
@@ -210,83 +211,6 @@ public class OrdersHandler {
             DBManager.getDatabase().endTransaction();
         }
     }
-
-//    public void insertOnHold(List<Order> orders) {
-//        for (Order order : orders) {
-//            order.ord_issync = "1";
-//            order.isOnHold = "1";
-//        }
-//        insert(orders);
-
-//        DBManager._db.beginTransaction();
-//        try {
-//            SQLiteStatement insert;
-//            String sb = "INSERT INTO " + table_name + " (" + sb1.toString() + ") " +
-//                    "VALUES (" + sb2.toString() + ")";
-//            insert = DBManager._db.compileStatement(sb);
-//            for (Order order : orders) {
-//                if (checkIfExist(order.ord_id)) {
-//                    updateOnHoldSync(order.ord_id);
-//                } else {
-//                    insert.bindString(index(ord_id), order.ord_id); // ord_id
-//                    insert.bindString(index(qbord_id), order.qbord_id); // qbord_id
-//                    insert.bindString(index(emp_id), order.emp_id); // emp_id
-//                    insert.bindString(index(cust_id), order.cust_id); // cust_id
-//                    insert.bindString(index(clerk_id), order.clerk_id); // clerk_id
-//                    insert.bindString(index(c_email), order.c_email); // c_email
-//                    insert.bindString(index(ord_signature), order.ord_signature); // ord_signature
-//                    insert.bindString(index(ord_po), order.ord_po); // ord_po
-//                    insert.bindString(index(total_lines), order.total_lines); // total_lines
-//                    insert.bindString(index(total_lines_pay), order.total_lines_pay); // total_lines_pay
-//                    insert.bindString(index(ord_total), order.ord_total); // ord_total
-//                    insert.bindString(index(ord_comment), order.ord_comment); // ord_comment
-//                    insert.bindString(index(ord_delivery), order.ord_delivery); // ord_delivery
-//                    insert.bindString(index(ord_timecreated), order.ord_timecreated); // ord_timecreated
-//                    insert.bindString(index(ord_timesync), order.ord_timesync); // ord_timesync
-//                    insert.bindString(index(qb_synctime), order.qb_synctime); // qb_synctime
-//                    insert.bindString(index(emailed), order.emailed); // emailed
-//                    insert.bindString(index(processed), order.processed); // processed
-//                    insert.bindString(index(ord_type), order.ord_type); // ord_type
-//                    insert.bindString(index(ord_claimnumber), order.ord_claimnumber); // ord_claimnumber
-//                    insert.bindString(index(ord_rganumber), order.ord_rganumber); // ord_rganumber
-//                    insert.bindString(index(ord_returns_pu), order.ord_returns_pu); // ord_returns_pu
-//                    insert.bindString(index(ord_inventory), order.ord_inventory); // ord_inventory
-//                    insert.bindString(index(ord_issync), "1"); // ord_issync
-//                    insert.bindString(index(tax_id), order.tax_id); // tax_id
-//                    insert.bindString(index(ord_shipvia), order.ord_shipvia); // ord_shipvia
-//                    insert.bindString(index(ord_shipto), order.ord_shipto); // ord_shipto
-//                    insert.bindString(index(ord_terms), order.ord_terms); // ord_terms
-//                    insert.bindString(index(ord_custmsg), order.ord_custmsg); // ord_custmsg
-//                    insert.bindString(index(ord_class), order.ord_class); // ord_class
-//                    insert.bindString(index(ord_subtotal), order.ord_subtotal); // ord_subtotal
-//                    insert.bindString(index(ord_taxamount), order.ord_taxamount); // ord_taxamount
-//                    insert.bindString(index(ord_discount), order.ord_discount); // ord_discount
-//                    insert.bindString(index(ord_discount_id), order.ord_discount_id); // ord_discount_id
-//                    insert.bindString(index(ord_latitude), order.ord_latitude); // ord_latitude
-//                    insert.bindString(index(ord_longitude), order.ord_longitude); // ord_longitude
-//                    insert.bindString(index(tipAmount), order.tipAmount); // tipAmount
-//                    insert.bindString(index(custidkey), order.custidkey); // custidkey
-//                    insert.bindString(index(isOnHold), "1"); // isOnHold
-//                    insert.bindString(index(ord_HoldName), order.ord_HoldName); // ord_HoldName
-//                    insert.bindString(index(assignedTable), order.assignedTable); // ord_HoldName
-//                    insert.bindString(index(numberOfSeats), String.valueOf(order.numberOfSeats)); // ord_HoldName
-//                    insert.bindString(index(associateID), order.associateID); // ord_HoldName
-//                    insert.bindString(index(VAT), order.VAT);
-//                    insert.bindString(index(ord_timeStarted), o == null || o.ord_timeStarted == null ? Global.getCurrentDate() : o.ord_timeStarted);
-//                    insert.execute();
-//                    insert.clearBindings();
-//                }
-//            }
-//            insert.close();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        } finally {
-//
-//            DBManager._db.setTransactionSuccessful();
-//            DBManager._db.endTransaction();
-//        }
-//    }
-
 
     public static void deleteTransaction(Activity activity, String orderId) {
         if (!orderId.isEmpty()) {
@@ -390,10 +314,7 @@ public class OrdersHandler {
         return order;
     }
 
-    public Order getOrder(String orderId) // Will populate all unsynchronized
-    // orders
-    // for XML post
-    {
+    public Order getOrder(String orderId) {
         String sb = "SELECT " + sb1.toString() + " FROM " + table_name + " WHERE ord_id = '" +
                 orderId + "'";
         Cursor cursor = DBManager.getDatabase().rawQuery(sb, null);
@@ -475,16 +396,16 @@ public class OrdersHandler {
     public String getLastOrderId(int deviceId, int year) {
         AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
         String lastOrdID = assignEmployee.getMSLastOrderID();
-        boolean getIdFromDB = true;
+        boolean getIdFromDB = false;
         StringBuilder sb = new StringBuilder();
-//        if (TextUtils.isEmpty(lastOrdID) || lastOrdID.length() <= 4) {
-//            getIdFromDB = true;
-//        } else {
-//            String[] tokens = assignEmployee.getMSLastOrderID().split("-");
-//            if (!tokens[2].equalsIgnoreCase(String.valueOf(year))) {
-//                getIdFromDB = true;
-//            }
-//        }
+        if (TextUtils.isEmpty(lastOrdID) || lastOrdID.length() <= 4) {
+            getIdFromDB = true;
+        } else {
+            String[] tokens = assignEmployee.getMSLastOrderID().split("-");
+            if (!tokens[2].equalsIgnoreCase(String.valueOf(year))) {
+                getIdFromDB = true;
+            }
+        }
 
         if (getIdFromDB) {
             sb.append("select max(ord_id) from ").append(table_name).append(" WHERE ord_id like '").append(assignEmployee.getEmpId())

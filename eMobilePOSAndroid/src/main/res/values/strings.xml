@@ -118,7 +118,7 @@
     <string name="dlog_star_ip">IP Address</string>
     <string name="dlog_star_port">Port Number</string>
 
-    <string name="sales_receipt_title">Sales Receipt</string>
+    <string name="sales_receipt_title">Start Check</string>
 
     <!-- Button -->
     <string name="button_print">Print</string>
@@ -159,7 +159,7 @@
     <string name="sales_title">Sales</string>
     <string name="invoices">Invoices</string>
     <string name="no_customer">No customer selected</string>
-    <string name="sales_receipt">Sales Receipt</string>
+    <string name="sales_receipt">Start Check</string>
     <string name="order">Order</string>
     <string name="return_tag">Return</string>
     <string name="invoice">Invoice</string>
@@ -167,7 +167,7 @@
     <string name="payment">Payment</string>
     <string name="refund">Refund</string>
     <string name="route">Route</string>
-    <string name="on_hold">On Hold</string>
+    <string name="on_hold">Recall Check</string>
     <string name="master_counter">Master Counter</string>
     <string name="consignment">Consignment</string>
 
@@ -190,7 +190,7 @@
     <string name="sync_consignment">Consignment</string>
     <string name="sync_transfer">Transfer</string>
     <string name="sync_void">Voids</string>
-    <string name="sync_on_hold">On Hold</string>
+    <string name="sync_on_hold">Recall Check</string>
     <string name="sync_last_sync">Last Synchronization:</string>
     <string name="sync_last_sent">Sent</string>
     <string name="sync_last_received">Received</string>
@@ -441,7 +441,7 @@
     <string name="button_load">Load</string>
     <string name="button_checkout">Checkout</string>
     <string name="button_template">Template</string>
-    <string name="button_hold">Hold</string>
+    <string name="button_hold">Send</string>
     <string name="button_details">Details</string>
     <string name="button_sign">Sign</string>
 
@@ -1095,8 +1095,8 @@
     <string name="config_enable_table_selection">Enable table selection</string>
     <string name="config_ask_numbers_seats">Ask number of seats</string>
     <string name="config_ask_split_equally">Ask to split payment equally</string>
-    <string name="select_togo_eatin">Select To-Go or Eat-In</string>
-    <string name="eatin_btn">Eat-In</string>
+    <string name="select_togo_eatin">Select To-Go or Dine-In</string>
+    <string name="eatin_btn">Dine-In</string>
     <string name="toGo_btn">To-Go</string>
     <string name="select_table_number">Select Table Number</string>
     <string name="select_table_seats_amount">Select the amount of seats</string>
@@ -1191,7 +1191,7 @@
     <string name="eod_report_return">Return</string>
     <string name="eod_report_estimate">Estimate</string>
     <string name="eod_report_order">Order</string>
-    <string name="eod_report_salesreceipt">Sales Receipt</string>
+    <string name="eod_report_salesreceipt">Start Check</string>
     <string name="eod_report_invoice">Invoice</string>
     <string name="eod_report_summary">Summary</string>
     <string name="eod_report_ordertypes">Shifts</string>

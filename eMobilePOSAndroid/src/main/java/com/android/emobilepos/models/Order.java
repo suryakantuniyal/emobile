@@ -1,6 +1,5 @@
 package com.android.emobilepos.models;
 
-import android.app.Activity;
 import android.content.Context;
 
 import com.android.dao.AssignEmployeeDAO;
@@ -76,6 +75,7 @@ public class Order implements Cloneable {
     public String ord_timeStarted;
     public List<OrderAttributes> orderAttributes;
     private List<DataTaxes> listOrderTaxes;
+
     public Order() {
         ord_issync = "0";
         isVoid = "0";
@@ -112,5 +112,9 @@ public class Order implements Cloneable {
 
     public void setListOrderTaxes(List<DataTaxes> listOrderTaxes) {
         this.listOrderTaxes = listOrderTaxes;
+    }
+
+    public boolean isSync() {
+        return ord_issync.equalsIgnoreCase("1");
     }
 }
