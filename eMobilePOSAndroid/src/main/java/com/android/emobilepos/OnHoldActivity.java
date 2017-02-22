@@ -242,9 +242,9 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
     @Override
     public void onResume() {
         if (global.isApplicationSentToBackground(activity))
-            global.loggedIn = false;
+            Global.loggedIn = false;
         global.stopActivityTransitionTimer();
-        if (hasBeenCreated && !global.loggedIn) {
+        if (hasBeenCreated && !Global.loggedIn) {
             if (global.getGlobalDlog() != null)
                 global.getGlobalDlog().dismiss();
             global.promptForMandatoryLogin(activity);
@@ -259,7 +259,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         boolean isScreenOn = powerManager.isScreenOn();
         if (!isScreenOn)
-            global.loggedIn = false;
+            Global.loggedIn = false;
         global.startActivityTransitionTimer();
     }
 
@@ -633,7 +633,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         ProductsHandler prodHandler = new ProductsHandler(activity);
         String[] discountInfo;
         double total;
-        double itemTotal = 0;
         Global global = (Global) activity.getApplication();
         global.orderProducts = new ArrayList<>();
 
@@ -658,8 +657,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                 }
             }
             ord.setDisAmount(ord.getDisAmount());
-            if (itemTotal < 0)
-                itemTotal = 0;
             ord.setItemTotal(Double.toString(total - discAmount));
             ord.setItemSubtotal(Double.toString(total));
             if (ord.isAddon()) {
@@ -698,7 +695,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             inflater = LayoutInflater.from(context);
         }
 
-        public boolean isRestaurantHold(int position) {
+        boolean isRestaurantHold(int position) {
             getCursor().moveToPosition(position);
             return !TextUtils.isEmpty(getCursor().getString(getCursor().getColumnIndex("assignedTable")));
         }
