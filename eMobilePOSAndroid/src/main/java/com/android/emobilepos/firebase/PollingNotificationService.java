@@ -159,11 +159,11 @@ public class PollingNotificationService extends Service {
 
             reader.endArray();
             reader.close();
+
+            lastPolled = new Date();
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        lastPolled = new Date();
     }
 
     class PollNotification {
