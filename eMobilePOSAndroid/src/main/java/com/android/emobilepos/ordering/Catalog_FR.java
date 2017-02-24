@@ -52,6 +52,8 @@ import com.android.support.Global;
 import com.android.support.MyEditText;
 import com.android.support.MyPreferences;
 import com.android.support.OrderProductUtils;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.LinearLayoutManager;
 import com.google.gson.Gson;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -104,6 +106,10 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     private long lastClickTime = 0;
     private int page = 1;
     private boolean isToGo;
+
+    //AN
+    private RecyclerView catalogRecyclerView;
+    private CatalogCategories_Adapter categoriesAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -170,6 +176,17 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
         setupSearchField();
         loadCursor();
+
+
+        // AN
+        catalogRecyclerView = (RecyclerView) view.findViewById(R.id.categoriesRecyclerView);
+        List<CategoriesHandler.EMSCategory> cats = catHandler.getMainCategories();
+        categoriesAdapter = new CatalogCategories_Adapter(getActivity(), cats, imageLoader);
+
+        LinearLayoutManager horizontalLayourManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
+        catalogRecyclerView.setLayoutManager(horizontalLayourManager);
+        catalogRecyclerView.setAdapter(categoriesAdapter);
+
         return view;
     }
 
@@ -206,6 +223,12 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.categoryButton:
+//                if (catalogRecyclerView.getVisibility() == View.VISIBLE) {
+//                    catalogRecyclerView.setVisibility(View.GONE);
+//                } else {
+//                    catalogRecyclerView.setVisibility(View.VISIBLE);
+//                }
+
                 categories = new ArrayList<>(spinnerCategories);
                 catName = new ArrayList<>(spinnerCatName);
                 catIDs = new ArrayList<>(spinnerCatID);
@@ -267,9 +290,9 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     private void setupSpinners(View v) {
 
         Button btnCategory = (Button) v.findViewById(R.id.categoryButton);
-        if (onRestaurantMode)
-            btnCategory.setVisibility(View.INVISIBLE);
-        else
+//        if (onRestaurantMode)
+//            btnCategory.setVisibility(View.INVISIBLE);
+//        else
             btnCategory.setOnClickListener(this);
 
 
@@ -298,35 +321,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 global.searchType = position;
-                //hide the keyboard
-                switch (position) {
-                    case 0: //Name
-                    {
-//                        searchField.setRawInputType(Configuration.KEYBOARD_NOKEYS);
-                        break;
-                    }
-                    case 1: //description
-                    {
-//                        searchField.setRawInputType(Configuration.KEYBOARD_NOKEYS);
-                        break;
-                    }
-                    case 2: //type
-                    {
-//                        searchField.setRawInputType(Configuration.KEYBOARD_NOKEYS);
-                        break;
-                    }
-
-                    case 3: //upc
-                    {
-//                        searchField.setRawInputType(Configuration.KEYBOARD_QWERTY);
-                        break;
-                    }
-                    case 4: //sku
-                    {
-//                        searchField.setRawInputType(Configuration.KEYBOARD_QWERTY);
-                        break;
-                    }
-                }
             }
 
             @Override

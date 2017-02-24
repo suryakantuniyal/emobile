@@ -45,6 +45,14 @@
             android:layout_weight="0.40" />
     </LinearLayout>
 
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/categoriesRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/catalog_image_size"
+        android:background="@color/white">
+    </android.support.v7.widget.RecyclerView>
+
     <GridView
         android:id="@+id/catalogListview"
         android:layout_width="match_parent"

@@ -1,6 +1,5 @@
 package com.android.database;
 
-import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 
@@ -214,5 +213,77 @@ public class CategoriesHandler {
         return cursor;
     }
 
+    public List<EMSCategory> getMainCategories() {
+        List<EMSCategory> categories = new ArrayList<>();
+        Cursor cursor = getCategoriesCursor();
 
+        int categoryIdIndex = cursor.getColumnIndex("_id");
+        int categoryNameIndex = cursor.getColumnIndex("cat_name");
+        int iconUrlIndex = cursor.getColumnIndex("url_icon");
+        int numberOfSubCategoriesIndex = cursor.getColumnIndex("num_subcategories");
+
+        String categoryId;
+        String categoryName;
+        String iconUrl;
+        int numberOfSubCategories = 0;
+
+        if (!cursor.isAfterLast()) {
+            do {
+                categoryId = cursor.getString(categoryIdIndex);
+                categoryName = cursor.getString(categoryNameIndex);
+                iconUrl = cursor.getString(iconUrlIndex);
+                numberOfSubCategories = cursor.getInt(numberOfSubCategoriesIndex);
+
+                categories.add(new EMSCategory(categoryId, categoryName, iconUrl, numberOfSubCategories));
+            } while (cursor.moveToNext());
+        }
+
+        return categories;
+    }
+
+    public class EMSCategory {
+        private String categoryId;
+        private String categoryName;
+        private String iconUrl;
+        private int numberOfSubCategories;
+
+        public String getCategoryId() {
+            return categoryId;
+        }
+
+        public void setCategoryId(String categoryId) {
+            this.categoryId = categoryId;
+        }
+
+        public String getCategoryName() {
+            return categoryName;
+        }
+
+        public void setCategoryName(String categoryName) {
+            this.categoryName = categoryName;
+        }
+
+        public String getIconUrl() {
+            return iconUrl;
+        }
+
+        public void setIconUrl(String iconUrl) {
+            this.iconUrl = iconUrl;
+        }
+
+        public int getNumberOfSubCategories() {
+            return numberOfSubCategories;
+        }
+
+        public void setNumberOfSubCategories(int numberOfSubCategories) {
+            this.numberOfSubCategories = numberOfSubCategories;
+        }
+
+        private EMSCategory(String categoryId, String categoryName, String iconUrl, int numberOfSubCategories) {
+            this.categoryId = categoryId;
+            this.categoryName = categoryName;
+            this.iconUrl = iconUrl;
+            this.numberOfSubCategories = numberOfSubCategories;
+        }
+    }
 }
