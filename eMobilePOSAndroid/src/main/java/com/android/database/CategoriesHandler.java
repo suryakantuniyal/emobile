@@ -3,6 +3,7 @@ package com.android.database;
 import android.content.Context;
 import android.database.Cursor;
 
+import com.android.emobilepos.models.EMSCategory;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 
@@ -214,8 +215,51 @@ public class CategoriesHandler {
     }
 
     public List<EMSCategory> getMainCategories() {
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("SELECT cat_id as '_id',cat_name,url_icon,(SELECT Count(*)  " +
+                "FROM Categories c2 WHERE c2.parentID = c1.cat_id) AS num_subcategories " +
+                "FROM Categories c1 ");
+        if (myPref.getPreferences(MyPreferences.pref_enable_multi_category))
+            sb.append("  WHERE c1.parentID='' AND c1.cat_id !='' ");
+        else {
+            sb.append("  WHERE c1.parentID='' ");
+        }
+        sb.append(" ORDER BY c1.cat_name");
+        Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
+
         List<EMSCategory> categories = new ArrayList<>();
-        Cursor cursor = getCategoriesCursor();
+
+        int categoryIdIndex = cursor.getColumnIndex("_id");
+        int categoryNameIndex = cursor.getColumnIndex("cat_name");
+        int iconUrlIndex = cursor.getColumnIndex("url_icon");
+        int numberOfSubCategoriesIndex = cursor.getColumnIndex("num_subcategories");
+
+        String categoryId;
+        String categoryName;
+        String iconUrl;
+        int numberOfSubCategories = 0;
+
+        if (cursor.moveToFirst()) {
+            do {
+                categoryId = cursor.getString(categoryIdIndex);
+                categoryName = cursor.getString(categoryNameIndex);
+                iconUrl = cursor.getString(iconUrlIndex);
+                numberOfSubCategories = cursor.getInt(numberOfSubCategoriesIndex);
+
+                categories.add(new EMSCategory(categoryId, categoryName, iconUrl, numberOfSubCategories));
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+
+        return categories;
+    }
+
+    public List<EMSCategory> getSubCategories(String parentCategoryId) {
+        List<EMSCategory> categories = new ArrayList<>();
+        Cursor cursor = getSubcategoriesCursor(parentCategoryId);
 
         int categoryIdIndex = cursor.getColumnIndex("_id");
         int categoryNameIndex = cursor.getColumnIndex("cat_name");
@@ -238,52 +282,8 @@ public class CategoriesHandler {
             } while (cursor.moveToNext());
         }
 
+        cursor.close();
+
         return categories;
-    }
-
-    public class EMSCategory {
-        private String categoryId;
-        private String categoryName;
-        private String iconUrl;
-        private int numberOfSubCategories;
-
-        public String getCategoryId() {
-            return categoryId;
-        }
-
-        public void setCategoryId(String categoryId) {
-            this.categoryId = categoryId;
-        }
-
-        public String getCategoryName() {
-            return categoryName;
-        }
-
-        public void setCategoryName(String categoryName) {
-            this.categoryName = categoryName;
-        }
-
-        public String getIconUrl() {
-            return iconUrl;
-        }
-
-        public void setIconUrl(String iconUrl) {
-            this.iconUrl = iconUrl;
-        }
-
-        public int getNumberOfSubCategories() {
-            return numberOfSubCategories;
-        }
-
-        public void setNumberOfSubCategories(int numberOfSubCategories) {
-            this.numberOfSubCategories = numberOfSubCategories;
-        }
-
-        private EMSCategory(String categoryId, String categoryName, String iconUrl, int numberOfSubCategories) {
-            this.categoryId = categoryId;
-            this.categoryName = categoryName;
-            this.iconUrl = iconUrl;
-            this.numberOfSubCategories = numberOfSubCategories;
-        }
     }
 }

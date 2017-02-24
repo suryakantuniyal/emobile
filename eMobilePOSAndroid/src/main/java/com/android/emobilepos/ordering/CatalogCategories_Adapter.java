@@ -1,6 +1,7 @@
 package com.android.emobilepos.ordering;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,8 +9,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.database.CategoriesHandler;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.EMSCategory;
 import com.android.support.Global;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -23,23 +24,32 @@ import java.util.List;
  */
 
 public class CatalogCategories_Adapter extends RecyclerView.Adapter<CatalogCategories_Adapter.CategoriesViewHolder> {
-    private List<CategoriesHandler.EMSCategory> categories;
+    private List<EMSCategory> categories;
     private ImageLoader imageLoader;
     private DisplayImageOptions options;
     private boolean isPortrait;
+    private int selectedPosition = -1;
+    private CategoriesCallback callback;
 
     public class CategoriesViewHolder extends RecyclerView.ViewHolder {
         public TextView textView;
         public ImageView imageView;
+        public TextView subCategoriesTextView;
 
         public CategoriesViewHolder(View view) {
             super(view);
             textView = (TextView) view.findViewById(R.id.categoryItemTextView);
             imageView = (ImageView) view.findViewById(R.id.categoryItemImage);
+            subCategoriesTextView = (TextView) view.findViewById(R.id.categoryItemSubCategoriesTextView);
         }
     }
 
-    public CatalogCategories_Adapter(Context context, List<CategoriesHandler.EMSCategory> categories, ImageLoader imageLoader) {
+    public interface CategoriesCallback {
+        void categorySelected(EMSCategory category);
+    }
+
+    public CatalogCategories_Adapter(Context context, CategoriesCallback callback, List<EMSCategory> categories, ImageLoader imageLoader) {
+        this.callback = callback;
         this.categories = categories;
         this.imageLoader = imageLoader;
         isPortrait = Global.isPortrait(context);
@@ -62,8 +72,8 @@ public class CatalogCategories_Adapter extends RecyclerView.Adapter<CatalogCateg
     }
 
     @Override
-    public void onBindViewHolder(CategoriesViewHolder holder, int position) {
-        CategoriesHandler.EMSCategory cat = categories.get(position);
+    public void onBindViewHolder(CategoriesViewHolder holder, final int position) {
+        final EMSCategory cat = categories.get(position);
 
         String categoryName = cat.getCategoryName();
         if (categoryName == null) {
@@ -80,6 +90,33 @@ public class CatalogCategories_Adapter extends RecyclerView.Adapter<CatalogCateg
         } else {
             holder.imageView.setImageDrawable(null);
         }
+
+        holder.subCategoriesTextView.setVisibility((cat.getNumberOfSubCategories() > 0) ? View.VISIBLE : View.INVISIBLE);
+        holder.subCategoriesTextView.setText(Integer.toString(cat.getNumberOfSubCategories()));
+
+        if (selectedPosition == position) {
+            holder.textView.setTextColor(Color.WHITE);
+            holder.itemView.setBackgroundColor(Color.BLUE);
+            holder.textView.setBackgroundColor(Color.BLUE);
+        } else {
+            holder.textView.setTextColor(Color.BLACK);
+            holder.textView.setBackgroundColor(Color.LTGRAY);
+            holder.itemView.setBackgroundColor(Color.TRANSPARENT);
+        }
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                notifyItemChanged(selectedPosition);
+                selectedPosition = position;
+                notifyItemChanged(selectedPosition);
+
+                if (callback != null) {
+                    callback.categorySelected(cat);
+                }
+            }
+        });
     }
 
     @Override

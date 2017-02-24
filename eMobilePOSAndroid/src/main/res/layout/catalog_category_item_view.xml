@@ -13,8 +13,6 @@
         android:layout_width="@dimen/catalog_image_size"
         android:layout_height="@dimen/catalog_image_size"
         android:adjustViewBounds="true"
-
-        android:clickable="true"
         android:scaleType="fitXY"
         android:src="@drawable/catalog_image_selector" />
 
@@ -38,15 +36,20 @@
         android:scaleType="fitXY"
         android:src="@drawable/ph_images" />
 
-    <TextView
-        android:layout_width="@dimen/catalog_image_size"
-        android:layout_height="@dimen/catalog_image_size"
-        android:text=""
-        android:id="@+id/gridCatalogProducttNametextView"
-        android:layout_gravity="center"
-        android:textSize="@dimen/text_default"
-        android:textAppearance="@style/white_text_appearance"
-        android:gravity="center" />
+
+        <TextView
+            android:background="@color/red"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:id="@+id/categoryItemSubCategoriesTextView"
+            android:textSize="@dimen/text_default"
+            android:textAppearance="@style/white_text_appearance"
+            android:layout_gravity="top|right"
+            android:gravity="top|right" />
+
 
 </FrameLayout>
 <!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
