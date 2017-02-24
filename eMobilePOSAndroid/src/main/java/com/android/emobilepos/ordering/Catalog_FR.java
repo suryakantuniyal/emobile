@@ -55,6 +55,7 @@ import com.android.support.MyPreferences;
 import com.android.support.OrderProductUtils;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.LinearLayoutManager;
+
 import com.google.gson.Gson;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -66,8 +67,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import util.json.JsonUtils;
-
-import static com.android.database.CategoriesHandler.*;
 
 public class Catalog_FR extends Fragment implements OnItemClickListener, OnClickListener, LoaderCallbacks<Cursor>,
         MenuCatGV_Adapter.ItemClickedCallback, MenuProdGV_Adapter.ProductClickedCallback, CatalogCategories_Adapter.CategoriesCallback {
@@ -114,7 +113,9 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     private RecyclerView catalogRecyclerView;
     private CatalogCategories_Adapter categoriesAdapter;
     private Button categoriesBackButton;
+    private TextView categoriesBannerTextView;
     private List<EMSCategory> categoryStack = new ArrayList<>();
+    private EMSCategory selectedCategory;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -185,18 +186,25 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
         // AN
         if (!catalogIsPortrait) {
+            categoriesBannerTextView = (TextView) view.findViewById(R.id.categoriesBannerTextView);
             categoriesBackButton = (Button) view.findViewById(R.id.categoriesBackButton);
             categoriesBackButton.setVisibility(View.GONE);
             categoriesBackButton.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     // Go Back one level
-                    if (categoryStack.size() == 1) {
-                        loadRootCategories();
-                    } else {
+                    selectedCategory = null;
+                    if (categoryStack.size() > 0) {
                         int lastIndex = categoryStack.size() - 1;
-                        loadSubCategories(categoryStack.get(lastIndex));
                         categoryStack.remove(lastIndex);
+
+                        if (categoryStack.size() == 0) {
+                            loadRootCategories();
+                        } else {
+                            loadSubCategories(categoryStack.get(categoryStack.size() - 1));
+                        }
+                    } else {
+                        loadRootCategories();
                     }
                 }
             });
@@ -217,40 +225,72 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
         Global.cat_id = category.getCategoryId();
 
+        selectedCategory = null;
         if ("0".equals(category.getCategoryId())) {
             loadRootCategories();
             _typeCase = CASE_CATEGORY;
         }
         else if (category.getNumberOfSubCategories() > 0) {
+            categoryStack.add(category);
             loadSubCategories(category);
             _typeCase = CASE_SUBCATEGORY;
         } else {
+            selectedCategory = category;
+            refreshCategoriesBanner();
             restModeViewingProducts = true;
             _typeCase = CASE_PRODUCTS;
             loadCursor();
         }
 
         categoriesBackButton.setVisibility(categoryStack.size() > 0 ? View.VISIBLE : View.GONE);
+//        categoriesBannerTextView.setVisibility(categoryStack.size() > 0 ? View.VISIBLE : View.GONE);
     }
 
     private void loadRootCategories() {
         categoryStack.clear();
+        selectedCategory = null;
         categoriesBackButton.setVisibility(View.GONE);
+//        categoriesBannerTextView.setVisibility(View.GONE);
 
         List<EMSCategory> cats = catHandler.getMainCategories();
         categoriesAdapter = new CatalogCategories_Adapter(getActivity(), this, cats, imageLoader);
         catalogRecyclerView.swapAdapter(categoriesAdapter, true);
+
+        refreshCategoriesBanner();
     }
 
     private void loadSubCategories(EMSCategory category) {
         List<EMSCategory> cats = catHandler.getSubCategories(category.getCategoryId());
-        EMSCategory rootCategory = new EMSCategory("0", "All", "", 0);
-        cats.add(0, rootCategory);
+//        EMSCategory rootCategory = new EMSCategory("0", "All", "", 0);
+//        cats.add(0, rootCategory);
 
         categoriesAdapter = new CatalogCategories_Adapter(getActivity(), this, cats, imageLoader);
         catalogRecyclerView.swapAdapter(categoriesAdapter, true);
 
-        categoryStack.add(category);
+        refreshCategoriesBanner();
+    }
+
+    private void refreshCategoriesBanner() {
+        StringBuilder sb = new StringBuilder();
+
+        if (categoryStack.size() > 0) {
+            for (int i = 0; i < categoryStack.size(); i++) {
+                if (i > 0) {
+                    sb.append(" > ");
+                }
+                sb.append(categoryStack.get(i).getCategoryName());
+            }
+
+            if (selectedCategory != null) {
+                sb.append(" > ");
+            }
+        }
+
+        if (selectedCategory != null) {
+            sb.append(selectedCategory.getCategoryName());
+        }
+
+        categoriesBannerTextView.setText(sb.toString());
     }
 
     public class CatalogProductLoader extends AsyncTask<Integer, Void, Catalog_Loader> {
