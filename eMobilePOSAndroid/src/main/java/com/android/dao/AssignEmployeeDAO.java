@@ -16,8 +16,9 @@ public class AssignEmployeeDAO {
         Realm r = Realm.getDefaultInstance();
         AssignEmployee employee;
         try {
-            employee = r.where(AssignEmployee.class).findFirst();
+            employee = r.copyFromRealm(r.where(AssignEmployee.class).findFirst());
         }finally {
+            r.close();
         }
         return employee;
     }
@@ -33,6 +34,7 @@ public class AssignEmployeeDAO {
             r.copyToRealmOrUpdate(assignEmployees);
         }finally {
             r.commitTransaction();
+            r.close();
         }
     }
 
@@ -44,6 +46,7 @@ public class AssignEmployeeDAO {
             assignEmployee.setMSLastOrderID(ord_id);
         }finally {
             r.commitTransaction();
+            r.close();
         }
     }
 
@@ -55,6 +58,7 @@ public class AssignEmployeeDAO {
             assignEmployee.setMSLastTransferID(transferId);
         }finally {
             r.commitTransaction();
+            r.close();
         }
     }
 }

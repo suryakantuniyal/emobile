@@ -8,9 +8,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
 
+import com.android.dao.ClerkDAO;
 import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
+import com.android.emobilepos.models.realms.Clerk;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.crashlytics.android.Crashlytics;
@@ -25,6 +27,8 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
     private static MyPreferences myPref;
     private boolean showNavigationbar = false;
     private static String[] navigationbarByModels;
+    public Menu menu;
+    Clerk clerk;
 
     protected void setActionBar() {
         showNavigationbar = myPref.getPreferences(MyPreferences.pref_use_navigationbar) || isNavigationBarModel() || this instanceof MainMenu_FA;
@@ -71,6 +75,7 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
         if (myPref == null) {
             myPref = new MyPreferences(this);
         }
+        clerk = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()));
         if (BuildConfig.REPORT_CRASHLITYCS) {
             setCrashliticAditionalInfo();
         }
@@ -84,6 +89,16 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
         } else if (showNavigationbar)
             getMenuInflater().inflate(R.menu.activity_main_menu, menu);
         return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem menuItem = menu.findItem(R.id.logoutMenuItem);
+        if (menuItem != null) {
+            menuItem.setTitle(String.format("%s (%s)", getString(R.string.logout_menu), clerk.getEmpName()));
+        }
+        this.menu = menu;
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override

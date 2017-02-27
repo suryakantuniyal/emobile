@@ -10,11 +10,11 @@ import android.widget.GridView;
 import android.widget.TextView;
 
 import com.android.dao.DinningTableDAO;
-import com.android.dao.SalesAssociateDAO;
+import com.android.dao.ClerkDAO;
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.DinningTablesAdapter;
 import com.android.emobilepos.models.realms.DinningTable;
-import com.android.emobilepos.models.realms.SalesAssociate;
+import com.android.emobilepos.models.realms.Clerk;
 
 import io.realm.RealmResults;
 
@@ -50,7 +50,7 @@ public class DinningTablesGridFragment extends Fragment implements AdapterView.O
 
     public void refreshGrid() {
         SalesAssociateConfigurationActivity activity = (SalesAssociateConfigurationActivity) getActivity();
-        setSalesAssociateInfo(activity.getSelectedSalesAssociate());
+        setSalesAssociateInfo(activity.getSelectedClerk());
     }
 
     @Override
@@ -58,25 +58,25 @@ public class DinningTablesGridFragment extends Fragment implements AdapterView.O
         final DinningTable table = (DinningTable) adapterView.getItemAtPosition(i);
         SalesAssociateConfigurationActivity activity = (SalesAssociateConfigurationActivity) getActivity();
 //        Realm.getDefaultInstance().beginTransaction();
-        boolean contains = activity.getSelectedSalesAssociate().getAssignedDinningTables().contains(table);
+        boolean contains = activity.getSelectedClerk().getAssignedDinningTables().contains(table);
         if (contains) {
-            SalesAssociateDAO.removeAssignedTable(activity.getSelectedSalesAssociate(), table);
-//            activity.getSelectedSalesAssociate().getAssignedDinningTables().remove(table);
+            ClerkDAO.removeAssignedTable(activity.getSelectedClerk(), table);
+//            activity.getSelectedClerk().getAssignedDinningTables().remove(table);
         } else {
-            SalesAssociateDAO.addAssignedTable(activity.getSelectedSalesAssociate(), table);
-//            activity.getSelectedSalesAssociate().getAssignedDinningTables().add(table);
+            ClerkDAO.addAssignedTable(activity.getSelectedClerk(), table);
+//            activity.getSelectedClerk().getAssignedDinningTables().add(table);
         }
 //        Realm.getDefaultInstance().commitTransaction();
-        adapter.setSelectedDinningTables(activity.getSelectedSalesAssociate().getAssignedDinningTables());
+        adapter.setSelectedDinningTables(activity.getSelectedClerk().getAssignedDinningTables());
         adapter.notifyDataSetChanged();
     }
 
-    public void setSalesAssociateInfo(SalesAssociate selectedSalesAssociate) {
+    public void setSalesAssociateInfo(Clerk selectedClerk) {
         TextView name = (TextView) getView().findViewById(R.id.salesAssociateNametextView16);
-        if (selectedSalesAssociate != null) {
-            adapter.setSelectedDinningTables(selectedSalesAssociate.getAssignedDinningTables());
+        if (selectedClerk != null) {
+            adapter.setSelectedDinningTables(selectedClerk.getAssignedDinningTables());
             adapter.notifyDataSetChanged();
-            name.setText(selectedSalesAssociate.toString());
+            name.setText(selectedClerk.toString());
         } else {
             name.setText("");
         }

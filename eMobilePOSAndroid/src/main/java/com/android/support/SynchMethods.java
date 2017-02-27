@@ -22,7 +22,7 @@ import com.android.dao.EmployeePermissionDAO;
 import com.android.dao.MixMatchDAO;
 import com.android.dao.OrderAttributesDAO;
 import com.android.dao.OrderProductAttributeDAO;
-import com.android.dao.SalesAssociateDAO;
+import com.android.dao.ClerkDAO;
 import com.android.dao.ShiftDAO;
 import com.android.dao.UomDAO;
 import com.android.database.ConsignmentTransactionHandler;
@@ -56,11 +56,11 @@ import com.android.emobilepos.models.Product;
 import com.android.emobilepos.models.ProductAddons;
 import com.android.emobilepos.models.ProductAlias;
 import com.android.emobilepos.models.realms.AssignEmployee;
+import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.DinningTable;
 import com.android.emobilepos.models.realms.MixMatch;
 import com.android.emobilepos.models.realms.OrderAttributes;
 import com.android.emobilepos.models.realms.PaymentMethod;
-import com.android.emobilepos.models.realms.SalesAssociate;
 import com.android.emobilepos.models.realms.Shift;
 import com.android.emobilepos.models.response.ClerkEmployeePermissionResponse;
 import com.android.emobilepos.models.salesassociates.DinningLocationConfiguration;
@@ -167,14 +167,14 @@ public class SynchMethods {
     }
 
 
-    public static void postSalesAssociatesConfiguration(Activity activity, List<SalesAssociate> salesAssociates) throws Exception {
+    public static void postSalesAssociatesConfiguration(Activity activity, List<Clerk> clerks) throws Exception {
         List<DinningLocationConfiguration> configurations = new ArrayList<>();
 
-        HashMap<String, List<SalesAssociate>> locations = SalesAssociateDAO.getSalesAssociatesByLocation();
-        for (Map.Entry<String, List<SalesAssociate>> location : locations.entrySet()) {
+        HashMap<String, List<Clerk>> locations = ClerkDAO.getSalesAssociatesByLocation();
+        for (Map.Entry<String, List<Clerk>> location : locations.entrySet()) {
             DinningLocationConfiguration configuration = new DinningLocationConfiguration();
             configuration.setLocationId(location.getKey());
-            configuration.setSalesAssociates(location.getValue());
+            configuration.setClerks(location.getValue());
             configurations.add(configuration);
         }
         AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
@@ -220,11 +220,11 @@ public class SynchMethods {
             reader.endArray();
             reader.close();
             for (DinningLocationConfiguration configuration : configurations) {
-                for (SalesAssociate associate : configuration.getSalesAssociates()) {
-                    SalesAssociateDAO.clearAllAssignedTable(associate);
+                for (Clerk associate : configuration.getClerks()) {
+                    ClerkDAO.clearAllAssignedTable(associate);
                     for (DinningTable table : associate.getAssignedDinningTables()) {
                         DinningTable dinningTable = DinningTableDAO.getById(table.getId());
-                        SalesAssociateDAO.addAssignedTable(associate, dinningTable);
+                        ClerkDAO.addAssignedTable(associate, dinningTable);
                     }
                 }
             }
@@ -517,8 +517,8 @@ public class SynchMethods {
 //            ClerkDAO.truncate();
             EmployeePermissionDAO.truncate();
 //            ClerkDAO.inserOrUpdate(response.getClerks());
-            SalesAssociateDAO.truncate();
-            SalesAssociateDAO.insert(response.getClerks());
+            ClerkDAO.truncate();
+            ClerkDAO.insert(response.getClerks());
             EmployeePermissionDAO.insertOrUpdate(response.getEmployeePersmissions());
         } catch (Exception e) {
             e.printStackTrace();
@@ -1219,8 +1219,8 @@ public class SynchMethods {
             String jsonRequest = client.httpJsonRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
                     xml.getSalesAssociate());
             try {
-                SalesAssociateDAO.truncate();
-                SalesAssociateDAO.insert(jsonRequest);
+                ClerkDAO.truncate();
+                ClerkDAO.insert(jsonRequest);
             } catch (Exception e) {
                 e.printStackTrace();
             }

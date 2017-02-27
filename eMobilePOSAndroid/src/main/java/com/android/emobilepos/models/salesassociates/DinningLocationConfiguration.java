@@ -1,6 +1,6 @@
 package com.android.emobilepos.models.salesassociates;
 
-import com.android.emobilepos.models.realms.SalesAssociate;
+import com.android.emobilepos.models.realms.Clerk;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.List;
 public class DinningLocationConfiguration {
     @SerializedName("loc_id")
     private String locationId;
-    private List<SalesAssociate> salesAssociates;
+    private List<Clerk> clerks;
 
     public String getLocationId() {
         return locationId;
@@ -21,12 +21,12 @@ public class DinningLocationConfiguration {
         this.locationId = locationId;
     }
 
-    public List<SalesAssociate> getSalesAssociates() {
-        return salesAssociates;
+    public List<Clerk> getClerks() {
+        return clerks;
     }
 
-    public void setSalesAssociates(List<SalesAssociate> salesAssociates) {
-        this.salesAssociates = salesAssociates;
+    public void setClerks(List<Clerk> clerks) {
+        this.clerks = clerks;
     }
 
 }

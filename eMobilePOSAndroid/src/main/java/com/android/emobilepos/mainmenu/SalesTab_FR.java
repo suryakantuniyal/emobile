@@ -25,7 +25,7 @@ import android.widget.TextView;
 
 import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.DinningTableDAO;
-import com.android.dao.SalesAssociateDAO;
+import com.android.dao.ClerkDAO;
 import com.android.dao.ShiftDAO;
 import com.android.database.CustomersHandler;
 import com.android.database.SalesTaxCodesHandler;
@@ -44,7 +44,7 @@ import com.android.emobilepos.locations.LocationsPickerDlog_FR;
 import com.android.emobilepos.locations.LocationsPicker_Listener;
 import com.android.emobilepos.mainmenu.restaurant.DinningTablesActivity;
 import com.android.emobilepos.models.realms.DinningTable;
-import com.android.emobilepos.models.realms.SalesAssociate;
+import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.Shift;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.emobilepos.ordering.SplittedOrderSummary_FA;
@@ -767,7 +767,7 @@ public class SalesTab_FR extends Fragment {
 //                String enteredPass = viewField.getText().toString().trim();
 //                enteredPass = TextUtils.isEmpty(enteredPass) ? "0" : enteredPass;
         int empId = ShiftDAO.getOpenShift(Integer.parseInt(myPref.getClerkID())).getAssigneeId();
-        SalesAssociate salesAssociates = SalesAssociateDAO.getByEmpId(empId); //SalesAssociateHandler.getSalesAssociate(enteredPass);
+        Clerk salesAssociates = ClerkDAO.getByEmpId(empId); //SalesAssociateHandler.getSalesAssociate(enteredPass);
         if (salesAssociates != null) {
 //            validPassword = true;
 //            associateId = enteredPass;

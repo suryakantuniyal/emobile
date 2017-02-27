@@ -364,7 +364,7 @@ public class DBManager {
             + "[addr_s_country]varchar,[addr_s_zipcode]varchar,[qb_cust_id]varchar, [addr_b_type]VARCHAR, [addr_s_type]VARCHAR, PRIMARY KEY ([addr_id],"
             + "[cust_id]) )";
 
-    private final String CREATE_SALES_ASSOCIATE = "CREATE TABLE [SalesAssociate]([emp_id] [int] PRIMARY KEY NOT NULL,"
+    private final String CREATE_SALES_ASSOCIATE = "CREATE TABLE [Clerk]([emp_id] [int] PRIMARY KEY NOT NULL,"
             + "[zone_id] [varchar](50),[emp_name][varchar](50),[emp_init] [varchar](50),[emp_pcs] [varchar](50)," +
             "[emp_lastlogin] [datetime],[emp_pos][int],[qb_emp_id] [varchar](50),[qb_salesrep_id] [varchar](50)," +
             "[isactive] [int],[tax_default][varchar](50),[loc_items] [tinyint]NOT NULL,[_rowversion][varchar](50)," +
@@ -642,7 +642,7 @@ public class DBManager {
 
     private final String CREATE_PAYMENTS_XML = "CREATE TABLE [PaymentsXML]([app_id] [varchar](100) PRIMARY KEY NOT NULL, [payment_xml] [varchar] NOT NULL)";
 
-    private final String[] TABLE_NAME = new String[]{"Address", "Categories", "SalesAssociate", "Customers", "DrawDateInfo", "EmpInv",
+    private final String[] TABLE_NAME = new String[]{"Address", "Categories", "Clerk", "Customers", "DrawDateInfo", "EmpInv",
             "Employees", "InvProducts", "InvoicePayments", "Invoices", "OrderProduct", "Orders", "PayMethods",
             "Payments", "PaymentsDeclined", "PriceLevel", "PriceLevelItems", "Printers", "Printers_Locations", "ProdCatXRef",
             "ProductChainXRef", "Product_addons", "Products", "Products_Images", "PublicVariables", "Reasons",

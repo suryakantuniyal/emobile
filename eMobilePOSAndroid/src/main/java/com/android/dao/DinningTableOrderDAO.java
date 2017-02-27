@@ -1,8 +1,8 @@
 package com.android.dao;
 
+import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.realms.DinningTable;
 import com.android.emobilepos.models.realms.DinningTableOrder;
-import com.android.emobilepos.models.Order;
 import com.android.support.DateUtils;
 
 import io.realm.Realm;
@@ -21,6 +21,7 @@ public class DinningTableOrderDAO {
             realm.copyToRealmOrUpdate(dinningTableOrder);
         } finally {
             realm.commitTransaction();
+            realm.close();
         }
     }
 
@@ -35,6 +36,7 @@ public class DinningTableOrderDAO {
             realm.delete(DinningTableOrder.class);
         } finally {
             realm.commitTransaction();
+            realm.close();
         }
     }
 
@@ -45,15 +47,18 @@ public class DinningTableOrderDAO {
             RealmResults<DinningTableOrder> results = where.equalTo("dinningTable.number", number).findAll();
             realm.beginTransaction();
             results.deleteAllFromRealm();
-        }finally {
+        } finally {
             realm.commitTransaction();
+            realm.close();
         }
     }
 
     public static DinningTableOrder getByNumber(String number) {
         Realm realm = Realm.getDefaultInstance();
         RealmQuery<DinningTableOrder> where = realm.where(DinningTableOrder.class);
-        return where.equalTo("dinningTable.number", number).findFirst();
+        DinningTableOrder dinningTableOrder = realm.copyFromRealm(where.equalTo("dinningTable.number", number).findFirst());
+        realm.close();
+        return dinningTableOrder;
     }
 
     public static void createDinningTableOrder(Order order) {
@@ -76,8 +81,9 @@ public class DinningTableOrderDAO {
             RealmResults<DinningTableOrder> results = where.equalTo("currentOrderId", ord_id).findAll();
             realm.beginTransaction();
             results.deleteAllFromRealm();
-        }finally {
+        } finally {
             realm.commitTransaction();
+            realm.close();
         }
     }
 }

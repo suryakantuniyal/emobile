@@ -19,6 +19,7 @@ import android.support.multidex.MultiDexApplication;
 import android.text.Html;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
@@ -33,19 +34,19 @@ import android.widget.TextView;
 import com.android.crashreport.ExceptionHandler;
 import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.RealmModule;
-import com.android.dao.SalesAssociateDAO;
+import com.android.dao.ClerkDAO;
 import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.holders.Locations_Holder;
 import com.android.emobilepos.holders.TransferInventory_Holder;
 import com.android.emobilepos.holders.TransferLocations_Holder;
-import com.android.emobilepos.models.DataTaxes;
+import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.Product;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.ProductAttribute;
-import com.android.emobilepos.models.realms.SalesAssociate;
+import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.ordering.Catalog_FR;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
@@ -1448,11 +1449,15 @@ public class Global extends MultiDexApplication {
                     globalDlog.dismiss();
                     String enteredPass = viewField.getText().toString().trim();
                     if (myPref.isUseClerks()) {
-                        SalesAssociate associate = SalesAssociateDAO.login(enteredPass, myPref);
-                        if (associate == null) {
+                        Clerk clerk = ClerkDAO.login(enteredPass, myPref);
+                        if (clerk == null) {
                             validPassword[0] = false;
                             promptForMandatoryLogin(activity);
                         } else {
+                            if(activity instanceof MainMenu_FA){
+                                MenuItem menuItem = ((MainMenu_FA) activity).menu.findItem(R.id.logoutMenuItem);
+                                menuItem.setTitle(String.format("%s (%s)", getString(R.string.logout_menu), clerk.getEmpName()));
+                            }
                             loggedIn = true;
                             validPassword[0] = true;
                         }

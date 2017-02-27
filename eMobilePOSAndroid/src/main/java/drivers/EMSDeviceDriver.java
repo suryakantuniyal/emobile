@@ -21,10 +21,10 @@ import android.widget.Toast;
 
 import com.StarMicronics.jasura.JAException;
 import com.android.dao.AssignEmployeeDAO;
+import com.android.dao.ClerkDAO;
 import com.android.dao.ShiftDAO;
 import com.android.dao.ShiftExpensesDAO;
 import com.android.dao.StoredPaymentsDAO;
-import com.android.database.ClerksHandler;
 import com.android.database.InvProdHandler;
 import com.android.database.InvoicesHandler;
 import com.android.database.MemoTextHandler;
@@ -44,6 +44,7 @@ import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.PaymentDetails;
 import com.android.emobilepos.models.SplitedOrder;
 import com.android.emobilepos.models.realms.AssignEmployee;
+import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.OrderAttributes;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.Shift;
@@ -651,6 +652,7 @@ public class EMSDeviceDriver {
     protected void printReceipt(String ordID, int lineWidth, boolean fromOnHold, Global.OrderType type, boolean isFromHistory, EMVContainer emvContainer) {
         try {
             AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee();
+            Clerk clerk = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()));
             startReceipt();
             setPaperWidth(lineWidth);
             printPref = myPref.getPrintingPreferences();
@@ -663,7 +665,6 @@ public class EMSDeviceDriver {
             OrdersHandler orderHandler = new OrdersHandler(activity);
             Order anOrder = orderHandler.getPrintedOrder(ordID);
 
-            ClerksHandler clerkHandler = new ClerksHandler(activity);
             boolean payWithLoyalty = false;
             StringBuilder sb = new StringBuilder();
             int size = orderProducts.size();
@@ -708,7 +709,7 @@ public class EMSDeviceDriver {
             if (!myPref.getShiftIsOpen() || myPref.isUseClerks()) {
                 String clerk_id = anOrder.clerk_id;
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_clerk),
-                        clerkHandler.getClerkName(clerk_id) + "(" + clerk_id + ")", lineWidth, 0));
+                        clerk.getEmpName() + "(" + clerk_id + ")", lineWidth, 0));
             }
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_employee),
                     employee.getEmpName() + "(" + employee.getEmpId() + ")", lineWidth, 0));

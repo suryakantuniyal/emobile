@@ -875,8 +875,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             @Override
             public void onClick(View v) {
                 dlog.dismiss();
-                if (isFromOnHold)
-                    leftFragment.voidCancelOnHold(2);
+//                if (isFromOnHold)
+//                    leftFragment.voidCancelOnHold(2);
             }
         });
         dlog.show();

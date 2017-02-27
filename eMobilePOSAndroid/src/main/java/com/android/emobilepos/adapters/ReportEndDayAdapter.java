@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.android.dao.SalesAssociateDAO;
+import com.android.dao.ClerkDAO;
 import com.android.dao.ShiftDAO;
 import com.android.database.OrderProductsHandler;
 import com.android.database.OrdersHandler;
@@ -15,15 +15,14 @@ import com.android.database.PaymentsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.Payment;
-import com.android.emobilepos.models.realms.SalesAssociate;
 import com.android.emobilepos.models.realms.Shift;
 import com.android.support.DateUtils;
 import com.android.support.Global;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
@@ -338,7 +337,7 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
                 mHolder.tvRightColumn.setText(Global.formatDoubleStrToCurrency(listSummary.get(position).ord_total));
                 break;
             case TYPE_SHIFTS:
-                SalesAssociate associate = SalesAssociateDAO.getByEmpId(listShifts.get(position - i_summary).getAssigneeId());
+                Clerk associate = ClerkDAO.getByEmpId(listShifts.get(position - i_summary).getAssigneeId());
                 mHolder.tvClerk.setText(associate.getEmpName());
                 mHolder.tvFrom.setText(DateUtils.getDateAsString(listShifts.get(position - i_summary).getStartTime(), DateUtils.DATE_yyyy_MM_dd));
                 mHolder.tvTo.setText(DateUtils.getDateAsString(listShifts.get(position - i_summary).getEndTime(), DateUtils.DATE_yyyy_MM_dd));

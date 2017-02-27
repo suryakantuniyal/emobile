@@ -17,7 +17,6 @@ import util.json.JsonUtils;
 public class DinningTableDAO {
     public static void insert(String json) {
         Gson gson = JsonUtils.getInstance();
-
         Type listType = new com.google.gson.reflect.TypeToken<List<DinningTable>>() {
         }.getType();
         try {
@@ -42,6 +41,7 @@ public class DinningTableDAO {
         } finally {
             realm.commitTransaction();
             removeInvalidLocations();
+            realm.close();
         }
     }
 
@@ -55,6 +55,7 @@ public class DinningTableDAO {
                     .findAll().deleteAllFromRealm();
         } finally {
             r.commitTransaction();
+            r.close();
         }
     }
 
@@ -72,20 +73,23 @@ public class DinningTableDAO {
             realm.delete(DinningTable.class);
         } finally {
             realm.commitTransaction();
+            realm.close();
         }
     }
 
     public static DinningTable getById(String tableId) {
         Realm realm = Realm.getDefaultInstance();
         RealmQuery<DinningTable> where = realm.where(DinningTable.class);
-        DinningTable table = where.equalTo("id", tableId).findFirst();
+        DinningTable table = realm.copyFromRealm(where.equalTo("id", tableId).findFirst());
+        realm.close();
         return table;
     }
 
     public static DinningTable getByNumber(String tableNumber) {
         Realm realm = Realm.getDefaultInstance();
         RealmQuery<DinningTable> where = realm.where(DinningTable.class);
-        DinningTable table = where.equalTo("number", tableNumber).findFirst();
+        DinningTable table = realm.copyFromRealm(where.equalTo("number", tableNumber).findFirst());
+        realm.close();
         return table;
     }
 }

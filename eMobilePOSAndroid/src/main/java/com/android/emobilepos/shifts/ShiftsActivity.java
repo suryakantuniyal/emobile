@@ -14,9 +14,11 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.android.dao.ClerkDAO;
 import com.android.dao.ShiftDAO;
 import com.android.database.DBManager;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.Shift;
 import com.android.support.DateUtils;
 import com.android.support.Global;
@@ -408,9 +410,9 @@ public class ShiftsActivity extends Activity implements View.OnClickListener, Te
 
     private void openUI() {
         setContentView(R.layout.activity_shifts);
-
+        Clerk clerk = ClerkDAO.getByEmpId(Integer.parseInt(preferences.getClerkID()));
         TextView clerkName = (TextView) findViewById(R.id.clerkNameShifttextView);
-        clerkName.setText(preferences.getClerkName());
+        clerkName.setText(clerk.getEmpName());
         shift = ShiftDAO.getCurrentShift(Integer.parseInt(preferences.getClerkID()));
         totalAmountEditText = (TextView) findViewById(R.id.totalAmounteditText);
         openOnLbl = (TextView) findViewById(R.id.openOnLbltextView25);

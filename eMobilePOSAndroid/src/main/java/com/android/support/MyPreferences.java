@@ -1210,7 +1210,6 @@ public class MyPreferences {
     public void setClerkName(String value) {
         prefEditor.putString("clerk_name", value);
         prefEditor.commit();
-
     }
 
     public String getClerkID() {

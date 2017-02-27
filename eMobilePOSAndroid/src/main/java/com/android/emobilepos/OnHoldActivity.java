@@ -26,7 +26,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.dao.SalesAssociateDAO;
+import com.android.dao.ClerkDAO;
 import com.android.dao.ShiftDAO;
 import com.android.database.CustomersHandler;
 import com.android.database.DBManager;
@@ -39,7 +39,7 @@ import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.firebase.NotificationEvent;
-import com.android.emobilepos.models.realms.SalesAssociate;
+import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.Shift;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.support.DateUtils;
@@ -121,7 +121,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
     private void askWaiterSignin() {
         if (myPref.isUseClerks()) {
             Shift openShift = ShiftDAO.getOpenShift(Integer.parseInt(myPref.getClerkID()));
-            SalesAssociate associate = SalesAssociateDAO.getByEmpId(openShift.getAssigneeId());
+            Clerk associate = ClerkDAO.getByEmpId(openShift.getAssigneeId());
             long count = associate == null ? 0 : associate.getAssignedDinningTables().where().equalTo("number", myCursor.getString(myCursor.getColumnIndex("assignedTable"))).count();
             if (associate != null && count > 0) {
                 validPassword = true;
@@ -200,9 +200,9 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                     String enteredPass = viewField.getText().toString().trim();
                     enteredPass = TextUtils.isEmpty(enteredPass) ? "0" : enteredPass;
                     boolean isDigits = org.apache.commons.lang3.math.NumberUtils.isDigits(enteredPass);
-                    SalesAssociate salesAssociates = null;
+                    Clerk salesAssociates = null;
                     if (isDigits) {
-                        salesAssociates = SalesAssociateDAO.getByEmpId(Integer.parseInt(enteredPass)); //SalesAssociateHandler.getSalesAssociate(enteredPass);
+                        salesAssociates = ClerkDAO.getByEmpId(Integer.parseInt(enteredPass)); //SalesAssociateHandler.getSalesAssociate(enteredPass);
                     }
                     long count = salesAssociates == null ? 0 : salesAssociates.getAssignedDinningTables().where().equalTo("number", myCursor.getString(myCursor.getColumnIndex("assignedTable"))).count();
                     if (salesAssociates != null && count > 0) {

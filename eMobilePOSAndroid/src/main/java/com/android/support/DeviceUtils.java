@@ -7,6 +7,7 @@ import com.android.dao.DeviceTableDAO;
 import com.android.emobilepos.models.realms.Device;
 
 import java.util.HashMap;
+import java.util.List;
 
 import io.realm.RealmResults;
 import main.EMSDeviceManager;
@@ -19,7 +20,7 @@ public class DeviceUtils {
     public static String autoConnect(final Activity activity, boolean forceReload) {
         final MyPreferences myPref = new MyPreferences(activity);
         final StringBuilder sb = new StringBuilder();
-        RealmResults<Device> devices = DeviceTableDAO.getAll();
+        List<Device> devices = DeviceTableDAO.getAll();
         HashMap<String, Integer> tempMap = new HashMap<>();
         EMSDeviceManager edm = null;
         if (forceReload) {

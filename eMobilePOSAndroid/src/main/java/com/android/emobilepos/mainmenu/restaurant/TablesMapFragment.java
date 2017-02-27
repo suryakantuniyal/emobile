@@ -19,12 +19,12 @@ import android.widget.TextView;
 
 import com.android.dao.DinningTableDAO;
 import com.android.dao.DinningTableOrderDAO;
-import com.android.dao.SalesAssociateDAO;
+import com.android.dao.ClerkDAO;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.Order;
+import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.DinningTable;
 import com.android.emobilepos.models.realms.DinningTableOrder;
-import com.android.emobilepos.models.realms.SalesAssociate;
 import com.android.emobilepos.ordering.SplittedOrderSummary_FA;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -39,7 +39,7 @@ import io.realm.Realm;
 public class TablesMapFragment extends Fragment implements View.OnClickListener, View.OnLongClickListener {
 
     private List<DinningTable> dinningTables;
-    private SalesAssociate associate;
+    private Clerk associate;
     MyPreferences preferences;
 
     public TablesMapFragment() {
@@ -55,7 +55,7 @@ public class TablesMapFragment extends Fragment implements View.OnClickListener,
         View rootView = inflater.inflate(R.layout.dlog_ask_table_map_layout, container, false);
         preferences = new MyPreferences(getActivity());
         if (!TextUtils.isEmpty(getDinningTablesActivity().associateId)) {
-            associate = SalesAssociateDAO.getByEmpId(Integer.parseInt(getDinningTablesActivity().associateId));
+            associate = ClerkDAO.getByEmpId(Integer.parseInt(getDinningTablesActivity().associateId));
         }
         dinningTables = DinningTableDAO.getAll();//DinningTablesProxy.getDinningTables(getContext());
 

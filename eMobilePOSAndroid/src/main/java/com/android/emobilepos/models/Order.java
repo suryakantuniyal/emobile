@@ -5,6 +5,7 @@ import android.content.Context;
 import com.android.dao.AssignEmployeeDAO;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.OrderAttributes;
+import com.android.emobilepos.models.realms.Payment;
 import com.android.support.Customer;
 import com.android.support.DateUtils;
 import com.android.support.MyPreferences;
@@ -75,6 +76,7 @@ public class Order implements Cloneable {
     public String ord_timeStarted;
     public List<OrderAttributes> orderAttributes;
     private List<DataTaxes> listOrderTaxes;
+    private List<Payment> payments;
 
     public Order() {
         ord_issync = "0";

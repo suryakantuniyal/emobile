@@ -219,14 +219,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
     @Override
     public void onResume() {
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                sendFirebaseMessage();
-//            }
-//        }).start();
         registerReceiver(messageReceiver, new IntentFilter(NOTIFICATION_RECEIVED));
-
         if (global.isApplicationSentToBackground(activity)) {
             global.loggedIn = false;
         }

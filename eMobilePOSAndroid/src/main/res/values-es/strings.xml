@@ -872,9 +872,9 @@
 
     <string name="shift_close_shift">Close Shift</string>
     <string name="shift_open_shift">Open Shift</string>
-    <string name="shift_expenses">Shift No Sale</string>
-    <string name="shift_expense">No Sale</string>
-    <string name="shift_add_expense">Add No Sale</string>
+    <string name="shift_expenses">No-Sale</string>
+    <string name="shift_expense">No-Sale</string>
+    <string name="shift_add_expense">Add No-Sale</string>
     <string name="shift_title">Shift</string>
 
     <string name="shift_details">Shift Details</string>
@@ -1296,7 +1296,7 @@
     <string name="sync_saving_settings">Saving settings...</string><string name="title_activity_sales_associate_dinning_tables">SalesAssociateDinningTables
     </string>
     <string name="title_activity_sales_associate_configuration">SalesAssociateConfiguration</string>
-    <string name="config_salesassociate_config">Sales Associate Configuration</string>
+    <string name="config_salesassociate_config">Table Configuration</string>
     <string name="device_name">Device Name</string>
     <string name="unknown">Unknown</string>
     <string name="split_single">Single Receipt</string>
@@ -1327,10 +1327,11 @@
     <string name="non_cash_gratuity">Non Cash Gratuity</string>
     <string name="security_alert">Permission denied to this area.</string>
     <string name="permission_denied">Permission denied to this area.</string>
-    <string name="expense_id">No Sale ID</string>
+    <string name="expense_id">No-Sale ID</string>
     <string name="logout_menu">Logout</string>
     <string name="clock_out">OUT</string>
     <string name="clock_in">IN</string>
+    <string name="Waiters">Waiters</string>
 
 
 </resources>
