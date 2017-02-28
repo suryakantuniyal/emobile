@@ -94,7 +94,7 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem menuItem = menu.findItem(R.id.logoutMenuItem);
-        if (menuItem != null) {
+        if (menuItem != null && clerk != null) {
             menuItem.setTitle(String.format("%s (%s)", getString(R.string.logout_menu), clerk.getEmpName()));
         }
         this.menu = menu;

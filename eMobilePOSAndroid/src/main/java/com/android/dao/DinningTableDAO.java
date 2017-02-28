@@ -41,7 +41,6 @@ public class DinningTableDAO {
         } finally {
             realm.commitTransaction();
             removeInvalidLocations();
-            realm.close();
         }
     }
 
@@ -55,7 +54,6 @@ public class DinningTableDAO {
                     .findAll().deleteAllFromRealm();
         } finally {
             r.commitTransaction();
-            r.close();
         }
     }
 
@@ -73,23 +71,20 @@ public class DinningTableDAO {
             realm.delete(DinningTable.class);
         } finally {
             realm.commitTransaction();
-            realm.close();
         }
     }
 
     public static DinningTable getById(String tableId) {
         Realm realm = Realm.getDefaultInstance();
         RealmQuery<DinningTable> where = realm.where(DinningTable.class);
-        DinningTable table = realm.copyFromRealm(where.equalTo("id", tableId).findFirst());
-        realm.close();
+        DinningTable table = where.equalTo("id", tableId).findFirst();
         return table;
     }
 
     public static DinningTable getByNumber(String tableNumber) {
         Realm realm = Realm.getDefaultInstance();
         RealmQuery<DinningTable> where = realm.where(DinningTable.class);
-        DinningTable table = realm.copyFromRealm(where.equalTo("number", tableNumber).findFirst());
-        realm.close();
+        DinningTable table = where.equalTo("number", tableNumber).findFirst();
         return table;
     }
 }
