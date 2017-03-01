@@ -33,8 +33,8 @@ import android.widget.TextView;
 
 import com.android.crashreport.ExceptionHandler;
 import com.android.dao.AssignEmployeeDAO;
-import com.android.dao.RealmModule;
 import com.android.dao.ClerkDAO;
+import com.android.dao.RealmModule;
 import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.holders.Locations_Holder;
@@ -45,8 +45,8 @@ import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.Product;
 import com.android.emobilepos.models.realms.AssignEmployee;
-import com.android.emobilepos.models.realms.ProductAttribute;
 import com.android.emobilepos.models.realms.Clerk;
+import com.android.emobilepos.models.realms.ProductAttribute;
 import com.android.emobilepos.ordering.Catalog_FR;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
@@ -1429,9 +1429,15 @@ public class Global extends MultiDexApplication {
             viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
             TextView viewTitle = (TextView) globalDlog.findViewById(R.id.dlogTitle);
             TextView viewMsg = (TextView) globalDlog.findViewById(R.id.dlogMessage);
+            Button systemLoginButton = (Button) globalDlog.findViewById(R.id.systemLoginbutton2);
+            TextView infoSystemLogin = (TextView) globalDlog.findViewById(R.id.infotextView23);
             if (myPref.isUseClerks()) {
+                systemLoginButton.setVisibility(View.VISIBLE);
+                infoSystemLogin.setVisibility(View.VISIBLE);
                 viewTitle.setText(R.string.dlog_title_enter_clerk_password);
             } else {
+                systemLoginButton.setVisibility(View.GONE);
+                infoSystemLogin.setVisibility(View.GONE);
                 viewTitle.setText(R.string.dlog_title_confirm);
             }
             final boolean[] validPassword = {true};
@@ -1439,7 +1445,16 @@ public class Global extends MultiDexApplication {
                 viewMsg.setText(R.string.invalid_password);
             else
                 viewMsg.setText(R.string.enter_password);
-
+            systemLoginButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    globalDlog.dismiss();
+                    validPassword[0] = false;
+                    loggedIn = false;
+                    myPref.setPreferences("pref_use_clerks", false);
+                    promptForMandatoryLogin(activity);
+                }
+            });
             Button btnOk = (Button) globalDlog.findViewById(R.id.btnDlogSingle);
             btnOk.setText(R.string.button_ok);
             btnOk.setOnClickListener(new View.OnClickListener() {
@@ -1454,7 +1469,7 @@ public class Global extends MultiDexApplication {
                             validPassword[0] = false;
                             promptForMandatoryLogin(activity);
                         } else {
-                            if(activity instanceof MainMenu_FA){
+                            if (activity instanceof MainMenu_FA) {
                                 MenuItem menuItem = ((MainMenu_FA) activity).menu.findItem(R.id.logoutMenuItem);
                                 menuItem.setTitle(String.format("%s (%s)", getString(R.string.logout_menu), clerk.getEmpName()));
                             }

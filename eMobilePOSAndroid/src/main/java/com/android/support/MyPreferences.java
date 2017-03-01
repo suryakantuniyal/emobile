@@ -634,6 +634,12 @@ public class MyPreferences {
         return sharedPref.getBoolean(key, false);
     }
 
+    public void setPreferences(String key, boolean value) {
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putBoolean(key, value);
+        editor.commit();
+    }
+
     public boolean requiresWaiterLogin() {
         return getPreferences(MyPreferences.pref_require_waiter_signin);
     }

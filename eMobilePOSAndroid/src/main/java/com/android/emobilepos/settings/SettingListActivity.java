@@ -98,10 +98,10 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
     public void onResume() {
         Global global = (Global) getApplication();
         if (global.isApplicationSentToBackground(this))
-            global.loggedIn = false;
+            Global.loggedIn = false;
         global.stopActivityTransitionTimer();
 
-        if (hasBeenCreated && !global.loggedIn) {
+        if (hasBeenCreated && !Global.loggedIn) {
             if (global.getGlobalDlog() != null)
                 global.getGlobalDlog().dismiss();
             global.promptForMandatoryLogin(this);
@@ -548,16 +548,16 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
 //                    } else
 //                        promptCloseShift(true, 0);
 //                    break;
-                case R.string.config_expenses:
-                    Shift openShift = ShiftDAO.getOpenShift(Integer.parseInt(myPref.getClerkID()));
-                    //if shift is open then show the expenses option
-                    if (openShift == null) {
-                        Toast.makeText(getActivity(), "A shift must be opened before an expense can be added!", Toast.LENGTH_LONG).show();
-                    } else {
-                        intent = new Intent(getActivity(), ShiftExpensesList_FA.class);
-                        startActivity(intent);
-                    }
-                    break;
+//                case R.string.config_expenses:
+//                    Shift openShift = ShiftDAO.getOpenShift(Integer.parseInt(myPref.getClerkID()));
+//                    //if shift is open then show the expenses option
+//                    if (openShift == null) {
+//                        Toast.makeText(getActivity(), "A shift must be opened before an expense can be added!", Toast.LENGTH_LONG).show();
+//                    } else {
+//                        intent = new Intent(getActivity(), ShiftExpensesList_FA.class);
+//                        startActivity(intent);
+//                    }
+//                    break;
                 case R.string.config_default_country:
                     CountryPicker picker = new CountryPicker();
                     final DialogFragment newFrag = picker;
