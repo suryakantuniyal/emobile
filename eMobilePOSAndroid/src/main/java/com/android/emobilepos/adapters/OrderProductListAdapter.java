@@ -308,7 +308,7 @@ public class OrderProductListAdapter extends BaseAdapter {
 
     public void setHolderValues(ViewHolder holder, final int pos) {
         final OrderProduct product = orderSeatProductList.get(pos).orderProduct;
-        final int orderProductIdx = orderSeatProductList.get(pos).rowType == OrderProductListAdapter.RowType.TYPE_ITEM ? global.orderProducts.indexOf(orderSeatProductList.get(pos).orderProduct) : 0;
+        final int orderProductIdx = orderSeatProductList.get(pos).rowType == OrderProductListAdapter.RowType.TYPE_ITEM ? global.order.getOrderProducts().indexOf(orderSeatProductList.get(pos).orderProduct) : 0;
         final String tempId = product.getOrdprod_id();
 
         if (!myPref.getPreferences(MyPreferences.pref_restaurant_mode)

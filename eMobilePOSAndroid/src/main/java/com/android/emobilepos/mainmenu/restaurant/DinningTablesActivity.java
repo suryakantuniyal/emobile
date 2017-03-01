@@ -16,6 +16,7 @@ import com.android.database.OrdersHandler;
 import com.android.emobilepos.OnHoldActivity;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.Order;
+import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.realms.DinningTable;
 import com.android.emobilepos.models.realms.DinningTableOrder;
 import com.android.emobilepos.ordering.OrderingMain_FA;
@@ -199,7 +200,7 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
                         OrderProductsHandler orderProdHandler = new OrderProductsHandler(DinningTablesActivity.this);
                         Cursor c = orderProdHandler.getOrderProductsOnHold(tableOrder.getCurrentOrderId());
                         Global global = (Global) DinningTablesActivity.this.getApplication();
-                        global.orderProducts = new ArrayList<>();
+                        global.order.setOrderProducts(new ArrayList<OrderProduct>());
                         OnHoldActivity.addOrderProducts(DinningTablesActivity.this, c);
                         Global.isFromOnHold = true;
 
@@ -215,7 +216,7 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
                     OrderProductsHandler orderProdHandler = new OrderProductsHandler(DinningTablesActivity.this);
                     Cursor c = orderProdHandler.getOrderProductsOnHold(tableOrder.getCurrentOrderId());
                     Global global = (Global) DinningTablesActivity.this.getApplication();
-                    global.orderProducts = new ArrayList<>();
+                    global.order.setOrderProducts(new ArrayList<OrderProduct>());
                     OnHoldActivity.addOrderProducts(DinningTablesActivity.this, c);
                     Global.isFromOnHold = true;
                 } else {

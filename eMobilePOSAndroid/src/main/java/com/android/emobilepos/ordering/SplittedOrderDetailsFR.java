@@ -352,8 +352,8 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         SplittedOrderSummary_FA summaryFa = (SplittedOrderSummary_FA) getActivity();
         if (summaryFa.getOrderSummaryFR().getGridView().getAdapter().getCount() > 1) {
             for (OrderProduct product : splitedOrder.getOrderProducts()) {
-                if (global.orderProducts.contains(product)) {
-                    global.orderProducts.remove(product);
+                if (global.order.getOrderProducts().contains(product)) {
+                    global.order.getOrderProducts().remove(product);
                 }
             }
             if (summaryFa.splitType != SplittedOrderSummary_FA.SalesReceiptSplitTypes.SPLIT_EQUALLY) {
@@ -476,7 +476,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
             Global global = (Global) getActivity().getApplication();
             for (OrderProduct product : restaurantSplitedOrder.getOrderProducts()) {
                 product.setOrd_id(global.order.ord_id);
-                global.orderProducts.add(product);
+                global.order.getOrderProducts().add(product);
                 if (summaryFa.splitType != SplittedOrderSummary_FA.SalesReceiptSplitTypes.SPLIT_EQUALLY) {
                     global.order.ord_subtotal = Global.getBigDecimalNum(global.order.ord_subtotal)
                             .add(Global.getBigDecimalNum(restaurantSplitedOrder.ord_subtotal)).toString();

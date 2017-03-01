@@ -605,8 +605,8 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                 if (tempPrice == null || tempPrice.isEmpty())
                     tempPrice = c.getString(c.getColumnIndex("master_price"));
             }
-        } else if (global.orderProducts.contains(product.getId())) {
-            BigDecimal origQty = Global.getBigDecimalNum(OrderProductUtils.getOrderProductQty(global.orderProducts, product.getId()));
+        } else if (global.order.getOrderProducts().contains(product.getId())) {
+            BigDecimal origQty = Global.getBigDecimalNum(OrderProductUtils.getOrderProductQty(global.order.getOrderProducts(), product.getId()));
             BigDecimal newQty = origQty.add(Global.getBigDecimalNum("1"));
             String[] temp = volPriceHandler.getVolumePrice(newQty.toString(), product.getId());
             if (temp[1] != null && !temp[1].isEmpty())
@@ -643,9 +643,9 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     private void performClickEvent() {
         Product product = populateDataForIntent(myCursor);
         if (myPref.isGroupReceiptBySku(isToGo)){//(myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
-            List<OrderProduct> orderProductsGroupBySKU = OrderProductUtils.getOrderProductsGroupBySKU(global.orderProducts);
-            global.orderProducts.clear();
-            global.orderProducts.addAll(orderProductsGroupBySKU);
+            List<OrderProduct> orderProductsGroupBySKU = OrderProductUtils.getOrderProductsGroupBySKU(global.order.getOrderProducts());
+            global.order.getOrderProducts().clear();
+            global.order.getOrderProducts().addAll(orderProductsGroupBySKU);
         }
         if (!isFastScanning) {
             Intent intent = new Intent(getActivity(), PickerProduct_FA.class);

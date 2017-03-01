@@ -309,7 +309,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                     taxSelected = pos;
                     setTaxValue(pos);
                 }
-                reCalculate(global.orderProducts);
+                reCalculate(global.order.getOrderProducts());
             }
 
             @Override
@@ -837,6 +837,6 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
 
     @Override
     public void recalculateTotal() {
-        reCalculate(global.orderProducts);
+        reCalculate(global.order.getOrderProducts());
     }
 }

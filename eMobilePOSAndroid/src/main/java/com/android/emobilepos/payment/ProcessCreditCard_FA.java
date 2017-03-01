@@ -231,7 +231,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
         tax1.setText(Global.formatDoubleStrToCurrency(extras.getString("Tax1_amount")));
         tax2.setText(Global.formatDoubleStrToCurrency(extras.getString("Tax2_amount")));
-        List<OrderProduct> orderProducts = global.orderProducts;
+        List<OrderProduct> orderProducts = global.order.getOrderProducts();
         double subtotalDbl = 0;
         for (OrderProduct products : orderProducts) {
             subtotalDbl += Double.parseDouble(products.getItemSubtotal());

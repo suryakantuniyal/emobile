@@ -230,14 +230,14 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
             ord.setOrd_id(Global.consignment_order.ord_id);
 
 
-            if (global.orderProducts == null) {
-                global.orderProducts = new ArrayList<OrderProduct>();
+            if (global.order.getOrderProducts() == null) {
+                global.order.setOrderProducts(new ArrayList<OrderProduct>());
             }
 
             UUID uuid = UUID.randomUUID();
             String randomUUIDString = uuid.toString();
 
-            global.orderProducts.add(ord);
+            global.order.getOrderProducts().add(ord);
             ord.setOrdprod_id(randomUUIDString);
 
             // end of adding to db;
@@ -325,7 +325,7 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
 
         global.order.ord_type = Global.OrderType.CONSIGNMENT_INVOICE.getCodeString();
 
-        global.order.total_lines = Integer.toString(global.orderProducts.size());
+        global.order.total_lines = Integer.toString(global.order.getOrderProducts().size());
         global.order.ord_signature = encodedImage;
 
         Location location = Global.getCurrLocation(activity, false);
@@ -334,7 +334,7 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
         global.order.processed = "1";
         ordersHandler.insert(global.order);
 
-        orderProductsHandler.insert(global.orderProducts);
+        orderProductsHandler.insert(global.order.getOrderProducts());
         if (global.order.getListOrderTaxes() != null
                 && global.order.getListOrderTaxes().size() > 0
                 ) {

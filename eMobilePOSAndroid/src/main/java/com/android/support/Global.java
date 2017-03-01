@@ -297,7 +297,7 @@ public class Global extends MultiDexApplication {
 //    public List<DataTaxes> listOrderTaxes = new ArrayList<>();
     public List<ProductAttribute> ordProdAttrPending;
     public RealmList<ProductAttribute> ordProdAttr = new RealmList<>();
-    public List<OrderProduct> orderProducts = new ArrayList<>();
+//    public List<OrderProduct> orderProducts = new ArrayList<>();
     //    public List<OrderProduct> orderProductAddons = new ArrayList<OrderProduct>();
     // public static HashMap<String,List<OrderProduct>>orderProductsAddonsMap;
     public Order order;
@@ -732,11 +732,11 @@ public class Global extends MultiDexApplication {
     public int checkIfGroupBySKU(Activity activity, String prodID, String pickedQty) {
         int orderIndex = -1;
         MyPreferences myPref = new MyPreferences(activity);
-        int size = this.orderProducts.size();
+        int size = order.getOrderProducts().size();
         boolean found = false;
 
         for (int i = size - 1; i >= 0; i--) {
-            if (this.orderProducts.get(i).getProd_id().equals(prodID) && !orderProducts.get(i).isReturned()) {
+            if (order.getOrderProducts().get(i).getProd_id().equals(prodID) && !order.getOrderProducts().get(i).isReturned()) {
                 orderIndex = i;
                 found = true;
                 break;
@@ -744,7 +744,7 @@ public class Global extends MultiDexApplication {
         }
 
         if (found && !OrderingMain_FA.returnItem) {
-            String value = OrderProductUtils.getOrderProductQty(this.orderProducts, prodID);//this.qtyCounter.get(prodID);
+            String value = OrderProductUtils.getOrderProductQty(order.getOrderProducts(), prodID);//this.qtyCounter.get(prodID);
             double previousQty = 0.0;
             if (value != null && !value.isEmpty())
                 previousQty = Double.parseDouble(value);
@@ -753,12 +753,12 @@ public class Global extends MultiDexApplication {
 
             if (myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities)) {
                 value = Global.formatNumber(true, sum);
-                this.orderProducts.get(orderIndex).setOrdprod_qty(value);
+                order.getOrderProducts().get(orderIndex).setOrdprod_qty(value);
                 // this.cur_orders.get(0).setQty(value);
 //                this.qtyCounter.put(prodID, Double.toString(sum));
             } else {
                 value = Global.formatNumber(false, sum);
-                this.orderProducts.get(orderIndex).setOrdprod_qty(value);
+                order.getOrderProducts().get(orderIndex).setOrdprod_qty(value);
                 // this.cur_orders.get(0).setQty(value);
 //                this.qtyCounter.put(prodID, Integer.toString((int) sum));
             }
@@ -767,7 +767,7 @@ public class Global extends MultiDexApplication {
     }
 
     public void refreshParticularOrder(Activity activity, int position, Product product) {
-        OrderProduct orderedProducts = this.orderProducts.get(position);
+        OrderProduct orderedProducts = order.getOrderProducts().get(position);
         MyPreferences myPref = new MyPreferences(activity);
         String newPickedOrders = orderedProducts.getOrdprod_qty();
         double sum;
@@ -1311,8 +1311,8 @@ public class Global extends MultiDexApplication {
     public void clearListViewData() {
         // if(this.cur_orders!=null)
         // this.cur_orders.clear();
-        if (this.orderProducts != null)
-            this.orderProducts.clear();
+//        if (this.orderProducts != null)
+//            this.orderProducts.clear();
 //        if (this.qtyCounter != null)
 //            this.qtyCounter.clear();
 

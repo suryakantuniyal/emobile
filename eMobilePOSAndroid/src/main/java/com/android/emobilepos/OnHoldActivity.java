@@ -634,7 +634,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         String[] discountInfo;
         double total;
         Global global = (Global) activity.getApplication();
-        global.orderProducts = new ArrayList<>();
+        global.order.setOrderProducts(new ArrayList<OrderProduct>());
 
         for (OrderProduct ord : orderProducts) {
             double discAmount = 0;
@@ -660,12 +660,12 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             ord.setItemTotal(Double.toString(total - discAmount));
             ord.setItemSubtotal(Double.toString(total));
             if (ord.isAddon()) {
-                int pos = global.orderProducts.size();
+                int pos = global.order.getOrderProducts().size();
                 if (pos > 0) {
                     String[] tempVal = prodAddonHandler.getAddonDetails(ord.getAddon_ordprod_id(), ord.getProd_id());
                 }
             } else {
-                global.orderProducts.add(ord);
+                global.order.getOrderProducts().add(ord);
             }
         }
     }

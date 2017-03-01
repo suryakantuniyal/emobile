@@ -86,7 +86,7 @@ public class OrderRewards_FR extends Fragment implements OnClickListener {
 
         if (savedInstanceState == null && OrderTotalDetails_FR.getFrag() != null) {
             Global global = (Global) getActivity().getApplication();
-            OrderTotalDetails_FR.getFrag().reCalculate(global.orderProducts);
+            OrderTotalDetails_FR.getFrag().reCalculate(global.order.getOrderProducts());
         }
 
         if (OrderingMain_FA.rewardsWasRead)
@@ -133,10 +133,10 @@ public class OrderRewards_FR extends Fragment implements OnClickListener {
                 Global global = (Global) getActivity().getApplication();
                 OrderingMain_FA mainFa = (OrderingMain_FA) getActivity();
                 BigDecimal rewardDiscount = mainFa.getLeftFragment()
-                        .applyRewardDiscount(result.getApprovedAmount(), global.orderProducts);
+                        .applyRewardDiscount(result.getApprovedAmount(), global.order.getOrderProducts());
 
                 if (OrderTotalDetails_FR.getFrag() != null) {
-                    OrderTotalDetails_FR.getFrag().reCalculate(global.orderProducts);
+                    OrderTotalDetails_FR.getFrag().reCalculate(global.order.getOrderProducts());
                 }
                 btnPayRewards.setClickable(false);
                 btnPayRewards.setEnabled(false);

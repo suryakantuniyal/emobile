@@ -201,6 +201,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         if (onHoldOrderJson != null && !onHoldOrderJson.isEmpty()) {
             Gson gson = JsonUtils.getInstance();
             onHoldOrder = gson.fromJson(onHoldOrderJson, Order.class);
+            OrdersHandler ordersHandler = new OrdersHandler(this);
+            onHoldOrder = ordersHandler.getOrder(onHoldOrder.ord_id);
             Global.lastOrdID = onHoldOrder.ord_id;// myCursor.getString(myCursor.getColumnIndex("ord_id"));
             Global.taxID = onHoldOrder.tax_id;//myCursor.getString(myCursor.getColumnIndex("tax_id"));
 
@@ -845,7 +847,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 else {
 
                     if (mTransType == Global.TransactionType.SALE_RECEIPT) // is sales receipt
-                        voidTransaction(OrderingMain_FA.this, global.order, global.orderProducts, global.ordProdAttr);
+                        voidTransaction(OrderingMain_FA.this, global.order, global.ordProdAttr);
                     else if (mTransType == Global.TransactionType.CONSIGNMENT) {
                         if (Global.consignment_order != null && !Global.consignment_order.ord_id.isEmpty()) {
                             OrdersHandler.deleteTransaction(OrderingMain_FA.this, Global.consignment_order.ord_id);
@@ -1016,7 +1018,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     }
 
     public boolean validAutomaticAddQty(Product product) {
-        List<OrderProduct> list = OrderProductUtils.getOrderProducts(global.orderProducts, product.getId());
+        List<OrderProduct> list = OrderProductUtils.getOrderProducts(global.order.getOrderProducts(), product.getId());
         String addedQty = list.isEmpty() ? "0" : list.get(0).getOrdprod_qty();
         double newQty = Double.parseDouble(addedQty) + 1;
         double onHandQty = Double.parseDouble(product.getProdOnHand());
@@ -1469,7 +1471,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     }
 
 
-    public static void voidTransaction(Activity activity, Order order, List<OrderProduct> orderProducts, List<ProductAttribute> ordProdAttr) {
+    public static void voidTransaction(Activity activity, Order order, List<ProductAttribute> ordProdAttr) {
         if (!Global.lastOrdID.isEmpty()) {
 
             OrdersHandler dbOrders = new OrdersHandler(activity);
@@ -1481,7 +1483,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 OrderProductsHandler dbOrdProd = new OrderProductsHandler(activity);
                 OrderProductsAttr_DB dbOrdAttr = new OrderProductsAttr_DB(activity);
                 dbOrders.insert(order);
-                dbOrdProd.insert(orderProducts);
+                dbOrdProd.insert(order.getOrderProducts());
                 dbOrdAttr.insert(ordProdAttr);
             }
             new VoidTransactionTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, activity, order);
@@ -1541,8 +1543,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             Global.lastOrdID = generator.getNextID(GenerateNewID.IdType.ORDER_ID);
         }
         orderProduct.setOrd_id(Global.lastOrdID);
-        if (global.orderProducts == null) {
-            global.orderProducts = new ArrayList<>();
+        if (global.order.getOrderProducts() == null) {
+            global.order.setOrderProducts(new ArrayList<OrderProduct>());
         }
         UUID uuid = UUID.randomUUID();
         String randomUUIDString = uuid.toString();
@@ -1565,7 +1567,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         String row1 = orderProduct.getOrdprod_name();
         String row2 = Global.formatDoubleStrToCurrency(orderProduct.getFinalPrice());
         TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
-        global.orderProducts.add(orderProduct);
+        global.order.getOrderProducts().add(orderProduct);
     }
 
     public String getAssociateId() {

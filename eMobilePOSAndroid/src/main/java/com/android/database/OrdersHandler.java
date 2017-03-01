@@ -311,6 +311,8 @@ public class OrdersHandler {
         OrderTaxes_DB taxes_db = new OrderTaxes_DB();
         List<DataTaxes> orderTaxes = taxes_db.getOrderTaxes(order.ord_id);
         order.setListOrderTaxes(orderTaxes);
+        OrderProductsHandler orderProductsHandler = new OrderProductsHandler(activity);
+        order.setOrderProducts(orderProductsHandler.getOrderProducts(order.ord_id));
         return order;
     }
 
@@ -321,7 +323,6 @@ public class OrdersHandler {
         Order order = new Order(this.activity);
         if (cursor.moveToFirst()) {
             order = getOrder(cursor, activity);
-
         }
         cursor.close();
         return order;

@@ -11,6 +11,7 @@ import com.android.support.DateUtils;
 import com.android.support.MyPreferences;
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -76,7 +77,7 @@ public class Order implements Cloneable {
     public String ord_timeStarted;
     public List<OrderAttributes> orderAttributes;
     private List<DataTaxes> listOrderTaxes;
-    private List<Payment> payments;
+    private List<OrderProduct> orderProducts = new ArrayList<>();
 
     public Order() {
         ord_issync = "0";
@@ -118,5 +119,13 @@ public class Order implements Cloneable {
 
     public boolean isSync() {
         return ord_issync.equalsIgnoreCase("1");
+    }
+
+    public List<OrderProduct> getOrderProducts() {
+        return orderProducts;
+    }
+
+    public void setOrderProducts(List<OrderProduct> orderProducts) {
+        this.orderProducts = orderProducts;
     }
 }

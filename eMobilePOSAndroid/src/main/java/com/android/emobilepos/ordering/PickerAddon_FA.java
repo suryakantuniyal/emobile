@@ -226,10 +226,10 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
         orderProduct.setOrdprod_desc(product.getProdDesc() + _ord_desc.toString());
         orderProduct.setProd_sku(product.getProd_sku());
         orderProduct.setProd_upc(product.getProd_upc());
-        int idx = global.orderProducts.indexOf(orderProduct);
+        int idx = global.order.getOrderProducts().indexOf(orderProduct);
         if (idx > -1) {
-            global.orderProducts.remove(idx);
-            global.orderProducts.add(orderProduct);
+            global.order.getOrderProducts().remove(idx);
+            global.order.getOrderProducts().add(orderProduct);
         }
     }
 
