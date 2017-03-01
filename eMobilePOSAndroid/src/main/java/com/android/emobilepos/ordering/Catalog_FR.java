@@ -116,6 +116,8 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     private TextView categoriesBannerTextView;
     private List<EMSCategory> categoryStack = new ArrayList<>();
     private EMSCategory selectedCategory;
+    private static String BUNDLE_CATEGORY_STACK = "BUNDLE_CATEGORY_STACK";
+    private static String BUNDLE_SELECTED_CATEGORY = "BUNDLE_SELECTED_CATEGORY";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -219,7 +221,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         catalogRecyclerView.setLayoutManager(horizontalLayoutManager);
 
         if (savedInstanceState != null) {
-            categoryStack = savedInstanceState.getParcelableArrayList("CATEGORY_STACK");
+            categoryStack = savedInstanceState.getParcelableArrayList(BUNDLE_CATEGORY_STACK);
 
             categoriesBackButton.setVisibility(categoryStack.size() > 0 ? View.VISIBLE : View.GONE);
 
@@ -231,7 +233,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                 loadRootCategories();
             }
 
-            selectedCategory = savedInstanceState.getParcelable("SELECTED_CATEGORY"); // DO NOT MOVE THIS ABOVE
+            selectedCategory = savedInstanceState.getParcelable(BUNDLE_SELECTED_CATEGORY); // DO NOT MOVE THIS ABOVE
             if (selectedCategory != null) {
                 categoriesAdapter.selectItemWithCategoryId(selectedCategory.getCategoryId());
             } else {
@@ -246,8 +248,8 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putParcelableArrayList("CATEGORY_STACK", (ArrayList<? extends Parcelable>) categoryStack);
-        outState.putParcelable("SELECTED_CATEGORY", selectedCategory);
+        outState.putParcelableArrayList(BUNDLE_CATEGORY_STACK, (ArrayList<? extends Parcelable>) categoryStack);
+        outState.putParcelable(BUNDLE_SELECTED_CATEGORY, selectedCategory);
         super.onSaveInstanceState(outState);
     }
 
