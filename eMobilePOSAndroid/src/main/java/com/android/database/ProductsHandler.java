@@ -418,7 +418,7 @@ public class ProductsHandler {
                         "ei.prod_onhand as 'local_prod_onhand',i.prod_img_name," +
                         "CASE WHEN p.prod_taxcode='' THEN '0' " +
                         "ELSE IFNULL(s.taxcode_istaxable,'1')  END AS 'prod_istaxable' ");
-        sb.append(",p.prod_taxcode,p.prod_taxtype, p.prod_type,p.cat_id ");
+        sb.append(",p.prod_taxcode,p.prod_taxtype, p.prod_type,p.cat_id, c.cat_name as 'cat_name' ");
 
         if (myPref.isCustSelected() && myPref.getPreferences(MyPreferences.pref_filter_products_by_customer)) {
 
@@ -465,10 +465,11 @@ public class ProductsHandler {
         sb.append(
                 "FROM Products p " +
                         " LEFT OUTER JOIN EmpInv ei ON ei.prod_id = p.prod_id " +
-                        "LEFT OUTER JOIN VolumePrices vp ON p.prod_id = vp.prod_id  AND vp.pricelevel_id = ? " +
-                        "LEFT OUTER JOIN PriceLevelItems pli ON p.prod_id = pli.pricelevel_prod_id  AND pli.pricelevel_id = ? " +
+                        " LEFT OUTER JOIN VolumePrices vp ON p.prod_id = vp.prod_id  AND vp.pricelevel_id = ? " +
+                        " LEFT OUTER JOIN PriceLevelItems pli ON p.prod_id = pli.pricelevel_prod_id  AND pli.pricelevel_id = ? " +
                         " LEFT OUTER JOIN PriceLevel pl ON pl.pricelevel_id = pli.pricelevel_id " +
                         " LEFT OUTER JOIN Products_Images i ON p.prod_id = i.prod_id " +
+                        " LEFT OUTER JOIN Categories c ON c.cat_id = p.cat_id " +
                         " LEFT OUTER JOIN SalesTaxCodes s ON p.prod_taxcode = s.taxcode_id " +
                         " LEFT OUTER JOIN ProductChainXRef ch ON ch.prod_id = p.prod_id ");
 
@@ -520,6 +521,7 @@ public class ProductsHandler {
             product.setProdIstaxable(cursor.getString(cursor.getColumnIndex("prod_istaxable")));
             product.setProdType(cursor.getString(cursor.getColumnIndex("prod_type")));
             product.setCatId(cursor.getString(cursor.getColumnIndex("cat_id")));
+            product.setCategoryName(cursor.getString(cursor.getColumnIndex("cat_name")));
             product.setProdPricePoints(cursor.getInt(cursor.getColumnIndex("prod_price_points")));
             product.setProdValuePoints(cursor.getInt(cursor.getColumnIndex("prod_value_points")));
             product.setProdTaxType(cursor.getString(cursor.getColumnIndex("prod_taxtype")));
@@ -546,7 +548,7 @@ public class ProductsHandler {
                 "CASE WHEN pl.pricelevel_type = 'FixedPercentage' THEN (p.prod_price+(p.prod_price*(pl.pricelevel_fixedpct/100))) ");
         sb.append(
                 "ELSE pli.pricelevel_price END AS 'pricelevel_price',p.prod_price_points,p.prod_value_points,p.prod_name,p.prod_desc,p.prod_extradesc,p.prod_onhand as 'master_prod_onhand',ei.prod_onhand as 'local_prod_onhand',i.prod_img_name, CASE WHEN p.prod_taxcode='' THEN '0' ELSE IFNULL(s.taxcode_istaxable,'1')  END AS 'prod_istaxable' ");
-        sb.append(",p.prod_taxcode,p.prod_taxtype, p.prod_type,p.cat_id ");
+        sb.append(",p.prod_taxcode,p.prod_taxtype, p.prod_type,p.cat_id, c.cat_name as 'cat_name' ");
 
         if (myPref.isCustSelected() && myPref.getPreferences(MyPreferences.pref_filter_products_by_customer)) {
             if (Global.isConsignment) {
@@ -589,8 +591,9 @@ public class ProductsHandler {
         sb.append("vp.pricelevel_id = ? LEFT OUTER JOIN PriceLevelItems pli ON p.prod_id = pli.pricelevel_prod_id ");
         sb.append(
                 "AND pli.pricelevel_id = ? LEFT OUTER JOIN PriceLevel pl ON pl.pricelevel_id = ? LEFT OUTER JOIN Products_Images i ON p.prod_id = i.prod_id AND i.type = 'I' ");
-        sb.append(
-                "LEFT OUTER JOIN SalesTaxCodes s ON p.prod_taxcode = s.taxcode_id LEFT OUTER JOIN ProductChainXRef ch ON ch.prod_id = p.prod_id ");
+        sb.append("LEFT OUTER JOIN SalesTaxCodes s ON p.prod_taxcode = s.taxcode_id " +
+                " LEFT OUTER JOIN Categories c ON c.cat_id = p.cat_id " +
+                " LEFT OUTER JOIN ProductChainXRef ch ON ch.prod_id = p.prod_id ");
         sb.append("LEFT JOIN ProductAliases pa ON p.prod_id = pa.prod_id ");
 
         sb.append(sb2);
@@ -643,6 +646,7 @@ public class ProductsHandler {
             product.setProdIstaxable(cursor.getString(cursor.getColumnIndex("prod_istaxable")));
             product.setProdType(cursor.getString(cursor.getColumnIndex("prod_type")));
             product.setCatId(cursor.getString(cursor.getColumnIndex("cat_id")));
+            product.setCategoryName(cursor.getString(cursor.getColumnIndex("cat_name")));
             String prod_price_points = cursor.getString(cursor.getColumnIndex("prod_price_points"));
             if (TextUtils.isEmpty(prod_price_points)) {
                 product.setProdPricePoints(0);
