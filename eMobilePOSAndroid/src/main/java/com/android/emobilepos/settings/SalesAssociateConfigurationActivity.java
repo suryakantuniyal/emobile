@@ -48,11 +48,11 @@ public class SalesAssociateConfigurationActivity extends BaseFragmentActivityAct
     public void onResume() {
         Global global = (Global) getApplication();
         if (global.isApplicationSentToBackground(this))
-            global.loggedIn = false;
+            Global.loggedIn = false;
 
         global.stopActivityTransitionTimer();
 
-        if (hasBeenCreated && !global.loggedIn) {
+        if (hasBeenCreated && !Global.loggedIn) {
             if (global.getGlobalDlog() != null)
                 global.getGlobalDlog().dismiss();
             global.promptForMandatoryLogin(this);
@@ -68,7 +68,7 @@ public class SalesAssociateConfigurationActivity extends BaseFragmentActivityAct
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         boolean isScreenOn = powerManager.isScreenOn();
         if (!isScreenOn)
-            global.loggedIn = false;
+            Global.loggedIn = false;
         global.startActivityTransitionTimer();
     }
 

@@ -76,10 +76,10 @@ public class ClerkDAO {
         try {
             RealmQuery<Clerk> where = realm.where(Clerk.class);
             clerk = where.equalTo("empId", empId).findFirst();
-            if(clerk!=null)
-                clerk=realm.copyFromRealm(clerk);
+//            if(clerk!=null)
+//                clerk=realm.copyFromRealm(clerk);
         } finally {
-            realm.close();
+//            realm.close();
         }
         return clerk;
     }

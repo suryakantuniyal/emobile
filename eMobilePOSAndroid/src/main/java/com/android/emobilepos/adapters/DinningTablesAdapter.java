@@ -10,28 +10,32 @@ import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.dao.DinningTableDAO;
 import com.android.dao.DinningTableOrderDAO;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.Order;
+import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.DinningTable;
 import com.android.emobilepos.models.realms.DinningTableOrder;
-import com.android.emobilepos.models.Order;
 import com.android.support.Global;
 
+import java.util.HashMap;
 import java.util.List;
 
 import io.realm.RealmList;
 
 public class DinningTablesAdapter extends BaseAdapter implements Filterable {
+    private final HashMap<String, List<Clerk>> tableAssignedClerks;
     private LayoutInflater mInflater;
     private List<DinningTable> dinningTables;
     private Activity activity;
     private RealmList<DinningTable> selectedDinningTables;
 
-
     public DinningTablesAdapter(Activity activity, List<DinningTable> dinningTables) {
         this.activity = activity;
         mInflater = LayoutInflater.from(activity);
         this.dinningTables = dinningTables;
+        tableAssignedClerks = DinningTableDAO.getTableAssignedClerks();
     }
 
     public void setSelectedDinningTables(RealmList<DinningTable> selectedDinningTables) {
@@ -52,7 +56,7 @@ public class DinningTablesAdapter extends BaseAdapter implements Filterable {
             holder.image = (ImageView) convertView.findViewById(R.id.dinningtableimageView3);
             holder.tableNumber = (TextView) convertView.findViewById(R.id.tableNumbertextView);
             holder.isSelectedCheckBox = (ImageView) convertView.findViewById(R.id.selectedCheckboximageView);
-
+            holder.clerkName = (TextView) convertView.findViewById(R.id.clerkNametextView23);
             convertView.setTag(holder);
 
         } else {
@@ -62,6 +66,7 @@ public class DinningTablesAdapter extends BaseAdapter implements Filterable {
         holder.image.setImageResource(R.drawable.table_round_lg);
         holder.tableNumber.setText(dinningTables.get(position).getNumber());
         holder.dinningTable = dinningTables.get(position);
+        List<Clerk> clerks = tableAssignedClerks.get(dinningTables.get(position).getId());
 
         if (selectedDinningTables != null) {
             boolean selected = selectedDinningTables.contains(dinningTables.get(position));
@@ -70,7 +75,7 @@ public class DinningTablesAdapter extends BaseAdapter implements Filterable {
             } else {
                 holder.isSelectedCheckBox.setVisibility(View.GONE);
             }
-        }else{
+        } else {
             holder.isSelectedCheckBox.setVisibility(View.GONE);
         }
         if (tableOrder != null) {
@@ -80,6 +85,7 @@ public class DinningTablesAdapter extends BaseAdapter implements Filterable {
             holder.time.setVisibility(View.VISIBLE);
             holder.guests.setVisibility(View.VISIBLE);
             holder.amount.setVisibility(View.VISIBLE);
+            holder.clerkName.setText(clerks != null && !clerks.isEmpty() ? clerks.get(0).getEmpName() : "");
             holder.time.setText(tableOrder.getElapsedTime());
             holder.guests.setText(String.format("%d/%d", tableOrder.getNumberOfGuest(), dinningTables.get(position).getSeats()));
             Order order = tableOrder.getOrder(activity);
@@ -89,6 +95,7 @@ public class DinningTablesAdapter extends BaseAdapter implements Filterable {
             holder.guests.setBackgroundResource(R.color.seat12);
             holder.amount.setBackgroundResource(R.color.seat12);
             holder.time.setVisibility(View.GONE);
+            holder.clerkName.setText(clerks != null && !clerks.isEmpty() ? clerks.get(0).getEmpName() : "");
             holder.guests.setText(String.format("%d/%d", 0, dinningTables.get(position).getSeats()));
             holder.amount.setVisibility(View.GONE);
         }
@@ -97,7 +104,7 @@ public class DinningTablesAdapter extends BaseAdapter implements Filterable {
 
 
     public class ViewHolder {
-        TextView tableNumber, guests, time, amount;
+        TextView tableNumber, guests, time, amount, clerkName;
         ImageView image;
         ImageView isSelectedCheckBox;
         public DinningTable dinningTable;

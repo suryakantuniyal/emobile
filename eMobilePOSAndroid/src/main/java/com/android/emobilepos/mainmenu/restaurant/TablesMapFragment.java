@@ -17,9 +17,9 @@ import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.android.dao.ClerkDAO;
 import com.android.dao.DinningTableDAO;
 import com.android.dao.DinningTableOrderDAO;
-import com.android.dao.ClerkDAO;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.realms.Clerk;
@@ -29,6 +29,7 @@ import com.android.emobilepos.ordering.SplittedOrderSummary_FA;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 
+import java.util.HashMap;
 import java.util.List;
 
 import io.realm.Realm;
@@ -41,6 +42,7 @@ public class TablesMapFragment extends Fragment implements View.OnClickListener,
     private List<DinningTable> dinningTables;
     private Clerk associate;
     MyPreferences preferences;
+    private HashMap<String, List<Clerk>> tableAssignedClerks;
 
     public TablesMapFragment() {
     }
@@ -58,7 +60,7 @@ public class TablesMapFragment extends Fragment implements View.OnClickListener,
             associate = ClerkDAO.getByEmpId(Integer.parseInt(getDinningTablesActivity().associateId));
         }
         dinningTables = DinningTableDAO.getAll();//DinningTablesProxy.getDinningTables(getContext());
-
+        tableAssignedClerks = DinningTableDAO.getTableAssignedClerks();
         return rootView;
     }
 
@@ -100,11 +102,14 @@ public class TablesMapFragment extends Fragment implements View.OnClickListener,
                         params[0].leftMargin = (int) convertPixelsToDp(table.getPosition().getPositionX(), mapFloor);
                         params[0].topMargin = (int) convertPixelsToDp(table.getPosition().getPositionY(), mapFloor);
                         String label = getActivity().getString(R.string.table_label_map) + " " + table.getNumber();
+                        List<Clerk> clerks = tableAssignedClerks.get(table.getId());
                         ((TextView) tableItem.findViewById(R.id.tableNumbertextView)).setText(label);
                         map.addView(tableItem, params[0]);
                         tableItem.findViewById(R.id.table_map_container).setOnClickListener(TablesMapFragment.this);
                         tableItem.findViewById(R.id.table_map_container).setTag(table);
                         TextView timeTxt = (TextView) tableItem.findViewById(R.id.timetextView21);
+                        TextView clerkName = (TextView) tableItem.findViewById(R.id.clerkNametextView23);
+                        clerkName.setText(clerks != null && !clerks.isEmpty() ? clerks.get(0).getEmpName() : "");
                         ImageView isSelectedCheckBox = (ImageView) tableItem.findViewById(R.id.selectedCheckboximageView);
                         TextView guestsTxt = (TextView) tableItem.findViewById(R.id.gueststextView16);
                         TextView amountxt = (TextView) tableItem.findViewById(R.id.amounttextView23);

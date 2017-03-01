@@ -31,8 +31,8 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
     Clerk clerk;
 
     protected void setActionBar() {
-        showNavigationbar = myPref.getPreferences(MyPreferences.pref_use_navigationbar) || isNavigationBarModel() || this instanceof MainMenu_FA;
-        if (showNavigationbar) {
+        showNavigationbar = myPref.getPreferences(MyPreferences.pref_use_navigationbar) || isNavigationBarModel() || (this instanceof MainMenu_FA && myPref.isUseClerks());
+        if (showNavigationbar || this instanceof MainMenu_FA) {
             myBar = this.getActionBar();
             if (myBar != null) {
                 myBar.setDisplayShowTitleEnabled(true);
@@ -84,7 +84,7 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (this instanceof MainMenu_FA) {
+        if (this instanceof MainMenu_FA && myPref.isUseClerks()) {
             getMenuInflater().inflate(R.menu.clerk_logout_menu, menu);
         } else if (showNavigationbar)
             getMenuInflater().inflate(R.menu.activity_main_menu, menu);
@@ -120,5 +120,11 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
             }
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        invalidateOptionsMenu();
+        super.onResume();
     }
 }

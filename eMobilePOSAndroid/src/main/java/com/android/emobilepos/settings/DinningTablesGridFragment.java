@@ -57,16 +57,12 @@ public class DinningTablesGridFragment extends Fragment implements AdapterView.O
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         final DinningTable table = (DinningTable) adapterView.getItemAtPosition(i);
         SalesAssociateConfigurationActivity activity = (SalesAssociateConfigurationActivity) getActivity();
-//        Realm.getDefaultInstance().beginTransaction();
         boolean contains = activity.getSelectedClerk().getAssignedDinningTables().contains(table);
         if (contains) {
             ClerkDAO.removeAssignedTable(activity.getSelectedClerk(), table);
-//            activity.getSelectedClerk().getAssignedDinningTables().remove(table);
         } else {
             ClerkDAO.addAssignedTable(activity.getSelectedClerk(), table);
-//            activity.getSelectedClerk().getAssignedDinningTables().add(table);
         }
-//        Realm.getDefaultInstance().commitTransaction();
         adapter.setSelectedDinningTables(activity.getSelectedClerk().getAssignedDinningTables());
         adapter.notifyDataSetChanged();
     }

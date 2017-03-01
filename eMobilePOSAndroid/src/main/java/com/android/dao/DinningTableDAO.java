@@ -1,12 +1,16 @@
 package com.android.dao;
 
+import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.DinningTable;
 import com.google.gson.Gson;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import io.realm.Realm;
+import io.realm.RealmList;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import util.json.JsonUtils;
@@ -86,5 +90,22 @@ public class DinningTableDAO {
         RealmQuery<DinningTable> where = realm.where(DinningTable.class);
         DinningTable table = where.equalTo("number", tableNumber).findFirst();
         return table;
+    }
+
+    public static HashMap<String, List<Clerk>> getTableAssignedClerks() {
+        HashMap<String, List<Clerk>> tableAssignedClerks = new HashMap<>();
+        RealmResults<Clerk> clerks = ClerkDAO.getAll();
+        for (DinningTable table : getAll()) {
+            tableAssignedClerks.put(table.getId(), new ArrayList<Clerk>());
+        }
+        for (Clerk c : clerks) {
+            RealmList<DinningTable> clerkTables = c.getAssignedDinningTables();
+            for (DinningTable clerkTable : clerkTables) {
+                if (tableAssignedClerks.containsKey(clerkTable.getId())) {
+                    tableAssignedClerks.get(clerkTable.getId()).add(c);
+                }
+            }
+        }
+        return tableAssignedClerks;
     }
 }

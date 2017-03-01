@@ -24,8 +24,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.dao.AssignEmployeeDAO;
-import com.android.dao.DinningTableDAO;
 import com.android.dao.ClerkDAO;
+import com.android.dao.DinningTableDAO;
 import com.android.dao.ShiftDAO;
 import com.android.database.CustomersHandler;
 import com.android.database.SalesTaxCodesHandler;
@@ -43,8 +43,8 @@ import com.android.emobilepos.holders.Locations_Holder;
 import com.android.emobilepos.locations.LocationsPickerDlog_FR;
 import com.android.emobilepos.locations.LocationsPicker_Listener;
 import com.android.emobilepos.mainmenu.restaurant.DinningTablesActivity;
-import com.android.emobilepos.models.realms.DinningTable;
 import com.android.emobilepos.models.realms.Clerk;
+import com.android.emobilepos.models.realms.DinningTable;
 import com.android.emobilepos.models.realms.Shift;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.emobilepos.ordering.SplittedOrderSummary_FA;
@@ -180,7 +180,9 @@ public class SalesTab_FR extends Fragment {
 
     @Override
     public void onResume() {
-
+        Global global = (Global) activity.getApplication();
+        global.resetOrderDetailsValues();
+        global.clearListViewData();
         if (myPref.isCustSelected()) {
             isCustomerSelected = true;
             selectedCust.setText(myPref.getCustName());
@@ -239,9 +241,6 @@ public class SalesTab_FR extends Fragment {
     }
 
     private void performListViewClick(final int pos) {
-        Global global = (Global) activity.getApplication();
-        global.resetOrderDetailsValues();
-        global.clearListViewData();
         Intent intent;
         if (isCustomerSelected) {
             switch (Global.TransactionType.getByCode(pos)) {
@@ -285,7 +284,7 @@ public class SalesTab_FR extends Fragment {
                 case ORDERS: {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
-                        if (!myPref.isUseClerks() ||  ShiftDAO.isShiftOpen(myPref.getClerkID())) {
+                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                             intent = new Intent(activity, OrderingMain_FA.class);
                             intent.putExtra("option_number", Global.TransactionType.ORDERS);
                             startActivityForResult(intent, 0);
@@ -823,9 +822,9 @@ public class SalesTab_FR extends Fragment {
     public void selectDinnerTable() {
         Intent intent = new Intent(getActivity(), DinningTablesActivity.class);
         int empId;
-        if(myPref.isUseClerks()) {
+        if (myPref.isUseClerks()) {
             empId = ShiftDAO.getOpenShift(Integer.parseInt(myPref.getClerkID())).getAssigneeId();
-        }else{
+        } else {
             empId = AssignEmployeeDAO.getAssignEmployee().getEmpId();
         }
         intent.putExtra("associateId", empId);

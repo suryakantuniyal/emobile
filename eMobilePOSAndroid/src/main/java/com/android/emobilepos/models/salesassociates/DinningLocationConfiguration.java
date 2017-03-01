@@ -11,6 +11,7 @@ import java.util.List;
 public class DinningLocationConfiguration {
     @SerializedName("loc_id")
     private String locationId;
+    @SerializedName("salesAssociates")
     private List<Clerk> clerks;
 
     public String getLocationId() {

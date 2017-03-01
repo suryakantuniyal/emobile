@@ -33,6 +33,7 @@ public class AssignEmployeeDAO {
             r.copyToRealmOrUpdate(assignEmployees);
         }finally {
             r.commitTransaction();
+            r.close();
         }
     }
 

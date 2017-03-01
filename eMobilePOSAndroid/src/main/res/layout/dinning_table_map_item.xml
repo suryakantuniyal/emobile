@@ -16,8 +16,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Table #1"
-        android:textAppearance="@style/black_text_appearance"
-        android:textSize="@dimen/text_default" />
+        style="@style/black_text_appearance" />
 
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -88,5 +87,13 @@
         android:layout_height="wrap_content"
         android:checked="false"
         android:visibility="gone" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/clerkNametextView23"
+        android:gravity="center_horizontal"
+        android:maxLines="1"
+        style="@style/black_text_appearance" />
 
 </LinearLayout>

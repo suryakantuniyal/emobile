@@ -176,13 +176,15 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.order_main_layout);
+        global = (Global) getApplication();
+        global.resetOrderDetailsValues();
+        global.clearListViewData();
         instance = this;
         callBackMSR = this;
         handler = new ProductsHandler(this);
         receiptContainer = (LinearLayout) findViewById(R.id.order_receipt_frag_container);
         catalogContainer = (LinearLayout) findViewById(R.id.order_catalog_frag_container);
         invisibleSearchMain = (EditText) findViewById(R.id.invisibleSearchMain);
-        global = (Global) getApplication();
         btnCheckout = (Button) findViewById(R.id.btnCheckOut);
         btnCheckout.setOnClickListener(this);
         myPref = new MyPreferences(this);
