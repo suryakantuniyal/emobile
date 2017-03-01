@@ -108,9 +108,14 @@ public class CatalogCategories_Adapter extends RecyclerView.Adapter<CatalogCateg
 
             @Override
             public void onClick(View v) {
-                notifyItemChanged(selectedPosition);
-                selectedPosition = position;
-                notifyItemChanged(selectedPosition);
+
+                if (selectedPosition != position) {
+                    notifyItemChanged(selectedPosition);
+                    selectedPosition = position;
+                } else {
+                    selectedPosition = -1;
+                }
+                notifyItemChanged(position);
 
                 if (callback != null) {
                     callback.categorySelected(cat);
@@ -122,5 +127,20 @@ public class CatalogCategories_Adapter extends RecyclerView.Adapter<CatalogCateg
     @Override
     public int getItemCount() {
         return categories.size();
+    }
+
+    public void selectItemWithCategoryId(String categoryId) {
+        for (EMSCategory category:categories) {
+            if (category.getCategoryId().equals(categoryId)) {
+                selectedPosition = categories.indexOf(category);
+                notifyItemChanged(selectedPosition);
+
+                if (callback != null) {
+                    callback.categorySelected(category);
+                }
+
+                break;
+            }
+        }
     }
 }
