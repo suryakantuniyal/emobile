@@ -12,6 +12,7 @@ public class EMSCategory implements Parcelable {
     private String categoryName;
     private String iconUrl;
     private int numberOfSubCategories;
+    public final static String ROOT_CATEGORY_ID = "ROOT_CATEGORY_ID";
 
     public String getCategoryId() {
         return categoryId;
@@ -57,6 +58,11 @@ public class EMSCategory implements Parcelable {
         categoryName = in.readString();
         iconUrl = in.readString();
         numberOfSubCategories = in.readInt();
+    }
+
+    public boolean equals(EMSCategory otherCategory) {
+        if (otherCategory == null) return false;
+        return this.categoryId == otherCategory.categoryId;
     }
 
     @Override

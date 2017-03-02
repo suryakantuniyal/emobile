@@ -74,7 +74,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         MenuCatGV_Adapter.ItemClickedCallback, MenuProdGV_Adapter.ProductClickedCallback, CatalogCategories_Adapter.CategoriesCallback {
 
     public static final int CASE_CATEGORY = 1, CASE_SUBCATEGORY = 2, CASE_PRODUCTS = 0, CASE_SEARCH_PROD = 3;
-    private static final int THE_LOADER = 0x01;
+    private static final int CURSOR_LOADER_ID = 0x01;
     public static Catalog_FR instance;
     public static int _typeCase = -1;
     public static String search_text = "", search_type = "";
@@ -87,14 +87,12 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     private MyPreferences myPref;
     private Global global;
     private boolean onRestaurantMode = false;
-    private boolean restModeViewingProducts = false;
 
     private VolumePricesHandler volPriceHandler;
     private MenuCatGV_Adapter categoryListAdapter;
     private MenuProdGV_Adapter prodListAdapter;
     private RefreshReceiptViewCallback callBackRefreshView;
     private MyEditText searchField;
-
 
     private ListViewAdapter tempLVAdapter;
     private Dialog dialog;
@@ -115,7 +113,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     private Button categoriesBackButton;
     private TextView categoriesBannerTextView;
     private List<EMSCategory> categoryStack = new ArrayList<>();
-    private EMSCategory selectedCategory;
+    private EMSCategory selectedSubcategory;
     private static String BUNDLE_CATEGORY_STACK = "BUNDLE_CATEGORY_STACK";
     private static String BUNDLE_SELECTED_CATEGORY = "BUNDLE_SELECTED_CATEGORY";
 
@@ -189,9 +187,11 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
         setupSearchField();
 
-        if ((!onRestaurantMode) || (onRestaurantMode && selectedCategory != null)) {
-            loadCursor();
-        }
+
+        // Prepare the loader.  Either re-connect with an existing one,
+        // or start a new one.
+        getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
+
 
         categoriesBannerTextView = (TextView) view.findViewById(R.id.categoriesBannerTextView);
         categoriesBackButton = (Button) view.findViewById(R.id.categoriesBackButton);
@@ -200,7 +200,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             @Override
             public void onClick(View v) {
                 // Go Back one level
-                selectedCategory = null;
+                selectedSubcategory = null;
                 if (categoryStack.size() > 0) {
                     int lastIndex = categoryStack.size() - 1;
                     categoryStack.remove(lastIndex);
@@ -213,6 +213,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                 } else {
                     loadRootCategories();
                 }
+                loadCursor();
             }
         });
 
@@ -233,14 +234,15 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                 loadRootCategories();
             }
 
-            selectedCategory = savedInstanceState.getParcelable(BUNDLE_SELECTED_CATEGORY); // DO NOT MOVE THIS ABOVE
-            if (selectedCategory != null) {
-                categoriesAdapter.selectItemWithCategoryId(selectedCategory.getCategoryId());
+            selectedSubcategory = savedInstanceState.getParcelable(BUNDLE_SELECTED_CATEGORY); // DO NOT MOVE THIS ABOVE
+            if (selectedSubcategory != null) {
+                categoriesAdapter.selectItemWithCategoryId(selectedSubcategory.getCategoryId());
             } else {
                 loadCursor();
             }
         } else {
             loadRootCategories();
+            loadCursor();
         }
 
         return view;
@@ -249,28 +251,25 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putParcelableArrayList(BUNDLE_CATEGORY_STACK, (ArrayList<? extends Parcelable>) categoryStack);
-        outState.putParcelable(BUNDLE_SELECTED_CATEGORY, selectedCategory);
+        outState.putParcelable(BUNDLE_SELECTED_CATEGORY, selectedSubcategory);
         super.onSaveInstanceState(outState);
     }
 
     @Override
     public void categorySelected(EMSCategory category) {
 
-        // TODO: Remove Global Dependency
-        Global.cat_id = category.getCategoryId();
+        selectedSubcategory = null;
 
-        selectedCategory = null;
-        if ("0".equals(category.getCategoryId())) {
+        if (EMSCategory.ROOT_CATEGORY_ID.equals(category.getCategoryId())) {
             loadRootCategories();
         } else if (category.getNumberOfSubCategories() > 0) {
             categoryStack.add(category);
             loadSubCategories(category);
         } else {
-            selectedCategory = category;
+            selectedSubcategory = category;
             refreshCategoriesBanner();
         }
 
-        _typeCase = CASE_PRODUCTS;
         loadCursor();
 
         categoriesBackButton.setVisibility(categoryStack.size() > 0 ? View.VISIBLE : View.GONE);
@@ -279,7 +278,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
     private void loadRootCategories() {
         categoryStack.clear();
-        selectedCategory = null;
+        selectedSubcategory = null;
         categoriesBackButton.setVisibility(View.GONE);
 
 
@@ -312,13 +311,13 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                 sb.append(categoryStack.get(i).getCategoryName());
             }
 
-            if (selectedCategory != null) {
+            if (selectedSubcategory != null) {
                 sb.append(" > ");
             }
         }
 
-        if (selectedCategory != null) {
-            sb.append(selectedCategory.getCategoryName());
+        if (selectedSubcategory != null) {
+            sb.append(selectedSubcategory.getCategoryName());
         }
 
         categoriesBannerTextView.setText(sb.toString());
@@ -340,7 +339,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
         @Override
         protected Catalog_Loader doInBackground(Integer... params) {
-            return new Catalog_Loader(getActivity(), (int) params[0] + Integer.parseInt(getString(R.string.sqlLimit)), 1);
+            return new Catalog_Loader(getActivity(), params[0] + Integer.parseInt(getString(R.string.sqlLimit)), 1, selectedSubcategory, search_text, search_type, onRestaurantMode);
         }
 
         @Override
@@ -537,14 +536,19 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     }
 
     public void loadCursor() {
-        getLoaderManager().initLoader(THE_LOADER, null, this).forceLoad();
+        getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this).forceLoad();
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-        return new Catalog_Loader(getActivity(), Integer.parseInt(getString(R.string.sqlLimit)), 0);
-    }
+        EMSCategory categoryToLoad = selectedSubcategory;
 
+        if (onRestaurantMode && categoryToLoad == null && categoryStack.size() > 0) {
+            categoryToLoad = categoryStack.get(categoryStack.size() - 1);
+        }
+
+        return new Catalog_Loader(getActivity(), Integer.parseInt(getString(R.string.sqlLimit)), 0, categoryToLoad, search_text, search_type, onRestaurantMode);
+    }
 
     @Override
     public void onDestroy() {
@@ -554,16 +558,15 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
     @Override
     public void onLoadFinished(Loader<Cursor> arg0, Cursor c) {
-
-        if (c != null) {
-
-        }
         myCursor = c;
         if (_typeCase != CASE_PRODUCTS && _typeCase != CASE_SEARCH_PROD) {
             categoryListAdapter = new MenuCatGV_Adapter(this, getActivity(), c, CursorAdapter.NO_SELECTION, imageLoader);
             catalogList.setAdapter(categoryListAdapter);
-            if (myPref.getPreferences(MyPreferences.pref_restaurant_mode) && myCursor.getCount() == 1
-                    && _typeCase == CASE_CATEGORY && !Global.cat_id.equalsIgnoreCase("0"))
+            if (
+                    myPref.getPreferences(MyPreferences.pref_restaurant_mode) // is restaurant
+                            && myCursor.getCount() == 1 // only one result
+                            && _typeCase == CASE_CATEGORY // displaying category
+                            && !Global.cat_id.equalsIgnoreCase("0")) //Global has a category set
                 itemClicked();
         } else {
             prodListAdapter = new MenuProdGV_Adapter(this, getActivity(), c, CursorAdapter.NO_SELECTION, imageLoader);
