@@ -1479,7 +1479,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 Global global = (Global) activity.getApplication();
                 order = Receipt_FR.buildOrder(activity, global, "", "", ((OrderingMain_FA) activity).getSelectedDinningTableNumber(),
                         ((OrderingMain_FA) activity).getAssociateId(), ((OrderingMain_FA) activity).getOrderAttributes(),
-                        ((OrderingMain_FA) activity).getListOrderTaxes());
+                        ((OrderingMain_FA) activity).getListOrderTaxes(),global.order.getOrderProducts());
                 OrderProductsHandler dbOrdProd = new OrderProductsHandler(activity);
                 OrderProductsAttr_DB dbOrdAttr = new OrderProductsAttr_DB(activity);
                 dbOrders.insert(order);

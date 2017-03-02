@@ -106,7 +106,7 @@ public class OrderRewards_FR extends Fragment implements OnClickListener {
                 Order order = Receipt_FR.buildOrder(getActivity(), global, "", "",
                         ((OrderingMain_FA) getActivity()).getSelectedDinningTableNumber(),
                         ((OrderingMain_FA) getActivity()).getAssociateId(),((OrderingMain_FA) getActivity()).getOrderAttributes(),
-                        ((OrderingMain_FA) getActivity()).getListOrderTaxes());
+                        ((OrderingMain_FA) getActivity()).getListOrderTaxes(),global.order.getOrderProducts());
                 OrdersHandler ordersHandler = new OrdersHandler(getActivity());
                 ordersHandler.insert(order);
                 global.order = order;
