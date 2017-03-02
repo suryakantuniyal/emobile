@@ -103,13 +103,14 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     private int page = 1;
     private boolean isToGo;
 
+    private LinearLayout categoriesWrapLayout;
     private RecyclerView catalogRecyclerView;
     private CatalogCategories_Adapter categoriesAdapter;
     private Button categoriesBackButton;
     private TextView categoriesBannerTextView;
     private List<EMSCategory> categoryStack = new ArrayList<>();
     private EMSCategory selectedSubcategory;
-    private boolean isReselectingPreviousCategory = false;
+    private boolean isRestoringSelectedCategory = false;
     private static String BUNDLE_CATEGORY_STACK = "BUNDLE_CATEGORY_STACK";
     private static String BUNDLE_SELECTED_CATEGORY = "BUNDLE_SELECTED_CATEGORY";
     private static String BUNDLE_SEARCH_TEXT = "BUNDLE_SEARCH_TEXT";
@@ -122,7 +123,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         isToGo = ((OrderingMain_FA) getActivity()).isToGo;
         searchField = (MyEditText) view.findViewById(R.id.catalogSearchField);
         searchField.setIsForSearching(getActivity(), OrderingMain_FA.invisibleSearchMain);
-        // searchField.setText("58187869354"); //test upc
         catalogList = (AbsListView) view.findViewById(R.id.catalogListview);
         catalogList.setOnItemClickListener(this);
         catalogIsPortrait = Global.isPortrait(getActivity());
@@ -170,6 +170,10 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                 }
             }
         });
+
+        categoriesWrapLayout = (LinearLayout)view.findViewById(R.id.categoriesWrapLayout);
+        categoriesWrapLayout.setVisibility(onRestaurantMode ? View.VISIBLE : View.GONE);
+
         setupSpinners(view);
         setupSearchField();
 
@@ -222,9 +226,9 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
             selectedSubcategory = savedInstanceState.getParcelable(BUNDLE_SELECTED_CATEGORY); // DO NOT MOVE THIS ABOVE
             if (selectedSubcategory != null) {
-                isReselectingPreviousCategory = true;
+                isRestoringSelectedCategory = true;
                 categoriesAdapter.selectItemWithCategoryId(selectedSubcategory.getCategoryId());
-                isReselectingPreviousCategory = false;
+                isRestoringSelectedCategory = false;
             } else {
                 loadCursor();
             }
@@ -246,9 +250,15 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     }
 
     @Override
+    public void onDestroyView() {
+        if (myCursor != null) myCursor.close();
+        super.onDestroyView();
+    }
+
+    @Override
     public void categorySelected(EMSCategory category) {
 
-        if (!isReselectingPreviousCategory) {
+        if (!isRestoringSelectedCategory) {
             search_text = "";
         }
 
