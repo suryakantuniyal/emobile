@@ -19,6 +19,7 @@ import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.TypedValue;
 import android.view.KeyEvent;
@@ -77,7 +78,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     private static final int CURSOR_LOADER_ID = 0x01;
     public static Catalog_FR instance;
     public static int _typeCase = -1;
-    public static String search_text = "", search_type = "";
+    private static String search_text = "", search_type = "";
     public static List<String> btnListID = new ArrayList<>();
     public static List<String> btnListName = new ArrayList<>();
     private AbsListView catalogList;
@@ -113,8 +114,11 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     private TextView categoriesBannerTextView;
     private List<EMSCategory> categoryStack = new ArrayList<>();
     private EMSCategory selectedSubcategory;
+    private boolean isReselectingPreviousCategory = false;
     private static String BUNDLE_CATEGORY_STACK = "BUNDLE_CATEGORY_STACK";
     private static String BUNDLE_SELECTED_CATEGORY = "BUNDLE_SELECTED_CATEGORY";
+    private static String BUNDLE_SEARCH_TEXT = "BUNDLE_SEARCH_TEXT";
+    private static String BUNDLE_SEARCH_TYPE = "BUNDLE_SEARCH_TYPE";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -198,6 +202,8 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         categoriesBackButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                search_text = "";
+
                 // Go Back one level
                 selectedSubcategory = null;
                 if (categoryStack.size() > 0) {
@@ -221,8 +227,10 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         catalogRecyclerView.setLayoutManager(horizontalLayoutManager);
 
         if (savedInstanceState != null) {
-            categoryStack = savedInstanceState.getParcelableArrayList(BUNDLE_CATEGORY_STACK);
+            search_text = savedInstanceState.getString(BUNDLE_SEARCH_TEXT);
+            search_type = savedInstanceState.getString(BUNDLE_SEARCH_TYPE);
 
+            categoryStack = savedInstanceState.getParcelableArrayList(BUNDLE_CATEGORY_STACK);
             categoriesBackButton.setVisibility(categoryStack.size() > 0 ? View.VISIBLE : View.GONE);
 
             if (categoryStack.size() > 0) {
@@ -235,7 +243,9 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
             selectedSubcategory = savedInstanceState.getParcelable(BUNDLE_SELECTED_CATEGORY); // DO NOT MOVE THIS ABOVE
             if (selectedSubcategory != null) {
+                isReselectingPreviousCategory = true;
                 categoriesAdapter.selectItemWithCategoryId(selectedSubcategory.getCategoryId());
+                isReselectingPreviousCategory = false;
             } else {
                 loadCursor();
             }
@@ -251,11 +261,17 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     public void onSaveInstanceState(Bundle outState) {
         outState.putParcelableArrayList(BUNDLE_CATEGORY_STACK, (ArrayList<? extends Parcelable>) categoryStack);
         outState.putParcelable(BUNDLE_SELECTED_CATEGORY, selectedSubcategory);
+        outState.putString(BUNDLE_SEARCH_TEXT, search_text);
+        outState.putString(BUNDLE_SEARCH_TYPE, search_type);
         super.onSaveInstanceState(outState);
     }
 
     @Override
     public void categorySelected(EMSCategory category) {
+
+        if (!isReselectingPreviousCategory) {
+            search_text = "";
+        }
 
         selectedSubcategory = null;
 
@@ -403,19 +419,13 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             @Override
             public void onTextChanged(CharSequence s, int arg1, int arg2, int arg3) {
                 String test = s.toString().trim();
-                if (test.isEmpty() && _typeCase == CASE_SEARCH_PROD) {
-                    if (onRestaurantMode) {
-//                        restModeViewingProducts = false;
-                        _typeCase = CASE_CATEGORY;
-                    } else
-                        _typeCase = CASE_PRODUCTS;
+                if (test.isEmpty() && !TextUtils.isEmpty(search_text)) {
+                    search_text = "";
+                    search_type = "";
                     loadCursor();
-
                 }
             }
         });
-        if (_typeCase == CASE_SEARCH_PROD)
-            performSearch(search_text);
     }
 
     private void setupSpinners(View v) {
@@ -578,49 +588,32 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
     public void searchUPC(String upc) {
         search_text = upc;
-        _typeCase = CASE_SEARCH_PROD;
         search_type = "prod_upc";
-
         loadCursor();
-//        restModeViewingProducts = true;
     }
 
     public void performSearch(String text) {
-
-
         search_text = text;
-        _typeCase = CASE_SEARCH_PROD;
 
         switch (global.searchType) {
             case 0: // search by Name
-            {
                 search_type = "prod_name";
                 break;
-            }
             case 1: // search by Description
-            {
                 search_type = "prod_desc";
                 break;
-            }
             case 2: // search by Type
-            {
                 search_type = "prod_type";
                 break;
-            }
             case 3: // search by UPC
-            {
                 search_type = "prod_upc";
-//                searchField.setRawInputType(Configuration.KEYBOARD_QWERTY);
                 break;
-            }
-            case 4:
+            case 4: // search by SKU
                 search_type = "prod_sku";
-//                searchField.setRawInputType(Configuration.KEYBOARD_QWERTY);
                 break;
         }
 
         loadCursor();
-//        restModeViewingProducts = true;
         OrderingMain_FA.invisibleSearchMain.requestFocus();
     }
 
