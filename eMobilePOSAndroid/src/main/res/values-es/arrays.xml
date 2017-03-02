@@ -227,5 +227,24 @@
         <item name="MEDIUM">MEDIUM</item>
         <item name="LARGE">LARGE</item>
     </string-array>
+    <string-array name="mainMenuRestaurantArray">
+        <item name="menu_sales_receipt">Start Check</item>
+        <item name="menu_order">Order</item>
+        <item name="menu_return">Return</item>
+        <item name="menu_invoice">Invoice</item>
+        <item name="menu_estimate">Estimate</item>
+        <item name="menu_payment">Payment</item>
+        <item name="menu_giftcard">Gift Card</item>
+        <item name="menu_loyaltycard">Loyalty Card</item>
+        <item name="menu_rewardcard">Reward Card</item>
+        <item name="menu_refund">Refund</item>
+        <item name="menu_route">Route</item>
+        <item name="menu_on_hold">Recall Check</item>
+        <item name="menu_consignment">Consignment</item>
+        <item name="menu_transfer_inventory">Inventory Transfer</item>
+        <item name="menu_tip_adjustment">Tip Adjustment</item>
+        <item name="menu_clerk_shifts">Shifts</item>
+        <item name="menu_shift_expense">No Sale</item>
+    </string-array>
 
 </resources>

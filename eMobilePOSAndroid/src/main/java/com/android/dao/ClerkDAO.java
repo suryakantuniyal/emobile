@@ -70,12 +70,15 @@ public class ClerkDAO {
         }
     }
 
-    public static Clerk getByEmpId(int empId) {
+    public static Clerk getByEmpId(int empId, boolean returnManaged) {
         Realm realm = Realm.getDefaultInstance();
         Clerk clerk;
         try {
             RealmQuery<Clerk> where = realm.where(Clerk.class);
             clerk = where.equalTo("empId", empId).findFirst();
+            if (!returnManaged && clerk != null) {
+                clerk = realm.copyFromRealm(clerk);
+            }
 //            if(clerk!=null)
 //                clerk=realm.copyFromRealm(clerk);
         } finally {
@@ -99,7 +102,7 @@ public class ClerkDAO {
         Realm realm = Realm.getDefaultInstance();
         try {
             realm.beginTransaction();
-            getByEmpId(selectedClerk.getEmpId()).getAssignedDinningTables().add(table);
+            getByEmpId(selectedClerk.getEmpId(), true).getAssignedDinningTables().add(table);
         } finally {
             realm.commitTransaction();
             realm.close();
@@ -110,7 +113,7 @@ public class ClerkDAO {
         Realm realm = Realm.getDefaultInstance();
         try {
             realm.beginTransaction();
-            getByEmpId(associate.getEmpId()).getAssignedDinningTables().clear();
+            getByEmpId(associate.getEmpId(), true).getAssignedDinningTables().clear();
         } finally {
             realm.commitTransaction();
             realm.close();

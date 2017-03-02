@@ -1,6 +1,5 @@
 package com.android.database;
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -11,9 +10,8 @@ import com.android.dao.AssignEmployeeDAO;
 import com.android.emobilepos.models.Discount;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.Product;
-import com.android.support.Global;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.support.MyPreferences;
 
 import net.sqlcipher.database.SQLiteStatement;
@@ -24,8 +22,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-
-import static java.util.logging.Logger.global;
 
 import util.StringUtil;
 
@@ -88,7 +84,7 @@ public class OrderProductsHandler {
     public StringBuilder sb1, sb2, sb3;
     public final String empStr = "";
     public HashMap<String, Integer> attrHash;
-//    public Global global;
+    //    public Global global;
     private List<String[]> data;
     private List<HashMap<String, Integer>> dictionaryListMap;
     public static final String table_name = "OrderProduct";
@@ -475,8 +471,11 @@ public class OrderProductsHandler {
         List<OrderProduct> products = new ArrayList<>();
         Cursor cursor = getCursorData(orderId);
         if (cursor.moveToFirst()) {
+            OrderProduct product;
             do {
-                products.add(getOrderProduct(cursor));
+                product = getOrderProduct(cursor);
+                if (!product.isAddon())
+                    products.add(product);
             } while (cursor.moveToNext());
         }
         return products;

@@ -297,7 +297,7 @@ public class Global extends MultiDexApplication {
 //    public List<DataTaxes> listOrderTaxes = new ArrayList<>();
     public List<ProductAttribute> ordProdAttrPending;
     public RealmList<ProductAttribute> ordProdAttr = new RealmList<>();
-//    public List<OrderProduct> orderProducts = new ArrayList<>();
+    //    public List<OrderProduct> orderProducts = new ArrayList<>();
     //    public List<OrderProduct> orderProductAddons = new ArrayList<OrderProduct>();
     // public static HashMap<String,List<OrderProduct>>orderProductsAddonsMap;
     public Order order;
@@ -580,6 +580,9 @@ public class Global extends MultiDexApplication {
     public static double formatNumFromLocale(String val)// received as #,##
     // instead of #.##
     {
+        if (TextUtils.isEmpty(val)) {
+            val = "0";
+        }
         double frmt = 0.0;
         try {
             NumberFormat numFormater = NumberFormat.getNumberInstance(Locale.getDefault());
@@ -1128,22 +1131,40 @@ public class Global extends MultiDexApplication {
         this.wasInBackground = false;
     }
 
-    public static boolean isIpAvailable(String ip, int port) {
-        boolean exists = false;
-        Socket sock;
-        try {
-            SocketAddress sockaddr = new InetSocketAddress(ip, port);
-            // Create an unbound socket
-            sock = new Socket();
-            int timeoutMs = 2000; // 2 seconds
-            sock.connect(sockaddr, timeoutMs);
-            sock.close();
-            exists = true;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public static boolean isIpAvailable(final String ip, final int port) {
+        final boolean[] exists = {false};
+        final Socket[] sock = new Socket[1];
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    SocketAddress sockaddr = new InetSocketAddress(ip, port);
+                    // Create an unbound socket
+                    sock[0] = new Socket();
+                    int timeoutMs = 2000; // 2 seconds
+                    sock[0].connect(sockaddr, timeoutMs);
+                    sock[0].close();
+                    exists[0] = true;
+                    synchronized (exists) {
+                        exists.notify();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    synchronized (exists) {
+                        exists.notify();
+                    }
+                }
 
-        return exists;
+            }
+        }).start();
+        synchronized (exists) {
+            try {
+                exists.wait(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        return exists[0];
     }
 
     private static int getNaturalOrientation(int orientation, int rotation) {

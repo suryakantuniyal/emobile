@@ -766,7 +766,7 @@ public class SalesTab_FR extends Fragment {
 //                String enteredPass = viewField.getText().toString().trim();
 //                enteredPass = TextUtils.isEmpty(enteredPass) ? "0" : enteredPass;
         int empId = ShiftDAO.getOpenShift(Integer.parseInt(myPref.getClerkID())).getAssigneeId();
-        Clerk salesAssociates = ClerkDAO.getByEmpId(empId); //SalesAssociateHandler.getSalesAssociate(enteredPass);
+        Clerk salesAssociates = ClerkDAO.getByEmpId(empId,true); //SalesAssociateHandler.getSalesAssociate(enteredPass);
         if (salesAssociates != null) {
 //            validPassword = true;
 //            associateId = enteredPass;

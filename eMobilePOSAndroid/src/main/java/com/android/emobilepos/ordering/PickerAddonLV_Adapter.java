@@ -249,10 +249,10 @@ public class PickerAddonLV_Adapter extends CursorAdapter implements OnClickListe
             ord.setItemTotal(tempPrice);
             ord.setItemSubtotal(tempPrice);
             if (!Global.isFromOnHold) {
-                GenerateNewID generator = new GenerateNewID(activity);
-                Global.lastOrdID = generator.getNextID(GenerateNewID.IdType.ORDER_ID);
+//                GenerateNewID generator = new GenerateNewID(activity);
+//                Global.lastOrdID = generator.getNextID(GenerateNewID.IdType.ORDER_ID);
             }
-            ord.setOrd_id(Global.lastOrdID);
+            ord.setOrd_id(orderProduct.getOrd_id());
 
             UUID uuid = UUID.randomUUID();
             ord.setOrdprod_id(uuid.toString());

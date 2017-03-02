@@ -1334,6 +1334,7 @@
     <string name="Waiters">Waiters</string>
     <string name="useSystemPassword">Use System Password</string>
     <string name="systemLoginInfo"><![CDATA[System password disable the use clerk. To re-enable the use of clerks go to Settings->Admin and select use clerks.]]></string>
+    <string name="button_send">Send</string>
 
 
 </resources>

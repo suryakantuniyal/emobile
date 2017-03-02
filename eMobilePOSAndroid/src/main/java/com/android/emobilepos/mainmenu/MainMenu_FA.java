@@ -357,7 +357,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
         @Override
         protected String doInBackground(String... params) {
-            final String autoConnect = "";
+            String autoConnect = "";
 
 //            activity.runOnUiThread(new Runnable() {
 //                @Override
@@ -372,7 +372,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 //                    e.printStackTrace();
 //                }
 //            }
-            DeviceUtils.autoConnect(activity, loadMultiPrinter);
+            autoConnect = DeviceUtils.autoConnect(activity, loadMultiPrinter);
             if (myPref.getPrinterType() == Global.POWA || myPref.getPrinterType() == Global.MEPOS
                     || myPref.getPrinterType() == Global.ELOPAYPOINT) {
                 isUSB = true;

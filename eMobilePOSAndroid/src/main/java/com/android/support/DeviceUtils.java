@@ -2,6 +2,7 @@ package com.android.support;
 
 import android.app.Activity;
 import android.text.TextUtils;
+import android.widget.Toast;
 
 import com.android.dao.DeviceTableDAO;
 import com.android.emobilepos.models.realms.Device;
@@ -9,7 +10,6 @@ import com.android.emobilepos.models.realms.Device;
 import java.util.HashMap;
 import java.util.List;
 
-import io.realm.RealmResults;
 import main.EMSDeviceManager;
 
 /**
@@ -23,7 +23,7 @@ public class DeviceUtils {
         List<Device> devices = DeviceTableDAO.getAll();
         HashMap<String, Integer> tempMap = new HashMap<>();
         EMSDeviceManager edm = null;
-        if (forceReload) {
+        if (forceReload || Global.multiPrinterMap.size() != devices.size()) {
             int i = 0;
             for (Device device : devices) {
                 if (tempMap.containsKey(device.getId())) {
@@ -155,7 +155,6 @@ public class DeviceUtils {
                 else
                     sb.append(myPref.getStarIPAddress()).append(": ").append("Failed to connect\n\r");
             }
-
         return sb.toString();
     }
 }

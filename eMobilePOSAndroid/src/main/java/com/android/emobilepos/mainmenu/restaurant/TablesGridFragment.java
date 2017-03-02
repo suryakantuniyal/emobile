@@ -14,14 +14,14 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.PopupMenu;
 
+import com.android.dao.ClerkDAO;
 import com.android.dao.DinningTableDAO;
 import com.android.dao.DinningTableOrderDAO;
-import com.android.dao.ClerkDAO;
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.DinningTablesAdapter;
+import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.DinningTable;
 import com.android.emobilepos.models.realms.DinningTableOrder;
-import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.ordering.SplittedOrderSummary_FA;
 import com.android.support.Global;
 
@@ -38,9 +38,11 @@ public class TablesGridFragment extends Fragment implements AdapterView.OnItemLo
 
     public TablesGridFragment() {
     }
+
     private DinningTablesActivity getDinningTablesActivity() {
         return (DinningTablesActivity) getActivity();
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -55,7 +57,7 @@ public class TablesGridFragment extends Fragment implements AdapterView.OnItemLo
         GridView gridView = (GridView) view.findViewById(R.id.tablesGridLayout);
         adapter = new DinningTablesAdapter(getActivity(), realmResults);
         if (!TextUtils.isEmpty(getDinningTablesActivity().associateId)) {
-            associate = ClerkDAO.getByEmpId(Integer.parseInt(getDinningTablesActivity().associateId));
+            associate = ClerkDAO.getByEmpId(Integer.parseInt(getDinningTablesActivity().associateId), true);
         }
         if (associate != null) {
             adapter.setSelectedDinningTables(associate.getAssignedDinningTables());

@@ -87,6 +87,9 @@ public class OrdersHandler {
             ord_taxamount, ord_discount, ord_discount_id, ord_latitude, ord_longitude, tipAmount, isVoid, custidkey,
             isOnHold, ord_HoldName, is_stored_fwd, VAT, assignedTable, numberOfSeats, associateID,
             ord_timeStarted, orderAttributes);
+    private static CustomersHandler custHandler;
+    private static OrderTaxes_DB taxes_db;
+    private static OrderProductsHandler orderProductsHandler;
 
     private StringBuilder sb1, sb2;
     private HashMap<String, Integer> attrHash;
@@ -299,7 +302,7 @@ public class OrdersHandler {
         order.ord_HoldName = cursor.getString(cursor.getColumnIndex(ord_HoldName));
         order.is_stored_fwd = cursor.getString(cursor.getColumnIndex(is_stored_fwd));
         order.custidkey = cursor.getString(cursor.getColumnIndex(custidkey));
-        CustomersHandler custHandler = new CustomersHandler(activity);
+        custHandler = new CustomersHandler(activity);
         order.customer = custHandler.getCustomer(order.cust_id);
         String attributes = cursor.getString(cursor.getColumnIndex(orderAttributes));
         if (!TextUtils.isEmpty(attributes)) {
@@ -308,12 +311,26 @@ public class OrdersHandler {
             }.getType();
             order.orderAttributes = gson.fromJson(attributes, listType);
         }
-        OrderTaxes_DB taxes_db = new OrderTaxes_DB();
+        taxes_db = getOrderTaxes_DB();
         List<DataTaxes> orderTaxes = taxes_db.getOrderTaxes(order.ord_id);
         order.setListOrderTaxes(orderTaxes);
-        OrderProductsHandler orderProductsHandler = new OrderProductsHandler(activity);
+        orderProductsHandler = getOrderProductsHandler(activity);
         order.setOrderProducts(orderProductsHandler.getOrderProducts(order.ord_id));
         return order;
+    }
+
+    private static OrderTaxes_DB getOrderTaxes_DB() {
+        if (taxes_db == null) {
+            taxes_db = new OrderTaxes_DB();
+        }
+        return taxes_db;
+    }
+
+    private static OrderProductsHandler getOrderProductsHandler(Context context) {
+        if (orderProductsHandler == null) {
+            orderProductsHandler = new OrderProductsHandler(context);
+        }
+        return orderProductsHandler;
     }
 
     public Order getOrder(String orderId) {

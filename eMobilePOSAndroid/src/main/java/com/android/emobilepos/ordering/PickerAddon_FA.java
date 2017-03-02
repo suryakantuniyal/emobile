@@ -176,7 +176,7 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
         LinearLayout addonParentLL = (LinearLayout) findViewById(R.id.addonParentHolder);
 
         if (parentAddons.size() >= 1) {
-            listParentViews = new ArrayList<View>();
+            listParentViews = new ArrayList<>();
             int pos = 0;
             for (ParentAddon parentAddon : parentAddons) {
                 final View view = inflater.inflate(R.layout.catalog_gridview_adapter, null);

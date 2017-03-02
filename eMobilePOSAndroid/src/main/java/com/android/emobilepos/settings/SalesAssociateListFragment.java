@@ -74,7 +74,7 @@ public class SalesAssociateListFragment extends Fragment implements AdapterView.
     private void reloadGrid(int i) {
         adapter.selectedIdx = i;
         if (associates != null && !associates.isEmpty()) {
-            Clerk associate = ClerkDAO.getByEmpId(associates.get(i).getEmpId());
+            Clerk associate = ClerkDAO.getByEmpId(associates.get(i).getEmpId(),true);
             SalesAssociateConfigurationActivity activity = (SalesAssociateConfigurationActivity) getActivity();
             activity.setSelectedClerk(associate);
             activity.getDinningTablesGridFragment().refreshGrid();

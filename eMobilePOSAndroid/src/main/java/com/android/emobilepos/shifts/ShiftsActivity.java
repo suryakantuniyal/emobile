@@ -410,7 +410,7 @@ public class ShiftsActivity extends Activity implements View.OnClickListener, Te
 
     private void openUI() {
         setContentView(R.layout.activity_shifts);
-        Clerk clerk = ClerkDAO.getByEmpId(Integer.parseInt(preferences.getClerkID()));
+        Clerk clerk = ClerkDAO.getByEmpId(Integer.parseInt(preferences.getClerkID()), true);
         TextView clerkName = (TextView) findViewById(R.id.clerkNameShifttextView);
         clerkName.setText(clerk.getEmpName());
         shift = ShiftDAO.getCurrentShift(Integer.parseInt(preferences.getClerkID()));

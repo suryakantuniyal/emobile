@@ -197,11 +197,11 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
                 } else {
                     try {
                         OnHoldsManager.synchOrdersOnHoldDetails(DinningTablesActivity.this, tableOrder.getCurrentOrderId());
-                        OrderProductsHandler orderProdHandler = new OrderProductsHandler(DinningTablesActivity.this);
-                        Cursor c = orderProdHandler.getOrderProductsOnHold(tableOrder.getCurrentOrderId());
-                        Global global = (Global) DinningTablesActivity.this.getApplication();
-                        global.order.setOrderProducts(new ArrayList<OrderProduct>());
-                        OnHoldActivity.addOrderProducts(DinningTablesActivity.this, c);
+//                        OrderProductsHandler orderProdHandler = new OrderProductsHandler(DinningTablesActivity.this);
+//                        Cursor c = orderProdHandler.getOrderProductsOnHold(tableOrder.getCurrentOrderId());
+//                        Global global = (Global) DinningTablesActivity.this.getApplication();
+//                        global.order.setOrderProducts(new ArrayList<OrderProduct>());
+//                        OnHoldActivity.addOrderProducts(DinningTablesActivity.this, c);
                         Global.isFromOnHold = true;
 
                     } catch (IOException e) {
@@ -213,11 +213,11 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
             } else {
                 OrdersHandler ordersHandler = new OrdersHandler(DinningTablesActivity.this);
                 if (ordersHandler.isOrderOffline(tableOrder.getCurrentOrderId())) {
-                    OrderProductsHandler orderProdHandler = new OrderProductsHandler(DinningTablesActivity.this);
-                    Cursor c = orderProdHandler.getOrderProductsOnHold(tableOrder.getCurrentOrderId());
-                    Global global = (Global) DinningTablesActivity.this.getApplication();
-                    global.order.setOrderProducts(new ArrayList<OrderProduct>());
-                    OnHoldActivity.addOrderProducts(DinningTablesActivity.this, c);
+//                    OrderProductsHandler orderProdHandler = new OrderProductsHandler(DinningTablesActivity.this);
+//                    Cursor c = orderProdHandler.getOrderProductsOnHold(tableOrder.getCurrentOrderId());
+//                    Global global = (Global) DinningTablesActivity.this.getApplication();
+//                    global.order.setOrderProducts(new ArrayList<OrderProduct>());
+//                    OnHoldActivity.addOrderProducts(DinningTablesActivity.this, c);
                     Global.isFromOnHold = true;
                 } else {
                     return false;

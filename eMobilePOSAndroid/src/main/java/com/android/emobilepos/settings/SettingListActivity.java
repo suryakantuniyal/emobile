@@ -43,7 +43,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.dao.PayMethodsDAO;
-import com.android.dao.ShiftDAO;
 import com.android.database.CategoriesHandler;
 import com.android.database.DBManager;
 import com.android.database.PayMethodsHandler;
@@ -52,8 +51,6 @@ import com.android.emobilepos.country.CountryPicker;
 import com.android.emobilepos.country.CountryPickerListener;
 import com.android.emobilepos.mainmenu.SettingsTab_FR;
 import com.android.emobilepos.models.realms.PaymentMethod;
-import com.android.emobilepos.models.realms.Shift;
-import com.android.emobilepos.shifts.ShiftExpensesList_FA;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.HttpClient;
@@ -528,7 +525,8 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     connectUSBDevice();
                     break;
                 case R.string.config_redetect_peripherals:
-                    DeviceUtils.autoConnect(getActivity(), true);
+                    String connect = DeviceUtils.autoConnect(getActivity(), true);
+                    Toast.makeText(getActivity(), connect, Toast.LENGTH_LONG).show();
 //                    new autoConnectPrinter().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                     break;
                 case R.string.config_store_and_forward_transactions:

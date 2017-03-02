@@ -441,7 +441,7 @@
     <string name="button_load">Load</string>
     <string name="button_checkout">Checkout</string>
     <string name="button_template">Template</string>
-    <string name="button_hold">Send</string>
+    <string name="button_hold">Hold</string>
     <string name="button_details">Details</string>
     <string name="button_sign">Sign</string>
 
@@ -1278,6 +1278,7 @@
     <string name="Waiters">Waiters</string>
     <string name="useSystemPassword">Use System Password</string>
     <string name="systemLoginInfo"><![CDATA[System password disable the use clerk. To re-enable the use of clerks go to Settings->Admin and select use clerks.]]></string>
+    <string name="button_send">Send</string>
 
 
 </resources>

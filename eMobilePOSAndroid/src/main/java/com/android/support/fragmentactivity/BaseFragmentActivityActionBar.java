@@ -75,7 +75,7 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
         if (myPref == null) {
             myPref = new MyPreferences(this);
         }
-        clerk = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()));
+        clerk = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()), false);
         if (BuildConfig.REPORT_CRASHLITYCS) {
             setCrashliticAditionalInfo();
         }

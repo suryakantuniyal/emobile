@@ -1880,8 +1880,8 @@ public class SynchMethods {
                 Cursor c = orderProdHandler.getOrderProductsOnHold(params[0]);
                 if (BuildConfig.DELETE_INVALID_HOLDS || (c != null && c.getCount() > 0)) {
                     proceedToView = true;
-                    if (type == 0)
-                        ((OnHoldActivity) context).addOrderProducts(activity, c);
+//                    if (type == 0)
+//                        OnHoldActivity.addOrderProducts(activity, c);
                 } else
                     proceedToView = false;
                 if (c != null) {

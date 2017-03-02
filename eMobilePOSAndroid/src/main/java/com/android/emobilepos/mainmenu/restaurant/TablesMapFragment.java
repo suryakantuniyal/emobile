@@ -57,7 +57,7 @@ public class TablesMapFragment extends Fragment implements View.OnClickListener,
         View rootView = inflater.inflate(R.layout.dlog_ask_table_map_layout, container, false);
         preferences = new MyPreferences(getActivity());
         if (!TextUtils.isEmpty(getDinningTablesActivity().associateId)) {
-            associate = ClerkDAO.getByEmpId(Integer.parseInt(getDinningTablesActivity().associateId));
+            associate = ClerkDAO.getByEmpId(Integer.parseInt(getDinningTablesActivity().associateId),true);
         }
         dinningTables = DinningTableDAO.getAll();//DinningTablesProxy.getDinningTables(getContext());
         tableAssignedClerks = DinningTableDAO.getTableAssignedClerks();

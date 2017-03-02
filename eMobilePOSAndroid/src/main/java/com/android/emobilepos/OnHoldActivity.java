@@ -121,7 +121,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
     private void askWaiterSignin() {
         if (myPref.isUseClerks()) {
             Shift openShift = ShiftDAO.getOpenShift(Integer.parseInt(myPref.getClerkID()));
-            Clerk associate = ClerkDAO.getByEmpId(openShift.getAssigneeId());
+            Clerk associate = ClerkDAO.getByEmpId(openShift.getAssigneeId(),true);
             long count = associate == null ? 0 : associate.getAssignedDinningTables().where().equalTo("number", myCursor.getString(myCursor.getColumnIndex("assignedTable"))).count();
             if (associate != null && count > 0) {
                 validPassword = true;
@@ -202,7 +202,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                     boolean isDigits = org.apache.commons.lang3.math.NumberUtils.isDigits(enteredPass);
                     Clerk salesAssociates = null;
                     if (isDigits) {
-                        salesAssociates = ClerkDAO.getByEmpId(Integer.parseInt(enteredPass)); //SalesAssociateHandler.getSalesAssociate(enteredPass);
+                        salesAssociates = ClerkDAO.getByEmpId(Integer.parseInt(enteredPass),true); //SalesAssociateHandler.getSalesAssociate(enteredPass);
                     }
                     long count = salesAssociates == null ? 0 : salesAssociates.getAssignedDinningTables().where().equalTo("number", myCursor.getString(myCursor.getColumnIndex("assignedTable"))).count();
                     if (salesAssociates != null && count > 0) {
@@ -397,7 +397,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                 int size = c.getCount();
                 if (size > 0) {
                     if (!forPrinting) {
-                        addOrderProducts(OnHoldActivity.this, c);
+//                        addOrderProducts(OnHoldActivity.this, c);
                         startActivityForResult(intent, 0);
                         activity.finish();
                     } else {
@@ -634,7 +634,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         String[] discountInfo;
         double total;
         Global global = (Global) activity.getApplication();
-        global.order.setOrderProducts(new ArrayList<OrderProduct>());
+//        global.order.setOrderProducts(new ArrayList<OrderProduct>());
 
         for (OrderProduct ord : orderProducts) {
             double discAmount = 0;

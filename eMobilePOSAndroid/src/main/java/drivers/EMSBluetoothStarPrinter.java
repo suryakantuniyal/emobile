@@ -89,6 +89,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     public boolean autoConnect(Activity activity, EMSDeviceManager edm, int paperSize, boolean isPOSPrinter,
                                String _portName, String _portNumber) {
         boolean didConnect = false;
+        boolean isNetworkPrinter = false;
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
         cardManager = new CreditCardInfo();
@@ -122,10 +123,13 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 enableCenter = new byte[]{0x1b, 0x61, 0x01};
                 disableCenter = new byte[]{0x1b, 0x61, 0x00};
             } else {
-                if (getPortName().contains("TCP") && portNumber != null && portNumber.equals("9100"))
+                if (getPortName().contains("TCP") && portNumber != null && portNumber.equals("9100")) {
                     portSettings = portNumber;
-                else
+                    isNetworkPrinter = true;
+                } else {
                     portSettings = "";
+                    isNetworkPrinter = false;
+                }
 
                 port = getStarIOPort();
                 enableCenter = new byte[]{0x1b, 0x1d, 0x61, 0x01};
@@ -139,7 +143,9 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
             }
             StarPrinterStatus status = null;
             try {
-                status = port.retreiveStatus();
+                if (!isNetworkPrinter) {
+                    status = port.retreiveStatus();
+                }
             } catch (StarIOPortException e) {
                 try {
                     StarIOPort.releasePort(port);
@@ -154,7 +160,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                     e1.printStackTrace();
                 }
             }
-            if ((port != null) && (!status.offline)) {
+            if (port != null && (isNetworkPrinter || !status.offline)) {
                 didConnect = true;
             }
 

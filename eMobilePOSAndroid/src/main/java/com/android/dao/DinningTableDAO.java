@@ -81,15 +81,13 @@ public class DinningTableDAO {
     public static DinningTable getById(String tableId) {
         Realm realm = Realm.getDefaultInstance();
         RealmQuery<DinningTable> where = realm.where(DinningTable.class);
-        DinningTable table = where.equalTo("id", tableId).findFirst();
-        return table;
+        return where.equalTo("id", tableId).findFirst();
     }
 
     public static DinningTable getByNumber(String tableNumber) {
         Realm realm = Realm.getDefaultInstance();
         RealmQuery<DinningTable> where = realm.where(DinningTable.class);
-        DinningTable table = where.equalTo("number", tableNumber).findFirst();
-        return table;
+        return where.equalTo("number", tableNumber).findFirst();
     }
 
     public static HashMap<String, List<Clerk>> getTableAssignedClerks() {
