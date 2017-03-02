@@ -199,8 +199,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         String onHoldOrderJson = extras.getString("onHoldOrderJson");
         Order onHoldOrder = null;
         if (onHoldOrderJson != null && !onHoldOrderJson.isEmpty()) {
-            Gson gson = JsonUtils.getInstance();
-            onHoldOrder = gson.fromJson(onHoldOrderJson, Order.class);
+//            Gson gson = JsonUtils.getInstance();
+//            onHoldOrder = gson.fromJson(onHoldOrderJson, Order.class);
             OrdersHandler ordersHandler = new OrdersHandler(this);
             onHoldOrder = ordersHandler.getOrder(onHoldOrder.ord_id);
             Global.lastOrdID = onHoldOrder.ord_id;// myCursor.getString(myCursor.getColumnIndex("ord_id"));
