@@ -71,7 +71,7 @@ import java.util.List;
 import util.json.JsonUtils;
 
 public class Catalog_FR extends Fragment implements OnItemClickListener, OnClickListener, LoaderCallbacks<Cursor>,
-        MenuCatGV_Adapter.ItemClickedCallback, MenuProdGV_Adapter.ProductClickedCallback, CatalogCategories_Adapter.CategoriesCallback {
+        MenuProdGV_Adapter.ProductClickedCallback, CatalogCategories_Adapter.CategoriesCallback {
 
     public static final int CASE_CATEGORY = 1, CASE_SUBCATEGORY = 2, CASE_PRODUCTS = 0, CASE_SEARCH_PROD = 3;
     private static final int CURSOR_LOADER_ID = 0x01;
@@ -89,7 +89,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     private boolean onRestaurantMode = false;
 
     private VolumePricesHandler volPriceHandler;
-    private MenuCatGV_Adapter categoryListAdapter;
     private MenuProdGV_Adapter prodListAdapter;
     private RefreshReceiptViewCallback callBackRefreshView;
     private MyEditText searchField;
@@ -559,28 +558,13 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     @Override
     public void onLoadFinished(Loader<Cursor> arg0, Cursor c) {
         myCursor = c;
-        if (_typeCase != CASE_PRODUCTS && _typeCase != CASE_SEARCH_PROD) {
-            categoryListAdapter = new MenuCatGV_Adapter(this, getActivity(), c, CursorAdapter.NO_SELECTION, imageLoader);
-            catalogList.setAdapter(categoryListAdapter);
-            if (
-                    myPref.getPreferences(MyPreferences.pref_restaurant_mode) // is restaurant
-                            && myCursor.getCount() == 1 // only one result
-                            && _typeCase == CASE_CATEGORY // displaying category
-                            && !Global.cat_id.equalsIgnoreCase("0")) //Global has a category set
-                itemClicked();
-        } else {
-            prodListAdapter = new MenuProdGV_Adapter(this, getActivity(), c, CursorAdapter.NO_SELECTION, imageLoader);
-            catalogList.setAdapter(prodListAdapter);
-        }
+        prodListAdapter = new MenuProdGV_Adapter(this, getActivity(), c, CursorAdapter.NO_SELECTION, imageLoader);
+        catalogList.setAdapter(prodListAdapter);
     }
-
 
     @Override
     public void onLoaderReset(Loader<Cursor> arg0) {
         myCursor.close();
-        if (categoryListAdapter != null) {
-            categoryListAdapter.swapCursor(null);
-        }
         if (catalogList != null) {
             catalogList.setAdapter(null);
         }
@@ -588,12 +572,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
     @Override
     public void productClicked(int position) {
-        myCursor.moveToPosition(position);
-        itemClicked();
-    }
-
-    @Override
-    public void itemClicked(int position, boolean showAllProducts) {
         myCursor.moveToPosition(position);
         itemClicked();
     }
@@ -911,12 +889,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     }
 
     public void refreshListView() {
-        if (_typeCase != CASE_PRODUCTS && _typeCase != CASE_SEARCH_PROD) {
-            categoryListAdapter.notifyDataSetChanged();
-
-        } else {
-            prodListAdapter.notifyDataSetChanged();
-        }
+        prodListAdapter.notifyDataSetChanged();
     }
 
     public void showSubcategories(String subCategoryName) {
