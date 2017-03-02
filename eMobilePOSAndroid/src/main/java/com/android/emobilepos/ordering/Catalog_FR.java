@@ -103,18 +103,20 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     private int page = 1;
     private boolean isToGo;
 
-    private LinearLayout categoriesWrapLayout;
+    private LinearLayout categoriesInnerWrapLayout;
     private RecyclerView catalogRecyclerView;
     private CatalogCategories_Adapter categoriesAdapter;
     private Button categoriesBackButton;
     private TextView categoriesBannerTextView;
     private List<EMSCategory> categoryStack = new ArrayList<>();
     private EMSCategory selectedSubcategory;
+    private SearchType searchType = SearchType.NAME;
     private boolean isRestoringSelectedCategory = false;
     private static String BUNDLE_CATEGORY_STACK = "BUNDLE_CATEGORY_STACK";
     private static String BUNDLE_SELECTED_CATEGORY = "BUNDLE_SELECTED_CATEGORY";
     private static String BUNDLE_SEARCH_TEXT = "BUNDLE_SEARCH_TEXT";
     private static String BUNDLE_SEARCH_TYPE = "BUNDLE_SEARCH_TYPE";
+    private static String BUNDLE_SEARCH_TYPE_ENUM = "BUNDLE_SEARCH_TYPE_ENUM";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -140,6 +142,9 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         isFastScanning = myPref.getPreferences(MyPreferences.pref_fast_scanning_mode);
 
         global = (Global) getActivity().getApplication();
+        catHandler = new CategoriesHandler(getActivity());
+
+        prodListAdapter = new MenuProdGV_Adapter(this, getActivity(), null, CursorAdapter.NO_SELECTION, imageLoader);
 
 
         // TODO: Remove Global Dependency
@@ -171,8 +176,8 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             }
         });
 
-        categoriesWrapLayout = (LinearLayout)view.findViewById(R.id.categoriesWrapLayout);
-        categoriesWrapLayout.setVisibility(onRestaurantMode ? View.VISIBLE : View.GONE);
+        categoriesInnerWrapLayout = (LinearLayout) view.findViewById(R.id.categoriesInnerWrapLayout);
+        categoriesInnerWrapLayout.setVisibility(onRestaurantMode ? View.VISIBLE : View.GONE);
 
         setupSpinners(view);
         setupSearchField();
@@ -212,6 +217,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         if (savedInstanceState != null) {
             search_text = savedInstanceState.getString(BUNDLE_SEARCH_TEXT);
             search_type = savedInstanceState.getString(BUNDLE_SEARCH_TYPE);
+            searchType = (SearchType) savedInstanceState.getSerializable(BUNDLE_SEARCH_TYPE_ENUM);
 
             categoryStack = savedInstanceState.getParcelableArrayList(BUNDLE_CATEGORY_STACK);
             categoriesBackButton.setVisibility(categoryStack.size() > 0 ? View.VISIBLE : View.GONE);
@@ -246,13 +252,44 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         outState.putParcelable(BUNDLE_SELECTED_CATEGORY, selectedSubcategory);
         outState.putString(BUNDLE_SEARCH_TEXT, search_text);
         outState.putString(BUNDLE_SEARCH_TYPE, search_type);
+        outState.putSerializable(BUNDLE_SEARCH_TYPE_ENUM, searchType);
         super.onSaveInstanceState(outState);
     }
 
-    @Override
-    public void onDestroyView() {
-        if (myCursor != null) myCursor.close();
-        super.onDestroyView();
+//    @Override
+//    public void onDestroyView() {
+//        if (myCursor != null) {
+//            if (!myCursor.isClosed()) myCursor.close();
+//        }
+//        super.onDestroyView();
+//    }
+
+    private enum SearchType {
+        NAME(0), DESCRIPTION(1), TYPE(2), UPC(3), SKU(4);
+
+        public int id;
+
+        SearchType(int id) {
+            this.id = id;
+        }
+
+        public static SearchType valueOf(int code) {
+            switch (code) {
+                case 0:
+                    return NAME;
+                case 1:
+                    return DESCRIPTION;
+                case 2:
+                    return TYPE;
+                case 3:
+                    return UPC;
+                case 4:
+                    return SKU;
+                default:
+                    return UPC;
+            }
+        }
+
     }
 
     @Override
@@ -359,12 +396,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.categoryButton:
-//                if (catalogRecyclerView.getVisibility() == View.VISIBLE) {
-//                    catalogRecyclerView.setVisibility(View.GONE);
-//                } else {
-//                    catalogRecyclerView.setVisibility(View.VISIBLE);
-//                }
-
                 categories = new ArrayList<>(spinnerCategories);
                 catName = new ArrayList<>(spinnerCatName);
                 catIDs = new ArrayList<>(spinnerCatID);
@@ -425,8 +456,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         else
             btnCategory.setOnClickListener(this);
 
-
-        catHandler = new CategoriesHandler(getActivity());
         Spinner spinnerFilter = (Spinner) v.findViewById(R.id.filterButton);
 
         Resources resources = getActivity().getResources();
@@ -450,7 +479,8 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         spinnerFilter.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                global.searchType = position;
+//                global.searchType = position;
+                searchType = SearchType.valueOf(position);
             }
 
             @Override
@@ -478,17 +508,16 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
                 if (position == 0 && !isSubcategory) {
-                    Global.cat_id = "0";
-
+                    selectedSubcategory = null;
                 } else {
 
                     int index = position;
-                    if (!isSubcategory)
+                    if (!isSubcategory) {
                         index -= 1;
-                    Global.cat_id = categories.get(index)[1];
-                    // it has sub-category
-                    global.hasSubcategory = myPref.getPreferences(MyPreferences.pref_enable_multi_category) && !categories.get(index)[2].equals("0");
-                    global.isSubcategory = false;
+                    }
+
+                    selectedSubcategory = new EMSCategory(categories.get(index)[1], categories.get(index)[0], "", 0);
+
                 }
                 dialog.dismiss();
                 loadCursor();
@@ -523,15 +552,27 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
     @Override
     public void onLoadFinished(Loader<Cursor> arg0, Cursor c) {
-        if (myCursor != null) myCursor.close();
+//        prodListAdapter.swapCursor(c);
+//        prodListAdapter.notifyDataSetChanged();
+//        if (myCursor != null) {
+//            if (!myCursor.isClosed()) myCursor.close();
+//        }
         myCursor = c;
         prodListAdapter = new MenuProdGV_Adapter(this, getActivity(), c, CursorAdapter.NO_SELECTION, imageLoader);
         catalogList.setAdapter(prodListAdapter);
+
+        if (!onRestaurantMode) {
+            categoriesBannerTextView.setVisibility(selectedSubcategory != null ? View.VISIBLE : View.GONE);
+            refreshCategoriesBanner();
+        }
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> arg0) {
-        myCursor.close();
+//        prodListAdapter.swapCursor(null);
+//        if (myCursor != null) {
+//            if (!myCursor.isClosed()) myCursor.close();
+//        }
         if (catalogList != null) {
             catalogList.setAdapter(null);
         }
@@ -552,20 +593,20 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     public void performSearch(String text) {
         search_text = text;
 
-        switch (global.searchType) {
-            case 0: // search by Name
+        switch (searchType) {
+            case NAME: // search by Name
                 search_type = "prod_name";
                 break;
-            case 1: // search by Description
+            case DESCRIPTION: // search by Description
                 search_type = "prod_desc";
                 break;
-            case 2: // search by Type
+            case TYPE: // search by Type
                 search_type = "prod_type";
                 break;
-            case 3: // search by UPC
+            case UPC: // search by UPC
                 search_type = "prod_upc";
                 break;
-            case 4: // search by SKU
+            case SKU: // search by SKU
                 search_type = "prod_sku";
                 break;
         }
@@ -788,7 +829,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         setupCategoryView();
         dialog.show();
     }
-
 
     public interface RefreshReceiptViewCallback {
         void refreshView();
