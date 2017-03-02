@@ -95,24 +95,4 @@
         android:scrollingCache="false" >
     </ListView>
 
-    <LinearLayout
-        android:id="@+id/categoriesButtonLayoutHolder"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/add_orders_bottom_section_size"
-        android:background="#262526"
-        android:paddingTop="5dp"
-        android:paddingBottom="5dp"
-        android:paddingLeft="20dp">
-
-        <Button
-            style="@style/action_button_text_appearance"
-            android:id="@+id/buttonAllCategories"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:background="@drawable/action_button_selector"
-            android:textSize="@dimen/ordering_checkout_btn_txt_size"
-            android:text="All"
-            android:layout_gravity="center_vertical"/>
-    </LinearLayout>
-
 </LinearLayout>

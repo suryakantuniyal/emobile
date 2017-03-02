@@ -1276,9 +1276,6 @@ public class Global extends MultiDexApplication {
 
         ord_type = null;
         cat_id = "0";
-        Catalog_FR._typeCase = -1;
-        Catalog_FR.btnListID.clear();
-        Catalog_FR.btnListName.clear();
         isSubcategory = false;
         hasSubcategory = false;
         Global.isFromOnHold = false;

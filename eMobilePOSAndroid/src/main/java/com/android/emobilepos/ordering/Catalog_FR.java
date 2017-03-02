@@ -79,12 +79,9 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     public static Catalog_FR instance;
     public static int _typeCase = -1;
     private static String search_text = "", search_type = "";
-    public static List<String> btnListID = new ArrayList<>();
-    public static List<String> btnListName = new ArrayList<>();
     private AbsListView catalogList;
     private ImageLoader imageLoader;
     private Cursor myCursor;
-    private LinearLayout catButLayout;
     private MyPreferences myPref;
     private Global global;
     private boolean onRestaurantMode = false;
@@ -125,7 +122,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         View view = inflater.inflate(R.layout.order_catalog_layout, container, false);
         instance = this;
         isToGo = ((OrderingMain_FA) getActivity()).isToGo;
-        catButLayout = (LinearLayout) view.findViewById(R.id.categoriesButtonLayoutHolder);
         searchField = (MyEditText) view.findViewById(R.id.catalogSearchField);
         searchField.setIsForSearching(getActivity(), OrderingMain_FA.invisibleSearchMain);
         // searchField.setText("58187869354"); //test upc
@@ -186,8 +182,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             }
         });
         setupSpinners(view);
-        setupCategoriesButtons();
-
         setupSearchField();
 
 
@@ -431,10 +425,10 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     private void setupSpinners(View v) {
 
         Button btnCategory = (Button) v.findViewById(R.id.categoryButton);
-//        if (onRestaurantMode)
-//            btnCategory.setVisibility(View.INVISIBLE);
-//        else
-        btnCategory.setOnClickListener(this);
+        if (onRestaurantMode)
+            btnCategory.setVisibility(View.INVISIBLE);
+        else
+            btnCategory.setOnClickListener(this);
 
 
         catHandler = new CategoriesHandler(getActivity());
@@ -512,38 +506,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
     }
 
-    private void setupCategoriesButtons() {
-        if (!onRestaurantMode)
-            catButLayout.setVisibility(View.GONE);
-        else {
-            Button but = (Button) catButLayout.findViewById(R.id.buttonAllCategories);
-            but.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    int size = btnListID.size();
-                    if (size > 0) {
-                        for (int i = 0; i < size; i++)
-                            removeCategoryButton(btnListID.get(i));
-                        btnListID.clear();
-                        btnListName.clear();
-
-
-                    }
-                    _typeCase = CASE_CATEGORY;
-                    Global.cat_id = "0";
-//                    restModeViewingProducts = false;
-                    loadCursor();
-                }
-            });
-
-            int size = btnListID.size();
-            for (int i = 0; i < size; i++) {
-                addCategoryButton(btnListName.get(i), btnListID.get(i));
-            }
-        }
-    }
-
     public void loadCursor() {
         getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this).forceLoad();
     }
@@ -615,75 +577,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
         loadCursor();
         OrderingMain_FA.invisibleSearchMain.requestFocus();
-    }
-
-    private void getCategoryCursor(int i_id, int i_cat_name, int i_num_subcategories, boolean showAllProducts) {
-//        restModeViewingProducts = false;
-        String catID = myCursor.getString(myCursor.getColumnIndex("_id"));
-        boolean found_category_name = myCursor.getColumnIndex("cat_name") != -1;
-        if (found_category_name) {
-            String catName = myCursor.getString(myCursor.getColumnIndex("cat_name"));
-            Global.cat_id = catID;
-
-            int num_subcategories = Integer.parseInt(myCursor.getString(myCursor.getColumnIndex("num_subcategories")));
-            if (num_subcategories > 0 && !showAllProducts) {
-
-                btnListID.add(catID);
-                btnListName.add(catName);
-                addCategoryButton(catName, catID);
-                _typeCase = CASE_SUBCATEGORY;
-                loadCursor();
-            } else {
-//                restModeViewingProducts = true;
-                btnListID.add(catID);
-                btnListName.add(catName);
-                addCategoryButton(catName, catID);
-
-                _typeCase = CASE_PRODUCTS;
-                loadCursor();
-            }
-        }
-    }
-
-    private void addCategoryButton(String categoryName, String cat_id) {
-        Button btn = new Button(getActivity());
-        btn.setTag(cat_id);
-        btn.setText(categoryName);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT);
-        catButLayout.addView(btn, params);
-        btn.setTextAppearance(getActivity(), R.style.black_text_appearance);
-        btn.setPadding(5, 0, 5, 0);
-        btn.setTextSize(TypedValue.COMPLEX_UNIT_PX, getActivity().getResources().getDimension(R.dimen.ordering_checkout_btn_txt_size));
-        btn.setBackgroundResource(R.drawable.blue_btn_selector);
-        btn.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                int size1 = btnListID.size();
-                int temp = btnListID.indexOf(v.getTag());
-                List<String> tempList = new ArrayList<String>(btnListID);
-                for (int i = temp + 1; i < size1; i++) {
-                    removeCategoryButton(tempList.get(i));
-                    btnListName.remove(btnListID.indexOf(tempList.get(i)));
-                    btnListID.remove(btnListID.indexOf(tempList.get(i)));
-                }
-                int size2 = btnListID.size();
-                if (size2 < size1) {
-                    Global.cat_id = btnListID.get(size2 - 1);
-                    _typeCase = CASE_SUBCATEGORY;
-                    loadCursor();
-                }
-            }
-        });
-    }
-
-    private void removeCategoryButton(String cat_id) {
-        Button temp = (Button) catButLayout.findViewWithTag(cat_id);
-        if (temp != null) {
-//            restModeViewingProducts = false;
-            catButLayout.removeView(temp);
-        }
     }
 
     public void automaticAddOrder(Product product) {
