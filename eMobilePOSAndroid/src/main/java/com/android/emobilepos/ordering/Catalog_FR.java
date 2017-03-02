@@ -74,10 +74,8 @@ import util.json.JsonUtils;
 public class Catalog_FR extends Fragment implements OnItemClickListener, OnClickListener, LoaderCallbacks<Cursor>,
         MenuProdGV_Adapter.ProductClickedCallback, CatalogCategories_Adapter.CategoriesCallback {
 
-    public static final int CASE_CATEGORY = 1, CASE_SUBCATEGORY = 2, CASE_PRODUCTS = 0, CASE_SEARCH_PROD = 3;
     private static final int CURSOR_LOADER_ID = 0x01;
     public static Catalog_FR instance;
-    public static int _typeCase = -1;
     private static String search_text = "", search_type = "";
     private AbsListView catalogList;
     private ImageLoader imageLoader;
@@ -148,21 +146,12 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         if (Global.cat_id.equals("0"))
             Global.cat_id = myPref.getPreferencesValue(MyPreferences.pref_default_category);
 
-        if (myPref.getPreferences(MyPreferences.pref_restaurant_mode)) {
-//            if (_typeCase == -1)
-//                _typeCase = CASE_CATEGORY;
-//            else if (_typeCase == CASE_PRODUCTS || _typeCase == CASE_SEARCH_PROD)
-//                restModeViewingProducts = true;
+        // END TODO
 
+
+        if (myPref.getPreferences(MyPreferences.pref_restaurant_mode)) {
             onRestaurantMode = true;
         }
-//        else {
-//            if (_typeCase == -1)
-//                _typeCase = CASE_PRODUCTS;
-//        }
-
-        _typeCase = CASE_PRODUCTS; // TEMPORARY UNTIL ABOVE IS REWRITTEN
-        // END TODO
 
         catalogList.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
@@ -184,11 +173,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         setupSpinners(view);
         setupSearchField();
 
-
-        // Prepare the loader.  Either re-connect with an existing one,
-        // or start a new one.
         getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
-
 
         categoriesBannerTextView = (TextView) view.findViewById(R.id.categoriesBannerTextView);
         categoriesBackButton = (Button) view.findViewById(R.id.categoriesBackButton);
@@ -482,7 +467,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         list.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-                _typeCase = CASE_PRODUCTS;
                 if (position == 0 && !isSubcategory) {
                     Global.cat_id = "0";
 
@@ -529,6 +513,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
     @Override
     public void onLoadFinished(Loader<Cursor> arg0, Cursor c) {
+        if (myCursor != null) myCursor.close();
         myCursor = c;
         prodListAdapter = new MenuProdGV_Adapter(this, getActivity(), c, CursorAdapter.NO_SELECTION, imageLoader);
         catalogList.setAdapter(prodListAdapter);
