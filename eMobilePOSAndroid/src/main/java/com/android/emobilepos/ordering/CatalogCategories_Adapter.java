@@ -109,12 +109,8 @@ public class CatalogCategories_Adapter extends RecyclerView.Adapter<CatalogCateg
             @Override
             public void onClick(View v) {
 
-                if (selectedPosition != position) {
-                    notifyItemChanged(selectedPosition);
-                    selectedPosition = position;
-                } else {
-                    selectedPosition = -1;
-                }
+                notifyItemChanged(selectedPosition);
+                selectedPosition = position;
                 notifyItemChanged(position);
 
                 if (callback != null) {
@@ -130,7 +126,7 @@ public class CatalogCategories_Adapter extends RecyclerView.Adapter<CatalogCateg
     }
 
     public void selectItemWithCategoryId(String categoryId) {
-        for (EMSCategory category:categories) {
+        for (EMSCategory category : categories) {
             if (category.getCategoryId().equals(categoryId)) {
                 selectedPosition = categories.indexOf(category);
                 notifyItemChanged(selectedPosition);
@@ -145,7 +141,7 @@ public class CatalogCategories_Adapter extends RecyclerView.Adapter<CatalogCateg
     }
 
     public EMSCategory getCategoryWithId(String categoryId) {
-        for (EMSCategory category:categories) {
+        for (EMSCategory category : categories) {
             if (category.getCategoryId().equals(categoryId)) {
                 return category;
             }
