@@ -718,7 +718,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
             ListPreference lp = (ListPreference) getPreferenceManager()
                     .findPreference(MyPreferences.pref_default_payment_method);
             PayMethodsHandler handler = new PayMethodsHandler(getActivity());
-            List<PaymentMethod> list = handler.getPayMethod();
+            List<PaymentMethod> list = PayMethodsDAO.getAllSortByName(true);
             int size = list.size();
             CharSequence[] entries = new String[size + 1];
             CharSequence[] entriesValues = new String[size + 1];

@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class DateUtils {
-    public static final String DATE_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+    public static final String DATE_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZ";
     public static final String DATE_yyyy_MM_ddTHH_mm_ss = "yyyy-MM-dd'T'HH:mm:ss";
     public static final String DATE_yyyy_MM_dd = "yyyy-MM-dd";
     public static final String DATE_MMM_dd_yyyy_h_mm_a = "MMM dd,yyyy h:mm a";

@@ -34,14 +34,19 @@ public class PayMethodsDAO {
                     method.deleteFromRealm();
                 }
             }
-        }finally {
+        } finally {
             realm.commitTransaction();
         }
     }
 
-    public static List<PaymentMethod> getAllSortByName() {
+    public static List<PaymentMethod> getAllSortByName(boolean returnManaged) {
         Realm realm = Realm.getDefaultInstance();
-        return realm.where(PaymentMethod.class).findAll().sort("paymethod_name", Sort.ASCENDING);
+        List<PaymentMethod> paymentMethods = realm.where(PaymentMethod.class).findAll().sort("paymethod_name", Sort.ASCENDING);
+        if (!returnManaged && paymentMethods != null) {
+            paymentMethods = realm.copyFromRealm(paymentMethods);
+        }
+
+        return paymentMethods;
     }
 
     public static void truncate() {
@@ -49,7 +54,7 @@ public class PayMethodsDAO {
         try {
             realm.beginTransaction();
             realm.delete(PaymentMethod.class);
-        }finally {
+        } finally {
             realm.commitTransaction();
         }
     }

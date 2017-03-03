@@ -1,6 +1,7 @@
 package com.android.emobilepos.adapters;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
 
+import com.android.dao.PayMethodsDAO;
 import com.android.database.PayMethodsHandler;
 import com.android.database.PaymentsHandler;
 import com.android.emobilepos.R;
@@ -34,12 +36,12 @@ public class ReportsMenuAdapter extends BaseAdapter implements Filterable {
     private String reportDate;
     private String granTotal = "0.00";
     private Map<String, String[]> hashedReport;
-    private List<PaymentMethod> paymentList;
-    private Activity activity;
+    private List<PaymentMethod> paymentMethods;
+    private Context activity;
     private Resources resource;
 
 
-    public ReportsMenuAdapter(Activity activity, String[] date) {
+    public ReportsMenuAdapter(Context activity, String[] date) {
         if (activity != null) {
             mInflater = LayoutInflater.from(activity.getApplicationContext());
             this.activity = activity;
@@ -55,44 +57,33 @@ public class ReportsMenuAdapter extends BaseAdapter implements Filterable {
     private Map<String, String[]> createReportMap() {
         HashMap<String, String[]> result = new HashMap<>();
         String[] labelLegend = new String[]{resource.getString(R.string.report_payments), resource.getString(R.string.report_refunds), "Total"};
-
         PayMethodsHandler methodsHandler = new PayMethodsHandler(activity);
-        paymentList = Realm.getDefaultInstance().copyFromRealm(methodsHandler.getPayMethod());
-        int size = paymentList.size();
-
+        paymentMethods = PayMethodsDAO.getAllSortByName(false);
+        int size = paymentMethods.size();
         result.put("Method", labelLegend);
         String[][] amounts = new String[size][3];
-
-
         int size2 = size * 3;
         int count = 0, count2 = 0;
-
         PaymentsHandler paymentHandler = new PaymentsHandler(activity);
-
-
         String date = curDate[1];
-
-
         String tempVal;
         DecimalFormat frmt = new DecimalFormat("0.00");
         for (int i = 0; i < size2; i++) {
-
             switch (count2) {
                 case 0:                    //payments
                 {
-                    tempVal = paymentHandler.getTotalPayAmount(paymentList.get(count).getPaymethod_id(), date);
+                    tempVal = paymentHandler.getTotalPayAmount(paymentMethods.get(count).getPaymethod_id(), date);
                     if (tempVal.contains(".")) {
                         tempVal = frmt.format(Double.parseDouble(tempVal));
                     } else {
                         tempVal = frmt.format((double) Integer.parseInt(tempVal));
                     }
                     amounts[count][count2] = tempVal;
-
                     break;
                 }
                 case 1:                    //refunds
                 {
-                    tempVal = paymentHandler.getTotalRefundAmount(paymentList.get(count).getPaymethod_id(), date);
+                    tempVal = paymentHandler.getTotalRefundAmount(paymentMethods.get(count).getPaymethod_id(), date);
                     if (tempVal.contains("."))
                         tempVal = frmt.format(Double.parseDouble(tempVal));
                     else
@@ -109,15 +100,13 @@ public class ReportsMenuAdapter extends BaseAdapter implements Filterable {
             }
 
             if ((i + 1) % 3 == 0) {
-                result.put(paymentList.get(count).getPaymethod_id(), amounts[count]);
+                result.put(paymentMethods.get(count).getPaymethod_id(), amounts[count]);
                 count++;
                 count2 = 0;
             } else {
-
                 count2++;
             }
         }
-
         return Collections.unmodifiableMap(result);
     }
 
@@ -205,8 +194,8 @@ public class ReportsMenuAdapter extends BaseAdapter implements Filterable {
                     holder.rightTwo.setText(rightVal[1]);
                     holder.rightThree.setText(rightVal[2]);
                 } else {
-                    holder.textLine.setText(paymentList.get(position - 3).getPaymethod_name());
-                    rightVal = hashedReport.get(paymentList.get(position - 3).getPaymethod_id());
+                    holder.textLine.setText(paymentMethods.get(position - 3).getPaymethod_name());
+                    rightVal = hashedReport.get(paymentMethods.get(position - 3).getPaymethod_id());
 
                     holder.rightOne.setText(Global.getCurrencyFormat(rightVal[0]));
                     holder.rightTwo.setText(Global.getCurrencyFormat(rightVal[1]));

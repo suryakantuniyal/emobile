@@ -2,6 +2,7 @@ package com.android.emobilepos.adapters;
 
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,37 +26,28 @@ public class ReportsShiftAdapter extends BaseAdapter implements Filterable {
 
     private List<Shift> shifts;
     private LayoutInflater mInflater;
-    private String[] curDate;
 
 
     private int offset = 2;                    //will include 2 dividers,the report date, and the total.
     private String reportDate;
     //	private Cursor myCursor;
     private int listViewSize;
-    private Activity activity;
-    private Resources resource;
-    private String temp;
 
 
-    public ReportsShiftAdapter(Activity activity, String[] date) {
+    public ReportsShiftAdapter(Context activity, String[] date) {
         if (activity != null) {
             mInflater = LayoutInflater.from(activity.getApplicationContext());
-            this.curDate = date;
-            resource = activity.getResources();
-            this.activity = activity;
+            String[] curDate = date;
+            Resources resource = activity.getResources();
             reportDate = resource.getString(R.string.report_but_title) + "\n\n" + curDate[0];
-//            ShiftPeriodsDBHandler handler = new ShiftPeriodsDBHandler(activity);
             shifts = ShiftDAO.getShift(DateUtils.getDateStringAsDate(curDate[1], DateUtils.DATE_yyyy_MM_dd));
-//			myCursor =handler.getAllShiftsReport(curDate[1]);
-            listViewSize = shifts.size(); //myCursor.getCount();
+            listViewSize = shifts.size();
         }
     }
 
     public boolean findValue(int[] array, int position) {
-        int size = array.length;
-
-        for (int i = 0; i < size; i++) {
-            if (array[i] == position) {
+        for (int anArray : array) {
+            if (anArray == position) {
                 return true;
             }
         }
@@ -102,10 +94,6 @@ public class ReportsShiftAdapter extends BaseAdapter implements Filterable {
                 {
                     convertView = mInflater.inflate(R.layout.report_shift_lv_adapter, null);
                     Shift shift = shifts.get(position - offset);
-//                    holder.i_startTime = myCursor.getColumnIndex("startTime");
-//                    holder.i_end_type = myCursor.getColumnIndex("end_type");
-//                    holder.i_assignee_name = myCursor.getColumnIndex("assignee_name");
-//                    holder.i_beginning_petty_cash = myCursor.getColumnIndex("beginning_petty_cash");
                     holder.top = (TextView) convertView.findViewById(R.id.shiftPeriod);
                     holder.bottom = (TextView) convertView.findViewById(R.id.clerkName);
 
@@ -135,7 +123,7 @@ public class ReportsShiftAdapter extends BaseAdapter implements Filterable {
             }
             case 2: {
                 Shift shift = shifts.get(position - offset);
-                temp = shift.getShiftStatus().name();
+                String temp = shift.getShiftStatus().name();
                 if (shift.getShiftStatus() == Shift.ShiftStatus.CLOSED)
                     temp = DateUtils.getDateAsString(shift.getEndTime(), DateUtils.DATE_yyyy_MM_dd);
                 holder.top.setText(DateUtils.getDateAsString(shift.getStartTime(), DateUtils.DATE_yyyy_MM_dd) + " - " + temp);

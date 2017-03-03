@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
@@ -34,7 +35,7 @@ public class ViewEndOfDayReport_FA extends BaseFragmentActivityActionBar impleme
 
     private static String curDate, mDate;
     private Activity activity;
-    private static Button btnDate;
+    private Button btnDate;
     private Global global;
     private ProgressDialog myProgressDialog;
     private static ReportEndDayAdapter adapter;
@@ -82,9 +83,9 @@ public class ViewEndOfDayReport_FA extends BaseFragmentActivityActionBar impleme
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btnDate:
-                DialogFragment newFrag = new DateDialog();
+                DialogFragment dateDialog = new DateDialog();
                 FragmentManager fm = getSupportFragmentManager();
-                newFrag.show(fm, "dialog");
+                dateDialog.show(fm, "dialog");
                 break;
             case R.id.btnPrint:
                 showPrintDetailsDlg();
@@ -196,9 +197,17 @@ public class ViewEndOfDayReport_FA extends BaseFragmentActivityActionBar impleme
 
     public static class DateDialog extends DialogFragment implements DatePickerDialog.OnDateSetListener {
 
+        private ViewEndOfDayReport_FA activity;
+
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
+        }
+
+        @Override
+        public void onAttach(Context context) {
+            this.activity = (ViewEndOfDayReport_FA) context;
+            super.onAttach(context);
         }
 
         @Override
@@ -221,7 +230,7 @@ public class ViewEndOfDayReport_FA extends BaseFragmentActivityActionBar impleme
             curDate = sdf2.format(cal.getTime());
             adapter.setNewDate(Global.formatToDisplayDate(curDate, 4));
             mDate = Global.formatToDisplayDate(curDate, 0);
-            btnDate.setText(mDate);
+            activity.btnDate.setText(mDate);
         }
     }
 
