@@ -172,6 +172,7 @@
             android:exported="false" />
         <activity
             android:name=".payment.SelectPayMethod_FA"
+            android:configChanges="orientation|screenSize"
             android:exported="false"
             android:launchMode="singleTop" />
         <activity

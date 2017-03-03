@@ -33,7 +33,6 @@ import java.util.List;
 
 import drivers.star.utils.Communication;
 import drivers.star.utils.PrinterFunctions;
-import drivers.star.utils.PrinterSetting;
 import interfaces.EMSCallBack;
 import interfaces.EMSDeviceManagerPrinterDelegate;
 import main.EMSDeviceManager;
@@ -44,7 +43,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     private int PAPER_WIDTH;
     private String portSettings;
     private String portName;
-
+    private String scannedData = "";
     private EMSCallBack callBack, scannerCallBack;
     private StarIoExtManager mStarIoExtManager;
     private Handler handler;
@@ -413,7 +412,6 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 }
             } catch (StarIOPortException e) {
                 e.printStackTrace();
-            } finally {
             }
         }
     }
@@ -429,7 +427,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         }
     }
 
-    class StartCardReaderThread extends Thread {
+    private class StartCardReaderThread extends Thread {
         public void run() {
             try {
                 if (port == null) {
@@ -452,7 +450,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
             try {
                 StringBuilder tr1 = new StringBuilder();
                 StringBuilder tr2 = new StringBuilder();
-                List<String> listTrack = new ArrayList<String>();
+                List<String> listTrack = new ArrayList<>();
                 String t;
                 boolean doneParsing = false;
                 while (!stopLoop) {
@@ -468,7 +466,6 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
                                         if (!data.endsWith("?"))
                                             tr1.append("?");
-                                        // tr1.append("%").append(data).append("?");
                                     } else if (data.contains("=")) {
                                         if (!data.startsWith(";"))
                                             tr1.append(";");
@@ -497,7 +494,8 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                     }
                 }
             } catch (StarIOPortException ignored) {
-            } catch (UnsupportedEncodingException ignored) {
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -565,14 +563,12 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     public void openCashDrawer() {
         byte[] data;
         data = PrinterFunctions.createCommandsOpenCashDrawer();
-        PrinterSetting setting = new PrinterSetting(this.activity);
         Communication.Result result;
         try {
             result = Communication.sendCommands(data, port, this.activity);
         } catch (Exception e) {
             e.printStackTrace();
-        }   // 10000mS!!!
-//        }
+        }
     }
 
     @Override
@@ -611,7 +607,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 handler = new Handler();
             if (_callBack != null) {
                 mStarIoExtManager = new StarIoExtManager(StarIoExtManager.Type.OnlyBarcodeReader, getPortName(), "", 10000,
-                        this.activity); // 10000mS!!!
+                        this.activity);
                 mStarIoExtManager.setListener(mStarIoExtManagerListener);
                 starIoExtManagerConnect();
             } else {
@@ -749,8 +745,6 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         }
     };
 
-    String scannedData = "";
-
     private Runnable runnableScannedData = new Runnable() {
         public void run() {
             try {
@@ -792,10 +786,31 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                     throw new StarIOPortException("Host not reachable.");
                 }
             }
-            try {
-                port = StarIOPort.getPort(getPortName(), portSettings, 30000, activity);
-            } catch (StarIOPortException e) {
-                port = StarIOPort.getPort(getPortName(), portSettings, 30000, activity);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        port = StarIOPort.getPort(getPortName(), portSettings, 30000, activity);
+                    } catch (StarIOPortException e) {
+                        e.printStackTrace();
+                        try {
+                            port = StarIOPort.getPort(getPortName(), portSettings, 30000, activity);
+                        } catch (StarIOPortException e1) {
+                            e1.printStackTrace();
+                        }
+                    } finally {
+                        synchronized (portSettings) {
+                            portSettings.notify();
+                        }
+                    }
+                }
+            }).start();
+            synchronized (portSettings) {
+                try {
+                    portSettings.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
         return port;

@@ -122,7 +122,7 @@ public class EMSDeviceDriver {
     MePOS mePOS;
     POSSDK pos_sdk = null;
     PrinterAPI eloPrinterApi;
-    protected POSPrinter bixolonPrinter;
+    POSPrinter bixolonPrinter;
     MePOSReceipt mePOSReceipt;
 
     private final int ALIGN_LEFT = 0, ALIGN_CENTER = 1;
@@ -174,7 +174,7 @@ public class EMSDeviceDriver {
         }
     }
 
-    protected void addTotalLines(Context context, Order anOrder, List<OrderProduct> orderProducts, StringBuilder sb, int lineWidth) {
+    private void addTotalLines(Context context, Order anOrder, List<OrderProduct> orderProducts, StringBuilder sb, int lineWidth) {
         double itemDiscTotal = 0;
         for (OrderProduct orderProduct : orderProducts) {
             try {
@@ -331,7 +331,6 @@ public class EMSDeviceDriver {
         } else if (this instanceof EMSBluetoothStarPrinter) {
             try {
                 printStar(new String(byteArray), false);
-//                port.writePort(byteArray, 0, byteArray.length);
             } catch (StarIOPortException e) {
                 e.printStackTrace();
             } catch (UnsupportedEncodingException e) {
@@ -624,7 +623,7 @@ public class EMSDeviceDriver {
             sb.append(textHandler.oneColumnLineWithLeftAlignedText(getString(R.string.receipt_description), lineWidth, 3));
             if (product.getOrdprod_desc() != null && !product.getOrdprod_desc().isEmpty()) {
                 StringTokenizer tokenizer = new StringTokenizer(product.getOrdprod_desc(), "<br/>");
-                sb.append(textHandler.oneColumnLineWithLeftAlignedText(tokenizer.nextToken().toString(), lineWidth, 3));
+                sb.append(textHandler.oneColumnLineWithLeftAlignedText(tokenizer.nextToken(), lineWidth, 3));
             } else {
                 sb.append(textHandler.oneColumnLineWithLeftAlignedText("", lineWidth, 3));
             }
@@ -652,7 +651,7 @@ public class EMSDeviceDriver {
     protected void printReceipt(String ordID, int lineWidth, boolean fromOnHold, Global.OrderType type, boolean isFromHistory, EMVContainer emvContainer) {
         try {
             AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee();
-            Clerk clerk = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()),false);
+            Clerk clerk = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()), false);
             startReceipt();
             setPaperWidth(lineWidth);
             printPref = myPref.getPrintingPreferences();
@@ -660,7 +659,7 @@ public class EMSDeviceDriver {
             OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB();
 
             List<DataTaxes> listOrdTaxes = ordTaxesDB.getOrderTaxes(ordID);
-            List<OrderProduct> orderProducts = orderProductsHandler.getOrderProducts(ordID); //handler.getPrintOrderedProducts(ordID);
+            List<OrderProduct> orderProducts = orderProductsHandler.getOrderProducts(ordID);
 
             OrdersHandler orderHandler = new OrdersHandler(activity);
             Order anOrder = orderHandler.getPrintedOrder(ordID);
@@ -1439,7 +1438,7 @@ public class EMSDeviceDriver {
 
     }
 
-    public void printYouSave(String saveAmount, int lineWidth) {
+    private void printYouSave(String saveAmount, int lineWidth) {
         EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
         StringBuilder sb = new StringBuilder(saveAmount);
 
@@ -1477,7 +1476,7 @@ public class EMSDeviceDriver {
         }
     }
 
-    protected double formatStrToDouble(String val) {
+    private double formatStrToDouble(String val) {
         if (val == null || val.isEmpty())
             return 0.00;
         return Double.parseDouble(val);
@@ -2169,7 +2168,6 @@ public class EMSDeviceDriver {
         EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
         StringBuilder sb_ord_types = new StringBuilder();
         OrdersHandler ordHandler = new OrdersHandler(activity);
-//        ShiftPeriodsDBHandler shiftHandler = new ShiftPeriodsDBHandler(activity);
         OrderProductsHandler ordProdHandler = new OrderProductsHandler(activity);
         PaymentsHandler paymentHandler = new PaymentsHandler(activity);
         boolean showTipField = false;
@@ -2241,7 +2239,6 @@ public class EMSDeviceDriver {
             listOrder.clear();
         }
         List<Shift> listShifts = ShiftDAO.getShift(new Date());
-//        List<ShiftPeriods> listShifts = shiftHandler.getShiftDayReport(null, mDate);
         if (listShifts.size() > 0) {
             sb.append(textHandler.newLines(2));
             sb.append(textHandler.centeredString("Totals By Shift", lineWidth));
@@ -2385,33 +2382,28 @@ public class EMSDeviceDriver {
         startReceipt();
         StringBuilder sb = new StringBuilder();
         EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
-//        ShiftPeriodsDBHandler shiftHandler = new ShiftPeriodsDBHandler(activity);
-//        SparseArray<String> shift = shiftHandler.getShiftDetails(shiftID);
         sb.append(textHandler.centeredString("Shift Details", lineWidth));
         Shift shift = ShiftDAO.getShift(shiftID);
         sb.append(textHandler.newLines(2));
         sb.append(textHandler.twoColumnLineWithLeftAlignedText("Sales Clerk:", shift.getAssigneeName(), lineWidth, 0));
-//        MyPreferences myPreferences = new MyPreferences(activity);
         sb.append(textHandler.twoColumnLineWithLeftAlignedText("Employee: ", employee.getEmpName(), lineWidth, 0));
         sb.append(textHandler.newLines(2));
-        sb.append("From: ").append(DateUtils.getDateAsString(shift.getStartTime())); //startTime
+        sb.append("From: ").append(DateUtils.getDateAsString(shift.getStartTime()));
         sb.append(textHandler.newLines(1));
         if (shift.getShiftStatus() == Shift.ShiftStatus.OPEN) {
-            sb.append("To: ").append(Shift.ShiftStatus.OPEN.name()); //display Open
+            sb.append("To: ").append(Shift.ShiftStatus.OPEN.name());
         } else {
-            sb.append("To: ").append(DateUtils.getDateAsString(shift.getEndTime())); //show endTime
+            sb.append("To: ").append(DateUtils.getDateAsString(shift.getEndTime()));
         }
         sb.append(textHandler.newLines(2));
         sb.append(textHandler.twoColumnLineWithLeftAlignedText("Beginning Petty Cash", shift.getBeginningPettyCash(), lineWidth, 0));
         sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total Expenses", "(" + shift.getTotalExpenses() + ")", lineWidth, 0));
-//        ShiftExpensesDBHandler shiftExpensesDBHandler = new ShiftExpensesDBHandler(activity);
-//        Cursor expensesByShift;
         List<ShiftExpense> shiftExpenses = ShiftExpensesDAO.getShiftExpenses(shiftID);
-//        expensesByShift = shiftExpensesDBHandler.getShiftExpenses(shiftID);
-//        while (!expensesByShift.isAfterLast()) {
-        for (ShiftExpense expense : shiftExpenses) {
-            sb.append(textHandler.twoColumnLineWithLeftAlignedText(expense.getProductName(),
-                    Global.formatDoubleStrToCurrency(expense.getCashAmount()), lineWidth, 3));
+        if (shiftExpenses != null) {
+            for (ShiftExpense expense : shiftExpenses) {
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(expense.getProductName(),
+                        Global.formatDoubleStrToCurrency(expense.getCashAmount()), lineWidth, 3));
+            }
         }
         sb.append(textHandler.twoColumnLineWithLeftAlignedText("Ending Petty Cash", shift.getEndingPettyCash(), lineWidth, 0));
         sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total Transactions Cash", shift.getTotalTransactionsCash(), lineWidth, 0));

@@ -170,10 +170,7 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
 
     private void getShifts() {
         listShifts = ShiftDAO.getShift(DateUtils.getDateStringAsDate(mDate, DateUtils.DATE_yyyy_MM_dd));
-//        listShifts = shiftHandler.getShiftDayReport(clerk_id, mDate);
-
         i_shifts = i_summary + listShifts.size();
-
         i_ord_types = i_shifts + listOrdTypes.size();
     }
 
@@ -356,28 +353,40 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
                 mHolder.tvOrdNetTotal.setText(Global.formatDoubleStrToCurrency(listOrdTypes.get(position - i_shifts).ord_total));
                 break;
             case TYPE_ITEMS_SOLD:
+                int qty = Integer.parseInt(listSold.get(position - i_ord_types).getOrdprod_qty());
+                BigDecimal price = Global.getBigDecimalNum(listSold.get(position - i_ord_types).getFinalPrice());
+                price = price.multiply(BigDecimal.valueOf(qty));
                 mHolder.tvProdName.setText(listSold.get(position - i_ord_types).getOrdprod_name());
                 mHolder.tvProdID.setText(listSold.get(position - i_ord_types).getProd_id());
                 mHolder.tvProdQty.setText(listSold.get(position - i_ord_types).getOrdprod_qty());
-                mHolder.tvProdTotal.setText(Global.formatDoubleStrToCurrency(listSold.get(position - i_ord_types).getFinalPrice()));
+                mHolder.tvProdTotal.setText(Global.formatDoubleToCurrency(price.doubleValue()));
                 break;
             case TYPE_ITEMS_RETURNED:
+                qty = Integer.parseInt(listSold.get(position - i_item_sold).getOrdprod_qty());
+                price = Global.getBigDecimalNum(listSold.get(position - i_item_sold).getFinalPrice());
+                price = price.multiply(BigDecimal.valueOf(qty));
                 mHolder.tvProdName.setText(listReturned.get(position - i_item_sold).getOrdprod_name());
                 mHolder.tvProdID.setText(listReturned.get(position - i_item_sold).getProd_id());
                 mHolder.tvProdQty.setText(listReturned.get(position - i_item_sold).getOrdprod_qty());
-                mHolder.tvProdTotal.setText(Global.formatDoubleStrToCurrency(listReturned.get(position - i_item_sold).getFinalPrice()));
+                mHolder.tvProdTotal.setText(Global.formatDoubleToCurrency(price.doubleValue()));
                 break;
             case TYPE_DEPT_SALES:
+                qty = Integer.parseInt(listSold.get(position - i_item_returned).getOrdprod_qty());
+                price = Global.getBigDecimalNum(listSold.get(position - i_item_returned).getFinalPrice());
+                price = price.multiply(BigDecimal.valueOf(qty));
                 mHolder.tvProdName.setText(listDeptSales.get(position - i_item_returned).getCat_name());
                 mHolder.tvProdID.setText(listDeptSales.get(position - i_item_returned).getCat_id());
                 mHolder.tvProdQty.setText(listDeptSales.get(position - i_item_returned).getOrdprod_qty());
-                mHolder.tvProdTotal.setText(Global.formatDoubleStrToCurrency(listDeptSales.get(position - i_item_returned).getFinalPrice()));
+                mHolder.tvProdTotal.setText(Global.formatDoubleToCurrency(price.doubleValue()));
                 break;
             case TYPE_DEPT_RETURNS:
+                qty = Integer.parseInt(listSold.get(position - i_dept_sales).getOrdprod_qty());
+                price = Global.getBigDecimalNum(listSold.get(position - i_dept_sales).getFinalPrice());
+                price = price.multiply(BigDecimal.valueOf(qty));
                 mHolder.tvProdName.setText(listDeptReturns.get(position - i_dept_sales).getCat_name());
                 mHolder.tvProdID.setText(listDeptReturns.get(position - i_dept_sales).getCat_id());
                 mHolder.tvProdQty.setText(listDeptReturns.get(position - i_dept_sales).getOrdprod_qty());
-                mHolder.tvProdTotal.setText(Global.formatDoubleStrToCurrency(listDeptReturns.get(position - i_dept_sales).getFinalPrice()));
+                mHolder.tvProdTotal.setText(Global.formatDoubleToCurrency(price.doubleValue()));
                 break;
             case TYPE_PAYMENT:
                 mHolder.tvPayType.setText(listPayment.get(position - i_dept_returns).getCard_type());
