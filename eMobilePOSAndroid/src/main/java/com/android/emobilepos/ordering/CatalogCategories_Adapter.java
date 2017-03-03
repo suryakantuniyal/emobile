@@ -143,4 +143,14 @@ public class CatalogCategories_Adapter extends RecyclerView.Adapter<CatalogCateg
             }
         }
     }
+
+    public EMSCategory getCategoryWithId(String categoryId) {
+        for (EMSCategory category:categories) {
+            if (category.getCategoryId().equals(categoryId)) {
+                return category;
+            }
+        }
+
+        return null;
+    }
 }

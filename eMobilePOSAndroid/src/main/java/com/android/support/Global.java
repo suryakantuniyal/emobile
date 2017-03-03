@@ -289,7 +289,6 @@ public class Global extends MultiDexApplication {
     public static boolean isFromOnHold = false;
     public static Map<String, String> paymentIconsMap = paymentIconMap();
     private static Dialog popDlog;
-    public int searchType = 0;
     public String encodedImage = "";
     public int orientation;
     // For new addon views
@@ -304,7 +303,6 @@ public class Global extends MultiDexApplication {
     // createTransactionsMap();
     public String lastInvID = "";
     public int lastProdOrdID = 0;
-    public boolean isSubcategory = false, hasSubcategory = false;
     public static boolean loggedIn = false;
     public List<HashMap<String, Integer>> dictionary;
     // ---------- Used to store order details selected info -----//
@@ -1276,8 +1274,6 @@ public class Global extends MultiDexApplication {
 
         ord_type = null;
         cat_id = "0";
-        isSubcategory = false;
-        hasSubcategory = false;
         Global.isFromOnHold = false;
         isConsignment = false;
         isInventoryTransfer = false;

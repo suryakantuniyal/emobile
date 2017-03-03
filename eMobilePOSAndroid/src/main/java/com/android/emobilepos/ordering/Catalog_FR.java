@@ -76,7 +76,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
     private static final int CURSOR_LOADER_ID = 0x01;
     public static Catalog_FR instance;
-    private static String search_text = "", search_type = "";
+    private String search_text = "", search_type = "";
     private AbsListView catalogList;
     private ImageLoader imageLoader;
     private Cursor myCursor;
@@ -146,14 +146,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
         prodListAdapter = new MenuProdGV_Adapter(this, getActivity(), null, CursorAdapter.NO_SELECTION, imageLoader);
 
-
-        // TODO: Remove Global Dependency
-        if (Global.cat_id.equals("0"))
-            Global.cat_id = myPref.getPreferencesValue(MyPreferences.pref_default_category);
-
-        // END TODO
-
-
         if (myPref.getPreferences(MyPreferences.pref_restaurant_mode)) {
             onRestaurantMode = true;
         }
@@ -166,7 +158,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                if (totalItemCount > 0 && myCursor.getCount() >= page * 200) {
+                if (totalItemCount > 0 && myCursor.getCount() >= page * Integer.parseInt(getString(R.string.sqlLimit))) {
                     int lastInScreen = firstVisibleItem + visibleItemCount;
                     if (lastInScreen == totalItemCount) {
                         page++;
@@ -240,7 +232,32 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             }
         } else {
             loadRootCategories();
-            loadCursor();
+
+            // Check for default category in settings
+            String defaultCategoryId = myPref.getPreferencesValue(MyPreferences.pref_default_category);
+
+            if (!"0".equals(defaultCategoryId) && !TextUtils.isEmpty(defaultCategoryId)) {
+                if (onRestaurantMode) {
+                    selectedSubcategory = categoriesAdapter.getCategoryWithId(defaultCategoryId);
+                    if (selectedSubcategory != null) {
+                        isRestoringSelectedCategory = true;
+                        categoriesAdapter.selectItemWithCategoryId(selectedSubcategory.getCategoryId());
+                        isRestoringSelectedCategory = false;
+                    } else {
+                        loadCursor();
+                    }
+                } else {
+                    for (String[] cat: spinnerCategories) {
+                        if (defaultCategoryId.equals(cat[1])) {
+                            selectedSubcategory = new EMSCategory(defaultCategoryId, cat[0], "", 0);
+                            break;
+                        }
+                    }
+                    loadCursor();
+                }
+            } else {
+                loadCursor();
+            }
         }
 
         return view;
@@ -255,14 +272,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         outState.putSerializable(BUNDLE_SEARCH_TYPE_ENUM, searchType);
         super.onSaveInstanceState(outState);
     }
-
-//    @Override
-//    public void onDestroyView() {
-//        if (myCursor != null) {
-//            if (!myCursor.isClosed()) myCursor.close();
-//        }
-//        super.onDestroyView();
-//    }
 
     private enum SearchType {
         NAME(0), DESCRIPTION(1), TYPE(2), UPC(3), SKU(4);
@@ -552,11 +561,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
     @Override
     public void onLoadFinished(Loader<Cursor> arg0, Cursor c) {
-//        prodListAdapter.swapCursor(c);
-//        prodListAdapter.notifyDataSetChanged();
-//        if (myCursor != null) {
-//            if (!myCursor.isClosed()) myCursor.close();
-//        }
         myCursor = c;
         prodListAdapter = new MenuProdGV_Adapter(this, getActivity(), c, CursorAdapter.NO_SELECTION, imageLoader);
         catalogList.setAdapter(prodListAdapter);
@@ -569,10 +573,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
     @Override
     public void onLoaderReset(Loader<Cursor> arg0) {
-//        prodListAdapter.swapCursor(null);
-//        if (myCursor != null) {
-//            if (!myCursor.isClosed()) myCursor.close();
-//        }
         if (catalogList != null) {
             catalogList.setAdapter(null);
         }
