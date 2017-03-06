@@ -19,7 +19,6 @@ import android.support.multidex.MultiDexApplication;
 import android.text.Html;
 import android.text.InputType;
 import android.text.TextUtils;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
@@ -1491,8 +1490,7 @@ public class Global extends MultiDexApplication {
                             promptForMandatoryLogin(activity);
                         } else {
                             if (activity instanceof MainMenu_FA) {
-                                MenuItem menuItem = ((MainMenu_FA) activity).menu.findItem(R.id.logoutMenuItem);
-                                menuItem.setTitle(String.format("%s (%s)", getString(R.string.logout_menu), clerk.getEmpName()));
+                                ((MainMenu_FA) activity).setLogoutButtonClerkname();
                             }
                             loggedIn = true;
                             validPassword[0] = true;

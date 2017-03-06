@@ -21,16 +21,20 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.dao.ClerkDAO;
 import com.android.database.DBManager;
 import com.android.emobilepos.R;
 import com.android.emobilepos.firebase.NotificationHandler;
 import com.android.emobilepos.firebase.NotificationSettings;
 import com.android.emobilepos.firebase.PollingNotificationService;
 import com.android.emobilepos.firebase.RegistrationIntentService;
+import com.android.emobilepos.models.realms.Clerk;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -217,14 +221,26 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         }
     };
 
+    public void setLogoutButtonClerkname(){
+        if (myPref.isUseClerks()) {
+            Clerk clerk = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()), false);
+            if (clerk != null) {
+                Menu menu = ((MainMenu_FA) activity).menu;
+                if (menu != null) {
+                    MenuItem menuItem = menu.findItem(R.id.logoutMenuItem);
+                    menuItem.setTitle(String.format("%s (%s)", getString(R.string.logout_menu), clerk.getEmpName()));
+                }
+            }
+        }
+    }
     @Override
     public void onResume() {
         registerReceiver(messageReceiver, new IntentFilter(NOTIFICATION_RECEIVED));
         if (global.isApplicationSentToBackground(activity)) {
             global.loggedIn = false;
         }
+        setLogoutButtonClerkname();
         global.stopActivityTransitionTimer();
-
         if (hasBeenCreated && !global.loggedIn
                 && (myPref.getPrinterType() != Global.POWA || (myPref.getPrinterType() == Global.POWA
                 && (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)))) {

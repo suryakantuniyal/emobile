@@ -16,13 +16,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.dao.AssignEmployeeDAO;
+import com.android.dao.ClerkDAO;
 import com.android.dao.DeviceTableDAO;
 import com.android.dao.DinningTableDAO;
 import com.android.dao.EmployeePermissionDAO;
 import com.android.dao.MixMatchDAO;
 import com.android.dao.OrderAttributesDAO;
 import com.android.dao.OrderProductAttributeDAO;
-import com.android.dao.ClerkDAO;
 import com.android.dao.ShiftDAO;
 import com.android.dao.UomDAO;
 import com.android.database.ConsignmentTransactionHandler;
@@ -1651,12 +1651,10 @@ public class SynchMethods {
             myProgressDialog.dismiss();
 
             if (type == Global.FROM_SYNCH_ACTIVITY) {
-                if (!isFromMainMenu) {
-                    SyncTab_FR.syncTabHandler.sendEmptyMessage(0);
-                } else {
+                if (isFromMainMenu) {
                     synchTextView.setVisibility(View.GONE);
                 }
-
+                SyncTab_FR.syncTabHandler.sendEmptyMessage(0);
             }
 
 //            if (proceed && dbManager.isSendAndReceive()) {

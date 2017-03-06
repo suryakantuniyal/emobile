@@ -313,10 +313,10 @@
         <activity
             android:name=".ordering.OrderingMain_FA"
             android:launchMode="singleTop"
+            android:configChanges="orientation|screenSize"
             android:windowSoftInputMode="stateAlwaysHidden">
             <intent-filter>
                 <action android:name="com.android.emobilepos.RECVR" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>

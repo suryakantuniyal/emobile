@@ -470,7 +470,7 @@ public class SalesTab_FR extends Fragment {
                     pickLocations(true);
                     break;
                 case SHIFTS: {
-                    boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
+                    boolean hasPermissions =  myPref.isUseClerks() && SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.SHIFT_CLERK);
                     if (hasPermissions) {
                         intent = new Intent(activity, ShiftsActivity.class);
@@ -481,7 +481,7 @@ public class SalesTab_FR extends Fragment {
                     break;
                 }
                 case SHIFT_EXPENSES: {
-                    boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
+                    boolean hasPermissions =  myPref.isUseClerks() && SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.NO_SALE);
                     if (hasPermissions) {
                         if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
@@ -668,7 +668,7 @@ public class SalesTab_FR extends Fragment {
                     break;
                 }
                 case SHIFTS: {
-                    boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
+                    boolean hasPermissions = myPref.isUseClerks() && SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.SHIFT_CLERK);
                     if (hasPermissions) {
                         intent = new Intent(activity, ShiftsActivity.class);
@@ -679,7 +679,7 @@ public class SalesTab_FR extends Fragment {
                     break;
                 }
                 case SHIFT_EXPENSES: {
-                    boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
+                    boolean hasPermissions =  myPref.isUseClerks() && SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.NO_SALE);
                     if (hasPermissions) {
                         Shift openShift = ShiftDAO.getOpenShift(Integer.parseInt(myPref.getClerkID()));
