@@ -820,7 +820,7 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         BigDecimal subtotal;
         BigDecimal addonsTotalPrice = getAddonsTotalPrice();
         BigDecimal finalPrice = new BigDecimal(getFinalPrice());
-        BigDecimal discount = Global.getBigDecimalNum(getDisAmount());
+        BigDecimal discount = Global.getBigDecimalNum(getDisTotal());
         subtotal = finalPrice.add(addonsTotalPrice).subtract(discount);
         return subtotal;
     }
