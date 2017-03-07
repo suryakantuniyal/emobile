@@ -10,6 +10,7 @@ android {
             keyPassword '1Enabler1'
             storeFile file('/home/guarionex/Develop/AndroidAPKCerts')
             storePassword '1Enabler1'
+            v2SigningEnabled false
         }
     }
     compileSdkVersion 25
@@ -49,7 +50,7 @@ android {
         ems {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.2.1.21"
+            versionName "1.2.1.22"
             versionCode 122
             targetSdkVersion 23
             multiDexEnabled = true
@@ -63,7 +64,7 @@ android {
         icmpevo {
             minSdkVersion 15
             applicationId 'com.emobilepos.icmpevo.app'
-            versionName "1.2.1.21"
+            versionName "1.2.1.22"
             versionCode 122
             targetSdkVersion 23
             multiDexEnabled = true
@@ -91,7 +92,7 @@ android {
         ivupos {
             minSdkVersion 15
             applicationId 'com.emobilepos.ivupos.app'
-            versionName "1.2.1.21"
+            versionName "1.2.1.22"
             versionCode 122
             targetSdkVersion 23
             multiDexEnabled = true

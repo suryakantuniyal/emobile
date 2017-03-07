@@ -889,7 +889,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 }
                 boolean refundPaymentType = PaymentsHandler.getLastPaymentInserted().isRefundPaymentType();
                 previous_pay_id = pay_id;
-                showPaymentSuccessDlog(true, emvContainer, isReturn|| refundPaymentType);
+                showPaymentSuccessDlog(true, emvContainer, isReturn || refundPaymentType);
             }
         } else {
             if (emvContainer != null && emvContainer.getGeniusResponse() != null &&
