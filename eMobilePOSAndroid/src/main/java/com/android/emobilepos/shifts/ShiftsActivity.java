@@ -26,11 +26,12 @@ import com.android.support.MyPreferences;
 import com.android.support.NetworkUtils;
 import com.android.support.NumberUtils;
 import com.android.support.SynchMethods;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import java.util.ArrayList;
 import java.util.Date;
 
-public class ShiftsActivity extends Activity implements View.OnClickListener, TextWatcher {
+public class ShiftsActivity extends BaseFragmentActivityActionBar implements View.OnClickListener, TextWatcher {
 
     private EditText oneDollarEditText;
     private EditText fiveDollarEditText;

@@ -84,10 +84,15 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.activity_main_menu, menu);
+        if (menu.findItem(R.id.logoutMenuItem) != null) {
+            menu.findItem(R.id.logoutMenuItem).setVisible(false);
+            menu.findItem(R.id.menu_back).setVisible(false);
+        }
         if (this instanceof MainMenu_FA && myPref.isUseClerks()) {
-            getMenuInflater().inflate(R.menu.clerk_logout_menu, menu);
+            menu.findItem(R.id.logoutMenuItem).setVisible(true);
         } else if (showNavigationbar)
-            getMenuInflater().inflate(R.menu.activity_main_menu, menu);
+            menu.findItem(R.id.menu_back).setVisible(true);
         return true;
     }
 
