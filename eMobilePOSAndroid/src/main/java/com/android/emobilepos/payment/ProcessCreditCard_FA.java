@@ -231,7 +231,8 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
         tax1.setText(Global.formatDoubleStrToCurrency(extras.getString("Tax1_amount")));
         tax2.setText(Global.formatDoubleStrToCurrency(extras.getString("Tax2_amount")));
-        List<OrderProduct> orderProducts = global.order.getOrderProducts();
+        List<OrderProduct> orderProducts = global.order == null
+                ? new ArrayList<OrderProduct>() : global.order.getOrderProducts();
         double subtotalDbl = 0;
         for (OrderProduct products : orderProducts) {
             subtotalDbl += Double.parseDouble(products.getItemSubtotal());
@@ -1090,7 +1091,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         String ccType = "";
         boolean isMasked;
         try {
-            if (TextUtils.isEmpty(number) || !TextUtils.isDigitsOnly(number) || number.length() < 4) {
+            if (TextUtils.isEmpty(number) || number.length() < 4) {
                 return "";
             } else {
                 if (!TextUtils.isDigitsOnly(number.substring(0, 4))) {
