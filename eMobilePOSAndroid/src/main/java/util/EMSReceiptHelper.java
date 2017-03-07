@@ -2,17 +2,19 @@ package util;
 
 import android.app.Activity;
 
+import com.android.dao.ShiftDAO;
 import com.android.database.OrderProductsHandler;
 import com.android.database.OrdersHandler;
 import com.android.database.PaymentsHandler;
-import com.android.database.ShiftPeriodsDBHandler;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
-import com.android.emobilepos.models.ShiftPeriods;
 import com.android.emobilepos.models.realms.Payment;
+import com.android.emobilepos.models.realms.Shift;
+import com.android.support.DateUtils;
 import com.android.support.Global;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 public class EMSReceiptHelper {
@@ -267,7 +269,7 @@ public class EMSReceiptHelper {
         StringBuilder sb_ord_types = new StringBuilder();
 
         OrdersHandler ordHandler = new OrdersHandler(activity);
-        ShiftPeriodsDBHandler shiftHandler = new ShiftPeriodsDBHandler(activity);
+//        ShiftPeriodsDBHandler shiftHandler = new ShiftPeriodsDBHandler(activity);
         OrderProductsHandler ordProdHandler = new OrderProductsHandler(activity);
         PaymentsHandler paymentHandler = new PaymentsHandler(activity);
 
@@ -322,19 +324,19 @@ public class EMSReceiptHelper {
         sb.append(twoColumn("Total", Global.formatDoubleStrToCurrency(salesAmount.add(invoiceAmount).subtract(returnAmount).toString()), 0));
 
         sb.append(newLines(2));
-
-        List<ShiftPeriods> listShifts = shiftHandler.getShiftDayReport(null, mDate);
+        List<Shift> listShifts = ShiftDAO.getShift(new Date());
+//        List<ShiftPeriods> listShifts = shiftHandler.getShiftDayReport(null, mDate);
         if (listShifts.size() > 0) {
             sb.append(centerText("Totals By Shift"));
-            for (ShiftPeriods shift : listShifts) {
-                sb.append(twoColumn("Sales Clerk", shift.assignee_name, 0));
-                sb.append(twoColumn("From", Global.formatToDisplayDate(shift.startTime, 2), 0));
-                sb.append(twoColumn("To", Global.formatToDisplayDate(shift.endTime, 2), 0));
-                sb.append(twoColumn("Beginning Petty Cash", Global.formatDoubleStrToCurrency(shift.beginning_petty_cash), 2));
-                sb.append(twoColumn("Total Expenses", Global.formatDoubleStrToCurrency(shift.total_expenses), 2));
-                sb.append(twoColumn("Ending Petty Cash", Global.formatDoubleStrToCurrency(shift.ending_petty_cash), 2));
-                sb.append(twoColumn("Total Transactions Cash", Global.formatDoubleStrToCurrency(shift.total_transaction_cash), 2));
-                sb.append(twoColumn("Entered Close Amount", shift.entered_close_amount, 2));
+            for (Shift shift : listShifts) {
+                sb.append(twoColumn("Sales Clerk", shift.getAssigneeName(), 0));
+                sb.append(twoColumn("From", DateUtils.getDateAsString(shift.getStartTime(), DateUtils.DATE_yyyy_MM_dd), 0));
+                sb.append(twoColumn("To", DateUtils.getDateAsString(shift.getEndTime(), DateUtils.DATE_yyyy_MM_dd), 0));
+                sb.append(twoColumn("Beginning Petty Cash", Global.formatDoubleStrToCurrency(shift.getBeginningPettyCash()), 2));
+                sb.append(twoColumn("Total Expenses", Global.formatDoubleStrToCurrency(shift.getTotalExpenses()), 2));
+                sb.append(twoColumn("Ending Petty Cash", Global.formatDoubleStrToCurrency(shift.getEndingPettyCash()), 2));
+                sb.append(twoColumn("Total Transactions Cash", Global.formatDoubleStrToCurrency(shift.getTotalTransactionsCash()), 2));
+                sb.append(twoColumn("Entered Close Amount", shift.getEnteredCloseAmount(), 2));
             }
             listShifts.clear();
         }

@@ -172,6 +172,7 @@
             android:exported="false" />
         <activity
             android:name=".payment.SelectPayMethod_FA"
+            android:configChanges="orientation|screenSize"
             android:exported="false"
             android:launchMode="singleTop" />
         <activity
@@ -312,10 +313,10 @@
         <activity
             android:name=".ordering.OrderingMain_FA"
             android:launchMode="singleTop"
+            android:configChanges="orientation|screenSize"
             android:windowSoftInputMode="stateAlwaysHidden">
             <intent-filter>
                 <action android:name="com.android.emobilepos.RECVR" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
@@ -380,12 +381,7 @@
             android:exported="false"
             android:theme="@style/LightTheme"
             android:windowSoftInputMode="stateHidden|adjustResize" />
-        <activity
-            android:name=".shifts.OpenShift_FA"
-            android:configChanges="orientation|screenSize"
-            android:exported="false"
-            android:theme="@style/Theme.TransparentTest"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+
         <activity
             android:name=".shifts.ShiftReportDetails_FA"
             android:configChanges="orientation|screenSize"

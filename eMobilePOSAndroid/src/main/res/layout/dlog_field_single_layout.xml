@@ -3,14 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_dlog"
         android:gravity="center"
-        android:orientation="vertical" >
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/dlogTitle"
@@ -36,35 +36,54 @@
             android:imeOptions="flagNoExtractUi|actionDone"
             android:textAppearance="@style/black_text_appearance_unbold"
             android:textColor="#000000"
-            android:textSize="@dimen/field_general_txt_size" >
-        </com.android.support.MyEditText>
+            android:textSize="@dimen/field_general_txt_size"></com.android.support.MyEditText>
 
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
 
             <Button
-                style="@style/action_button_text_appearance"
                 android:id="@+id/btnDlogSingle"
+                style="@style/action_button_text_appearance"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:background="@drawable/action_button_selector"
                 android:ems="7"
-                android:textSize="@dimen/dlog_btn_size"
-                android:layout_weight="1" />
+                android:textSize="@dimen/dlog_btn_size" />
 
             <Button
-                style="@style/action_button_text_appearance"
                 android:id="@+id/btnCancelDlogSingle"
+                style="@style/action_button_text_appearance"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:background="@drawable/action_button_selector"
                 android:ems="7"
                 android:text="@string/button_cancel"
-                android:textSize="@dimen/dlog_btn_size"
-                android:layout_weight="1" />
+                android:textSize="@dimen/dlog_btn_size" />
         </LinearLayout>
+
+        <Button
+            android:id="@+id/systemLoginbutton2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/action_button_selector"
+            android:text="@string/useSystemPassword"
+            android:textColor="@color/red"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/infotextView23"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:maxLines="4"
+            android:lines="4"
+            android:text="@string/systemLoginInfo"
+            android:gravity="left|center_vertical"
+            android:visibility="gone" />
 
     </LinearLayout>
 

@@ -86,7 +86,7 @@ public class OrderRewards_FR extends Fragment implements OnClickListener {
 
         if (savedInstanceState == null && OrderTotalDetails_FR.getFrag() != null) {
             Global global = (Global) getActivity().getApplication();
-            OrderTotalDetails_FR.getFrag().reCalculate(global.orderProducts);
+            OrderTotalDetails_FR.getFrag().reCalculate(global.order.getOrderProducts());
         }
 
         if (OrderingMain_FA.rewardsWasRead)
@@ -105,7 +105,8 @@ public class OrderRewards_FR extends Fragment implements OnClickListener {
                 Global global = (Global) getActivity().getApplication();
                 Order order = Receipt_FR.buildOrder(getActivity(), global, "", "",
                         ((OrderingMain_FA) getActivity()).getSelectedDinningTableNumber(),
-                        ((OrderingMain_FA) getActivity()).getAssociateId(),((OrderingMain_FA) getActivity()).getOrderAttributes());
+                        ((OrderingMain_FA) getActivity()).getAssociateId(),((OrderingMain_FA) getActivity()).getOrderAttributes(),
+                        ((OrderingMain_FA) getActivity()).getListOrderTaxes(),global.order.getOrderProducts());
                 OrdersHandler ordersHandler = new OrdersHandler(getActivity());
                 ordersHandler.insert(order);
                 global.order = order;
@@ -132,10 +133,10 @@ public class OrderRewards_FR extends Fragment implements OnClickListener {
                 Global global = (Global) getActivity().getApplication();
                 OrderingMain_FA mainFa = (OrderingMain_FA) getActivity();
                 BigDecimal rewardDiscount = mainFa.getLeftFragment()
-                        .applyRewardDiscount(result.getApprovedAmount(), global.orderProducts);
+                        .applyRewardDiscount(result.getApprovedAmount(), global.order.getOrderProducts());
 
                 if (OrderTotalDetails_FR.getFrag() != null) {
-                    OrderTotalDetails_FR.getFrag().reCalculate(global.orderProducts);
+                    OrderTotalDetails_FR.getFrag().reCalculate(global.order.getOrderProducts());
                 }
                 btnPayRewards.setClickable(false);
                 btnPayRewards.setEnabled(false);

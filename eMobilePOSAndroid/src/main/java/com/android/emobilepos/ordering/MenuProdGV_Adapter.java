@@ -116,7 +116,7 @@ public class MenuProdGV_Adapter extends CursorAdapter {
 
             if (isPortrait) {
                 String prod_id = cursor.getString(holder.i_id);
-                holder.qty.setText(OrderProductUtils.getOrderProductQty(global.orderProducts, prod_id));//getQty(prod_id));
+                holder.qty.setText(OrderProductUtils.getOrderProductQty(global.order.getOrderProducts(), prod_id));//getQty(prod_id));
                 String tempPrice = cursor.getString(holder.i_volume_price);
                 if (tempPrice == null || tempPrice.isEmpty()) {
                     tempPrice = cursor.getString(holder.i_pricelevel_price);
@@ -126,7 +126,7 @@ public class MenuProdGV_Adapter extends CursorAdapter {
                             tempPrice = cursor.getString(holder.i_master_price);
                     }
                 } else {
-                    String[] temp = volPriceHandler.getVolumePrice(OrderProductUtils.getOrderProductQty(global.orderProducts, prod_id), prod_id);
+                    String[] temp = volPriceHandler.getVolumePrice(OrderProductUtils.getOrderProductQty(global.order.getOrderProducts(), prod_id), prod_id);
                     if (temp[1] != null && !temp[1].isEmpty())
                         tempPrice = temp[1];
                 }

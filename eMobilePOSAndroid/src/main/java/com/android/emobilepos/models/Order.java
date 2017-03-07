@@ -1,16 +1,17 @@
 package com.android.emobilepos.models;
 
-import android.app.Activity;
 import android.content.Context;
 
 import com.android.dao.AssignEmployeeDAO;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.OrderAttributes;
+import com.android.emobilepos.models.realms.Payment;
 import com.android.support.Customer;
 import com.android.support.DateUtils;
 import com.android.support.MyPreferences;
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -75,6 +76,8 @@ public class Order implements Cloneable {
     public int numberOfSeats;
     public String ord_timeStarted;
     public List<OrderAttributes> orderAttributes;
+    private List<DataTaxes> listOrderTaxes;
+    private List<OrderProduct> orderProducts = new ArrayList<>();
 
     public Order() {
         ord_issync = "0";
@@ -106,4 +109,23 @@ public class Order implements Cloneable {
         return json;
     }
 
+    public List<DataTaxes> getListOrderTaxes() {
+        return listOrderTaxes;
+    }
+
+    public void setListOrderTaxes(List<DataTaxes> listOrderTaxes) {
+        this.listOrderTaxes = listOrderTaxes;
+    }
+
+    public boolean isSync() {
+        return ord_issync.equalsIgnoreCase("1");
+    }
+
+    public List<OrderProduct> getOrderProducts() {
+        return orderProducts;
+    }
+
+    public void setOrderProducts(List<OrderProduct> orderProducts) {
+        this.orderProducts = orderProducts;
+    }
 }

@@ -5,9 +5,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
 
-import com.android.dao.SalesAssociateDAO;
+import com.android.dao.ClerkDAO;
 import com.android.emobilepos.R;
-import com.android.emobilepos.models.realms.SalesAssociate;
+import com.android.emobilepos.models.realms.Clerk;
 import com.android.support.Global;
 import com.android.support.SynchMethods;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
@@ -18,7 +18,7 @@ import io.realm.Realm;
 
 public class SalesAssociateConfigurationActivity extends BaseFragmentActivityActionBar {
 
-    private SalesAssociate selectedSalesAssociate;
+    private Clerk selectedClerk;
     private boolean hasBeenCreated;
 
     @Override
@@ -36,23 +36,23 @@ public class SalesAssociateConfigurationActivity extends BaseFragmentActivityAct
         return (SalesAssociateListFragment) getFragmentManager().findFragmentById(R.id.associateListfragment);
     }
 
-    public void setSelectedSalesAssociate(SalesAssociate selectedSalesAssociate) {
-        this.selectedSalesAssociate = selectedSalesAssociate;
+    public void setSelectedClerk(Clerk selectedClerk) {
+        this.selectedClerk = selectedClerk;
     }
 
-    public SalesAssociate getSelectedSalesAssociate() {
-        return selectedSalesAssociate;
+    public Clerk getSelectedClerk() {
+        return selectedClerk;
     }
 
     @Override
     public void onResume() {
         Global global = (Global) getApplication();
         if (global.isApplicationSentToBackground(this))
-            global.loggedIn = false;
+            Global.loggedIn = false;
 
         global.stopActivityTransitionTimer();
 
-        if (hasBeenCreated && !global.loggedIn) {
+        if (hasBeenCreated && !Global.loggedIn) {
             if (global.getGlobalDlog() != null)
                 global.getGlobalDlog().dismiss();
             global.promptForMandatoryLogin(this);
@@ -68,7 +68,7 @@ public class SalesAssociateConfigurationActivity extends BaseFragmentActivityAct
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         boolean isScreenOn = powerManager.isScreenOn();
         if (!isScreenOn)
-            global.loggedIn = false;
+            Global.loggedIn = false;
         global.startActivityTransitionTimer();
     }
 
@@ -97,7 +97,7 @@ public class SalesAssociateConfigurationActivity extends BaseFragmentActivityAct
         @Override
         protected Void doInBackground(Void... params) {
             Realm realm = Realm.getDefaultInstance();
-            List<SalesAssociate> assosiates = SalesAssociateDAO.getAll();// realm.where(SalesAssociate.class).findAll();
+            List<Clerk> assosiates = ClerkDAO.getAll();// realm.where(Clerk.class).findAll();
             try {
                 SynchMethods.postSalesAssociatesConfiguration(SalesAssociateConfigurationActivity.this, realm.copyFromRealm(assosiates));
             } catch (Exception e) {

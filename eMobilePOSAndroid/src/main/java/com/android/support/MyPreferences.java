@@ -24,7 +24,7 @@ public class MyPreferences {
     public static final String pref_restaurant_mode = "pref_restaurant_mode";
     public static final String pref_enable_togo_eatin = "pref_enable_togo_eatin";
     public static final String pref_require_waiter_signin = "pref_require_waiter_signin";
-//    private Global global;
+    //    private Global global;
     public static final String pref_enable_table_selection = "pref_enable_table_selection";
     public static final String pref_ask_seats = "pref_ask_seats";
     public static final String pref_use_navigationbar = "pref_use_navigationbar";
@@ -35,7 +35,7 @@ public class MyPreferences {
     public static final String pref_enable_multi_category = "pref_enable_multi_category";
     public static final String pref_ask_order_comments = "pref_ask_order_comments";
     public static final String pref_skip_email_phone = "pref_skip_email_phone";
-//    private final String zone_id = "zone_id";
+    //    private final String zone_id = "zone_id";
 //    private final String VAT = "VAT";
     public static final String pref_show_only_group_taxes = "pref_show_only_group_taxes";
     public static final String pref_retail_taxes = "pref_retail_taxes";
@@ -45,7 +45,7 @@ public class MyPreferences {
     public static final String pref_direct_customer_selection = "pref_direct_customer_selection";
     public static final String pref_display_customer_account_number = "pref_display_customer_account_number";
     public static final String pref_skip_want_add_more_products = "pref_skip_want_add_more_products";
-//    private final String MSLastTransferID = "MSLastTransferID";
+    //    private final String MSLastTransferID = "MSLastTransferID";
     public static final String pref_require_shift_transactions = "pref_require_shift_transactions";
     public static final String pref_allow_customer_creation = "pref_allow_customer_creation";
     public static final String pref_scope_bar_in_restaurant_mode = "pref_scope_bar_in_restaurant_mode";
@@ -165,6 +165,7 @@ public class MyPreferences {
     private Context context;
     private SharedPreferences sharedPref;
     private String defaultUnitsName;
+
     public MyPreferences(Context context) {
         this.context = context;
         // prefEditor =
@@ -634,6 +635,12 @@ public class MyPreferences {
         return sharedPref.getBoolean(key, false);
     }
 
+    public void setPreferences(String key, boolean value) {
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putBoolean(key, value);
+        editor.commit();
+    }
+
     public boolean requiresWaiterLogin() {
         return getPreferences(MyPreferences.pref_require_waiter_signin);
     }
@@ -1085,7 +1092,7 @@ public class MyPreferences {
         int NUM_OF_ITEMS = 17;
         boolean[] values = new boolean[NUM_OF_ITEMS];
         Set<String> selections = sharedPref.getStringSet("pref_configure_home_menu", null);
-        if (selections != null && NUM_OF_ITEMS == selections.size()) {
+        if (selections != null) {
             String[] selected = selections.toArray(new String[]{});
 
             Arrays.sort(selected);
@@ -1186,7 +1193,7 @@ public class MyPreferences {
     }
 
     public String getShiftID() {
-        return prefs.getString("shift_id", "");
+        return prefs.getString("shift_id", "0");
     }
 
     public void setShiftID(String value) {
@@ -1210,7 +1217,6 @@ public class MyPreferences {
     public void setClerkName(String value) {
         prefEditor.putString("clerk_name", value);
         prefEditor.commit();
-
     }
 
     public String getClerkID() {
@@ -1317,6 +1323,10 @@ public class MyPreferences {
     public void setDefaultUnitsName(String defaultUnitsName) {
         prefEditor.putString("defaultUnitsName", defaultUnitsName);
         prefEditor.commit();
+    }
+
+    public boolean isRestaurantMode() {
+        return getPreferences(MyPreferences.pref_restaurant_mode);
     }
 
     public enum PrinterPreviewWidth {SMALL, MEDIUM, LARGE}

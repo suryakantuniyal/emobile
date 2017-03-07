@@ -12,10 +12,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.android.database.ClerksHandler;
+import com.android.dao.ClerkDAO;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.security.SecurityManager;
 import com.android.emobilepos.shifts.ClockInOut_FA;
+import com.android.support.MyPreferences;
 
 public class ClockTab_FR extends Fragment implements OnClickListener {
     private Activity activity;
@@ -36,13 +38,12 @@ public class ClockTab_FR extends Fragment implements OnClickListener {
     @Override
     public void onClick(View v) {
         String enteredPass = fieldPassword.getText().toString().trim();
-        ClerksHandler clerkHandler = new ClerksHandler(activity);
-        String[] clerkData = clerkHandler.getClerkID(enteredPass);
+        Clerk clerk = ClerkDAO.login(enteredPass, new MyPreferences(getActivity()));
         fieldPassword.setText("");
-        if (clerkData != null && !clerkData[0].isEmpty()) {
+        if (clerk != null) {
             Intent intent = new Intent(activity, ClockInOut_FA.class);
-            intent.putExtra("clerk_id", clerkData[0]);
-            intent.putExtra("clerk_name", clerkData[1]);
+            intent.putExtra("clerk_id", clerk.getEmpId());
+            intent.putExtra("clerk_name", clerk.getEmpName());
             activity.startActivity(intent);
         } else {
             Toast.makeText(activity, R.string.invalid_password, Toast.LENGTH_LONG).show();

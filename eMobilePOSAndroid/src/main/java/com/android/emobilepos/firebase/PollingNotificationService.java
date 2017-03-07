@@ -12,6 +12,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.support.DateUtils;
@@ -49,7 +50,6 @@ public class PollingNotificationService extends Service {
     private static final String TAG = "PollingService";
     private Timer timer;
     private static final int delay = 3000; // delay for 3 sec before first start
-    private static final int period = 10000; // repeat check every 10 sec.
     private Date lastPolled;
     private String accountNumber;
 
@@ -88,7 +88,7 @@ public class PollingNotificationService extends Service {
                         pollNotificationEvents(PollingNotificationService.this);
 //                        updateMainActivity("3");
                     }
-                }, delay, period);
+                }, delay, BuildConfig.POLLING_PERIOD);
             }
 
             Bitmap icon = BitmapFactory.decodeResource(getResources(),

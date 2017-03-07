@@ -1,6 +1,5 @@
 package com.android.database;
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -11,9 +10,8 @@ import com.android.dao.AssignEmployeeDAO;
 import com.android.emobilepos.models.Discount;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.Product;
-import com.android.support.Global;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.support.MyPreferences;
 
 import net.sqlcipher.database.SQLiteStatement;
@@ -24,8 +22,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-
-import static java.util.logging.Logger.global;
 
 import util.StringUtil;
 
@@ -88,7 +84,7 @@ public class OrderProductsHandler {
     public StringBuilder sb1, sb2, sb3;
     public final String empStr = "";
     public HashMap<String, Integer> attrHash;
-//    public Global global;
+    //    public Global global;
     private List<String[]> data;
     private List<HashMap<String, Integer>> dictionaryListMap;
     public static final String table_name = "OrderProduct";
@@ -475,10 +471,14 @@ public class OrderProductsHandler {
         List<OrderProduct> products = new ArrayList<>();
         Cursor cursor = getCursorData(orderId);
         if (cursor.moveToFirst()) {
+            OrderProduct product;
             do {
-                products.add(getOrderProduct(cursor));
+                product = getOrderProduct(cursor);
+                if (!product.isAddon())
+                    products.add(product);
             } while (cursor.moveToNext());
         }
+        cursor.close();
         return products;
     }
 
@@ -608,7 +608,7 @@ public class OrderProductsHandler {
         List<OrderProduct> listOrdProd = new ArrayList<>();
 
         query.append(
-                "SELECT ordprod_name, prod_id,prod_sku, prod_upc, sum(ordprod_qty) as 'ordprod_qty', " +
+                "SELECT prod_price, ordprod_name, prod_id,prod_sku, prod_upc, sum(ordprod_qty) as 'ordprod_qty', " +
                         " sum(overwrite_price) 'overwrite_price',date(o.ord_timecreated,'localtime') as 'date' " +
                         "FROM " + table_name + " op ");
         query.append("LEFT JOIN Orders o ON op.ord_id = o.ord_id WHERE o.isVoid = '0' AND o.ord_type IN ");
@@ -642,16 +642,17 @@ public class OrderProductsHandler {
             int i_prod_upc = c.getColumnIndex(prod_upc);
             int i_ordprod_qty = c.getColumnIndex(ordprod_qty);
             int i_overwrite_price = c.getColumnIndex(overwrite_price);
-
+            int i_prod_price = c.getColumnIndex(prod_price);
             do {
                 OrderProduct ordProd = new OrderProduct();
-
+                ordProd.setProd_price(c.getString(i_prod_price));
+                ordProd.setOverwrite_price(c.getString(i_overwrite_price) == null
+                        ? null : new BigDecimal(c.getString(i_overwrite_price)));
                 ordProd.setOrdprod_name(c.getString(i_ordprod_name));
                 ordProd.setProd_id(c.getString(i_prod_id));
                 ordProd.setProd_sku(c.getString(i_prod_sku));
                 ordProd.setProd_upc(c.getString(i_prod_upc));
                 ordProd.setOrdprod_qty(c.getString(i_ordprod_qty));
-                ordProd.setOverwrite_price(new BigDecimal(c.getDouble(i_overwrite_price)));
 
                 listOrdProd.add(ordProd);
             } while (c.moveToNext());
@@ -666,7 +667,7 @@ public class OrderProductsHandler {
         List<OrderProduct> listOrdProd = new ArrayList<OrderProduct>();
 
         query.append(
-                "SELECT c.cat_name,op.cat_id, sum(ordprod_qty) as 'ordprod_qty',  sum(overwrite_price) 'overwrite_price'," +
+                "SELECT prod_price, c.cat_name,op.cat_id, sum(ordprod_qty) as 'ordprod_qty',  sum(overwrite_price) 'overwrite_price'," +
                         "date(o.ord_timecreated,'localtime') as 'date'  " +
                         "FROM " + table_name + " op ");
         query.append(
@@ -701,14 +702,16 @@ public class OrderProductsHandler {
             int i_cat_id = c.getColumnIndex(cat_id);
             int i_ordprod_qty = c.getColumnIndex(ordprod_qty);
             int i_overwrite_price = c.getColumnIndex(overwrite_price);
+            int i_prod_price = c.getColumnIndex(prod_price);
 
             do {
                 OrderProduct ordProd = new OrderProduct();
-
+                ordProd.setProd_price(c.getString(i_prod_price));
+                ordProd.setOverwrite_price(c.getString(i_overwrite_price) == null
+                        ? null : new BigDecimal(c.getString(i_overwrite_price)));
                 ordProd.setCat_name(c.getString(i_cat_name));
                 ordProd.setCat_id(c.getString(i_cat_id));
                 ordProd.setOrdprod_qty(c.getString(i_ordprod_qty));
-                ordProd.setOverwrite_price(new BigDecimal(c.getDouble(i_overwrite_price)));
 
                 listOrdProd.add(ordProd);
             } while (c.moveToNext());

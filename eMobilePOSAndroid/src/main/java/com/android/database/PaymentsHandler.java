@@ -397,8 +397,8 @@ public class PaymentsHandler {
         payment.setPay_issync("0");
 
         payment.setOriginal_pay_id(_orig_pay_id);
-        payment.setPay_timecreated(DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss));
-        payment.setPay_date(DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss));
+        payment.setPay_timecreated(DateUtils.getDateAsString(new Date(), DateUtils.DATE_PATTERN));
+        payment.setPay_date(DateUtils.getDateAsString(new Date(), DateUtils.DATE_PATTERN));
 
         if (onlineVoid) {
             payment.setPay_resultcode(response.get(pay_resultcode));

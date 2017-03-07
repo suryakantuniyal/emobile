@@ -176,7 +176,7 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
         LinearLayout addonParentLL = (LinearLayout) findViewById(R.id.addonParentHolder);
 
         if (parentAddons.size() >= 1) {
-            listParentViews = new ArrayList<View>();
+            listParentViews = new ArrayList<>();
             int pos = 0;
             for (ParentAddon parentAddon : parentAddons) {
                 final View view = inflater.inflate(R.layout.catalog_gridview_adapter, null);
@@ -226,10 +226,10 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
         orderProduct.setOrdprod_desc(product.getProdDesc() + _ord_desc.toString());
         orderProduct.setProd_sku(product.getProd_sku());
         orderProduct.setProd_upc(product.getProd_upc());
-        int idx = global.orderProducts.indexOf(orderProduct);
+        int idx = global.order.getOrderProducts().indexOf(orderProduct);
         if (idx > -1) {
-            global.orderProducts.remove(idx);
-            global.orderProducts.add(orderProduct);
+            global.order.getOrderProducts().remove(idx);
+            global.order.getOrderProducts().add(orderProduct);
         }
     }
 

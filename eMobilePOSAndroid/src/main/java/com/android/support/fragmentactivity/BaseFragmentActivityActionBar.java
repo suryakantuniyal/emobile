@@ -8,9 +8,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
 
+import com.android.dao.ClerkDAO;
 import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
+import com.android.emobilepos.models.realms.Clerk;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.crashlytics.android.Crashlytics;
@@ -25,10 +27,12 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
     private static MyPreferences myPref;
     private boolean showNavigationbar = false;
     private static String[] navigationbarByModels;
+    public Menu menu;
+    Clerk clerk;
 
     protected void setActionBar() {
-        showNavigationbar = myPref.getPreferences(MyPreferences.pref_use_navigationbar) || isNavigationBarModel() || this instanceof MainMenu_FA;
-        if (showNavigationbar) {
+        showNavigationbar = myPref.getPreferences(MyPreferences.pref_use_navigationbar) || isNavigationBarModel() || (this instanceof MainMenu_FA && myPref.isUseClerks());
+        if (showNavigationbar || this instanceof MainMenu_FA) {
             myBar = this.getActionBar();
             if (myBar != null) {
                 myBar.setDisplayShowTitleEnabled(true);
@@ -71,6 +75,7 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
         if (myPref == null) {
             myPref = new MyPreferences(this);
         }
+        clerk = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()), false);
         if (BuildConfig.REPORT_CRASHLITYCS) {
             setCrashliticAditionalInfo();
         }
@@ -79,11 +84,21 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (this instanceof MainMenu_FA) {
+        if (this instanceof MainMenu_FA && myPref.isUseClerks()) {
             getMenuInflater().inflate(R.menu.clerk_logout_menu, menu);
         } else if (showNavigationbar)
             getMenuInflater().inflate(R.menu.activity_main_menu, menu);
         return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem menuItem = menu.findItem(R.id.logoutMenuItem);
+        if (menuItem != null && clerk != null) {
+            menuItem.setTitle(String.format("%s (%s)", getString(R.string.logout_menu), clerk.getEmpName()));
+        }
+        this.menu = menu;
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -105,5 +120,11 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
             }
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        invalidateOptionsMenu();
+        super.onResume();
     }
 }

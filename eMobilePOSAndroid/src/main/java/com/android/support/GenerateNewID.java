@@ -1,6 +1,5 @@
 package com.android.support;
 
-import android.app.Activity;
 import android.content.Context;
 
 import com.android.dao.AssignEmployeeDAO;
@@ -9,6 +8,7 @@ import com.android.database.ConsignmentTransactionHandler;
 import com.android.database.OrdersHandler;
 import com.android.database.PaymentsHandler;
 import com.android.database.TransferLocations_DB;
+import com.android.emobilepos.models.EmobilePosId;
 import com.android.emobilepos.models.realms.AssignEmployee;
 
 import java.text.SimpleDateFormat;
@@ -63,16 +63,12 @@ public class GenerateNewID {
                 lastID = TransferLocations_DB.getLastTransferID(Integer.parseInt(String.valueOf(assignEmployee.getEmpId())), Integer.parseInt(year));
                 break;
         }
-
         if (lastID == null)
             lastID = "";
-
         if (lastID.isEmpty() || lastID.length() <= 4) {
             sb.append(assignEmployee.getEmpId()).append("-").append("00001").append("-").append(year);
         } else {
-
             String[] tokens = lastID.split(delims);
-
             if (tokens[2].equals(year)) {
                 int seq = Integer.parseInt(tokens[1]);
                 sb.append(assignEmployee.getEmpId()).append("-").append(String.format("%05d", (seq + 1))).append("-")
@@ -81,7 +77,6 @@ public class GenerateNewID {
                 sb.append(assignEmployee.getEmpId()).append("-").append("00001").append("-").append(year);
             }
         }
-
         return sb.toString();
     }
 
@@ -89,5 +84,24 @@ public class GenerateNewID {
         String qbOrderId = orderId.replace("-", "");
         qbOrderId = qbOrderId.substring(0, qbOrderId.length() - 4) + qbOrderId.substring(qbOrderId.length() - 2);
         return qbOrderId;
+    }
+
+    public static boolean isValidLastId(String id, IdType idType) {
+        switch (idType) {
+            case ORDER_ID: {
+                String lastOrderID = AssignEmployeeDAO.getAssignEmployee().getMSLastOrderID();
+                EmobilePosId newId = new EmobilePosId(id);
+                EmobilePosId lastId = new EmobilePosId(lastOrderID);
+                if (Integer.parseInt(newId.getYear()) > Integer.parseInt(lastId.getYear())) {
+                    return true;
+                } else if (Integer.parseInt(newId.getYear()) == Integer.parseInt(lastId.getYear())
+                        && Integer.parseInt(newId.getSequence()) > Integer.parseInt(lastId.getSequence())) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+        return false;
     }
 }

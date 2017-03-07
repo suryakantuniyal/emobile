@@ -538,20 +538,15 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
         }
     };
 
-    private void serOrderProductRequiredAttributes() {
-        for (OrderProduct product : global.orderProducts) {
-
-        }
-    }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btnSave:
                 OrderProduct product = null;
-                if (global.orderProducts != null && !global.orderProducts.isEmpty()
+                if (global.order.getOrderProducts() != null && !global.order.getOrderProducts().isEmpty()
                         && !TextUtils.isEmpty(ordprod_id)) {
-                    product = global.orderProducts.get(global.orderProducts.indexOf(OrderProduct.getInstance(ordprod_id)));
+                    product = global.order.getOrderProducts().get(global.order.getOrderProducts().indexOf(OrderProduct.getInstance(ordprod_id)));
                 }
                 if (isCardInfo) {
                     attr_value = fieldCardNum.getText().toString();

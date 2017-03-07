@@ -16,13 +16,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.dao.AssignEmployeeDAO;
+import com.android.dao.ClerkDAO;
 import com.android.dao.DeviceTableDAO;
 import com.android.dao.DinningTableDAO;
 import com.android.dao.EmployeePermissionDAO;
 import com.android.dao.MixMatchDAO;
 import com.android.dao.OrderAttributesDAO;
 import com.android.dao.OrderProductAttributeDAO;
-import com.android.dao.SalesAssociateDAO;
 import com.android.dao.ShiftDAO;
 import com.android.dao.UomDAO;
 import com.android.database.ConsignmentTransactionHandler;
@@ -39,7 +39,6 @@ import com.android.database.PriceLevelItemsHandler;
 import com.android.database.ProductAddonsHandler;
 import com.android.database.ProductAliases_DB;
 import com.android.database.ProductsHandler;
-import com.android.database.ShiftPeriodsDBHandler;
 import com.android.database.TemplateHandler;
 import com.android.database.TimeClockHandler;
 import com.android.database.TransferLocations_DB;
@@ -57,11 +56,11 @@ import com.android.emobilepos.models.Product;
 import com.android.emobilepos.models.ProductAddons;
 import com.android.emobilepos.models.ProductAlias;
 import com.android.emobilepos.models.realms.AssignEmployee;
+import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.DinningTable;
 import com.android.emobilepos.models.realms.MixMatch;
 import com.android.emobilepos.models.realms.OrderAttributes;
 import com.android.emobilepos.models.realms.PaymentMethod;
-import com.android.emobilepos.models.realms.SalesAssociate;
 import com.android.emobilepos.models.realms.Shift;
 import com.android.emobilepos.models.response.ClerkEmployeePermissionResponse;
 import com.android.emobilepos.models.salesassociates.DinningLocationConfiguration;
@@ -168,16 +167,14 @@ public class SynchMethods {
     }
 
 
-
-
-    public static void postSalesAssociatesConfiguration(Activity activity, List<SalesAssociate> salesAssociates) throws Exception {
+    public static void postSalesAssociatesConfiguration(Activity activity, List<Clerk> clerks) throws Exception {
         List<DinningLocationConfiguration> configurations = new ArrayList<>();
 
-        HashMap<String, List<SalesAssociate>> locations = SalesAssociateDAO.getSalesAssociatesByLocation();
-        for (Map.Entry<String, List<SalesAssociate>> location : locations.entrySet()) {
+        HashMap<String, List<Clerk>> locations = ClerkDAO.getSalesAssociatesByLocation();
+        for (Map.Entry<String, List<Clerk>> location : locations.entrySet()) {
             DinningLocationConfiguration configuration = new DinningLocationConfiguration();
             configuration.setLocationId(location.getKey());
-            configuration.setSalesAssociates(location.getValue());
+            configuration.setClerks(location.getValue());
             configurations.add(configuration);
         }
         AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
@@ -223,11 +220,11 @@ public class SynchMethods {
             reader.endArray();
             reader.close();
             for (DinningLocationConfiguration configuration : configurations) {
-                for (SalesAssociate associate : configuration.getSalesAssociates()) {
-                    SalesAssociateDAO.clearAllAssignedTable(associate);
+                for (Clerk associate : configuration.getClerks()) {
+                    ClerkDAO.clearAllAssignedTable(associate);
                     for (DinningTable table : associate.getAssignedDinningTables()) {
                         DinningTable dinningTable = DinningTableDAO.getById(table.getId());
-                        SalesAssociateDAO.addAssignedTable(associate, dinningTable);
+                        ClerkDAO.addAssignedTable(associate, dinningTable);
                     }
                 }
             }
@@ -520,8 +517,8 @@ public class SynchMethods {
 //            ClerkDAO.truncate();
             EmployeePermissionDAO.truncate();
 //            ClerkDAO.inserOrUpdate(response.getClerks());
-            SalesAssociateDAO.truncate();
-            SalesAssociateDAO.insert(response.getClerks());
+            ClerkDAO.truncate();
+            ClerkDAO.insert(response.getClerks());
             EmployeePermissionDAO.insertOrUpdate(response.getEmployeePersmissions());
         } catch (Exception e) {
             e.printStackTrace();
@@ -645,7 +642,7 @@ public class SynchMethods {
             JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
             List<Order> orders = new ArrayList<>();
             OrdersHandler ordersHandler = new OrdersHandler(activity);
-            ordersHandler.deleteOnHoldsTable();
+            ordersHandler.deleteOnHoldsOrders();
             reader.beginArray();
             int i = 0;
             while (reader.hasNext()) {
@@ -653,7 +650,7 @@ public class SynchMethods {
                 order.ord_issync = "1";
                 order.isOnHold = "1";
                 Order onHoldOrder = ordersHandler.getOrder(order.ord_id);
-                if (onHoldOrder == null || onHoldOrder.isOnHold.equals("1")) {
+                if (onHoldOrder == null || TextUtils.isEmpty(onHoldOrder.ord_id) || onHoldOrder.isOnHold.equals("1")) {
                     orders.add(order);
                     i++;
                 }
@@ -968,22 +965,22 @@ public class SynchMethods {
 
     public void postShift(Context context) throws Exception {
         SAXParserPost handler = new SAXParserPost();
-        ShiftPeriodsDBHandler dbHandler = new ShiftPeriodsDBHandler(context);
+//        ShiftPeriodsDBHandler dbHandler = new ShiftPeriodsDBHandler(context);
         List<Shift> pendingSyncShifts = ShiftDAO.getPendingSyncShifts();
         if (pendingSyncShifts != null && !pendingSyncShifts.isEmpty()) {
             xml = post.postData(Global.S_SUBMIT_SHIFT, context, "");
             inSource = new InputSource(new StringReader(xml));
             xr.setContentHandler(handler);
             xr.parse(inSource);
-            data = handler.getData();
+//            data = handler.getData();
             for (Shift s : pendingSyncShifts) {
                 s.setSync(true);
             }
             ShiftDAO.updateShiftToSync(pendingSyncShifts);
-            dbHandler.updateIsSync(data);
-            if (data.isEmpty())
-                didSendData = false;
-            data.clear();
+//            dbHandler.updateIsSync(data);
+//            if (data.isEmpty())
+//                didSendData = false;
+//            data.clear();
         }
     }
 
@@ -1222,8 +1219,8 @@ public class SynchMethods {
             String jsonRequest = client.httpJsonRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
                     xml.getSalesAssociate());
             try {
-                SalesAssociateDAO.truncate();
-                SalesAssociateDAO.insert(jsonRequest);
+                ClerkDAO.truncate();
+                ClerkDAO.insert(jsonRequest);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -1654,12 +1651,10 @@ public class SynchMethods {
             myProgressDialog.dismiss();
 
             if (type == Global.FROM_SYNCH_ACTIVITY) {
-                if (!isFromMainMenu) {
-                    SyncTab_FR.syncTabHandler.sendEmptyMessage(0);
-                } else {
+                if (isFromMainMenu) {
                     synchTextView.setVisibility(View.GONE);
                 }
-
+                SyncTab_FR.syncTabHandler.sendEmptyMessage(0);
             }
 
 //            if (proceed && dbManager.isSendAndReceive()) {
@@ -1883,8 +1878,8 @@ public class SynchMethods {
                 Cursor c = orderProdHandler.getOrderProductsOnHold(params[0]);
                 if (BuildConfig.DELETE_INVALID_HOLDS || (c != null && c.getCount() > 0)) {
                     proceedToView = true;
-                    if (type == 0)
-                        ((OnHoldActivity) context).addOrderProducts(activity, c);
+//                    if (type == 0)
+//                        OnHoldActivity.addOrderProducts(activity, c);
                 } else
                     proceedToView = false;
                 if (c != null) {

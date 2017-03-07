@@ -30,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.dao.AssignEmployeeDAO;
+import com.android.dao.PayMethodsDAO;
 import com.android.dao.PaymentMethodDAO;
 import com.android.dao.StoredPaymentsDAO;
 import com.android.database.DrawInfoHandler;
@@ -179,9 +180,9 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             setResult(-1);
 
             if (Global.loyaltyCardInfo != null && !Global.loyaltyCardInfo.getCardNumUnencrypted().isEmpty()) {
-                showPaymentSuccessDlog(true, null);
+                showPaymentSuccessDlog(true, null, false);
             } else if (Global.rewardCardInfo != null && !Global.rewardCardInfo.getCardNumUnencrypted().isEmpty()) {
-                showPaymentSuccessDlog(true, null);
+                showPaymentSuccessDlog(true, null, false);
             }
         }
 
@@ -469,7 +470,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             myInflater = LayoutInflater.from(context);
 
             PayMethodsHandler handler = new PayMethodsHandler(activity);
-            payTypeList = handler.getPayMethod();
+            payTypeList = PayMethodsDAO.getAllSortByName(true);
         }
 
         @Override
@@ -838,7 +839,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 setResult(Global.FROM_PAYMENT);
             else
                 setResult(-1);
-            showPaymentSuccessDlog(true, emvContainer);
+            showPaymentSuccessDlog(true, emvContainer, false);
         } else if (resultCode == -2) {
             totalPayCount++;
             OrdersHandler ordersHandler = new OrdersHandler(activity);
@@ -868,26 +869,33 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             if (overAllRemainingBalance > 0) {
 
                 GenerateNewID generator = new GenerateNewID(this);
-                previous_pay_id = PaymentsHandler.getLastPaymentInserted().getPay_id();
+                Payment lastPaymentInserted = PaymentsHandler.getLastPaymentInserted();
+                previous_pay_id = lastPaymentInserted.getPay_id();
                 pay_id = generator.getNextID(IdType.PAYMENT_ID);
 
                 if (isFromMainMenu || extras.getBoolean("histinvoices"))
-                    showPaymentSuccessDlog(true, emvContainer);
+                    showPaymentSuccessDlog(true, emvContainer, false);
                 else
-                    showPaymentSuccessDlog(false, emvContainer);
+                    showPaymentSuccessDlog(false, emvContainer, false);
 
             } else {
+                boolean isReturn = false;
                 if (job_id != null && !job_id.isEmpty()) {
                     ordersHandler.updateIsProcessed(job_id, "1");
+                    Order order = ordersHandler.getOrder(job_id);
+                    if (Global.OrderType.getByCode(Integer.parseInt(order.ord_type)) == Global.OrderType.RETURN) {
+                        isReturn = true;
+                    }
                 }
+                boolean refundPaymentType = PaymentsHandler.getLastPaymentInserted().isRefundPaymentType();
                 previous_pay_id = pay_id;
-                showPaymentSuccessDlog(true, emvContainer);
+                showPaymentSuccessDlog(true, emvContainer, isReturn || refundPaymentType);
             }
         } else {
             if (emvContainer != null && emvContainer.getGeniusResponse() != null &&
                     emvContainer.getGeniusResponse().getStatus().equalsIgnoreCase("DECLINED")) {
                 previous_pay_id = PaymentsHandler.getLastPaymentInserted().getPay_id();
-                showPaymentSuccessDlog(true, emvContainer);
+                showPaymentSuccessDlog(true, emvContainer, false);
             }
         }
     }
@@ -915,7 +923,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         dlog.show();
     }
 
-    private void showPaymentSuccessDlog(final boolean withPrintRequest, final EMVContainer emvContainer) {
+    private void showPaymentSuccessDlog(final boolean withPrintRequest, final EMVContainer emvContainer, boolean isRetun) {
 
         dlog = new Dialog(activity, R.style.Theme_TransparentTest);
         dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -927,12 +935,20 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         viewTitle.setText(R.string.dlog_title_confirm);
         if (emvContainer != null && emvContainer.getGeniusResponse() != null) {
             if (emvContainer.getGeniusResponse().getStatus().equalsIgnoreCase("APPROVED")) {
-                viewMsg.setText(R.string.payment_saved_successfully);
+                if (isRetun) {
+                    viewMsg.setText(R.string.payment_return_saved_successfully);
+                } else {
+                    viewMsg.setText(R.string.payment_saved_successfully);
+                }
             } else {
                 viewMsg.setText(R.string.payment_save_declined);
             }
         } else {
-            viewMsg.setText(R.string.payment_saved_successfully);
+            if (isRetun) {
+                viewMsg.setText(R.string.payment_return_saved_successfully);
+            } else {
+                viewMsg.setText(R.string.payment_saved_successfully);
+            }
         }
 
         Button btnOk = (Button) dlog.findViewById(R.id.btnDlogSingle);
@@ -944,10 +960,8 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 dlog.dismiss();
                 if (withPrintRequest) {
                     if (Global.loyaltyCardInfo != null && !Global.loyaltyCardInfo.getCardNumUnencrypted().isEmpty()) {
-//                        processInquiry(true);
                         showPrintDlg(false, false, emvContainer);
                     } else if (Global.rewardCardInfo != null && !Global.rewardCardInfo.getCardNumUnencrypted().isEmpty()) {
-//                        processInquiry(false);
                         showPrintDlg(false, false, emvContainer);
                     } else {
                         if (myPref.getPreferences(MyPreferences.pref_enable_printing)

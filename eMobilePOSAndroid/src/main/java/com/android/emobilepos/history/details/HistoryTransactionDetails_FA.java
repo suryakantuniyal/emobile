@@ -35,13 +35,13 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.android.dao.ShiftDAO;
 import com.android.dao.StoredPaymentsDAO;
 import com.android.database.CustomersHandler;
 import com.android.database.OrderProductsHandler;
 import com.android.database.OrdersHandler;
 import com.android.database.PaymentsHandler;
 import com.android.database.ProductsImagesHandler;
-import com.android.database.ShiftPeriodsDBHandler;
 import com.android.database.VoidTransactionsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.Order;
@@ -611,10 +611,10 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         ord.ord_type = order.ord_type;
         voidHandler.insert(ord);
         //Section to update the local ShiftPeriods database to reflect the VOID
-        ShiftPeriodsDBHandler handlerSP = new ShiftPeriodsDBHandler(activity);
+//        ShiftPeriodsDBHandler handlerSP = new ShiftPeriodsDBHandler(activity);
         amountToBeSubstracted = Double.parseDouble(NumberUtils.cleanCurrencyFormatedNumber(order.ord_total)); //find total to be credited
         //update ShiftPeriods (isReturn set to true)
-        handlerSP.updateShiftAmounts(myPref.getShiftID(), amountToBeSubstracted, true);
+        ShiftDAO.updateShiftAmounts(Integer.parseInt(myPref.getShiftID()), amountToBeSubstracted, true);
         //Check if Stored&Forward active and delete from record if any payment were made
         if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
             handler.updateOrderStoredFwd(order_id, "0");
