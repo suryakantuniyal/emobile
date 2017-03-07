@@ -142,7 +142,7 @@ public class ProductsHandler {
         DBManager.getDatabase().execSQL("DELETE FROM " + table_name);
     }
 
-    public Cursor getCatalogData(int limit, int offset) {
+    public Cursor getCatalogData(String categoryId, int limit, int offset) {
 
         String[] parameters;
         String query;
@@ -156,8 +156,7 @@ public class ProductsHandler {
             priceLevelID = StringUtil.nullStringToEmpty(assignEmployee.getPricelevelId());
         }
 
-        if (Global.cat_id.equals("0")) {
-
+        if (TextUtils.isEmpty(categoryId)) {
             sb.append(
                     "SELECT  p.prod_id as '_id',  p.prod_prices_group_id as 'prod_prices_group_id'," +
                             " p.prod_price as 'master_price'," +
@@ -309,12 +308,12 @@ public class ProductsHandler {
                 sb.append("FROM Products p " + "LEFT OUTER JOIN EmpInv ei ON ei.prod_id = p.prod_id " +
                         "INNER JOIN ProdCatXref xr ON p.prod_id = xr.prod_id  " +
                         "INNER JOIN Categories c ON c.cat_id = xr.cat_id AND " +
-                        "xr.cat_id = '").append(Global.cat_id).append("'");
+                        "xr.cat_id = '").append(categoryId).append("'");
             } else {
                 sb.append("FROM Products p " +
                         "LEFT OUTER JOIN EmpInv ei ON ei.prod_id = p.prod_id " +
                         "INNER JOIN Categories c ON c.cat_id = p.cat_id AND " +
-                        "p.cat_id = '").append(Global.cat_id).append("'");
+                        "p.cat_id = '").append(categoryId).append("'");
             }
 
             sb.append(" LEFT OUTER JOIN VolumePrices vp ON p.prod_id = vp.prod_id AND '1' " +

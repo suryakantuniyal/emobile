@@ -72,6 +72,8 @@ public class MenuProdGV_Adapter extends CursorAdapter {
     public void bindView(View view, Context context, final Cursor cursor) {
         final int position = cursor.getPosition();
 
+        if (cursor.isClosed()) return;
+
         holder = (ViewHolder) view.getTag();
         if (holder.i_prod_name != -1) {
             if (holder.title != null)

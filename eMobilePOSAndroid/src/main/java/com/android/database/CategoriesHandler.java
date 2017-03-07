@@ -1,9 +1,9 @@
 package com.android.database;
 
-import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 
+import com.android.emobilepos.models.EMSCategory;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 
@@ -186,26 +186,6 @@ public class CategoriesHandler {
         return list;
     }
 
-
-    public Cursor getCategoriesCursor() {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append("SELECT cat_id as '_id',cat_name,url_icon,(SELECT Count(*)  " +
-                "FROM Categories c2 WHERE c2.parentID = c1.cat_id) AS num_subcategories " +
-                "FROM Categories c1 ");
-        if (!Global.cat_id.equals("0"))
-            sb.append("  WHERE  c1.parentID='' AND c1.cat_id ='").append(Global.cat_id).append("' ");
-        else if (myPref.getPreferences(MyPreferences.pref_enable_multi_category))
-            sb.append("  WHERE c1.parentID='' AND c1.cat_id !='' ");
-        else {
-            sb.append("  WHERE c1.parentID='' ");
-        }
-        sb.append(" ORDER BY c1.cat_name");
-        Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
-        cursor.moveToFirst();
-        return cursor;
-    }
-
     public Cursor getSubcategoriesCursor(String name) {
         String sb = "SELECT cat_id as '_id',cat_name,url_icon,(SELECT Count(*)  FROM Categories c2 WHERE c2.parentID = c1.cat_id) AS num_subcategories FROM Categories c1 " +
                 "  WHERE c1.parentID=? ORDER BY c1.cat_name";
@@ -214,5 +194,61 @@ public class CategoriesHandler {
         return cursor;
     }
 
+    public List<EMSCategory> getMainCategories() {
 
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("SELECT cat_id as '_id',cat_name,url_icon,(SELECT Count(*)  " +
+                "FROM Categories c2 WHERE c2.parentID = c1.cat_id) AS num_subcategories " +
+                "FROM Categories c1 ");
+        if (myPref.getPreferences(MyPreferences.pref_enable_multi_category))
+            sb.append("  WHERE c1.parentID='' AND c1.cat_id !='' ");
+        else {
+            sb.append("  WHERE c1.parentID='' ");
+        }
+        sb.append(" ORDER BY c1.cat_name");
+        Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
+        List<EMSCategory> categories = getCategoriesFromCursor(cursor);
+        cursor.close();
+
+        return categories;
+    }
+
+    public List<EMSCategory> getSubCategories(String parentCategoryId) {
+
+        String query = "SELECT cat_id as '_id',cat_name,url_icon,(SELECT Count(*)  FROM Categories c2 WHERE c2.parentID = c1.cat_id) AS num_subcategories FROM Categories c1 " +
+                "  WHERE c1.parentID=? ORDER BY c1.cat_name";
+        Cursor cursor = DBManager.getDatabase().rawQuery(query, new String[]{parentCategoryId});
+        List<EMSCategory> categories = getCategoriesFromCursor(cursor);
+        cursor.close();
+
+        return categories;
+    }
+
+    private List<EMSCategory> getCategoriesFromCursor(Cursor cursor) {
+        List<EMSCategory> categories = new ArrayList<>();
+
+        int categoryIdIndex = cursor.getColumnIndex("_id");
+        int categoryNameIndex = cursor.getColumnIndex("cat_name");
+        int iconUrlIndex = cursor.getColumnIndex("url_icon");
+        int numberOfSubCategoriesIndex = cursor.getColumnIndex("num_subcategories");
+
+        String categoryId;
+        String categoryName;
+        String iconUrl;
+        int numberOfSubCategories;
+
+        if (cursor.moveToFirst()) {
+            do {
+                categoryId = cursor.getString(categoryIdIndex);
+                categoryName = cursor.getString(categoryNameIndex);
+                iconUrl = cursor.getString(iconUrlIndex);
+                numberOfSubCategories = cursor.getInt(numberOfSubCategoriesIndex);
+
+                categories.add(new EMSCategory(categoryId, categoryName, iconUrl, numberOfSubCategories));
+            } while (cursor.moveToNext());
+        }
+
+        return categories;
+    }
 }
