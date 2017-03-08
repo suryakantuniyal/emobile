@@ -196,6 +196,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         setAssociateId(extras.getString("associateId", ""));
 
         openFromHold = extras.getBoolean("openFromHold", false);
+        Global.isFromOnHold = openFromHold;
         String onHoldOrderJson = extras.getString("onHoldOrderJson");
         Order onHoldOrder = null;
         if (onHoldOrderJson != null && !onHoldOrderJson.isEmpty()) {
@@ -205,7 +206,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             onHoldOrder = ordersHandler.getOrder(onHoldOrder.ord_id);
             Global.lastOrdID = onHoldOrder.ord_id;// myCursor.getString(myCursor.getColumnIndex("ord_id"));
             Global.taxID = onHoldOrder.tax_id;//myCursor.getString(myCursor.getColumnIndex("tax_id"));
-
         }
         isToGo = getRestaurantSaleType() == Global.RestaurantSaleType.TO_GO;
 
@@ -467,7 +467,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             receiptContainer.startAnimation(AnimationUtils.loadAnimation(this, R.anim.anim_left_right));
             receiptContainer.setVisibility(View.VISIBLE);
         } else {
-            if (Global.isFromOnHold)
+            if (openFromHold)
                 showDlog(true);
             else
                 showDlog(false);
@@ -1479,7 +1479,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 Global global = (Global) activity.getApplication();
                 order = Receipt_FR.buildOrder(activity, global, "", "", ((OrderingMain_FA) activity).getSelectedDinningTableNumber(),
                         ((OrderingMain_FA) activity).getAssociateId(), ((OrderingMain_FA) activity).getOrderAttributes(),
-                        ((OrderingMain_FA) activity).getListOrderTaxes(),global.order.getOrderProducts());
+                        ((OrderingMain_FA) activity).getListOrderTaxes(), global.order.getOrderProducts());
                 OrderProductsHandler dbOrdProd = new OrderProductsHandler(activity);
                 OrderProductsAttr_DB dbOrdAttr = new OrderProductsAttr_DB(activity);
                 dbOrders.insert(order);

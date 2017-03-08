@@ -5,7 +5,6 @@ import android.content.Context;
 import com.android.dao.AssignEmployeeDAO;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.OrderAttributes;
-import com.android.emobilepos.models.realms.Payment;
 import com.android.support.Customer;
 import com.android.support.DateUtils;
 import com.android.support.MyPreferences;
@@ -127,5 +126,9 @@ public class Order implements Cloneable {
 
     public void setOrderProducts(List<OrderProduct> orderProducts) {
         this.orderProducts = orderProducts;
+    }
+
+    public boolean isOnHold() {
+        return isOnHold != null && isOnHold.equals("1");
     }
 }
