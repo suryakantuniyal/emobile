@@ -315,8 +315,8 @@ public class OrderProductListAdapter extends BaseAdapter {
         final int orderProductIdx = orderSeatProductList.get(pos).rowType == OrderProductListAdapter.RowType.TYPE_ITEM ? global.order.getOrderProducts().indexOf(orderSeatProductList.get(pos).orderProduct) : 0;
         final String tempId = product.getOrdprod_id();
 
-        if (!myPref.getPreferences(MyPreferences.pref_restaurant_mode)
-                || (myPref.getPreferences(MyPreferences.pref_restaurant_mode)
+        if (!myPref.isRestaurantMode()
+                || (myPref.isRestaurantMode()
                 && !product.getHasAddons())) {
             if (holder.addonButton != null) {
                 holder.addonButton.setVisibility(View.INVISIBLE);

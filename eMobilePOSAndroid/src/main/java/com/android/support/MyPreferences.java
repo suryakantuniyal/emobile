@@ -21,7 +21,7 @@ import java.util.Set;
 import util.json.UIUtils;
 
 public class MyPreferences {
-    public static final String pref_restaurant_mode = "pref_restaurant_mode";
+    private static final String pref_restaurant_mode = "pref_restaurant_mode";
     public static final String pref_enable_togo_eatin = "pref_enable_togo_eatin";
     public static final String pref_require_waiter_signin = "pref_require_waiter_signin";
     //    private Global global;

@@ -56,7 +56,7 @@ public class MenuProdGV_Adapter extends CursorAdapter {
         imageLoader = _imageLoader;
         attrToDisplay = myPref.getPreferencesValue(MyPreferences.pref_attribute_to_display);
         isFastScanning = myPref.getPreferences(MyPreferences.pref_fast_scanning_mode);
-        isRestMode = myPref.getPreferences(MyPreferences.pref_restaurant_mode);
+        isRestMode = myPref.isRestaurantMode();
         global = (Global) activity.getApplication();
         if (isPortrait) {
             options = new DisplayImageOptions.Builder().resetViewBeforeLoading(true).displayer(new FadeInBitmapDisplayer(800)).cacheOnDisc(true)

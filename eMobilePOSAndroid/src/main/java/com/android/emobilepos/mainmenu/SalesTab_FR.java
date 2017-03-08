@@ -259,7 +259,7 @@ public class SalesTab_FR extends Fragment {
                     if (hasPermissions) {
                         if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                             if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
-                                if (myPref.getPreferences(MyPreferences.pref_restaurant_mode) &&
+                                if (myPref.isRestaurantMode() &&
                                         myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
                                     askEatInToGo();
                                 } else {
@@ -507,7 +507,7 @@ public class SalesTab_FR extends Fragment {
                             if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
                                 Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_select_customer));
                             } else {
-                                if (myPref.getPreferences(MyPreferences.pref_restaurant_mode) &&
+                                if (myPref.isRestaurantMode() &&
                                         myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
                                     askEatInToGo();
                                 } else {
@@ -987,7 +987,7 @@ public class SalesTab_FR extends Fragment {
 
             @Override
             public void onClick(View v) {
-                if (myPref.getPreferences(MyPreferences.pref_restaurant_mode) &&
+                if (myPref.isRestaurantMode() &&
                         myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
                     askEatInToGo();
                 } else {
@@ -1006,7 +1006,7 @@ public class SalesTab_FR extends Fragment {
                 salesInvoices.setVisibility(View.GONE);
                 myPref.resetCustInfo(getString(R.string.no_customer));
                 isCustomerSelected = false;
-                if (myPref.getPreferences(MyPreferences.pref_restaurant_mode) &&
+                if (myPref.isRestaurantMode() &&
                         myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
                     askEatInToGo();
                 } else {

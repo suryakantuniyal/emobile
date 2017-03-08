@@ -136,7 +136,7 @@ public class OrderProductsHandler {
 
         DBManager.getDatabase().beginTransaction();
         try {
-            boolean isRestaurantMode = myPref.getPreferences(MyPreferences.pref_restaurant_mode);
+            boolean isRestaurantMode = myPref.isRestaurantMode();
             SQLiteStatement insert;
             insert = DBManager.getDatabase().compileStatement("INSERT OR REPLACE INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
             int size = orderProducts.size();

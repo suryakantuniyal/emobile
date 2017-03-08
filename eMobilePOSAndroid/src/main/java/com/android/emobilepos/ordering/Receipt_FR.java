@@ -263,7 +263,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
         Button addSeatButton = (Button) view.findViewById(R.id.addSeatButton);
         addSeatButton.setOnClickListener(this);
-        if (!myPref.getPreferences(MyPreferences.pref_restaurant_mode) || !myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
+        if (!myPref.isRestaurantMode() || !myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
             addSeatButton.setVisibility(View.GONE);
         }
         ImageView plusBut = (ImageView) view.findViewById(R.id.plusButton);
@@ -925,7 +925,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     global.encodedImage = "";
                     orderProductsHandler.insert(order.getOrderProducts());
                     productsAttrDb.insert(global.ordProdAttr);
-                    if (myPref.getPreferences(MyPreferences.pref_restaurant_mode)) {
+                    if (myPref.isRestaurantMode()) {
                         new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
                     }
                     DBManager dbManager = new DBManager(activity);
@@ -953,8 +953,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                             && typeOfProcedure != Global.TransactionType.REFUND)
                         ordTaxesDB.insert(global.order.getListOrderTaxes(),
                                 global.order.ord_id);
-                    if (myPref
-                            .getPreferences(MyPreferences.pref_restaurant_mode))
+                    if (myPref.isRestaurantMode())
                         new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
                     DBManager dbManager = new DBManager(activity);
                     SynchMethods sm = new SynchMethods(dbManager);
@@ -1000,7 +999,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         }
                     }
                 }
-                if (myPref.getPreferences(MyPreferences.pref_restaurant_mode))
+                if (myPref.isRestaurantMode())
                     new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
 
             }

@@ -838,7 +838,7 @@ public class GenerateXML {
                 serializer.endTag(empstr, "Shipping");
 
                 serializer.startTag(empstr, "OrderProducts");
-                if (myPref.getPreferences(MyPreferences.pref_restaurant_mode)) {
+                if (myPref.isRestaurantMode()) {
                     if (order.isOnHold.equalsIgnoreCase("0"))
                         // on
                         // hold
@@ -1033,7 +1033,7 @@ public class GenerateXML {
         serializer.endTag(empstr, "VAT");
 
         serializer.startTag(empstr, "OrderProducts");
-        buildOrderProducts(serializer, order.ord_id, myPref.getPreferences(MyPreferences.pref_restaurant_mode),
+        buildOrderProducts(serializer, order.ord_id, myPref.isRestaurantMode(),
                 isOnHold);
         serializer.endTag(empstr, "OrderProducts");
         serializer.endTag(empstr, "Order");
@@ -2618,7 +2618,7 @@ public class GenerateXML {
         Cursor c = handler.getWalletOrdProd(ordID);
         c.moveToFirst();
         int size = c.getCount();
-        boolean isRestMode = info.getPreferences(MyPreferences.pref_restaurant_mode);
+        boolean isRestMode = info.isRestaurantMode();
 
         for (int i = 0; i < size; i++) {
             if (!isRestMode || (isRestMode && ((c.getString(c.getColumnIndex("addon")).equals("false"))))) {

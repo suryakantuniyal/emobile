@@ -146,7 +146,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
         prodListAdapter = new MenuProdGV_Adapter(this, getActivity(), null, CursorAdapter.NO_SELECTION, imageLoader);
 
-        if (myPref.getPreferences(MyPreferences.pref_restaurant_mode)) {
+        if (myPref.isRestaurantMode()) {
             onRestaurantMode = true;
         }
 

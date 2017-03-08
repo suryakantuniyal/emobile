@@ -737,7 +737,7 @@ public class EMSDeviceDriver {
             sb.setLength(0);
             int totalItemstQty = 0;
             if (!myPref.getPreferences(MyPreferences.pref_wholesale_printout)) {
-                boolean isRestMode = myPref.getPreferences(MyPreferences.pref_restaurant_mode);
+                boolean isRestMode = myPref.isRestaurantMode();
 
                 for (int i = 0; i < size; i++) {
                     if (!TextUtils.isEmpty(orderProducts.get(i).getProd_price_points()) && Integer.parseInt(orderProducts.get(i).getProd_price_points()) > 0) {
@@ -920,7 +920,7 @@ public class EMSDeviceDriver {
                             Global.formatDoubleToCurrency(tempGrandTotal - tempAmount), lineWidth, 0));
                 }
                 if (type != Global.OrderType.ORDER) {
-                    if (myPref.getPreferences(MyPreferences.pref_restaurant_mode) &&
+                    if (myPref.isRestaurantMode() &&
                             myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
                         if (tempTipAmount == 0) {
                             sb.append("\n");
@@ -1649,7 +1649,7 @@ public class EMSDeviceDriver {
                     if (Double.parseDouble(change) > 0) {
                         sb.append(textHandler.twoColumnLineWithLeftAlignedText(includedTip,
                                 Global.formatDoubleStrToCurrency(change), lineWidth, 0));
-                    } else if (myPref.getPreferences(MyPreferences.pref_restaurant_mode) &&
+                    } else if (myPref.isRestaurantMode() &&
                             myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
                         print(textHandler.newLines(1), FORMAT);
                         sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_tip),
