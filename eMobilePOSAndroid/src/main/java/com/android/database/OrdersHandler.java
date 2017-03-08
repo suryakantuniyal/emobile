@@ -11,6 +11,7 @@ import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.DinningTableOrderDAO;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.Order;
+import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.OrderAttributes;
 import com.android.emobilepos.models.realms.ProductAttribute;
@@ -636,6 +637,7 @@ public class OrdersHandler {
 
     public Order getPrintedOrder(String ordID) {
         Order anOrder = new Order(activity);
+        OrderProductsHandler productsHandler = new OrderProductsHandler(activity);
         String sb = ("SELECT o.ord_id,o.ord_timecreated,o.ord_total,o.ord_subtotal,o.ord_discount,o.ord_taxamount,c.cust_name," +
                 "c.AccountNumnber,o.cust_id, o.orderAttributes,"
                 + "o.ord_total AS 'gran_total', tipAmount, ord_signature,o.ord_HoldName,o.clerk_id,o.ord_comment,o.isVoid " +
@@ -661,6 +663,8 @@ public class OrdersHandler {
                 anOrder.ord_comment = getValue(cursor.getString(cursor.getColumnIndex(ord_comment)));
                 anOrder.cust_id = getValue(cursor.getString(cursor.getColumnIndex("AccountNumnber")));
                 anOrder.isVoid = getValue(cursor.getString(cursor.getColumnIndex(isVoid)));
+                List<OrderProduct> orderProducts = productsHandler.getOrderProducts(ordID);
+                anOrder.setOrderProducts(orderProducts);
                 String json = getValue(cursor.getString(cursor.getColumnIndex(orderAttributes)));
                 Gson gson = JsonUtils.getInstance();
                 Type listType = new com.google.gson.reflect.TypeToken<List<OrderAttributes>>() {
@@ -670,6 +674,7 @@ public class OrdersHandler {
                 } else {
                     anOrder.orderAttributes = new ArrayList<>();
                 }
+
             } while (cursor.moveToNext());
         }
         cursor.close();

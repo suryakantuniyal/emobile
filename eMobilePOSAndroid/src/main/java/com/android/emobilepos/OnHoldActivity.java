@@ -625,50 +625,50 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
     }
 
-    public static void addOrderProducts(Activity activity, Cursor c) {
-        OrderProductsHandler orderProductsHandler = new OrderProductsHandler(activity);
-        c.moveToFirst();
-        List<OrderProduct> orderProducts = orderProductsHandler.getOrderProducts(c.getString(c.getColumnIndex("ord_id")));
-        ProductAddonsHandler prodAddonHandler = new ProductAddonsHandler(activity);
-        ProductsHandler prodHandler = new ProductsHandler(activity);
-        String[] discountInfo;
-        double total;
-        Global global = (Global) activity.getApplication();
-//        global.order.setOrderProducts(new ArrayList<OrderProduct>());
-
-        for (OrderProduct ord : orderProducts) {
-            double discAmount = 0;
-            total = (Double.parseDouble(ord.getOrdprod_qty())) * Double.parseDouble(ord.getFinalPrice());
-            discountInfo = prodHandler.getDiscount(ord.getDiscount_id(), ord.getFinalPrice());
-            if (discountInfo != null) {
-                if (discountInfo[1] != null && discountInfo[1].equals("Fixed")) {
-                    ord.setDiscount_is_fixed("1");
-                }
-                if (discountInfo[2] != null) {
-                    discAmount = Double.parseDouble(discountInfo[4]);
-                }
-                if (discountInfo[3] != null) {
-                    ord.setDiscount_is_taxable(discountInfo[3]);
-                }
-                if (discountInfo[4] != null) {
-                    ord.setDisTotal(discountInfo[4]);
-                    discAmount = Double.parseDouble(discountInfo[4]);
-                    ord.setDiscount_value(discountInfo[4]);
-                }
-            }
-            ord.setDisAmount(ord.getDisAmount());
-            ord.setItemTotal(Double.toString(total - discAmount));
-            ord.setItemSubtotal(Double.toString(total));
-            if (ord.isAddon()) {
-                int pos = global.order.getOrderProducts().size();
-                if (pos > 0) {
-                    String[] tempVal = prodAddonHandler.getAddonDetails(ord.getAddon_ordprod_id(), ord.getProd_id());
-                }
-            } else {
-                global.order.getOrderProducts().add(ord);
-            }
-        }
-    }
+//    public static void addOrderProducts(Activity activity, Cursor c) {
+//        OrderProductsHandler orderProductsHandler = new OrderProductsHandler(activity);
+//        c.moveToFirst();
+//        List<OrderProduct> orderProducts = orderProductsHandler.getOrderProducts(c.getString(c.getColumnIndex("ord_id")));
+//        ProductAddonsHandler prodAddonHandler = new ProductAddonsHandler(activity);
+//        ProductsHandler prodHandler = new ProductsHandler(activity);
+//        String[] discountInfo;
+//        double total;
+//        Global global = (Global) activity.getApplication();
+////        global.order.setOrderProducts(new ArrayList<OrderProduct>());
+//
+//        for (OrderProduct ord : orderProducts) {
+//            double discAmount = 0;
+//            total = (Double.parseDouble(ord.getOrdprod_qty())) * Double.parseDouble(ord.getFinalPrice());
+//            discountInfo = prodHandler.getDiscount(ord.getDiscount_id(), ord.getFinalPrice());
+//            if (discountInfo != null) {
+//                if (discountInfo[1] != null && discountInfo[1].equals("Fixed")) {
+//                    ord.setDiscount_is_fixed("1");
+//                }
+//                if (discountInfo[2] != null) {
+//                    discAmount = Double.parseDouble(discountInfo[4]);
+//                }
+//                if (discountInfo[3] != null) {
+//                    ord.setDiscount_is_taxable(discountInfo[3]);
+//                }
+//                if (discountInfo[4] != null) {
+//                    ord.setDisTotal(discountInfo[4]);
+//                    discAmount = Double.parseDouble(discountInfo[4]);
+//                    ord.setDiscount_value(discountInfo[4]);
+//                }
+//            }
+//            ord.setDisAmount(ord.getDisAmount());
+//            ord.setItemTotal(Double.toString(total - discAmount));
+//            ord.setItemSubtotal(Double.toString(total));
+//            if (ord.isAddon()) {
+//                int pos = global.order.getOrderProducts().size();
+//                if (pos > 0) {
+//                    String[] tempVal = prodAddonHandler.getAddonDetails(ord.getAddon_ordprod_id(), ord.getProd_id());
+//                }
+//            } else {
+//                global.order.getOrderProducts().add(ord);
+//            }
+//        }
+//    }
 
     private void selectCustomer(String custID) {
         if (custID != null && !custID.isEmpty()) {

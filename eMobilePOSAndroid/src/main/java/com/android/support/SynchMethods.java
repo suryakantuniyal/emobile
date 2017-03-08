@@ -680,8 +680,31 @@ public class SynchMethods {
             OrderProductsHandler orderProductsHandler = new OrderProductsHandler(activity);
             reader.beginArray();
             int i = 0;
+            ProductsHandler productsHandler = new ProductsHandler(activity);
             while (reader.hasNext()) {
+                double discAmount = 0;
                 OrderProduct product = gson.fromJson(reader, OrderProduct.class);
+                double total = (Double.parseDouble(product.getOrdprod_qty())) * Double.parseDouble(product.getFinalPrice());
+                String[] discountInfo = productsHandler.getDiscount(product.getDiscount_id(), product.getFinalPrice());
+                if (discountInfo != null) {
+                    if (discountInfo[1] != null && discountInfo[1].equals("Fixed")) {
+                        product.setDiscount_is_fixed("1");
+                    }
+                    if (discountInfo[2] != null) {
+                        discAmount = Double.parseDouble(discountInfo[4]);
+                    }
+                    if (discountInfo[3] != null) {
+                        product.setDiscount_is_taxable(discountInfo[3]);
+                    }
+                    if (discountInfo[4] != null) {
+                        product.setDisTotal(discountInfo[4]);
+                        discAmount = Double.parseDouble(discountInfo[4]);
+                        product.setDiscount_value(discountInfo[4]);
+                    }
+                }
+                product.setDisAmount(String.valueOf(discAmount));
+                product.setItemTotal(Double.toString(total - discAmount));
+                product.setItemSubtotal(Double.toString(total));
                 orderProducts.add(product);
                 i++;
                 if (i == 1000) {
