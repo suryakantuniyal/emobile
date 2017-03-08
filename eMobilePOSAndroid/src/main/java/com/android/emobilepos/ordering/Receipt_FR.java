@@ -227,10 +227,12 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         fragInstance = this;
 
         myPref = new MyPreferences(activity);
-        if (onHoldOrder == null) {
-            global.order = new Order(activity);
-        } else {
-            global.order = onHoldOrder;
+        if (savedInstanceState == null) {
+            if (onHoldOrder == null) {
+                global.order = new Order(activity);
+            } else {
+                global.order = onHoldOrder;
+            }
         }
         final Bundle extras = activity.getIntent().getExtras();
         typeOfProcedure = (Global.TransactionType) extras.get("option_number");

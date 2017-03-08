@@ -177,8 +177,10 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         super.onCreate(savedInstanceState);
         setContentView(R.layout.order_main_layout);
         global = (Global) getApplication();
-        global.resetOrderDetailsValues();
-        global.clearListViewData();
+        if (savedInstanceState == null) {
+            global.resetOrderDetailsValues();
+            global.clearListViewData();
+        }
         instance = this;
         callBackMSR = this;
         handler = new ProductsHandler(this);

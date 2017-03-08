@@ -1310,14 +1310,6 @@ public class Global extends MultiDexApplication {
         cons_issue_order = null;
         cons_return_order = null;
         cons_fillup_order = null;
-//        if (productParentAddons != null)
-//            productParentAddons.clear();
-//        if (productParentAddonsDictionary != null)
-//            productParentAddonsDictionary.clear();
-//        if (addonSelectionMap != null)
-//            addonSelectionMap.clear();
-//        if (orderProductAddonsMap != null)
-//            orderProductAddonsMap.clear();
         loyaltyCardInfo = new CreditCardInfo();
         loyaltyAddAmount = "";
         loyaltyCharge = "";
@@ -1329,25 +1321,8 @@ public class Global extends MultiDexApplication {
     }
 
     public void clearListViewData() {
-        // if(this.cur_orders!=null)
-        // this.cur_orders.clear();
-//        if (this.orderProducts != null)
-//            this.orderProducts.clear();
-//        if (this.qtyCounter != null)
-//            this.qtyCounter.clear();
-
         if (ordProdAttr != null)
             ordProdAttr.clear();
-//        if (ordProdAttrPending != null)
-//            ordProdAttrPending.clear();
-
-//        if (this.orderProductAddons != null)
-//            this.orderProductAddons.clear();
-
-//        if (this.listOrderTaxes != null)
-//            this.listOrderTaxes.clear();
-
-        // this.
     }
 
     public String getSelectedComments() {
