@@ -770,7 +770,7 @@ public class EMSDeviceDriver {
                             }
 
                             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_price),
-                                    Global.getCurrencyFormat(orderProducts.get(i).getItemSubtotal()), lineWidth, 3));
+                                    Global.getCurrencyFormat(String.valueOf(orderProducts.get(i).getItemSubtotalCalculated())), lineWidth, 3));
                             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
                                     Global.getCurrencyFormat(orderProducts.get(i).getItemTotal()), lineWidth, 3));
 

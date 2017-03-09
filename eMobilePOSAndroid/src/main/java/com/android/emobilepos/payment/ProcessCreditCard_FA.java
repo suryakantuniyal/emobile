@@ -235,7 +235,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                 ? new ArrayList<OrderProduct>() : global.order.getOrderProducts();
         double subtotalDbl = 0;
         for (OrderProduct products : orderProducts) {
-            subtotalDbl += Double.parseDouble(products.getItemSubtotal());
+            subtotalDbl += products.getItemSubtotalCalculated().doubleValue();
         }
         subtotal.setText(Global.formatDoubleToCurrency(subtotalDbl));
         this.amountDueField = (EditText) findViewById(R.id.processCardAmount);

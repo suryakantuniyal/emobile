@@ -704,7 +704,7 @@ public class SynchMethods {
                 }
                 product.setDisAmount(String.valueOf(discAmount));
                 product.setItemTotal(Double.toString(total - discAmount));
-                product.setItemSubtotal(Double.toString(total));
+//                product.setItemSubtotal(Double.toString(total));
                 orderProducts.add(product);
                 i++;
                 if (i == 1000) {

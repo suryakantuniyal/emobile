@@ -47,7 +47,7 @@ public class OrderCalculator {
         TaxesHandler taxHandler = new TaxesHandler(activity);
         String taxRate = "0";
         String prod_taxId = "";
-        BigDecimal subtotal = new BigDecimal(product.getItemSubtotal());
+        BigDecimal subtotal = product.getItemSubtotalCalculated();
         BigDecimal prodQty = new BigDecimal(product.getOrdprod_qty());
         if (myPref.getPreferences(MyPreferences.pref_retail_taxes)) {
             if (!taxId.isEmpty()) {

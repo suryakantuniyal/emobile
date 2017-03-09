@@ -55,7 +55,7 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
 
     private String itemTotalVatExclusive = "0";
     private String itemTotal = "0";
-    private String itemSubtotal = "0";
+//    private String itemSubtotal = "0";
     private String disAmount = "0";
     private String disTotal = "0";
     private String taxAmount = "0";
@@ -209,8 +209,8 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
 
         setOverwrite_price(overwriteAmount);
         setProd_price(Global.getRoundBigDecimal(overwriteAmount));
-        setItemSubtotal(Global
-                .getRoundBigDecimal(new_subtotal));
+//        setItemSubtotal(Global
+//                .getRoundBigDecimal(new_subtotal));
         setItemTotal(Global
                 .getRoundBigDecimal(new_subtotal));
         setPricelevel_id("");
@@ -242,7 +242,7 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     public void setPrices(String prod_price, String ordprod_qty) {
         this.setProd_price(prod_price);
         this.setItemTotal(Global.getBigDecimalNum(prod_price).multiply(new BigDecimal(ordprod_qty)).toString());
-        this.setItemSubtotal(Global.getBigDecimalNum(prod_price).multiply(new BigDecimal(ordprod_qty)).toString());
+//        this.setItemSubtotal(Global.getBigDecimalNum(prod_price).multiply(new BigDecimal(ordprod_qty)).toString());
     }
 
     public String getPrice_vat_exclusive() {
@@ -498,13 +498,13 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         this.itemTotal = itemTotal;
     }
 
-    public String getItemSubtotal() {
-        return itemSubtotal;
-    }
-
-    public void setItemSubtotal(String itemSubtotal) {
-        this.itemSubtotal = itemSubtotal;
-    }
+//    public String getItemSubtotal() {
+//        return itemSubtotal;
+//    }
+//
+//    public void setItemSubtotal(String itemSubtotal) {
+//        this.itemSubtotal = itemSubtotal;
+//    }
 
     public String getDisAmount() {
         return disAmount;
@@ -810,9 +810,9 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         BigDecimal subtotal;
         BigDecimal addonsTotalPrice = getAddonsTotalPrice();
         BigDecimal finalPrice = new BigDecimal(getFinalPrice());
-        BigDecimal taxAmount = Global.getBigDecimalNum(getTaxAmount());
-        BigDecimal discount = Global.getBigDecimalNum(getDisAmount());
-        subtotal = finalPrice.add(addonsTotalPrice).add(taxAmount).subtract(discount);
+        BigDecimal taxAmount = Global.getBigDecimalNum(getTaxTotal());
+        BigDecimal discount = Global.getBigDecimalNum(getDisTotal());
+        subtotal = finalPrice.add(taxAmount).subtract(discount);
         return subtotal;
     }
 
@@ -821,7 +821,7 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         BigDecimal addonsTotalPrice = getAddonsTotalPrice();
         BigDecimal finalPrice = new BigDecimal(getFinalPrice());
         BigDecimal discount = Global.getBigDecimalNum(getDisTotal());
-        subtotal = finalPrice.add(addonsTotalPrice).subtract(discount);
+        subtotal = finalPrice.subtract(discount);
         return subtotal;
     }
 }

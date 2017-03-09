@@ -86,7 +86,7 @@ public class TaxesCalculator {
             }
         }
 
-        BigDecimal tempSubTotal = new BigDecimal(orderProduct.getItemSubtotal());
+        BigDecimal tempSubTotal = orderProduct.getItemSubtotalCalculated();
         BigDecimal prodQty = new BigDecimal(orderProduct.getOrdprod_qty());
         BigDecimal _temp_subtotal = tempSubTotal;
         boolean isVAT = assignEmployee.isVAT();
@@ -142,7 +142,7 @@ public class TaxesCalculator {
             if (orderProduct.getDiscount_is_taxable().equals("1")) {
                 BigDecimal temp = new BigDecimal(taxAmount).divide(new BigDecimal("100")).setScale(6,
                         RoundingMode.HALF_UP);
-                tempSubTotal = tempSubTotal.abs().subtract(new BigDecimal(orderProduct.getDiscount_value()).abs());
+//                tempSubTotal = tempSubTotal.abs().subtract(new BigDecimal(orderProduct.getDiscount_value()).abs());
                 if (orderProduct.isReturned() && OrderingMain_FA.mTransType != Global.TransactionType.RETURN) {
                     tempSubTotal = tempSubTotal.negate();
                 }
@@ -492,7 +492,7 @@ public class TaxesCalculator {
                     if (isVAT) {
                         val = orderProducts.get(i).getItemTotalVatExclusive();
                     } else
-                        val = orderProducts.get(i).getItemSubtotal();
+                        val = String.valueOf(orderProducts.get(i).getItemSubtotalCalculated());
                 }
                 if (val == null || val.isEmpty())
                     val = "0.00";

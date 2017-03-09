@@ -552,7 +552,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                     orderProduct.setOrdprod_qty(String.valueOf(prodQty));
                     orderProduct.setMixMatchQtyApplied(prodQty);
                     orderProduct.setItemTotal(String.valueOf(xyzProduct.getPrice().multiply(Global.getBigDecimalNum(orderProduct.getOrdprod_qty()))));
-                    orderProduct.setItemSubtotal(String.valueOf(xyzProduct.getPrice().multiply(Global.getBigDecimalNum(orderProduct.getOrdprod_qty()))));
+//                    orderProduct.setItemSubtotal(String.valueOf(xyzProduct.getPrice().multiply(Global.getBigDecimalNum(orderProduct.getOrdprod_qty()))));
                     orderProducts.add(orderProduct);
                 } else {
                     for (OrderProduct orderProduct : xyzProduct.getOrderProducts()) {
@@ -567,7 +567,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                         clone.setProd_price(String.valueOf(xyzProduct.getPrice()));
                         clone.setMixMatchQtyApplied(1);
                         clone.setItemTotal(clone.getProd_price());
-                        clone.setItemSubtotal(clone.getProd_price());
+//                        clone.setItemSubtotal(clone.getProd_price());
                         orderProducts.add(clone);
                     }
                 }
@@ -589,8 +589,8 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                         orderProduct.setMixMatchQtyApplied(regularPriced);
                         orderProduct.setItemTotal(String.valueOf(xyzProduct.getPrice()
                                 .multiply(Global.getBigDecimalNum(orderProduct.getOrdprod_qty()))));
-                        orderProduct.setItemSubtotal(String.valueOf(xyzProduct.getPrice()
-                                .multiply(Global.getBigDecimalNum(orderProduct.getOrdprod_qty()))));
+//                        orderProduct.setItemSubtotal(String.valueOf(xyzProduct.getPrice()
+//                                .multiply(Global.getBigDecimalNum(orderProduct.getOrdprod_qty()))));
 
                         orderProducts.add(orderProduct);
                     } else {
@@ -601,7 +601,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                                 clone.setOrdprod_qty("1");
                                 clone.setMixMatchQtyApplied(1);
                                 clone.setItemTotal(clone.getProd_price());
-                                clone.setItemSubtotal(clone.getProd_price());
+//                                clone.setItemSubtotal(clone.getProd_price());
                                 orderProducts.add(clone);
                             } catch (CloneNotSupportedException e) {
                                 e.printStackTrace();
@@ -633,7 +633,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                         }
                         orderProduct.setProd_price(String.valueOf(discountPrice));
                         orderProduct.setItemTotal(String.valueOf(Global.getBigDecimalNum(orderProduct.getProd_price()).multiply(Global.getBigDecimalNum(orderProduct.getOrdprod_qty()))));
-                        orderProduct.setItemSubtotal(String.valueOf(Global.getBigDecimalNum(orderProduct.getProd_price()).multiply(Global.getBigDecimalNum(orderProduct.getOrdprod_qty()))));
+//                        orderProduct.setItemSubtotal(String.valueOf(Global.getBigDecimalNum(orderProduct.getProd_price()).multiply(Global.getBigDecimalNum(orderProduct.getOrdprod_qty()))));
 
                         orderProducts.add(orderProduct);
                     } else {
@@ -653,7 +653,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                                 }
                                 clone.setProd_price(String.valueOf(discountPrice));
                                 clone.setItemTotal(clone.getProd_price());
-                                clone.setItemSubtotal(clone.getProd_price());
+//                                clone.setItemSubtotal(clone.getProd_price());
                                 orderProducts.add(clone);
                             } catch (CloneNotSupportedException e) {
                                 e.printStackTrace();
@@ -791,7 +791,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                     if (isVAT) {
                         val = orderProducts.get(i).getItemTotalVatExclusive();
                     } else
-                        val = orderProducts.get(i).getItemSubtotal();
+                        val = String.valueOf(orderProducts.get(i).getFinalPrice());
                 }
                 if (val == null || val.isEmpty())
                     val = "0.00";

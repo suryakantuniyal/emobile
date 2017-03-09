@@ -802,7 +802,7 @@ public class Global extends MultiDexApplication {
         if (itemTotal < 0)
             itemTotal = 0.00;
 
-        orderedProducts.setItemSubtotal(Double.toString(itemTotal));
+//        orderedProducts.setItemSubtotal(Double.toString(itemTotal));
         double discountRate = 0;
         if (orderedProducts.getDiscount_is_fixed().equals("1")) {
             discountRate = Double.parseDouble(orderedProducts.getDiscount_value());

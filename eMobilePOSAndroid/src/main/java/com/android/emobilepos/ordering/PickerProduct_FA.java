@@ -925,7 +925,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             itemTotal = total.subtract(Global.getBigDecimalNum(disTotal));
         }
         orderProduct.setItemTotal(itemTotal.toString());
-        orderProduct.setItemSubtotal(total.toString());
+//        orderProduct.setItemSubtotal(total.toString());
         GenerateNewID generator = new GenerateNewID(activity);
         if (!Global.isFromOnHold && Global.lastOrdID.isEmpty()) {
             Global.lastOrdID = generator.getNextID(IdType.ORDER_ID);

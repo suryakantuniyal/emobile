@@ -190,7 +190,8 @@ public class OrderProductsHandler {
                 insert.bindString(index(prod_price), TextUtils.isEmpty(prod.getProd_price()) ? "0" : prod.getProd_price()); // prod_price
                 insert.bindString(index(prod_type), prod.getProd_type() == null ? "" : prod.getProd_type()); // prod_type
                 insert.bindString(index(itemTotal), TextUtils.isEmpty(prod.getItemTotal()) ? "0" : prod.getItemTotal()); // itemTotal
-                insert.bindString(index(itemSubtotal), TextUtils.isEmpty(prod.getItemSubtotal()) ? "0" : prod.getItemSubtotal()); // itemSubtotal
+                insert.bindString(index(itemSubtotal), String.valueOf(prod.getItemSubtotalCalculated()==null ?
+                        "0" : prod.getItemSubtotalCalculated())); // itemSubtotal
                 insert.bindString(index(hasAddons), String.valueOf(prod.getHasAddons())); // hasAddons
                 insert.bindString(index(addon_section_name),
                         TextUtils.isEmpty(prod.getAddon_section_name()) ? "" : prod.getAddon_section_name());
@@ -262,7 +263,7 @@ public class OrderProductsHandler {
             insert.bindString(index(prod_price), TextUtils.isEmpty(prod.getProd_price()) ? "0" : prod.getProd_price()); // prod_price
             insert.bindString(index(prod_type), TextUtils.isEmpty(prod.getProd_type()) ? "" : prod.getProd_type()); // prod_type
             insert.bindString(index(itemTotal), TextUtils.isEmpty(prod.getItemTotal()) ? "0" : prod.getItemTotal()); // itemTotal
-            insert.bindString(index(itemSubtotal), TextUtils.isEmpty(prod.getItemSubtotal()) ? "0" : prod.getItemSubtotal()); // itemSubtotal
+            insert.bindString(index(itemSubtotal), String.valueOf(prod.getItemSubtotalCalculated()==null ? "0" : prod.getItemSubtotalCalculated())); // itemSubtotal
             insert.bindString(index(hasAddons), String.valueOf(prod.getHasAddons())); // hasAddons
             insert.bindString(index(addon_section_name),
                     prod.getAddon_section_name() == null ? "" : prod.getAddon_section_name());
@@ -358,8 +359,8 @@ public class OrderProductsHandler {
         DBManager.getDatabase().delete(table_name, "ordprod_id = ? or addon_ordprod_id = ?", new String[]{ordprod_id, ordprod_id});
     }
 
-    public void deleteAllOrdProd(String _ord_id) {
-        DBManager.getDatabase().delete(table_name, "ord_id = ?", new String[]{_ord_id});
+    public int deleteAllOrdProd(String _ord_id) {
+        return DBManager.getDatabase().delete(table_name, "ord_id = ?", new String[]{_ord_id});
     }
 
     public void emptyTable() {
@@ -447,7 +448,7 @@ public class OrderProductsHandler {
         product.setProd_price(cursor.getString(cursor.getColumnIndex(prod_price)));
         product.setProd_type(cursor.getString(cursor.getColumnIndex(prod_type)));
         product.setItemTotal(cursor.getString(cursor.getColumnIndex(itemTotal)));
-        product.setItemSubtotal(cursor.getString(cursor.getColumnIndex(itemSubtotal)));
+//        product.setItemSubtotal(cursor.getString(cursor.getColumnIndex(itemSubtotal)));
         product.setAddon_section_name(cursor.getString(cursor.getColumnIndex(addon_section_name)));
         product.setAddon_position(cursor.getString(cursor.getColumnIndex(addon_position)));
         product.setCat_id(cursor.getString(cursor.getColumnIndex(cat_id)));
@@ -731,7 +732,7 @@ public class OrderProductsHandler {
             Discount discount = productsHandler.getDiscounts(orderProduct.getDiscount_id());
             orderProduct.setDisAmount(discount.getProductPrice());
             orderProduct.setPrices(orderProduct.getFinalPrice(), orderProduct.getOrdprod_qty());
-            orderProduct.setItemSubtotal(String.valueOf(orderProduct.getItemSubtotalCalculated()));
+//            orderProduct.setItemSubtotal(String.valueOf(orderProduct.getItemSubtotalCalculated()));
             completeProductFields(orderProduct.addonsProducts, activity);
         }
     }

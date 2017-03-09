@@ -655,7 +655,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                     if (OrderLoyalty_FR.isValidPointClaim(price)) {
                                         orderSeatProduct.orderProduct.setOverwrite_price(null);
                                         orderSeatProduct.orderProduct.setItemTotal("0.00");
-                                        orderSeatProduct.orderProduct.setItemSubtotal("0.00");
+//                                        orderSeatProduct.orderProduct.setItemSubtotal("0.00");
                                         orderSeatProduct.orderProduct.setPayWithPoints("true");
                                         refreshView();
                                     } else
@@ -1875,8 +1875,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                 "overwrite_price")));
                         ordProd.setOrdprod_qty(mapList.get(i).get("ordprod_qty"));
                         ordProd.setItemTotal(mapList.get(i).get("itemTotal"));
-                        ordProd.setItemSubtotal(mapList.get(i).get(
-                                "itemSubtotal"));
+//                        ordProd.setItemSubtotal(mapList.get(i).get(
+//                                "itemSubtotal"));
                         ordProd.setOrd_id(mapList.get(i).get("ord_id"));
                         ordProd.setOrdprod_desc(mapList.get(i).get(
                                 "ordprod_desc"));
