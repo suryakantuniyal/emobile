@@ -218,7 +218,7 @@ public class TaxesHandler {
 
         sb.append(subquery1).append(table_name).append(subquery2).append(taxID).append("'");
 
-        if (myPref.getPreferences(MyPreferences.pref_retail_taxes)) {
+        if (myPref.isRetailTaxes()) {
             sb.append(" AND tax_code_id = '").append(taxType).append("'");
         }
 
@@ -234,7 +234,7 @@ public class TaxesHandler {
 
         cursor.close();
 
-        if (isGroupTax && myPref.getPreferences(MyPreferences.pref_retail_taxes) && !taxType.isEmpty()) {
+        if (isGroupTax && myPref.isRetailTaxes() && !taxType.isEmpty()) {
             sb.setLength(0);
             sb.append("SELECT tax_rate,taxLowRange,taxHighRange FROM Taxes_Group WHERE taxgroupid= ? AND taxcode_id = ?");
             cursor = DBManager.getDatabase().rawQuery(sb.toString(), new String[]{taxID, taxType});
@@ -324,7 +324,7 @@ public class TaxesHandler {
 
         sb.append(subquery1).append(table_name).append(subquery2).append(taxID).append("'");
 
-        if (myPref.getPreferences(MyPreferences.pref_retail_taxes)) {
+        if (myPref.isRetailTaxes()) {
             sb.append(" AND tax_code_id = '").append(taxType).append("'");
         }
 

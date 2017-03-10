@@ -8,7 +8,7 @@ import android.util.Log;
 
 import com.android.dao.AssignEmployeeDAO;
 import com.android.emobilepos.models.Discount;
-import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Product;
 import com.android.emobilepos.models.realms.AssignEmployee;

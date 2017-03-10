@@ -1,15 +1,22 @@
-package com.android.emobilepos.models;
+package com.android.emobilepos.models.orders;
 
 import android.content.Context;
 
 import com.android.dao.AssignEmployeeDAO;
+import com.android.database.TaxesHandler;
+import com.android.emobilepos.models.DataTaxes;
+import com.android.emobilepos.models.Discount;
+import com.android.emobilepos.models.Tax;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.OrderAttributes;
 import com.android.support.Customer;
 import com.android.support.DateUtils;
+import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.google.gson.Gson;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -130,5 +137,54 @@ public class Order implements Cloneable {
 
     public boolean isOnHold() {
         return isOnHold != null && isOnHold.equals("1");
+    }
+
+    public OrderTotalDetails getOrderTotalDetails(Discount discount, Tax tax) {
+        OrderTotalDetails totalDetails = new OrderTotalDetails();
+        if (getOrderProducts() != null && !getOrderProducts().isEmpty()) {
+            for (OrderProduct orderProduct : getOrderProducts()) {
+                orderProduct.setTaxAmount(tax != null ? tax.getTaxRate() : "0");
+                orderProduct.setProd_taxId(tax != null ? tax.getTaxId() : "");
+                orderProduct.setTax_type(tax != null ? tax.getTaxType() : "");
+
+                totalDetails.setSubtotal(totalDetails.getSubtotal()
+                        .add(orderProduct.getItemSubtotalCalculated()).setScale(6, RoundingMode.HALF_UP));
+                totalDetails.setTax(totalDetails.getTax()
+                        .add(orderProduct.getTaxAmountCalculated()).setScale(6, RoundingMode.HALF_UP));
+                totalDetails.setGranTotal(totalDetails.getGranTotal()
+                        .add(orderProduct.getGranTotalCalculated()).setScale(6, RoundingMode.HALF_UP));
+            }
+            if (discount != null) {
+                if (discount.isFixed()) {
+                    totalDetails.setGranTotal(totalDetails.getGranTotal().subtract(Global.getBigDecimalNum(discount.getProductPrice())).setScale(6, RoundingMode.HALF_UP));
+                } else {
+                    BigDecimal disAmout = totalDetails.getSubtotal()
+                            .multiply(Global.getBigDecimalNum(discount.getProductPrice())
+                                    .divide(new BigDecimal(100)).setScale(6, RoundingMode.HALF_UP));
+                    totalDetails.setGlobalDiscount(disAmout);
+                    totalDetails.setGranTotal(totalDetails.getGranTotal()
+                            .subtract(disAmout).setScale(6, RoundingMode.HALF_UP));
+                }
+            }
+        }
+        return totalDetails;
+    }
+
+    public void setRetailTax(Context context, String taxID) {
+        TaxesHandler taxesHandler = new TaxesHandler(context);
+        for (OrderProduct product : getOrderProducts()) {
+            Tax tax;
+            if (taxID != null) {
+                tax = taxesHandler.getTax(taxID, product.getTax_type(),
+                        Global.getBigDecimalNum(product.getFinalPrice()).doubleValue());
+            }else{
+                tax = taxesHandler.getTax(product.getProd_taxcode(), product.getTax_type(),
+                        Global.getBigDecimalNum(product.getFinalPrice()).doubleValue());
+            }
+            product.setTaxAmount(tax != null ? tax.getTaxRate() : "0");
+            product.setProd_taxId(tax != null ? tax.getTaxId() : "");
+            product.setTax_type(tax != null ? tax.getTaxType() : "");
+        }
+
     }
 }

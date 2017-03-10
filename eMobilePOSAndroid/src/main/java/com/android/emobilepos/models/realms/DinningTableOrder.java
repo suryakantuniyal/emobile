@@ -3,7 +3,7 @@ package com.android.emobilepos.models.realms;
 import android.app.Activity;
 
 import com.android.database.OrdersHandler;
-import com.android.emobilepos.models.Order;
+import com.android.emobilepos.models.orders.Order;
 import com.android.support.DateUtils;
 
 import java.util.Date;

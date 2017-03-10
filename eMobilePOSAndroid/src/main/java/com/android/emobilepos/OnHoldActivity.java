@@ -32,12 +32,9 @@ import com.android.database.CustomersHandler;
 import com.android.database.DBManager;
 import com.android.database.OrderProductsHandler;
 import com.android.database.OrdersHandler;
-import com.android.database.ProductAddonsHandler;
-import com.android.database.ProductsHandler;
 import com.android.database.SalesTaxCodesHandler;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
-import com.android.emobilepos.models.Order;
-import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.firebase.NotificationEvent;
 import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.Shift;
@@ -49,10 +46,8 @@ import com.android.support.NetworkUtils;
 import com.android.support.OnHoldsManager;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 

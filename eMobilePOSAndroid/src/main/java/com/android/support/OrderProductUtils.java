@@ -2,7 +2,7 @@ package com.android.support;
 
 import android.text.TextUtils;
 
-import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.models.orders.OrderProduct;
 
 import java.util.ArrayList;
 import java.util.HashMap;

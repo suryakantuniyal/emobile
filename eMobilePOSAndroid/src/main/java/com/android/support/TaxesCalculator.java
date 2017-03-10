@@ -7,8 +7,8 @@ import com.android.database.TaxesGroupHandler;
 import com.android.database.TaxesHandler;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.Discount;
-import com.android.emobilepos.models.Order;
-import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.models.orders.Order;
+import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.Tax;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.ordering.OrderLoyalty_FR;
@@ -67,7 +67,7 @@ public class TaxesCalculator {
         String taxAmount = "0.00";
         String prod_taxId = "";
 
-        if (myPref.getPreferences(MyPreferences.pref_retail_taxes)) {
+        if (myPref.isRetailTaxes()) {
             if (!taxID.isEmpty()) {
                 taxAmount = Global.formatNumToLocale(
                         Double.parseDouble(taxHandler.getTaxRate(taxID, orderProduct.getTax_type(),
@@ -212,7 +212,7 @@ public class TaxesCalculator {
 //                }
             }
 
-            if (myPref.getPreferences(MyPreferences.pref_retail_taxes)) {
+            if (myPref.isRetailTaxes()) {
                 calculateRetailGlobalTax(_temp_subtotal, taxAmount, prodQty, isVAT);
             } else {
                 calculateGlobalTax(_temp_subtotal, prodQty, isVAT);
@@ -339,7 +339,7 @@ public class TaxesCalculator {
         TaxesGroupHandler taxesGroupHandler = new TaxesGroupHandler(activity);
         Global.taxAmount = Global.getBigDecimalNum(taxSelected.getTaxRate());
 
-        if (!myPref.getPreferences(MyPreferences.pref_retail_taxes)) {
+        if (!myPref.isRetailTaxes()) {
             listMapTaxes = taxesHandler.getTaxDetails(taxID, "");
             if (listMapTaxes.size() > 0 && listMapTaxes.get(0).get("tax_type").equals("G")) {
                 listMapTaxes = taxesGroupHandler.getIndividualTaxes(listMapTaxes.get(0).get("tax_id"),

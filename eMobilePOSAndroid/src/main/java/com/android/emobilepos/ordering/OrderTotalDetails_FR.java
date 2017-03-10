@@ -28,8 +28,9 @@ import com.android.emobilepos.models.Discount;
 import com.android.emobilepos.models.MixAndMatchDiscount;
 import com.android.emobilepos.models.MixMatchProductGroup;
 import com.android.emobilepos.models.MixMatchXYZProduct;
-import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.Tax;
+import com.android.emobilepos.models.orders.OrderProduct;
+import com.android.emobilepos.models.orders.OrderTotalDetails;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.MixMatch;
 import com.android.support.Global;
@@ -101,7 +102,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.order_total_details_layout, container, false);
         assignEmployee = AssignEmployeeDAO.getAssignEmployee();
-        isToGo = ((OrderingMain_FA)getActivity()).isToGo;
+        isToGo = ((OrderingMain_FA) getActivity()).isToGo;
         myFrag = this;
         taxSelected = 0;
         discountSelected = 0;
@@ -332,7 +333,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
 
             taxID = taxList.get(taxSelected - 1).getTaxId();
             Global.taxAmount = Global.getBigDecimalNum(taxList.get(taxSelected - 1).getTaxRate());
-            if (!myPref.getPreferences(MyPreferences.pref_retail_taxes)) {
+            if (!myPref.isRetailTaxes()) {
                 listMapTaxes = taxHandler.getTaxDetails(taxID, "");
                 if (listMapTaxes.size() > 0 && listMapTaxes.get(0).get("tax_type").equals("G")) {
                     listMapTaxes = taxGroupHandler.getIndividualTaxes(listMapTaxes.get(0).get("tax_id"),
@@ -396,7 +397,8 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
     }
 
     private List<HashMap<String, String>> listMapTaxes = new ArrayList<>();
-    private OrderingMain_FA getOrderingMainFa(){
+
+    private OrderingMain_FA getOrderingMainFa() {
         return (OrderingMain_FA) getActivity();
     }
 
@@ -758,11 +760,19 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             boolean isGroupBySKU = myPref.isGroupReceiptBySku(isToGo);//myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku) && isToGo;
             calculateMixAndMatch(orderProducts, isGroupBySKU);
         }
+        Discount discount = discountSelected > 0 ? discountList.get(discountSelected - 1) : null;
+        Tax tax = taxSelected > 0 ? taxList.get(taxSelected - 1) : null;
+        if (myPref.isRetailTaxes()) {
+            global.order.setRetailTax(getActivity(), taxID);
+        }
 
+        global.order.ord_globalDiscount = String.valueOf(discount_amount);
+        OrderTotalDetails totalDetails = global.order.getOrderTotalDetails(discount, tax);
         int size = 0;
         if (orderProducts != null) {
             size = orderProducts.size();
         }
+
         tempTaxableAmount = new BigDecimal("0");
         itemsDiscountTotal = new BigDecimal(0);
         setupTaxesHolder();
@@ -833,6 +843,11 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             granTotal.setText(activity.getString(R.string.amount_zero_lbl));
             OrderLoyalty_FR.recalculatePoints("0", "0", "0", gran_total.toString());
         }
+
+        subTotal.setText(Global.getCurrencyFrmt(String.valueOf(totalDetails.getSubtotal())));
+        granTotal.setText(Global.getCurrencyFrmt(String.valueOf(totalDetails.getGranTotal())));
+        globalTax.setText(Global.getCurrencyFrmt(String.valueOf(totalDetails.getTax())));
+        globalDiscount.setText(Global.getCurrencyFrmt(String.valueOf(totalDetails.getGlobalDiscount())));
     }
 
     @Override
