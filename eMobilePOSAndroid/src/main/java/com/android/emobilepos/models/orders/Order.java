@@ -84,6 +84,7 @@ public class Order implements Cloneable {
     public List<OrderAttributes> orderAttributes;
     private List<DataTaxes> listOrderTaxes;
     private List<OrderProduct> orderProducts = new ArrayList<>();
+    private boolean retailTaxes;
 
     public Order() {
         ord_issync = "0";
@@ -143,10 +144,11 @@ public class Order implements Cloneable {
         OrderTotalDetails totalDetails = new OrderTotalDetails();
         if (getOrderProducts() != null && !getOrderProducts().isEmpty()) {
             for (OrderProduct orderProduct : getOrderProducts()) {
-                orderProduct.setTaxAmount(tax != null ? tax.getTaxRate() : "0");
-                orderProduct.setProd_taxId(tax != null ? tax.getTaxId() : "");
-                orderProduct.setTax_type(tax != null ? tax.getTaxType() : "");
-
+                if (!isRetailTaxes()) {
+                    orderProduct.setTaxAmount(tax != null ? tax.getTaxRate() : "0");
+                    orderProduct.setProd_taxId(tax != null ? tax.getTaxId() : "");
+                    orderProduct.setTax_type(tax != null ? tax.getTaxType() : "");
+                }
                 totalDetails.setSubtotal(totalDetails.getSubtotal()
                         .add(orderProduct.getItemSubtotalCalculated()).setScale(6, RoundingMode.HALF_UP));
                 totalDetails.setTax(totalDetails.getTax()
@@ -177,7 +179,7 @@ public class Order implements Cloneable {
             if (taxID != null) {
                 tax = taxesHandler.getTax(taxID, product.getTax_type(),
                         Global.getBigDecimalNum(product.getFinalPrice()).doubleValue());
-            }else{
+            } else {
                 tax = taxesHandler.getTax(product.getProd_taxcode(), product.getTax_type(),
                         Global.getBigDecimalNum(product.getFinalPrice()).doubleValue());
             }
@@ -185,6 +187,13 @@ public class Order implements Cloneable {
             product.setProd_taxId(tax != null ? tax.getTaxId() : "");
             product.setTax_type(tax != null ? tax.getTaxType() : "");
         }
+    }
 
+    public void setRetailTaxes(boolean retailTaxes) {
+        this.retailTaxes = retailTaxes;
+    }
+
+    public boolean isRetailTaxes() {
+        return retailTaxes;
     }
 }

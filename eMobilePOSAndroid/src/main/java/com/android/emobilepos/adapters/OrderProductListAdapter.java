@@ -383,7 +383,7 @@ public class OrderProductListAdapter extends BaseAdapter {
         temp = Global.formatNumToLocale(Double.parseDouble(product.getDisTotal()));
         holder.distAmount.setText(Global.getCurrencyFormat(temp));
         BigDecimal itemTotal = product.getItemSubtotalCalculated();
-        temp = Global.formatNumToLocale(product.getGranTotalCalculated().doubleValue());
+        temp = Global.formatNumToLocale(product.getItemSubtotalCalculated().doubleValue());
         holder.granTotal.setText(Global.getCurrencyFormat(temp));
 
     }

@@ -819,27 +819,26 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     public BigDecimal getItemSubtotalCalculated() {
         BigDecimal subtotal;
         BigDecimal addonsTotalPrice = getAddonsTotalPrice();
-        BigDecimal finalPrice = new BigDecimal(getFinalPrice());
+        BigDecimal finalPrice = new BigDecimal(getFinalPrice()).multiply(new BigDecimal(getOrdprod_qty()));
         BigDecimal discount = Global.getBigDecimalNum(getDisTotal());
         subtotal = finalPrice.subtract(discount).add(addonsTotalPrice).setScale(6, RoundingMode.HALF_UP);
         return subtotal;
     }
 
-    public BigDecimal getItemTotalCalculated() {
-        BigDecimal total;
-        BigDecimal addonsTotalPrice = getAddonsTotalPrice();
-        BigDecimal finalPrice = new BigDecimal(getFinalPrice());
-        BigDecimal taxAmount = Global.getBigDecimalNum(getTaxTotal());
-        BigDecimal discount = Global.getBigDecimalNum(getDisTotal());
-        total = finalPrice.subtract(discount).add(addonsTotalPrice).add(taxAmount).setScale(6, RoundingMode.HALF_UP);
-        return total;
-    }
+//    public BigDecimal getItemTotalCalculated() {
+//        BigDecimal total;
+//        BigDecimal addonsTotalPrice = getAddonsTotalPrice();
+//        BigDecimal finalPrice = new BigDecimal(getFinalPrice()).multiply(new BigDecimal(getOrdprod_qty()));
+//        BigDecimal taxAmount = Global.getBigDecimalNum(getTaxTotal());
+//        BigDecimal discount = Global.getBigDecimalNum(getDisTotal());
+//        total = finalPrice.subtract(discount).add(addonsTotalPrice).add(taxAmount).setScale(6, RoundingMode.HALF_UP);
+//        return total;
+//    }
 
     public BigDecimal getGranTotalCalculated() {
         BigDecimal taxAmount = getTaxAmountCalculated();
-        BigDecimal granTotal = Global.getBigDecimalNum(getFinalPrice())
-                .add(getAddonsTotalPrice())
-                .subtract(getDiscountTotal()).add(taxAmount)
+        BigDecimal subtotalCalculated = getItemSubtotalCalculated();
+        BigDecimal granTotal = subtotalCalculated.add(taxAmount)
                 .setScale(6, RoundingMode.HALF_UP);
         return granTotal;
     }
@@ -851,7 +850,7 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     public BigDecimal getProductPriceTaxableAmountCalculated() {
         BigDecimal taxableAmount;
         if (isTaxable()) {
-            taxableAmount = new BigDecimal(getFinalPrice())
+            taxableAmount = (new BigDecimal(getFinalPrice()).multiply(new BigDecimal(getOrdprod_qty())))
                     .add(getAddonsTotalPrice())
                     .setScale(6, RoundingMode.HALF_UP);
             if (isDiscountTaxable()) {

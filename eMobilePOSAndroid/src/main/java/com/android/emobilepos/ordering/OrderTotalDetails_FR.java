@@ -761,12 +761,14 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             calculateMixAndMatch(orderProducts, isGroupBySKU);
         }
         Discount discount = discountSelected > 0 ? discountList.get(discountSelected - 1) : null;
+        global.order.setRetailTaxes(myPref.isRetailTaxes());
+        global.order.ord_globalDiscount = String.valueOf(discount_amount);
         Tax tax = taxSelected > 0 ? taxList.get(taxSelected - 1) : null;
         if (myPref.isRetailTaxes()) {
             global.order.setRetailTax(getActivity(), taxID);
         }
 
-        global.order.ord_globalDiscount = String.valueOf(discount_amount);
+
         OrderTotalDetails totalDetails = global.order.getOrderTotalDetails(discount, tax);
         int size = 0;
         if (orderProducts != null) {
