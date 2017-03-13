@@ -186,6 +186,10 @@ public class Order implements Cloneable {
             product.setTaxAmount(tax != null ? tax.getTaxRate() : "0");
             product.setProd_taxId(tax != null ? tax.getTaxId() : "");
             product.setTax_type(tax != null ? tax.getTaxType() : "");
+            BigDecimal taxTotal = new BigDecimal(product.getFinalPrice())
+                    .multiply(new BigDecimal(product.getOrdprod_qty()))
+                    .multiply(new BigDecimal(tax.getTaxRate())).divide(new BigDecimal(100)).setScale(6, RoundingMode.HALF_UP);
+            product.setTaxTotal(String.valueOf(taxTotal));
         }
     }
 
