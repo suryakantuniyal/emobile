@@ -871,4 +871,8 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     public boolean isDiscountTaxable() {
         return discount_is_taxable.equals("1");
     }
+
+    public boolean isDiscountFixed() {
+        return discount_is_fixed != null && discount_is_fixed.equals("1");
+    }
 }

@@ -140,7 +140,7 @@ public class Order implements Cloneable {
         return isOnHold != null && isOnHold.equals("1");
     }
 
-    public OrderTotalDetails getOrderTotalDetails(Discount discount, Tax tax) {
+    public OrderTotalDetails getOrderTotalDetails(Discount discount, Tax tax, boolean isVAT) {
         OrderTotalDetails totalDetails = new OrderTotalDetails();
         if (getOrderProducts() != null && !getOrderProducts().isEmpty()) {
             for (OrderProduct orderProduct : getOrderProducts()) {
@@ -148,6 +148,9 @@ public class Order implements Cloneable {
                     orderProduct.setTaxAmount(tax != null ? tax.getTaxRate() : "0");
                     orderProduct.setProd_taxId(tax != null ? tax.getTaxId() : "");
                     orderProduct.setTax_type(tax != null ? tax.getTaxType() : "");
+                }
+                if(isVAT) {
+                    setVATTax(tax);
                 }
                 totalDetails.setSubtotal(totalDetails.getSubtotal()
                         .add(orderProduct.getItemSubtotalCalculated()).setScale(6, RoundingMode.HALF_UP));
@@ -186,10 +189,49 @@ public class Order implements Cloneable {
             product.setTaxAmount(tax != null ? tax.getTaxRate() : "0");
             product.setProd_taxId(tax != null ? tax.getTaxId() : "");
             product.setTax_type(tax != null ? tax.getTaxType() : "");
-            BigDecimal taxTotal = new BigDecimal(product.getFinalPrice())
-                    .multiply(new BigDecimal(product.getOrdprod_qty()))
-                    .multiply(new BigDecimal(tax.getTaxRate())).divide(new BigDecimal(100)).setScale(6, RoundingMode.HALF_UP);
+            BigDecimal taxTotal = Global.getBigDecimalNum(product.getFinalPrice())
+                    .multiply(Global.getBigDecimalNum(product.getOrdprod_qty()))
+                    .multiply(Global.getBigDecimalNum(tax.getTaxRate())).divide(new BigDecimal(100)).setScale(6, RoundingMode.HALF_UP);
             product.setTaxTotal(String.valueOf(taxTotal));
+        }
+    }
+
+    public void setVATTax(Tax tax) {
+        for (OrderProduct product : getOrderProducts()) {
+                      if (product.isTaxable()) {
+                BigDecimal subTotal;
+                if (product.getProd_price_updated().equals("0")) {
+                    BigDecimal taxRate = Global.getBigDecimalNum(tax.getTaxRate()).divide(new BigDecimal("100")).setScale(6, RoundingMode.HALF_UP);
+                    BigDecimal denom = new BigDecimal(1).add(taxRate);
+                    BigDecimal vatPrice = Global.getBigDecimalNum(product.getFinalPrice()).divide(denom, 2, RoundingMode.HALF_UP);
+                    subTotal = vatPrice.multiply(Global.getBigDecimalNum(product.getOrdprod_qty())).setScale(6, RoundingMode.HALF_UP);
+                    product.setPrice_vat_exclusive(vatPrice.setScale(6, RoundingMode.HALF_UP)
+                            .toString());
+                    product.setProd_price_updated("1");
+                    BigDecimal disc;
+                    if (!product.isDiscountFixed()) {
+                        BigDecimal val = subTotal
+                                .multiply(Global.getBigDecimalNum(product.getDisAmount()))
+                                .setScale(6, RoundingMode.HALF_UP);
+                        disc = val.divide(new BigDecimal("100"), 6, RoundingMode.HALF_UP);
+                    } else {
+                        disc = new BigDecimal(product.getDisAmount());
+                    }
+                    product.setDiscount_value(Global.getRoundBigDecimal(disc));
+                    product.setDisTotal(Global.getRoundBigDecimal(disc));
+
+                    product.setItemTotalVatExclusive(Global
+                            .getRoundBigDecimal(subTotal.subtract(disc)));
+                }
+                BigDecimal qty = Global.getBigDecimalNum(product.getOrdprod_qty());
+                if (qty.compareTo(new BigDecimal("1")) == 1) {
+                    subTotal = new BigDecimal(product.getPrice_vat_exclusive()).setScale(2,
+                            RoundingMode.HALF_UP);
+                } else {
+                    subTotal = new BigDecimal(product.getPrice_vat_exclusive()).multiply(qty)
+                            .setScale(2, RoundingMode.HALF_UP);
+                }
+            }
         }
     }
 

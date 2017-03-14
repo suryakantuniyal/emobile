@@ -474,7 +474,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                     if (mixMatches.size() == 2) {
                         mixMatches = mixMatches.sort("xyzSequence", Sort.ASCENDING);
                         orderProducts.addAll(applyXYZMixMatchToGroup(group, mixMatches, isGroupBySKU));
-                    }else{
+                    } else {
                         orderProducts.addAll(group.getOrderProducts());
                     }
                 }
@@ -770,9 +770,10 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         if (myPref.isRetailTaxes()) {
             global.order.setRetailTax(getActivity(), taxID);
         }
-
-
-        OrderTotalDetails totalDetails = global.order.getOrderTotalDetails(discount, tax);
+//        if (assignEmployee.isVAT() || true) {
+//            global.order.setVATTax(tax);
+//        }
+        OrderTotalDetails totalDetails = global.order.getOrderTotalDetails(discount, tax, assignEmployee.isVAT() || true);
 //        int size = 0;
 //        if (orderProducts != null) {
 //            size = orderProducts.size();
@@ -790,7 +791,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
 //            String val;
 //            int pointsSubTotal = 0, pointsInUse = 0, pointsAcumulable = 0;
 //            for (int i = 0; i < size; i++) {
-//                calculateTaxes(orderProducts.get(i));
+//        calculateTaxes(orderProducts.get(i));
 //                if (myPref.getPreferences(MyPreferences.pref_show_removed_void_items_in_printout)) {
 //                    String temp = orderProducts.get(i).getItem_void();
 //
