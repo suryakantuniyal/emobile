@@ -464,15 +464,18 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         for (Map.Entry<String, MixMatchProductGroup> mixMatchProductGroupEntry : mixMatchProductGroupHashMap.entrySet()) {
             MixMatchProductGroup group = mixMatchProductGroupEntry.getValue();
             RealmResults<MixMatch> mixMatches = MixMatchDAO.getDiscountsBygroupId(group);
-            mixMatches.sort("qty", Sort.DESCENDING);
             if (!mixMatches.isEmpty()) {
                 MixMatch mixMatch = mixMatches.get(0);
                 int mixMatchType = mixMatch.getMixMatchType();
                 if (mixMatchType == 1) {
+                    mixMatches = mixMatches.sort("qty", Sort.DESCENDING);
                     orderProducts.addAll(applyMixMatch(group, mixMatches));
                 } else {
                     if (mixMatches.size() == 2) {
+                        mixMatches = mixMatches.sort("xyzSequence", Sort.ASCENDING);
                         orderProducts.addAll(applyXYZMixMatchToGroup(group, mixMatches, isGroupBySKU));
+                    }else{
+                        orderProducts.addAll(group.getOrderProducts());
                     }
                 }
             } else if (!group.getOrderProducts().isEmpty()) {

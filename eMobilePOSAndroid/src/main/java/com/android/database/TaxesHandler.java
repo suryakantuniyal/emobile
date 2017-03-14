@@ -1,6 +1,5 @@
 package com.android.database;
 
-import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 
@@ -208,7 +207,7 @@ public class TaxesHandler {
 
     public Tax getTax(String taxID, String taxType, double prodPrice) {
         Tax tax = new Tax(taxID);
-
+        tax.setTaxType(taxType);
         String taxRate;
 
         String subquery1 = "SELECT tax_rate,tax_name, tax_type FROM ";
