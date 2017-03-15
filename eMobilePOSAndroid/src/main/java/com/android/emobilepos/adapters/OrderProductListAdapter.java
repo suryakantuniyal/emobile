@@ -376,13 +376,12 @@ public class OrderProductListAdapter extends BaseAdapter {
         } else if (attDisplay.equalsIgnoreCase("prod_extradesc")) {
             holder.itemName.setText(product.getProd_extradesc());
         }
-        String temp = Global.formatNumToLocale(product.getAddonsTotalPrice().add(new BigDecimal(product.getFinalPrice())).doubleValue());
+        String temp = Global.formatNumToLocale(product.getItemTotalCalculated().doubleValue());
         holder.itemAmount.setText(Global.getCurrencyFormat(temp));
 
         holder.distQty.setText(product.getDisAmount());
         temp = Global.formatNumToLocale(Double.parseDouble(product.getDisTotal()));
         holder.distAmount.setText(Global.getCurrencyFormat(temp));
-        BigDecimal itemTotal = product.getItemSubtotalCalculated();
         temp = Global.formatNumToLocale(product.getItemSubtotalCalculated().doubleValue());
         holder.granTotal.setText(Global.getCurrencyFormat(temp));
 

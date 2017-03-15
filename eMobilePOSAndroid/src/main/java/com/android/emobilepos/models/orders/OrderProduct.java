@@ -233,6 +233,8 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     public String getFinalPrice() {
         if (getOverwrite_price() != null) {
             return getOverwrite_price().toString();
+        } else if (!TextUtils.isEmpty(getPrice_vat_exclusive()) && !getItemTotalVatExclusive().equalsIgnoreCase("0")) {
+            return getItemTotalVatExclusive();
         } else {
             if (!TextUtils.isEmpty(getProd_price())) {
                 return getProd_price();
@@ -816,27 +818,32 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         return taxAmount;
     }
 
+
     public BigDecimal getItemSubtotalCalculated() {
         BigDecimal subtotal;
         BigDecimal addonsTotalPrice = getAddonsTotalPrice();
         BigDecimal finalPrice = new BigDecimal(getFinalPrice()).multiply(new BigDecimal(getOrdprod_qty()));
+        if (isVAT()) {
+            finalPrice = finalPrice.add(getTaxAmountCalculated());
+        }
         BigDecimal discount = Global.getBigDecimalNum(getDisTotal());
         subtotal = finalPrice.subtract(discount).add(addonsTotalPrice).setScale(6, RoundingMode.HALF_UP);
         return subtotal;
     }
 
-//    public BigDecimal getItemTotalCalculated() {
-//        BigDecimal total;
-//        BigDecimal addonsTotalPrice = getAddonsTotalPrice();
-//        BigDecimal finalPrice = new BigDecimal(getFinalPrice()).multiply(new BigDecimal(getOrdprod_qty()));
-//        BigDecimal taxAmount = Global.getBigDecimalNum(getTaxTotal());
-//        BigDecimal discount = Global.getBigDecimalNum(getDisTotal());
-//        total = finalPrice.subtract(discount).add(addonsTotalPrice).add(taxAmount).setScale(6, RoundingMode.HALF_UP);
-//        return total;
-//    }
+    public BigDecimal getItemTotalCalculated() {
+        BigDecimal subtotal;
+        BigDecimal addonsTotalPrice = getAddonsTotalPrice();
+        BigDecimal finalPrice = new BigDecimal(getFinalPrice()).multiply(new BigDecimal(getOrdprod_qty()));
+        if (isVAT()) {
+            finalPrice = finalPrice.add(getTaxAmountCalculated());
+        }
+        subtotal = finalPrice.add(addonsTotalPrice).setScale(6, RoundingMode.HALF_UP);
+        return subtotal;
+    }
 
     public BigDecimal getGranTotalCalculated() {
-        BigDecimal taxAmount = getTaxAmountCalculated();
+        BigDecimal taxAmount = isVAT() ? new BigDecimal(0) : getTaxAmountCalculated();
         BigDecimal subtotalCalculated = getItemSubtotalCalculated();
         BigDecimal granTotal = subtotalCalculated.add(taxAmount)
                 .setScale(6, RoundingMode.HALF_UP);
@@ -874,5 +881,9 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
 
     public boolean isDiscountFixed() {
         return discount_is_fixed != null && discount_is_fixed.equals("1");
+    }
+
+    public boolean isVAT() {
+        return !TextUtils.isEmpty(getPrice_vat_exclusive()) && !getPrice_vat_exclusive().equals("0");
     }
 }

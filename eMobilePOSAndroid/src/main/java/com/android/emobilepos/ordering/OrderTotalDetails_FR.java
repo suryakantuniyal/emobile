@@ -773,7 +773,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
 //        if (assignEmployee.isVAT() || true) {
 //            global.order.setVATTax(tax);
 //        }
-        OrderTotalDetails totalDetails = global.order.getOrderTotalDetails(discount, tax, assignEmployee.isVAT() || true);
+        OrderTotalDetails totalDetails = global.order.getOrderTotalDetails(discount, tax, assignEmployee.isVAT());
 //        int size = 0;
 //        if (orderProducts != null) {
 //            size = orderProducts.size();
