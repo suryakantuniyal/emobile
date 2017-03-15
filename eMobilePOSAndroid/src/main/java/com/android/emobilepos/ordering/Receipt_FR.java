@@ -63,11 +63,11 @@ import com.android.emobilepos.holders.TransferInventory_Holder;
 import com.android.emobilepos.holders.TransferLocations_Holder;
 import com.android.emobilepos.mainmenu.SalesTab_FR;
 import com.android.emobilepos.models.DataTaxes;
-import com.android.emobilepos.models.orders.Order;
-import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.OrderSeatProduct;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Product;
+import com.android.emobilepos.models.orders.Order;
+import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.OrderAttributes;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
@@ -184,7 +184,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         }
         int totalLines = global.order.getOrderProducts().size();
         for (OrderProduct orderProduct : global.order.getOrderProducts()) {
-            order.ord_lineItemDiscount += orderProduct.getDiscount_value();
+            order.ord_lineItemDiscount = String.valueOf(Global.getBigDecimalNum(order.ord_lineItemDiscount)
+                    .add(Global.getBigDecimalNum(orderProduct.getDiscount_value())));
         }
         if (!myPref.getShiftIsOpen())
             order.clerk_id = myPref.getShiftClerkID();

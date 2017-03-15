@@ -1,15 +1,16 @@
 package com.android.support;
 
 import android.app.Activity;
+import android.content.Context;
 
 import com.android.dao.AssignEmployeeDAO;
 import com.android.database.TaxesGroupHandler;
 import com.android.database.TaxesHandler;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.Discount;
+import com.android.emobilepos.models.Tax;
 import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.orders.OrderProduct;
-import com.android.emobilepos.models.Tax;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.ordering.OrderLoyalty_FR;
 import com.android.emobilepos.ordering.OrderRewards_FR;
@@ -361,6 +362,44 @@ public class TaxesCalculator {
         }
     }
 
+    public static ArrayList<DataTaxes> getDataTaxes(OrderProduct orderProduct, Context context, String taxID) {
+        List<HashMap<String, String>> listMapTaxes = getTaxValue(orderProduct, context, taxID);
+        int size = listMapTaxes.size();
+        ArrayList<DataTaxes> listOrderTaxes = new ArrayList<>();
+        DataTaxes tempTaxes;
+        for (int i = 0; i < size; i++) {
+            tempTaxes = new DataTaxes();
+            tempTaxes.setTax_name(listMapTaxes.get(i).get("tax_name"));
+            tempTaxes.setOrd_id("");
+            tempTaxes.setTax_amount("0");
+            tempTaxes.setTax_rate(listMapTaxes.get(i).get("tax_rate"));
+            listOrderTaxes.add(tempTaxes);
+        }
+        return listOrderTaxes;
+    }
+
+    public static List<HashMap<String, String>> getTaxValue(OrderProduct orderProduct, Context context, String taxID) {
+        List<HashMap<String, String>> listMapTaxes = new ArrayList<>();
+        TaxesHandler taxesHandler = new TaxesHandler(context);
+        TaxesGroupHandler taxesGroupHandler = new TaxesGroupHandler(context);
+        MyPreferences preferences = new MyPreferences(context);
+        if (!preferences.isRetailTaxes()) {
+            listMapTaxes = taxesHandler.getTaxDetails(taxID, "");
+            if (listMapTaxes.size() > 0 && listMapTaxes.get(0).get("tax_type").equals("G")) {
+                listMapTaxes = taxesGroupHandler.getIndividualTaxes(listMapTaxes.get(0).get("tax_id"),
+                        listMapTaxes.get(0).get("tax_code_id"));
+            }
+        } else {
+            Tax tax = taxesHandler.getTax(taxID, orderProduct.getTax_type(),
+                    Double.parseDouble(orderProduct.getFinalPrice()));
+            HashMap<String, String> mapTax = new HashMap<>();
+            mapTax.put("tax_id", taxID);
+            mapTax.put("tax_name", tax.getTaxName());
+            mapTax.put("tax_rate", tax.getTaxRate());
+            listMapTaxes.add(mapTax);
+        }
+        return listMapTaxes;
+    }
 
     public BigDecimal getDiscount_rate() {
         return discount_rate;

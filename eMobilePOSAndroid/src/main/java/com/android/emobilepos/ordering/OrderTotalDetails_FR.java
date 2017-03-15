@@ -766,6 +766,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         Discount discount = discountSelected > 0 ? discountList.get(discountSelected - 1) : null;
         global.order.setRetailTaxes(myPref.isRetailTaxes());
         global.order.ord_globalDiscount = String.valueOf(discount_amount);
+        global.order.setListOrderTaxes(getOrderingMainFa().getListOrderTaxes());
         Tax tax = taxSelected > 0 ? taxList.get(taxSelected - 1) : null;
         if (myPref.isRetailTaxes()) {
             global.order.setRetailTax(getActivity(), taxID);
@@ -773,7 +774,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
 //        if (assignEmployee.isVAT() || true) {
 //            global.order.setVATTax(tax);
 //        }
-        OrderTotalDetails totalDetails = global.order.getOrderTotalDetails(discount, tax, assignEmployee.isVAT());
+        OrderTotalDetails totalDetails = global.order.getOrderTotalDetails(discount, tax, assignEmployee.isVAT(), getActivity());
 //        int size = 0;
 //        if (orderProducts != null) {
 //            size = orderProducts.size();
@@ -849,11 +850,14 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
 //            granTotal.setText(activity.getString(R.string.amount_zero_lbl));
 //            OrderLoyalty_FR.recalculatePoints("0", "0", "0", gran_total.toString());
 //        }
-
-        subTotal.setText(Global.getCurrencyFrmt(String.valueOf(totalDetails.getSubtotal())));
-        granTotal.setText(Global.getCurrencyFrmt(String.valueOf(totalDetails.getGranTotal())));
-        globalTax.setText(Global.getCurrencyFrmt(String.valueOf(totalDetails.getTax())));
-        globalDiscount.setText(Global.getCurrencyFrmt(String.valueOf(totalDetails.getGlobalDiscount())));
+        gran_total = totalDetails.getGranTotal();
+        sub_total = totalDetails.getSubtotal();
+        tax_amount = totalDetails.getTax();
+        discount_amount = totalDetails.getGlobalDiscount();
+        subTotal.setText(Global.getCurrencyFrmt(String.valueOf(sub_total)));
+        granTotal.setText(Global.getCurrencyFrmt(String.valueOf(gran_total)));
+        globalTax.setText(Global.getCurrencyFrmt(String.valueOf(tax_amount)));
+        globalDiscount.setText(Global.getCurrencyFrmt(String.valueOf(discount_amount)));
     }
 
     @Override

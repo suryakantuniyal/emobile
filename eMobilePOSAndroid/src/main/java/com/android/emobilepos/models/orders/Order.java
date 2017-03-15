@@ -13,6 +13,7 @@ import com.android.support.Customer;
 import com.android.support.DateUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.TaxesCalculator;
 import com.google.gson.Gson;
 
 import java.math.BigDecimal;
@@ -140,7 +141,7 @@ public class Order implements Cloneable {
         return isOnHold != null && isOnHold.equals("1");
     }
 
-    public OrderTotalDetails getOrderTotalDetails(Discount discount, Tax tax, boolean isVAT) {
+    public OrderTotalDetails getOrderTotalDetails(Discount discount, Tax tax, boolean isVAT, Context context) {
         OrderTotalDetails totalDetails = new OrderTotalDetails();
         if (getOrderProducts() != null && !getOrderProducts().isEmpty()) {
             for (OrderProduct orderProduct : getOrderProducts()) {
@@ -149,7 +150,7 @@ public class Order implements Cloneable {
                     orderProduct.setProd_taxId(tax != null ? tax.getTaxId() : "");
                     orderProduct.setTax_type(tax != null ? tax.getTaxType() : "");
                 }
-                if(isVAT) {
+                if (isVAT) {
                     setVATTax(tax);
                 }
                 totalDetails.setSubtotal(totalDetails.getSubtotal()
@@ -171,8 +172,18 @@ public class Order implements Cloneable {
                             .subtract(disAmout).setScale(6, RoundingMode.HALF_UP));
                 }
             }
+            setOrderGlobalDataTaxes(totalDetails);
         }
         return totalDetails;
+    }
+
+    private void setOrderGlobalDataTaxes(OrderTotalDetails totalDetails) {
+        for (DataTaxes taxes : getListOrderTaxes()) {
+            BigDecimal rate = Global.getBigDecimalNum(taxes.getTax_rate()).divide(new BigDecimal("100")).setScale(6,
+                    RoundingMode.HALF_UP);
+            BigDecimal tax_amount = totalDetails.getSubtotal().multiply(rate).setScale(6, RoundingMode.HALF_UP);
+            taxes.setTax_amount(String.valueOf(tax_amount));
+        }
     }
 
     public void setRetailTax(Context context, String taxID) {
@@ -198,7 +209,7 @@ public class Order implements Cloneable {
 
     public void setVATTax(Tax tax) {
         for (OrderProduct product : getOrderProducts()) {
-                      if (product.isTaxable()) {
+            if (product.isTaxable()) {
                 BigDecimal subTotal;
                 if (product.getProd_price_updated().equals("0")) {
                     BigDecimal taxRate = Global.getBigDecimalNum(tax.getTaxRate()).divide(new BigDecimal("100")).setScale(6, RoundingMode.HALF_UP);
