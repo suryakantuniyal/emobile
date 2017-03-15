@@ -17,7 +17,7 @@ import com.android.database.OrdersHandler;
 import com.android.database.PayMethodsHandler;
 import com.android.database.PaymentsHandler;
 import com.android.emobilepos.R;
-import com.android.emobilepos.models.Order;
+import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.CreditCardInfo;

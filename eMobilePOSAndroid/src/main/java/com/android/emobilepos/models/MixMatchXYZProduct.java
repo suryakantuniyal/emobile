@@ -1,5 +1,7 @@
 package com.android.emobilepos.models;
 
+import com.android.emobilepos.models.orders.OrderProduct;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;

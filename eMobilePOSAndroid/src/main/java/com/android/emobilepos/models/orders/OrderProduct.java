@@ -1,15 +1,18 @@
-package com.android.emobilepos.models;
+package com.android.emobilepos.models.orders;
 
 import android.app.Activity;
 import android.text.TextUtils;
 
 import com.android.database.ProductsHandler;
+import com.android.emobilepos.models.MixAndMatchDiscount;
+import com.android.emobilepos.models.Product;
 import com.android.emobilepos.models.realms.ProductAttribute;
 import com.android.support.Global;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -55,7 +58,7 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
 
     private String itemTotalVatExclusive = "0";
     private String itemTotal = "0";
-    private String itemSubtotal = "0";
+    //    private String itemSubtotal = "0";
     private String disAmount = "0";
     private String disTotal = "0";
     private String taxAmount = "0";
@@ -209,8 +212,8 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
 
         setOverwrite_price(overwriteAmount);
         setProd_price(Global.getRoundBigDecimal(overwriteAmount));
-        setItemSubtotal(Global
-                .getRoundBigDecimal(new_subtotal));
+//        setItemSubtotal(Global
+//                .getRoundBigDecimal(new_subtotal));
         setItemTotal(Global
                 .getRoundBigDecimal(new_subtotal));
         setPricelevel_id("");
@@ -230,6 +233,8 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     public String getFinalPrice() {
         if (getOverwrite_price() != null) {
             return getOverwrite_price().toString();
+        } else if (!TextUtils.isEmpty(getPrice_vat_exclusive()) && !getItemTotalVatExclusive().equalsIgnoreCase("0")) {
+            return getItemTotalVatExclusive();
         } else {
             if (!TextUtils.isEmpty(getProd_price())) {
                 return getProd_price();
@@ -242,7 +247,7 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     public void setPrices(String prod_price, String ordprod_qty) {
         this.setProd_price(prod_price);
         this.setItemTotal(Global.getBigDecimalNum(prod_price).multiply(new BigDecimal(ordprod_qty)).toString());
-        this.setItemSubtotal(Global.getBigDecimalNum(prod_price).multiply(new BigDecimal(ordprod_qty)).toString());
+//        this.setItemSubtotal(Global.getBigDecimalNum(prod_price).multiply(new BigDecimal(ordprod_qty)).toString());
     }
 
     public String getPrice_vat_exclusive() {
@@ -498,13 +503,13 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         this.itemTotal = itemTotal;
     }
 
-    public String getItemSubtotal() {
-        return itemSubtotal;
-    }
-
-    public void setItemSubtotal(String itemSubtotal) {
-        this.itemSubtotal = itemSubtotal;
-    }
+//    public String getItemSubtotal() {
+//        return itemSubtotal;
+//    }
+//
+//    public void setItemSubtotal(String itemSubtotal) {
+//        this.itemSubtotal = itemSubtotal;
+//    }
 
     public String getDisAmount() {
         return disAmount;
@@ -806,22 +811,79 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         return price;
     }
 
+    public BigDecimal getTaxAmountCalculated() {
+        BigDecimal taxAmount = getProductPriceTaxableAmountCalculated()
+                .multiply(Global.getBigDecimalNum(getTaxAmount()).divide(new BigDecimal("100")))
+                .setScale(6, RoundingMode.HALF_UP);
+        return taxAmount;
+    }
+
+
     public BigDecimal getItemSubtotalCalculated() {
         BigDecimal subtotal;
         BigDecimal addonsTotalPrice = getAddonsTotalPrice();
-        BigDecimal finalPrice = new BigDecimal(getFinalPrice());
-        BigDecimal taxAmount = Global.getBigDecimalNum(getTaxAmount());
-        BigDecimal discount = Global.getBigDecimalNum(getDisAmount());
-        subtotal = finalPrice.add(addonsTotalPrice).add(taxAmount).subtract(discount);
+        BigDecimal finalPrice = new BigDecimal(getFinalPrice()).multiply(new BigDecimal(getOrdprod_qty()));
+        if (isVAT()) {
+            finalPrice = finalPrice.add(getTaxAmountCalculated());
+        }
+        BigDecimal discount = Global.getBigDecimalNum(getDisTotal());
+        subtotal = finalPrice.subtract(discount).add(addonsTotalPrice).setScale(6, RoundingMode.HALF_UP);
         return subtotal;
     }
 
     public BigDecimal getItemTotalCalculated() {
         BigDecimal subtotal;
         BigDecimal addonsTotalPrice = getAddonsTotalPrice();
-        BigDecimal finalPrice = new BigDecimal(getFinalPrice());
-        BigDecimal discount = Global.getBigDecimalNum(getDisTotal());
-        subtotal = finalPrice.add(addonsTotalPrice).subtract(discount);
+        BigDecimal finalPrice = new BigDecimal(getFinalPrice()).multiply(new BigDecimal(getOrdprod_qty()));
+        if (isVAT()) {
+            finalPrice = finalPrice.add(getTaxAmountCalculated());
+        }
+        subtotal = finalPrice.add(addonsTotalPrice).setScale(6, RoundingMode.HALF_UP);
         return subtotal;
+    }
+
+    public BigDecimal getGranTotalCalculated() {
+        BigDecimal taxAmount = isVAT() ? new BigDecimal(0) : getTaxAmountCalculated();
+        BigDecimal subtotalCalculated = getItemSubtotalCalculated();
+        BigDecimal granTotal = subtotalCalculated.add(taxAmount)
+                .setScale(6, RoundingMode.HALF_UP);
+        return granTotal;
+    }
+
+    public BigDecimal getDiscountTotal() {
+        return Global.getBigDecimalNum(getDisTotal());
+    }
+
+    public BigDecimal getProductPriceTaxableAmountCalculated() {
+        BigDecimal taxableAmount;
+        if (isTaxable()) {
+            taxableAmount = (new BigDecimal(getFinalPrice()).multiply(new BigDecimal(getOrdprod_qty())))
+                    .add(getAddonsTotalPrice())
+                    .setScale(6, RoundingMode.HALF_UP);
+            if (isDiscountTaxable()) {
+                taxableAmount = taxableAmount
+                        .subtract(getDiscountTotal())
+                        .setScale(6, RoundingMode.HALF_UP);
+            }
+        } else {
+            taxableAmount = BigDecimal.valueOf(0);
+        }
+        return taxableAmount;
+    }
+
+    public boolean isTaxable() {
+        return prod_istaxable.equals("1");
+    }
+
+    public boolean isDiscountTaxable() {
+        return discount_is_taxable.equals("1");
+    }
+
+    public boolean isDiscountFixed() {
+        return discount_is_fixed != null && discount_is_fixed.equals("1");
+    }
+
+    public boolean isVAT() {
+        return !TextUtils.isEmpty(getPrice_vat_exclusive()) && !getPrice_vat_exclusive().equals("0");
     }
 }

@@ -63,4 +63,8 @@ public class Discount {
     public void setProductId(String productId) {
         this.productId = productId;
     }
+
+    public boolean isFixed() {
+        return getProductDiscountType().equals("Fixed");
+    }
 }

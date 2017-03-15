@@ -22,7 +22,7 @@ import android.widget.TextView;
 import com.android.database.ProductAddonsHandler;
 import com.android.database.ProductsHandler;
 import com.android.emobilepos.R;
-import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.ParentAddon;
 import com.android.emobilepos.models.Product;
 import com.android.support.Global;
@@ -220,8 +220,8 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
         temp = temp.add(addedAddon);
         if (temp.compareTo(new BigDecimal("0")) == -1)
             temp = new BigDecimal("0");
-        orderProduct.setOverwrite_price(temp);
-        orderProduct.setItemSubtotal(Global.getRoundBigDecimal(temp));
+//        orderProduct.setOverwrite_price(temp);
+//        orderProduct.setItemSubtotal(Global.getRoundBigDecimal(temp));
         orderProduct.setItemTotal(Global.getRoundBigDecimal(temp));
         orderProduct.setOrdprod_desc(product.getProdDesc() + _ord_desc.toString());
         orderProduct.setProd_sku(product.getProd_sku());

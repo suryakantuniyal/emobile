@@ -47,8 +47,8 @@ import com.android.emobilepos.adapters.OrderProductListAdapter;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.mainmenu.SalesTab_FR;
 import com.android.emobilepos.models.DataTaxes;
-import com.android.emobilepos.models.Order;
-import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.models.orders.Order;
+import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.OrderSeatProduct;
 import com.android.emobilepos.models.Product;
 import com.android.emobilepos.models.realms.OrderAttributes;
@@ -177,8 +177,10 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         super.onCreate(savedInstanceState);
         setContentView(R.layout.order_main_layout);
         global = (Global) getApplication();
-        global.resetOrderDetailsValues();
-        global.clearListViewData();
+        if (savedInstanceState == null) {
+            global.resetOrderDetailsValues();
+            global.clearListViewData();
+        }
         instance = this;
         callBackMSR = this;
         handler = new ProductsHandler(this);
@@ -196,6 +198,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         setAssociateId(extras.getString("associateId", ""));
 
         openFromHold = extras.getBoolean("openFromHold", false);
+        Global.isFromOnHold = openFromHold;
         String onHoldOrderJson = extras.getString("onHoldOrderJson");
         Order onHoldOrder = null;
         if (onHoldOrderJson != null && !onHoldOrderJson.isEmpty()) {
@@ -205,7 +208,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             onHoldOrder = ordersHandler.getOrder(onHoldOrder.ord_id);
             Global.lastOrdID = onHoldOrder.ord_id;// myCursor.getString(myCursor.getColumnIndex("ord_id"));
             Global.taxID = onHoldOrder.tax_id;//myCursor.getString(myCursor.getColumnIndex("tax_id"));
-
         }
         isToGo = getRestaurantSaleType() == Global.RestaurantSaleType.TO_GO;
 
@@ -467,7 +469,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             receiptContainer.startAnimation(AnimationUtils.loadAnimation(this, R.anim.anim_left_right));
             receiptContainer.setVisibility(View.VISIBLE);
         } else {
-            if (Global.isFromOnHold)
+            if (openFromHold)
                 showDlog(true);
             else
                 showDlog(false);
@@ -1479,7 +1481,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 Global global = (Global) activity.getApplication();
                 order = Receipt_FR.buildOrder(activity, global, "", "", ((OrderingMain_FA) activity).getSelectedDinningTableNumber(),
                         ((OrderingMain_FA) activity).getAssociateId(), ((OrderingMain_FA) activity).getOrderAttributes(),
-                        ((OrderingMain_FA) activity).getListOrderTaxes(),global.order.getOrderProducts());
+                        ((OrderingMain_FA) activity).getListOrderTaxes(), global.order.getOrderProducts());
                 OrderProductsHandler dbOrdProd = new OrderProductsHandler(activity);
                 OrderProductsAttr_DB dbOrdAttr = new OrderProductsAttr_DB(activity);
                 dbOrders.insert(order);
@@ -1536,7 +1538,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         total = total.multiply(OrderingMain_FA.returnItem && OrderingMain_FA.mTransType != Global.TransactionType.RETURN ? new BigDecimal(-1) : new BigDecimal(1));
         DecimalFormat frmt = new DecimalFormat("0.00");
         orderProduct.setItemTotal(total.toString());
-        orderProduct.setItemSubtotal(total.toString());
+//        orderProduct.setItemSubtotal(total.toString());
         GenerateNewID generator = new GenerateNewID(activity);
         MyPreferences myPref = new MyPreferences(activity);
         if (!Global.isFromOnHold && Global.lastOrdID.isEmpty()) {

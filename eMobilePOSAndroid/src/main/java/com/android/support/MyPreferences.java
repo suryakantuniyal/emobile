@@ -38,7 +38,7 @@ public class MyPreferences {
     //    private final String zone_id = "zone_id";
 //    private final String VAT = "VAT";
     public static final String pref_show_only_group_taxes = "pref_show_only_group_taxes";
-    public static final String pref_retail_taxes = "pref_retail_taxes";
+    private static final String pref_retail_taxes = "pref_retail_taxes";
     public static final String pref_mix_match = "pref_mix_match";
     public static final String pref_require_customer = "pref_require_customer";
     public static final String pref_show_confirmation_screen = "pref_show_confirmation_screen";
@@ -1327,6 +1327,10 @@ public class MyPreferences {
 
     public boolean isRestaurantMode() {
         return getPreferences(MyPreferences.pref_restaurant_mode);
+    }
+
+    public boolean isRetailTaxes() {
+        return getPreferences(MyPreferences.pref_retail_taxes);
     }
 
     public enum PrinterPreviewWidth {SMALL, MEDIUM, LARGE}

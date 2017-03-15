@@ -42,7 +42,7 @@ import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.ShowProductImageActivity;
 import com.android.emobilepos.models.Discount;
-import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.PriceLevel;
 import com.android.emobilepos.models.realms.ProductAttribute;
 import com.android.emobilepos.models.realms.UOM;
@@ -360,7 +360,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
     private void setupTax() {
         TaxesHandler taxHandler = new TaxesHandler(activity);
-        if (myPref.getPreferences(MyPreferences.pref_retail_taxes)) {
+        if (myPref.isRetailTaxes()) {
             if (!Global.taxID.isEmpty()) {
                 taxAmount = taxHandler.getTaxRate(Global.taxID, orderProduct.getTax_type(), Double.parseDouble(basePrice));
                 prod_taxId = orderProduct.getTax_type();
@@ -925,7 +925,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             itemTotal = total.subtract(Global.getBigDecimalNum(disTotal));
         }
         orderProduct.setItemTotal(itemTotal.toString());
-        orderProduct.setItemSubtotal(total.toString());
+//        orderProduct.setItemSubtotal(total.toString());
         GenerateNewID generator = new GenerateNewID(activity);
         if (!Global.isFromOnHold && Global.lastOrdID.isEmpty()) {
             Global.lastOrdID = generator.getNextID(IdType.ORDER_ID);

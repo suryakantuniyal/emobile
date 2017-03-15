@@ -7,8 +7,8 @@ import com.android.database.TaxesGroupHandler;
 import com.android.database.TaxesHandler;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.Discount;
-import com.android.emobilepos.models.Order;
-import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.models.orders.Order;
+import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.Tax;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.ordering.OrderLoyalty_FR;
@@ -67,7 +67,7 @@ public class TaxesCalculator {
         String taxAmount = "0.00";
         String prod_taxId = "";
 
-        if (myPref.getPreferences(MyPreferences.pref_retail_taxes)) {
+        if (myPref.isRetailTaxes()) {
             if (!taxID.isEmpty()) {
                 taxAmount = Global.formatNumToLocale(
                         Double.parseDouble(taxHandler.getTaxRate(taxID, orderProduct.getTax_type(),
@@ -86,7 +86,7 @@ public class TaxesCalculator {
             }
         }
 
-        BigDecimal tempSubTotal = new BigDecimal(orderProduct.getItemSubtotal());
+        BigDecimal tempSubTotal = orderProduct.getItemSubtotalCalculated();
         BigDecimal prodQty = new BigDecimal(orderProduct.getOrdprod_qty());
         BigDecimal _temp_subtotal = tempSubTotal;
         boolean isVAT = assignEmployee.isVAT();
@@ -142,7 +142,7 @@ public class TaxesCalculator {
             if (orderProduct.getDiscount_is_taxable().equals("1")) {
                 BigDecimal temp = new BigDecimal(taxAmount).divide(new BigDecimal("100")).setScale(6,
                         RoundingMode.HALF_UP);
-                tempSubTotal = tempSubTotal.abs().subtract(new BigDecimal(orderProduct.getDiscount_value()).abs());
+//                tempSubTotal = tempSubTotal.abs().subtract(new BigDecimal(orderProduct.getDiscount_value()).abs());
                 if (orderProduct.isReturned() && OrderingMain_FA.mTransType != Global.TransactionType.RETURN) {
                     tempSubTotal = tempSubTotal.negate();
                 }
@@ -212,7 +212,7 @@ public class TaxesCalculator {
 //                }
             }
 
-            if (myPref.getPreferences(MyPreferences.pref_retail_taxes)) {
+            if (myPref.isRetailTaxes()) {
                 calculateRetailGlobalTax(_temp_subtotal, taxAmount, prodQty, isVAT);
             } else {
                 calculateGlobalTax(_temp_subtotal, prodQty, isVAT);
@@ -339,7 +339,7 @@ public class TaxesCalculator {
         TaxesGroupHandler taxesGroupHandler = new TaxesGroupHandler(activity);
         Global.taxAmount = Global.getBigDecimalNum(taxSelected.getTaxRate());
 
-        if (!myPref.getPreferences(MyPreferences.pref_retail_taxes)) {
+        if (!myPref.isRetailTaxes()) {
             listMapTaxes = taxesHandler.getTaxDetails(taxID, "");
             if (listMapTaxes.size() > 0 && listMapTaxes.get(0).get("tax_type").equals("G")) {
                 listMapTaxes = taxesGroupHandler.getIndividualTaxes(listMapTaxes.get(0).get("tax_id"),
@@ -492,7 +492,7 @@ public class TaxesCalculator {
                     if (isVAT) {
                         val = orderProducts.get(i).getItemTotalVatExclusive();
                     } else
-                        val = orderProducts.get(i).getItemSubtotal();
+                        val = String.valueOf(orderProducts.get(i).getItemSubtotalCalculated());
                 }
                 if (val == null || val.isEmpty())
                     val = "0.00";

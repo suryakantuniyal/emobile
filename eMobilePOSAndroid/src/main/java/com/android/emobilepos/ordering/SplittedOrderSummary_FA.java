@@ -30,8 +30,8 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.OrderProductListAdapter;
 import com.android.emobilepos.adapters.SplittedOrderSummaryAdapter;
 import com.android.emobilepos.models.Discount;
-import com.android.emobilepos.models.Order;
-import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.models.orders.Order;
+import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.OrderSeatProduct;
 import com.android.emobilepos.models.SplitedOrder;
 import com.android.emobilepos.models.Tax;
@@ -274,7 +274,8 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                         List<OrderProduct> orderProducts = getProductsSingleReceipt();
                         BigDecimal orderSubTotal = new BigDecimal(0);
                         for (OrderProduct product : orderProducts) {
-                            orderSubTotal = orderSubTotal.add(new BigDecimal(product.getItemSubtotal()).add(product.getAddonsTotalPrice())).setScale(4, RoundingMode.HALF_UP);
+                            orderSubTotal = orderSubTotal.add(product.getItemSubtotalCalculated()
+                                    .add(product.getAddonsTotalPrice())).setScale(4, RoundingMode.HALF_UP);
                         }
                         splitedOrder.ord_subtotal = orderSubTotal.toString();
                         splitedOrder.ord_total = orderSubTotal.subtract(globalDiscountAmount).toString();
@@ -341,7 +342,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                         List<OrderProduct> orderProducts = getProductsBySeatsGroup(seatProduct.getSeatGroupId());
                         BigDecimal orderSubTotal = new BigDecimal(0);
                         for (OrderProduct product : orderProducts) {
-                            orderSubTotal = orderSubTotal.add(new BigDecimal(product.getItemSubtotal()).add(product.getAddonsTotalPrice())).setScale(4, RoundingMode.HALF_UP);
+                            orderSubTotal = orderSubTotal.add(product.getItemSubtotalCalculated().add(product.getAddonsTotalPrice())).setScale(4, RoundingMode.HALF_UP);
                         }
                         splitedOrder.ord_subtotal = orderSubTotal.toString();
                         splitedOrder.ord_total = orderSubTotal.subtract(orderSubTotal.multiply(globalDiscountPercentge)).toString();
@@ -390,12 +391,12 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                     for (OrderProduct product : orderProducts) {
                         BigDecimal itemSubtotal = new BigDecimal(product.getFinalPrice()).add(product.getAddonsTotalPrice());
                         itemSubtotal = itemSubtotal.divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP);
-                        product.setItemSubtotal(itemSubtotal.toString());
+//                        product.setItemSubtotal(itemSubtotal.toString());
                         for (OrderProduct addon : product.addonsProducts) {
                             addon.setProd_price(new BigDecimal(addon.getProd_price()).divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP).toString());
                             addon.setOverwrite_price(new BigDecimal(addon.getProd_price()));
                             addon.setItemTotal(Global.getBigDecimalNum(addon.getItemTotal()).divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP).toString());
-                            addon.setItemSubtotal(Global.getBigDecimalNum(addon.getItemSubtotal()).divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP).toString());
+//                            addon.setItemSubtotal(Global.getBigDecimalNum(addon.getItemSubtotal()).divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP).toString());
                         }
                         product.setProd_price(new BigDecimal(product.getFinalPrice()).divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP).toString());
                         product.setOverwrite_price(new BigDecimal(product.getProd_price()));

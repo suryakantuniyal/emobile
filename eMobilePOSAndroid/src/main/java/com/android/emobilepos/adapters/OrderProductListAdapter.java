@@ -14,8 +14,8 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.android.emobilepos.R;
-import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.OrderSeatProduct;
+import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.emobilepos.ordering.PickerAddon_FA;
 import com.android.support.Global;
@@ -376,14 +376,13 @@ public class OrderProductListAdapter extends BaseAdapter {
         } else if (attDisplay.equalsIgnoreCase("prod_extradesc")) {
             holder.itemName.setText(product.getProd_extradesc());
         }
-        String temp = Global.formatNumToLocale(Double.parseDouble(product.getFinalPrice()));
+        String temp = Global.formatNumToLocale(product.getItemTotalCalculated().doubleValue());
         holder.itemAmount.setText(Global.getCurrencyFormat(temp));
 
         holder.distQty.setText(product.getDisAmount());
         temp = Global.formatNumToLocale(Double.parseDouble(product.getDisTotal()));
         holder.distAmount.setText(Global.getCurrencyFormat(temp));
-        BigDecimal itemTotal = product.getItemTotalCalculated();
-        temp = Global.formatNumToLocale(itemTotal.doubleValue());
+        temp = Global.formatNumToLocale(product.getItemSubtotalCalculated().doubleValue());
         holder.granTotal.setText(Global.getCurrencyFormat(temp));
 
     }

@@ -72,51 +72,53 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
     }
 
     private void setViewData(View view) {
-        MyPreferences preferences = new MyPreferences(getActivity());
-        TextView syncPaymentsQty = (TextView) view.findViewById(R.id.syncPaymentsQty);
-        TextView sync_salesQty = (TextView) view.findViewById(R.id.sync_salesQty);
-        TextView syncSignaturesQty = (TextView) view.findViewById(R.id.syncSignaturesQty);
-        TextView syncConsignmentsQty = (TextView) view.findViewById(R.id.syncConsignmentsQty);
-        TextView syncTemplatesQty = (TextView) view.findViewById(R.id.syncTemplatesQty);
-        TextView syncCustomersQty = (TextView) view.findViewById(R.id.syncCustomersQty);
-        TextView syncVoidsQty = (TextView) view.findViewById(R.id.syncVoidsQty);
-        TextView syncTransfersQty = (TextView) view.findViewById(R.id.syncTransfersQty);
-        TextView synchFeedText = (TextView) view.findViewById(R.id.synchFeedText);
-        TextView synchSendDate = (TextView) view.findViewById(R.id.synchSendDate);
-        TextView synchReceiveDate = (TextView) view.findViewById(R.id.synchReceiveDate);
+        if (view != null) {
+            MyPreferences preferences = new MyPreferences(getActivity());
+            TextView syncPaymentsQty = (TextView) view.findViewById(R.id.syncPaymentsQty);
+            TextView sync_salesQty = (TextView) view.findViewById(R.id.sync_salesQty);
+            TextView syncSignaturesQty = (TextView) view.findViewById(R.id.syncSignaturesQty);
+            TextView syncConsignmentsQty = (TextView) view.findViewById(R.id.syncConsignmentsQty);
+            TextView syncTemplatesQty = (TextView) view.findViewById(R.id.syncTemplatesQty);
+            TextView syncCustomersQty = (TextView) view.findViewById(R.id.syncCustomersQty);
+            TextView syncVoidsQty = (TextView) view.findViewById(R.id.syncVoidsQty);
+            TextView syncTransfersQty = (TextView) view.findViewById(R.id.syncTransfersQty);
+            TextView synchFeedText = (TextView) view.findViewById(R.id.synchFeedText);
+            TextView synchSendDate = (TextView) view.findViewById(R.id.synchSendDate);
+            TextView synchReceiveDate = (TextView) view.findViewById(R.id.synchReceiveDate);
 
-        PaymentsHandler paymentHandler = new PaymentsHandler(getActivity());
-        int unsyncPayments = (int) paymentHandler.getNumUnsyncPayments();
-        syncPaymentsQty.setText(String.valueOf(unsyncPayments));
+            PaymentsHandler paymentHandler = new PaymentsHandler(getActivity());
+            int unsyncPayments = (int) paymentHandler.getNumUnsyncPayments();
+            syncPaymentsQty.setText(String.valueOf(unsyncPayments));
 
-        OrdersHandler ordersHandler = new OrdersHandler(getActivity());
-        int unsycOrders = (int) ordersHandler.getNumUnsyncOrders();
-        sync_salesQty.setText(String.valueOf(unsycOrders));
+            OrdersHandler ordersHandler = new OrdersHandler(getActivity());
+            int unsycOrders = (int) ordersHandler.getNumUnsyncOrders();
+            sync_salesQty.setText(String.valueOf(unsycOrders));
 
-        VoidTransactionsHandler voidHandler = new VoidTransactionsHandler();
-        int unsyncVoids = (int) voidHandler.getNumUnsyncVoids();
-        syncVoidsQty.setText(String.valueOf(unsyncVoids));
+            VoidTransactionsHandler voidHandler = new VoidTransactionsHandler();
+            int unsyncVoids = (int) voidHandler.getNumUnsyncVoids();
+            syncVoidsQty.setText(String.valueOf(unsyncVoids));
 
-        CustomersHandler custHandler = new CustomersHandler(getActivity());
-        int unsyncCust = (int) custHandler.getNumUnsyncCustomers();
-        syncCustomersQty.setText(String.valueOf(unsyncCust));
+            CustomersHandler custHandler = new CustomersHandler(getActivity());
+            int unsyncCust = (int) custHandler.getNumUnsyncCustomers();
+            syncCustomersQty.setText(String.valueOf(unsyncCust));
 
-        TemplateHandler templateHandler = new TemplateHandler(getActivity());
-        int unsyncTemplates = (int) templateHandler.getNumUnsyncTemplates();
-        syncTemplatesQty.setText(String.valueOf(unsyncTemplates));
+            TemplateHandler templateHandler = new TemplateHandler(getActivity());
+            int unsyncTemplates = (int) templateHandler.getNumUnsyncTemplates();
+            syncTemplatesQty.setText(String.valueOf(unsyncTemplates));
 
-        ConsignmentTransactionHandler consignmentHandler = new ConsignmentTransactionHandler(getActivity());
-        int unsyncConsignment = (int) consignmentHandler.getNumUnsyncItems();
-        syncConsignmentsQty.setText(String.valueOf(unsyncConsignment));
+            ConsignmentTransactionHandler consignmentHandler = new ConsignmentTransactionHandler(getActivity());
+            int unsyncConsignment = (int) consignmentHandler.getNumUnsyncItems();
+            syncConsignmentsQty.setText(String.valueOf(unsyncConsignment));
 
-        TransferLocations_DB transferDB = new TransferLocations_DB(getActivity());
-        int unsyncTransfer = (int) transferDB.getNumUnsyncTransfers();
-        syncTransfersQty.setText(String.valueOf(unsyncTransfer));
+            TransferLocations_DB transferDB = new TransferLocations_DB(getActivity());
+            int unsyncTransfer = (int) transferDB.getNumUnsyncTransfers();
+            syncTransfersQty.setText(String.valueOf(unsyncTransfer));
 
-        syncSignaturesQty.setText("0");
-        synchFeedText.setText(getWifiConnectivityName());
-        synchSendDate.setText(preferences.getLastSendSync());
-        synchReceiveDate.setText(preferences.getLastReceiveSync());
+            syncSignaturesQty.setText("0");
+            synchFeedText.setText(getWifiConnectivityName());
+            synchSendDate.setText(preferences.getLastSendSync());
+            synchReceiveDate.setText(preferences.getLastReceiveSync());
+        }
     }
 
     private String getWifiConnectivityName() {

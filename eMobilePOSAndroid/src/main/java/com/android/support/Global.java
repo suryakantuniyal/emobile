@@ -40,8 +40,8 @@ import com.android.emobilepos.holders.Locations_Holder;
 import com.android.emobilepos.holders.TransferInventory_Holder;
 import com.android.emobilepos.holders.TransferLocations_Holder;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
-import com.android.emobilepos.models.Order;
-import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.models.orders.Order;
+import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.Product;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Clerk;
@@ -800,7 +800,7 @@ public class Global extends MultiDexApplication {
         if (itemTotal < 0)
             itemTotal = 0.00;
 
-        orderedProducts.setItemSubtotal(Double.toString(itemTotal));
+//        orderedProducts.setItemSubtotal(Double.toString(itemTotal));
         double discountRate = 0;
         if (orderedProducts.getDiscount_is_fixed().equals("1")) {
             discountRate = Double.parseDouble(orderedProducts.getDiscount_value());
@@ -1303,14 +1303,6 @@ public class Global extends MultiDexApplication {
         cons_issue_order = null;
         cons_return_order = null;
         cons_fillup_order = null;
-//        if (productParentAddons != null)
-//            productParentAddons.clear();
-//        if (productParentAddonsDictionary != null)
-//            productParentAddonsDictionary.clear();
-//        if (addonSelectionMap != null)
-//            addonSelectionMap.clear();
-//        if (orderProductAddonsMap != null)
-//            orderProductAddonsMap.clear();
         loyaltyCardInfo = new CreditCardInfo();
         loyaltyAddAmount = "";
         loyaltyCharge = "";
@@ -1322,25 +1314,8 @@ public class Global extends MultiDexApplication {
     }
 
     public void clearListViewData() {
-        // if(this.cur_orders!=null)
-        // this.cur_orders.clear();
-//        if (this.orderProducts != null)
-//            this.orderProducts.clear();
-//        if (this.qtyCounter != null)
-//            this.qtyCounter.clear();
-
         if (ordProdAttr != null)
             ordProdAttr.clear();
-//        if (ordProdAttrPending != null)
-//            ordProdAttrPending.clear();
-
-//        if (this.orderProductAddons != null)
-//            this.orderProductAddons.clear();
-
-//        if (this.listOrderTaxes != null)
-//            this.listOrderTaxes.clear();
-
-        // this.
     }
 
     public String getSelectedComments() {

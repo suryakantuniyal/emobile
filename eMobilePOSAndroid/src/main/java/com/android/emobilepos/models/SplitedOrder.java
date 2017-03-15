@@ -2,6 +2,9 @@ package com.android.emobilepos.models;
 
 import android.app.Activity;
 
+import com.android.emobilepos.models.orders.Order;
+import com.android.emobilepos.models.orders.OrderProduct;
+
 import java.util.List;
 
 /**
