@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
@@ -1517,8 +1518,14 @@ public class SynchMethods {
 
             myPref.setLastReceiveSync(date);
 
-            if (!activity.isFinishing() && !activity.isDestroyed()) {
-                dismissProgressDialog();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                if (!activity.isFinishing() && !activity.isDestroyed()) {
+                    dismissProgressDialog();
+                }
+            }else{
+                if (!activity.isFinishing()) {
+                    dismissProgressDialog();
+                }
             }
             activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
             if (type == Global.FROM_LOGIN_ACTIVITTY) {

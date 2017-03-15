@@ -69,47 +69,49 @@ public class PollingNotificationService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent.getAction().equals(START_ACTION)) {
-            Log.i(TAG, "Received Start Foreground Intent");
+        if(intent!=null) {
+            if (intent.getAction().equals(START_ACTION)) {
+                Log.i(TAG, "Received Start Foreground Intent");
 
-            Intent notificationIntent = new Intent(this, MainMenu_FA.class);
-            notificationIntent.setAction(MAIN_ACTION);
-            notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                    | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
-                    notificationIntent, 0);
+                Intent notificationIntent = new Intent(this, MainMenu_FA.class);
+                notificationIntent.setAction(MAIN_ACTION);
+                notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                        | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
+                        notificationIntent, 0);
 
-            if (timer == null) {
-                timer = new Timer();
-                timer.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        Log.i(TAG, "Timer");
-                        pollNotificationEvents(PollingNotificationService.this);
+                if (timer == null) {
+                    timer = new Timer();
+                    timer.schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            Log.i(TAG, "Timer");
+                            pollNotificationEvents(PollingNotificationService.this);
 //                        updateMainActivity("3");
-                    }
-                }, delay, BuildConfig.POLLING_PERIOD);
-            }
+                        }
+                    }, delay, BuildConfig.POLLING_PERIOD);
+                }
 
-            Bitmap icon = BitmapFactory.decodeResource(getResources(),
-                    R.drawable.emobile_icon);
+                Bitmap icon = BitmapFactory.decodeResource(getResources(),
+                        R.drawable.emobile_icon);
 
-            Notification notification = new NotificationCompat.Builder(this)
-                    .setContentTitle("eMobilePOS")
-                    .setTicker("eMobilePOS")
-                    .setContentText("Synchronizing")
-                    .setSmallIcon(R.drawable.emobile_icon_notification)
-                    .setLargeIcon(
-                            Bitmap.createScaledBitmap(icon, 128, 128, false))
+                Notification notification = new NotificationCompat.Builder(this)
+                        .setContentTitle("eMobilePOS")
+                        .setTicker("eMobilePOS")
+                        .setContentText("Synchronizing")
+                        .setSmallIcon(R.drawable.emobile_icon_notification)
+                        .setLargeIcon(
+                                Bitmap.createScaledBitmap(icon, 128, 128, false))
 //                    .setContentIntent(pendingIntent)
-                    .setOngoing(true).build();
+                        .setOngoing(true).build();
 
-            startForeground(FOREGROUND_SERVICE,
-                    notification);
-        } else if (intent.getAction().equals(STOP_ACTION)) {
-            Log.i(TAG, "Received Stop Foreground Intent");
-            stopForeground(true);
-            stopSelf();
+                startForeground(FOREGROUND_SERVICE,
+                        notification);
+            } else if (intent.getAction().equals(STOP_ACTION)) {
+                Log.i(TAG, "Received Stop Foreground Intent");
+                stopForeground(true);
+                stopSelf();
+            }
         }
         return START_STICKY;
     }

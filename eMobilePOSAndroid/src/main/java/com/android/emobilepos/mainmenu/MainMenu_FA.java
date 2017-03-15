@@ -240,11 +240,11 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
     public void onResume() {
         registerReceiver(messageReceiver, new IntentFilter(NOTIFICATION_RECEIVED));
         if (global.isApplicationSentToBackground(activity)) {
-            global.loggedIn = false;
+            Global.loggedIn = false;
         }
         setLogoutButtonClerkname();
         global.stopActivityTransitionTimer();
-        if (hasBeenCreated && !global.loggedIn
+        if (hasBeenCreated && !Global.loggedIn
                 && (myPref.getPrinterType() != Global.POWA || (myPref.getPrinterType() == Global.POWA
                 && (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)))) {
             if (global.getGlobalDlog() != null && global.getGlobalDlog().isShowing()) {
@@ -345,6 +345,9 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
     @Override
     protected void onDestroy() {
         dismissProgressDialog();
+        if (global.getGlobalDlog() != null && global.getGlobalDlog().isShowing()) {
+            global.getGlobalDlog().dismiss();
+        }
         super.onDestroy();
     }
 
