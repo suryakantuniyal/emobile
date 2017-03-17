@@ -980,6 +980,10 @@ public class Global extends MultiDexApplication {
         });
     }
 
+    public static BigDecimal getBigDecimalNum(String val, int scale) {
+        return getBigDecimalNum(val).setScale(scale, RoundingMode.HALF_UP);
+    }
+
     public static BigDecimal getBigDecimalNum(String val) {
         if (val == null || val.isEmpty())
             val = "0";

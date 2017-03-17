@@ -608,6 +608,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         String paymentType = null;
         String transactionId = null;
         String authcode = null;
+        amountToTip = Global.getBigDecimalNum(String.valueOf(amountToTip), 2).doubleValue();
         Payment payment = new Payment(activity, extras.getString("pay_id"), extras.getString("cust_id"), invoiceId, jobId, clerkId, custidkey, extras.getString("paymethod_id"),
                 actualAmount, amountTender,
                 cardInfoManager.getCardOwnerName(), reference.getText().toString(), phoneNumberField.getText().toString(),
@@ -2014,7 +2015,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                         } else {
                             Payment p = new Payment(activity);
                             p.setPay_amount(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
-                            p.setTipAmount(NumberUtils.cleanCurrencyFormatedNumber(tipAmount));
+                            p.setTipAmount(String.valueOf(Global.getBigDecimalNum(NumberUtils.cleanCurrencyFormatedNumber(tipAmount), 2)));
                             if (Global.btSwiper != null && Global.btSwiper.getCurrentDevice() != null) {
                                 Global.btSwiper.getCurrentDevice().salePayment(p);
                             } else if (isEverpay) {
