@@ -627,7 +627,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                 if (!isModify)
                     preValidateSettings();
                 else {
-                    setProductInfo(OrderProductUtils.getOrderProducts(global.order.getOrderProducts(), orderProduct.getProd_id()).get(0));
+                    setProductInfo(OrderProductUtils.getOrderProducts(global.order.getOrderProducts(), orderProduct.getOrdprod_id()).get(0));
                 }
 
                 activity.setResult(2);

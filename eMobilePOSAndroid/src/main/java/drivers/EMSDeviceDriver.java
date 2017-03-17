@@ -38,11 +38,11 @@ import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.EMVContainer;
-import com.android.emobilepos.models.orders.Order;
-import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.PaymentDetails;
 import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.orders.Order;
+import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.OrderAttributes;
@@ -770,7 +770,11 @@ public class EMSDeviceDriver {
                             }
 
                             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_price),
-                                    Global.getCurrencyFormat(String.valueOf(orderProducts.get(i).getItemSubtotalCalculated())), lineWidth, 3));
+                                    Global.getCurrencyFormat(String.valueOf(orderProducts.get(i).getItemTotalCalculated())), lineWidth, 3));
+                            if (orderProducts.get(i).getDiscount_id() != null && !orderProducts.get(i).getDiscount_id().isEmpty()) {
+                                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_discount),
+                                        Global.getCurrencyFormat(orderProducts.get(i).getDiscount_value()), lineWidth, 3));
+                            }
                             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
                                     Global.getCurrencyFormat(orderProducts.get(i).getItemTotal()), lineWidth, 3));
 

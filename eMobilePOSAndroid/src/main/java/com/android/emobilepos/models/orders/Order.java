@@ -178,11 +178,13 @@ public class Order implements Cloneable {
     }
 
     private void setOrderGlobalDataTaxes(OrderTotalDetails totalDetails) {
-        for (DataTaxes taxes : getListOrderTaxes()) {
-            BigDecimal rate = Global.getBigDecimalNum(taxes.getTax_rate()).divide(new BigDecimal("100")).setScale(6,
-                    RoundingMode.HALF_UP);
-            BigDecimal tax_amount = totalDetails.getSubtotal().multiply(rate).setScale(6, RoundingMode.HALF_UP);
-            taxes.setTax_amount(String.valueOf(tax_amount));
+        if(getListOrderTaxes()!=null) {
+            for (DataTaxes taxes : getListOrderTaxes()) {
+                BigDecimal rate = Global.getBigDecimalNum(taxes.getTax_rate()).divide(new BigDecimal("100")).setScale(6,
+                        RoundingMode.HALF_UP);
+                BigDecimal tax_amount = totalDetails.getSubtotal().multiply(rate).setScale(6, RoundingMode.HALF_UP);
+                taxes.setTax_amount(String.valueOf(tax_amount));
+            }
         }
     }
 

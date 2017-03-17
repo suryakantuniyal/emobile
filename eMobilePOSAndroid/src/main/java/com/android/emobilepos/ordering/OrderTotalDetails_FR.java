@@ -63,6 +63,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             discount_rate = new BigDecimal("0"), discountable_sub_total = new BigDecimal("0"),
             sub_total = new BigDecimal("0"), gran_total = new BigDecimal("0");
     public static BigDecimal itemsDiscountTotal = new BigDecimal(0);
+    private List<HashMap<String, String>> listMapTaxes = new ArrayList<>();
 
     private Activity activity;
     private MyPreferences myPref;
@@ -396,7 +397,6 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         Global.discountAmount = discount_amount;
     }
 
-    private List<HashMap<String, String>> listMapTaxes = new ArrayList<>();
 
     private OrderingMain_FA getOrderingMainFa() {
         return (OrderingMain_FA) getActivity();
@@ -416,18 +416,18 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         }
     }
 
-    private void calculateTaxes(OrderProduct orderProduct) {
-        Discount dis = null;
-        if (discountSelected > 0) {
-            dis = discountList.get(discountSelected - 1);
-        }
-        if (taxSelected > 0) {
-            TaxesCalculator taxesCalculator = new TaxesCalculator(activity, orderProduct, Global.taxID,
-                    taxList.get(taxSelected - 1), dis, discountable_sub_total, itemsDiscountTotal);
-            tempTaxableAmount = tempTaxableAmount.add(taxesCalculator.getTaxableAmount());
-            getOrderingMainFa().setListOrderTaxes(taxesCalculator.getListOrderTaxes());
-        }
-    }
+//    private void calculateTaxes(OrderProduct orderProduct) {
+//        Discount dis = null;
+//        if (discountSelected > 0) {
+//            dis = discountList.get(discountSelected - 1);
+//        }
+//        if (taxSelected > 0) {
+//            TaxesCalculator taxesCalculator = new TaxesCalculator(activity, orderProduct, Global.taxID,
+//                    taxList.get(taxSelected - 1), dis, discountable_sub_total, itemsDiscountTotal);
+//            tempTaxableAmount = tempTaxableAmount.add(taxesCalculator.getTaxableAmount());
+//            getOrderingMainFa().setListOrderTaxes(taxesCalculator.getListOrderTaxes());
+//        }
+//    }
 
     private static void calculateMixAndMatch(List<OrderProduct> orderProducts, boolean isGroupBySKU) {
         List<OrderProduct> noMixMatchProducts = new ArrayList<>();
