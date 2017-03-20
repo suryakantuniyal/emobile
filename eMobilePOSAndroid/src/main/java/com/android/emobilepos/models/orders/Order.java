@@ -13,7 +13,6 @@ import com.android.support.Customer;
 import com.android.support.DateUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
-import com.android.support.TaxesCalculator;
 import com.google.gson.Gson;
 
 import java.math.BigDecimal;
@@ -178,7 +177,7 @@ public class Order implements Cloneable {
     }
 
     private void setOrderGlobalDataTaxes(OrderTotalDetails totalDetails) {
-        if(getListOrderTaxes()!=null) {
+        if (getListOrderTaxes() != null) {
             for (DataTaxes taxes : getListOrderTaxes()) {
                 BigDecimal rate = Global.getBigDecimalNum(taxes.getTax_rate()).divide(new BigDecimal("100")).setScale(6,
                         RoundingMode.HALF_UP);
@@ -254,5 +253,14 @@ public class Order implements Cloneable {
 
     public boolean isRetailTaxes() {
         return retailTaxes;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Order) {
+            Order order = (Order) obj;
+            return order.ord_id.equalsIgnoreCase(this.ord_id);
+        }
+        return super.equals(obj);
     }
 }

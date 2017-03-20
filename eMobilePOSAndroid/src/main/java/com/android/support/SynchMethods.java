@@ -50,12 +50,12 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.mainmenu.SyncTab_FR;
 import com.android.emobilepos.models.ItemPriceLevel;
-import com.android.emobilepos.models.orders.Order;
-import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.PriceLevel;
 import com.android.emobilepos.models.Product;
 import com.android.emobilepos.models.ProductAddons;
 import com.android.emobilepos.models.ProductAlias;
+import com.android.emobilepos.models.orders.Order;
+import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.DinningTable;
@@ -638,21 +638,24 @@ public class SynchMethods {
         try {
             Gson gson = JsonUtils.getInstance();
             GenerateXML xml = new GenerateXML(activity);
-            InputStream inputStream = new HttpClient().httpInputStreamRequest(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+//            InputStream inputStream = new HttpClient().httpInputStreamRequest(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+//                    xml.downloadAll("GetOrdersOnHoldList"));
+//            JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
+            String json = new HttpClient().httpJsonRequest(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
                     xml.downloadAll("GetOrdersOnHoldList"));
-            JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
-            List<Order> orders = new ArrayList<>();
+            Type listType = new com.google.gson.reflect.TypeToken<List<Order>>() {
+            }.getType();
+            List<Order> orders = gson.fromJson(json, listType);
+            List<Order> ordersToDelete = new ArrayList<>(orders);
             OrdersHandler ordersHandler = new OrdersHandler(activity);
-            ordersHandler.deleteOnHoldsOrders();
-            reader.beginArray();
             int i = 0;
-            while (reader.hasNext()) {
-                Order order = gson.fromJson(reader, Order.class);
+            for (Order order : orders) {
                 order.ord_issync = "1";
                 order.isOnHold = "1";
                 Order onHoldOrder = ordersHandler.getOrder(order.ord_id);
                 if (onHoldOrder == null || TextUtils.isEmpty(onHoldOrder.ord_id) || onHoldOrder.isOnHold.equals("1")) {
-                    orders.add(order);
+//                    orders.add(order);
+                    ordersToDelete.remove(order);
                     i++;
                 }
                 if (i == 1000) {
@@ -662,8 +665,27 @@ public class SynchMethods {
                 }
             }
             ordersHandler.insert(orders);
-            reader.endArray();
-            reader.close();
+            ordersHandler.deleteOnHoldsOrders(ordersToDelete);
+
+//            reader.beginArray();
+//            while (reader.hasNext()) {
+//                Order order = gson.fromJson(reader, Order.class);
+//                order.ord_issync = "1";
+//                order.isOnHold = "1";
+//                Order onHoldOrder = ordersHandler.getOrder(order.ord_id);
+//                if (onHoldOrder == null || TextUtils.isEmpty(onHoldOrder.ord_id) || onHoldOrder.isOnHold.equals("1")) {
+//                    orders.add(order);
+//                    i++;
+//                }
+//                if (i == 1000) {
+//                    ordersHandler.insert(orders);
+//                    orders.clear();
+//                    i = 0;
+//                }
+//            }
+//            ordersHandler.insert(orders);
+//            reader.endArray();
+//            reader.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1522,7 +1544,7 @@ public class SynchMethods {
                 if (!activity.isFinishing() && !activity.isDestroyed()) {
                     dismissProgressDialog();
                 }
-            }else{
+            } else {
                 if (!activity.isFinishing()) {
                     dismissProgressDialog();
                 }

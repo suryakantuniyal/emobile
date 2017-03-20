@@ -230,10 +230,11 @@ public class OrdersHandler {
         }
     }
 
-    public void deleteOrder(String ord_id) {
-        DBManager.getDatabase().delete(table_name, "ord_id = ?", new String[]{ord_id});
+    public int deleteOrder(String ord_id) {
+        int delete = DBManager.getDatabase().delete(table_name, "ord_id = ?", new String[]{ord_id});
         Log.d("Delete order:", ord_id);
         DinningTableOrderDAO.deleteByOrderId(ord_id);
+        return delete;
     }
 
     public void emptyTableOnHold() {
@@ -786,8 +787,12 @@ public class OrdersHandler {
         insert(Arrays.asList(order));
     }
 
-    public int deleteOnHoldsOrders() {
-        int delete = DBManager.getDatabase().delete(table_name, "isOnHold = ?", new String[]{"1"});
+    public int deleteOnHoldsOrders(List<Order> ordersToDelete) {
+        int delete = 0;
+        for (Order order : ordersToDelete) {
+            delete += deleteOrder(order.ord_id);
+        }
+//        int delete = DBManager.getDatabase().delete(table_name, "isOnHold = ?", new String[]{"1"});
         return delete;
     }
 }
