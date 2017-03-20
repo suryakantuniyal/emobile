@@ -822,7 +822,8 @@ public class MyPreferences {
         String sled_type = "sled_type";
         String printer_type = "printer_type";
         String swiper_type = "swiper_type";
-
+        setIsPOWA(false);
+        setIsMEPOS(false);
         setPrinterName(""); //clean the printer name
         prefEditor.putInt(sled_type, -1);
         prefEditor.putInt(printer_type, -1);

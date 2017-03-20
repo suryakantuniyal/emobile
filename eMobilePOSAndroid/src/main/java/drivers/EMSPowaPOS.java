@@ -43,9 +43,8 @@ import interfaces.EMSCallBack;
 import interfaces.EMSDeviceManagerPrinterDelegate;
 import main.EMSDeviceManager;
 
-//com.mpowa.android.sdk.powapos.core.callbacks.PowaPOSCallbackBas
 public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
-    String scannedData = "";
+    private String scannedData = "";
     private int LINE_WIDTH = 48;
     private Handler handler;
     private ProgressDialog myProgressDialog;
@@ -66,14 +65,14 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
             }
         }
     };
-    PowaPOSCallback mPowaPOSCallback = new PowaPOSCallback() {
+    private PowaPOSCallback mPowaPOSCallback = new PowaPOSCallback() {
         @Override
         public void onMCUInitialized(PowaPOSEnums.InitializedResult initializedResult) {
 
             if (myProgressDialog != null)
                 myProgressDialog.dismiss();
 
-            if (isAutoConnect && !global.loggedIn) {
+            if (isAutoConnect && !Global.loggedIn) {
                 if (global.getGlobalDlog() != null)
                     global.getGlobalDlog().dismiss();
                 global.promptForMandatoryLogin(activity);
@@ -125,7 +124,7 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
     };
     // ===================================== SCANNER CALLBACK
     // =======================================
-    PowaHidScanner.Callback hidScannerCB = new PowaHidScanner.Callback() {
+    private PowaHidScanner.Callback hidScannerCB = new PowaHidScanner.Callback() {
         @Override
         public void onScannerReady() {
             Log.d("", "onScannerReady()");
@@ -230,25 +229,12 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
     public boolean isUSBConnected() {
         UsbManager manager = (UsbManager) activity.getSystemService(Context.USB_SERVICE);
         HashMap<String, UsbDevice> deviceList = manager.getDeviceList();
-        Iterator<UsbDevice> deviceIterator = deviceList.values().iterator();
         return !deviceList.isEmpty();
     }
 
     @Override
     public void toggleBarcodeReader() {
     }
-
-    //    @Override
-//    public void printReceiptPreview(View view) {
-//        try {
-//            Bitmap bitmap = loadBitmapFromView(view);
-//            super.printReceiptPreview(bitmap, LINE_WIDTH);
-//        } catch (JAException e) {
-//            e.printStackTrace();
-//        } catch (StarIOPortException e) {
-//            e.printStackTrace();
-//        }
-//    }
 
     @Override
     public void printReceiptPreview(SplitedOrder splitedOrder) {

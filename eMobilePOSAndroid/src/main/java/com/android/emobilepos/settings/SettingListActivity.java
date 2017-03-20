@@ -1246,7 +1246,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                 myPref.setPrinterType(Global.MEPOS);
                 Global.mainPrinterManager = edm.getManager();
                 Global.mainPrinterManager.loadDrivers(getActivity(), Global.MEPOS, false);
-            } else {
+            } else if (myPref.isPOWA()) {
                 myPref.setPrinterType(Global.POWA);
                 Global.mainPrinterManager = edm.getManager();
                 Global.mainPrinterManager.loadDrivers(getActivity(), Global.POWA, false);

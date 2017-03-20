@@ -1,15 +1,20 @@
 package com.android.support;
 
 import android.app.Activity;
+import android.content.Context;
+import android.hardware.usb.UsbDevice;
+import android.hardware.usb.UsbManager;
 import android.text.TextUtils;
-import android.widget.Toast;
 
 import com.android.dao.DeviceTableDAO;
 import com.android.emobilepos.models.realms.Device;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
+import drivers.EMSDeviceDriver;
+import drivers.EMSPowaPOS;
 import main.EMSDeviceManager;
 
 /**
@@ -156,5 +161,23 @@ public class DeviceUtils {
                     sb.append(myPref.getStarIPAddress()).append(": ").append("Failed to connect\n\r");
             }
         return sb.toString();
+    }
+
+    public static Collection<UsbDevice> getUSBDevices(Context context) {
+        UsbManager manager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
+        HashMap<String, UsbDevice> deviceList = manager.getDeviceList();
+        return deviceList.values();
+    }
+
+    public static EMSDeviceDriver getUSBDeviceDriver(Context context) {
+        Collection<UsbDevice> usbDevices = getUSBDevices(context);
+        for (UsbDevice device : usbDevices) {
+            int productId = device.getProductId();
+            switch (productId) {
+                case 22321:
+                    return new EMSPowaPOS();
+            }
+        }
+        return null;
     }
 }

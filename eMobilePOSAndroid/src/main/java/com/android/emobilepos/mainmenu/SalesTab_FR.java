@@ -54,10 +54,14 @@ import com.android.emobilepos.security.SecurityManager;
 import com.android.emobilepos.settings.SettingListActivity;
 import com.android.emobilepos.shifts.ShiftExpensesList_FA;
 import com.android.emobilepos.shifts.ShiftsActivity;
+import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 
 import java.util.HashMap;
+
+import drivers.EMSDeviceDriver;
+import drivers.EMSPowaPOS;
 
 public class SalesTab_FR extends Fragment {
     public static Activity activity;
@@ -470,7 +474,7 @@ public class SalesTab_FR extends Fragment {
                     pickLocations(true);
                     break;
                 case SHIFTS: {
-                    boolean hasPermissions =  myPref.isUseClerks() && SecurityManager.hasPermissions(getActivity(),
+                    boolean hasPermissions = myPref.isUseClerks() && SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.SHIFT_CLERK);
                     if (hasPermissions) {
                         intent = new Intent(activity, ShiftsActivity.class);
@@ -481,7 +485,7 @@ public class SalesTab_FR extends Fragment {
                     break;
                 }
                 case SHIFT_EXPENSES: {
-                    boolean hasPermissions =  myPref.isUseClerks() && SecurityManager.hasPermissions(getActivity(),
+                    boolean hasPermissions = myPref.isUseClerks() && SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.NO_SALE);
                     if (hasPermissions) {
                         if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
@@ -679,7 +683,7 @@ public class SalesTab_FR extends Fragment {
                     break;
                 }
                 case SHIFT_EXPENSES: {
-                    boolean hasPermissions =  myPref.isUseClerks() && SecurityManager.hasPermissions(getActivity(),
+                    boolean hasPermissions = myPref.isUseClerks() && SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.NO_SALE);
                     if (hasPermissions) {
                         Shift openShift = ShiftDAO.getOpenShift(Integer.parseInt(myPref.getClerkID()));
@@ -766,7 +770,7 @@ public class SalesTab_FR extends Fragment {
 //                String enteredPass = viewField.getText().toString().trim();
 //                enteredPass = TextUtils.isEmpty(enteredPass) ? "0" : enteredPass;
         int empId = ShiftDAO.getOpenShift(Integer.parseInt(myPref.getClerkID())).getAssigneeId();
-        Clerk salesAssociates = ClerkDAO.getByEmpId(empId,true); //SalesAssociateHandler.getSalesAssociate(enteredPass);
+        Clerk salesAssociates = ClerkDAO.getByEmpId(empId, true); //SalesAssociateHandler.getSalesAssociate(enteredPass);
         if (salesAssociates != null) {
 //            validPassword = true;
 //            associateId = enteredPass;
@@ -1033,9 +1037,12 @@ public class SalesTab_FR extends Fragment {
     }
 
     private boolean isTablet() {
-
+        EMSDeviceDriver usbDeviceDriver = DeviceUtils.getUSBDeviceDriver(getActivity());
         String model = Build.MODEL;
-        if (model.equals("ET1")) {
+        if (usbDeviceDriver!=null && usbDeviceDriver instanceof EMSPowaPOS) {
+            myPref.setIsPOWA(true);
+            return true;
+        } else if (model.equals("ET1")) {
             myPref.isET1(false, true);
             return true;
         } else if (model.equals("MC40N0")) {
