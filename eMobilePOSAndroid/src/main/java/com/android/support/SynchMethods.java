@@ -646,8 +646,8 @@ public class SynchMethods {
             Type listType = new com.google.gson.reflect.TypeToken<List<Order>>() {
             }.getType();
             List<Order> orders = gson.fromJson(json, listType);
-            List<Order> ordersToDelete = new ArrayList<>(orders);
             OrdersHandler ordersHandler = new OrdersHandler(activity);
+            List<Order> ordersToDelete = ordersHandler.getOrdersOnHold();
             int i = 0;
             for (Order order : orders) {
                 order.ord_issync = "1";

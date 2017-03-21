@@ -398,11 +398,18 @@ public class OrdersHandler {
         return count;
     }
 
-    public Cursor getOrderOnHold() {
+    public Cursor getOrdersOnHoldCursor() {
         Cursor c = DBManager.getDatabase()
                 .rawQuery("SELECT ord_id as '_id',* FROM Orders WHERE isOnHold = '1' ORDER BY ord_id ASC", null);
         c.moveToFirst();
         return c;
+    }
+
+    public List<Order> getOrdersOnHold() {
+        Cursor c = getOrdersOnHoldCursor();
+        List<Order> orders = getOrders(c);
+        c.close();
+        return orders;
     }
 
     public long getNumUnsyncOrders() {
