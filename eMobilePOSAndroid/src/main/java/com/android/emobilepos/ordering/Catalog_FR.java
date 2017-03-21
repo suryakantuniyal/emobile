@@ -18,6 +18,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -48,17 +50,13 @@ import com.android.database.ProductsHandler;
 import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMSCategory;
-import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.ParentAddon;
 import com.android.emobilepos.models.Product;
+import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.support.Global;
 import com.android.support.MyEditText;
 import com.android.support.MyPreferences;
 import com.android.support.OrderProductUtils;
-
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.LinearLayoutManager;
-
 import com.google.gson.Gson;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -247,7 +245,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                         loadCursor();
                     }
                 } else {
-                    for (String[] cat: spinnerCategories) {
+                    for (String[] cat : spinnerCategories) {
                         if (defaultCategoryId.equals(cat[1])) {
                             selectedSubcategory = new EMSCategory(defaultCategoryId, cat[0], "", 0);
                             break;
@@ -394,6 +392,9 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
         @Override
         protected void onPostExecute(Catalog_Loader catalog_loader) {
+            if (myCursor != null && !myCursor.isClosed()) {
+                myCursor.close();
+            }
             myCursor = catalog_loader.loadInBackground();
             prodListAdapter.swapCursor(myCursor);
             prodListAdapter.notifyDataSetChanged();
@@ -676,7 +677,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
     private void performClickEvent() {
         Product product = populateDataForIntent(myCursor);
-        if (myPref.isGroupReceiptBySku(isToGo)){//(myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
+        if (myPref.isGroupReceiptBySku(isToGo)) {//(myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
             List<OrderProduct> orderProductsGroupBySKU = OrderProductUtils.getOrderProductsGroupBySKU(global.order.getOrderProducts());
             global.order.getOrderProducts().clear();
             global.order.getOrderProducts().addAll(orderProductsGroupBySKU);

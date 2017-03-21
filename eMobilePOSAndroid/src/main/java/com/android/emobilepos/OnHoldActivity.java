@@ -34,8 +34,8 @@ import com.android.database.OrderProductsHandler;
 import com.android.database.OrdersHandler;
 import com.android.database.SalesTaxCodesHandler;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
-import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.firebase.NotificationEvent;
+import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.Shift;
 import com.android.emobilepos.ordering.OrderingMain_FA;
@@ -72,7 +72,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         myPref = new MyPreferences(activity);
         ListView listView = (ListView) findViewById(R.id.onHoldListView);
         OrdersHandler ordersHandler = new OrdersHandler(activity);
-        myCursor = ordersHandler.getOrderOnHold();
+        myCursor = ordersHandler.getOrdersOnHoldCursor();
         myAdapter = new HoldsCursorAdapter(activity, myCursor, CursorAdapter.NO_SELECTION);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -96,8 +96,11 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             NotificationEvent.NotificationEventAction action = NotificationEvent.NotificationEventAction.getNotificationEventByCode(Integer.parseInt(eventAction));
             switch (action) {
                 case SYNC_HOLDS:
+                    if (myCursor != null && !myCursor.isClosed()) {
+                        myCursor.close();
+                    }
                     OrdersHandler ordersHandler = new OrdersHandler(activity);
-                    myCursor = ordersHandler.getOrderOnHold();
+                    myCursor = ordersHandler.getOrdersOnHoldCursor();
                     myAdapter.swapCursor(myCursor);
                     myAdapter.notifyDataSetChanged();
                     break;
@@ -116,7 +119,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
     private void askWaiterSignin() {
         if (myPref.isUseClerks()) {
             Shift openShift = ShiftDAO.getOpenShift(Integer.parseInt(myPref.getClerkID()));
-            Clerk associate = ClerkDAO.getByEmpId(openShift.getAssigneeId(),true);
+            Clerk associate = ClerkDAO.getByEmpId(openShift.getAssigneeId(), true);
             long count = associate == null ? 0 : associate.getAssignedDinningTables().where().equalTo("number", myCursor.getString(myCursor.getColumnIndex("assignedTable"))).count();
             if (associate != null && count > 0) {
                 validPassword = true;
@@ -197,7 +200,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                     boolean isDigits = org.apache.commons.lang3.math.NumberUtils.isDigits(enteredPass);
                     Clerk salesAssociates = null;
                     if (isDigits) {
-                        salesAssociates = ClerkDAO.getByEmpId(Integer.parseInt(enteredPass),true); //SalesAssociateHandler.getSalesAssociate(enteredPass);
+                        salesAssociates = ClerkDAO.getByEmpId(Integer.parseInt(enteredPass), true); //SalesAssociateHandler.getSalesAssociate(enteredPass);
                     }
                     long count = salesAssociates == null ? 0 : salesAssociates.getAssignedDinningTables().where().equalTo("number", myCursor.getString(myCursor.getColumnIndex("assignedTable"))).count();
                     if (salesAssociates != null && count > 0) {

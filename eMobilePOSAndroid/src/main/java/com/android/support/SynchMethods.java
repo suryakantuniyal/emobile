@@ -638,23 +638,19 @@ public class SynchMethods {
         try {
             Gson gson = JsonUtils.getInstance();
             GenerateXML xml = new GenerateXML(activity);
-//            InputStream inputStream = new HttpClient().httpInputStreamRequest(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-//                    xml.downloadAll("GetOrdersOnHoldList"));
-//            JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
             String json = new HttpClient().httpJsonRequest(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
                     xml.downloadAll("GetOrdersOnHoldList"));
             Type listType = new com.google.gson.reflect.TypeToken<List<Order>>() {
             }.getType();
             List<Order> orders = gson.fromJson(json, listType);
-            List<Order> ordersToDelete = new ArrayList<>(orders);
             OrdersHandler ordersHandler = new OrdersHandler(activity);
+            List<Order> ordersToDelete = ordersHandler.getOrdersOnHold();
             int i = 0;
             for (Order order : orders) {
                 order.ord_issync = "1";
                 order.isOnHold = "1";
                 Order onHoldOrder = ordersHandler.getOrder(order.ord_id);
                 if (onHoldOrder == null || TextUtils.isEmpty(onHoldOrder.ord_id) || onHoldOrder.isOnHold.equals("1")) {
-//                    orders.add(order);
                     ordersToDelete.remove(order);
                     i++;
                 }
@@ -667,25 +663,6 @@ public class SynchMethods {
             ordersHandler.insert(orders);
             ordersHandler.deleteOnHoldsOrders(ordersToDelete);
 
-//            reader.beginArray();
-//            while (reader.hasNext()) {
-//                Order order = gson.fromJson(reader, Order.class);
-//                order.ord_issync = "1";
-//                order.isOnHold = "1";
-//                Order onHoldOrder = ordersHandler.getOrder(order.ord_id);
-//                if (onHoldOrder == null || TextUtils.isEmpty(onHoldOrder.ord_id) || onHoldOrder.isOnHold.equals("1")) {
-//                    orders.add(order);
-//                    i++;
-//                }
-//                if (i == 1000) {
-//                    ordersHandler.insert(orders);
-//                    orders.clear();
-//                    i = 0;
-//                }
-//            }
-//            ordersHandler.insert(orders);
-//            reader.endArray();
-//            reader.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
