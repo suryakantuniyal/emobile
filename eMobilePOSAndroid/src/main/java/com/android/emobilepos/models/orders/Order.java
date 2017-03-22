@@ -144,11 +144,11 @@ public class Order implements Cloneable {
         OrderTotalDetails totalDetails = new OrderTotalDetails();
         if (getOrderProducts() != null && !getOrderProducts().isEmpty()) {
             for (OrderProduct orderProduct : getOrderProducts()) {
-                if (!isRetailTaxes()) {
-                    orderProduct.setTaxAmount(tax != null ? tax.getTaxRate() : "0");
-                    orderProduct.setProd_taxId(tax != null ? tax.getTaxId() : "");
-                    orderProduct.setTax_type(tax != null ? tax.getTaxType() : "");
-                }
+//                if (!isRetailTaxes()) {
+//                    orderProduct.setTaxAmount(tax != null ? tax.getTaxRate() : "0");
+//                    orderProduct.setProd_taxId(tax != null ? tax.getTaxId() : "");
+//                    orderProduct.setTax_type(tax != null ? tax.getTaxType() : "");
+//                }
                 if (isVAT) {
                     setVATTax(tax);
                 }
@@ -171,17 +171,24 @@ public class Order implements Cloneable {
                             .subtract(disAmout).setScale(6, RoundingMode.HALF_UP));
                 }
             }
-            setOrderGlobalDataTaxes(totalDetails);
+            setOrderGlobalDataTaxes();
         }
         return totalDetails;
     }
 
-    private void setOrderGlobalDataTaxes(OrderTotalDetails totalDetails) {
+    private void setOrderGlobalDataTaxes() {
+        BigDecimal taxableAmount = new BigDecimal(0);
         if (getListOrderTaxes() != null) {
+            for (OrderProduct product : getOrderProducts()) {
+                if(product.isTaxable()) {
+                    taxableAmount = taxableAmount.add(product.getItemSubtotalCalculated());
+                }
+            }
+
             for (DataTaxes taxes : getListOrderTaxes()) {
                 BigDecimal rate = Global.getBigDecimalNum(taxes.getTax_rate()).divide(new BigDecimal("100")).setScale(6,
                         RoundingMode.HALF_UP);
-                BigDecimal tax_amount = totalDetails.getSubtotal().multiply(rate).setScale(6, RoundingMode.HALF_UP);
+                BigDecimal tax_amount = taxableAmount.multiply(rate).setScale(6, RoundingMode.HALF_UP);
                 taxes.setTax_amount(String.valueOf(tax_amount));
             }
         }
