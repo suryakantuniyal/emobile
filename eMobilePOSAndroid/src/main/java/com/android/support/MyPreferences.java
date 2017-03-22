@@ -13,11 +13,13 @@ import com.android.database.SalesTaxCodesHandler;
 import java.security.AccessControlException;
 import java.security.Guard;
 import java.security.GuardedObject;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.PropertyPermission;
 import java.util.Set;
 
+import util.AESCipher;
 import util.json.UIUtils;
 
 public class MyPreferences {
@@ -1110,17 +1112,6 @@ public class MyPreferences {
 
     }
 
-    // public boolean[] getMainMenuSettings(){
-    // String[] mainMenuList = global.getSalesMainMenuList();
-    // int size = mainMenuList.length;
-    // boolean[] values = new boolean[size];
-    //
-    // for(int i = 0 ; i < size; i++)
-    // values[i] = prefs.getBoolean(mainMenuList[i], true);
-    //
-    // return values;
-    // }
-
     public List<String> getPrintingPreferences() {
         Set<String> selections = sharedPref.getStringSet("pref_set_printing_preferences", null);
         List<String> list = Arrays.asList(selections.toArray(new String[]{}));
@@ -1128,8 +1119,12 @@ public class MyPreferences {
     }
 
     public boolean loginAdmin(String password) {
-        return getPOSAdminPass().equals(password);
-
+        try {
+            return getPOSAdminPass().equals(AESCipher.getSha256Hash(password));
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     public String getPOSAdminPass() {
@@ -1137,7 +1132,11 @@ public class MyPreferences {
     }
 
     public void setPOSAdminPass(String pass) {
-        prefEditor.putString("posAdminPassword", pass);
+        try {
+            prefEditor.putString("posAdminPassword", AESCipher.getSha256Hash(pass));
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
         prefEditor.commit();
     }
 
@@ -1147,13 +1146,21 @@ public class MyPreferences {
     }
 
     public boolean loginManager(String password) {
-        return getPosManagerPass().equals(password);
-
+        try {
+            return getPosManagerPass().equals(AESCipher.getSha256Hash(password));
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     public void setPosManagerPass(String value) {
         String posManagerPassword = "posManagerPassword";
-        prefEditor.putString(posManagerPassword, value);
+        try {
+            prefEditor.putString(posManagerPassword, AESCipher.getSha256Hash(value));
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
         prefEditor.commit();
     }
 

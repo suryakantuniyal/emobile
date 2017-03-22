@@ -7,6 +7,7 @@ import org.springframework.util.support.Base64;
 import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.Security;
@@ -66,5 +67,15 @@ public class AESCipher {
 
         return new String(original);
 
+    }
+
+    public static String getSha256Hash(String value) throws NoSuchAlgorithmException {
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        byte[] shaBytes = digest.digest(value.getBytes());
+        StringBuilder hexString = new StringBuilder();
+        for (byte shaByte : shaBytes) {
+            hexString.append(Integer.toHexString(0xFF & shaByte));
+        }
+        return  hexString.toString();
     }
 }
