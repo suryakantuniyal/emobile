@@ -151,7 +151,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                         myCursor.moveToPosition(selectedPos);
                         String enteredPass = viewField.getText().toString().trim();
                         enteredPass = TextUtils.isEmpty(enteredPass) ? "0" : enteredPass;
-                        if (enteredPass.equals(myPref.getPosManagerPass())) // validate manager password
+                        if (myPref.loginManager(enteredPass)) // validate manager password
                         {
                             validPassword = true;
                             isUpdateOnHold = true;
@@ -207,7 +207,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                         validPassword = true;
                         new checkHoldStatus().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                     } else {
-                        if (enteredPass.equals(myPref.getPosManagerPass())) // validate manager password
+                        if (myPref.loginManager(enteredPass)) // validate manager password
                         {
                             validPassword = true;
                             isUpdateOnHold = true;
@@ -554,7 +554,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             public void onClick(View v) {
                 globalDlog.dismiss();
                 String value = viewField.getText().toString();
-                if (value.equals(myPref.getPosManagerPass())) // validate manager password
+                if (myPref.loginManager(value)) // validate manager password
                 {
                     validPassword = true;
                     isUpdateOnHold = true;

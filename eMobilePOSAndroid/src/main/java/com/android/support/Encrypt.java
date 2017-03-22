@@ -5,11 +5,13 @@ import android.content.Context;
 import com.android.emobilepos.R;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.jce.provider.JCEMac;
 import org.springframework.util.support.Base64;
 
 import java.io.InputStream;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.SecureRandom;

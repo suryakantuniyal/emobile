@@ -206,7 +206,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
         String curDate = sdf.format(new Date());
         if (order.isVoid != null && (order.isVoid.equals("1") ||
-                !curDate.equals(Global.formatToDisplayDate(order.ord_timecreated,  0)))) {
+                !curDate.equals(Global.formatToDisplayDate(order.ord_timecreated, 0)))) {
             btnVoid.setEnabled(false && hasVoidPermissions);
             btnVoid.setClickable(false && hasVoidPermissions);
         } else {
@@ -520,7 +520,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
             public void onClick(View v) {
                 globalDlog.dismiss();
                 String pass = viewField.getText().toString();
-                if (!pass.isEmpty() && myPref.getPosManagerPass().equals(pass.trim())) {
+                if (!pass.isEmpty() && myPref.loginManager(pass.trim())) {
                     //Void transaction
                     globalDlog.dismiss();
                     startVoidingTransaction();

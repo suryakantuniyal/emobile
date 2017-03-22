@@ -474,7 +474,7 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
             @Override
             public void onClick(View v) {
                 String value = viewField.getText().toString();
-                if (value.equals(myPref.getPOSAdminPass())) // validate admin
+                if (myPref.loginAdmin(value)) // validate admin
                 // password
                 {
                     validPassword = true;

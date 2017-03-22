@@ -30,11 +30,11 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.OrderProductListAdapter;
 import com.android.emobilepos.adapters.SplittedOrderSummaryAdapter;
 import com.android.emobilepos.models.Discount;
-import com.android.emobilepos.models.orders.Order;
-import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.OrderSeatProduct;
 import com.android.emobilepos.models.SplitedOrder;
 import com.android.emobilepos.models.Tax;
+import com.android.emobilepos.models.orders.Order;
+import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.emobilepos.security.SecurityManager;
@@ -541,7 +541,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                 globalDlog.dismiss();
                 MyPreferences myPref = new MyPreferences(SplittedOrderSummary_FA.this);
                 String pass = viewField.getText().toString();
-                if (!pass.isEmpty() && myPref.getPosManagerPass().equals(pass.trim())) {
+                if (!pass.isEmpty() && myPref.loginManager(pass.trim())) {
                     voidTransaction(voidPayments, getOrderDetailsFR().restaurantSplitedOrder.ord_id);
                 } else {
                     promptManagerPassword(voidPayments);

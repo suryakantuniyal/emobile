@@ -1503,9 +1503,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             public void onClick(View v) {
                 globalDlog.dismiss();
                 String value = viewField.getText().toString().trim();
-                if (value.equals(myPref.getPosManagerPass())) // validate
-                // admin
-                // password
+                if (myPref.loginManager(value))
                 {
                     validPassword = true;
                     switch (type) {

@@ -65,14 +65,11 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     private EMSDeviceManager edm;
     private EMSELO thisInstance;
     private Handler handler;
-    String scannedData = "";
     private final int LINE_WIDTH = 32;
     private BarcodeReader barcodereader = new BarcodeReader();
     private boolean didConnect;
     private static CFD customerFacingDisplay;
     private static MTSCRA m_scra;
-    private Handler m_scraHandler;
-    public static final String CONNECTION_TYPE_VALUE_USB = "USB";
 
     private class SCRAHandlerCallback implements Handler.Callback {
         private static final String TAG = "Magtek";
@@ -151,7 +148,6 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     public static CFD getTerminalDisp() {
         if (customerFacingDisplay == null) {
             customerFacingDisplay = new CFD();
-
         }
         return customerFacingDisplay;
     }
@@ -193,29 +189,17 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     }
 
     public class processConnectionAsync extends AsyncTask<Boolean, String, Boolean> {
-
-//        private ProgressDialog myProgressDialog;
-
         @Override
         protected void onPreExecute() {
-
-//            myProgressDialog = new ProgressDialog(activity);
-//            myProgressDialog.setMessage(activity.getString(R.string.progress_connecting_printer));
-//            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-//            myProgressDialog.setCancelable(false);
-//            myProgressDialog.show();
 
         }
 
         @Override
         protected Boolean doInBackground(Boolean... params) {
-//            Looper.prepare();
             String Text = "\n\n\nYour Elo Touch Solutions\nPayPoint receipt printer is\nworking properly.";
             SerialPort port;
             try {
                 port = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
-                OutputStream stream = port.getOutputStream();
-                InputStream iStream = port.getInputStream();
                 SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
                 eloPrinterApi = new PrinterAPI(eloPrinterPort);
                 if (!eloPrinterApi.isPaperAvailable()) {
@@ -230,14 +214,11 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
                 didConnect = false;
                 e.printStackTrace();
             }
-//            Looper.loop();
             return params[0];
         }
 
         @Override
         protected void onPostExecute(Boolean showAlert) {
-//            myProgressDialog.dismiss();
-
             if (didConnect) {
                 playSound();
                 edm.driverDidConnectToDevice(thisInstance, showAlert);
@@ -250,7 +231,6 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     @Override
     public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
         try {
-//            String Text = "\n\n\nYour Elo Touch Solutions\nPayPoint receipt printer is\nworking properly.";
             SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
             eloPrinterApi = new PrinterAPI(eloPrinterPort);
             printReceipt(ordID, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, emvContainer);
@@ -409,12 +389,30 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
 
     @Override
     public void printEndOfDayReport(String date, String clerk_id, boolean printDetails) {
-        super.printEndOfDayReportReceipt(date, LINE_WIDTH, printDetails);
+        try {
+            SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
+            eloPrinterApi = new PrinterAPI(eloPrinterPort);
+            super.printEndOfDayReportReceipt(date, LINE_WIDTH, printDetails);
+            eloPrinterPort.getInputStream().close();
+            eloPrinterPort.getOutputStream().close();
+            eloPrinterPort.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void printShiftDetailsReport(String shiftID) {
-        super.printShiftDetailsReceipt(LINE_WIDTH, shiftID);
+        try {
+            SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
+            eloPrinterApi = new PrinterAPI(eloPrinterPort);
+            super.printShiftDetailsReceipt(LINE_WIDTH, shiftID);
+            eloPrinterPort.getInputStream().close();
+            eloPrinterPort.getOutputStream().close();
+            eloPrinterPort.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -435,7 +433,7 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     public void loadCardReader(final EMSCallBack callBack, boolean isDebitCard) {
         this.scannerCallBack = callBack;
         if (m_scra == null) {
-            m_scraHandler = new Handler(new SCRAHandlerCallback());
+            Handler m_scraHandler = new Handler(new SCRAHandlerCallback());
             m_scra = new MTSCRA(activity, m_scraHandler);
             m_scra.setConnectionType(MTConnectionType.USB);
             m_scra.setAddress(null);
@@ -481,15 +479,10 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
 
     @Override
     public void releaseCardReader() {
-        try {
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
     public void openCashDrawer() {
-
         CashDrawer cash_drawer = new CashDrawer();
         if (cash_drawer.isDrawerOpen()) {
             Toast.makeText(activity, "The Cash Drawer is already open !", Toast.LENGTH_SHORT).show();
@@ -608,6 +601,7 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     private Runnable runnableScannedData = new Runnable() {
         public void run() {
             try {
+                String scannedData = "";
                 if (scannerCallBack != null)
                     scannerCallBack.scannerWasRead(scannedData);
 

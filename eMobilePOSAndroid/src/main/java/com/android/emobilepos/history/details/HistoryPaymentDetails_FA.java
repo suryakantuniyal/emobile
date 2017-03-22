@@ -420,7 +420,7 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
             public void onClick(View v) {
                 globalDlog.dismiss();
                 String pass = viewField.getText().toString();
-                if (!pass.isEmpty() && myPref.getPosManagerPass().equals(pass.trim())) {
+                if (!pass.isEmpty() && myPref.loginManager(pass.trim())) {
                     //Void transaction
                     globalDlog.dismiss();
                     voidTransaction();

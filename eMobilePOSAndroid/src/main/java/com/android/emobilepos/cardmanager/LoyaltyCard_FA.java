@@ -138,10 +138,9 @@ public class LoyaltyCard_FA extends BaseFragmentActivityActionBar implements OnI
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 globalDlog.dismiss();
                 String pass = viewField.getText().toString();
-                if (!pass.isEmpty() && myPref.getPosManagerPass().equals(pass.trim())) {
+                if (!pass.isEmpty() && myPref.loginManager(pass.trim())) {
                     startActivity(intent);
                 } else {
                     promptManagerPassword(intent);

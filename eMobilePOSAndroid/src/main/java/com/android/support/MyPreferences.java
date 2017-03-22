@@ -1127,6 +1127,11 @@ public class MyPreferences {
         return list;
     }
 
+    public boolean loginAdmin(String password) {
+        return getPOSAdminPass().equals(password);
+
+    }
+
     public String getPOSAdminPass() {
         return (prefs.getString("posAdminPassword", ""));
     }
@@ -1139,6 +1144,11 @@ public class MyPreferences {
     public String getPosManagerPass() {
         String posManagerPassword = "posManagerPassword";
         return prefs.getString(posManagerPassword, "");
+    }
+
+    public boolean loginManager(String password) {
+        return getPosManagerPass().equals(password);
+
     }
 
     public void setPosManagerPass(String value) {
