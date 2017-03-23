@@ -62,6 +62,7 @@ import java.util.HashMap;
 
 import drivers.EMSDeviceDriver;
 import drivers.EMSPowaPOS;
+import drivers.EMSmePOS;
 
 public class SalesTab_FR extends Fragment {
     public static Activity activity;
@@ -1039,7 +1040,7 @@ public class SalesTab_FR extends Fragment {
     private boolean isTablet() {
         EMSDeviceDriver usbDeviceDriver = DeviceUtils.getUSBDeviceDriver(getActivity());
         String model = Build.MODEL;
-        if (usbDeviceDriver!=null && usbDeviceDriver instanceof EMSPowaPOS) {
+        if (usbDeviceDriver != null && usbDeviceDriver instanceof EMSPowaPOS) {
             myPref.setIsPOWA(true);
             return true;
         } else if (model.equals("ET1")) {
@@ -1048,7 +1049,7 @@ public class SalesTab_FR extends Fragment {
         } else if (model.equals("MC40N0")) {
             myPref.isMC40(false, true);
             return false;
-        } else if (model.startsWith("Lenovo")) {
+        } else if (usbDeviceDriver != null && usbDeviceDriver instanceof EMSmePOS)  {
             myPref.setIsMEPOS(true);
             return true;
         } else if (model.equals("M2MX60P") || model.equals("M2MX6OP")) {

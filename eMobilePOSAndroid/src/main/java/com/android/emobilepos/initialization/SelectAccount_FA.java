@@ -183,6 +183,7 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
                 xr.parse(inSource);
                 proceed = Boolean.parseBoolean(handler.getData().toLowerCase(Locale.getDefault()));
             } catch (Exception e) {
+                e.printStackTrace();
             }
             return proceed;
         }

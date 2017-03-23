@@ -50,7 +50,11 @@ public class DeviceUtils {
                 }
             }
         }
-
+        EMSDeviceDriver usbDevice = getUSBDeviceDriver(activity);
+        if (usbDevice instanceof EMSPowaPOS) {
+            myPref.setIsMEPOS(false);
+            myPref.setIsPOWA(true);
+        }
         String _portName;
         String _peripheralName;
         if (myPref.getSwiperType() != -1)
@@ -171,11 +175,16 @@ public class DeviceUtils {
 
     public static EMSDeviceDriver getUSBDeviceDriver(Context context) {
         Collection<UsbDevice> usbDevices = getUSBDevices(context);
+        MyPreferences preferences = new MyPreferences(context);
         for (UsbDevice device : usbDevices) {
             int productId = device.getProductId();
             switch (productId) {
                 case 22321:
+                    preferences.setIsPOWA(true);
                     return new EMSPowaPOS();
+                case 9220:
+                    preferences.setIsPOWA(true);
+                    return  new EMSPowaPOS();
             }
         }
         return null;

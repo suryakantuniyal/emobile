@@ -10,6 +10,7 @@ import android.view.Window;
 
 import com.android.dao.ClerkDAO;
 import com.android.emobilepos.BuildConfig;
+import com.android.emobilepos.OnHoldActivity;
 import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.models.realms.Clerk;
@@ -84,7 +85,11 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_main_menu, menu);
+        if(this instanceof OnHoldActivity){
+
+        }else {
+            getMenuInflater().inflate(R.menu.activity_main_menu, menu);
+        }
         if (menu.findItem(R.id.logoutMenuItem) != null) {
             menu.findItem(R.id.logoutMenuItem).setVisible(false);
             menu.findItem(R.id.menu_back).setVisible(false);

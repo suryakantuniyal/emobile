@@ -331,14 +331,14 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         boolean isScreenOn = powerManager.isScreenOn();
         if (!isScreenOn)
-            global.loggedIn = false;
+            Global.loggedIn = false;
         global.startActivityTransitionTimer();
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        global.loggedIn = false;
+        Global.loggedIn = false;
         this.finish();
     }
 

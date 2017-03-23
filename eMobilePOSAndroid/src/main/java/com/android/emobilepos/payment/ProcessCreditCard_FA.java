@@ -481,16 +481,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                     roverReader = new EMSRover();
                     roverReader.initializeReader(activity, isDebit);
                 }
-//                else if (_audio_reader_type.equals(Global.AUDIO_MSR_WALKER)) {
-//                    walkerReader = new EMSWalker();
-//                    myPref.setSwiperType(Global.NOMAD);
-//                }
             }
-
-//        } else if (_audio_reader_type.equals(Global.AUDIO_MSR_WALKER)) {
-//            walkerReader = new EMSWalker();
-//            myPref.setSwiperType(Global.NOMAD);
-
         } else {
             int _swiper_type = myPref.getSwiperType();
             int _printer_type = myPref.getPrinterType();
