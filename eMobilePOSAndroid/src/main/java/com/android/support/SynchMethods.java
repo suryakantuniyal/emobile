@@ -645,6 +645,7 @@ public class SynchMethods {
                 orders.clear();
                 i = 0;
             }
+            synchOrdersOnHoldDetails(context, order.ord_id);
         }
         ordersHandler.insert(orders);
         ordersHandler.deleteOnHoldsOrders(ordersToDelete);
@@ -1820,7 +1821,7 @@ public class SynchMethods {
         protected String doInBackground(String... params) {
             try {
                 updateProgress(context.getString(R.string.sync_dload_ordersonhold));
-                synchOrdersOnHoldDetails(context, params[0]);
+//                synchOrdersOnHoldDetails(context, params[0]);
                 OrderProductsHandler orderProdHandler = new OrderProductsHandler(context);
                 Cursor c = orderProdHandler.getOrderProductsOnHold(params[0]);
                 if (BuildConfig.DELETE_INVALID_HOLDS || (c != null && c.getCount() > 0)) {

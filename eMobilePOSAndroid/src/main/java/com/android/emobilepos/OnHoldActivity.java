@@ -123,10 +123,10 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         protected Void doInBackground(Void... params) {
             try {
                 SynchMethods.synchOrdersOnHoldList(OnHoldActivity.this);
-//                Intent intent = new Intent(MainMenu_FA.NOTIFICATION_RECEIVED);
-//                intent.putExtra(MainMenu_FA.NOTIFICATION_MESSAGE, String.valueOf(NotificationEvent.NotificationEventAction.SYNC_HOLDS.getCode()));
-//                sendBroadcast(intent);
-//                Log.d("NotificationHandler", "sendBroadcast");
+                Intent intent = new Intent(MainMenu_FA.NOTIFICATION_RECEIVED);
+                intent.putExtra(MainMenu_FA.NOTIFICATION_MESSAGE, String.valueOf(NotificationEvent.NotificationEventAction.SYNC_HOLDS.getCode()));
+                sendBroadcast(intent);
+                Log.d("NotificationHandler", "sendBroadcast");
             } catch (SAXException e) {
                 e.printStackTrace();
             } catch (IOException e) {

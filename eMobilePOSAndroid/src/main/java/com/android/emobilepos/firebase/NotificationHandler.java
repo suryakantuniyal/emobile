@@ -44,7 +44,7 @@ public class NotificationHandler extends NotificationsHandler {
                                 try {
                                     Log.d("NotificationHandler", "synchOrdersOnHoldList");
                                     SynchMethods.synchOrdersOnHoldList(context);
-//                                    updateMainActivity(context, eventAction);
+                                    updateMainActivity(context, eventAction);
                                 } catch (SAXException e) {
                                     e.printStackTrace();
                                 } catch (IOException e) {
@@ -60,7 +60,7 @@ public class NotificationHandler extends NotificationsHandler {
                                 try {
                                     Log.d("NotificationHandler", "synchSalesAssociateDinnindTablesConfiguration");
                                     SynchMethods.synchSalesAssociateDinnindTablesConfiguration(context);
-                                    updateMainActivity(context, eventAction);
+//                                    updateMainActivity(context, eventAction);
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 } catch (SAXException e) {

@@ -24,10 +24,6 @@ import com.viewpagerindicator.IconPagerAdapter;
 import com.viewpagerindicator.PageIndicator;
 import com.viewpagerindicator.TitlePageIndicator;
 
-import org.xml.sax.SAXException;
-
-import java.io.IOException;
-
 public class DinningTablesActivity extends BaseFragmentActivityActionBar {
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
@@ -188,8 +184,8 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
                 if (claimRequired) {
                     return false;
                 } else {
-                    try {
-                        OnHoldsManager.synchOrdersOnHoldDetails(DinningTablesActivity.this, tableOrder.getCurrentOrderId());
+//                    try {
+//                        OnHoldsManager.synchOrdersOnHoldDetails(DinningTablesActivity.this, tableOrder.getCurrentOrderId());
 //                        OrderProductsHandler orderProdHandler = new OrderProductsHandler(DinningTablesActivity.this);
 //                        Cursor c = orderProdHandler.getOrderProductsOnHold(tableOrder.getCurrentOrderId());
 //                        Global global = (Global) DinningTablesActivity.this.getApplication();
@@ -197,11 +193,11 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
 //                        OnHoldActivity.addOrderProducts(DinningTablesActivity.this, c);
                         Global.isFromOnHold = true;
 
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } catch (SAXException e) {
-                        e.printStackTrace();
-                    }
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    } catch (SAXException e) {
+//                        e.printStackTrace();
+//                    }
                 }
             } else {
                 OrdersHandler ordersHandler = new OrdersHandler(DinningTablesActivity.this);

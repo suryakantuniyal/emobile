@@ -208,7 +208,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         for (ProductAttribute attribute : global.ordProdAttrPending) {
             ordProdAttr += attribute.getAttributeName() + "\n";
         }
-        setupTax();
+//        setupTax();
         lView.addHeaderView(header);
         lv_adapter = new ListViewAdapter(activity);
         lView.setAdapter(lv_adapter);
@@ -358,26 +358,26 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
     }
 
 
-    private void setupTax() {
-        TaxesHandler taxHandler = new TaxesHandler(activity);
-        if (myPref.isRetailTaxes()) {
-            if (!Global.taxID.isEmpty()) {
-                taxAmount = taxHandler.getTaxRate(Global.taxID, orderProduct.getTax_type(), Double.parseDouble(basePrice));
-                prod_taxId = orderProduct.getTax_type();
-            } else {
-                taxAmount = taxHandler.getTaxRate(orderProduct.getProd_taxcode(), orderProduct.getTax_type(), Double.parseDouble(basePrice));
-                prod_taxId = orderProduct.getProd_taxcode();
-            }
-        } else {
-            if (!Global.taxID.isEmpty()) {
-                taxAmount = taxHandler.getTaxRate(Global.taxID, "", Double.parseDouble(basePrice));
-                prod_taxId = Global.taxID;
-            } else {
-                taxAmount = taxHandler.getTaxRate(orderProduct.getProd_taxcode(), "", Double.parseDouble(basePrice));
-                prod_taxId = orderProduct.getProd_taxcode();
-            }
-        }
-    }
+//    private void setupTax() {
+//        TaxesHandler taxHandler = new TaxesHandler(activity);
+//        if (myPref.isRetailTaxes()) {
+//            if (!Global.taxID.isEmpty()) {
+//                taxAmount = taxHandler.getTaxRate(Global.taxID, orderProduct.getTax_type(), Double.parseDouble(basePrice));
+//                prod_taxId = orderProduct.getTax_type();
+//            } else {
+//                taxAmount = taxHandler.getTaxRate(orderProduct.getProd_taxcode(), orderProduct.getTax_type(), Double.parseDouble(basePrice));
+//                prod_taxId = orderProduct.getProd_taxcode();
+//            }
+//        } else {
+//            if (!Global.taxID.isEmpty()) {
+//                taxAmount = taxHandler.getTaxRate(Global.taxID, "", Double.parseDouble(basePrice));
+//                prod_taxId = Global.taxID;
+//            } else {
+//                taxAmount = taxHandler.getTaxRate(orderProduct.getProd_taxcode(), "", Double.parseDouble(basePrice));
+//                prod_taxId = orderProduct.getProd_taxcode();
+//            }
+//        }
+//    }
 
 
     private void updateSavedDetails() {

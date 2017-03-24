@@ -144,6 +144,7 @@ public class Order implements Cloneable {
         OrderTotalDetails totalDetails = new OrderTotalDetails();
         if (getOrderProducts() != null && !getOrderProducts().isEmpty()) {
             for (OrderProduct orderProduct : getOrderProducts()) {
+                setupProductTax(context, orderProduct);
 //                if (!isRetailTaxes()) {
 //                    orderProduct.setTaxAmount(tax != null ? tax.getTaxRate() : "0");
 //                    orderProduct.setProd_taxId(tax != null ? tax.getTaxId() : "");
@@ -180,7 +181,7 @@ public class Order implements Cloneable {
         BigDecimal taxableAmount = new BigDecimal(0);
         if (getListOrderTaxes() != null) {
             for (OrderProduct product : getOrderProducts()) {
-                if(product.isTaxable()) {
+                if (product.isTaxable()) {
                     taxableAmount = taxableAmount.add(product.getItemSubtotalCalculated());
                 }
             }
@@ -189,9 +190,30 @@ public class Order implements Cloneable {
                 BigDecimal rate = Global.getBigDecimalNum(taxes.getTax_rate()).divide(new BigDecimal("100")).setScale(6,
                         RoundingMode.HALF_UP);
                 BigDecimal tax_amount = taxableAmount.multiply(rate).setScale(6, RoundingMode.HALF_UP);
-                taxes.setTax_amount(String.valueOf(tax_amount));
             }
         }
+    }
+
+    private void setupProductTax(Context context, OrderProduct orderProduct) {
+        TaxesHandler taxHandler = new TaxesHandler(context);
+        MyPreferences preferences = new MyPreferences(context);
+        Tax tax;
+        if (preferences.isRetailTaxes()) {
+            if (!Global.taxID.isEmpty()) {
+                tax = taxHandler.getTax(Global.taxID, orderProduct.getTax_type(), Double.parseDouble(orderProduct.getProd_price()));
+            } else {
+                tax = taxHandler.getTax(orderProduct.getProd_taxcode(), orderProduct.getTax_type(), Double.parseDouble(orderProduct.getProd_price()));
+            }
+        } else {
+            if (!Global.taxID.isEmpty()) {
+                tax = taxHandler.getTax(Global.taxID, "", Double.parseDouble(orderProduct.getProd_price()));
+            } else {
+                tax = taxHandler.getTax(orderProduct.getProd_taxcode(), "", Double.parseDouble(orderProduct.getProd_price()));
+            }
+        }
+        orderProduct.setTaxAmount(tax != null ? tax.getTaxRate() : "0");
+        orderProduct.setProd_taxId(tax != null ? tax.getTaxId() : "");
+        orderProduct.setTax_type(tax != null ? tax.getTaxType() : "");
     }
 
     public void setRetailTax(Context context, String taxID) {
