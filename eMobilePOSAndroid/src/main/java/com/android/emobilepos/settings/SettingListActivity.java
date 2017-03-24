@@ -1272,12 +1272,8 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     return nameList;
                 }
             } catch (Exception e) {
-                StringBuilder sb = new StringBuilder();
-                sb.append(e.getMessage())
-                        .append(" [com.android.emobilepos.SettingsMenuActiv (at Class.getPairedDevices)]");
-
             }
-            return null;
+            return new ArrayList<>();
         }
 
         @Override
