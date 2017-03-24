@@ -54,6 +54,7 @@ import com.android.emobilepos.models.PriceLevel;
 import com.android.emobilepos.models.Product;
 import com.android.emobilepos.models.ProductAddons;
 import com.android.emobilepos.models.ProductAlias;
+import com.android.emobilepos.models.firebase.NotificationEvent;
 import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
@@ -634,16 +635,16 @@ public class SynchMethods {
         return xml.split("<" + tagName + ">")[1].split("</" + tagName + ">")[0];
     }
 
-    public static void synchOrdersOnHoldList(Context activity) throws SAXException, IOException {
+    public static void synchOrdersOnHoldList(Context context) throws SAXException, IOException {
         try {
             Gson gson = JsonUtils.getInstance();
-            GenerateXML xml = new GenerateXML(activity);
-            String json = new HttpClient().httpJsonRequest(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+            GenerateXML xml = new GenerateXML(context);
+            String json = new HttpClient().httpJsonRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
                     xml.downloadAll("GetOrdersOnHoldList"));
             Type listType = new com.google.gson.reflect.TypeToken<List<Order>>() {
             }.getType();
             List<Order> orders = gson.fromJson(json, listType);
-            OrdersHandler ordersHandler = new OrdersHandler(activity);
+            OrdersHandler ordersHandler = new OrdersHandler(context);
             List<Order> ordersToDelete = ordersHandler.getOrdersOnHold();
             int i = 0;
             for (Order order : orders) {
@@ -662,7 +663,6 @@ public class SynchMethods {
             }
             ordersHandler.insert(orders);
             ordersHandler.deleteOnHoldsOrders(ordersToDelete);
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1501,6 +1501,10 @@ public class SynchMethods {
                         updateProgress(context.getString(R.string.sync_dload_locations_inventory));
                     synchLocationsInventory();
                 }
+//                SynchMethods.synchOrdersOnHoldList(context);
+//                Intent intent = new Intent(MainMenu_FA.NOTIFICATION_RECEIVED);
+//                intent.putExtra(MainMenu_FA.NOTIFICATION_MESSAGE, String.valueOf(NotificationEvent.NotificationEventAction.SYNC_HOLDS.getCode()));
+//                context.sendBroadcast(intent);
                 updateProgress("Updating Sync Time");
                 synchUpdateSyncTime();
 

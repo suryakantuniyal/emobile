@@ -10,4 +10,9 @@
         android:icon="@drawable/ic_power_settings_new_black_48dp"
         android:showAsAction="always|withText"
         android:title="@string/logout_menu" />
+    <item
+        android:id="@+id/refreshHolds"
+        android:icon="@drawable/ic_sync_black_48dp"
+        android:showAsAction="always|withText"
+        android:title="@string/refresh_menu" />
 </menu>

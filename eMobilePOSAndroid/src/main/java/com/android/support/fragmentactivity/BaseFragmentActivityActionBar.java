@@ -33,7 +33,7 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
 
     protected void setActionBar() {
         showNavigationbar = myPref.getPreferences(MyPreferences.pref_use_navigationbar) || isNavigationBarModel() || (this instanceof MainMenu_FA && myPref.isUseClerks());
-        if (showNavigationbar || this instanceof MainMenu_FA) {
+        if (showNavigationbar || this instanceof MainMenu_FA || this instanceof OnHoldActivity) {
             myBar = this.getActionBar();
             if (myBar != null) {
                 myBar.setDisplayShowTitleEnabled(true);
@@ -85,10 +85,11 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.activity_main_menu, menu);
         if(this instanceof OnHoldActivity){
-
-        }else {
-            getMenuInflater().inflate(R.menu.activity_main_menu, menu);
+            menu.findItem(R.id.refreshHolds).setVisible(true);
+        }else{
+            menu.findItem(R.id.refreshHolds).setVisible(false);
         }
         if (menu.findItem(R.id.logoutMenuItem) != null) {
             menu.findItem(R.id.logoutMenuItem).setVisible(false);
@@ -113,9 +114,6 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         switch (id) {
             case R.id.menu_back: {

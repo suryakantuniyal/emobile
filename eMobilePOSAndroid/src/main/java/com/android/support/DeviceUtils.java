@@ -15,6 +15,7 @@ import java.util.List;
 
 import drivers.EMSDeviceDriver;
 import drivers.EMSPowaPOS;
+import drivers.EMSmePOS;
 import main.EMSDeviceManager;
 
 /**
@@ -183,8 +184,8 @@ public class DeviceUtils {
                     preferences.setIsPOWA(true);
                     return new EMSPowaPOS();
                 case 9220:
-                    preferences.setIsPOWA(true);
-                    return  new EMSPowaPOS();
+                    preferences.setIsMEPOS(true);
+                    return  new EMSmePOS();
             }
         }
         return null;

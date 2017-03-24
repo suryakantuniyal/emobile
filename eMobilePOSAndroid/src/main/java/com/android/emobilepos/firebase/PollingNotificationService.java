@@ -141,7 +141,7 @@ public class PollingNotificationService extends Service {
             JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
             reader.beginArray();
 
-            List<PollNotification> notifications = new ArrayList();
+            List<PollNotification> notifications = new ArrayList<>();
             while (reader.hasNext()) {
                 PollNotification notification = gson.fromJson(reader, PollNotification.class);
                 notifications.add(notification);

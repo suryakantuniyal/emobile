@@ -15,7 +15,9 @@ import android.os.PowerManager;
 import android.support.v4.widget.CursorAdapter;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -44,8 +46,12 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NetworkUtils;
 import com.android.support.OnHoldsManager;
+import com.android.support.SynchMethods;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
+import org.xml.sax.SAXException;
+
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -87,6 +93,56 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         hasBeenCreated = true;
 
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id) {
+            case R.id.refreshHolds: {
+                new RefreshHolds().execute();
+                break;
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    public class RefreshHolds extends AsyncTask<Void, Void, Void> {
+        private ProgressDialog myProgressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog.setMessage("Loading...");
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setCancelable(true);
+            myProgressDialog.setCanceledOnTouchOutside(true);
+            myProgressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                SynchMethods.synchOrdersOnHoldList(OnHoldActivity.this);
+//                Intent intent = new Intent(MainMenu_FA.NOTIFICATION_RECEIVED);
+//                intent.putExtra(MainMenu_FA.NOTIFICATION_MESSAGE, String.valueOf(NotificationEvent.NotificationEventAction.SYNC_HOLDS.getCode()));
+//                sendBroadcast(intent);
+//                Log.d("NotificationHandler", "sendBroadcast");
+            } catch (SAXException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            if (myProgressDialog != null && myProgressDialog.isShowing()) {
+                myProgressDialog.dismiss();
+            }
+        }
+    }
+
 
     private BroadcastReceiver messageReceiver = new BroadcastReceiver() {
         @Override
