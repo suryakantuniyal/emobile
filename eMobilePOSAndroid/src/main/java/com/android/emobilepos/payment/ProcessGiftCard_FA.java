@@ -537,8 +537,8 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
                         xr.parse(inSource);
                         parsedMap = handler.getData();
                         payment.setPay_amount(parsedMap.get("AuthorizedAmount"));
-                        double due = Double.parseDouble(payment.getOriginalTotalAmount())
-                                - Double.parseDouble(payment.getPay_amount());
+                        double due = Double.parseDouble(payment.getOriginalTotalAmount() == null ? "0" : payment.getOriginalTotalAmount())
+                                - Double.parseDouble(payment.getPay_amount() == null ? "0" : payment.getPay_amount());
                         payment.setPay_dueamount(String.valueOf(due));
                         Global.amountPaid = payment.getPay_amount();
                         if (parsedMap != null && parsedMap.size() > 0 && parsedMap.get("epayStatusCode").equals("APPROVED"))

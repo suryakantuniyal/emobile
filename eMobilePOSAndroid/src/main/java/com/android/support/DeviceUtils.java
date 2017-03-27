@@ -4,7 +4,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
+import android.os.Looper;
 import android.text.TextUtils;
+import android.util.Base64;
+import android.util.Log;
 
 import com.android.dao.DeviceTableDAO;
 import com.android.emobilepos.models.realms.Device;
@@ -129,17 +132,6 @@ public class DeviceUtils {
                         forceReload = true;
                     }
                 }
-//                if (myPref.getPrinterName().toUpperCase().contains("MPOP") && Global.mainPrinterManager != null) {
-//                    EMSBluetoothStarPrinter mpop = (EMSBluetoothStarPrinter) Global.mainPrinterManager.getCurrentDevice();
-//                    try {
-//                        if (mpop.getPort().retreiveStatus().offline) {
-//                            forceReload = true;
-//                        }
-//                    } catch (StarIOPortException e) {
-//                        e.printStackTrace();
-//                        forceReload = true;
-//                    }
-//                }
                 if (Global.mainPrinterManager == null || Global.mainPrinterManager.getCurrentDevice() == null
                         || forceReload) {
                     if (Global.mainPrinterManager == null) {
@@ -174,18 +166,22 @@ public class DeviceUtils {
         return deviceList.values();
     }
 
-    public static EMSDeviceDriver getUSBDeviceDriver(Context context) {
+    public static EMSDeviceDriver getUSBDeviceDriver(Activity context) {
         Collection<UsbDevice> usbDevices = getUSBDevices(context);
         MyPreferences preferences = new MyPreferences(context);
         for (UsbDevice device : usbDevices) {
+            Log.d("USB product ID:", String.valueOf(device.getProductId()));
             int productId = device.getProductId();
             switch (productId) {
                 case 22321:
+                case 21541:
+                    Log.d("USB POWA detected:", "true");
                     preferences.setIsPOWA(true);
+                    preferences.setPrinterType(Global.POWA);
                     return new EMSPowaPOS();
                 case 9220:
                     preferences.setIsMEPOS(true);
-                    return  new EMSmePOS();
+                    return new EMSmePOS();
             }
         }
         return null;

@@ -439,16 +439,7 @@
             android:launchMode="singleTop"
             android:theme="@style/LightTheme"
             android:windowSoftInputMode="stateAlwaysHidden" />
-        <!-- <activity -->
-        <!-- android:name="com.iparse.checkcapture.CheckCaptureActivity" -->
-        <!-- android:configChanges="keyboardHidden|screenSize" -->
-        <!-- android:label="@string/app_name" -->
-        <!-- android:screenOrientation="landscape" -->
-        <!-- android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" > -->
-        <!-- </activity> -->
 
-
-        <!-- Crash Activity that will appears when app crashes -->
         <activity android:name="com.android.crashreport.CrashActivity" />
 
         <service
