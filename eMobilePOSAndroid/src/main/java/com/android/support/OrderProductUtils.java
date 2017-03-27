@@ -43,10 +43,10 @@ public class OrderProductUtils {
         return hashMap;
     }
 
-    public static List<OrderProduct> getOrderProducts(List<OrderProduct> orderProducts, String orderProductId) {
+    public static List<OrderProduct> getOrderProducts(List<OrderProduct> orderProducts, String productId) {
         List<OrderProduct> list = new ArrayList<>();
         for (OrderProduct orderProduct : orderProducts) {
-            if (orderProduct.getOrdprod_id().equalsIgnoreCase(orderProductId)) {
+            if (orderProduct.getProd_id().equalsIgnoreCase(productId)) {
                 list.add(orderProduct);
             }
         }

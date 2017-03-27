@@ -195,27 +195,14 @@ public class EMSDeviceDriver {
                 Global.formatDoubleStrToCurrency(anOrder.ord_taxamount), lineWidth, 0));
     }
 
-    private void addTaxesLine(List<DataTaxes> taxes, String orderTaxAmount, int lineWidth, StringBuilder sb) {
-
-        int num_taxes = taxes.size();
-        double taxAmtTotal = 0;
-        if (num_taxes > 0) {
-            for (int i = 0; i < num_taxes; i++) {
-                double taxAmt = Double.parseDouble(taxes.get(i).getTax_amount());
-                taxAmtTotal += Double.parseDouble(taxes.get(i).getTax_amount());
-                if (i == num_taxes - 1) {
-                    BigDecimal rndDifference = new BigDecimal(orderTaxAmount).subtract(new BigDecimal(taxAmtTotal))
-                            .setScale(2, RoundingMode.HALF_UP);
-                    taxAmt += Double.parseDouble(String.valueOf(rndDifference));
-
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(taxes.get(i).getTax_name(),
-                            Global.getCurrencyFormat(String.valueOf(taxAmt)), lineWidth, 2));
-
-                } else {
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(taxes.get(i).getTax_name(),
-                            Global.getCurrencyFormat(taxes.get(i).getTax_amount()), lineWidth, 2));
-                }
-            }
+    private void addTaxesLine(List<DataTaxes> taxes, Order order, int lineWidth, StringBuilder sb) {
+        for (DataTaxes tax : taxes) {
+            BigDecimal taxAmount = new BigDecimal(order.ord_subtotal)
+                    .multiply(new BigDecimal(tax.getTax_rate())
+                    .divide(new BigDecimal(100)))
+                    .setScale(2, RoundingMode.HALF_UP);
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(tax.getTax_name(),
+                    Global.getCurrencyFormat(String.valueOf(taxAmount)), lineWidth, 2));
         }
     }
 
@@ -845,7 +832,7 @@ public class EMSDeviceDriver {
             print(textHandler.lines(lineWidth), FORMAT);
             addTotalLines(this.activity, anOrder, orderProducts, sb, lineWidth);
 
-            addTaxesLine(listOrdTaxes, anOrder.ord_taxamount, lineWidth, sb);
+            addTaxesLine(listOrdTaxes, anOrder, lineWidth, sb);
 
             sb.append("\n");
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_itemsQtyTotal),
