@@ -40,13 +40,12 @@ import com.android.emobilepos.holders.Locations_Holder;
 import com.android.emobilepos.holders.TransferInventory_Holder;
 import com.android.emobilepos.holders.TransferLocations_Holder;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
+import com.android.emobilepos.models.Product;
 import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.orders.OrderProduct;
-import com.android.emobilepos.models.Product;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.ProductAttribute;
-import com.android.emobilepos.ordering.Catalog_FR;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
 import com.google.android.gms.common.ConnectionResult;
@@ -570,6 +569,12 @@ public class Global extends MultiDexApplication {
     public static String formatDoubleStrToCurrency(String val) {
         if (val == null || val.isEmpty())
             return (Global.getCurrencyFormat(Global.formatNumToLocale(0.00)));
+        if (val.contains(".")) {
+            int decLen = val.substring(val.indexOf('.')).length();
+            if (decLen > 4) {
+                val = val.substring(0, val.indexOf('.') + 4);
+            }
+        }
         return (Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(NumberUtils.cleanCurrencyFormatedNumber(val)))));
 
     }
