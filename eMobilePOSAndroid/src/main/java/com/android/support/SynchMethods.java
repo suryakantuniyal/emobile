@@ -1453,7 +1453,9 @@ public class SynchMethods {
                 context.startActivity(intent);
                 activity.finish();
             } else if (type == Global.FROM_SYNCH_ACTIVITY) {
-                SyncTab_FR.syncTabHandler.sendEmptyMessage(0);
+                if (SyncTab_FR.syncTabHandler != null) {
+                    SyncTab_FR.syncTabHandler.sendEmptyMessage(0);
+                }
             }
             if (!result) {
                 Global.showPrompt(context, R.string.sync_title, context.getString(R.string.sync_fail));

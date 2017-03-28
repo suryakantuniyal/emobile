@@ -167,7 +167,6 @@ public class MenuProdGV_Adapter extends CursorAdapter {
         ViewHolder holder = new ViewHolder();
         retView = inflater.inflate(R.layout.catalog_listview_adapter, parent, false);
         if (isPortrait) {
-//            retView = inflater.inflate(R.layout.catalog_listview_adapter, parent, false);
             holder.title = (TextView) retView.findViewById(R.id.catalogItemName);
             holder.qty = (TextView) retView.findViewById(R.id.catalogItemQty);
             holder.consignment_qty = (TextView) retView.findViewById(R.id.catalogConsignmentQty);
@@ -185,10 +184,7 @@ public class MenuProdGV_Adapter extends CursorAdapter {
             holder.i_prod_img_name = cursor.getColumnIndex("prod_img_name");
             holder.i_chain_price = cursor.getColumnIndex("chain_price");
             holder.i_consignment_qty = cursor.getColumnIndex("consignment_qty");
-
         } else {
-//            retView = inflater.inflate(R.layout.catalog_gridview_adapter, parent, false);
-
             holder.title = (TextView) retView.findViewById(R.id.gridViewImageTitle);
             holder.itemImage = (ImageView) retView.findViewById(R.id.gridViewImage);
             holder.productNameTxt = (TextView) retView.findViewById(R.id.gridCatalogProducttNametextView);

@@ -403,7 +403,8 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                 String otherAmount = "0";
                 if (size > 0) {
 
-                    if (paymentMapList.get(0).getPaymentMethod().getPaymethod_name().equalsIgnoreCase("LoyaltyCard"))
+                    if (paymentMapList.get(0).getPaymentMethod() != null &&
+                            paymentMapList.get(0).getPaymentMethod().getPaymethod_name().equalsIgnoreCase("LoyaltyCard"))
                         otherAmount = Global.addSubsStrings(true, otherAmount, Global.formatNumToLocale(Double.parseDouble(paymentMapList.get(0).getPay_amount())));
                     else
                         temp = Global.formatNumToLocale(Double.parseDouble(paymentMapList.get(0).getPay_amount()));

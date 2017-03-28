@@ -720,6 +720,9 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     public boolean isConnected() {
         StarPrinterStatus status;
         try {
+            if (port == null) {
+                return false;
+            }
             status = port.retreiveStatus();
         } catch (StarIOPortException e) {
             try {

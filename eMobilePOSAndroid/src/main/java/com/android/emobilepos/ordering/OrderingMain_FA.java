@@ -648,11 +648,12 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     public void onResume() {
 
         if (global.isApplicationSentToBackground(this))
-            global.loggedIn = false;
+            Global.loggedIn = false;
         global.stopActivityTransitionTimer();
-        if (hasBeenCreated && !global.loggedIn) {
-            if (global.getGlobalDlog() != null)
+        if (hasBeenCreated && !Global.loggedIn) {
+            if (global.getGlobalDlog() != null && global.getGlobalDlog().isShowing()) {
                 global.getGlobalDlog().dismiss();
+            }
             global.promptForMandatoryLogin(this);
         }
 

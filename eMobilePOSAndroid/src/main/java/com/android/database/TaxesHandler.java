@@ -14,6 +14,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import util.StringUtil;
+
 public class TaxesHandler {
 
     private static final String tax_id_key = "tax_id_key";
@@ -191,7 +193,9 @@ public class TaxesHandler {
     public static List<GroupTax> getGroupTaxRate(String taxGroupId) {
         List<GroupTax> list = new ArrayList<GroupTax>();
         GroupTax data = new GroupTax();
-        Cursor cursor = DBManager.getDatabase().rawQuery("SELECT t.tax_name,t.tax_rate/100 as 'tax_rate',t.prTax FROM Taxes t INNER JOIN Taxes_Group tg ON t.tax_id = tg.taxId WHERE tg.taxGroupId ='" + taxGroupId + "' ORDER BY t.tax_name ASC", null);
+        Cursor cursor = DBManager.getDatabase().rawQuery("SELECT t.tax_name,t.tax_rate/100 as 'tax_rate',t.prTax " +
+                "FROM Taxes t INNER JOIN Taxes_Group tg ON t.tax_id = tg.taxId " +
+                "WHERE tg.taxGroupId ='" + StringUtil.nullStringToEmpty(taxGroupId) + "' ORDER BY t.tax_name ASC", null);
         if (cursor.moveToFirst()) {
             do {
                 data.setTaxName(cursor.getString(cursor.getColumnIndex(tax_name)));

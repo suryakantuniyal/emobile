@@ -69,7 +69,7 @@ public class PollingNotificationService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if(intent!=null) {
+        if (intent != null) {
             if (intent.getAction().equals(START_ACTION)) {
                 Log.i(TAG, "Received Start Foreground Intent");
 

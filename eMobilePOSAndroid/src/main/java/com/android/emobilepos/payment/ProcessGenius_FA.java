@@ -29,9 +29,9 @@ import com.android.database.PayMethodsHandler;
 import com.android.database.PaymentsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
-import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.genius.GeniusResponse;
 import com.android.emobilepos.models.genius.GeniusTransportToken;
+import com.android.emobilepos.models.realms.Payment;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessGeniusHandler;
 import com.android.support.DateUtils;
@@ -247,35 +247,35 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
             Gson gson = JsonUtils.getInstance();
             GeniusResponse geniusResponse = null;
 //            if (pingGeniusDevice()) {
-                geniusConnected = true;
-                Post post = new Post();
-                SAXParserFactory spf = SAXParserFactory.newInstance();
-                SAXProcessGeniusHandler handler = new SAXProcessGeniusHandler(activity);
+            geniusConnected = true;
+            Post post = new Post();
+            SAXParserFactory spf = SAXParserFactory.newInstance();
+            SAXProcessGeniusHandler handler = new SAXProcessGeniusHandler(activity);
 
-                try {
-                    String xml = post.postData(13, activity, params[0]);
-                    InputSource inSource = new InputSource(new StringReader(xml));
+            try {
+                String xml = post.postData(13, activity, params[0]);
+                InputSource inSource = new InputSource(new StringReader(xml));
 
-                    SAXParser sp = spf.newSAXParser();
-                    XMLReader xr = sp.getXMLReader();
-                    xr.setContentHandler(handler);
-                    xr.parse(inSource);
-                    GeniusTransportToken geniusTransportToken = handler.getGeniusTransportToken();
+                SAXParser sp = spf.newSAXParser();
+                XMLReader xr = sp.getXMLReader();
+                xr.setContentHandler(handler);
+                xr.parse(inSource);
+                GeniusTransportToken geniusTransportToken = handler.getGeniusTransportToken();
 
-                    if (geniusTransportToken != null && geniusTransportToken.getStatusCode().equalsIgnoreCase("APPROVED")) {// && getData("statusCode", 0, 0).equals("APPROVED")) {
-                        boProcessed = true;
-                        MyPreferences myPref = new MyPreferences(activity);
-                        String json = post.postData(11, activity, "http://" + myPref.getGeniusIP() + ":8080/v2/pos?TransportKey=" + geniusTransportToken.getTransportkey() + "&Format=JSON");
-                        geniusResponse = gson.fromJson(json, GeniusResponse.class);
-                    } else {
-                        geniusResponse = new GeniusResponse();
-                        geniusResponse.setErrorMessage(geniusTransportToken.getStatusMessage() + "\r\n" + geniusTransportToken.getEpayStatusCode());
-                    }
-                } catch (Exception ex) {
-                    if (geniusResponse == null)
-                        geniusResponse = new GeniusResponse();
-                    geniusResponse.setErrorMessage(ex.getMessage());
+                if (geniusTransportToken != null && geniusTransportToken.getStatusCode().equalsIgnoreCase("APPROVED")) {// && getData("statusCode", 0, 0).equals("APPROVED")) {
+                    boProcessed = true;
+                    MyPreferences myPref = new MyPreferences(activity);
+                    String json = post.postData(11, activity, "http://" + myPref.getGeniusIP() + ":8080/v2/pos?TransportKey=" + geniusTransportToken.getTransportkey() + "&Format=JSON");
+                    geniusResponse = gson.fromJson(json, GeniusResponse.class);
+                } else {
+                    geniusResponse = new GeniusResponse();
+                    geniusResponse.setErrorMessage(geniusTransportToken.getStatusMessage() + "\r\n" + geniusTransportToken.getEpayStatusCode());
                 }
+            } catch (Exception ex) {
+                if (geniusResponse == null)
+                    geniusResponse = new GeniusResponse();
+                geniusResponse.setErrorMessage(ex.getMessage());
+            }
 
 //            }
             return geniusResponse;
@@ -283,7 +283,9 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
 
         @Override
         protected void onPostExecute(GeniusResponse response) {
-            myProgressDialog.dismiss();
+            if (myProgressDialog != null && myProgressDialog.isShowing()) {
+                myProgressDialog.dismiss();
+            }
 
             if (!geniusConnected) {
                 Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.failed_genius_connectivity));

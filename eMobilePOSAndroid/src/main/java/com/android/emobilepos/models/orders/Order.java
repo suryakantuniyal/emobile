@@ -129,6 +129,9 @@ public class Order implements Cloneable {
     }
 
     public List<OrderProduct> getOrderProducts() {
+        if (orderProducts == null) {
+            orderProducts = new ArrayList<>();
+        }
         return orderProducts;
     }
 

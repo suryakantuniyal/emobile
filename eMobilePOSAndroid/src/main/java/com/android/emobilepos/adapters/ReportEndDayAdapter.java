@@ -353,7 +353,7 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
                 mHolder.tvOrdNetTotal.setText(Global.formatDoubleStrToCurrency(listOrdTypes.get(position - i_shifts).ord_total));
                 break;
             case TYPE_ITEMS_SOLD:
-                int qty = Integer.parseInt(listSold.get(position - i_ord_types).getOrdprod_qty());
+                double qty = Double.parseDouble(listSold.get(position - i_ord_types).getOrdprod_qty());
                 BigDecimal price = Global.getBigDecimalNum(listSold.get(position - i_ord_types).getFinalPrice());
                 price = price.multiply(BigDecimal.valueOf(qty));
                 mHolder.tvProdName.setText(listSold.get(position - i_ord_types).getOrdprod_name());
@@ -362,7 +362,7 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
                 mHolder.tvProdTotal.setText(Global.formatDoubleToCurrency(price.doubleValue()));
                 break;
             case TYPE_ITEMS_RETURNED:
-                qty = Integer.parseInt(listReturned.get(position - i_item_sold).getOrdprod_qty());
+                qty = Double.parseDouble(listReturned.get(position - i_item_sold).getOrdprod_qty());
                 price = Global.getBigDecimalNum(listReturned.get(position - i_item_sold).getFinalPrice());
                 price = price.multiply(BigDecimal.valueOf(qty));
                 mHolder.tvProdName.setText(listReturned.get(position - i_item_sold).getOrdprod_name());
@@ -371,7 +371,7 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
                 mHolder.tvProdTotal.setText(Global.formatDoubleToCurrency(price.doubleValue()));
                 break;
             case TYPE_DEPT_SALES:
-                qty = Integer.parseInt(listDeptSales.get(position - i_item_returned).getOrdprod_qty());
+                qty = Double.parseDouble(listDeptSales.get(position - i_item_returned).getOrdprod_qty());
                 price = Global.getBigDecimalNum(listDeptSales.get(position - i_item_returned).getFinalPrice());
                 price = price.multiply(BigDecimal.valueOf(qty));
                 mHolder.tvProdName.setText(listDeptSales.get(position - i_item_returned).getCat_name());
@@ -380,7 +380,7 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
                 mHolder.tvProdTotal.setText(Global.formatDoubleToCurrency(price.doubleValue()));
                 break;
             case TYPE_DEPT_RETURNS:
-                qty = Integer.parseInt(listDeptReturns.get(position - i_dept_sales).getOrdprod_qty());
+                qty = Double.parseDouble(listDeptReturns.get(position - i_dept_sales).getOrdprod_qty());
                 price = Global.getBigDecimalNum(listDeptReturns.get(position - i_dept_sales).getFinalPrice());
                 price = price.multiply(BigDecimal.valueOf(qty));
                 mHolder.tvProdName.setText(listDeptReturns.get(position - i_dept_sales).getCat_name());
