@@ -82,6 +82,9 @@ import com.android.saxhandler.SaxLoginHandler;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -654,18 +657,36 @@ public class SynchMethods {
     public static void synchOrdersOnHoldDetails(Context activity, String ordID) throws SAXException, IOException {
         HttpClient client = new HttpClient();
         Gson gson = JsonUtils.getInstance();
-        GenerateXML xml = new GenerateXML(activity);
-        InputStream inputStream = client.httpInputStreamRequest(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                xml.getOnHold(Global.S_ORDERS_ON_HOLD_DETAILS, ordID));
-        JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
         List<OrderProduct> orderProducts = new ArrayList<>();
+        GenerateXML xml = new GenerateXML(activity);
+        String json = client.httpJsonRequest(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                xml.getOnHold(Global.S_ORDERS_ON_HOLD_DETAILS, ordID));
+        JSONArray jsonArray;
+        try {
+            jsonArray = new JSONArray(json);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                String seatGroupId = jsonObject.optString("seatGroupId");
+                if (TextUtils.isEmpty(seatGroupId)) {
+                    jsonObject.put("seatGroupId", "0");
+                }
+                orderProducts.add(gson.fromJson(jsonObject.toString(), OrderProduct.class));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+//        Type listType = new com.google.gson.reflect.TypeToken<List<OrderProduct>>() {
+//        }.getType();
+//        JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
+//        List<OrderProduct> orderProducts = gson.fromJson(jsonArray, listType);
         OrderProductsHandler orderProductsHandler = new OrderProductsHandler(activity);
-        reader.beginArray();
-        int i = 0;
+//        reader.beginArray();
+//        int i = 0;
         ProductsHandler productsHandler = new ProductsHandler(activity);
-        while (reader.hasNext()) {
+        for (OrderProduct product : orderProducts) {
+//            while (reader.hasNext()) {
             double discAmount = 0;
-            OrderProduct product = gson.fromJson(reader, OrderProduct.class);
+//            OrderProduct product = gson.fromJson(reader, OrderProduct.class);
             double total = (Double.parseDouble(product.getOrdprod_qty())) * Double.parseDouble(product.getFinalPrice());
             String[] discountInfo = productsHandler.getDiscount(product.getDiscount_id(), product.getFinalPrice());
             if (discountInfo != null) {
@@ -687,20 +708,20 @@ public class SynchMethods {
             product.setDisAmount(String.valueOf(discAmount));
             product.setItemTotal(Double.toString(total - discAmount));
 //                product.setItemSubtotal(Double.toString(total));
-            orderProducts.add(product);
-            i++;
-            if (i == 1000) {
-                OrderProductUtils.assignAddonsOrderProduct(orderProducts);
-                orderProductsHandler.insert(orderProducts);
-                orderProducts.clear();
-                i = 0;
-            }
+//                orderProducts.add(product);
+//                i++;
+//                if (i == 1000) {
+//                    OrderProductUtils.assignAddonsOrderProduct(orderProducts);
+//                    orderProductsHandler.insert(orderProducts);
+//                    orderProducts.clear();
+//                    i = 0;
+//                }
         }
         OrderProductUtils.assignAddonsOrderProduct(orderProducts);
         orderProductsHandler.completeProductFields(orderProducts, activity);
         orderProductsHandler.insert(orderProducts);
-        reader.endArray();
-        reader.close();
+//            reader.endArray();
+//            reader.close();
     }
 
     /************************************
