@@ -9,7 +9,6 @@ import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.hardware.usb.UsbManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -23,6 +22,7 @@ import android.preference.PreferenceGroup;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -80,7 +80,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
 
     public final static int CASE_ADMIN = 0, CASE_MANAGER = 1, CASE_GENERAL = 2;
     private static SettingsTab_FR.SettingsRoles settingsType;
-    private static FragmentManager supportFragmentManager;
+//    private FragmentManager supportFragmentManager;
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
@@ -94,6 +94,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
 
     @Override
     public void onResume() {
+//        supportFragmentManager = getSupportFragmentManager();
         Global global = (Global) getApplication();
         if (global.isApplicationSentToBackground(this))
             Global.loggedIn = false;
@@ -114,7 +115,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         boolean isScreenOn = powerManager.isScreenOn();
         if (!isScreenOn)
-            global.loggedIn = false;
+            Global.loggedIn = false;
         global.startActivityTransitionTimer();
     }
 
@@ -127,7 +128,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
         View recyclerView = findViewById(R.id.setting_list);
         assert recyclerView != null;
         setupRecyclerView((RecyclerView) recyclerView);
-        supportFragmentManager = getSupportFragmentManager();
+//        supportFragmentManager = getSupportFragmentManager();
         if (findViewById(R.id.setting_detail_container) != null) {
             // The detail container view will be present only in the
             // large-screen layouts (res/values-w900dp).
@@ -566,14 +567,13 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                         public void onSelectCountry(String name, String code) {
                             myPref.defaultCountryCode(false, code);
                             myPref.defaultCountryName(false, name);
-
                             CharSequence temp = "\t\t" + name;
                             defaultCountry.setSummary(temp);
-
                             newFrag.dismiss();
                         }
                     });
-
+                    FragmentActivity activity = (FragmentActivity) getActivity();
+                    FragmentManager supportFragmentManager = activity.getSupportFragmentManager();
                     newFrag.show(supportFragmentManager, "dialog");
                     break;
                 case R.string.config_force_upload:
@@ -1300,6 +1300,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                 }
             }
         }
+
 
         private class autoConnectPrinter extends AsyncTask<Void, Void, String> {
             private ProgressDialog progressDlog;
