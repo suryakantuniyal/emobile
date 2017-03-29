@@ -888,7 +888,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             orderProduct.setOverwrite_price(productPriceLevelTotal.multiply(uomMultiplier));
         orderProduct.setProd_taxValue(new BigDecimal(taxTotal));
         BigDecimal finalPrice = new BigDecimal(orderProduct.getFinalPrice()).multiply(new BigDecimal(qty_picked));
-        if (Double.parseDouble(orderProduct.getFinalPrice()) >= 0
+        if (finalPrice.doubleValue() >= 0
                 && finalPrice.doubleValue() <= Double.parseDouble(disTotal)) {
             disTotal = orderProduct.getFinalPrice();
         }
