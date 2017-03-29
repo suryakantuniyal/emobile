@@ -22,8 +22,8 @@ import io.realm.RealmObject;
  */
 
 public class OrderAttributeRealmListConverter implements JsonSerializer<RealmList<OrderAttributes>> {
-    Realm realm = Realm.getDefaultInstance();
-    Gson gson = new GsonBuilder()
+    private Realm realm = Realm.getDefaultInstance();
+    private Gson gson = new GsonBuilder()
             .setExclusionStrategies(new ExclusionStrategy() {
                 @Override
                 public boolean shouldSkipField(FieldAttributes f) {

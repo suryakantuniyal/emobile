@@ -592,6 +592,9 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     }
 
     public String getProd_price() {
+        if (TextUtils.isEmpty(prod_price)) {
+            prod_price = "0";
+        }
         return prod_price;
     }
 

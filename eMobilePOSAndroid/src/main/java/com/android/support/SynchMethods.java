@@ -1604,7 +1604,9 @@ public class SynchMethods {
                 if (isFromMainMenu) {
                     synchTextView.setVisibility(View.GONE);
                 }
-                SyncTab_FR.syncTabHandler.sendEmptyMessage(0);
+                if (SyncTab_FR.syncTabHandler != null) {
+                    SyncTab_FR.syncTabHandler.sendEmptyMessage(0);
+                }
             }
 
 //            if (proceed && dbManager.isSendAndReceive()) {

@@ -137,7 +137,7 @@ android {
             buildConfigField "boolean", "REPORT_CRASHLITYCS", "false"
             buildConfigField "String", "OS", "\"Android\""
             buildConfigField "int", "POLLING_PERIOD", "10"
-            buildConfigField "boolean", "PRINT_TO_LOG", "true"
+            buildConfigField "boolean", "PRINT_TO_LOG", "false"
             buildConfigField "boolean", "DEBUG_NOMAD", "true"
             buildConfigField "boolean", "DELETE_INVALID_HOLDS", "true"
             minifyEnabled false

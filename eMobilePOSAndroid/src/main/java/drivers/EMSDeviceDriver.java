@@ -457,7 +457,7 @@ public class EMSDeviceDriver {
             ArrayList<byte[]> commands = new ArrayList<>();
             commands.add(new byte[]{0x1b, 0x40}); // Initialization
             byte[] characterheightExpansion = new byte[]{0x1b, 0x68, 0x00};
-            characterheightExpansion[2] = 48;
+            characterheightExpansion[2] = 49;
             commands.add(characterheightExpansion);
             byte[] characterwidthExpansion = new byte[]{0x1b, 0x57, 0x00};
             characterwidthExpansion[2] = 49;

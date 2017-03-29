@@ -336,7 +336,9 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     @Override
     public boolean printPaymentDetails(String payID, int type, boolean isReprint, EMVContainer emvContainer) {
         setPaperWidth(LINE_WIDTH);
-        printPaymentDetailsReceipt(payID, type, isReprint, LINE_WIDTH, emvContainer);
+        if (port != null) {
+            printPaymentDetailsReceipt(payID, type, isReprint, LINE_WIDTH, emvContainer);
+        }
         try {
             StarIOPort.releasePort(port);
         } catch (StarIOPortException e) {
