@@ -65,11 +65,13 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     private EMSDeviceManager edm;
     private EMSELO thisInstance;
     private Handler handler;
+    String scannedData = "";
     private final int LINE_WIDTH = 32;
     private BarcodeReader barcodereader = new BarcodeReader();
     private boolean didConnect;
     private static CFD customerFacingDisplay;
     private static MTSCRA m_scra;
+    private Handler m_scraHandler;
 
     private class SCRAHandlerCallback implements Handler.Callback {
         private static final String TAG = "Magtek";
@@ -200,6 +202,8 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
             SerialPort port;
             try {
                 port = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
+                OutputStream stream = port.getOutputStream();
+                InputStream iStream = port.getInputStream();
                 SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
                 eloPrinterApi = new PrinterAPI(eloPrinterPort);
                 if (!eloPrinterApi.isPaperAvailable()) {
@@ -433,7 +437,7 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     public void loadCardReader(final EMSCallBack callBack, boolean isDebitCard) {
         this.scannerCallBack = callBack;
         if (m_scra == null) {
-            Handler m_scraHandler = new Handler(new SCRAHandlerCallback());
+            m_scraHandler = new Handler(new SCRAHandlerCallback());
             m_scra = new MTSCRA(activity, m_scraHandler);
             m_scra.setConnectionType(MTConnectionType.USB);
             m_scra.setAddress(null);
@@ -601,7 +605,6 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     private Runnable runnableScannedData = new Runnable() {
         public void run() {
             try {
-                String scannedData = "";
                 if (scannerCallBack != null)
                     scannerCallBack.scannerWasRead(scannedData);
 

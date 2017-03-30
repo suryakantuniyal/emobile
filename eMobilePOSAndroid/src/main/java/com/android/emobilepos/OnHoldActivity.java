@@ -175,7 +175,13 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
     private void askWaiterSignin() {
         if (myPref.isUseClerks()) {
             Shift openShift = ShiftDAO.getOpenShift(Integer.parseInt(myPref.getClerkID()));
-            Clerk associate = ClerkDAO.getByEmpId(openShift.getAssigneeId(), true);
+            int empId;
+            if (openShift != null) {
+                empId = openShift.getAssigneeId();
+            } else {
+                empId = Integer.parseInt(myPref.getClerkID());
+            }
+            Clerk associate = ClerkDAO.getByEmpId(empId, true);
             long count = associate == null ? 0 : associate.getAssignedDinningTables().where().equalTo("number", myCursor.getString(myCursor.getColumnIndex("assignedTable"))).count();
             if (associate != null && count > 0) {
                 validPassword = true;

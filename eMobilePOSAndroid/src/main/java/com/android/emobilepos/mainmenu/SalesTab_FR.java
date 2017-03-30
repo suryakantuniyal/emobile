@@ -837,7 +837,12 @@ public class SalesTab_FR extends Fragment {
         Intent intent = new Intent(getActivity(), DinningTablesActivity.class);
         int empId;
         if (myPref.isUseClerks()) {
-            empId = ShiftDAO.getOpenShift(Integer.parseInt(myPref.getClerkID())).getAssigneeId();
+            Shift openShift = ShiftDAO.getOpenShift(Integer.parseInt(myPref.getClerkID()));
+            if (openShift != null) {
+                empId = openShift.getAssigneeId();
+            } else {
+                empId = Integer.parseInt(myPref.getClerkID());
+            }
         } else {
             empId = AssignEmployeeDAO.getAssignEmployee().getEmpId();
         }
@@ -978,7 +983,13 @@ public class SalesTab_FR extends Fragment {
         intent.putExtra("RestaurantSaleType", restaurantSaleType);
 
         if (restaurantSaleType == Global.RestaurantSaleType.EAT_IN) {
-            int empId = ShiftDAO.getOpenShift(Integer.parseInt(myPref.getClerkID())).getAssigneeId();
+            Shift openShift = ShiftDAO.getOpenShift(Integer.parseInt(myPref.getClerkID()));
+            int empId;
+            if (openShift != null) {
+                empId = openShift.getAssigneeId();
+            } else {
+                empId = Integer.parseInt(myPref.getClerkID());
+            }
             intent.putExtra("associateId", empId);
             intent.putExtra("selectedSeatsAmount", selectedSeatsAmount);
             intent.putExtra("selectedDinningTableNumber", tableNumber);

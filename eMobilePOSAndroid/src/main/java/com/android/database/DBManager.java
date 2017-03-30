@@ -254,14 +254,10 @@ public class DBManager {
     }
 
     public void alterTables() {
-        switch (VERSION) {
-            case 47:
-                Cursor cursor = getDatabase().rawQuery("select * from  [Orders] limit 1", new String[]{});
-                boolean exist = cursor.getColumnIndex("ord_timeStarted") > -1;
-                if (!exist) {
-                    getDatabase().execSQL("ALTER TABLE [Orders] ADD COLUMN [ord_timeStarted] [datetime] NULL");
-                }
-                break;
+        Cursor cursor = getDatabase().rawQuery("select * from  [Orders] limit 1", new String[]{});
+        boolean exist = cursor.getColumnIndex("ord_timeStarted") > -1;
+        if (!exist) {
+            getDatabase().execSQL("ALTER TABLE [Orders] ADD COLUMN [ord_timeStarted] [datetime] NULL");
         }
     }
 

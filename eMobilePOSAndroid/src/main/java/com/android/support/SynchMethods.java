@@ -1103,25 +1103,26 @@ public class SynchMethods {
         url = new URL(generator.getAccountLogo());
         is = url.openStream();
         Bitmap bmp = BitmapFactory.decodeStream(is);
-
-        int width = bmp.getWidth();
-        int height = bmp.getHeight();
-        float scale = 0;
-        if (width > 300) {
-            scale = (float) 300 / width;
-            width = (int) (width * scale);
-            height = (int) (height * scale);
+        if (bmp != null) {
+            int width = bmp.getWidth();
+            int height = bmp.getHeight();
+            float scale = 0;
+            if (width > 300) {
+                scale = (float) 300 / width;
+                width = (int) (width * scale);
+                height = (int) (height * scale);
+            }
+            Bitmap newBitmap = Bitmap.createScaledBitmap(bmp, width, height, false);
+            String externalPath = context.getApplicationContext().getFilesDir().getAbsolutePath() + "/";
+            myPref.setAccountLogoPath(externalPath + "logo.png");
+            File file = new File(externalPath, "logo.png");
+            OutputStream os = new FileOutputStream(file);
+            newBitmap.compress(CompressFormat.PNG, 0, os);
+            is.close();
+            os.close();
+            bmp.recycle();
+            newBitmap.recycle();
         }
-        Bitmap newBitmap = Bitmap.createScaledBitmap(bmp, width, height, false);
-        String externalPath = context.getApplicationContext().getFilesDir().getAbsolutePath() + "/";
-        myPref.setAccountLogoPath(externalPath + "logo.png");
-        File file = new File(externalPath, "logo.png");
-        OutputStream os = new FileOutputStream(file);
-        newBitmap.compress(CompressFormat.PNG, 0, os);
-        is.close();
-        os.close();
-        bmp.recycle();
-        newBitmap.recycle();
 
     }
 
