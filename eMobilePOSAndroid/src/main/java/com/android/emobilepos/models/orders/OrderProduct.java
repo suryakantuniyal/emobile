@@ -7,6 +7,7 @@ import com.android.database.ProductsHandler;
 import com.android.emobilepos.models.MixAndMatchDiscount;
 import com.android.emobilepos.models.Product;
 import com.android.emobilepos.models.realms.ProductAttribute;
+import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.support.Global;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
@@ -122,7 +123,8 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         this.setPricesXGroupid(product.getPricesXGroupid());
         this.setOrdprod_name(product.getProdName());
         this.setProd_extradesc(product.getProdExtraDesc());
-        this.setOrdprod_qty("1");
+        this.setOrdprod_qty(OrderingMain_FA.returnItem ? "-1" : "1");
+        this.setReturned(OrderingMain_FA.returnItem);
     }
 
     public OrderProduct() {
