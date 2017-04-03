@@ -572,7 +572,7 @@ public class Global extends MultiDexApplication {
         if (val.contains(".")) {
             int decLen = val.substring(val.indexOf('.')).length();
             if (decLen > 4) {
-                val = val.substring(0, val.indexOf('.') + 4);
+                val = val.substring(0, val.indexOf('.') + 5);
             }
         }
         return (Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(NumberUtils.cleanCurrencyFormatedNumber(val)))));
@@ -613,11 +613,11 @@ public class Global extends MultiDexApplication {
     }
 
     public static String formatNumToLocale(double val) {
-
-        NumberFormat nf = NumberFormat.getNumberInstance(Locale.getDefault());
-        nf.setParseIntegerOnly(false);
-        DecimalFormat df = (DecimalFormat) nf;
-        return df.format(val);
+//        NumberFormat nf = NumberFormat.getNumberInstance(Locale.getDefault());
+//        nf.setParseIntegerOnly(false);
+//        DecimalFormat df = (DecimalFormat) nf;
+//        return df.format(val);
+        return String.format(Locale.getDefault(), "%.4f", val);
     }
 
     public static void generateDebugFile(String sBody) {

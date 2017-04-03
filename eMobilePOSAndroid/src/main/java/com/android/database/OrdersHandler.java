@@ -153,7 +153,7 @@ public class OrdersHandler {
                 insert.bindString(index(total_lines), TextUtils.isEmpty(order.total_lines) ? "0" : order.total_lines); // cust_id
                 insert.bindString(index(total_lines_pay),
                         TextUtils.isEmpty(order.total_lines_pay) ? "0" : order.total_lines_pay); // cust_id
-                insert.bindString(index(ord_total), TextUtils.isEmpty(order.ord_total) ? "0" : order.ord_total); // cust_id
+                insert.bindString(index(ord_total), String.valueOf(TextUtils.isEmpty(order.ord_total) ? "0" : Global.getBigDecimalNum(order.ord_total, 2))); // cust_id
                 insert.bindString(index(ord_comment), order.ord_comment == null ? "" : order.ord_comment); // cust_id
                 insert.bindString(index(ord_delivery), order.ord_delivery == null ? "" : order.ord_delivery); // cust_id
                 insert.bindString(index(ord_timecreated), order.ord_timecreated == null ? "" : order.ord_timecreated); // cust_id
