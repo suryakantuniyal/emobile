@@ -34,6 +34,7 @@ import com.android.support.MyEditText;
 import com.android.support.MyPreferences;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.android.support.textwatcher.GiftCardTextWatcher;
+import com.crashlytics.android.Crashlytics;
 import com.honeywell.decodemanager.DecodeManager;
 import com.honeywell.decodemanager.DecodeManager.SymConfigActivityOpeartor;
 import com.honeywell.decodemanager.SymbologyConfigs;
@@ -156,6 +157,7 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
                 mDecodeManager.setSymbologyDefaults(CommonDefine.SymbologyID.SYM_UPCA);
             } catch (RemoteException e) {
                 e.printStackTrace();
+                Crashlytics.logException(e);
             }
         }
         if (mDecodeManager != null) {
@@ -175,6 +177,7 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
                 mDecodeManager = null;
             } catch (IOException e) {
                 e.printStackTrace();
+                Crashlytics.logException(e);
             }
         }
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
@@ -195,6 +198,7 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
                 mDecodeManager = null;
             } catch (IOException e) {
                 e.printStackTrace();
+                Crashlytics.logException(e);
             }
         }
 
@@ -474,6 +478,7 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
                     DoScan();
                 } catch (RemoteException e) {
                     e.printStackTrace();
+                    Crashlytics.logException(e);
                 }
             } else
                 DoScan();
@@ -490,6 +495,7 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
             }
         } catch (RemoteException e) {
             e.printStackTrace();
+            Crashlytics.logException(e);
         }
     }
 
@@ -527,6 +533,7 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
                             mDecodeManager.setSymbologyConfigs(symconfig);
                         } catch (RemoteException e) {
                             e.printStackTrace();
+                            Crashlytics.logException(e);
                         }
                     }
                 }

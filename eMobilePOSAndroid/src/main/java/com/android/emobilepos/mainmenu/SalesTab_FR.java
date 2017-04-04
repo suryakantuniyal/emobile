@@ -57,6 +57,7 @@ import com.android.emobilepos.shifts.ShiftsActivity;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.crashlytics.android.Crashlytics;
 
 import java.util.HashMap;
 
@@ -86,6 +87,7 @@ public class SalesTab_FR extends Fragment {
                     type = "-1";
                 transType = Integer.parseInt(type);
             } catch (NumberFormatException e) {
+                Crashlytics.logException(e);
                 transType = -1;
             }
 

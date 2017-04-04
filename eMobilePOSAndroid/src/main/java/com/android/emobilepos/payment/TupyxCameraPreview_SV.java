@@ -8,6 +8,8 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import com.crashlytics.android.Crashlytics;
+
 import java.io.IOException;
 
 public class TupyxCameraPreview_SV extends SurfaceView implements SurfaceHolder.Callback {
@@ -54,6 +56,8 @@ public class TupyxCameraPreview_SV extends SurfaceView implements SurfaceHolder.
         try {
             mCamera.setPreviewDisplay(holder);
         } catch (IOException e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
             Log.d("DBG", "Error setting camera preview: " + e.getMessage());
         }
     }

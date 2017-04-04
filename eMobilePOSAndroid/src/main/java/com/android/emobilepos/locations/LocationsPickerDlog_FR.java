@@ -16,6 +16,7 @@ import android.widget.ListView;
 import com.android.database.Locations_DB;
 import com.android.emobilepos.R;
 import com.android.emobilepos.holders.Locations_Holder;
+import com.crashlytics.android.Crashlytics;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -87,6 +88,7 @@ public class LocationsPickerDlog_FR extends DialogFragment implements Comparator
 
             } catch (Exception e) {
                 e.printStackTrace();
+                Crashlytics.logException(e);
             }
         }
         return null;

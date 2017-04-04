@@ -15,6 +15,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.SalesAssociateListAdapter;
 import com.android.emobilepos.models.realms.Clerk;
 import com.android.support.SynchMethods;
+import com.crashlytics.android.Crashlytics;
 
 import org.xml.sax.SAXException;
 
@@ -100,8 +101,10 @@ public class SalesAssociateListFragment extends Fragment implements AdapterView.
                 SynchMethods.synchSalesAssociateDinnindTablesConfiguration(getActivity());
             } catch (SAXException e) {
                 e.printStackTrace();
+                Crashlytics.logException(e);
             } catch (IOException e) {
                 e.printStackTrace();
+                Crashlytics.logException(e);
             }
             return null;
         }

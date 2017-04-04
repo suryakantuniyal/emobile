@@ -33,6 +33,7 @@ import com.android.support.Global;
 import com.android.support.NetworkUtils;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.crashlytics.android.Crashlytics;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -373,11 +374,16 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
 
                         } catch (ParserConfigurationException e) {
                             e.printStackTrace();
+                            Crashlytics.logException(e);
                         } catch (SAXException e) {
                             e.printStackTrace();
+                            Crashlytics.logException(e);
                         } catch (IOException e) {
                             e.printStackTrace();
+                            Crashlytics.logException(e);
                         } catch (Exception e) {
+                            e.printStackTrace();
+                            Crashlytics.logException(e);
                             StoredPaymentsDAO.updateStoreForwardPaymentToRetry(storeAndForward);
                         }
 

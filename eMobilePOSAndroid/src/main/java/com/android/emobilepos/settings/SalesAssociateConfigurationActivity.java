@@ -11,6 +11,7 @@ import com.android.emobilepos.models.realms.Clerk;
 import com.android.support.Global;
 import com.android.support.SynchMethods;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.crashlytics.android.Crashlytics;
 
 import java.util.List;
 
@@ -102,6 +103,7 @@ public class SalesAssociateConfigurationActivity extends BaseFragmentActivityAct
                 SynchMethods.postSalesAssociatesConfiguration(SalesAssociateConfigurationActivity.this, realm.copyFromRealm(assosiates));
             } catch (Exception e) {
                 e.printStackTrace();
+                Crashlytics.logException(e);
             }
             return null;
         }

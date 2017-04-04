@@ -4,6 +4,7 @@ import android.app.Activity;
 
 import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.orders.OrderProduct;
+import com.crashlytics.android.Crashlytics;
 
 import java.util.List;
 
@@ -25,6 +26,7 @@ public class SplitedOrder extends Order implements Cloneable, Comparable<Splited
             Thread.sleep(10);
         } catch (InterruptedException e) {
             e.printStackTrace();
+            Crashlytics.logException(e);
         }
     }
 

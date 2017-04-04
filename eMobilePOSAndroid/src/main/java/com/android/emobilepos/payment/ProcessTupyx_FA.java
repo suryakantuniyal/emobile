@@ -32,6 +32,7 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NumberUtils;
 import com.android.support.Post;
+import com.crashlytics.android.Crashlytics;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -362,9 +363,8 @@ public class ProcessTupyx_FA extends FragmentActivity implements OnClickListener
                 }
 
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-//				Tracker tracker = EasyTracker.getInstance(activity);
-//				tracker.send(MapBuilder.createException(e.getStackTrace().toString(), false).build());
+                e.printStackTrace();
+                Crashlytics.logException(e);
             }
 
             return null;

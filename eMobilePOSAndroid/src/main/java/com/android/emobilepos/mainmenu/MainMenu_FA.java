@@ -41,6 +41,7 @@ import com.android.support.MyPreferences;
 import com.android.support.NetworkUtils;
 import com.android.support.SynchMethods;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.microsoft.windowsazure.notifications.NotificationsManager;
@@ -295,8 +296,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
             setHasEmbeddedTabsMethod.setAccessible(true);
             setHasEmbeddedTabsMethod.invoke(actionBar, false);
         } catch (final Exception e) {
-            // Handle issues as needed: log, warn user, fallback etc
-            // This error is safe to ignore, standard tabs will appear.
+            Crashlytics.logException(e);
         }
     }
 

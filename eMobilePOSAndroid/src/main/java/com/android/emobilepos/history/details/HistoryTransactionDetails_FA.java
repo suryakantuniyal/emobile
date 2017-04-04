@@ -56,6 +56,7 @@ import com.android.support.MyPreferences;
 import com.android.support.NumberUtils;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.crashlytics.android.Crashlytics;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -491,11 +492,13 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
             image = Drawable.createFromStream(is, "src");
 
         } catch (MalformedURLException e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
             image = null;
-
         } catch (IOException e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
             image = null;
-
         }
         return image;
     }
@@ -698,7 +701,8 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                     }
                 }
             } catch (Exception e) {
-
+                e.printStackTrace();
+                Crashlytics.logException(e);
             }
             return null;
         }

@@ -43,6 +43,7 @@ import com.android.support.NumberUtils;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.android.support.textwatcher.GiftCardTextWatcher;
+import com.crashlytics.android.Crashlytics;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -611,7 +612,9 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
                         errorMsg = xml;
                 }
 
-            } catch (Exception ignored) {
+            } catch (Exception e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
             }
             return null;
         }
@@ -729,7 +732,9 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
         try {
             Date date = dt2.parse(cardInfoManager.getCardExpYear());
             formatedYear = dt.format(date);
-        } catch (ParseException ignored) {
+        } catch (ParseException e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
 
         }
 

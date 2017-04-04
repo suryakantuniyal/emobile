@@ -18,6 +18,7 @@ import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.support.DateUtils;
 import com.android.support.HttpClient;
 import com.android.support.MyPreferences;
+import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 
@@ -164,7 +165,7 @@ public class PollingNotificationService extends Service {
 
             lastPolled = new Date();
         } catch (Exception e) {
-            e.printStackTrace();
+            Crashlytics.logException(e);
         }
     }
 
