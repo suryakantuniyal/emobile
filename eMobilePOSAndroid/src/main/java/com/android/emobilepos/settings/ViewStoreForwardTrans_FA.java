@@ -75,7 +75,6 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
         btnProcessAll = (Button) findViewById(R.id.btnProcessAll);
         btnProcessAll.setOnClickListener(this);
         btnProcessAll.setEnabled(true);
-        dbStoredPay = new StoredPaymentsDAO(this);
         RecyclerView listView = (RecyclerView) findViewById(R.id.listView);
         storeAndForwards = realm.where(StoreAndForward.class).findAll();
         RealmChangeListener<RealmResults<StoreAndForward>> changeListener = new RealmChangeListener<RealmResults<StoreAndForward>>() {

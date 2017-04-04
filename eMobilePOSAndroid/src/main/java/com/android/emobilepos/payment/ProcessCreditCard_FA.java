@@ -11,6 +11,7 @@ import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Message;
 import android.os.PowerManager;
 import android.text.Editable;
 import android.text.InputType;
@@ -1259,8 +1260,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             }
         }
 
-        StoredPaymentsDAO dbStoredPayments = new StoredPaymentsDAO(this);
-        dbStoredPayments.insert(activity, payment, StoreAndForward.PaymentType.CREDIT_CARD);
+        StoredPaymentsDAO.insert(activity, payment, StoreAndForward.PaymentType.CREDIT_CARD);
         // payHandler.insert(payment);
 
         if (myPref.getPreferences(MyPreferences.pref_handwritten_signature)) {
@@ -1575,9 +1575,11 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             }
         } else {
             if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
-                StoredPaymentsDAO dbStoredPayments = new StoredPaymentsDAO(this);
-                Global.amountPaid = dbStoredPayments.updateSignaturePayment(payment.getPay_uuid());
-
+                Global.amountPaid = StoredPaymentsDAO.getStoreAndForward(payment.getPay_uuid()).getPayment().getPay_amount();
+                Message msg = Global.handler.obtainMessage();
+                msg.what = 0;
+                msg.obj = PaymentsHandler.getLastPaymentInserted();
+                Global.handler.sendMessage(msg);
                 OrdersHandler dbOrders = new OrdersHandler(this);
                 dbOrders.updateOrderStoredFwd(payment.getJob_id(), "1");
             } else {
@@ -1728,9 +1730,14 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         } else if (resultCode == -1) {
             if (myPref.getSwiperType() != Global.NOMAD) {
                 if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
-                    StoredPaymentsDAO dbStoredPayments = new StoredPaymentsDAO(this);
-                    Global.amountPaid = dbStoredPayments.updateSignaturePayment(PaymentsHandler.getLastPaymentInserted().getPay_uuid());
-
+//                    Global.amountPaid = StoredPaymentsDAO.updateSignaturePayment(PaymentsHandler.getLastPaymentInserted().getPay_uuid(), global.encodedImage);
+                    Payment payment = StoredPaymentsDAO.getStoreAndForward(PaymentsHandler.getLastPaymentInserted().getPay_uuid()).getPayment();
+                    Global.amountPaid = payment.getPay_amount();
+                    PaymentsHandler.getLastPaymentInserted().setPay_signature(global.encodedImage);
+                    Message msg = Global.handler.obtainMessage();
+                    msg.what = 0;
+                    msg.obj = PaymentsHandler.getLastPaymentInserted();
+                    Global.handler.sendMessage(msg);
                     OrdersHandler dbOrders = new OrdersHandler(this);
                     dbOrders.updateOrderStoredFwd(PaymentsHandler.getLastPaymentInserted().getJob_id(), "1");
                 } else {

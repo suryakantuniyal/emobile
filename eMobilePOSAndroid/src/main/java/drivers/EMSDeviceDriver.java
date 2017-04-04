@@ -845,8 +845,7 @@ public class EMSDeviceDriver {
             PaymentsHandler payHandler = new PaymentsHandler(activity);
             List<PaymentDetails> detailsList = payHandler.getPaymentForPrintingTransactions(ordID);
             if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
-                StoredPaymentsDAO dbStoredPay = new StoredPaymentsDAO(activity);
-                detailsList.addAll(dbStoredPay.getPaymentForPrintingTransactions(ordID));
+                detailsList.addAll(StoredPaymentsDAO.getPaymentForPrintingTransactions(ordID));
             }
             String receiptSignature;
             size = detailsList.size();
@@ -1543,11 +1542,10 @@ public class EMSDeviceDriver {
             long pay_count = payHandler.paymentExist(payID, true);
             if (pay_count == 0) {
                 isStoredFwd = true;
-                StoredPaymentsDAO dbStoredPay = new StoredPaymentsDAO(activity);
                 if (emvContainer != null && emvContainer.getGeniusResponse() != null && emvContainer.getGeniusResponse().getStatus().equalsIgnoreCase("DECLINED")) {
                     type = 2;
                 }
-                payArray = dbStoredPay.getPrintingForPaymentDetails(payID, type);
+                payArray = StoredPaymentsDAO.getPrintingForPaymentDetails(payID, type);
             } else {
                 payArray = payHandler.getPrintingForPaymentDetails(payID, type);
             }

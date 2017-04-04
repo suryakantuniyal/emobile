@@ -130,7 +130,6 @@ public class BoloroPayment {
 
     public static void seveBoloroAsInvoice(Activity activity, StoreAndForward storeAndForward, HashMap<String, String> parsedMap) {
         OrdersHandler dbOrdHandler = new OrdersHandler(activity);
-        StoredPaymentsDAO dbStoredPay = new StoredPaymentsDAO(activity);
         //remove from StoredPayment and change order to Invoice
         StringBuilder sb = new StringBuilder();
         String job_id = storeAndForward.getPayment().getJob_id();
@@ -154,7 +153,7 @@ public class BoloroPayment {
         dbOrdHandler.updateOrderComment(job_id, sb.toString());
 
         //Remove as pending stored & forward if no more payments are pending to be processed.
-        if (dbStoredPay.getCountPendingStoredPayments(job_id) <= 0)
+        if (StoredPaymentsDAO.getCountPendingStoredPayments(job_id) <= 0)
             dbOrdHandler.updateOrderStoredFwd(job_id, "0");
 
     }

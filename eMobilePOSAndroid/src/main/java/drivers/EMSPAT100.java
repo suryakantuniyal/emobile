@@ -182,8 +182,7 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         long pay_count = payHandler.paymentExist(payID);
         if (pay_count == 0) {
             isStoredFwd = true;
-            StoredPaymentsDAO dbStoredPay = new StoredPaymentsDAO(activity);
-            paymentDetails = dbStoredPay.getPrintingForPaymentDetails(payID, type);
+            paymentDetails = StoredPaymentsDAO.getPrintingForPaymentDetails(payID, type);
         } else {
             paymentDetails = payHandler.getPrintingForPaymentDetails(payID, type);
         }

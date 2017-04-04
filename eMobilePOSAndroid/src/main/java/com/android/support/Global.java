@@ -13,6 +13,9 @@ import android.graphics.PorterDuff.Mode;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.multidex.MultiDexApplication;
@@ -34,6 +37,7 @@ import com.android.crashreport.ExceptionHandler;
 import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.ClerkDAO;
 import com.android.dao.RealmModule;
+import com.android.dao.StoredPaymentsDAO;
 import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.holders.Locations_Holder;
@@ -45,6 +49,7 @@ import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Clerk;
+import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.ProductAttribute;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
@@ -314,9 +319,34 @@ public class Global extends MultiDexApplication {
     private String selectedDeliveryDate;
     private String selectedComments;
     private String selectedPO;
+    public enum HandlerMessages {
+        UPDATE_PAYMENT_SIGNATURE(0);
+
+        private int code;
+        HandlerMessages(int code) {
+            this.code = code;
+        }
+        public int getCode(){
+            return this.code;
+        }
+    }
+
     private Dialog globalDlog;
-
-
+    public static Handler handler = new Handler(Looper.getMainLooper()){
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what){
+                case 0:{
+                    Realm realm = Realm.getDefaultInstance();
+                    realm.beginTransaction();
+                    Payment payment = (Payment) msg.obj;
+                    realm.insertOrUpdate(payment);
+                    realm.commitTransaction();
+                break;
+                }
+            }
+        }
+    };
     public static String getPeripheralName(int type) {
         String _name = "Unknown";
         switch (type) {

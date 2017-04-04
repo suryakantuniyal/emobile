@@ -577,8 +577,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         btnVoid.setClickable(false);
 
         if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
-            StoredPaymentsDAO dbStoredPayments = new StoredPaymentsDAO(activity);
-            if (dbStoredPayments.getRetryTransCount(order_id) > 0) {
+            if (StoredPaymentsDAO.getRetryTransCount(order_id) > 0) {
                 //There are pending stored&forward cannot void_payment
                 Global.showPrompt(activity, R.string.dlog_title_error, getString(R.string.dlog_msg_pending_stored_forward));
                 btnVoid.setEnabled(true);
@@ -619,8 +618,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         //Check if Stored&Forward active and delete from record if any payment were made
         if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
             handler.updateOrderStoredFwd(order_id, "0");
-            StoredPaymentsDAO dbStoredPayments = new StoredPaymentsDAO(this);
-            dbStoredPayments.deletePaymentFromJob(order_id);
+            StoredPaymentsDAO.deletePaymentFromJob(order_id);
         }
         payHandler = new PaymentsHandler(activity);
         listVoidPayments = payHandler.getOrderPayments(order_id);

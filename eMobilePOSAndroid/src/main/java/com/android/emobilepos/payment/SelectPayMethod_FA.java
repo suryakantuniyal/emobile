@@ -729,8 +729,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         MyPreferences myPref = new MyPreferences(activity);
         if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
             handler.updateOrderStoredFwd(job_id, "0");
-            StoredPaymentsDAO dbStoredPayments = new StoredPaymentsDAO(activity);
-            dbStoredPayments.deletePaymentFromJob(job_id);
+            StoredPaymentsDAO.deletePaymentFromJob(job_id);
         }
         HashMap<String, String> parsedMap;
         PaymentsHandler payHandler = new PaymentsHandler(activity);

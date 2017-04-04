@@ -30,6 +30,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import io.realm.Realm;
+
 public class PaymentsHandler {
 
     private final String pay_id = "pay_id";
@@ -109,7 +111,11 @@ public class PaymentsHandler {
     }
 
     public static void setLastPaymentInserted(Payment payment) {
-        lastPaymentInserted = payment;
+        if (payment != null && payment.isManaged()) {
+            lastPaymentInserted = Realm.getDefaultInstance().copyFromRealm(payment);
+        } else {
+            lastPaymentInserted = payment;
+        }
     }
 
     public final List<String> attr = Arrays.asList(pay_id, group_pay_id, cust_id, tupyx_user_id, emp_id,
