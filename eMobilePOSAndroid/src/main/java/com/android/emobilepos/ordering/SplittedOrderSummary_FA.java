@@ -153,7 +153,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
         Bundle extras = this.getIntent().getExtras();
         preferences = new MyPreferences(this);
         generateNewID = new GenerateNewID(this);
-        assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+        assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
 
         Gson gson = JsonUtils.getInstance();
         if (extras != null) {

@@ -34,7 +34,7 @@ public class OrderCalculator {
         this.discount = discount;
         this.orderTaxes = orderTaxes;
         myPref = new MyPreferences(activity);
-        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
         this.taxId = taxId;
         isVAT = assignEmployee.isVAT();
         this.activity = activity;

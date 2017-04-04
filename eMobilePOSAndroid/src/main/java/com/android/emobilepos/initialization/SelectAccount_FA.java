@@ -92,7 +92,7 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
             dbManager = new DBManager(activity, Global.FROM_LOGIN_ACTIVITTY);
             if (dbManager.isNewDBVersion()) {
                 dbManager.alterTables();
-                AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+                AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(true);
                 if (assignEmployee == null && !myPref.getEmpIdFromPreferences().isEmpty()) {
                     assignEmployee = new AssignEmployee();
                     assignEmployee.setEmpId(Integer.parseInt(myPref.getEmpIdFromPreferences()));

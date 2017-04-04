@@ -12,7 +12,7 @@ import io.realm.Realm;
 
 public class AssignEmployeeDAO {
 
-    public static AssignEmployee getAssignEmployee() {
+    public static AssignEmployee getAssignEmployee(boolean returnManaged) {
         Realm r = Realm.getDefaultInstance();
         AssignEmployee employee;
         try {
@@ -21,7 +21,11 @@ public class AssignEmployeeDAO {
         } finally {
             r.commitTransaction();
         }
-        return employee;
+        if (returnManaged || employee == null) {
+            return employee;
+        } else {
+            return r.copyFromRealm(employee);
+        }
     }
 
     public static void insertAssignEmployee(List<AssignEmployee> assignEmployees) throws Exception {
@@ -42,7 +46,7 @@ public class AssignEmployeeDAO {
     public static void updateLastOrderId(String ord_id) {
         Realm r = Realm.getDefaultInstance();
         try {
-            AssignEmployee assignEmployee = getAssignEmployee();
+            AssignEmployee assignEmployee = getAssignEmployee(true);
             r.beginTransaction();
             assignEmployee.setMSLastOrderID(ord_id);
             r.insertOrUpdate(assignEmployee);
@@ -54,7 +58,7 @@ public class AssignEmployeeDAO {
     public static void updateLastTransferId(String transferId) {
         Realm r = Realm.getDefaultInstance();
         try {
-            AssignEmployee assignEmployee = getAssignEmployee();
+            AssignEmployee assignEmployee = getAssignEmployee(true);
             r.beginTransaction();
             assignEmployee.setMSLastTransferID(transferId);
             r.insertOrUpdate(assignEmployee);

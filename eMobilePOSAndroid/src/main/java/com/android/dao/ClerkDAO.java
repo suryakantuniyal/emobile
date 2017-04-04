@@ -122,7 +122,7 @@ public class ClerkDAO {
 
     public static HashMap<String, List<Clerk>> getSalesAssociatesByLocation() {
         Realm realm = Realm.getDefaultInstance();
-        String defaultLocation = AssignEmployeeDAO.getAssignEmployee().getDefaultLocation();
+        String defaultLocation = AssignEmployeeDAO.getAssignEmployee(false).getDefaultLocation();
         RealmResults<DinningTable> tables = realm.where(DinningTable.class)
                 .equalTo("locationId", defaultLocation)
                 .findAll();

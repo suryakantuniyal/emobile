@@ -512,7 +512,7 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
             cardType = "Reward";
         PaymentMethod paymentMethod = PaymentMethodDAO.getPaymentMethodByType(cardType);
         if (populateCardInfo() && paymentMethod != null) {
-            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
             payment = new Payment(this);
             GenerateNewID generator = new GenerateNewID(this);
             String tempPay_id;

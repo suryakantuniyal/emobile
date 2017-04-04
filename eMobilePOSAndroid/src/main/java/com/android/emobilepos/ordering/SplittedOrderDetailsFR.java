@@ -69,7 +69,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                 container, false);
         this.inflater = inflater;
         myPref = new MyPreferences(getActivity());
-        assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+        assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
         LinearLayout previewContainer = (LinearLayout) detailView.findViewById(R.id.receiptPreviewContainer);
         ViewGroup.LayoutParams params = previewContainer.getLayoutParams();
         params.width = myPref.getPrintPreviewLayoutWidth();

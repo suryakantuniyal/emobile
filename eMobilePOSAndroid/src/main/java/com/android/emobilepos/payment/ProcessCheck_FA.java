@@ -99,7 +99,7 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
         super.onCreate(savedInstanceState);
         extras = this.getIntent().getExtras();
         activity = this;
-        assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+        assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
 
         myPref = new MyPreferences(activity);
         String custTaxCode;

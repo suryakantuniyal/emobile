@@ -59,7 +59,7 @@ public class GenerateXML {
     public GenerateXML(Context activity) {
         info = new MyPreferences(activity);
         myPref = new MyPreferences(activity);
-        AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee();
+        AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee(false);
         if (employee == null && !TextUtils.isEmpty(myPref.getEmpIdFromPreferences())) {
             this.assignEmployee = new AssignEmployee();
             this.assignEmployee.setEmpId(Integer.parseInt(myPref.getEmpIdFromPreferences()));

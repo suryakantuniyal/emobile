@@ -1108,7 +1108,7 @@ public class PaymentsHandler {
             cursor.close();
             stmt.close();
             if (TextUtils.isEmpty(lastPayID)) {
-                AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+                AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
                 lastPayID = assignEmployee.getEmpId() + "-" + "00001" + "-" + year;
             }
             myPref.setLastPayID(lastPayID);

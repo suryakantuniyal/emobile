@@ -41,7 +41,7 @@ public class ProductAddonsHandler {
 
     public ProductAddonsHandler(Context activity) {
         myPref = new MyPreferences(activity);
-        assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+        assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
         attrHash = new HashMap<>();
         addrData = new ArrayList<>();
         sb1 = new StringBuilder();

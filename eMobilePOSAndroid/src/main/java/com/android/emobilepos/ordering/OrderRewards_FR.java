@@ -158,7 +158,7 @@ public class OrderRewards_FR extends Fragment implements OnClickListener {
     }
 
     private Payment getPayment(boolean isLoyalty, BigDecimal chargeAmount) {
-        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
 
         Payment loyaltyRewardPayment = new Payment(getActivity());
         MyPreferences preferences = new MyPreferences(getActivity());

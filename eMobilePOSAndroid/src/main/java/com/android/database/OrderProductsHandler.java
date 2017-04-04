@@ -8,9 +8,9 @@ import android.util.Log;
 
 import com.android.dao.AssignEmployeeDAO;
 import com.android.emobilepos.models.Discount;
-import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Product;
+import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.support.MyPreferences;
 
@@ -79,6 +79,7 @@ public class OrderProductsHandler {
             discount_value, prod_istaxable, discount_is_taxable, discount_is_fixed, onHand, imgURL, prod_price,
             prod_type, itemTotal, itemSubtotal, addon_section_name, addon_position, hasAddons, cat_id, cat_name, assignedSeat,
             seatGroupId, addon_ordprod_id, prodPricePoints);
+    private AssignEmployee assignEmployee;
 
 
     private StringBuilder sb1, sb2, sb3;
@@ -190,7 +191,7 @@ public class OrderProductsHandler {
                 insert.bindString(index(prod_price), TextUtils.isEmpty(prod.getProd_price()) ? "0" : prod.getProd_price()); // prod_price
                 insert.bindString(index(prod_type), prod.getProd_type() == null ? "" : prod.getProd_type()); // prod_type
                 insert.bindString(index(itemTotal), TextUtils.isEmpty(prod.getItemTotal()) ? "0" : prod.getItemTotal()); // itemTotal
-                insert.bindString(index(itemSubtotal), String.valueOf(prod.getItemSubtotalCalculated()==null ?
+                insert.bindString(index(itemSubtotal), String.valueOf(prod.getItemSubtotalCalculated() == null ?
                         "0" : prod.getItemSubtotalCalculated())); // itemSubtotal
                 insert.bindString(index(hasAddons), String.valueOf(prod.getHasAddons())); // hasAddons
                 insert.bindString(index(addon_section_name),
@@ -263,7 +264,7 @@ public class OrderProductsHandler {
             insert.bindString(index(prod_price), TextUtils.isEmpty(prod.getProd_price()) ? "0" : prod.getProd_price()); // prod_price
             insert.bindString(index(prod_type), TextUtils.isEmpty(prod.getProd_type()) ? "" : prod.getProd_type()); // prod_type
             insert.bindString(index(itemTotal), TextUtils.isEmpty(prod.getItemTotal()) ? "0" : prod.getItemTotal()); // itemTotal
-            insert.bindString(index(itemSubtotal), String.valueOf(prod.getItemSubtotalCalculated()==null ? "0" : prod.getItemSubtotalCalculated())); // itemSubtotal
+            insert.bindString(index(itemSubtotal), String.valueOf(prod.getItemSubtotalCalculated() == null ? "0" : prod.getItemSubtotalCalculated())); // itemSubtotal
             insert.bindString(index(hasAddons), String.valueOf(prod.getHasAddons())); // hasAddons
             insert.bindString(index(addon_section_name),
                     prod.getAddon_section_name() == null ? "" : prod.getAddon_section_name());
@@ -386,11 +387,9 @@ public class OrderProductsHandler {
     }
 
     public Cursor getCursorData(String orderId) {
-        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
-
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT ").append(sb1.toString()).append(",");
-        if (assignEmployee.isVAT())
+        if (getAssignEmployee().isVAT())
             sb.append("itemTotal AS 'totalLineValue' FROM ");
         else
             sb.append("(itemTotal+prod_taxValue) AS 'totalLineValue' FROM ");
@@ -735,5 +734,12 @@ public class OrderProductsHandler {
 //            orderProduct.setItemSubtotal(String.valueOf(orderProduct.getItemSubtotalCalculated()));
             completeProductFields(orderProduct.addonsProducts, activity);
         }
+    }
+
+    public AssignEmployee getAssignEmployee() {
+        if (this.assignEmployee == null) {
+            this.assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+        }
+        return this.assignEmployee;
     }
 }

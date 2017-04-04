@@ -97,7 +97,7 @@ public class EMSAsura extends EMSDeviceDriver
     private JABarcodeReader barcodeReader;
     private JAPrinterStatus status;
     private JAPrintCashDrawer cashDrawer;
-    AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+    AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
 
     @Override
     public void connect(Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {

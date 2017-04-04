@@ -150,7 +150,7 @@ public class MemoTextHandler {
 	public HashMap<String,String>getOrderInfo()
 	{
 		HashMap<String,String>map = new HashMap<String,String>();
-		AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+		AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
 		String query = "SELECT * FROM memotext";
 		
 		Cursor c = DBManager.getDatabase().rawQuery(query, null);

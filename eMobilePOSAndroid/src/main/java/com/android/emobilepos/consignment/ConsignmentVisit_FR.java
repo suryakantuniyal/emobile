@@ -117,7 +117,7 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
         @Override
         protected String doInBackground(String... params) {
             ordersHandler = new OrdersHandler(activity);
-            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
 
             orderProductsHandler = new OrderProductsHandler(activity);
             consTransDBHandler = new ConsignmentTransactionHandler(activity);

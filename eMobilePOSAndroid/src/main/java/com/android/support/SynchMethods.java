@@ -180,7 +180,7 @@ public class SynchMethods {
             configuration.setClerks(location.getValue());
             configurations.add(configuration);
         }
-        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
 
         MyPreferences preferences = new MyPreferences(activity);
         StringBuilder url = new StringBuilder(activity.getString(R.string.sync_enablermobile_mesasconfig));
@@ -211,7 +211,7 @@ public class SynchMethods {
         JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
         List<DinningLocationConfiguration> configurations = new ArrayList<>();
         reader.beginArray();
-        String defaultLocation = AssignEmployeeDAO.getAssignEmployee().getDefaultLocation();
+        String defaultLocation = AssignEmployeeDAO.getAssignEmployee(false).getDefaultLocation();
         while (reader.hasNext()) {
             DinningLocationConfiguration configuration = gson.fromJson(reader, DinningLocationConfiguration.class);
             if (configuration.getLocationId().equalsIgnoreCase(defaultLocation)) {

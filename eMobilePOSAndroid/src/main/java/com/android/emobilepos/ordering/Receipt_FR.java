@@ -152,7 +152,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                    String _email, String ord_HoldName, String assignedTable, String associateId,
                                    List<OrderAttributes> orderAttributes, List<DataTaxes> orderTaxes, List<OrderProduct> orderProducts) {
         MyPreferences myPref = new MyPreferences(activity);
-        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
 
         Order order = new Order(activity);
         order.setOrderProducts(orderProducts);

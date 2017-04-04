@@ -844,7 +844,7 @@ public class SalesTab_FR extends Fragment {
                 empId = Integer.parseInt(myPref.getClerkID());
             }
         } else {
-            empId = AssignEmployeeDAO.getAssignEmployee().getEmpId();
+            empId = AssignEmployeeDAO.getAssignEmployee(false).getEmpId();
         }
         intent.putExtra("associateId", empId);
         startActivityForResult(intent, 0);

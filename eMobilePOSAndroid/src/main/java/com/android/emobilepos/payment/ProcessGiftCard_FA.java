@@ -107,7 +107,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         global = (Global) getApplication();
         activity = this;
         callBack = this;
-        assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+        assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
 
         Global.isEncryptSwipe = true;
         myPref = new MyPreferences(activity);

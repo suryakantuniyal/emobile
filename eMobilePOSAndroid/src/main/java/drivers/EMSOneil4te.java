@@ -53,7 +53,7 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
     private EMSDeviceDriver thisInstance;
     private EMSDeviceManager edm;
     private Resources resources;
-    AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+    AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
 
     public void registerAll() {
         this.registerPrinter();

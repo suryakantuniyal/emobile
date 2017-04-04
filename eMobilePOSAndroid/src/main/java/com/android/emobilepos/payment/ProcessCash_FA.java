@@ -92,7 +92,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         if (myPref.isCustSelected()) {
             custTaxCode = myPref.getCustTaxCode();
         } else {
-            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
             custTaxCode = assignEmployee.getTaxDefault();
         }
         groupTaxRate = TaxesHandler.getGroupTaxRate(custTaxCode);

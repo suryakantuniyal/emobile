@@ -42,7 +42,7 @@ public class TaxesCalculator {
     private BigDecimal discountable_sub_total;
     private BigDecimal itemsDiscountTotal;
     private BigDecimal taxableDueAmount = new BigDecimal(0.00);
-    AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+    AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
     private ArrayList<DataTaxes> listOrderTaxes;
 
     public TaxesCalculator(Activity activity, OrderProduct orderProduct, String taxID, Tax taxSelected,

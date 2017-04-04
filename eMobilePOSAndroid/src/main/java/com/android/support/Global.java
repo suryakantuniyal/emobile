@@ -1302,7 +1302,7 @@ public class Global extends MultiDexApplication {
                 .modules(Realm.getDefaultModule(), new RealmModule())
                 .build();
         Realm.setDefaultConfiguration(config);
-        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(true);
         if (assignEmployee == null) {
             assignEmployee = new AssignEmployee();
             MyPreferences preferences = new MyPreferences(this);

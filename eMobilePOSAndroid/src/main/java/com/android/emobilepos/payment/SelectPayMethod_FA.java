@@ -1003,7 +1003,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
     };
 
     private void processInquiry(boolean isLoyalty) {
-        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
 
         loyaltyRewardPayment = new Payment(this);
         Bundle extras = getIntent().getExtras();

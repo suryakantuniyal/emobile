@@ -39,7 +39,7 @@ public class GenerateNewID {
     }
 
     public String getNextID(IdType idType) {
-        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
         StringBuilder sb = new StringBuilder();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy", Locale.getDefault());
         String year = sdf.format(new Date());
@@ -89,7 +89,7 @@ public class GenerateNewID {
     public static boolean isValidLastId(String id, IdType idType) {
         switch (idType) {
             case ORDER_ID: {
-                String lastOrderID = AssignEmployeeDAO.getAssignEmployee().getMSLastOrderID();
+                String lastOrderID = AssignEmployeeDAO.getAssignEmployee(false).getMSLastOrderID();
                 EmobilePosId newId = new EmobilePosId(id);
                 EmobilePosId lastId = new EmobilePosId(lastOrderID);
                 if (Integer.parseInt(newId.getYear()) > Integer.parseInt(lastId.getYear())) {
