@@ -28,6 +28,7 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NetworkUtils;
 import com.android.support.Post;
+import com.crashlytics.android.Crashlytics;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -195,6 +196,8 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
                         }
                     }
                 } catch (Exception e) {
+                    e.printStackTrace();
+                    Crashlytics.logException(e);
                 }
 
             }
@@ -307,6 +310,8 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
                     }
 
                 } catch (Exception e) {
+                    e.printStackTrace();
+                    Crashlytics.logException(e);
                 }
             } else {
                 listTC = timeClockHandler.getEmployeeTimeClock(mClerkID);
@@ -339,6 +344,7 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
                             }
                         } catch (ParseException e) {
                             e.printStackTrace();
+                            Crashlytics.logException(e);
                         }
                     }
 

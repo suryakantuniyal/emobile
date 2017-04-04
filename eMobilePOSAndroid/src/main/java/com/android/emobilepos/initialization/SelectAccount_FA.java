@@ -29,6 +29,7 @@ import com.android.support.MyPreferences;
 import com.android.support.Post;
 import com.android.support.SynchMethods;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.crashlytics.android.Crashlytics;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -101,7 +102,7 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
                     try {
                         AssignEmployeeDAO.insertAssignEmployee(assignEmployees);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        Crashlytics.logException(e);
                     }
                 }
                 if (dbManager.unsynchItemsLeft()) {
@@ -183,7 +184,7 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
                 xr.parse(inSource);
                 proceed = Boolean.parseBoolean(handler.getData().toLowerCase(Locale.getDefault()));
             } catch (Exception e) {
-                e.printStackTrace();
+                Crashlytics.logException(e);
             }
             return proceed;
         }

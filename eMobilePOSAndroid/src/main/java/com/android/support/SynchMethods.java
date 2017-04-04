@@ -1620,19 +1620,17 @@ public class SynchMethods {
             myPref.setLastSendSync(date);
 
             isSending = false;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                if (!activity.isFinishing() && !activity.isDestroyed()) {
-                    if (myProgressDialog != null && myProgressDialog.isShowing()) {
-                        myProgressDialog.dismiss();
-                    }
-                }
-            } else {
-                if (!activity.isFinishing()) {
-                    if (myProgressDialog != null && myProgressDialog.isShowing()) {
-                        myProgressDialog.dismiss();
-                    }
-                }
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+//                if (!activity.isDestroyed()) {
+//                    if (myProgressDialog != null && myProgressDialog.isShowing()) {
+//                        myProgressDialog.dismiss();
+//                    }
+//                }
+//            } else {
+            if (myProgressDialog != null && myProgressDialog.isShowing()) {
+                myProgressDialog.dismiss();
             }
+//            }
 
             if (type == Global.FROM_SYNCH_ACTIVITY) {
                 if (isFromMainMenu) {
@@ -1651,7 +1649,13 @@ public class SynchMethods {
                 if (TextUtils.isEmpty(xml)) {
                     xml = context.getString(R.string.sync_fail);
                 }
-                Global.showPrompt(context, R.string.dlog_title_error, xml);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                    if (!activity.isFinishing() && !activity.isDestroyed()) {
+                        Global.showPrompt(activity, R.string.dlog_title_error, xml);
+                    }
+                } else if (!activity.isFinishing()) {
+                    Global.showPrompt(activity, R.string.dlog_title_error, xml);
+                }
             }
 
             activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);

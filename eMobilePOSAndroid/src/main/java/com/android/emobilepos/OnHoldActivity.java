@@ -48,6 +48,7 @@ import com.android.support.NetworkUtils;
 import com.android.support.OnHoldsManager;
 import com.android.support.SynchMethods;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.crashlytics.android.Crashlytics;
 
 import org.xml.sax.SAXException;
 
@@ -129,8 +130,10 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                 Log.d("NotificationHandler", "sendBroadcast");
             } catch (SAXException e) {
                 e.printStackTrace();
+                Crashlytics.logException(e);
             } catch (IOException e) {
                 e.printStackTrace();
+                Crashlytics.logException(e);
             }
             return null;
         }
@@ -354,6 +357,8 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                         OnHoldsManager.updateStatusOnHold(ordID, activity);
                     }
                 } catch (Exception e) {
+                    e.printStackTrace();
+                    Crashlytics.logException(e);
                 }
                 return null;
             } else {

@@ -58,6 +58,7 @@ import com.android.support.HttpClient;
 import com.android.support.MyPreferences;
 import com.android.support.SynchMethods;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.crashlytics.android.Crashlytics;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -1253,6 +1254,8 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     return nameList;
                 }
             } catch (Exception e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
             }
             return new ArrayList<>();
         }

@@ -40,6 +40,7 @@ import com.android.support.MyPreferences;
 import com.android.support.NumberUtils;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 
 import org.xml.sax.InputSource;
@@ -271,10 +272,12 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                     geniusResponse = new GeniusResponse();
                     geniusResponse.setErrorMessage(geniusTransportToken.getStatusMessage() + "\r\n" + geniusTransportToken.getEpayStatusCode());
                 }
-            } catch (Exception ex) {
+            } catch (Exception e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
                 if (geniusResponse == null)
                     geniusResponse = new GeniusResponse();
-                geniusResponse.setErrorMessage(ex.getMessage());
+                geniusResponse.setErrorMessage(e.getMessage());
             }
 
 //            }
@@ -444,6 +447,8 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
 
                 isReachable = code == 200 || code == 400;
             } catch (IOException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
                 isReachable = false;
             }
             return isReachable;
@@ -527,10 +532,12 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                     payment.setPay_signature(global.encodedImage);
 
 
-                } catch (FileNotFoundException ignored) {
-
-                } catch (IOException ignored) {
-
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                    Crashlytics.logException(e);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Crashlytics.logException(e);
                 }
             }
         }
@@ -542,7 +549,9 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
         public static Limiters toLimit(String str) {
             try {
                 return valueOf(str);
-            } catch (Exception ex) {
+            } catch (Exception e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
                 return null;
             }
         }

@@ -53,6 +53,7 @@ import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.ProductAttribute;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.zxing.BarcodeFormat;
@@ -454,7 +455,7 @@ public class Global extends MultiDexApplication {
                 try {
                     locationServices.wait(15000);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    Crashlytics.logException(e);
                 }
             }
         }
@@ -485,7 +486,7 @@ public class Global extends MultiDexApplication {
             byte[] b = baos.toByteArray();
             return Base64.encodeBytes(b);
         } catch (WriterException e) {
-            e.printStackTrace();
+            Crashlytics.logException(e);
         }
         return "";
     }
@@ -572,6 +573,7 @@ public class Global extends MultiDexApplication {
 
         } catch (ParseException e) {
             formatedDate = "";
+            Crashlytics.logException(e);
         }
         return formatedDate;
     }
@@ -625,7 +627,7 @@ public class Global extends MultiDexApplication {
             Number number = numFormater.parse(val);
             frmt = number.doubleValue();
         } catch (ParseException e) {
-
+            Crashlytics.logException(e);
         }
         return frmt;
     }
@@ -637,7 +639,7 @@ public class Global extends MultiDexApplication {
         try {
             number = cf.parse(val);
         } catch (ParseException e) {
-
+            Crashlytics.logException(e);
         }
         return number.doubleValue();
     }
@@ -663,6 +665,7 @@ public class Global extends MultiDexApplication {
             writer.close();
 
         } catch (IOException e) {
+            Crashlytics.logException(e);
         }
     }
 
@@ -828,6 +831,7 @@ public class Global extends MultiDexApplication {
 
             total = priceLevel.multiply(new BigDecimal(sum));
         } catch (NumberFormatException e) {
+            Crashlytics.logException(e);
         }
 
         double itemTotal = total.doubleValue();
@@ -1030,6 +1034,7 @@ public class Global extends MultiDexApplication {
             df.setMinimumFractionDigits(2);
             return (BigDecimal) df.parseObject(String.valueOf(valDbl));
         } catch (ParseException e) {
+            Crashlytics.logException(e);
             return new BigDecimal("0");
         }
     }
@@ -1079,7 +1084,7 @@ public class Global extends MultiDexApplication {
         try {
             decodedByte = Base64.decode(input);
         } catch (IOException e) {
-            e.printStackTrace();
+            Crashlytics.logException(e);
         }
         return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length);
     }
@@ -1185,7 +1190,7 @@ public class Global extends MultiDexApplication {
                         exists.notify();
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Crashlytics.logException(e);
                     synchronized (exists) {
                         exists.notify();
                     }
@@ -1197,7 +1202,7 @@ public class Global extends MultiDexApplication {
             try {
                 exists.wait(3000);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                Crashlytics.logException(e);
             }
         }
         return exists[0];
@@ -1313,7 +1318,7 @@ public class Global extends MultiDexApplication {
                 try {
                     AssignEmployeeDAO.insertAssignEmployee(employees);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Crashlytics.logException(e);
                 }
             }
         }

@@ -15,6 +15,7 @@ import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.models.firebase.NotificationEvent;
 import com.android.support.NetworkUtils;
 import com.android.support.SynchMethods;
+import com.crashlytics.android.Crashlytics;
 import com.microsoft.windowsazure.notifications.NotificationsHandler;
 
 import org.xml.sax.SAXException;
@@ -47,8 +48,10 @@ public class NotificationHandler extends NotificationsHandler {
                                     updateMainActivity(context, eventAction);
                                 } catch (SAXException e) {
                                     e.printStackTrace();
+                                    Crashlytics.logException(e);
                                 } catch (IOException e) {
                                     e.printStackTrace();
+                                    Crashlytics.logException(e);
                                 }
                             }
                         }).start();
@@ -63,8 +66,10 @@ public class NotificationHandler extends NotificationsHandler {
 //                                    updateMainActivity(context, eventAction);
                                 } catch (IOException e) {
                                     e.printStackTrace();
+                                    Crashlytics.logException(e);
                                 } catch (SAXException e) {
                                     e.printStackTrace();
+                                    Crashlytics.logException(e);
                                 }
                             }
                         }).start();

@@ -13,6 +13,7 @@ import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.GenerateNewID;
 import com.android.support.Global;
 import com.android.support.Post;
+import com.crashlytics.android.Crashlytics;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -97,6 +98,8 @@ public class BoloroPayment {
                         try {
                             Thread.sleep(ProcessBoloro_FA.POLLING_SLEEP_TIME);
                         } catch (InterruptedException e) {
+                            e.printStackTrace();
+                            Crashlytics.logException(e);
                         }
                     } else if (response.containsKey("next_action") && response.get("next_action").equals("SUCCESS")) {
                         Realm.getDefaultInstance().beginTransaction();
@@ -121,6 +124,7 @@ public class BoloroPayment {
             } while (!failed && isPolling && !transCompleted);
         } catch (Exception e) {
             e.printStackTrace();
+            Crashlytics.logException(e);
             if (Realm.getDefaultInstance().isInTransaction()) {
                 Realm.getDefaultInstance().cancelTransaction();
             }

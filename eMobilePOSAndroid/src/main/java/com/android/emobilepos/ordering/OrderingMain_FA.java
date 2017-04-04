@@ -69,6 +69,7 @@ import com.android.support.Post;
 import com.android.support.SynchMethods;
 import com.android.support.TerminalDisplay;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 import com.honeywell.decodemanager.DecodeManager;
 import com.honeywell.decodemanager.DecodeManager.SymConfigActivityOpeartor;
@@ -294,7 +295,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                         try {
                             mDecodeManager.setSymbologyConfigs(symconfig);
                         } catch (RemoteException e) {
-                            e.printStackTrace();
+                            Crashlytics.logException(e);
                         }
                     }
                 }
@@ -684,7 +685,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     mDecodeManager.release();
                     mDecodeManager = null;
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Crashlytics.logException(e);
                 }
             }
 
@@ -972,7 +973,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     scannerInDecodeMode = false;
                     DoScan();
                 } catch (RemoteException e) {
-                    e.printStackTrace();
+                    Crashlytics.logException(e);
                 }
             } else
                 DoScan();
@@ -987,7 +988,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 scannerInDecodeMode = true;
             }
         } catch (RemoteException e) {
-            e.printStackTrace();
+            Crashlytics.logException(e);
         }
     }
 
@@ -1398,6 +1399,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 }
 
             } catch (Exception e) {
+                Crashlytics.logException(e);
                 Global.showPrompt(OrderingMain_FA.this, R.string.dlog_title_error, e.getMessage());
             }
 

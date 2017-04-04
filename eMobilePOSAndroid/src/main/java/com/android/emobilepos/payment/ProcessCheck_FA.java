@@ -37,6 +37,7 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NumberUtils;
 import com.android.support.Post;
+import com.crashlytics.android.Crashlytics;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -793,7 +794,8 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
 
 
             } catch (Exception e) {
-
+                e.printStackTrace();
+                Crashlytics.logException(e);
             }
             return null;
         }

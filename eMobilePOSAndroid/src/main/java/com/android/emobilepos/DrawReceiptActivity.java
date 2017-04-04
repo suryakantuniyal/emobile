@@ -19,6 +19,7 @@ import com.android.emobilepos.payment.ProcessCreditCard_FA;
 import com.android.support.DrawView;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.crashlytics.android.Crashlytics;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -196,8 +197,11 @@ public class DrawReceiptActivity extends Activity implements OnClickListener {
                     }
 
                 } catch (FileNotFoundException e) {
-
+                    e.printStackTrace();
+                    Crashlytics.logException(e);
                 } catch (IOException e) {
+                    e.printStackTrace();
+                    Crashlytics.logException(e);
                 }
                 finish();
                 break;

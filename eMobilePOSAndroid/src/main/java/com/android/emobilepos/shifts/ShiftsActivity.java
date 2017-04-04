@@ -27,6 +27,7 @@ import com.android.support.NetworkUtils;
 import com.android.support.NumberUtils;
 import com.android.support.SynchMethods;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.crashlytics.android.Crashlytics;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -397,7 +398,7 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
                     sm.synchShifts();
                 } catch (Exception e) {
                     e.printStackTrace();
-                }
+                    Crashlytics.logException(e);                }
             }
             return null;
         }
@@ -519,6 +520,7 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
                     sm.postShift(ShiftsActivity.this);
                 } catch (Exception e) {
                     e.printStackTrace();
+                    Crashlytics.logException(e);
                     return false;
                 }
             }

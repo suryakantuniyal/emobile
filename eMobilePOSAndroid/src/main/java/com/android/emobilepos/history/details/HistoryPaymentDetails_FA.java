@@ -46,6 +46,7 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.crashlytics.android.Crashlytics;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -469,6 +470,8 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
                 } else
                     errorMsg = xml;
             } catch (Exception e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
             }
             return null;
         }
@@ -494,9 +497,13 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
             InputStream is = (InputStream) url.getContent();
             image = Drawable.createFromStream(is, "src");
         } catch (MalformedURLException e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
             image = null;
 
         } catch (IOException e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
             image = null;
         }
         return image;

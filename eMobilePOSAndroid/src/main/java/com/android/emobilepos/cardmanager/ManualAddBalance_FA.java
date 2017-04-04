@@ -30,6 +30,7 @@ import com.android.support.MyPreferences;
 import com.android.support.NumberUtils;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.crashlytics.android.Crashlytics;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -346,6 +347,8 @@ public class ManualAddBalance_FA extends BaseFragmentActivityActionBar implement
                 }
 
             } catch (Exception e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
             }
 
             return null;
@@ -416,9 +419,8 @@ public class ManualAddBalance_FA extends BaseFragmentActivityActionBar implement
             Date date = dt2.parse(cardInfoManager.getCardExpYear());
             formatedYear = dt.format(date);
         } catch (ParseException e) {
-            // TODO Auto-generated catch block
-//			Tracker tracker = EasyTracker.getInstance(activity);
-//			tracker.send(MapBuilder.createException(e.getStackTrace().toString(), false).build());
+            e.printStackTrace();
+            Crashlytics.logException(e);
         }
 
         cardInfoManager.setCardExpYear(formatedYear);
