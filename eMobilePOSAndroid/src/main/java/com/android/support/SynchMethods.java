@@ -1620,7 +1620,19 @@ public class SynchMethods {
             myPref.setLastSendSync(date);
 
             isSending = false;
-            myProgressDialog.dismiss();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                if (!activity.isFinishing() && !activity.isDestroyed()) {
+                    if (myProgressDialog != null && myProgressDialog.isShowing()) {
+                        myProgressDialog.dismiss();
+                    }
+                }
+            } else {
+                if (!activity.isFinishing()) {
+                    if (myProgressDialog != null && myProgressDialog.isShowing()) {
+                        myProgressDialog.dismiss();
+                    }
+                }
+            }
 
             if (type == Global.FROM_SYNCH_ACTIVITY) {
                 if (isFromMainMenu) {

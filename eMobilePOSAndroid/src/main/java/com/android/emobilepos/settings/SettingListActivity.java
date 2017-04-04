@@ -165,8 +165,8 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
 
     public enum SettingSection {
         GENERAL(0), RESTAURANT(1), GIFTCARD(2), PAYMENT_METHODS(3), PAYMENT_PROCESSING(4), PRINTING(5), PRODUCTS(6),
-        ACCOUNT(7), CASH_DRAWER(8), KIOSK(9), SHIFTS(10), SHIPPING_CALCULATION(11),
-        TRANSACTION(12), HANPOINT(13), SUPPORT(14), OTHERS(15);
+        ACCOUNT(7), CASH_DRAWER(8), KIOSK(9), SHIPPING_CALCULATION(10),
+        TRANSACTION(11), HANPOINT(12), SUPPORT(13), OTHERS(14);
         int code;
 
         SettingSection(int code) {
@@ -196,16 +196,14 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                 case 9:
                     return KIOSK;
                 case 10:
-                    return SHIFTS;
-                case 11:
                     return SHIPPING_CALCULATION;
-                case 12:
+                case 11:
                     return TRANSACTION;
-                case 13:
+                case 12:
                     return HANPOINT;
-                case 14:
+                case 13:
                     return SUPPORT;
-                case 15:
+                case 14:
                     return OTHERS;
                 default:
                     return GENERAL;
@@ -253,13 +251,6 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     }
                 case KIOSK:
                     return R.xml.settings_admin_kiosk_layout;
-                case SHIFTS:
-                    switch (settingsType) {
-                        case MANAGER:
-                            return R.xml.settings_manager_shifts_layout;
-                        default:
-                            return R.xml.settings_admin_shifts_layout;
-                    }
                 case SHIPPING_CALCULATION:
                     return R.xml.settings_admin_shipping_layout;
                 case TRANSACTION:
@@ -357,15 +348,6 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                 case KIOSK:
                     prefManager.findPreference("pref_customer_display").setOnPreferenceClickListener(this);
                     break;
-                case SHIFTS:
-                    openShiftPref = getPreferenceManager().findPreference("pref_open_shift");
-                    if (!myPref.getShiftIsOpen()) {
-                        CharSequence c = "\t\t" + getString(R.string.admin_close_shift) + " <" + myPref.getShiftClerkName() + ">";
-                        openShiftPref.setSummary(c);
-                    }
-                    openShiftPref.setOnPreferenceClickListener(this);
-                    prefManager.findPreference("pref_expenses").setOnPreferenceClickListener(this);
-                    break;
                 case SHIPPING_CALCULATION:
                     break;
                 case TRANSACTION:
@@ -424,8 +406,6 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                         case 1:
                             return SettingSection.CASH_DRAWER;
                         case 2:
-                            return SettingSection.SHIFTS;
-                        case 3:
                             return SettingSection.OTHERS;
                     }
                     break;

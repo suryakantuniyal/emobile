@@ -11,7 +11,6 @@
         <item name="accountSettings">Account Settings</item>
         <item name="cashDrawerSettings">Cash Drawer</item>
         <item name="kioskSettings">Kiosk Configuration</item>
-        <item name="shiftsSettings">Shifts</item>
         <item name="shippingCalculationSettings">Shipping Calculation</item>
         <item name="transactionSettings">Transaction Settings</item>
         <item name="handpointSettings">Handpoint Tools</item>
@@ -22,7 +21,6 @@
     <string-array name="settingsSectionsManagerArray">
         <item name="printingSettings">Printing Settings</item>
         <item name="cashDrawerSettings">Cash Drawer</item>
-        <item name="shiftsSettings">Shifts</item>
         <item name="othersSettings">Other Settings</item>
     </string-array>
 
