@@ -375,11 +375,11 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     @Override
     public void printEndOfDayReport(String curDate, String clerk_id, boolean printDetails) {
         printEndOfDayReportReceipt(curDate, LINE_WIDTH, printDetails);
-        try {
-            StarIOPort.releasePort(port);
-        } catch (StarIOPortException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            StarIOPort.releasePort(port);
+//        } catch (StarIOPortException e) {
+//            e.printStackTrace();
+//        }
     }
 
     @Override

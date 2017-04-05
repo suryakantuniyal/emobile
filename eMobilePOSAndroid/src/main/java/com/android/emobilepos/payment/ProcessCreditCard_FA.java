@@ -173,7 +173,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         global = (Global) getApplication();
         myPref = new MyPreferences(activity);
         AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
-        groupTaxRate = TaxesHandler.getGroupTaxRate(assignEmployee.getTaxDefault());
+        groupTaxRate = new TaxesHandler(this).getGroupTaxRate(assignEmployee.getTaxDefault());
 
         Global.isEncryptSwipe = true;
         cardInfoManager = new CreditCardInfo();

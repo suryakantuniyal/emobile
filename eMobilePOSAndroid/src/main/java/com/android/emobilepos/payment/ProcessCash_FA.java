@@ -95,7 +95,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
             AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
             custTaxCode = assignEmployee.getTaxDefault();
         }
-        groupTaxRate = TaxesHandler.getGroupTaxRate(custTaxCode);
+        groupTaxRate = new TaxesHandler(this).getGroupTaxRate(custTaxCode);
         if (!myPref.getPreferences(MyPreferences.pref_show_tips_for_cash)) {
             showTipField = false;
             LinearLayout layout = (LinearLayout) findViewById(R.id.tipFieldMainHolder);

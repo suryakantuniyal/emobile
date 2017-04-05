@@ -112,7 +112,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         Global.isEncryptSwipe = true;
         myPref = new MyPreferences(activity);
         setContentView(R.layout.process_giftcard_layout);
-        groupTaxRate = TaxesHandler.getGroupTaxRate(assignEmployee.getTaxDefault());
+        groupTaxRate = new TaxesHandler(this).getGroupTaxRate(assignEmployee.getTaxDefault());
         cardInfoManager = new CreditCardInfo();
         cardSwipe = (CheckBox) findViewById(R.id.checkboxCardSwipe);
         redeemAll = (CheckBox) findViewById(R.id.checkboxRedeemAll);

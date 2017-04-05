@@ -610,7 +610,8 @@ public class OrderProductsHandler {
         List<OrderProduct> listOrdProd = new ArrayList<>();
 
         query.append(
-                "SELECT prod_price, ordprod_name, prod_id,prod_sku, prod_upc, sum(ordprod_qty) as 'ordprod_qty', " +
+                "SELECT prod_price, sum(itemsubtotal) as 'itemsubtotal_sum', ordprod_name, prod_id,prod_sku, prod_upc, " +
+                        "sum(ordprod_qty) as 'ordprod_qty', " +
                         " sum(overwrite_price) 'overwrite_price',date(o.ord_timecreated,'localtime') as 'date' " +
                         "FROM " + table_name + " op ");
         query.append("LEFT JOIN Orders o ON op.ord_id = o.ord_id WHERE o.isVoid = '0' AND o.ord_type IN ");
@@ -638,6 +639,7 @@ public class OrderProductsHandler {
         Cursor c = DBManager.getDatabase().rawQuery(query.toString(), where_values);
 
         if (c.moveToFirst()) {
+            int i_itemsubtotal_sum = c.getColumnIndex("itemsubtotal_sum");
             int i_ordprod_name = c.getColumnIndex(ordprod_name);
             int i_prod_id = c.getColumnIndex(prod_id);
             int i_prod_sku = c.getColumnIndex(prod_sku);
@@ -655,7 +657,7 @@ public class OrderProductsHandler {
                 ordProd.setProd_sku(c.getString(i_prod_sku));
                 ordProd.setProd_upc(c.getString(i_prod_upc));
                 ordProd.setOrdprod_qty(c.getString(i_ordprod_qty));
-
+                ordProd.setItemTotal(c.getString(i_itemsubtotal_sum));
                 listOrdProd.add(ordProd);
             } while (c.moveToNext());
         }

@@ -190,7 +190,7 @@ public class TaxesHandler {
         return list;
     }
 
-    public static List<GroupTax> getGroupTaxRate(String taxGroupId) {
+    public List<GroupTax> getGroupTaxRate(String taxGroupId) {
         List<GroupTax> list = new ArrayList<GroupTax>();
         GroupTax data = new GroupTax();
         Cursor cursor = DBManager.getDatabase().rawQuery("SELECT t.tax_name,t.tax_rate/100 as 'tax_rate',t.prTax " +

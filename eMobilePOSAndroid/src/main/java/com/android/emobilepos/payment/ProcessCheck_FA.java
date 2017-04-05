@@ -123,7 +123,7 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
         tax2 = (EditText) findViewById(R.id.tax2CashEdit);
         TextView tax1Lbl = (TextView) findViewById(R.id.tax1CashLbl);
         TextView tax2Lbl = (TextView) findViewById(R.id.tax2CashLbl);
-        groupTaxRate = TaxesHandler.getGroupTaxRate(custTaxCode);
+        groupTaxRate = new TaxesHandler(this).getGroupTaxRate(custTaxCode);
         ProcessCash_FA.setTaxLabels(groupTaxRate, tax1Lbl, tax2Lbl);
         this.amountField = (EditText) findViewById(R.id.checkAmount);
 

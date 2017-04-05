@@ -2252,7 +2252,11 @@ public class EMSDeviceDriver {
             sb.append(textHandler.centeredString("Items Sold", lineWidth));
             sb.append(textHandler.threeColumnLineItem("Name", 60, "Qty", 20, "Total", 20, lineWidth, 0));
             for (OrderProduct prod : listProd) {
-                sb.append(textHandler.threeColumnLineItem(prod.getOrdprod_name(), 60, prod.getOrdprod_qty(), 20, Global.formatDoubleStrToCurrency(prod.getFinalPrice()), 20, lineWidth, 0));
+                sb.append(textHandler.threeColumnLineItem(prod.getOrdprod_name(), 60,
+                        prod.getOrdprod_qty(), 20,
+                        Global.formatDoubleStrToCurrency(String.valueOf(new BigDecimal(prod.getItemTotal())
+                                .divide(new BigDecimal(prod.getOrdprod_qty()),2, RoundingMode.HALF_UP))),
+                        20, lineWidth, 0));
                 if (printDetails) {
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText("UPC:" + prod.getProd_upc(), "", lineWidth, 3));
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText("SKU:" + prod.getProd_sku(), "", lineWidth, 3));

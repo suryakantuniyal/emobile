@@ -356,10 +356,11 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
                 double qty = Double.parseDouble(listSold.get(position - i_ord_types).getOrdprod_qty());
                 BigDecimal price = Global.getBigDecimalNum(listSold.get(position - i_ord_types).getFinalPrice());
                 price = price.multiply(BigDecimal.valueOf(qty));
+                String itemTotal = listSold.get(position - i_ord_types).getItemTotal();
                 mHolder.tvProdName.setText(listSold.get(position - i_ord_types).getOrdprod_name());
                 mHolder.tvProdID.setText(listSold.get(position - i_ord_types).getProd_id());
                 mHolder.tvProdQty.setText(listSold.get(position - i_ord_types).getOrdprod_qty());
-                mHolder.tvProdTotal.setText(Global.formatDoubleToCurrency(price.doubleValue()));
+                mHolder.tvProdTotal.setText(Global.formatDoubleStrToCurrency(itemTotal));
                 break;
             case TYPE_ITEMS_RETURNED:
                 qty = Double.parseDouble(listReturned.get(position - i_item_sold).getOrdprod_qty());

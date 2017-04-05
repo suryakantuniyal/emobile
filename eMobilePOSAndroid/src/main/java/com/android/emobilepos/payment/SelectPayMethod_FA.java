@@ -384,7 +384,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 double subtotal = Double.parseDouble(extras.getString("ord_subtotal"));
                 String taxID = extras.getString("ord_taxID");
 
-                List<GroupTax> groupTax = TaxesHandler.getGroupTaxRate(taxID);
+                List<GroupTax> groupTax = new TaxesHandler(this).getGroupTaxRate(taxID);
 
                 if (groupTax.size() > 0) {
                     BigDecimal tempRate;
