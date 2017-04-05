@@ -151,6 +151,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     public static Order buildOrder(Activity activity, Global global,
                                    String _email, String ord_HoldName, String assignedTable, String associateId,
                                    List<OrderAttributes> orderAttributes, List<DataTaxes> orderTaxes, List<OrderProduct> orderProducts) {
+        OrderingMain_FA orderingMainFa = (OrderingMain_FA) activity;
+        orderingMainFa.buildOrderStarted = true;
         MyPreferences myPref = new MyPreferences(activity);
         AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
 
@@ -736,6 +738,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         if (global.order.getOrderProducts() != null && global.order.getOrderProducts().size() > 0) {
                             processOrder(order, "", OrderingMain_FA.OrderingAction.HOLD, Global.isFromOnHold, false);
                         } else {
+                            getOrderingMainFa().buildOrderStarted = false;
                             Toast.makeText(activity,
                                     getString(R.string.warning_empty_products),
                                     Toast.LENGTH_SHORT).show();
@@ -804,10 +807,12 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                 processOrder(order, emailInput.getText().toString(), OrderingMain_FA.OrderingAction.HOLD,
                                         Global.isFromOnHold, false);
 
-                            } else
+                            } else {
+                                getOrderingMainFa().buildOrderStarted = false;
                                 Toast.makeText(activity,
                                         getString(R.string.warning_empty_products),
                                         Toast.LENGTH_SHORT).show();
+                            }
                         }
                     } else
                         Toast.makeText(activity,
@@ -828,10 +833,12 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                     ((OrderingMain_FA) activity).getListOrderTaxes(), global.order.getOrderProducts());
                             processOrder(order, "", OrderingMain_FA.OrderingAction.HOLD, Global.isFromOnHold, false);
 
-                        } else
+                        } else {
+                            getOrderingMainFa().buildOrderStarted = false;
                             Toast.makeText(activity,
                                     getString(R.string.warning_empty_products),
                                     Toast.LENGTH_SHORT).show();
+                        }
                     }
                 }
             }
@@ -877,6 +884,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         if (global.order.getOrderProducts() != null && global.order.getOrderProducts().size() > 0) {
                             processOrder(order, "", OrderingMain_FA.OrderingAction.HOLD, Global.isFromOnHold, false);
                         } else {
+                            getOrderingMainFa().buildOrderStarted = false;
                             Toast.makeText(activity,
                                     getString(R.string.warning_empty_products),
                                     Toast.LENGTH_SHORT).show();
@@ -1446,6 +1454,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
     private void isSalesReceipt() {
         Intent intent = new Intent(activity, SelectPayMethod_FA.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         intent.putExtra("typeOfProcedure", typeOfProcedure);
         intent.putExtra("salesreceipt", true);
 

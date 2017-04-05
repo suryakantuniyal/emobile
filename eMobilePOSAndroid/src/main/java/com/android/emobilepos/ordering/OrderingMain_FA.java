@@ -20,6 +20,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.SubMenu;
@@ -152,6 +153,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     private String associateId;
     private List<OrderAttributes> orderAttributes;
     private ArrayList<DataTaxes> listOrderTaxes;
+    public boolean buildOrderStarted = false;
 
 
     public enum OrderingAction {
@@ -490,33 +492,39 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             return;
         }
         Receipt_FR.lastClickTime = SystemClock.elapsedRealtime();
-        switch (v.getId()) {
-            case R.id.btnCheckOut:
-                disableCheckoutButton();
-                orderingAction = OrderingAction.CHECKOUT;
-                btnCheckout.setEnabled(false);
-                if (leftFragment != null) {
-                    leftFragment.checkoutOrder();
-                }
-                btnCheckout.setEnabled(true);
-                break;
-            case R.id.headerMenubutton:
-                showSeatHeaderPopMenu(v);
-                break;
+        if (!buildOrderStarted) {
+            switch (v.getId()) {
+                case R.id.btnCheckOut:
+                    disableCheckoutButton();
+                    orderingAction = OrderingAction.CHECKOUT;
+//                btnCheckout.setEnabled(false);
+                    if (leftFragment != null) {
+                        leftFragment.checkoutOrder();
+                    }
+//                btnCheckout.setEnabled(true);
+                    break;
+                case R.id.headerMenubutton:
+                    showSeatHeaderPopMenu(v);
+                    break;
+            }
+        } else {
+            Log.d("Checkout", "Checkout clicks bypass");
         }
     }
 
-    private void disableCheckoutButton(){
-        new Thread(new Runnable() {
+    private void disableCheckoutButton() {
+        runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 btnCheckout.setEnabled(false);
+                btnCheckout.setClickable(false);
                 try {
                     Thread.sleep(3000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
                 btnCheckout.setEnabled(true);
+                btnCheckout.setClickable(true);
             }
         });
     }
@@ -603,6 +611,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        buildOrderStarted = false;
         if (resultCode == Global.FROM_ORDER_ATTRIBUTES_ACTIVITY) {
             Gson gson = JsonUtils.getInstance();
             Type listType = new com.google.gson.reflect.TypeToken<List<OrderAttributes>>() {
@@ -662,7 +671,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     @Override
     public void onResume() {
-
+        buildOrderStarted = false;
         if (global.isApplicationSentToBackground(this))
             Global.loggedIn = false;
         global.stopActivityTransitionTimer();

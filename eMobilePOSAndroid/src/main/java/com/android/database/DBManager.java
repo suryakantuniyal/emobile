@@ -80,12 +80,13 @@ public class DBManager {
         this.context = context;
         myPref = new MyPreferences(context);
         managerInstance = this;
-        SQLiteDatabase.loadLibs(context);
+        if ((getDatabase() == null || !getDatabase().isOpen())) {
+            SQLiteDatabase.loadLibs(context);
 //		exportDBFile();
-        dbMigration();
-        this.DBHelper = new DatabaseHelper(this.context);
-        if ((getDatabase() == null || !getDatabase().isOpen()))
+            dbMigration();
+            this.DBHelper = new DatabaseHelper(this.context);
             InitializeSQLCipher();
+        }
 
     }
 
@@ -95,13 +96,13 @@ public class DBManager {
         if (type == Global.FROM_REGISTRATION_ACTIVITY) {
             resetDatabase();
         }
-
         myPref = new MyPreferences(context);
-        SQLiteDatabase.loadLibs(context);
+        if ((getDatabase() == null || !getDatabase().isOpen())) {
+            SQLiteDatabase.loadLibs(context);
 //		exportDBFile();
-        dbMigration();
-        if ((getDatabase() == null || !getDatabase().isOpen()))
+            dbMigration();
             InitializeSQLCipher();
+        }
 
     }
 

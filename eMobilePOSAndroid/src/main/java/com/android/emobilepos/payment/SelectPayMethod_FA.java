@@ -1291,25 +1291,30 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         PaymentMethodDAO.incrementPriority(payTypeList.get(position));
         if (payTypeList.get(position).getPaymentmethod_type().equals("Cash")) {
             Intent intent = new Intent(this, ProcessCash_FA.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());
 
             initIntents(extras, intent);
         } else if (payTypeList.get(position).getPaymentmethod_type().equals("Check")) {
             Intent intent = new Intent(this, ProcessCheck_FA.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());
             initIntents(extras, intent);
         } else if (payTypeList.get(position).getPaymentmethod_type().equals("Genius")) {
             Intent intent = new Intent(this, ProcessGenius_FA.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());
             initIntents(extras, intent);
         } else if (payTypeList.get(position).getPaymentmethod_type().equals("Wallet")) {
             Intent intent = new Intent(activity, ProcessTupyx_FA.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());
             initIntents(extras, intent);
         } else if (payTypeList.get(position).getPaymentmethod_type().equals("Boloro")) {
             //If store & forward is selected then boloro only accept NFC payments
             if (myPref.isPrefUseStoreForward()) {
                 Intent intent = new Intent(activity, ProcessBoloro_FA.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 intent.putExtra("paymethod_id", payTypeList.get(selectedPosition).getPaymethod_id());
                 intent.putExtra("isNFC", true);
                 initIntents(extras, intent);
@@ -1320,6 +1325,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 payTypeList.get(position).getPaymentmethod_type().toUpperCase(Locale.getDefault()).contains("REWARD") ||
                 payTypeList.get(position).getPaymentmethod_type().toUpperCase(Locale.getDefault()).contains("STADIS")) {
             Intent intent = new Intent(activity, ProcessGiftCard_FA.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());
             intent.putExtra("paymentmethod_type", payTypeList.get(position).getPaymentmethod_type());
             initIntents(extras, intent);
@@ -1329,6 +1335,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 Global.showPrompt(activity, R.string.invalid_payment_type, getString(R.string.invalid_storeforward_payment_type));
             } else {
                 Intent intent = new Intent(this, ProcessCreditCard_FA.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());
                 intent.putExtra("paymentmethod_type", payTypeList.get(position).getPaymentmethod_type());
                 intent.putExtra("requireTransID", payTypeList.get(position).getOriginalTransid().equalsIgnoreCase("1"));

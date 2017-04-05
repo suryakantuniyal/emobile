@@ -1514,7 +1514,9 @@ public class SynchMethods {
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);
             myProgressDialog.setMax(100);
-            myProgressDialog.show();
+            if(!(context instanceof MainMenu_FA)) {
+                myProgressDialog.show();
+            }
 
         }
 
