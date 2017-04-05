@@ -1448,11 +1448,12 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         Intent intent = new Intent(activity, SelectPayMethod_FA.class);
         intent.putExtra("typeOfProcedure", typeOfProcedure);
         intent.putExtra("salesreceipt", true);
+
         intent.putExtra(
                 "amount",
                 Global.getRoundBigDecimal(OrderTotalDetails_FR.gran_total
                         .compareTo(new BigDecimal(0)) == -1 ? OrderTotalDetails_FR.gran_total
-                        .negate() : OrderTotalDetails_FR.gran_total));
+                        .negate() : OrderTotalDetails_FR.gran_total, 2));
         intent.putExtra("paid", "0.00");
         intent.putExtra("is_receipt", true);
         intent.putExtra("job_id", global.order.ord_id);
@@ -1503,8 +1504,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             public void onClick(View v) {
                 globalDlog.dismiss();
                 String value = viewField.getText().toString().trim();
-                if (myPref.loginManager(value))
-                {
+                if (myPref.loginManager(value)) {
                     validPassword = true;
                     switch (type) {
                         case REMOVE_ITEM:

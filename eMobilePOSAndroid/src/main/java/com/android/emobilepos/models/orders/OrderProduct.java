@@ -116,6 +116,7 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         this.setProd_istaxable(product.getProdIstaxable());
         this.setOrdprod_desc(product.getProdDesc());
         this.setProd_taxcode(product.getProdTaxCode());
+        this.setProd_taxId(product.getProdTaxType());
         this.setOrdprod_name(product.getProdName());
         this.setTax_type(product.getProdTaxType());
         this.setProd_price_points(String.valueOf(product.getProdPricePoints()));

@@ -492,6 +492,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         Receipt_FR.lastClickTime = SystemClock.elapsedRealtime();
         switch (v.getId()) {
             case R.id.btnCheckOut:
+                disableCheckoutButton();
                 orderingAction = OrderingAction.CHECKOUT;
                 btnCheckout.setEnabled(false);
                 if (leftFragment != null) {
@@ -505,6 +506,20 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
     }
 
+    private void disableCheckoutButton(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                btnCheckout.setEnabled(false);
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                btnCheckout.setEnabled(true);
+            }
+        });
+    }
 
     private void showSeatHeaderPopMenu(final View v) {
         final OrderSeatProduct orderSeatProduct = (OrderSeatProduct) v.getTag();

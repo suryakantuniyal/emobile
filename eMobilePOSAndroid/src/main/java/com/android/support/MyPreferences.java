@@ -42,6 +42,7 @@ public class MyPreferences {
     public static final String pref_show_only_group_taxes = "pref_show_only_group_taxes";
     private static final String pref_retail_taxes = "pref_retail_taxes";
     public static final String pref_mix_match = "pref_mix_match";
+    public static final String pref_holds_polling_service = "pref_holds_polling_service";
     public static final String pref_require_customer = "pref_require_customer";
     public static final String pref_show_confirmation_screen = "pref_show_confirmation_screen";
     public static final String pref_direct_customer_selection = "pref_direct_customer_selection";
@@ -1350,6 +1351,9 @@ public class MyPreferences {
     public boolean isRetailTaxes() {
         return getPreferences(MyPreferences.pref_retail_taxes);
     }
+
+    public boolean isPollingHoldsEnable() {
+        return getPreferences(pref_holds_polling_service);    }
 
     public enum PrinterPreviewWidth {SMALL, MEDIUM, LARGE}
 

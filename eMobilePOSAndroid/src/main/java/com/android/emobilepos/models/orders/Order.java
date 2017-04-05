@@ -215,7 +215,7 @@ public class Order implements Cloneable {
             }
         }
         orderProduct.setTaxAmount(tax != null ? tax.getTaxRate() : "0");
-        orderProduct.setProd_taxId(tax != null ? tax.getTaxId() : "");
+//        orderProduct.setProd_taxId(tax != null ? tax.getTaxId() : "");
         orderProduct.setTax_type(tax != null ? tax.getTaxType() : "");
     }
 
@@ -231,7 +231,7 @@ public class Order implements Cloneable {
                         Global.getBigDecimalNum(product.getFinalPrice()).doubleValue());
             }
             product.setTaxAmount(tax != null ? tax.getTaxRate() : "0");
-            product.setProd_taxId(tax != null ? tax.getTaxId() : "");
+//            product.setProd_taxId(tax != null ? tax.getTaxId() : "");
             product.setTax_type(tax != null ? tax.getTaxType() : "");
             BigDecimal taxTotal = Global.getBigDecimalNum(product.getFinalPrice())
                     .multiply(Global.getBigDecimalNum(product.getOrdprod_qty()))
