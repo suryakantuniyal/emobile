@@ -586,7 +586,9 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         String receipt;
         receipt = printStationPrinterReceipt(orders, ordID, 42, cutPaper, printHeader);
         try {
-            StarIOPort.releasePort(port);
+            if (!myPref.isSam4s()) {
+                StarIOPort.releasePort(port);
+            }
         } catch (StarIOPortException e) {
             e.printStackTrace();
         }
