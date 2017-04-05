@@ -501,6 +501,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     if (leftFragment != null) {
                         leftFragment.checkoutOrder();
                     }
+                    enableCheckoutButton();
 //                btnCheckout.setEnabled(true);
                     break;
                 case R.id.headerMenubutton:
@@ -512,19 +513,36 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
     }
 
+    private void enableCheckoutButton() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                btnCheckout.setEnabled(true);
+                btnCheckout.setClickable(true);
+//                try {
+//                    Thread.sleep(3000);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//                btnCheckout.setEnabled(true);
+//                btnCheckout.setClickable(true);
+            }
+        });
+    }
+
     private void disableCheckoutButton() {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 btnCheckout.setEnabled(false);
                 btnCheckout.setClickable(false);
-                try {
-                    Thread.sleep(3000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                btnCheckout.setEnabled(true);
-                btnCheckout.setClickable(true);
+//                try {
+//                    Thread.sleep(3000);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//                btnCheckout.setEnabled(true);
+//                btnCheckout.setClickable(true);
             }
         });
     }
