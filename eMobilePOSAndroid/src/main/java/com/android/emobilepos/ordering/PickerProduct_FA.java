@@ -893,7 +893,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             disTotal = orderProduct.getFinalPrice();
         }
         orderProduct.setDiscount_value(disTotal);
-        orderProduct.setProd_taxId(prod_taxId);
+//        orderProduct.setProd_taxId(prod_taxId);
         orderProduct.setDiscount_id(discount_id);
         orderProduct.setTaxAmount(taxAmount);
         orderProduct.setTaxTotal(taxTotal);

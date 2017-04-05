@@ -63,6 +63,11 @@
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_automatic_sync" />
 
+        <CheckBoxPreference
+            android:key="pref_holds_polling_service"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_holds_polling_service" />
+
         <Preference
             android:key="pref_transaction_num_prefix"
             android:layout="@layout/settings_custom_layout"
@@ -432,18 +437,6 @@
             android:key="pref_limit_products_on_hand"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_limit_products_on_hand" />
-    </PreferenceCategory>
-    <PreferenceCategory
-        android:layout="@layout/settings_custom_header_layout"
-        android:title="@string/config_shifts">
-        <Preference
-            android:key="pref_open_shift"
-            android:layout="@layout/settings_custom_layout"
-            android:title="@string/config_open_shift" />
-        <Preference
-            android:key="pref_expenses"
-            android:layout="@layout/settings_custom_layout"
-            android:title="@string/config_expenses" />
     </PreferenceCategory>
     <PreferenceCategory
         android:layout="@layout/settings_custom_header_layout"

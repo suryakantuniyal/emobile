@@ -58,14 +58,67 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
     public static final String NOTIFICATION_RECEIVED = "NOTIFICATION_RECEIVED";
     public static final String NOTIFICATION_MESSAGE = "NOTIFICATION_MESSAGE";
+    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     public static Activity activity;
+    private static MyPreferences myPref;
     private Global global;
     private boolean hasBeenCreated = false;
-    private static MyPreferences myPref;
     private TextView synchTextView, tvStoreForward;
     private AdapterTabs tabsAdapter;
-    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private ProgressDialog driversProgressDialog;
+    //    private void sendFirebaseMessage() {
+//        FirebaseMessaging messaging = FirebaseMessaging.getInstance();
+//        messaging.send(new RemoteMessage.Builder(new NotificationSettings().getSenderId() + "@gcm.googleapis.com")
+//                .setMessageId(String.valueOf(SystemClock.currentThreadTimeMillis()))
+//                .addData("my_message", "Hello world")
+//                .addData("my_action", "SAY_HELLO")
+//                .build()
+//        );
+//
+//        oauthclient.HttpClient client = new oauthclient.HttpClient();
+//        String json = "{\"to\":\"/topics/holds_sync\",\"notification\":{\"body\":\"Yellow\",\"title\":\"my title\"},\"priority\":10}";
+//        String authorizationKey = "key=AAAAgT3tGUw:APA91bHti3tuO7EJvsqWiFF-YJil6fhDff67AorKTJzJ6ihWud7g-1roBfDuP21zAYTdgTdvlkEQQdp8mFPU9AT1LS_mIGg7y63SyZTaBFZZ8HnD0xea7vdg7Yr3VrGt0zK_WP6_ajGuSCJ71oI_lvQu67T8Yrs7qg";
+//        try {
+//            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+//            NotificationEvent event = new NotificationEvent();
+//            event.setTo("/topics/" + myPref.getAcctNumber());
+//            event.getNotification().setMerchantAccount(myPref.getAcctNumber());
+//            event.getNotification().setDeviceId(myPref.getDeviceID());
+//            event.getNotification().setEmployeeId(String.valueOf(assignEmployee.getEmpId()));
+//            event.getNotification().setNotificationEventAction(NotificationEvent.NotificationEventAction.SYNC_HOLDS);
+//            Gson gson = JsonUtils.getInstance();
+//            json = gson.toJson(event);
+//            client.postAuthorizationHeader("https://fcm.googleapis.com/fcm/send", json, authorizationKey);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//
+//        }
+//    }
+    private BroadcastReceiver messageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Handler handler = new Handler();
+            String eventAction = intent.getStringExtra(NOTIFICATION_MESSAGE);
+            NotificationEventAction action = NotificationEventAction.getNotificationEventByCode(Integer.parseInt(eventAction));
+            switch (action) {
+                case SYNC_HOLDS:
+                    getSynchTextView().setText(getString(R.string.sync_dload_ordersonhold));
+                    getSynchTextView().setVisibility(View.VISIBLE);
+                    break;
+                case SYNC_MESAS_CONFIG:
+                    getSynchTextView().setText(getString(R.string.sync_dload_dinnertables));
+                    getSynchTextView().setVisibility(View.VISIBLE);
+                    break;
+            }
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    getSynchTextView().setVisibility(View.GONE);
+                }
+            };
+            handler.postDelayed(runnable, 5000);
+        }
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -122,6 +175,17 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
     }
 
+//    public void ToastNotify(final String notificationMessage) {
+//        runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                Toast.makeText(MainMenu_FA.this, notificationMessage, Toast.LENGTH_LONG).show();
+////                TextView helloText = (TextView) findViewById(R.id.);
+////                helloText.setText(notificationMessage);
+//            }
+//        });
+//    }
+
     /**
      * Check the device to make sure it has the Google Play Services APK. If
      * it doesn't, display a dialog that allows users to download the APK from
@@ -144,17 +208,6 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         return true;
     }
 
-//    public void ToastNotify(final String notificationMessage) {
-//        runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                Toast.makeText(MainMenu_FA.this, notificationMessage, Toast.LENGTH_LONG).show();
-////                TextView helloText = (TextView) findViewById(R.id.);
-////                helloText.setText(notificationMessage);
-//            }
-//        });
-//    }
-
     public void registerWithNotificationHubs() {
         if (checkPlayServices()) {
 //            if (false) {
@@ -164,63 +217,11 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
             Intent intent = new Intent(this, RegistrationIntentService.class);
             startService(intent);
         } else {
-            startPollingService();
+            if (myPref.isPollingHoldsEnable()) {
+                startPollingService();
+            }
         }
     }
-
-    //    private void sendFirebaseMessage() {
-//        FirebaseMessaging messaging = FirebaseMessaging.getInstance();
-//        messaging.send(new RemoteMessage.Builder(new NotificationSettings().getSenderId() + "@gcm.googleapis.com")
-//                .setMessageId(String.valueOf(SystemClock.currentThreadTimeMillis()))
-//                .addData("my_message", "Hello world")
-//                .addData("my_action", "SAY_HELLO")
-//                .build()
-//        );
-//
-//        oauthclient.HttpClient client = new oauthclient.HttpClient();
-//        String json = "{\"to\":\"/topics/holds_sync\",\"notification\":{\"body\":\"Yellow\",\"title\":\"my title\"},\"priority\":10}";
-//        String authorizationKey = "key=AAAAgT3tGUw:APA91bHti3tuO7EJvsqWiFF-YJil6fhDff67AorKTJzJ6ihWud7g-1roBfDuP21zAYTdgTdvlkEQQdp8mFPU9AT1LS_mIGg7y63SyZTaBFZZ8HnD0xea7vdg7Yr3VrGt0zK_WP6_ajGuSCJ71oI_lvQu67T8Yrs7qg";
-//        try {
-//            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
-//            NotificationEvent event = new NotificationEvent();
-//            event.setTo("/topics/" + myPref.getAcctNumber());
-//            event.getNotification().setMerchantAccount(myPref.getAcctNumber());
-//            event.getNotification().setDeviceId(myPref.getDeviceID());
-//            event.getNotification().setEmployeeId(String.valueOf(assignEmployee.getEmpId()));
-//            event.getNotification().setNotificationEventAction(NotificationEvent.NotificationEventAction.SYNC_HOLDS);
-//            Gson gson = JsonUtils.getInstance();
-//            json = gson.toJson(event);
-//            client.postAuthorizationHeader("https://fcm.googleapis.com/fcm/send", json, authorizationKey);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//
-//        }
-//    }
-    private BroadcastReceiver messageReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Handler handler = new Handler();
-            String eventAction = intent.getStringExtra(NOTIFICATION_MESSAGE);
-            NotificationEventAction action = NotificationEventAction.getNotificationEventByCode(Integer.parseInt(eventAction));
-            switch (action) {
-                case SYNC_HOLDS:
-                    getSynchTextView().setText(getString(R.string.sync_dload_ordersonhold));
-                    getSynchTextView().setVisibility(View.VISIBLE);
-                    break;
-                case SYNC_MESAS_CONFIG:
-                    getSynchTextView().setText(getString(R.string.sync_dload_dinnertables));
-                    getSynchTextView().setVisibility(View.VISIBLE);
-                    break;
-            }
-            Runnable runnable = new Runnable() {
-                @Override
-                public void run() {
-                    getSynchTextView().setVisibility(View.GONE);
-                }
-            };
-            handler.postDelayed(runnable, 5000);
-        }
-    };
 
     public void setLogoutButtonClerkname() {
         if (myPref.isUseClerks()) {
@@ -313,7 +314,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
             driversProgressDialog = new ProgressDialog(MainMenu_FA.this);
             driversProgressDialog.setMessage(getString(R.string.connecting_devices));
             driversProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            driversProgressDialog.setCancelable(false);
+            driversProgressDialog.setCancelable(true);
         }
         driversProgressDialog.show();
     }
@@ -357,6 +358,10 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
     public void setTabsAdapter(AdapterTabs tabsAdapter) {
         this.tabsAdapter = tabsAdapter;
+    }
+
+    public TextView getSynchTextView() {
+        return synchTextView;
     }
 
     private class autoConnectPrinter extends AsyncTask<String, String, String> {
@@ -426,10 +431,6 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         }
     }
 
-    public TextView getSynchTextView() {
-        return synchTextView;
-    }
-
     private class AdapterTabs extends FragmentPagerAdapter
             implements ActionBar.TabListener, ViewPager.OnPageChangeListener {
 
@@ -437,16 +438,6 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         private final ViewPager myViewPager;
         private final ActionBar myActionBar;
         private final ArrayList<TabInfo> myTabs = new ArrayList<TabInfo>();
-
-        final class TabInfo {
-            private final Class<?> clazz;
-            private final Bundle args;
-
-            TabInfo(Class<?> _clazz, Bundle _args) {
-                clazz = _clazz;
-                args = _args;
-            }
-        }
 
         public AdapterTabs(FragmentActivity activity, ViewPager pager) {
             super(activity.getSupportFragmentManager());
@@ -516,6 +507,16 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         @Override
         public int getCount() {
             return myTabs.size();
+        }
+
+        final class TabInfo {
+            private final Class<?> clazz;
+            private final Bundle args;
+
+            TabInfo(Class<?> _clazz, Bundle _args) {
+                clazz = _clazz;
+                args = _args;
+            }
         }
 
     }
