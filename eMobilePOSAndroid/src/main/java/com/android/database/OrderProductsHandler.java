@@ -12,6 +12,7 @@ import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Product;
 import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
+import com.android.support.Global;
 import com.android.support.MyPreferences;
 
 import net.sqlcipher.database.SQLiteStatement;
@@ -176,7 +177,7 @@ public class OrderProductsHandler {
                 insert.bindString(index(uom_id), prod.getUom_id() == null ? "" : prod.getUom_id()); // uom_id
                 insert.bindString(index(prod_taxId), prod.getProd_taxId() == null ? "" : prod.getProd_taxId()); // prod_taxId
                 insert.bindDouble(index(prod_taxValue),
-                        prod.getProd_taxValue() == null ? 0 : prod.getProd_taxValue().doubleValue());
+                        prod.getProd_taxValue() == null ? 0 : Double.valueOf(Global.getRoundBigDecimal(prod.getProd_taxValue(),2)));
                 insert.bindString(index(discount_id), prod.getDiscount_id() == null ? "" : prod.getDiscount_id()); // discount_id
                 insert.bindString(index(discount_value),
                         TextUtils.isEmpty(prod.getDiscount_value()) ? "0" : prod.getDiscount_value()); // discount_value

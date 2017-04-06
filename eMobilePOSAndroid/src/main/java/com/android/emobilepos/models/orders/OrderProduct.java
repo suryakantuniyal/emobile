@@ -819,8 +819,9 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
 
     public BigDecimal getTaxAmountCalculated() {
         BigDecimal taxAmount = getProductPriceTaxableAmountCalculated()
-                .multiply(Global.getBigDecimalNum(getTaxAmount()).divide(new BigDecimal("100")))
+                .multiply(Global.getBigDecimalNum(getTaxAmount()).divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP))
                 .setScale(6, RoundingMode.HALF_UP);
+        setProd_taxValue(taxAmount);
         return taxAmount;
     }
 
