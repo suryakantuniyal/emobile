@@ -199,7 +199,7 @@ public class EMSDeviceDriver {
         for (DataTaxes tax : taxes) {
             BigDecimal taxAmount = new BigDecimal(order.ord_subtotal)
                     .multiply(new BigDecimal(tax.getTax_rate())
-                    .divide(new BigDecimal(100)))
+                            .divide(new BigDecimal(100)))
                     .setScale(2, RoundingMode.HALF_UP);
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(tax.getTax_name(),
                     Global.getCurrencyFormat(String.valueOf(taxAmount)), lineWidth, 2));
@@ -211,6 +211,7 @@ public class EMSDeviceDriver {
             if (port != null) {
                 try {
                     StarIOPort.releasePort(port);
+                    port = null;
                 } catch (StarIOPortException ignored) {
                 }
             }
@@ -2251,11 +2252,19 @@ public class EMSDeviceDriver {
             sb.append(textHandler.newLines(2));
             sb.append(textHandler.centeredString("Items Sold", lineWidth));
             sb.append(textHandler.threeColumnLineItem("Name", 60, "Qty", 20, "Total", 20, lineWidth, 0));
+
             for (OrderProduct prod : listProd) {
+                String calc;
+                if (new BigDecimal(prod.getOrdprod_qty()).compareTo(new BigDecimal(0)) != 0) {
+                    calc = Global.formatDoubleStrToCurrency(String.valueOf(new BigDecimal(prod.getItemTotal())
+                            .divide(new BigDecimal(prod.getOrdprod_qty()), 2, RoundingMode.HALF_UP)));
+                } else {
+                    calc = Global.formatDoubleToCurrency(0);
+                }
+
                 sb.append(textHandler.threeColumnLineItem(prod.getOrdprod_name(), 60,
                         prod.getOrdprod_qty(), 20,
-                        Global.formatDoubleStrToCurrency(String.valueOf(new BigDecimal(prod.getItemTotal())
-                                .divide(new BigDecimal(prod.getOrdprod_qty()),2, RoundingMode.HALF_UP))),
+                        calc,
                         20, lineWidth, 0));
                 if (printDetails) {
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText("UPC:" + prod.getProd_upc(), "", lineWidth, 3));

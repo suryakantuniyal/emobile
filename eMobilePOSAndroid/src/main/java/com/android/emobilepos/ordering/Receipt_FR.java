@@ -2182,7 +2182,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 if (currentDevice != null && !TextUtils.isEmpty(receipt)) {
                     currentDevice.print(receipt.toString(), true);
                     receipt.setLength(0);
-                    currentDevice.cutPaper();
                 }
             }
             return null;
