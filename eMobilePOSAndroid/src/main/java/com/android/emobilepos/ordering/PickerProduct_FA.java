@@ -582,6 +582,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         }
         OrderProduct product;
         if (isModify) {
+            orderProduct.setRequiredProductAttributes(global.ordProdAttr);
             product = orderProduct;//global.orderProducts.size() == 0 ? null : global.orderProducts.get(modifyOrderPosition);
         } else {
             orderProduct.setRequiredProductAttributes(global.ordProdAttr);
@@ -938,14 +939,14 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         UUID uuid = UUID.randomUUID();
         String randomUUIDString = uuid.toString();
         orderProduct.setOrdprod_id(randomUUIDString);
-        orderProduct.requiredProductAttributes = new ArrayList<>();
-        int size = global.ordProdAttr.size();
-        for (int i = 0; i < size; i++) {
-            if (global.ordProdAttr.get(i).getProductId() == null || global.ordProdAttr.get(i).getProductId().isEmpty()) {
-                global.ordProdAttr.get(i).setProductId(randomUUIDString);
-                orderProduct.requiredProductAttributes.add(global.ordProdAttr.get(i));
-            }
-        }
+//        orderProduct.requiredProductAttributes = new ArrayList<>();
+//        int size = global.ordProdAttr.size();
+//        for (int i = 0; i < size; i++) {
+//            if (global.ordProdAttr.get(i).getProductId() == null || global.ordProdAttr.get(i).getProductId().isEmpty()) {
+//                global.ordProdAttr.get(i).setProductId(randomUUIDString);
+//                orderProduct.requiredProductAttributes.add(global.ordProdAttr.get(i));
+//            }
+//        }
         if (isFromAddon) {
             Global.addonTotalAmount = 0;
             StringBuilder sb = new StringBuilder();
