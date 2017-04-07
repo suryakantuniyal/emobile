@@ -137,7 +137,8 @@ public class ViewEndOfDayReport_FA extends BaseFragmentActivityActionBar impleme
     private void showPrintDetailsDlg() {
         final Dialog dlog = new Dialog(activity, R.style.Theme_TransparentTest);
         dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dlog.setCancelable(false);
+        dlog.setCancelable(true);
+        dlog.setCanceledOnTouchOutside(true);
         dlog.setContentView(R.layout.dlog_btn_left_right_layout);
         TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
         TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
@@ -145,9 +146,15 @@ public class ViewEndOfDayReport_FA extends BaseFragmentActivityActionBar impleme
         viewMsg.setText(R.string.dlog_msg_print_details);
         Button btnYes = (Button) dlog.findViewById(R.id.btnDlogLeft);
         Button btnNo = (Button) dlog.findViewById(R.id.btnDlogRight);
+        Button btnCancel = (Button) dlog.findViewById(R.id.btnDlogCancel);
         btnYes.setText(R.string.button_yes);
         btnNo.setText(R.string.button_no);
-
+        btnCancel.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dlog.dismiss();
+            }
+        });
         btnYes.setOnClickListener(new View.OnClickListener() {
 
             @Override

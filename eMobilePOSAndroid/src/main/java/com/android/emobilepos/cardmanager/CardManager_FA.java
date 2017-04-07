@@ -27,9 +27,8 @@ import com.android.dao.PaymentMethodDAO;
 import com.android.database.OrderProductsHandler;
 import com.android.database.PaymentsHandler;
 import com.android.emobilepos.R;
-import com.android.emobilepos.models.realms.AssignEmployee;
-import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.PaymentDetails;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.PaymentMethod;
 import com.android.payments.EMSPayGate_Default;
@@ -71,6 +70,7 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
     private EditText hiddenField;
     private String finalMessage;
     private String amountAdded;
+    private EMSRover roverReader;
 
     public enum GiftCardActions {
         CASE_ACTIVATE(0), CASE_ADD_BALANCE(1), CASE_BALANCE_INQUIRY(2), CASE_MANUAL_ADD(3), CASE_DEACTIVATE(4);
@@ -281,38 +281,39 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
 
                 break;
         }
+        cardInfoManager = new CreditCardInfo();
         hiddenField.addTextChangedListener(new GiftCardTextWatcher(activity, hiddenField, fieldCardNum, cardInfoManager, Global.isEncryptSwipe));
 
         setUpCardReader();
         hasBeenCreated = true;
     }
-
-    private TextWatcher hiddenTxtWatcher(final EditText hiddenField) {
-
-        return new TextWatcher() {
-            @Override
-            public void afterTextChanged(Editable s) {
-                String value = s.toString();
-                if (value.contains("\n") && value.split("\n").length >= 2
-                        && value.substring(value.length() - 1).contains("\n")) {
-                    String data = hiddenField.getText().toString().replace("\n", "");
-                    hiddenField.setText("");
-
-                    cardInfoManager = Global.parseSimpleMSR(activity, data);
-                    updateViewAfterSwipe();
-                }
-            }
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-        };
-    }
+//
+//    private TextWatcher hiddenTxtWatcher(final EditText hiddenField) {
+//
+//        return new TextWatcher() {
+//            @Override
+//            public void afterTextChanged(Editable s) {
+//                String value = s.toString();
+//                if (value.contains("\n") && value.split("\n").length >= 2
+//                        && value.substring(value.length() - 1).contains("\n")) {
+//                    String data = hiddenField.getText().toString().replace("\n", "");
+//                    hiddenField.setText("");
+//
+//                    cardInfoManager = Global.parseSimpleMSR(activity, data);
+//                    updateViewAfterSwipe();
+//                }
+//            }
+//
+//            @Override
+//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence s, int start, int before, int count) {
+//
+//            }
+//        };
+//    }
 
     @Override
     public void onResume() {
@@ -362,8 +363,8 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
     @SuppressWarnings("deprecation")
     private void setUpCardReader() {
         AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        String _audio_reader_type = myPref.getPreferencesValue(MyPreferences.pref_audio_card_reader);
         if (audioManager.isWiredHeadsetOn()) {
-            String _audio_reader_type = myPref.getPreferencesValue(MyPreferences.pref_audio_card_reader);
             if (_audio_reader_type != null && !_audio_reader_type.isEmpty() && !_audio_reader_type.equals("-1")) {
                 if (_audio_reader_type.equals(Global.AUDIO_MSR_UNIMAG)) {
                     uniMagReader = new EMSUniMagDriver();
@@ -376,30 +377,39 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
                         }
                     }).start();
                 } else if (_audio_reader_type.equals(Global.AUDIO_MSR_ROVER)) {
-                    EMSRover roverReader = new EMSRover();
+                    roverReader = new EMSRover();
                     roverReader.initializeReader(activity, false);
                 }
             }
-
         } else {
             int _swiper_type = myPref.getSwiperType();
             int _printer_type = myPref.getPrinterType();
-            if (_swiper_type != -1 && Global.btSwiper != null && Global.btSwiper.getCurrentDevice() != null && !cardReaderConnected) {
+            int _sled_type = myPref.sledType(true, -2);
+            if (_swiper_type != -1 && Global.btSwiper != null && Global.btSwiper.getCurrentDevice() != null
+                    && !cardReaderConnected) {
                 Global.btSwiper.getCurrentDevice().loadCardReader(msrCallBack, false);
-            } else if (_printer_type != -1
-                    && (_printer_type == Global.STAR || _printer_type == Global.BAMBOO || _printer_type == Global.ZEBRA)) {
-                if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null && !cardReaderConnected)
+            }
+            if (_sled_type != -1 && Global.btSled != null && Global.btSled.getCurrentDevice() != null
+                    && !cardReaderConnected) {
+                Global.btSled.getCurrentDevice().loadCardReader(msrCallBack, false);
+            }
+            if (_printer_type != -1 && Global.deviceHasMSR(_printer_type)) {
+                if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null
+                        && !cardReaderConnected)
                     Global.mainPrinterManager.getCurrentDevice().loadCardReader(msrCallBack, false);
             }
         }
-        // }
+
         if (myPref.isET1(true, false) || myPref.isMC40(true, false)) {
             ourIntentAction = getString(R.string.intentAction3);
             Intent i = getIntent();
             handleDecodeData(i);
             cardSwipe.setChecked(true);
-        } else if (myPref.isSam4s() || myPref.isPAT100()) {
+        } else if (myPref.isSam4s() || myPref.isPAT100() || EMSIDTechUSB.isUSBConnected(this)) {
             cardSwipe.setChecked(true);
+            _msrUsbSams = new EMSIDTechUSB(activity, msrCallBack);
+            if (_msrUsbSams.OpenDevice())
+                _msrUsbSams.StartReadingThread();
         } else if (myPref.isESY13P1()) {
             if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
                 Global.mainPrinterManager.getCurrentDevice().loadCardReader(msrCallBack, false);

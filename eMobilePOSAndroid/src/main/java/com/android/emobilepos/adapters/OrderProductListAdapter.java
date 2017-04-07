@@ -21,7 +21,6 @@ import com.android.emobilepos.ordering.PickerAddon_FA;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -66,7 +65,7 @@ public class OrderProductListAdapter extends BaseAdapter {
         Collections.sort(orderProducts, new Comparator<OrderProduct>() {
             @Override
             public int compare(OrderProduct lhs, OrderProduct rhs) {
-                if (lhs.getAssignedSeat() != null && rhs.getAssignedSeat() != null) {
+                if (!TextUtils.isEmpty(lhs.getAssignedSeat()) && !TextUtils.isEmpty(rhs.getAssignedSeat())) {
                     return Integer.valueOf(lhs.getAssignedSeat()).compareTo(Integer.valueOf(rhs.getAssignedSeat()));
                 } else {
                     return 0;
