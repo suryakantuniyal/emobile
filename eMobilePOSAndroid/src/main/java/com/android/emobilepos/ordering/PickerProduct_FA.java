@@ -37,13 +37,12 @@ import com.android.dao.UomDAO;
 import com.android.database.PriceLevelHandler;
 import com.android.database.ProductsAttrHandler;
 import com.android.database.ProductsHandler;
-import com.android.database.TaxesHandler;
 import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.ShowProductImageActivity;
 import com.android.emobilepos.models.Discount;
-import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.PriceLevel;
+import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.ProductAttribute;
 import com.android.emobilepos.models.realms.UOM;
 import com.android.support.GenerateNewID;
@@ -939,6 +938,9 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         UUID uuid = UUID.randomUUID();
         String randomUUIDString = uuid.toString();
         orderProduct.setOrdprod_id(randomUUIDString);
+        for (ProductAttribute attribute : orderProduct.getRequiredProductAttributes()) {
+            attribute.setProductId(orderProduct.getOrdprod_id());
+        }
 //        orderProduct.requiredProductAttributes = new ArrayList<>();
 //        int size = global.ordProdAttr.size();
 //        for (int i = 0; i < size; i++) {
