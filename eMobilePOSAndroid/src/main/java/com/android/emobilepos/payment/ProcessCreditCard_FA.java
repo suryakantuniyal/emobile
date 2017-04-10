@@ -88,6 +88,7 @@ import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
 import interfaces.EMSCallBack;
 import main.EMSDeviceManager;
+import util.json.UIUtils;
 
 public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener, TextWatcherCallback {
 
@@ -1983,68 +1984,70 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.exactAmountBut:
-                double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDueField));
-                grandTotalAmount = amountToBePaid + amountToTip;
-                amountPaidField.setText(amountDueField.getText().toString());
-                break;
-            case R.id.processButton:
-                if (myPref.getSwiperType() == Global.NOMAD || myPref.getSwiperType() == Global.HANDPOINT
-                        || myPref.getSwiperType() == Global.ICMPEVO || isEverpay) {
-                    boolean valid = validateProcessPayment();
-                    if (!valid) {
-                        String errorMsg = getString(R.string.card_validation_error);
-                        Global.showPrompt(activity, R.string.validation_failed, errorMsg);
-                    } else {
-                        myProgressDialog = new ProgressDialog(activity);
-                        myProgressDialog.setMessage(activity.getString(R.string.swipe_insert_card));
-                        myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                        myProgressDialog.setCancelable(true);
-                        myProgressDialog.show();
-                        if (isRefund) {
-                            Payment p = new Payment(activity);
-                            p.setPay_amount(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
-
-                            if (isEverpay)
-                                openEverpayApp(p);
-                            else
-                                Global.btSwiper.getCurrentDevice().refund(p);
+        if (UIUtils.singleOnClick(v)) {
+            switch (v.getId()) {
+                case R.id.exactAmountBut:
+                    double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDueField));
+                    grandTotalAmount = amountToBePaid + amountToTip;
+                    amountPaidField.setText(amountDueField.getText().toString());
+                    break;
+                case R.id.processButton:
+                    if (myPref.getSwiperType() == Global.NOMAD || myPref.getSwiperType() == Global.HANDPOINT
+                            || myPref.getSwiperType() == Global.ICMPEVO || isEverpay) {
+                        boolean valid = validateProcessPayment();
+                        if (!valid) {
+                            String errorMsg = getString(R.string.card_validation_error);
+                            Global.showPrompt(activity, R.string.validation_failed, errorMsg);
                         } else {
-                            Payment p = new Payment(activity);
-                            p.setPay_amount(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
-                            p.setTipAmount(String.valueOf(Global.getBigDecimalNum(NumberUtils.cleanCurrencyFormatedNumber(tipAmount), 2)));
-                            if (Global.btSwiper != null && Global.btSwiper.getCurrentDevice() != null) {
-                                Global.btSwiper.getCurrentDevice().salePayment(p);
-                            } else if (isEverpay) {
-                                openEverpayApp(p);
+                            myProgressDialog = new ProgressDialog(activity);
+                            myProgressDialog.setMessage(activity.getString(R.string.swipe_insert_card));
+                            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                            myProgressDialog.setCancelable(true);
+                            myProgressDialog.show();
+                            if (isRefund) {
+                                Payment p = new Payment(activity);
+                                p.setPay_amount(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
+
+                                if (isEverpay)
+                                    openEverpayApp(p);
+                                else
+                                    Global.btSwiper.getCurrentDevice().refund(p);
+                            } else {
+                                Payment p = new Payment(activity);
+                                p.setPay_amount(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
+                                p.setTipAmount(String.valueOf(Global.getBigDecimalNum(NumberUtils.cleanCurrencyFormatedNumber(tipAmount), 2)));
+                                if (Global.btSwiper != null && Global.btSwiper.getCurrentDevice() != null) {
+                                    Global.btSwiper.getCurrentDevice().salePayment(p);
+                                } else if (isEverpay) {
+                                    openEverpayApp(p);
+                                }
+                            }
+                        }
+                    } else {
+                        boolean valid = validateProcessPayment();
+                        if (!valid) {
+                            String errorMsg = getString(R.string.card_validation_error);
+                            Global.showPrompt(activity, R.string.validation_failed, errorMsg);
+                        } else {
+                            btnProcess.setEnabled(false);
+                            if (myPref.getPreferences(MyPreferences.pref_show_confirmation_screen)) {
+                                promptAmountConfirmation();
+                            } else {
+                                if (!extras.getBoolean("histinvoices") || (isOpenInvoice && !isMultiInvoice))
+                                    processPayment();
+                                else
+                                    processMultiInvoicePayment();
                             }
                         }
                     }
-                } else {
-                    boolean valid = validateProcessPayment();
-                    if (!valid) {
-                        String errorMsg = getString(R.string.card_validation_error);
-                        Global.showPrompt(activity, R.string.validation_failed, errorMsg);
-                    } else {
-                        btnProcess.setEnabled(false);
-                        if (myPref.getPreferences(MyPreferences.pref_show_confirmation_screen)) {
-                            promptAmountConfirmation();
-                        } else {
-                            if (!extras.getBoolean("histinvoices") || (isOpenInvoice && !isMultiInvoice))
-                                processPayment();
-                            else
-                                processMultiInvoicePayment();
-                        }
-                    }
-                }
 //                else {
 //                    new ProcessWalkerAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 //                }
-                break;
-            case R.id.tipAmountBut:
-                promptTipConfirmation();
-                break;
+                    break;
+                case R.id.tipAmountBut:
+                    promptTipConfirmation();
+                    break;
+            }
         }
     }
 

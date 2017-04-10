@@ -68,6 +68,7 @@ import drivers.EMSNomad;
 import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
 import interfaces.EMSCallBack;
+import util.json.UIUtils;
 
 public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener {
 
@@ -694,14 +695,16 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.exactAmountBut:
-                fieldAmountTendered.setText(fieldAmountDue.getText().toString());
-                break;
-            case R.id.processButton:
-                if (validatePaymentData())
-                    processPayment();
-                break;
+        if (UIUtils.singleOnClick(v)) {
+            switch (v.getId()) {
+                case R.id.exactAmountBut:
+                    fieldAmountTendered.setText(fieldAmountDue.getText().toString());
+                    break;
+                case R.id.processButton:
+                    if (validatePaymentData())
+                        processPayment();
+                    break;
+            }
         }
     }
 

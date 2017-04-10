@@ -28,6 +28,7 @@ import android.widget.Filterable;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.PayMethodsDAO;
@@ -84,6 +85,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import util.json.UIUtils;
+
 public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements OnClickListener, OnItemClickListener {
 
     private CardsListAdapter myAdapter;
@@ -115,6 +118,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
     private int totalPayCount = 0;
     private String order_email = "";
     private Global.OrderType orderType;
+    private boolean isClicked;
 
 
     @Override
@@ -1279,15 +1283,15 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        selectPayment(position);
+        if (UIUtils.singleOnClick(view)) {
+            selectPayment(position);
+        } else {
+            Toast.makeText(this, "Multiple click detected", Toast.LENGTH_LONG);
+        }
     }
 
     private void selectPayment(int position) {
         selectedPosition = position;
-//        Realm realm = Realm.getDefaultInstance();
-//        realm.beginTransaction();
-//        payTypeList.get(position).incrementPriority();
-//        realm.commitTransaction();
         PaymentMethodDAO.incrementPriority(payTypeList.get(position));
         if (payTypeList.get(position).getPaymentmethod_type().equals("Cash")) {
             Intent intent = new Intent(this, ProcessCash_FA.class);

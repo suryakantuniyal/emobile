@@ -51,6 +51,8 @@ import java.util.List;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import util.json.UIUtils;
+
 public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChangeListener, OnClickListener {
 
     private Global global;
@@ -1037,29 +1039,31 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.processCheckBut:
-                btnProcess.setEnabled(false);
-                if (!validInput()) {
-                    Global.showPrompt(activity, R.string.validation_failed, activity.getString(R.string.card_validation_error));
-                } else {
-                    if (!isLivePayment && Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
-                        Global.mainPrinterManager.getCurrentDevice().openCashDrawer();
+        if (UIUtils.singleOnClick(v)) {
+            switch (v.getId()) {
+                case R.id.processCheckBut:
+                    btnProcess.setEnabled(false);
+                    if (!validInput()) {
+                        Global.showPrompt(activity, R.string.validation_failed, activity.getString(R.string.card_validation_error));
+                    } else {
+                        if (!isLivePayment && Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                            Global.mainPrinterManager.getCurrentDevice().openCashDrawer();
+                        }
+                        if (!isOpenInvoice || (isOpenInvoice && !isMultiInvoice))
+                            processPayment();
+                        else
+                            processMultiInvoicePayment();
                     }
-                    if (!isOpenInvoice || (isOpenInvoice && !isMultiInvoice))
-                        processPayment();
-                    else
-                        processMultiInvoicePayment();
-                }
-                btnProcess.setEnabled(true);
-                break;
-            case R.id.exactAmountBut:
-                field[CHECK_AMOUNT_PAID].setText(field[CHECK_AMOUNT].getText().toString().replace(",", ""));
-                break;
-            case R.id.btnCheckCapture:
-                Intent intent = new Intent(this, CaptureCheck_FA.class);
-                startActivityForResult(intent, INTENT_CAPTURE_CHECK);
-                break;
+                    btnProcess.setEnabled(true);
+                    break;
+                case R.id.exactAmountBut:
+                    field[CHECK_AMOUNT_PAID].setText(field[CHECK_AMOUNT].getText().toString().replace(",", ""));
+                    break;
+                case R.id.btnCheckCapture:
+                    Intent intent = new Intent(this, CaptureCheck_FA.class);
+                    startActivityForResult(intent, INTENT_CAPTURE_CHECK);
+                    break;
+            }
         }
     }
 

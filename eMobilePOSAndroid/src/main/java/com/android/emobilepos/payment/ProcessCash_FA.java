@@ -45,6 +45,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
+import util.json.UIUtils;
+
 public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener {
     //    private ProgressDialog myProgressDialog;
     private AlertDialog.Builder dialog;
@@ -206,27 +208,28 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
 
             @Override
             public void onClick(View v) {
-                btnProcess.setEnabled(false);
-                double enteredAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
-                double amountDueDbl = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDue));
-                if (enteredAmount <= 0 && (amountDueDbl > 0 || isFromMainMenu)) {
-                    paid.setBackgroundResource(R.drawable.edittext_wrong_input);
-                    Global.showPrompt(activity, R.string.validation_failed, activity.getString(R.string.error_wrong_amount));
-                } else {
-                    paid.setBackgroundResource(R.drawable.edittext_border);
+                if (UIUtils.singleOnClick(v)) {
+                    btnProcess.setEnabled(false);
+                    double enteredAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
+                    double amountDueDbl = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDue));
+                    if (enteredAmount <= 0 && (amountDueDbl > 0 || isFromMainMenu)) {
+                        paid.setBackgroundResource(R.drawable.edittext_wrong_input);
+                        Global.showPrompt(activity, R.string.validation_failed, activity.getString(R.string.error_wrong_amount));
+                    } else {
+                        paid.setBackgroundResource(R.drawable.edittext_border);
 
-                    if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
-                        Global.mainPrinterManager.getCurrentDevice().openCashDrawer();
-                    }
+                        if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                            Global.mainPrinterManager.getCurrentDevice().openCashDrawer();
+                        }
 
-                    if (!isInvoice || (isInvoice && !isMultiInvoice))
-                        new processPaymentAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
-                    else {
-                        new processPaymentAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
+                        if (!isInvoice || (isInvoice && !isMultiInvoice))
+                            new processPaymentAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
+                        else {
+                            new processPaymentAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
+                        }
                     }
+                    btnProcess.setEnabled(true);
                 }
-                btnProcess.setEnabled(true);
-
             }
         });
 

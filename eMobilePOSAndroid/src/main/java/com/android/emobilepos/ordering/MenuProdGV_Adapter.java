@@ -24,6 +24,8 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 
+import util.json.UIUtils;
+
 public class MenuProdGV_Adapter extends CursorAdapter {
     private final Global global;
     LayoutInflater inflater;
@@ -37,7 +39,7 @@ public class MenuProdGV_Adapter extends CursorAdapter {
 
     private VolumePricesHandler volPriceHandler;
     private String attrToDisplay = "";
-    private long lastClickTime = 0;
+//    private long lastClickTime = 0;
     private boolean isFastScanning = false;
     private boolean isRestMode = false;
 
@@ -99,17 +101,19 @@ public class MenuProdGV_Adapter extends CursorAdapter {
             holder.itemImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if ((!isFastScanning || (isFastScanning && isRestMode)) && SystemClock.elapsedRealtime() - lastClickTime < 1000) {
-                        return;
-                    }
-                    lastClickTime = SystemClock.elapsedRealtime();
-                    if (isPortrait) {
-                        Intent intent = new Intent(activity, ShowProductImageActivity.class);
-                        cursor.moveToPosition(position);
-                        intent.putExtra("url", cursor.getString(holder.i_prod_img_name));
-                        activity.startActivity(intent);
-                    } else {
-                        callBack.productClicked(position);
+//                    if ((!isFastScanning || (isFastScanning && isRestMode)) && SystemClock.elapsedRealtime() - lastClickTime < 1000) {
+//                        return;
+//                    }
+//                    lastClickTime = SystemClock.elapsedRealtime();
+                    if((isFastScanning && !isRestMode) || UIUtils.singleOnClick(v)) {
+                        if (isPortrait) {
+                            Intent intent = new Intent(activity, ShowProductImageActivity.class);
+                            cursor.moveToPosition(position);
+                            intent.putExtra("url", cursor.getString(holder.i_prod_img_name));
+                            activity.startActivity(intent);
+                        } else {
+                            callBack.productClicked(position);
+                        }
                     }
                 }
             });

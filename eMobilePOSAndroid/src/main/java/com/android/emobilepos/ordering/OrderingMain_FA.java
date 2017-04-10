@@ -33,6 +33,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.dao.OrderProductAttributeDAO;
 import com.android.database.AddressHandler;
@@ -102,6 +103,7 @@ import drivers.EMSUniMagDriver;
 import interfaces.EMSCallBack;
 import io.realm.RealmResults;
 import util.json.JsonUtils;
+import util.json.UIUtils;
 
 public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Receipt_FR.AddProductBtnCallback,
         Receipt_FR.UpdateHeaderTitleCallback, OnClickListener, Catalog_FR.RefreshReceiptViewCallback,
@@ -488,64 +490,63 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     @Override
     public void onClick(View v) {
-        if (SystemClock.elapsedRealtime() - Receipt_FR.lastClickTime < 1000) {
-            return;
-        }
-        Receipt_FR.lastClickTime = SystemClock.elapsedRealtime();
-        if (!buildOrderStarted) {
-            switch (v.getId()) {
-                case R.id.btnCheckOut:
-                    disableCheckoutButton();
-                    orderingAction = OrderingAction.CHECKOUT;
+        if (UIUtils.singleOnClick(v)) {
+//        Receipt_FR.lastClickTime = SystemClock.elapsedRealtime();
+            if (!buildOrderStarted) {
+                switch (v.getId()) {
+                    case R.id.btnCheckOut:
+//                        disableCheckoutButton();
+                        orderingAction = OrderingAction.CHECKOUT;
 //                btnCheckout.setEnabled(false);
-                    if (leftFragment != null) {
-                        leftFragment.checkoutOrder();
-                    }
-                    enableCheckoutButton();
+                        if (leftFragment != null) {
+                            leftFragment.checkoutOrder();
+                        }
+//                        enableCheckoutButton();
 //                btnCheckout.setEnabled(true);
-                    break;
-                case R.id.headerMenubutton:
-                    showSeatHeaderPopMenu(v);
-                    break;
+                        break;
+                    case R.id.headerMenubutton:
+                        showSeatHeaderPopMenu(v);
+                        break;
+                }
+            } else {
+                Log.d("Checkout", "Checkout clicks bypass");
             }
-        } else {
-            Log.d("Checkout", "Checkout clicks bypass");
         }
     }
-
-    private void enableCheckoutButton() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                btnCheckout.setEnabled(true);
-                btnCheckout.setClickable(true);
-//                try {
-//                    Thread.sleep(3000);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
+//
+//    private void enableCheckoutButton() {
+//        runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
 //                btnCheckout.setEnabled(true);
 //                btnCheckout.setClickable(true);
-            }
-        });
-    }
-
-    private void disableCheckoutButton() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                btnCheckout.setEnabled(false);
-                btnCheckout.setClickable(false);
-//                try {
-//                    Thread.sleep(3000);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//                btnCheckout.setEnabled(true);
-//                btnCheckout.setClickable(true);
-            }
-        });
-    }
+////                try {
+////                    Thread.sleep(3000);
+////                } catch (InterruptedException e) {
+////                    e.printStackTrace();
+////                }
+////                btnCheckout.setEnabled(true);
+////                btnCheckout.setClickable(true);
+//            }
+//        });
+//    }
+//
+//    private void disableCheckoutButton() {
+//        runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                btnCheckout.setEnabled(false);
+//                btnCheckout.setClickable(false);
+////                try {
+////                    Thread.sleep(3000);
+////                } catch (InterruptedException e) {
+////                    e.printStackTrace();
+////                }
+////                btnCheckout.setEnabled(true);
+////                btnCheckout.setClickable(true);
+//            }
+//        });
+//    }
 
     private void showSeatHeaderPopMenu(final View v) {
         final OrderSeatProduct orderSeatProduct = (OrderSeatProduct) v.getTag();
