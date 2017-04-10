@@ -222,7 +222,7 @@ public class TaxesHandler {
         sb.append(subquery1).append(table_name).append(subquery2).append(taxID).append("'");
 
         if (myPref.isRetailTaxes()) {
-            sb.append(" AND tax_code_id = '").append(taxType).append("'");
+            sb.append(" AND tax_code_id IS NOT NULL AND tax_code_id != '' AND tax_code_id = '").append(taxType).append("'");
         }
 
         Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);

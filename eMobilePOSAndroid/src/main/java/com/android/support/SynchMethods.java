@@ -1,7 +1,6 @@
 package com.android.support;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -128,7 +127,7 @@ public class SynchMethods {
     private String tempFilePath;
     private boolean checkoutOnHold = false, downloadHoldList = false;
 
-    private ProgressDialog myProgressDialog;
+    //    private ProgressDialog myProgressDialog;
     private int type;
 
     private boolean didSendData = true;
@@ -140,6 +139,7 @@ public class SynchMethods {
     private boolean isReceive = false;
     private boolean isSending = false;
     private String _server_time = "";
+    MyPreferences preferences;
 
     public SynchMethods(DBManager managerInst) {
         post = new Post();
@@ -147,6 +147,7 @@ public class SynchMethods {
         SAXParserFactory spf = SAXParserFactory.newInstance();
         context = managerInst.getContext();
         data = new ArrayList<>();
+        preferences = new MyPreferences(context);
         if (OAuthManager.isExpired(context) && NetworkUtils.isConnectedToInternet(context)) {
             OAuthManager oAuthManager = getOAuthManager(context);
             try {
@@ -199,6 +200,68 @@ public class SynchMethods {
         httpClient.post(url.toString(), json, authClient);
     }
 
+    public boolean syncReceive() {
+        try {
+            synchGetServerTime();
+            synchEmployeeData();
+            synchAddresses();
+            synchCategories();
+            synchCustomers();
+            synchEmpInv();
+            synchProdInv();
+            synchInvoices();
+            synchPaymentMethods();
+            synchPriceLevel();
+            synchItemsPriceLevel();
+            synchPrinters();
+            synchProdCatXref();
+            synchProdChain();
+            synchProdAddon();
+            synchProducts();
+            synchOrderAttributes();
+            synchOrderAttributes();
+            synchProductAliases();
+            synchProductImages();
+            synchDownloadProductsAttr();
+            synchGetOrdProdAttr();
+            synchSalesTaxCode();
+            synchShippingMethods();
+            synchTaxes();
+            synchTaxGroup();
+            synchTerms();
+            synchMemoText();
+            synchAccountLogo();
+            synchDeviceDefaultValues();
+            synchDownloadLastPayID();
+            synchVolumePrices();
+            synchUoM();
+            synchGetTemplates();
+
+            if (Global.isIvuLoto) {
+                synchIvuLottoDrawDates();
+            }
+            synchDownloadCustomerInventory();
+            synchDownloadConsignmentTransaction();
+            synchShifts();
+            synchDownloadClerks();
+            synchClerkPersmissions();
+            synchDownloadDinnerTable();
+            synchSalesAssociateDinnindTablesConfiguration(context);
+            synchDownloadMixMatch();
+            synchDownloadTermsAndConditions();
+            if (preferences.getPreferences(MyPreferences.pref_enable_location_inventory)) {
+                synchLocations();
+                synchLocationsInventory();
+            }
+            synchUpdateSyncTime();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
     public static void synchSalesAssociateDinnindTablesConfiguration(Context activity) throws IOException, SAXException {
         oauthclient.HttpClient client = new oauthclient.HttpClient();
         Gson gson = JsonUtils.getInstance();
@@ -232,26 +295,26 @@ public class SynchMethods {
         }
     }
 
-    private void showProgressDialog() {
-        if (myProgressDialog == null) {
-            myProgressDialog = new ProgressDialog(context);
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-        }
-        myProgressDialog.show();
-    }
+//    private void showProgressDialog() {
+//        if (myProgressDialog == null) {
+//            myProgressDialog = new ProgressDialog(context);
+//            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+//            myProgressDialog.setCancelable(false);
+//        }
+//        myProgressDialog.show();
+//    }
+//
+//    private void dismissProgressDialog() {
+//        if (myProgressDialog != null && myProgressDialog.isShowing()) {
+//            myProgressDialog.dismiss();
+//        }
+//    }
 
-    private void dismissProgressDialog() {
-        if (myProgressDialog != null && myProgressDialog.isShowing()) {
-            myProgressDialog.dismiss();
-        }
-    }
-
-    public void synchReceive(int type, Activity activity) {
-        this.type = type;
-        isReceive = true;
-        new ResynchAsync(activity).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
+//    public void synchReceive(int type, Activity activity) {
+//        this.type = type;
+//        isReceive = true;
+//        new ResynchAsync(activity).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+//    }
 
     public void getLocationsInventory(Activity activity) {
         new AsyncGetLocationsInventory(activity).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -1308,183 +1371,183 @@ public class SynchMethods {
         tempFile.delete();
     }
 
-    private class ResynchAsync extends AsyncTask<Void, String, Boolean> {
-        MyPreferences myPref = new MyPreferences(context);
-        private Activity activity;
-
-        private ResynchAsync(Activity activity) {
-            this.activity = activity;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            int orientation = context.getResources().getConfiguration().orientation;
-            activity.setRequestedOrientation(Global.getScreenOrientation(context));
-            showProgressDialog();
-        }
-
-        @Override
-        protected void onProgressUpdate(String... params) {
-            myProgressDialog.setMessage(params[0]);
-        }
-
-        public void updateProgress(String msg) {
-            publishProgress(msg);
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            try {
-                updateProgress("Getting Server Time");
-                synchGetServerTime();
-                updateProgress(context.getString(R.string.sync_dload_employee_data));
-                synchEmployeeData();
-                updateProgress(context.getString(R.string.sync_dload_address));
-                synchAddresses();
-                updateProgress(context.getString(R.string.sync_dload_categories));
-                synchCategories();
-                updateProgress(context.getString(R.string.sync_dload_cust));
-                synchCustomers();
-                updateProgress(context.getString(R.string.sync_dload_emp_inv));
-                synchEmpInv();
-                updateProgress(context.getString(R.string.sync_dload_prod_inv));
-                synchProdInv();
-                updateProgress(context.getString(R.string.sync_dload_invoices));
-                synchInvoices();
-                updateProgress(context.getString(R.string.sync_dload_pay_methods));
-                synchPaymentMethods();
-                updateProgress(context.getString(R.string.sync_dload_price_levels));
-                synchPriceLevel();
-                updateProgress(context.getString(R.string.sync_dload_item_price_levels));
-                synchItemsPriceLevel();
-                updateProgress(context.getString(R.string.sync_dload_printers));
-                synchPrinters();
-                updateProgress(context.getString(R.string.sync_dload_prodcatxref));
-                synchProdCatXref();
-                updateProgress(context.getString(R.string.sync_dload_productchainxref));
-                synchProdChain();
-                updateProgress(context.getString(R.string.sync_dload_product_addons));
-                synchProdAddon();
-                updateProgress(context.getString(R.string.sync_dload_products));
-                synchProducts();
-                synchOrderAttributes();
-                updateProgress(context.getString(R.string.sync_dload_product_aliases));
-                synchOrderAttributes();
-                synchProductAliases();
-                updateProgress(context.getString(R.string.sync_dload_products_images));
-                synchProductImages();
-                updateProgress(context.getString(R.string.sync_dload_products_attributes));
-                synchDownloadProductsAttr();
-                updateProgress(context.getString(R.string.sync_dload_ordprodattr));
-                synchGetOrdProdAttr();
-                updateProgress(context.getString(R.string.sync_dload_salestaxcodes));
-                synchSalesTaxCode();
-                updateProgress(context.getString(R.string.sync_dload_shipmethod));
-                synchShippingMethods();
-                updateProgress(context.getString(R.string.sync_dload_taxes));
-                synchTaxes();
-                updateProgress(context.getString(R.string.sync_dload_taxes_group));
-                synchTaxGroup();
-                updateProgress(context.getString(R.string.sync_dload_terms));
-                synchTerms();
-                updateProgress(context.getString(R.string.sync_dload_memotext));
-                synchMemoText();
-                updateProgress(context.getString(R.string.sync_dload_logo));
-                synchAccountLogo();
-                updateProgress(context.getString(R.string.sync_dload_device_default_values));
-                synchDeviceDefaultValues();
-                updateProgress(context.getString(R.string.sync_dload_last_pay_id));
-                synchDownloadLastPayID();
-                updateProgress(context.getString(R.string.sync_dload_volume_prices));
-                synchVolumePrices();
-                updateProgress(context.getString(R.string.sync_dload_uom));
-                synchUoM();
-                updateProgress(context.getString(R.string.sync_dload_templates));
-                synchGetTemplates();
-
-                if (Global.isIvuLoto) {
-                    updateProgress(context.getString(R.string.sync_dload_ivudrawdates));
-                    synchIvuLottoDrawDates();
-                }
-                updateProgress(context.getString(R.string.sync_dload_customer_inventory));
-                synchDownloadCustomerInventory();
-                updateProgress(context.getString(R.string.sync_dload_consignment_transaction));
-                synchDownloadConsignmentTransaction();
-                updateProgress(context.getString(R.string.sync_dload_shifts));
-                synchShifts();
-                updateProgress(context.getString(R.string.sync_dload_clerks));
-                synchDownloadClerks();
-                synchClerkPersmissions();
-//                updateProgress(context.getString(R.string.sync_dload_salesassociate));
-//                synchDownloadSalesAssociate();
-                updateProgress(context.getString(R.string.sync_dload_dinnertables));
-                synchDownloadDinnerTable();
-                synchSalesAssociateDinnindTablesConfiguration(context);
-                updateProgress(context.getString(R.string.sync_dload_mixmatch));
-                synchDownloadMixMatch();
-                updateProgress(context.getString(R.string.sync_dload_termsandconditions));
-                synchDownloadTermsAndConditions();
-                if (myPref.getPreferences(MyPreferences.pref_enable_location_inventory)) {
-                    if (isReceive)
-                        updateProgress(context.getString(R.string.sync_dload_locations));
-                    else
-                        updateProgress(context.getString(R.string.sync_dload_locations));
-                    synchLocations();
-                    if (isReceive)
-                        updateProgress(context.getString(R.string.sync_dload_locations_inventory));
-                    else
-                        updateProgress(context.getString(R.string.sync_dload_locations_inventory));
-                    synchLocationsInventory();
-                }
-//                SynchMethods.synchOrdersOnHoldList(context);
-//                Intent intent = new Intent(MainMenu_FA.NOTIFICATION_RECEIVED);
-//                intent.putExtra(MainMenu_FA.NOTIFICATION_MESSAGE, String.valueOf(NotificationEvent.NotificationEventAction.SYNC_HOLDS.getCode()));
-//                context.sendBroadcast(intent);
-                updateProgress("Updating Sync Time");
-                synchUpdateSyncTime();
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                return false;
-            }
-            return true;
-        }
-
-        protected void onPostExecute(Boolean result) {
-            isReceive = false;
-            SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy h:mm a", Locale.getDefault());
-            String date = sdf.format(new Date());
-            myPref.setLastReceiveSync(date);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                if (!activity.isFinishing() && !activity.isDestroyed()) {
-                    dismissProgressDialog();
-                }
-            } else {
-                if (!activity.isFinishing()) {
-                    dismissProgressDialog();
-                }
-            }
-            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-            if (type == Global.FROM_LOGIN_ACTIVITTY) {
-                Intent intent = new Intent(context, MainMenu_FA.class);
-                context.startActivity(intent);
-                activity.finish();
-            } else if (type == Global.FROM_REGISTRATION_ACTIVITY) {
-                Intent intent = new Intent(context, MainMenu_FA.class);
-                activity.setResult(-1);
-                context.startActivity(intent);
-                activity.finish();
-            } else if (type == Global.FROM_SYNCH_ACTIVITY) {
-                if (SyncTab_FR.syncTabHandler != null) {
-                    SyncTab_FR.syncTabHandler.sendEmptyMessage(0);
-                }
-            }
-            if (!result) {
-                Global.showPrompt(context, R.string.sync_title, context.getString(R.string.sync_fail));
-            }
-        }
-
-    }
+//    private class ResynchAsync extends AsyncTask<Void, String, Boolean> {
+//        MyPreferences myPref = new MyPreferences(context);
+//        private Activity activity;
+//
+//        private ResynchAsync(Activity activity) {
+//            this.activity = activity;
+//        }
+//
+//        @Override
+//        protected void onPreExecute() {
+//            int orientation = context.getResources().getConfiguration().orientation;
+//            activity.setRequestedOrientation(Global.getScreenOrientation(context));
+////            showProgressDialog();
+//        }
+//
+//        @Override
+//        protected void onProgressUpdate(String... params) {
+////            myProgressDialog.setMessage(params[0]);
+//        }
+//
+//        public void updateProgress(String msg) {
+//            publishProgress(msg);
+//        }
+//
+//        @Override
+//        protected Boolean doInBackground(Void... params) {
+//            try {
+//                updateProgress("Getting Server Time");
+//                synchGetServerTime();
+//                updateProgress(context.getString(R.string.sync_dload_employee_data));
+//                synchEmployeeData();
+//                updateProgress(context.getString(R.string.sync_dload_address));
+//                synchAddresses();
+//                updateProgress(context.getString(R.string.sync_dload_categories));
+//                synchCategories();
+//                updateProgress(context.getString(R.string.sync_dload_cust));
+//                synchCustomers();
+//                updateProgress(context.getString(R.string.sync_dload_emp_inv));
+//                synchEmpInv();
+//                updateProgress(context.getString(R.string.sync_dload_prod_inv));
+//                synchProdInv();
+//                updateProgress(context.getString(R.string.sync_dload_invoices));
+//                synchInvoices();
+//                updateProgress(context.getString(R.string.sync_dload_pay_methods));
+//                synchPaymentMethods();
+//                updateProgress(context.getString(R.string.sync_dload_price_levels));
+//                synchPriceLevel();
+//                updateProgress(context.getString(R.string.sync_dload_item_price_levels));
+//                synchItemsPriceLevel();
+//                updateProgress(context.getString(R.string.sync_dload_printers));
+//                synchPrinters();
+//                updateProgress(context.getString(R.string.sync_dload_prodcatxref));
+//                synchProdCatXref();
+//                updateProgress(context.getString(R.string.sync_dload_productchainxref));
+//                synchProdChain();
+//                updateProgress(context.getString(R.string.sync_dload_product_addons));
+//                synchProdAddon();
+//                updateProgress(context.getString(R.string.sync_dload_products));
+//                synchProducts();
+//                synchOrderAttributes();
+//                updateProgress(context.getString(R.string.sync_dload_product_aliases));
+//                synchOrderAttributes();
+//                synchProductAliases();
+//                updateProgress(context.getString(R.string.sync_dload_products_images));
+//                synchProductImages();
+//                updateProgress(context.getString(R.string.sync_dload_products_attributes));
+//                synchDownloadProductsAttr();
+//                updateProgress(context.getString(R.string.sync_dload_ordprodattr));
+//                synchGetOrdProdAttr();
+//                updateProgress(context.getString(R.string.sync_dload_salestaxcodes));
+//                synchSalesTaxCode();
+//                updateProgress(context.getString(R.string.sync_dload_shipmethod));
+//                synchShippingMethods();
+//                updateProgress(context.getString(R.string.sync_dload_taxes));
+//                synchTaxes();
+//                updateProgress(context.getString(R.string.sync_dload_taxes_group));
+//                synchTaxGroup();
+//                updateProgress(context.getString(R.string.sync_dload_terms));
+//                synchTerms();
+//                updateProgress(context.getString(R.string.sync_dload_memotext));
+//                synchMemoText();
+//                updateProgress(context.getString(R.string.sync_dload_logo));
+//                synchAccountLogo();
+//                updateProgress(context.getString(R.string.sync_dload_device_default_values));
+//                synchDeviceDefaultValues();
+//                updateProgress(context.getString(R.string.sync_dload_last_pay_id));
+//                synchDownloadLastPayID();
+//                updateProgress(context.getString(R.string.sync_dload_volume_prices));
+//                synchVolumePrices();
+//                updateProgress(context.getString(R.string.sync_dload_uom));
+//                synchUoM();
+//                updateProgress(context.getString(R.string.sync_dload_templates));
+//                synchGetTemplates();
+//
+//                if (Global.isIvuLoto) {
+//                    updateProgress(context.getString(R.string.sync_dload_ivudrawdates));
+//                    synchIvuLottoDrawDates();
+//                }
+//                updateProgress(context.getString(R.string.sync_dload_customer_inventory));
+//                synchDownloadCustomerInventory();
+//                updateProgress(context.getString(R.string.sync_dload_consignment_transaction));
+//                synchDownloadConsignmentTransaction();
+//                updateProgress(context.getString(R.string.sync_dload_shifts));
+//                synchShifts();
+//                updateProgress(context.getString(R.string.sync_dload_clerks));
+//                synchDownloadClerks();
+//                synchClerkPersmissions();
+////                updateProgress(context.getString(R.string.sync_dload_salesassociate));
+////                synchDownloadSalesAssociate();
+//                updateProgress(context.getString(R.string.sync_dload_dinnertables));
+//                synchDownloadDinnerTable();
+//                synchSalesAssociateDinnindTablesConfiguration(context);
+//                updateProgress(context.getString(R.string.sync_dload_mixmatch));
+//                synchDownloadMixMatch();
+//                updateProgress(context.getString(R.string.sync_dload_termsandconditions));
+//                synchDownloadTermsAndConditions();
+//                if (myPref.getPreferences(MyPreferences.pref_enable_location_inventory)) {
+//                    if (isReceive)
+//                        updateProgress(context.getString(R.string.sync_dload_locations));
+//                    else
+//                        updateProgress(context.getString(R.string.sync_dload_locations));
+//                    synchLocations();
+//                    if (isReceive)
+//                        updateProgress(context.getString(R.string.sync_dload_locations_inventory));
+//                    else
+//                        updateProgress(context.getString(R.string.sync_dload_locations_inventory));
+//                    synchLocationsInventory();
+//                }
+////                SynchMethods.synchOrdersOnHoldList(context);
+////                Intent intent = new Intent(MainMenu_FA.NOTIFICATION_RECEIVED);
+////                intent.putExtra(MainMenu_FA.NOTIFICATION_MESSAGE, String.valueOf(NotificationEvent.NotificationEventAction.SYNC_HOLDS.getCode()));
+////                context.sendBroadcast(intent);
+//                updateProgress("Updating Sync Time");
+//                synchUpdateSyncTime();
+//
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//                return false;
+//            }
+//            return true;
+//        }
+//
+//        protected void onPostExecute(Boolean result) {
+//            isReceive = false;
+//            SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy h:mm a", Locale.getDefault());
+//            String date = sdf.format(new Date());
+//            myPref.setLastReceiveSync(date);
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+//                if (!activity.isFinishing() && !activity.isDestroyed()) {
+////                    dismissProgressDialog();
+//                }
+//            } else {
+//                if (!activity.isFinishing()) {
+////                    dismissProgressDialog();
+//                }
+//            }
+//            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+//            if (type == Global.FROM_LOGIN_ACTIVITTY) {
+//                Intent intent = new Intent(context, MainMenu_FA.class);
+//                context.startActivity(intent);
+//                activity.finish();
+//            } else if (type == Global.FROM_REGISTRATION_ACTIVITY) {
+//                Intent intent = new Intent(context, MainMenu_FA.class);
+//                activity.setResult(-1);
+//                context.startActivity(intent);
+//                activity.finish();
+//            } else if (type == Global.FROM_SYNCH_ACTIVITY) {
+//                if (SyncTab_FR.syncTabHandler != null) {
+//                    SyncTab_FR.syncTabHandler.sendEmptyMessage(0);
+//                }
+//            }
+//            if (!result) {
+//                Global.showPrompt(context, R.string.sync_title, context.getString(R.string.sync_fail));
+//            }
+//        }
+//
+//    }
 
     private class SendAsync extends AsyncTask<String, String, String> {
         boolean proceed = false;
@@ -1509,23 +1572,23 @@ public class SynchMethods {
                 synchTextView = synchActivity.getSynchTextView();
             }
 
-            myProgressDialog = new ProgressDialog(context);
-
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            myProgressDialog.setMax(100);
-            if(!(context instanceof MainMenu_FA)) {
-                myProgressDialog.show();
-            }
+//            myProgressDialog = new ProgressDialog(context);
+//
+//            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+//            myProgressDialog.setCancelable(false);
+//            myProgressDialog.setMax(100);
+//            if(!(context instanceof MainMenu_FA)) {
+//                myProgressDialog.show();
+//            }
 
         }
 
         @Override
         protected void onProgressUpdate(String... params) {
             if (!isFromMainMenu) {
-                if (!myProgressDialog.isShowing())
-                    myProgressDialog.show();
-                myProgressDialog.setMessage(params[0]);
+//                if (!myProgressDialog.isShowing())
+//                    myProgressDialog.show();
+//                myProgressDialog.setMessage(params[0]);
             } else {
                 if (!synchTextView.isShown())
                     synchTextView.setVisibility(View.VISIBLE);
@@ -1629,9 +1692,9 @@ public class SynchMethods {
 //                    }
 //                }
 //            } else {
-            if (myProgressDialog != null && myProgressDialog.isShowing()) {
-                myProgressDialog.dismiss();
-            }
+//            if (myProgressDialog != null && myProgressDialog.isShowing()) {
+//                myProgressDialog.dismiss();
+//            }
 //            }
 
             if (type == Global.FROM_SYNCH_ACTIVITY) {
@@ -1679,11 +1742,11 @@ public class SynchMethods {
 
             activity.setRequestedOrientation(Global.getScreenOrientation(context));
 
-            myProgressDialog = new ProgressDialog(context);
-
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            myProgressDialog.setMax(100);
+//            myProgressDialog = new ProgressDialog(context);
+//
+//            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+//            myProgressDialog.setCancelable(false);
+//            myProgressDialog.setMax(100);
         }
 
         public void updateProgress(String msg) {
@@ -1693,9 +1756,9 @@ public class SynchMethods {
         @Override
         protected void onProgressUpdate(String... params) {
 
-            if (!myProgressDialog.isShowing())
-                myProgressDialog.show();
-            myProgressDialog.setMessage(params[0]);
+//            if (!myProgressDialog.isShowing())
+//                myProgressDialog.show();
+//            myProgressDialog.setMessage(params[0]);
 
         }
 
@@ -1773,7 +1836,7 @@ public class SynchMethods {
             myPref.setLastSendSync(date);
 
             isSending = false;
-            myProgressDialog.dismiss();
+//            myProgressDialog.dismiss();
 
             activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         }
@@ -1793,15 +1856,15 @@ public class SynchMethods {
             int orientation = context.getResources().getConfiguration().orientation;
             activity.setRequestedOrientation(Global.getScreenOrientation(context));
 
-            myProgressDialog = new ProgressDialog(context);
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            myProgressDialog.show();
+//            myProgressDialog = new ProgressDialog(context);
+//            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+//            myProgressDialog.setCancelable(false);
+//            myProgressDialog.show();
         }
 
         @Override
         protected void onProgressUpdate(String... params) {
-            myProgressDialog.setMessage(params[0]);
+//            myProgressDialog.setMessage(params[0]);
         }
 
         public void updateProgress(String msg) {
@@ -1825,7 +1888,7 @@ public class SynchMethods {
 //            SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy h:mm a", Locale.getDefault());
             String date = DateUtils.getDateAsString(new Date(), DateUtils.DATE_MMM_dd_yyyy_h_mm_a);
             myPref.setLastReceiveSync(date);
-            myProgressDialog.dismiss();
+//            myProgressDialog.dismiss();
             activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
             Intent intent = new Intent(context, OnHoldActivity.class);
             context.startActivity(intent);
@@ -1846,15 +1909,15 @@ public class SynchMethods {
 
             int orientation = context.getResources().getConfiguration().orientation;
             activity.setRequestedOrientation(Global.getScreenOrientation(context));
-            myProgressDialog = new ProgressDialog(context);
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            myProgressDialog.show();
+//            myProgressDialog = new ProgressDialog(context);
+//            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+//            myProgressDialog.setCancelable(false);
+//            myProgressDialog.show();
         }
 
         @Override
         protected void onProgressUpdate(String... params) {
-            myProgressDialog.setMessage(params[0]);
+//            myProgressDialog.setMessage(params[0]);
         }
 
         public void updateProgress(String msg) {
@@ -1884,7 +1947,7 @@ public class SynchMethods {
         }
 
         protected void onPostExecute(String unused) {
-            myProgressDialog.dismiss();
+//            myProgressDialog.dismiss();
             if (proceedToView) {
                 if (type == 0) {
                     activity.startActivityForResult(onHoldIntent, 0);
@@ -1912,21 +1975,21 @@ public class SynchMethods {
         protected void onPreExecute() {
             int orientation = context.getResources().getConfiguration().orientation;
             activity.setRequestedOrientation(Global.getScreenOrientation(context));
-            if (myProgressDialog != null && myProgressDialog.isShowing())
-                myProgressDialog.dismiss();
-            myProgressDialog = new ProgressDialog(context);
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-
-            if (!checkoutOnHold) {
-                myProgressDialog.show();
-            }
+//            if (myProgressDialog != null && myProgressDialog.isShowing())
+//                myProgressDialog.dismiss();
+//            myProgressDialog = new ProgressDialog(context);
+//            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+//            myProgressDialog.setCancelable(false);
+//
+//            if (!checkoutOnHold) {
+//                myProgressDialog.show();
+//            }
 
         }
 
         @Override
         protected void onProgressUpdate(String... params) {
-            myProgressDialog.setMessage(params[0]);
+//            myProgressDialog.setMessage(params[0]);
         }
 
         public void updateProgress(String msg) {
@@ -1955,8 +2018,8 @@ public class SynchMethods {
         }
 
         protected void onPostExecute(String unused) {
-            if (!activity.isFinishing() && myProgressDialog != null && myProgressDialog.isShowing())
-                myProgressDialog.dismiss();
+//            if (!activity.isFinishing() && myProgressDialog != null && myProgressDialog.isShowing())
+//                myProgressDialog.dismiss();
             if (!downloadHoldList) {
                 boolean closeActivity = true;
                 if (context instanceof OrderingMain_FA &&
@@ -1989,15 +2052,15 @@ public class SynchMethods {
 
             int orientation = context.getResources().getConfiguration().orientation;
             activity.setRequestedOrientation(Global.getScreenOrientation(context));
-            myProgressDialog = new ProgressDialog(context);
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            myProgressDialog.show();
+//            myProgressDialog = new ProgressDialog(context);
+//            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+//            myProgressDialog.setCancelable(false);
+//            myProgressDialog.show();
         }
 
         @Override
         protected void onProgressUpdate(String... params) {
-            myProgressDialog.setMessage(params[0]);
+//            myProgressDialog.setMessage(params[0]);
         }
 
         public void updateProgress(String msg) {
@@ -2024,7 +2087,7 @@ public class SynchMethods {
 
         @Override
         protected void onPostExecute(Void unused) {
-            myProgressDialog.dismiss();
+//            myProgressDialog.dismiss();
         }
 
     }

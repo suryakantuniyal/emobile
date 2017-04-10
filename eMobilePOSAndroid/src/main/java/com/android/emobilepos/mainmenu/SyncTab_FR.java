@@ -1,10 +1,12 @@
 package com.android.emobilepos.mainmenu;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -155,10 +157,40 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
                 if (dbManager.unsynchItemsLeft()) {
                     Global.showPrompt(getActivity(), R.string.dlog_title_error, getActivity().getString(R.string.send_unsync_items_first));
                 } else {
-                    sm = new SynchMethods(dbManager);
-                    sm.synchReceive(Global.FROM_SYNCH_ACTIVITY, getActivity());
+                    new SyncReceiveTask().execute(dbManager);
+//                    sm = new SynchMethods(dbManager);
+//                    sm.syncReceive();
                 }
                 break;
+        }
+    }
+
+    public class SyncReceiveTask extends AsyncTask<DBManager, Void, Boolean> {
+        ProgressDialog dialog;
+
+        @Override
+        protected void onPreExecute() {
+            dialog = new ProgressDialog(getActivity());
+            dialog.setTitle(R.string.sync_title);
+            dialog.setIndeterminate(true);
+            dialog.setMessage(getString(R.string.sync_inprogress));
+            dialog.show();
+        }
+
+        @Override
+        protected Boolean doInBackground(DBManager... params) {
+            DBManager dbManager = params[0];
+            SynchMethods sm = new SynchMethods(dbManager);
+            return sm.syncReceive();
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            dialog.dismiss();
+            if (!result) {
+                Global.showPrompt(getActivity(), R.string.sync_title, getString(R.string.sync_fail));
+            }
+            SyncTab_FR.syncTabHandler.sendEmptyMessage(0);
         }
     }
 }

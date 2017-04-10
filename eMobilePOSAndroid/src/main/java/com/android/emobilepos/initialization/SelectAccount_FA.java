@@ -122,9 +122,10 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
                                         @Override
                                         public void onClick(DialogInterface thisDialog, int which) {
                                             dbManager.updateDB();
-                                            SynchMethods sm = new SynchMethods(dbManager);
-                                            sm.synchReceive(Global.FROM_REGISTRATION_ACTIVITY, activity);
+//                                            SynchMethods sm = new SynchMethods(dbManager);
+//                                            sm.synchReceive(Global.FROM_REGISTRATION_ACTIVITY, activity);
                                             promptDialog.dismiss();
+                                            new SyncReceiveTask().execute(dbManager);
                                         }
                                     }).create();
                     promptDialog.show();
@@ -155,6 +156,39 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
                 }
             });
             checkLocationPermissions();
+        }
+    }
+
+    public class SyncReceiveTask extends AsyncTask<DBManager, Void, Boolean> {
+        ProgressDialog dialog;
+
+        @Override
+        protected void onPreExecute() {
+            dialog = new ProgressDialog(SelectAccount_FA.this);
+            dialog.setTitle(R.string.sync_title);
+            dialog.setIndeterminate(true);
+            dialog.setMessage(getString(R.string.sync_inprogress));
+            dialog.show();
+        }
+
+        @Override
+        protected Boolean doInBackground(DBManager... params) {
+            DBManager dbManager = params[0];
+            SynchMethods sm = new SynchMethods(dbManager);
+            return sm.syncReceive();
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            dialog.dismiss();
+            if (!result) {
+                Global.showPrompt(SelectAccount_FA.this, R.string.sync_title, getString(R.string.sync_fail));
+            }else{
+                Intent intent = new Intent(SelectAccount_FA.this, MainMenu_FA.class);
+                activity.setResult(-1);
+                startActivity(intent);
+                activity.finish();
+            }
         }
     }
 

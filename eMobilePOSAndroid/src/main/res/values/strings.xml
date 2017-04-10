@@ -1283,6 +1283,7 @@
     <string name="refresh_menu">Reload</string>
     <string name="dlog_msg_error_shift_needs_use_clerk">Use clerk setting is required to open this section.</string>
     <string name="config_holds_polling_service">Enable holds polling service</string>
+    <string name="sync_inprogress">Synchronization in progress. Please wait.</string>
 
 
 </resources>
