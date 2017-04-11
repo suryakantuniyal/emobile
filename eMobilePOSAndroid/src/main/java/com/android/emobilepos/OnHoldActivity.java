@@ -35,6 +35,7 @@ import com.android.database.DBManager;
 import com.android.database.OrderProductsHandler;
 import com.android.database.OrdersHandler;
 import com.android.database.SalesTaxCodesHandler;
+import com.android.emobilepos.firebase.PollingNotificationService;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.models.firebase.NotificationEvent;
 import com.android.emobilepos.models.orders.Order;
@@ -92,6 +93,9 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         });
         listView.setAdapter(myAdapter);
         hasBeenCreated = true;
+        if (!PollingNotificationService.isServiceRunning(this)) {
+            PollingNotificationService.start(this);
+        }
 
     }
 
@@ -123,6 +127,9 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         @Override
         protected Void doInBackground(Void... params) {
             try {
+                if(!PollingNotificationService.isServiceRunning(OnHoldActivity.this)){
+                    PollingNotificationService.start(OnHoldActivity.this);
+                }
                 SynchMethods.synchOrdersOnHoldList(OnHoldActivity.this);
                 Intent intent = new Intent(MainMenu_FA.NOTIFICATION_RECEIVED);
                 intent.putExtra(MainMenu_FA.NOTIFICATION_MESSAGE, String.valueOf(NotificationEvent.NotificationEventAction.SYNC_HOLDS.getCode()));

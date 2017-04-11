@@ -240,6 +240,9 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
     @Override
     public void onResume() {
+        if (!PollingNotificationService.isServiceRunning(this)) {
+            PollingNotificationService.start(this);
+        }
         registerReceiver(messageReceiver, new IntentFilter(NOTIFICATION_RECEIVED));
         if (global.isApplicationSentToBackground(activity)) {
             Global.loggedIn = false;
@@ -278,15 +281,11 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
     }
 
     private void startPollingService() {
-        Intent startIntent = new Intent(this, PollingNotificationService.class);
-        startIntent.setAction(PollingNotificationService.START_ACTION);
-        startService(startIntent);
+        PollingNotificationService.start(this);
     }
 
     private void stopPollingService() {
-        Intent stopIntent = new Intent(this, PollingNotificationService.class);
-        stopIntent.setAction(PollingNotificationService.STOP_ACTION);
-        startService(stopIntent);
+        PollingNotificationService.start(this);
     }
 
     public void forceTabs() {
