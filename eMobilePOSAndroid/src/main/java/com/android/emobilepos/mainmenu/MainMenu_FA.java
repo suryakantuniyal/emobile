@@ -240,6 +240,9 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
     @Override
     public void onResume() {
+        if(PollingNotificationService.isMyServiceRunning(this)){
+
+        }
         registerReceiver(messageReceiver, new IntentFilter(NOTIFICATION_RECEIVED));
         if (global.isApplicationSentToBackground(activity)) {
             Global.loggedIn = false;

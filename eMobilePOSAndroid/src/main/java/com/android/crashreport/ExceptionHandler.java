@@ -39,7 +39,6 @@ public class ExceptionHandler implements
 	private String fingerPrint;
 	private String host;
 	private String ID;
-	private String manufacturer;
 	private String model;
 	private String product;
 	private String tags;
@@ -236,61 +235,12 @@ public class ExceptionHandler implements
 		
 		if(DBManager.getDatabase() !=null& DBManager.getDatabase().isOpen()&& DBManager.getDatabase().inTransaction())
 			DBManager.getDatabase().endTransaction();
-		
-//		String report = "";
-//		
-//		Date curDate = new Date();
-//		report += "Error Report collected on : " + curDate.toString();
-//		report += "\n";
-//		report += "\n";
-//		report += "Informations :";
-//		report += "\n";
-//		report += "==============";
-//		report += "\n";
-//		report += "\n";
-//		
-//		report += createInformationString();
-//
-//		report += "\n\n";
-//		report += "Stack : \n";
-//		report += "======= \n";
-//		
-//		final Writer result = new StringWriter();
-//		final PrintWriter printWriter = new PrintWriter(result);
-//		exception.printStackTrace(printWriter);
-//		String stacktrace = result.toString();
-//		report += stacktrace;
-//
-//		// If the exception was thrown in a background thread inside
-//		// AsyncTask, then the actual exception can be found with getCause
-//		Throwable cause = exception.getCause();
-//		if (cause != null) {
-//			report += "\n";
-//			report += "Cause : \n";
-//			report += "======= \n";
-//		}
-//
-//		// find the cause of the crash
-//		while (cause != null) {
-//			cause.printStackTrace(printWriter);
-//			report += result.toString();
-//			cause = cause.getCause();
-//		}
-//
-//		printWriter.close();
-//		report += "****  End of current Report ***";
 
-		//Intent intent = new Intent(myContext, CrashActivity.class);
-		//intent.putExtra("STACKTRACE", report);
-		
 		// create a file in SD card & write the error log in it
 		// later send this file in the email to developer
 		
 		new Helper().saveAsFile(getStringReport(exception), myContext);
-		
-		// start the crash activity
-		//myContext.startActivity(intent);
-		
+
 		// kill the process
 		if(oldHandler!=null)
 		{

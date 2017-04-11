@@ -35,6 +35,7 @@ import com.android.database.DBManager;
 import com.android.database.OrderProductsHandler;
 import com.android.database.OrdersHandler;
 import com.android.database.SalesTaxCodesHandler;
+import com.android.emobilepos.firebase.PollingNotificationService;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.models.firebase.NotificationEvent;
 import com.android.emobilepos.models.orders.Order;
@@ -92,6 +93,9 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         });
         listView.setAdapter(myAdapter);
         hasBeenCreated = true;
+        if(PollingNotificationService.isMyServiceRunning(this)){
+
+        }
 
     }
 

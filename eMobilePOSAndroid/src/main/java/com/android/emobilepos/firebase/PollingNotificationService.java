@@ -1,5 +1,6 @@
 package com.android.emobilepos.firebase;
 
+import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -134,11 +135,12 @@ public class PollingNotificationService extends Service {
             HttpClient client = new HttpClient();
             Gson gson = JsonUtils.getInstance();
 
-            StringBuilder sb = new StringBuilder(context.getString(R.string.sync_enablermobile_deviceasxmltrans));
-            sb.append("pollnotification.ashx?RegID=").append(URLEncoder.encode(accountNumber, "utf-8"));
-            sb.append("&fromdate=").append(URLEncoder.encode(DateUtils.getDateAsString(lastPolled), "utf-8"));
+            String sb = String.format("%spollnotification.ashx?RegID=%s&fromdate=%s",
+                    context.getString(R.string.sync_enablermobile_deviceasxmltrans),
+                    URLEncoder.encode(accountNumber, "utf-8"),
+                    URLEncoder.encode(DateUtils.getDateAsString(lastPolled), "utf-8"));
 
-            InputStream inputStream = client.httpInputStreamRequest(sb.toString());
+            InputStream inputStream = client.httpInputStreamRequest(sb);
             JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
             reader.beginArray();
 
@@ -167,6 +169,16 @@ public class PollingNotificationService extends Service {
         } catch (Exception e) {
             Crashlytics.logException(e);
         }
+    }
+
+    public static boolean isMyServiceRunning(Context context) {
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (PollingNotificationService.class.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     class PollNotification {
