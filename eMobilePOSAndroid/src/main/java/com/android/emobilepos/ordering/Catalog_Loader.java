@@ -40,11 +40,9 @@ public class Catalog_Loader extends AsyncTaskLoader<Cursor> {
         if (onRestaurantMode && category == null && TextUtils.isEmpty(searchText)) {
             return getEmptyCursor();
         }
-
         Cursor cursor;
 
         ProductsHandler productsHandler = new ProductsHandler(context);
-
         if (!TextUtils.isEmpty(searchText) && !TextUtils.isEmpty(searchType)) {
             cursor = productsHandler.searchProducts(searchText, searchType);
         } else {
@@ -54,7 +52,6 @@ public class Catalog_Loader extends AsyncTaskLoader<Cursor> {
             }
             cursor = productsHandler.getCatalogData(categoryId, limit, offset);
         }
-
         return cursor;
     }
 

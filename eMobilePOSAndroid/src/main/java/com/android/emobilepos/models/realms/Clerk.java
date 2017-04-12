@@ -11,7 +11,7 @@ import io.realm.annotations.PrimaryKey;
 /**
  * Created by Guarionex on 3/8/2016.
  */
-public class SalesAssociate extends RealmObject {
+public class Clerk extends RealmObject {
     @SerializedName("emp_id")
     @Expose
     @PrimaryKey

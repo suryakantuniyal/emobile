@@ -19,7 +19,7 @@ import java.util.Locale;
 public class GiftCardTextWatcher implements android.text.TextWatcher {
     boolean doneScanning = false;
     private EditText hiddenEditText;
-    private CreditCardInfo creditCardInfo;
+    private final CreditCardInfo creditCardInfo;
     private Context context;
     private EditText cardEditText;
     private boolean encryptCardNumber;
@@ -59,7 +59,7 @@ public class GiftCardTextWatcher implements android.text.TextWatcher {
                 cardEditText.setText(data);
                 hiddenEditText.setText("");
             } else {
-                creditCardInfo = Global.parseSimpleMSR(context, data);
+                creditCardInfo.setCardInfo(Global.parseSimpleMSR(context, data));
                 if (encryptCardNumber) {
                     cardEditText.setText(creditCardInfo.getCardNumAESEncrypted());
                 } else {

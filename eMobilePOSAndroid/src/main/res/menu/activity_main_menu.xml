@@ -1,7 +1,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/menu_back"
-        android:title="@string/menu_back"
-        android:icon="@drawable/ic_backspace_black_24dp"
+    <item
+        android:id="@+id/menu_back"
+        android:icon="@drawable/ic_arrow_back_black_48dp"
         android:orderInCategory="100"
-        android:showAsAction="always|withText" />
+        android:showAsAction="always|withText"
+        android:title="@string/menu_back" />
+    <item
+        android:id="@+id/logoutMenuItem"
+        android:icon="@drawable/ic_power_settings_new_black_48dp"
+        android:showAsAction="always|withText"
+        android:title="@string/logout_menu" />
+    <item
+        android:id="@+id/refreshHolds"
+        android:icon="@drawable/ic_sync_black_48dp"
+        android:showAsAction="always|withText"
+        android:title="@string/refresh_menu" />
 </menu>

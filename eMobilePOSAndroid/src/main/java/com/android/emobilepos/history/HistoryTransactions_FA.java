@@ -30,6 +30,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.history.details.HistoryTransactionDetails_FA;
 import com.android.support.Global;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.crashlytics.android.Crashlytics;
 
 public class HistoryTransactions_FA extends BaseFragmentActivityActionBar implements OnTabChangeListener {
 
@@ -226,7 +227,9 @@ public class HistoryTransactions_FA extends BaseFragmentActivityActionBar implem
         public static Limiters toLimit(String str) {
             try {
                 return valueOf(str);
-            } catch (Exception ex) {
+            } catch (Exception e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
                 return null;
             }
         }

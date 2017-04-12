@@ -49,7 +49,7 @@ public class EMSmePOS extends EMSDeviceDriver implements EMSDeviceManagerPrinter
         this.edm = edm;
         myPref = new MyPreferences(activity);
         init();
-        if (mePOS.getConnectionManager().getConnectionStatus() == MePOSConnectionManager.STATUS_CONNECTED_USB) {
+        if (mePOS != null && mePOS.getConnectionManager().getConnectionStatus() == MePOSConnectionManager.STATUS_CONNECTED_USB) {
             edm.driverDidConnectToDevice(this, true);
         } else {
             edm.driverDidNotConnectToDevice(this, msg, true);
@@ -63,7 +63,7 @@ public class EMSmePOS extends EMSDeviceDriver implements EMSDeviceManagerPrinter
         this.edm = edm;
         myPref = new MyPreferences(activity);
         init();
-        if (mePOS.getConnectionManager().getConnectionStatus() == MePOSConnectionManager.STATUS_CONNECTED_USB) {
+        if (mePOS != null && mePOS.getConnectionManager().getConnectionStatus() == MePOSConnectionManager.STATUS_CONNECTED_USB) {
             edm.driverDidConnectToDevice(this, false);
         } else {
             edm.driverDidNotConnectToDevice(this, msg, false);
@@ -72,25 +72,30 @@ public class EMSmePOS extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     }
 
     private void init() {
-        mePOS = new MePOS(activity, MePOSConnectionType.USB);
-        final IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction("android.hardware.usb.action.USB_DEVICE_ATTACHED");
-        intentFilter.addAction("android.hardware.usb.action.USB_DEVICE_DETACHED");
-        final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                if (intent.getAction().contains("ATTACHED")) {
-                    mePOS = new MePOS(context, MePOSConnectionType.USB);
-                    Toast.makeText(activity, "MePOS connected", Toast.LENGTH_SHORT).show();
-                    connected = true;
-                } else if (intent.getAction().contains("DETACHED")) {
-                    mePOS.getConnectionManager().disconnect();
-                    Toast.makeText(activity, "MePOS disconnected", Toast.LENGTH_SHORT).show();
-                    connected = false;
+        try {
+            mePOS = new MePOS(activity, MePOSConnectionType.USB);
+            final IntentFilter intentFilter = new IntentFilter();
+            intentFilter.addAction("android.hardware.usb.action.USB_DEVICE_ATTACHED");
+            intentFilter.addAction("android.hardware.usb.action.USB_DEVICE_DETACHED");
+            final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    if (intent.getAction().contains("ATTACHED")) {
+                        mePOS = new MePOS(context, MePOSConnectionType.USB);
+                        Toast.makeText(activity, "MePOS connected", Toast.LENGTH_SHORT).show();
+                        connected = true;
+                    } else if (intent.getAction().contains("DETACHED")) {
+                        mePOS.getConnectionManager().disconnect();
+                        Toast.makeText(activity, "MePOS disconnected", Toast.LENGTH_SHORT).show();
+                        connected = false;
+                    }
                 }
-            }
-        };
-        activity.getApplicationContext().registerReceiver(broadcastReceiver, intentFilter);
+            };
+            activity.getApplicationContext().registerReceiver(broadcastReceiver, intentFilter);
+        } catch (Exception e) {
+            mePOS = null;
+            e.printStackTrace();
+        }
     }
 
 

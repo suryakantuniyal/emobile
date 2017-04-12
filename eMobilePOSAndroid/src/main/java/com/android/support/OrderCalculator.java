@@ -6,7 +6,7 @@ import com.android.dao.AssignEmployeeDAO;
 import com.android.database.TaxesHandler;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.Discount;
-import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.Tax;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.ordering.OrderingMain_FA;
@@ -34,7 +34,7 @@ public class OrderCalculator {
         this.discount = discount;
         this.orderTaxes = orderTaxes;
         myPref = new MyPreferences(activity);
-        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
         this.taxId = taxId;
         isVAT = assignEmployee.isVAT();
         this.activity = activity;
@@ -47,9 +47,9 @@ public class OrderCalculator {
         TaxesHandler taxHandler = new TaxesHandler(activity);
         String taxRate = "0";
         String prod_taxId = "";
-        BigDecimal subtotal = new BigDecimal(product.getItemSubtotal());
+        BigDecimal subtotal = product.getItemSubtotalCalculated();
         BigDecimal prodQty = new BigDecimal(product.getOrdprod_qty());
-        if (myPref.getPreferences(MyPreferences.pref_retail_taxes)) {
+        if (myPref.isRetailTaxes()) {
             if (!taxId.isEmpty()) {
                 taxRate = taxHandler.getTaxRate(taxId, product.getTax_type(), Double.parseDouble(product.getFinalPrice()));
                 prod_taxId = product.getTax_type();
@@ -177,7 +177,7 @@ public class OrderCalculator {
 
             }
 
-            if (myPref.getPreferences(MyPreferences.pref_retail_taxes)) {
+            if (myPref.isRetailTaxes()) {
                 calculateGlobalTax(subtotal, prodQty, isVAT, new BigDecimal(taxRate));
             } else {
                 calculateGlobalTax(subtotal, prodQty, isVAT, new BigDecimal(taxRate));

@@ -12,14 +12,20 @@ import io.realm.Realm;
 
 public class AssignEmployeeDAO {
 
-    public static AssignEmployee getAssignEmployee() {
+    public static AssignEmployee getAssignEmployee(boolean returnManaged) {
         Realm r = Realm.getDefaultInstance();
         AssignEmployee employee;
         try {
+            r.beginTransaction();
             employee = r.where(AssignEmployee.class).findFirst();
-        }finally {
+        } finally {
+            r.commitTransaction();
         }
-        return employee;
+        if (returnManaged || employee == null) {
+            return employee;
+        } else {
+            return r.copyFromRealm(employee);
+        }
     }
 
     public static void insertAssignEmployee(List<AssignEmployee> assignEmployees) throws Exception {
@@ -31,18 +37,20 @@ public class AssignEmployeeDAO {
             r.beginTransaction();
             r.where(AssignEmployee.class).findAll().deleteAllFromRealm();
             r.copyToRealmOrUpdate(assignEmployees);
-        }finally {
+        } finally {
             r.commitTransaction();
+            r.close();
         }
     }
 
     public static void updateLastOrderId(String ord_id) {
         Realm r = Realm.getDefaultInstance();
         try {
+            AssignEmployee assignEmployee = getAssignEmployee(true);
             r.beginTransaction();
-            AssignEmployee assignEmployee = getAssignEmployee();
             assignEmployee.setMSLastOrderID(ord_id);
-        }finally {
+            r.insertOrUpdate(assignEmployee);
+        } finally {
             r.commitTransaction();
         }
     }
@@ -50,10 +58,11 @@ public class AssignEmployeeDAO {
     public static void updateLastTransferId(String transferId) {
         Realm r = Realm.getDefaultInstance();
         try {
+            AssignEmployee assignEmployee = getAssignEmployee(true);
             r.beginTransaction();
-            AssignEmployee assignEmployee = getAssignEmployee();
             assignEmployee.setMSLastTransferID(transferId);
-        }finally {
+            r.insertOrUpdate(assignEmployee);
+        } finally {
             r.commitTransaction();
         }
     }

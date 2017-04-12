@@ -12,6 +12,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.models.firebase.HubRegistrationPNS;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.support.MyPreferences;
+import com.crashlytics.android.Crashlytics;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.Gson;
 import com.microsoft.windowsazure.messaging.NotificationHub;
@@ -83,6 +84,8 @@ public class RegistrationIntentService extends IntentService {
 //                sharedPreferences.edit().putString("FCMtoken", FCM_token).apply();
             }
         } catch (Exception e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
             Log.e(TAG, resultString = "Failed to complete registration", e);
             // If an exception happens while fetching the new token or updating our registration data
             // on a third-party server, this ensures that we'll attempt the update at a later time.
@@ -96,7 +99,7 @@ public class RegistrationIntentService extends IntentService {
             HttpClient httpClient = new HttpClient();
             String url = getString(R.string.sync_register_pns);
             OAuthClient authClient = OAuthManager.getOAuthClient(RegistrationIntentService.this);
-            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
             NotificationSettings settings = FirebaseDAO.getNotificationSettings();
             HubRegistrationPNS request = new HubRegistrationPNS();
             request.setEmployeeId(assignEmployee.getEmpId());
@@ -111,6 +114,7 @@ public class RegistrationIntentService extends IntentService {
                 FirebaseDAO.saveHUBRegistrationStatus(NotificationSettings.HUBRegistrationStatus.SUCCEED);
             } catch (Exception e) {
                 e.printStackTrace();
+                Crashlytics.logException(e);
                 FirebaseDAO.saveHUBRegistrationStatus(NotificationSettings.HUBRegistrationStatus.UNKNOWN);
             }
         }

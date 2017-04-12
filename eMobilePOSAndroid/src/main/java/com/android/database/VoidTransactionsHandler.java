@@ -1,11 +1,9 @@
 package com.android.database;
 
-import android.app.Activity;
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 
-import com.android.emobilepos.models.Order;
+import com.android.emobilepos.models.orders.Order;
 
 import net.sqlcipher.database.SQLiteStatement;
 

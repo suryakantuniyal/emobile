@@ -73,7 +73,7 @@ public class OrderLoyalty_FR extends Fragment implements OnClickListener {
 
         if (savedInstanceState == null && OrderTotalDetails_FR.getFrag() != null && OrderTotalDetails_FR.getFrag().getActivity() != null) {
             Global global = (Global) OrderLoyalty_FR.this.getActivity().getApplication();
-            OrderTotalDetails_FR.getFrag().reCalculate(global.orderProducts);
+            OrderTotalDetails_FR.getFrag().reCalculate(global.order.getOrderProducts());
         }
         return view;
     }

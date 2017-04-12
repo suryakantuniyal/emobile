@@ -1,6 +1,7 @@
 package com.android.emobilepos.models;
 
 import com.android.emobilepos.adapters.OrderProductListAdapter;
+import com.android.emobilepos.models.orders.OrderProduct;
 
 /**
  * Created by Guarionex on 2/18/2016.

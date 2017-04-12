@@ -1,7 +1,12 @@
 package com.android.dao;
 
 import com.android.emobilepos.models.realms.Shift;
+import com.android.support.DateUtils;
+import com.android.support.Global;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import io.realm.Realm;
@@ -93,4 +98,57 @@ public class ShiftDAO {
         Shift shift = getOpenShift(Integer.parseInt(clerkID));
         return shift != null;
     }
+
+    public static void updateShiftAmounts(int clerkID, double amountToApply, boolean isReturn) {
+        Shift openShift = getOpenShift(clerkID);
+        if(openShift==null) {
+            return;
+        }
+
+        if (isReturn) {
+            openShift.setTotalTransactionsCash(String.valueOf(Global.getBigDecimalNum(openShift != null
+                    ? openShift.getTotalTransactionsCash() :
+                    "0").subtract(BigDecimal.valueOf(amountToApply))));
+        } else {
+            openShift.setTotalTransactionsCash(String.valueOf(Global.getBigDecimalNum(openShift != null
+                    ? openShift.getTotalTransactionsCash()
+                    : "0").add(BigDecimal.valueOf(amountToApply))));
+        }
+        insertOrUpdate(openShift);
+    }
+
+    public static Shift getShift(String shiftId) {
+        Realm r = Realm.getDefaultInstance();
+        return r.copyFromRealm(r.where(Shift.class).equalTo("shiftId", shiftId).findFirst());
+    }
+
+    public static List<Shift> getShift(Date date) {
+        List<Shift> list = new ArrayList<>();
+        Realm r = Realm.getDefaultInstance();
+        RealmResults<Shift> shifts = r.where(Shift.class).findAll();
+        for (Shift shift : shifts) {
+            String creationDate = DateUtils.getDateAsString(shift.getCreationDate(), DateUtils.DATE_yyyy_MM_dd);
+            String filterDate = DateUtils.getDateAsString(date, DateUtils.DATE_yyyy_MM_dd);
+            if (creationDate.equalsIgnoreCase(filterDate)) {
+                list.add(shift);
+            }
+        }
+        return r.copyFromRealm(list);
+    }
+//
+//    public static List<Shift> getShift(String clerkId, Date date) {
+//        List<Shift> list = new ArrayList<>();
+//        Realm r = Realm.getDefaultInstance();
+//        RealmResults<Shift> shifts = r.where(Shift.class)
+//                .equalTo("assigneeId", clerkId)
+//                .findAll();
+//        for (Shift shift : shifts) {
+//            String creationDate = DateUtils.getDateAsString(shift.getCreationDate(), DateUtils.DATE_yyyy_MM_dd);
+//            String filterDate = DateUtils.getDateAsString(date, DateUtils.DATE_yyyy_MM_dd);
+//            if (creationDate.equalsIgnoreCase(filterDate)) {
+//                list.add(shift);
+//            }
+//        }
+//        return list;
+//    }
 }

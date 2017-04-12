@@ -37,6 +37,7 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NumberUtils;
 import com.android.support.Post;
+import com.crashlytics.android.Crashlytics;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -49,6 +50,8 @@ import java.util.List;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+
+import util.json.UIUtils;
 
 public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChangeListener, OnClickListener {
 
@@ -99,7 +102,7 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
         super.onCreate(savedInstanceState);
         extras = this.getIntent().getExtras();
         activity = this;
-        assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+        assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
 
         myPref = new MyPreferences(activity);
         String custTaxCode;
@@ -122,7 +125,7 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
         tax2 = (EditText) findViewById(R.id.tax2CashEdit);
         TextView tax1Lbl = (TextView) findViewById(R.id.tax1CashLbl);
         TextView tax2Lbl = (TextView) findViewById(R.id.tax2CashLbl);
-        groupTaxRate = TaxesHandler.getGroupTaxRate(custTaxCode);
+        groupTaxRate = new TaxesHandler(this).getGroupTaxRate(custTaxCode);
         ProcessCash_FA.setTaxLabels(groupTaxRate, tax1Lbl, tax2Lbl);
         this.amountField = (EditText) findViewById(R.id.checkAmount);
 
@@ -793,7 +796,8 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
 
 
             } catch (Exception e) {
-
+                e.printStackTrace();
+                Crashlytics.logException(e);
             }
             return null;
         }
@@ -1035,29 +1039,31 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.processCheckBut:
-                btnProcess.setEnabled(false);
-                if (!validInput()) {
-                    Global.showPrompt(activity, R.string.validation_failed, activity.getString(R.string.card_validation_error));
-                } else {
-                    if (!isLivePayment && Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
-                        Global.mainPrinterManager.getCurrentDevice().openCashDrawer();
+        if (UIUtils.singleOnClick(v)) {
+            switch (v.getId()) {
+                case R.id.processCheckBut:
+                    btnProcess.setEnabled(false);
+                    if (!validInput()) {
+                        Global.showPrompt(activity, R.string.validation_failed, activity.getString(R.string.card_validation_error));
+                    } else {
+                        if (!isLivePayment && Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                            Global.mainPrinterManager.getCurrentDevice().openCashDrawer();
+                        }
+                        if (!isOpenInvoice || (isOpenInvoice && !isMultiInvoice))
+                            processPayment();
+                        else
+                            processMultiInvoicePayment();
                     }
-                    if (!isOpenInvoice || (isOpenInvoice && !isMultiInvoice))
-                        processPayment();
-                    else
-                        processMultiInvoicePayment();
-                }
-                btnProcess.setEnabled(true);
-                break;
-            case R.id.exactAmountBut:
-                field[CHECK_AMOUNT_PAID].setText(field[CHECK_AMOUNT].getText().toString().replace(",", ""));
-                break;
-            case R.id.btnCheckCapture:
-                Intent intent = new Intent(this, CaptureCheck_FA.class);
-                startActivityForResult(intent, INTENT_CAPTURE_CHECK);
-                break;
+                    btnProcess.setEnabled(true);
+                    break;
+                case R.id.exactAmountBut:
+                    field[CHECK_AMOUNT_PAID].setText(field[CHECK_AMOUNT].getText().toString().replace(",", ""));
+                    break;
+                case R.id.btnCheckCapture:
+                    Intent intent = new Intent(this, CaptureCheck_FA.class);
+                    startActivityForResult(intent, INTENT_CAPTURE_CHECK);
+                    break;
+            }
         }
     }
 

@@ -39,6 +39,7 @@ import com.android.support.Global;
 import com.android.support.MyEditText;
 import com.android.support.MyPreferences;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.crashlytics.android.Crashlytics;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -563,12 +564,8 @@ public class CreateCustomer_FA extends BaseFragmentActivityActionBar implements 
             try {
                 dobDate = sdf2.format(sdf1.parse(sb.toString()));
             } catch (ParseException e) {
-                // TODO Auto-generated catch block
-                StringBuilder sb2 = new StringBuilder();
-                sb2.append(e.getMessage()).append(" [").append("com.android.support.ReportsMenuActivity (at Class.DateDialog) ]");
-//				Tracker tracker = EasyTracker.getInstance(activity);
-//				tracker.send(MapBuilder.createException(sb2.toString(), false).build());
-                // throw new RuntimeException(e);
+                e.printStackTrace();
+                Crashlytics.logException(e);
             }
             field[DOB].setText(Global.formatToDisplayDate(dobDate,  1));
 

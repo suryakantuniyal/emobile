@@ -13,6 +13,9 @@ import android.graphics.PorterDuff.Mode;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.multidex.MultiDexApplication;
@@ -32,23 +35,25 @@ import android.widget.TextView;
 
 import com.android.crashreport.ExceptionHandler;
 import com.android.dao.AssignEmployeeDAO;
+import com.android.dao.ClerkDAO;
 import com.android.dao.RealmModule;
-import com.android.dao.SalesAssociateDAO;
+import com.android.dao.StoredPaymentsDAO;
 import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.holders.Locations_Holder;
 import com.android.emobilepos.holders.TransferInventory_Holder;
 import com.android.emobilepos.holders.TransferLocations_Holder;
-import com.android.emobilepos.models.DataTaxes;
-import com.android.emobilepos.models.Order;
-import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.models.Product;
+import com.android.emobilepos.models.orders.Order;
+import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
+import com.android.emobilepos.models.realms.Clerk;
+import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.ProductAttribute;
-import com.android.emobilepos.models.realms.SalesAssociate;
-import com.android.emobilepos.ordering.Catalog_FR;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.zxing.BarcodeFormat;
@@ -292,10 +297,10 @@ public class Global extends MultiDexApplication {
     public String encodedImage = "";
     public int orientation;
     // For new addon views
-    public List<DataTaxes> listOrderTaxes = new ArrayList<DataTaxes>();
+//    public List<DataTaxes> listOrderTaxes = new ArrayList<>();
     public List<ProductAttribute> ordProdAttrPending;
     public RealmList<ProductAttribute> ordProdAttr = new RealmList<>();
-    public List<OrderProduct> orderProducts = new ArrayList<OrderProduct>();
+    //    public List<OrderProduct> orderProducts = new ArrayList<>();
     //    public List<OrderProduct> orderProductAddons = new ArrayList<OrderProduct>();
     // public static HashMap<String,List<OrderProduct>>orderProductsAddonsMap;
     public Order order;
@@ -315,9 +320,34 @@ public class Global extends MultiDexApplication {
     private String selectedDeliveryDate;
     private String selectedComments;
     private String selectedPO;
+    public enum HandlerMessages {
+        UPDATE_PAYMENT_SIGNATURE(0);
+
+        private int code;
+        HandlerMessages(int code) {
+            this.code = code;
+        }
+        public int getCode(){
+            return this.code;
+        }
+    }
+
     private Dialog globalDlog;
-
-
+    public static Handler handler = new Handler(Looper.getMainLooper()){
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what){
+                case 0:{
+                    Realm realm = Realm.getDefaultInstance();
+                    realm.beginTransaction();
+                    Payment payment = (Payment) msg.obj;
+                    realm.insertOrUpdate(payment);
+                    realm.commitTransaction();
+                break;
+                }
+            }
+        }
+    };
     public static String getPeripheralName(int type) {
         String _name = "Unknown";
         switch (type) {
@@ -425,7 +455,7 @@ public class Global extends MultiDexApplication {
                 try {
                     locationServices.wait(15000);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    Crashlytics.logException(e);
                 }
             }
         }
@@ -456,7 +486,7 @@ public class Global extends MultiDexApplication {
             byte[] b = baos.toByteArray();
             return Base64.encodeBytes(b);
         } catch (WriterException e) {
-            e.printStackTrace();
+            Crashlytics.logException(e);
         }
         return "";
     }
@@ -543,6 +573,7 @@ public class Global extends MultiDexApplication {
 
         } catch (ParseException e) {
             formatedDate = "";
+            Crashlytics.logException(e);
         }
         return formatedDate;
     }
@@ -570,13 +601,22 @@ public class Global extends MultiDexApplication {
     public static String formatDoubleStrToCurrency(String val) {
         if (val == null || val.isEmpty())
             return (Global.getCurrencyFormat(Global.formatNumToLocale(0.00)));
-        return (Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(val))));
+        if (val.contains(".")) {
+            int decLen = val.substring(val.indexOf('.')).length();
+            if (decLen > 4) {
+                val = val.substring(0, val.indexOf('.') + 5);
+            }
+        }
+        return (Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(NumberUtils.cleanCurrencyFormatedNumber(val)))));
 
     }
 
     public static double formatNumFromLocale(String val)// received as #,##
     // instead of #.##
     {
+        if (TextUtils.isEmpty(val)) {
+            val = "0";
+        }
         double frmt = 0.0;
         try {
             NumberFormat numFormater = NumberFormat.getNumberInstance(Locale.getDefault());
@@ -587,7 +627,7 @@ public class Global extends MultiDexApplication {
             Number number = numFormater.parse(val);
             frmt = number.doubleValue();
         } catch (ParseException e) {
-
+            Crashlytics.logException(e);
         }
         return frmt;
     }
@@ -599,17 +639,17 @@ public class Global extends MultiDexApplication {
         try {
             number = cf.parse(val);
         } catch (ParseException e) {
-
+            Crashlytics.logException(e);
         }
         return number.doubleValue();
     }
 
     public static String formatNumToLocale(double val) {
-
-        NumberFormat nf = NumberFormat.getNumberInstance(Locale.getDefault());
-        nf.setParseIntegerOnly(false);
-        DecimalFormat df = (DecimalFormat) nf;
-        return df.format(val);
+//        NumberFormat nf = NumberFormat.getNumberInstance(Locale.getDefault());
+//        nf.setParseIntegerOnly(false);
+//        DecimalFormat df = (DecimalFormat) nf;
+//        return df.format(val);
+        return String.format(Locale.getDefault(), "%.4f", val);
     }
 
     public static void generateDebugFile(String sBody) {
@@ -625,6 +665,7 @@ public class Global extends MultiDexApplication {
             writer.close();
 
         } catch (IOException e) {
+            Crashlytics.logException(e);
         }
     }
 
@@ -729,11 +770,11 @@ public class Global extends MultiDexApplication {
     public int checkIfGroupBySKU(Activity activity, String prodID, String pickedQty) {
         int orderIndex = -1;
         MyPreferences myPref = new MyPreferences(activity);
-        int size = this.orderProducts.size();
+        int size = order.getOrderProducts().size();
         boolean found = false;
 
         for (int i = size - 1; i >= 0; i--) {
-            if (this.orderProducts.get(i).getProd_id().equals(prodID) && !orderProducts.get(i).isReturned()) {
+            if (order.getOrderProducts().get(i).getProd_id().equals(prodID) && !order.getOrderProducts().get(i).isReturned()) {
                 orderIndex = i;
                 found = true;
                 break;
@@ -741,7 +782,7 @@ public class Global extends MultiDexApplication {
         }
 
         if (found && !OrderingMain_FA.returnItem) {
-            String value = OrderProductUtils.getOrderProductQty(this.orderProducts, prodID);//this.qtyCounter.get(prodID);
+            String value = OrderProductUtils.getOrderProductQty(order.getOrderProducts(), prodID);//this.qtyCounter.get(prodID);
             double previousQty = 0.0;
             if (value != null && !value.isEmpty())
                 previousQty = Double.parseDouble(value);
@@ -750,12 +791,12 @@ public class Global extends MultiDexApplication {
 
             if (myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities)) {
                 value = Global.formatNumber(true, sum);
-                this.orderProducts.get(orderIndex).setOrdprod_qty(value);
+                order.getOrderProducts().get(orderIndex).setOrdprod_qty(value);
                 // this.cur_orders.get(0).setQty(value);
 //                this.qtyCounter.put(prodID, Double.toString(sum));
             } else {
                 value = Global.formatNumber(false, sum);
-                this.orderProducts.get(orderIndex).setOrdprod_qty(value);
+                order.getOrderProducts().get(orderIndex).setOrdprod_qty(value);
                 // this.cur_orders.get(0).setQty(value);
 //                this.qtyCounter.put(prodID, Integer.toString((int) sum));
             }
@@ -764,7 +805,7 @@ public class Global extends MultiDexApplication {
     }
 
     public void refreshParticularOrder(Activity activity, int position, Product product) {
-        OrderProduct orderedProducts = this.orderProducts.get(position);
+        OrderProduct orderedProducts = order.getOrderProducts().get(position);
         MyPreferences myPref = new MyPreferences(activity);
         String newPickedOrders = orderedProducts.getOrdprod_qty();
         double sum;
@@ -790,6 +831,7 @@ public class Global extends MultiDexApplication {
 
             total = priceLevel.multiply(new BigDecimal(sum));
         } catch (NumberFormatException e) {
+            Crashlytics.logException(e);
         }
 
         double itemTotal = total.doubleValue();
@@ -797,7 +839,7 @@ public class Global extends MultiDexApplication {
         if (itemTotal < 0)
             itemTotal = 0.00;
 
-        orderedProducts.setItemSubtotal(Double.toString(itemTotal));
+//        orderedProducts.setItemSubtotal(Double.toString(itemTotal));
         double discountRate = 0;
         if (orderedProducts.getDiscount_is_fixed().equals("1")) {
             discountRate = Double.parseDouble(orderedProducts.getDiscount_value());
@@ -977,6 +1019,10 @@ public class Global extends MultiDexApplication {
         });
     }
 
+    public static BigDecimal getBigDecimalNum(String val, int scale) {
+        return getBigDecimalNum(val).setScale(scale, RoundingMode.HALF_UP);
+    }
+
     public static BigDecimal getBigDecimalNum(String val) {
         if (val == null || val.isEmpty())
             val = "0";
@@ -988,6 +1034,7 @@ public class Global extends MultiDexApplication {
             df.setMinimumFractionDigits(2);
             return (BigDecimal) df.parseObject(String.valueOf(valDbl));
         } catch (ParseException e) {
+            Crashlytics.logException(e);
             return new BigDecimal("0");
         }
     }
@@ -1037,7 +1084,7 @@ public class Global extends MultiDexApplication {
         try {
             decodedByte = Base64.decode(input);
         } catch (IOException e) {
-            e.printStackTrace();
+            Crashlytics.logException(e);
         }
         return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length);
     }
@@ -1125,22 +1172,40 @@ public class Global extends MultiDexApplication {
         this.wasInBackground = false;
     }
 
-    public static boolean isIpAvailable(String ip, int port) {
-        boolean exists = false;
-        Socket sock;
-        try {
-            SocketAddress sockaddr = new InetSocketAddress(ip, port);
-            // Create an unbound socket
-            sock = new Socket();
-            int timeoutMs = 2000; // 2 seconds
-            sock.connect(sockaddr, timeoutMs);
-            sock.close();
-            exists = true;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public static boolean isIpAvailable(final String ip, final int port) {
+        final boolean[] exists = {false};
+        final Socket[] sock = new Socket[1];
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    SocketAddress sockaddr = new InetSocketAddress(ip, port);
+                    // Create an unbound socket
+                    sock[0] = new Socket();
+                    int timeoutMs = 2000; // 2 seconds
+                    sock[0].connect(sockaddr, timeoutMs);
+                    sock[0].close();
+                    exists[0] = true;
+                    synchronized (exists) {
+                        exists.notify();
+                    }
+                } catch (Exception e) {
+                    Crashlytics.logException(e);
+                    synchronized (exists) {
+                        exists.notify();
+                    }
+                }
 
-        return exists;
+            }
+        }).start();
+        synchronized (exists) {
+            try {
+                exists.wait(3000);
+            } catch (InterruptedException e) {
+                Crashlytics.logException(e);
+            }
+        }
+        return exists[0];
     }
 
     private static int getNaturalOrientation(int orientation, int rotation) {
@@ -1242,7 +1307,7 @@ public class Global extends MultiDexApplication {
                 .modules(Realm.getDefaultModule(), new RealmModule())
                 .build();
         Realm.setDefaultConfiguration(config);
-        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(true);
         if (assignEmployee == null) {
             assignEmployee = new AssignEmployee();
             MyPreferences preferences = new MyPreferences(this);
@@ -1253,7 +1318,7 @@ public class Global extends MultiDexApplication {
                 try {
                     AssignEmployeeDAO.insertAssignEmployee(employees);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Crashlytics.logException(e);
                 }
             }
         }
@@ -1282,14 +1347,6 @@ public class Global extends MultiDexApplication {
         cons_issue_order = null;
         cons_return_order = null;
         cons_fillup_order = null;
-//        if (productParentAddons != null)
-//            productParentAddons.clear();
-//        if (productParentAddonsDictionary != null)
-//            productParentAddonsDictionary.clear();
-//        if (addonSelectionMap != null)
-//            addonSelectionMap.clear();
-//        if (orderProductAddonsMap != null)
-//            orderProductAddonsMap.clear();
         loyaltyCardInfo = new CreditCardInfo();
         loyaltyAddAmount = "";
         loyaltyCharge = "";
@@ -1301,25 +1358,8 @@ public class Global extends MultiDexApplication {
     }
 
     public void clearListViewData() {
-        // if(this.cur_orders!=null)
-        // this.cur_orders.clear();
-        if (this.orderProducts != null)
-            this.orderProducts.clear();
-//        if (this.qtyCounter != null)
-//            this.qtyCounter.clear();
-
         if (ordProdAttr != null)
             ordProdAttr.clear();
-//        if (ordProdAttrPending != null)
-//            ordProdAttrPending.clear();
-
-//        if (this.orderProductAddons != null)
-//            this.orderProductAddons.clear();
-
-        if (this.listOrderTaxes != null)
-            this.listOrderTaxes.clear();
-
-        // this.
     }
 
     public String getSelectedComments() {
@@ -1421,9 +1461,15 @@ public class Global extends MultiDexApplication {
             viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
             TextView viewTitle = (TextView) globalDlog.findViewById(R.id.dlogTitle);
             TextView viewMsg = (TextView) globalDlog.findViewById(R.id.dlogMessage);
+            Button systemLoginButton = (Button) globalDlog.findViewById(R.id.systemLoginbutton2);
+            TextView infoSystemLogin = (TextView) globalDlog.findViewById(R.id.infotextView23);
             if (myPref.isUseClerks()) {
+                systemLoginButton.setVisibility(View.VISIBLE);
+                infoSystemLogin.setVisibility(View.VISIBLE);
                 viewTitle.setText(R.string.dlog_title_enter_clerk_password);
             } else {
+                systemLoginButton.setVisibility(View.GONE);
+                infoSystemLogin.setVisibility(View.GONE);
                 viewTitle.setText(R.string.dlog_title_confirm);
             }
             final boolean[] validPassword = {true};
@@ -1431,7 +1477,16 @@ public class Global extends MultiDexApplication {
                 viewMsg.setText(R.string.invalid_password);
             else
                 viewMsg.setText(R.string.enter_password);
-
+            systemLoginButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    globalDlog.dismiss();
+                    validPassword[0] = false;
+                    loggedIn = false;
+                    myPref.setPreferences("pref_use_clerks", false);
+                    promptForMandatoryLogin(activity);
+                }
+            });
             Button btnOk = (Button) globalDlog.findViewById(R.id.btnDlogSingle);
             btnOk.setText(R.string.button_ok);
             btnOk.setOnClickListener(new View.OnClickListener() {
@@ -1441,11 +1496,14 @@ public class Global extends MultiDexApplication {
                     globalDlog.dismiss();
                     String enteredPass = viewField.getText().toString().trim();
                     if (myPref.isUseClerks()) {
-                        SalesAssociate associate = SalesAssociateDAO.login(enteredPass, myPref);
-                        if (associate == null) {
+                        Clerk clerk = ClerkDAO.login(enteredPass, myPref);
+                        if (clerk == null) {
                             validPassword[0] = false;
                             promptForMandatoryLogin(activity);
                         } else {
+                            if (activity instanceof MainMenu_FA) {
+                                ((MainMenu_FA) activity).setLogoutButtonClerkname();
+                            }
                             loggedIn = true;
                             validPassword[0] = true;
                         }

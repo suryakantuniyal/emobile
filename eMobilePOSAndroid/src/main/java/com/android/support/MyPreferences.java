@@ -13,18 +13,20 @@ import com.android.database.SalesTaxCodesHandler;
 import java.security.AccessControlException;
 import java.security.Guard;
 import java.security.GuardedObject;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.PropertyPermission;
 import java.util.Set;
 
+import util.AESCipher;
 import util.json.UIUtils;
 
 public class MyPreferences {
-    public static final String pref_restaurant_mode = "pref_restaurant_mode";
+    private static final String pref_restaurant_mode = "pref_restaurant_mode";
     public static final String pref_enable_togo_eatin = "pref_enable_togo_eatin";
     public static final String pref_require_waiter_signin = "pref_require_waiter_signin";
-//    private Global global;
+    //    private Global global;
     public static final String pref_enable_table_selection = "pref_enable_table_selection";
     public static final String pref_ask_seats = "pref_ask_seats";
     public static final String pref_use_navigationbar = "pref_use_navigationbar";
@@ -35,17 +37,18 @@ public class MyPreferences {
     public static final String pref_enable_multi_category = "pref_enable_multi_category";
     public static final String pref_ask_order_comments = "pref_ask_order_comments";
     public static final String pref_skip_email_phone = "pref_skip_email_phone";
-//    private final String zone_id = "zone_id";
+    //    private final String zone_id = "zone_id";
 //    private final String VAT = "VAT";
     public static final String pref_show_only_group_taxes = "pref_show_only_group_taxes";
-    public static final String pref_retail_taxes = "pref_retail_taxes";
+    private static final String pref_retail_taxes = "pref_retail_taxes";
     public static final String pref_mix_match = "pref_mix_match";
+    public static final String pref_holds_polling_service = "pref_holds_polling_service";
     public static final String pref_require_customer = "pref_require_customer";
     public static final String pref_show_confirmation_screen = "pref_show_confirmation_screen";
     public static final String pref_direct_customer_selection = "pref_direct_customer_selection";
     public static final String pref_display_customer_account_number = "pref_display_customer_account_number";
     public static final String pref_skip_want_add_more_products = "pref_skip_want_add_more_products";
-//    private final String MSLastTransferID = "MSLastTransferID";
+    //    private final String MSLastTransferID = "MSLastTransferID";
     public static final String pref_require_shift_transactions = "pref_require_shift_transactions";
     public static final String pref_allow_customer_creation = "pref_allow_customer_creation";
     public static final String pref_scope_bar_in_restaurant_mode = "pref_scope_bar_in_restaurant_mode";
@@ -165,6 +168,7 @@ public class MyPreferences {
     private Context context;
     private SharedPreferences sharedPref;
     private String defaultUnitsName;
+
     public MyPreferences(Context context) {
         this.context = context;
         // prefEditor =
@@ -419,7 +423,7 @@ public class MyPreferences {
                     return new_id;
                 else if (new_seq > curr_seq)
                     return new_id;
-            } else if (tokens[0].equals(String.valueOf(AssignEmployeeDAO.getAssignEmployee().getEmpId()))) {
+            } else if (tokens[0].equals(String.valueOf(AssignEmployeeDAO.getAssignEmployee(false).getEmpId()))) {
                 return new_id;
             }
         }
@@ -634,6 +638,12 @@ public class MyPreferences {
         return sharedPref.getBoolean(key, false);
     }
 
+    public void setPreferences(String key, boolean value) {
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putBoolean(key, value);
+        editor.commit();
+    }
+
     public boolean requiresWaiterLogin() {
         return getPreferences(MyPreferences.pref_require_waiter_signin);
     }
@@ -815,7 +825,8 @@ public class MyPreferences {
         String sled_type = "sled_type";
         String printer_type = "printer_type";
         String swiper_type = "swiper_type";
-
+        setIsPOWA(false);
+        setIsMEPOS(false);
         setPrinterName(""); //clean the printer name
         prefEditor.putInt(sled_type, -1);
         prefEditor.putInt(printer_type, -1);
@@ -1085,7 +1096,7 @@ public class MyPreferences {
         int NUM_OF_ITEMS = 17;
         boolean[] values = new boolean[NUM_OF_ITEMS];
         Set<String> selections = sharedPref.getStringSet("pref_configure_home_menu", null);
-        if (selections != null && NUM_OF_ITEMS == selections.size()) {
+        if (selections != null) {
             String[] selected = selections.toArray(new String[]{});
 
             Arrays.sort(selected);
@@ -1102,21 +1113,19 @@ public class MyPreferences {
 
     }
 
-    // public boolean[] getMainMenuSettings(){
-    // String[] mainMenuList = global.getSalesMainMenuList();
-    // int size = mainMenuList.length;
-    // boolean[] values = new boolean[size];
-    //
-    // for(int i = 0 ; i < size; i++)
-    // values[i] = prefs.getBoolean(mainMenuList[i], true);
-    //
-    // return values;
-    // }
-
     public List<String> getPrintingPreferences() {
         Set<String> selections = sharedPref.getStringSet("pref_set_printing_preferences", null);
         List<String> list = Arrays.asList(selections.toArray(new String[]{}));
         return list;
+    }
+
+    public boolean loginAdmin(String password) {
+        try {
+            return getPOSAdminPass().equals(AESCipher.getSha256Hash(password));
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     public String getPOSAdminPass() {
@@ -1124,7 +1133,11 @@ public class MyPreferences {
     }
 
     public void setPOSAdminPass(String pass) {
-        prefEditor.putString("posAdminPassword", pass);
+        try {
+            prefEditor.putString("posAdminPassword", AESCipher.getSha256Hash(pass));
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
         prefEditor.commit();
     }
 
@@ -1133,9 +1146,22 @@ public class MyPreferences {
         return prefs.getString(posManagerPassword, "");
     }
 
+    public boolean loginManager(String password) {
+        try {
+            return getPosManagerPass().equals(AESCipher.getSha256Hash(password));
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public void setPosManagerPass(String value) {
         String posManagerPassword = "posManagerPassword";
-        prefEditor.putString(posManagerPassword, value);
+        try {
+            prefEditor.putString(posManagerPassword, AESCipher.getSha256Hash(value));
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
         prefEditor.commit();
     }
 
@@ -1186,7 +1212,7 @@ public class MyPreferences {
     }
 
     public String getShiftID() {
-        return prefs.getString("shift_id", "");
+        return prefs.getString("shift_id", "0");
     }
 
     public void setShiftID(String value) {
@@ -1210,7 +1236,6 @@ public class MyPreferences {
     public void setClerkName(String value) {
         prefEditor.putString("clerk_name", value);
         prefEditor.commit();
-
     }
 
     public String getClerkID() {
@@ -1318,6 +1343,17 @@ public class MyPreferences {
         prefEditor.putString("defaultUnitsName", defaultUnitsName);
         prefEditor.commit();
     }
+
+    public boolean isRestaurantMode() {
+        return getPreferences(MyPreferences.pref_restaurant_mode);
+    }
+
+    public boolean isRetailTaxes() {
+        return getPreferences(MyPreferences.pref_retail_taxes);
+    }
+
+    public boolean isPollingHoldsEnable() {
+        return getPreferences(pref_holds_polling_service);    }
 
     public enum PrinterPreviewWidth {SMALL, MEDIUM, LARGE}
 

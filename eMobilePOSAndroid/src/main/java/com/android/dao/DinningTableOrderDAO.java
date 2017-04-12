@@ -1,8 +1,8 @@
 package com.android.dao;
 
+import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.realms.DinningTable;
 import com.android.emobilepos.models.realms.DinningTableOrder;
-import com.android.emobilepos.models.Order;
 import com.android.support.DateUtils;
 
 import io.realm.Realm;

@@ -33,9 +33,12 @@ public class SalesMenuAdapter extends BaseAdapter implements Filterable {
     public SalesMenuAdapter(Activity activity, boolean custSelected) {
         mInflater = LayoutInflater.from(activity);
         this.activity = activity;
-
-
-        mainMenuList = activity.getResources().getStringArray(R.array.mainMenuArray);
+        MyPreferences preferences = new MyPreferences(activity);
+        if (preferences.isRestaurantMode()) {
+            mainMenuList = activity.getResources().getStringArray(R.array.mainMenuRestaurantArray);
+        } else {
+            mainMenuList = activity.getResources().getStringArray(R.array.mainMenuArray);
+        }
 
         mainMenuIconsMap = new SparseArray<>();
         mainMenuIconsMap.put(Global.TransactionType.SALE_RECEIPT.getCode(), "list");

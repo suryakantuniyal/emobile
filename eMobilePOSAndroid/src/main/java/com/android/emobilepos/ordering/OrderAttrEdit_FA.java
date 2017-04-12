@@ -25,7 +25,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import com.android.emobilepos.R;
-import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.ProductAttribute;
 import com.android.soundmanager.SoundManager;
 import com.android.support.CreditCardInfo;
@@ -34,6 +34,7 @@ import com.android.support.MyEditText;
 import com.android.support.MyPreferences;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.android.support.textwatcher.GiftCardTextWatcher;
+import com.crashlytics.android.Crashlytics;
 import com.honeywell.decodemanager.DecodeManager;
 import com.honeywell.decodemanager.DecodeManager.SymConfigActivityOpeartor;
 import com.honeywell.decodemanager.SymbologyConfigs;
@@ -156,6 +157,7 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
                 mDecodeManager.setSymbologyDefaults(CommonDefine.SymbologyID.SYM_UPCA);
             } catch (RemoteException e) {
                 e.printStackTrace();
+                Crashlytics.logException(e);
             }
         }
         if (mDecodeManager != null) {
@@ -175,6 +177,7 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
                 mDecodeManager = null;
             } catch (IOException e) {
                 e.printStackTrace();
+                Crashlytics.logException(e);
             }
         }
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
@@ -195,6 +198,7 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
                 mDecodeManager = null;
             } catch (IOException e) {
                 e.printStackTrace();
+                Crashlytics.logException(e);
             }
         }
 
@@ -474,6 +478,7 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
                     DoScan();
                 } catch (RemoteException e) {
                     e.printStackTrace();
+                    Crashlytics.logException(e);
                 }
             } else
                 DoScan();
@@ -490,6 +495,7 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
             }
         } catch (RemoteException e) {
             e.printStackTrace();
+            Crashlytics.logException(e);
         }
     }
 
@@ -527,6 +533,7 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
                             mDecodeManager.setSymbologyConfigs(symconfig);
                         } catch (RemoteException e) {
                             e.printStackTrace();
+                            Crashlytics.logException(e);
                         }
                     }
                 }
@@ -538,20 +545,15 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
         }
     };
 
-    private void serOrderProductRequiredAttributes() {
-        for (OrderProduct product : global.orderProducts) {
-
-        }
-    }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btnSave:
                 OrderProduct product = null;
-                if (global.orderProducts != null && !global.orderProducts.isEmpty()
+                if (global.order.getOrderProducts() != null && !global.order.getOrderProducts().isEmpty()
                         && !TextUtils.isEmpty(ordprod_id)) {
-                    product = global.orderProducts.get(global.orderProducts.indexOf(OrderProduct.getInstance(ordprod_id)));
+                    product = global.order.getOrderProducts().get(global.order.getOrderProducts().indexOf(OrderProduct.getInstance(ordprod_id)));
                 }
                 if (isCardInfo) {
                     attr_value = fieldCardNum.getText().toString();

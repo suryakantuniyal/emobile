@@ -15,7 +15,7 @@
 
     <string name="header_title_customers">Clientes</string>
 
-    <string name="sales_receipt_title">Sales Receipt</string>
+    <string name="sales_receipt_title">Start Check</string>
 
     <string name="enter_password">Entre Contrase\u00F1a</string>
 
@@ -696,7 +696,7 @@
     <string name="sync_saving_products_attributes">Saving ProductsAttributes\u002E\u002E\u002E</string>
     <string name="sync_saving_clerks">Saving Clerks\u002E\u002E\u002E</string>
     <string name="sync_saving_termsandconditions">Saving TermsAndConditions\u002E\u002E\u002E</string>
-    <string name="sync_saving_ordersonhold">Saving Orders On Hold\u002E\u002E\u002E</string>
+    <string name="sync_saving_ordersonhold">Saving Orders Recall Check\u002E\u002E\u002E</string>
     <string name="sync_saving_dinnertables">Saving Dinner Tables\u002E\u002E\u002E</string>
     <string name="sync_saving_salesassociate">Saving Sales Associate\u002E\u002E\u002E</string>
 
@@ -872,9 +872,9 @@
 
     <string name="shift_close_shift">Close Shift</string>
     <string name="shift_open_shift">Open Shift</string>
-    <string name="shift_expenses">Shift No Sale</string>
-    <string name="shift_expense">No Sale</string>
-    <string name="shift_add_expense">Add No Sale</string>
+    <string name="shift_expenses">No-Sale</string>
+    <string name="shift_expense">No-Sale</string>
+    <string name="shift_add_expense">Add No-Sale</string>
     <string name="shift_title">Shift</string>
 
     <string name="shift_details">Shift Details</string>
@@ -1151,8 +1151,8 @@
     <string name="config_enable_table_selection">Enable table selection</string>
     <string name="config_ask_numbers_seats">Ask number of seats</string>
     <string name="config_ask_split_equally">Ask to split payment equally</string>
-    <string name="select_togo_eatin">Select To-Go or Eat-In</string>
-    <string name="eatin_btn">Eat-In</string>
+    <string name="select_togo_eatin">Select To-Go or Dine-In</string>
+    <string name="eatin_btn">Dine-In</string>
     <string name="toGo_btn">To-Go</string>
     <string name="select_table_number">Select table number</string>
     <string name="select_table_seats_amount">Select the amount of seats</string>
@@ -1254,7 +1254,7 @@
     <string name="eod_report_return">Return</string>
     <string name="eod_report_estimate">Estimate</string>
     <string name="eod_report_order">Order</string>
-    <string name="eod_report_salesreceipt">Sales Receipt</string>
+    <string name="eod_report_salesreceipt">Start Check</string>
     <string name="eod_report_invoice">Invoice</string>
     <string name="eod_report_summary">Summary</string>
     <string name="eod_report_ordertypes">Shifts</string>
@@ -1296,7 +1296,7 @@
     <string name="sync_saving_settings">Saving settings...</string><string name="title_activity_sales_associate_dinning_tables">SalesAssociateDinningTables
     </string>
     <string name="title_activity_sales_associate_configuration">SalesAssociateConfiguration</string>
-    <string name="config_salesassociate_config">Sales Associate Configuration</string>
+    <string name="config_salesassociate_config">Table Configuration</string>
     <string name="device_name">Device Name</string>
     <string name="unknown">Unknown</string>
     <string name="split_single">Single Receipt</string>
@@ -1327,8 +1327,19 @@
     <string name="non_cash_gratuity">Non Cash Gratuity</string>
     <string name="security_alert">Permission denied to this area.</string>
     <string name="permission_denied">Permission denied to this area.</string>
-    <string name="expense_id">No Sale ID</string>
+    <string name="expense_id">No-Sale ID</string>
     <string name="logout_menu">Logout</string>
+    <string name="clock_out">OUT</string>
+    <string name="clock_in">IN</string>
+    <string name="Waiters">Waiters</string>
+    <string name="useSystemPassword">Use System Password</string>
+    <string name="systemLoginInfo"><![CDATA[System password disable the use clerk. To re-enable the use of clerks go to Settings->Admin and select use clerks.]]></string>
+    <string name="button_send">Send</string>
+    <string name="payment_return_saved_successfully">Payment return saved successfully.</string>
+    <string name="refresh_menu">Reload</string>
+    <string name="dlog_msg_error_shift_needs_use_clerk">Use clerk setting is required to open this section.</string>
+    <string name="config_holds_polling_service">Enable holds polling service</string>
+    <string name="sync_inprogress">Synchronization in progress. Please wait.</string>
 
 
 </resources>

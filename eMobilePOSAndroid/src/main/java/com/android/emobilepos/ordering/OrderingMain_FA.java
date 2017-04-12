@@ -20,6 +20,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.SubMenu;
@@ -32,6 +33,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.dao.OrderProductAttributeDAO;
 import com.android.database.AddressHandler;
@@ -46,10 +48,11 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.OrderProductListAdapter;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.mainmenu.SalesTab_FR;
-import com.android.emobilepos.models.Order;
-import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.OrderSeatProduct;
 import com.android.emobilepos.models.Product;
+import com.android.emobilepos.models.orders.Order;
+import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.OrderAttributes;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.ProductAttribute;
@@ -68,6 +71,7 @@ import com.android.support.Post;
 import com.android.support.SynchMethods;
 import com.android.support.TerminalDisplay;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 import com.honeywell.decodemanager.DecodeManager;
 import com.honeywell.decodemanager.DecodeManager.SymConfigActivityOpeartor;
@@ -99,6 +103,7 @@ import drivers.EMSUniMagDriver;
 import interfaces.EMSCallBack;
 import io.realm.RealmResults;
 import util.json.JsonUtils;
+import util.json.UIUtils;
 
 public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Receipt_FR.AddProductBtnCallback,
         Receipt_FR.UpdateHeaderTitleCallback, OnClickListener, Catalog_FR.RefreshReceiptViewCallback,
@@ -149,6 +154,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     OrderingAction orderingAction = OrderingAction.NONE;
     private String associateId;
     private List<OrderAttributes> orderAttributes;
+    private ArrayList<DataTaxes> listOrderTaxes;
+    public boolean buildOrderStarted = false;
 
 
     public enum OrderingAction {
@@ -174,13 +181,17 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.order_main_layout);
+        global = (Global) getApplication();
+        if (savedInstanceState == null) {
+            global.resetOrderDetailsValues();
+            global.clearListViewData();
+        }
         instance = this;
         callBackMSR = this;
         handler = new ProductsHandler(this);
         receiptContainer = (LinearLayout) findViewById(R.id.order_receipt_frag_container);
         catalogContainer = (LinearLayout) findViewById(R.id.order_catalog_frag_container);
         invisibleSearchMain = (EditText) findViewById(R.id.invisibleSearchMain);
-        global = (Global) getApplication();
         btnCheckout = (Button) findViewById(R.id.btnCheckOut);
         btnCheckout.setOnClickListener(this);
         myPref = new MyPreferences(this);
@@ -192,14 +203,16 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         setAssociateId(extras.getString("associateId", ""));
 
         openFromHold = extras.getBoolean("openFromHold", false);
+        Global.isFromOnHold = openFromHold;
         String onHoldOrderJson = extras.getString("onHoldOrderJson");
         Order onHoldOrder = null;
         if (onHoldOrderJson != null && !onHoldOrderJson.isEmpty()) {
             Gson gson = JsonUtils.getInstance();
             onHoldOrder = gson.fromJson(onHoldOrderJson, Order.class);
+            OrdersHandler ordersHandler = new OrdersHandler(this);
+            onHoldOrder = ordersHandler.getOrder(onHoldOrder.ord_id);
             Global.lastOrdID = onHoldOrder.ord_id;// myCursor.getString(myCursor.getColumnIndex("ord_id"));
             Global.taxID = onHoldOrder.tax_id;//myCursor.getString(myCursor.getColumnIndex("tax_id"));
-
         }
         isToGo = getRestaurantSaleType() == Global.RestaurantSaleType.TO_GO;
 
@@ -286,7 +299,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                         try {
                             mDecodeManager.setSymbologyConfigs(symconfig);
                         } catch (RemoteException e) {
-                            e.printStackTrace();
+                            Crashlytics.logException(e);
                         }
                     }
                 }
@@ -461,7 +474,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             receiptContainer.startAnimation(AnimationUtils.loadAnimation(this, R.anim.anim_left_right));
             receiptContainer.setVisibility(View.VISIBLE);
         } else {
-            if (Global.isFromOnHold)
+            if (openFromHold)
                 showDlog(true);
             else
                 showDlog(false);
@@ -477,25 +490,63 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     @Override
     public void onClick(View v) {
-        if (SystemClock.elapsedRealtime() - Receipt_FR.lastClickTime < 1000) {
-            return;
-        }
-        Receipt_FR.lastClickTime = SystemClock.elapsedRealtime();
-        switch (v.getId()) {
-            case R.id.btnCheckOut:
-                orderingAction = OrderingAction.CHECKOUT;
-                btnCheckout.setEnabled(false);
-                if (leftFragment != null) {
-                    leftFragment.checkoutOrder();
+        if (UIUtils.singleOnClick(v)) {
+//        Receipt_FR.lastClickTime = SystemClock.elapsedRealtime();
+            if (!buildOrderStarted) {
+                switch (v.getId()) {
+                    case R.id.btnCheckOut:
+//                        disableCheckoutButton();
+                        orderingAction = OrderingAction.CHECKOUT;
+//                btnCheckout.setEnabled(false);
+                        if (leftFragment != null) {
+                            leftFragment.checkoutOrder();
+                        }
+//                        enableCheckoutButton();
+//                btnCheckout.setEnabled(true);
+                        break;
+                    case R.id.headerMenubutton:
+                        showSeatHeaderPopMenu(v);
+                        break;
                 }
-                btnCheckout.setEnabled(true);
-                break;
-            case R.id.headerMenubutton:
-                showSeatHeaderPopMenu(v);
-                break;
+            } else {
+                Log.d("Checkout", "Checkout clicks bypass");
+            }
         }
     }
-
+//
+//    private void enableCheckoutButton() {
+//        runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                btnCheckout.setEnabled(true);
+//                btnCheckout.setClickable(true);
+////                try {
+////                    Thread.sleep(3000);
+////                } catch (InterruptedException e) {
+////                    e.printStackTrace();
+////                }
+////                btnCheckout.setEnabled(true);
+////                btnCheckout.setClickable(true);
+//            }
+//        });
+//    }
+//
+//    private void disableCheckoutButton() {
+//        runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                btnCheckout.setEnabled(false);
+//                btnCheckout.setClickable(false);
+////                try {
+////                    Thread.sleep(3000);
+////                } catch (InterruptedException e) {
+////                    e.printStackTrace();
+////                }
+////                btnCheckout.setEnabled(true);
+////                btnCheckout.setClickable(true);
+//            }
+//        });
+//    }
 
     private void showSeatHeaderPopMenu(final View v) {
         final OrderSeatProduct orderSeatProduct = (OrderSeatProduct) v.getTag();
@@ -579,6 +630,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        buildOrderStarted = false;
         if (resultCode == Global.FROM_ORDER_ATTRIBUTES_ACTIVITY) {
             Gson gson = JsonUtils.getInstance();
             Type listType = new com.google.gson.reflect.TypeToken<List<OrderAttributes>>() {
@@ -638,13 +690,14 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     @Override
     public void onResume() {
-
+        buildOrderStarted = false;
         if (global.isApplicationSentToBackground(this))
-            global.loggedIn = false;
+            Global.loggedIn = false;
         global.stopActivityTransitionTimer();
-        if (hasBeenCreated && !global.loggedIn) {
-            if (global.getGlobalDlog() != null)
+        if (hasBeenCreated && !Global.loggedIn) {
+            if (global.getGlobalDlog() != null && global.getGlobalDlog().isShowing()) {
                 global.getGlobalDlog().dismiss();
+            }
             global.promptForMandatoryLogin(this);
         }
 
@@ -675,7 +728,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     mDecodeManager.release();
                     mDecodeManager = null;
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Crashlytics.logException(e);
                 }
             }
 
@@ -841,7 +894,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 else {
 
                     if (mTransType == Global.TransactionType.SALE_RECEIPT) // is sales receipt
-                        voidTransaction(OrderingMain_FA.this, global.order, global.orderProducts, global.ordProdAttr);
+                        voidTransaction(OrderingMain_FA.this, global.order, global.ordProdAttr);
                     else if (mTransType == Global.TransactionType.CONSIGNMENT) {
                         if (Global.consignment_order != null && !Global.consignment_order.ord_id.isEmpty()) {
                             OrdersHandler.deleteTransaction(OrderingMain_FA.this, Global.consignment_order.ord_id);
@@ -873,8 +926,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             @Override
             public void onClick(View v) {
                 dlog.dismiss();
-                if (isFromOnHold)
-                    leftFragment.voidCancelOnHold(2);
+//                if (isFromOnHold)
+//                    leftFragment.voidCancelOnHold(2);
             }
         });
         dlog.show();
@@ -963,7 +1016,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     scannerInDecodeMode = false;
                     DoScan();
                 } catch (RemoteException e) {
-                    e.printStackTrace();
+                    Crashlytics.logException(e);
                 }
             } else
                 DoScan();
@@ -978,7 +1031,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 scannerInDecodeMode = true;
             }
         } catch (RemoteException e) {
-            e.printStackTrace();
+            Crashlytics.logException(e);
         }
     }
 
@@ -1012,7 +1065,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     }
 
     public boolean validAutomaticAddQty(Product product) {
-        List<OrderProduct> list = OrderProductUtils.getOrderProducts(global.orderProducts, product.getId());
+        List<OrderProduct> list = OrderProductUtils.getOrderProducts(global.order.getOrderProducts(), product.getId());
         String addedQty = list.isEmpty() ? "0" : list.get(0).getOrdprod_qty();
         double newQty = Double.parseDouble(addedQty) + 1;
         double onHandQty = Double.parseDouble(product.getProdOnHand());
@@ -1284,6 +1337,14 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     }
 
+    public ArrayList<DataTaxes> getListOrderTaxes() {
+        return listOrderTaxes;
+    }
+
+    public void setListOrderTaxes(ArrayList<DataTaxes> listOrderTaxes) {
+        this.listOrderTaxes = listOrderTaxes;
+    }
+
     public Global.RestaurantSaleType getRestaurantSaleType() {
         return restaurantSaleType;
     }
@@ -1381,6 +1442,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 }
 
             } catch (Exception e) {
+                Crashlytics.logException(e);
                 Global.showPrompt(OrderingMain_FA.this, R.string.dlog_title_error, e.getMessage());
             }
 
@@ -1457,18 +1519,19 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     }
 
 
-    public static void voidTransaction(Activity activity, Order order, List<OrderProduct> orderProducts, List<ProductAttribute> ordProdAttr) {
+    public static void voidTransaction(Activity activity, Order order, List<ProductAttribute> ordProdAttr) {
         if (!Global.lastOrdID.isEmpty()) {
 
             OrdersHandler dbOrders = new OrdersHandler(activity);
             if (order.ord_id.isEmpty()) {
                 Global global = (Global) activity.getApplication();
                 order = Receipt_FR.buildOrder(activity, global, "", "", ((OrderingMain_FA) activity).getSelectedDinningTableNumber(),
-                        ((OrderingMain_FA) activity).getAssociateId(), ((OrderingMain_FA) activity).getOrderAttributes());
+                        ((OrderingMain_FA) activity).getAssociateId(), ((OrderingMain_FA) activity).getOrderAttributes(),
+                        ((OrderingMain_FA) activity).getListOrderTaxes(), global.order.getOrderProducts());
                 OrderProductsHandler dbOrdProd = new OrderProductsHandler(activity);
                 OrderProductsAttr_DB dbOrdAttr = new OrderProductsAttr_DB(activity);
                 dbOrders.insert(order);
-                dbOrdProd.insert(orderProducts);
+                dbOrdProd.insert(order.getOrderProducts());
                 dbOrdAttr.insert(ordProdAttr);
             }
             new VoidTransactionTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, activity, order);
@@ -1521,15 +1584,15 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         total = total.multiply(OrderingMain_FA.returnItem && OrderingMain_FA.mTransType != Global.TransactionType.RETURN ? new BigDecimal(-1) : new BigDecimal(1));
         DecimalFormat frmt = new DecimalFormat("0.00");
         orderProduct.setItemTotal(total.toString());
-        orderProduct.setItemSubtotal(total.toString());
+//        orderProduct.setItemSubtotal(total.toString());
         GenerateNewID generator = new GenerateNewID(activity);
         MyPreferences myPref = new MyPreferences(activity);
         if (!Global.isFromOnHold && Global.lastOrdID.isEmpty()) {
             Global.lastOrdID = generator.getNextID(GenerateNewID.IdType.ORDER_ID);
         }
         orderProduct.setOrd_id(Global.lastOrdID);
-        if (global.orderProducts == null) {
-            global.orderProducts = new ArrayList<>();
+        if (global.order.getOrderProducts() == null) {
+            global.order.setOrderProducts(new ArrayList<OrderProduct>());
         }
         UUID uuid = UUID.randomUUID();
         String randomUUIDString = uuid.toString();
@@ -1552,7 +1615,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         String row1 = orderProduct.getOrdprod_name();
         String row2 = Global.formatDoubleStrToCurrency(orderProduct.getFinalPrice());
         TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
-        global.orderProducts.add(orderProduct);
+        global.order.getOrderProducts().add(orderProduct);
     }
 
     public String getAssociateId() {
@@ -1574,6 +1637,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
         return true;
     }
+
     public List<OrderAttributes> getOrderAttributes() {
         return orderAttributes;
     }

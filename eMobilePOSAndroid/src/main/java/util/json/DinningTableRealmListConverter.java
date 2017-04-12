@@ -22,8 +22,8 @@ import io.realm.RealmObject;
  */
 
 public class DinningTableRealmListConverter implements JsonSerializer<RealmList<DinningTable>> {
-    Realm realm = Realm.getDefaultInstance();
-    Gson gson = new GsonBuilder()
+    private Realm realm = Realm.getDefaultInstance();
+    private Gson gson = new GsonBuilder()
             .setExclusionStrategies(new ExclusionStrategy() {
                 @Override
                 public boolean shouldSkipField(FieldAttributes f) {

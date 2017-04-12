@@ -29,6 +29,7 @@ import com.android.support.MyPreferences;
 import com.android.support.Post;
 import com.android.support.SynchMethods;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.crashlytics.android.Crashlytics;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -92,7 +93,7 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
             dbManager = new DBManager(activity, Global.FROM_LOGIN_ACTIVITTY);
             if (dbManager.isNewDBVersion()) {
                 dbManager.alterTables();
-                AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+                AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(true);
                 if (assignEmployee == null && !myPref.getEmpIdFromPreferences().isEmpty()) {
                     assignEmployee = new AssignEmployee();
                     assignEmployee.setEmpId(Integer.parseInt(myPref.getEmpIdFromPreferences()));
@@ -101,7 +102,7 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
                     try {
                         AssignEmployeeDAO.insertAssignEmployee(assignEmployees);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        Crashlytics.logException(e);
                     }
                 }
                 if (dbManager.unsynchItemsLeft()) {
@@ -121,9 +122,10 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
                                         @Override
                                         public void onClick(DialogInterface thisDialog, int which) {
                                             dbManager.updateDB();
-                                            SynchMethods sm = new SynchMethods(dbManager);
-                                            sm.synchReceive(Global.FROM_REGISTRATION_ACTIVITY, activity);
+//                                            SynchMethods sm = new SynchMethods(dbManager);
+//                                            sm.synchReceive(Global.FROM_REGISTRATION_ACTIVITY, activity);
                                             promptDialog.dismiss();
+                                            new SyncReceiveTask().execute(dbManager);
                                         }
                                     }).create();
                     promptDialog.show();
@@ -157,6 +159,39 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
         }
     }
 
+    public class SyncReceiveTask extends AsyncTask<DBManager, Void, Boolean> {
+        ProgressDialog dialog;
+
+        @Override
+        protected void onPreExecute() {
+            dialog = new ProgressDialog(SelectAccount_FA.this);
+            dialog.setTitle(R.string.sync_title);
+            dialog.setIndeterminate(true);
+            dialog.setMessage(getString(R.string.sync_inprogress));
+            dialog.show();
+        }
+
+        @Override
+        protected Boolean doInBackground(DBManager... params) {
+            DBManager dbManager = params[0];
+            SynchMethods sm = new SynchMethods(dbManager);
+            return sm.syncReceive();
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            dialog.dismiss();
+            if (!result) {
+                Global.showPrompt(SelectAccount_FA.this, R.string.sync_title, getString(R.string.sync_fail));
+            }else{
+                Intent intent = new Intent(SelectAccount_FA.this, MainMenu_FA.class);
+                activity.setResult(-1);
+                startActivity(intent);
+                activity.finish();
+            }
+        }
+    }
+
     public class validateLoginAsync extends AsyncTask<String, String, Boolean> {
 
         @Override
@@ -183,6 +218,7 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
                 xr.parse(inSource);
                 proceed = Boolean.parseBoolean(handler.getData().toLowerCase(Locale.getDefault()));
             } catch (Exception e) {
+                Crashlytics.logException(e);
             }
             return proceed;
         }

@@ -1,9 +1,9 @@
 package com.android.emobilepos.report;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -34,35 +34,28 @@ import java.util.Locale;
 
 public class ViewReport_FA extends BaseFragmentActivityActionBar {
 
-    private static ReportsMenuAdapter mainAdapter;
-    private static ReportsShiftAdapter shiftAdapter;
+    private ReportsMenuAdapter mainAdapter;
+    private ReportsShiftAdapter shiftAdapter;
     private ProgressDialog myProgressDialog;
-    private static ListView myListview;
+    ListView myListview;
     private static String curDate;
-    private static Activity activity;
     private static String[] dates = new String[2];
-    private Button dateBut, printBut;
+    private Button printBut;
     private static boolean isShiftReport = false;
     private Global global;
     private boolean hasBeenCreated = false;
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.report_layout);
-        activity = this;
-
-        global = (Global) activity.getApplication();
-        final Bundle extras = activity.getIntent().getExtras();
-
+        global = (Global) this.getApplication();
+        final Bundle extras = this.getIntent().getExtras();
         isShiftReport = extras.getBoolean("isShiftReport", false);
-
-        dateBut = (Button) findViewById(R.id.changeDateButton);
+        Button dateBut = (Button) findViewById(R.id.changeDateButton);
         printBut = (Button) findViewById(R.id.reportPrintButton);
         myListview = (ListView) findViewById(R.id.reportListView);
         TextView headerTitle = (TextView) findViewById(R.id.headerTitle);
-
         dateBut.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -70,11 +63,8 @@ public class ViewReport_FA extends BaseFragmentActivityActionBar {
                 DialogFragment newFrag = new DateDialog();
                 FragmentManager fm = getSupportFragmentManager();
                 newFrag.show(fm, "dialog");
-
             }
         });
-
-
         if (isShiftReport) {
             headerTitle.setText(R.string.report_per_shift);
             myListview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -83,7 +73,7 @@ public class ViewReport_FA extends BaseFragmentActivityActionBar {
                 public void onItemClick(AdapterView<?> arg0, View arg1, int pos,
                                         long arg3) {
                     if (pos >= 2) {
-                        Intent intent = new Intent(activity, ShiftReportDetails_FA.class);
+                        Intent intent = new Intent(ViewReport_FA.this, ShiftReportDetails_FA.class);
                         intent.putExtra("shift_id", shiftAdapter.getShiftID(pos));
                         startActivity(intent);
                     }
@@ -92,20 +82,18 @@ public class ViewReport_FA extends BaseFragmentActivityActionBar {
         } else {
             headerTitle.setText(R.string.report_title);
         }
-
         hasBeenCreated = true;
         new initViewAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
-
 
     @Override
     public void onResume() {
 
         if (global.isApplicationSentToBackground(this))
-            global.loggedIn = false;
+            Global.loggedIn = false;
         global.stopActivityTransitionTimer();
 
-        if (hasBeenCreated && !global.loggedIn) {
+        if (hasBeenCreated && !Global.loggedIn) {
             if (global.getGlobalDlog() != null)
                 global.getGlobalDlog().dismiss();
             global.promptForMandatoryLogin(this);
@@ -119,7 +107,7 @@ public class ViewReport_FA extends BaseFragmentActivityActionBar {
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         boolean isScreenOn = powerManager.isScreenOn();
         if (!isScreenOn)
-            global.loggedIn = false;
+            Global.loggedIn = false;
         global.startActivityTransitionTimer();
     }
 
@@ -127,13 +115,11 @@ public class ViewReport_FA extends BaseFragmentActivityActionBar {
     private class initViewAsync extends AsyncTask<Void, String, String> {
         @Override
         protected void onPreExecute() {
-
-            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog = new ProgressDialog(ViewReport_FA.this);
             myProgressDialog.setMessage("Creating Report...");
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);
             myProgressDialog.show();
-
         }
 
         @Override
@@ -141,11 +127,10 @@ public class ViewReport_FA extends BaseFragmentActivityActionBar {
             curDate = DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss);
             dates[0] = Global.formatToDisplayDate(curDate, 0);
             dates[1] = Global.formatToDisplayDate(curDate, 4);
-
             if (!isShiftReport)
-                mainAdapter = new ReportsMenuAdapter(activity, dates);
+                mainAdapter = new ReportsMenuAdapter(ViewReport_FA.this, dates);
             else
-                shiftAdapter = new ReportsShiftAdapter(activity, dates);
+                shiftAdapter = new ReportsShiftAdapter(ViewReport_FA.this, dates);
             return null;
         }
 
@@ -156,8 +141,7 @@ public class ViewReport_FA extends BaseFragmentActivityActionBar {
                 myListview.setAdapter(mainAdapter);
             else
                 myListview.setAdapter(shiftAdapter);
-
-            MyPreferences myPref = new MyPreferences(activity);
+            MyPreferences myPref = new MyPreferences(ViewReport_FA.this);
             if (myPref.getPreferences(MyPreferences.pref_enable_printing)) {
                 printBut.setBackgroundResource(R.drawable.tab_button_selector);
                 printBut.setOnClickListener(new View.OnClickListener() {
@@ -175,7 +159,7 @@ public class ViewReport_FA extends BaseFragmentActivityActionBar {
     }
 
     private void showPrintDlg() {
-        final Dialog dlog = new Dialog(activity, R.style.Theme_TransparentTest);
+        final Dialog dlog = new Dialog(this, R.style.Theme_TransparentTest);
         dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dlog.setCancelable(false);
         dlog.setContentView(R.layout.dlog_btn_left_right_layout);
@@ -217,7 +201,7 @@ public class ViewReport_FA extends BaseFragmentActivityActionBar {
 
         @Override
         protected void onPreExecute() {
-            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog = new ProgressDialog(ViewReport_FA.this);
             myProgressDialog.setMessage("Printing...");
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);
@@ -225,12 +209,12 @@ public class ViewReport_FA extends BaseFragmentActivityActionBar {
 
         }
 
-		@Override
-		protected Void doInBackground(Void... params) {
-			if(Global.mainPrinterManager!=null&&Global.mainPrinterManager.getCurrentDevice()!=null)
-				printSuccessful = Global.mainPrinterManager.getCurrentDevice().printReport(curDate);
-			return null;
-		}
+        @Override
+        protected Void doInBackground(Void... params) {
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)
+                printSuccessful = Global.mainPrinterManager.getCurrentDevice().printReport(curDate);
+            return null;
+        }
 
         @Override
         protected void onPostExecute(Void unused) {
@@ -244,9 +228,17 @@ public class ViewReport_FA extends BaseFragmentActivityActionBar {
 
     public static class DateDialog extends DialogFragment implements DatePickerDialog.OnDateSetListener {
 
+        private ViewReport_FA context;
+
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
+        }
+
+        @Override
+        public void onAttach(Context context) {
+            this.context = (ViewReport_FA) context;
+            super.onAttach(context);
         }
 
         @Override
@@ -256,29 +248,24 @@ public class ViewReport_FA extends BaseFragmentActivityActionBar {
             int month = c.get(Calendar.MONTH);
             int day = c.get(Calendar.DAY_OF_MONTH);
 
-            return new DatePickerDialog(activity, this, year, month, day);
+            return new DatePickerDialog(context, this, year, month, day);
 
         }
 
         @Override
         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-            // Do something after user selects the date...
-            StringBuilder sb = new StringBuilder();
-            sb.append(Integer.toString(year)).append(Integer.toString(monthOfYear + 1)).append(Integer.toString(dayOfMonth));
             Calendar cal = Calendar.getInstance();
             cal.set(year, monthOfYear, dayOfMonth);
             SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
             curDate = sdf2.format(cal.getTime());
             dates[0] = Global.formatToDisplayDate(curDate, 0);
             dates[1] = Global.formatToDisplayDate(curDate, 4);
-            if (activity != null) {
-                if (!isShiftReport) {
-                    mainAdapter = new ReportsMenuAdapter(activity, dates);
-                    myListview.setAdapter(mainAdapter);
-                } else {
-                    shiftAdapter = new ReportsShiftAdapter(activity, dates);
-                    myListview.setAdapter(shiftAdapter);
-                }
+            if (!isShiftReport) {
+                context.mainAdapter = new ReportsMenuAdapter(context, dates);
+                context.myListview.setAdapter(context.mainAdapter);
+            } else {
+                context.shiftAdapter = new ReportsShiftAdapter(context, dates);
+                context.myListview.setAdapter(context.shiftAdapter);
             }
 
         }

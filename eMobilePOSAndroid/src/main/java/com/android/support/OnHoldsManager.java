@@ -71,7 +71,7 @@ public class OnHoldsManager {
     }
 
     public static void synchOrdersOnHoldDetails(Activity activity, String orderId) throws IOException, SAXException {
-        SynchMethods.synchOrdersOnHoldDetails(activity, orderId);
+//        SynchMethods.synchOrdersOnHoldDetails(activity, orderId);
     }
 
 }
