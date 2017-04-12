@@ -132,6 +132,7 @@ public class PollingNotificationService extends Service {
 
     public void pollNotificationEvents(Context context) {
         try {
+            Date tempPollDate = new Date();
             HttpClient client = new HttpClient();
             Gson gson = JsonUtils.getInstance();
 
@@ -153,6 +154,7 @@ public class PollingNotificationService extends Service {
             for (PollNotification pn : notifications) {
                 String message = NONE_BROADCAST_ACTION;
                 if (pn.isAvailable()) {
+                    lastPolled = tempPollDate;
                     if (pn.notificationtype.equalsIgnoreCase("onhold")) {
                         message = ONHOLD_BROADCAST_ACTION;
                     } else if (pn.notificationtype.equalsIgnoreCase("mesas")) {
@@ -164,8 +166,6 @@ public class PollingNotificationService extends Service {
 
             reader.endArray();
             reader.close();
-
-            lastPolled = new Date();
         } catch (Exception e) {
             Crashlytics.logException(e);
         }
