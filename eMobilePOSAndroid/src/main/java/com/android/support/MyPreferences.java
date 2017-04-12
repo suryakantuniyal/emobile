@@ -1180,6 +1180,10 @@ public class MyPreferences {
         prefEditor.commit();
     }
 
+    public boolean isShiftOpenRequired() {
+        return getPreferences(MyPreferences.pref_require_shift_transactions);
+    }
+
     public boolean isUseClerks() {
         return getPreferences(MyPreferences.pref_use_clerks);
     }
@@ -1353,7 +1357,8 @@ public class MyPreferences {
     }
 
     public boolean isPollingHoldsEnable() {
-        return getPreferences(pref_holds_polling_service);    }
+        return getPreferences(pref_holds_polling_service);
+    }
 
     public enum PrinterPreviewWidth {SMALL, MEDIUM, LARGE}
 

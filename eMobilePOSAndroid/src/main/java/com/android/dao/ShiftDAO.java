@@ -17,10 +17,10 @@ import io.realm.RealmResults;
  */
 
 public class ShiftDAO {
-    public static Shift getCurrentShift(int clerkId) {
+    public static Shift getCurrentShift(int employeeId) {
         Realm r = Realm.getDefaultInstance();
         Shift shift = r.where(Shift.class)
-                .equalTo("assigneeId", clerkId)
+                .equalTo("assigneeId", employeeId)
                 .findAll().where()
                 .equalTo("shiftStatusCode", 0)
                 .or()

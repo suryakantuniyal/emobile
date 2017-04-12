@@ -1,6 +1,5 @@
 package com.android.emobilepos.shifts;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -14,10 +13,12 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.ClerkDAO;
 import com.android.dao.ShiftDAO;
 import com.android.database.DBManager;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.Shift;
 import com.android.support.DateUtils;
@@ -282,9 +283,11 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
     private void openShift() {
         Date now = new Date();
         shift = new Shift();
+        AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee(false);
         shift.setShiftStatus(Shift.ShiftStatus.OPEN);
-        shift.setAssigneeId(Integer.parseInt(preferences.getClerkID()));
-        shift.setAssigneeName(preferences.getClerkName());
+        shift.setAssigneeId(employee.getEmpId());
+        shift.setAssigneeName(employee.getEmpName());
+        shift.setEmpId(Integer.parseInt(preferences.getClerkID()));
         shift.setBeginningPettyCash(NumberUtils.cleanCurrencyFormatedNumber(totalAmountEditText.getText().toString()));
         shift.setCreationDate(now);
         shift.setStartTime(now);
@@ -398,7 +401,8 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
                     sm.synchShifts();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Crashlytics.logException(e);                }
+                    Crashlytics.logException(e);
+                }
             }
             return null;
         }
@@ -412,10 +416,14 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
 
     private void openUI() {
         setContentView(R.layout.activity_shifts);
-        Clerk clerk = ClerkDAO.getByEmpId(Integer.parseInt(preferences.getClerkID()), true);
+//        Clerk clerk = ClerkDAO.getByEmpId(Integer.parseInt(preferences.getClerkID()), true);
+        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+        shift = ShiftDAO.getCurrentShift(assignEmployee.getEmpId());
+        Clerk clerk = ClerkDAO.getByEmpId(shift.getEmpId(), false);
         TextView clerkName = (TextView) findViewById(R.id.clerkNameShifttextView);
         clerkName.setText(clerk.getEmpName());
-        shift = ShiftDAO.getCurrentShift(Integer.parseInt(preferences.getClerkID()));
+
+
         totalAmountEditText = (TextView) findViewById(R.id.totalAmounteditText);
         openOnLbl = (TextView) findViewById(R.id.openOnLbltextView25);
         openOnDate = (TextView) findViewById(R.id.openOnDatetextView26);

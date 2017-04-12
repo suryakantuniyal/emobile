@@ -510,17 +510,18 @@ public class SalesTab_FR extends Fragment {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
-//                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
-                        if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
-                            Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_select_customer));
-                        } else {
-                            if (myPref.isRestaurantMode() &&
-                                    myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
-                                askEatInToGo();
+                        if (validateClerkShift(Global.TransactionType.getByCode(pos))) {
+                            if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
+                                Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_select_customer));
                             } else {
-                                intent = new Intent(activity, OrderingMain_FA.class);
-                                intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
-                                startActivityForResult(intent, 0);
+                                if (myPref.isRestaurantMode() &&
+                                        myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
+                                    askEatInToGo();
+                                } else {
+                                    intent = new Intent(activity, OrderingMain_FA.class);
+                                    intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
+                                    startActivityForResult(intent, 0);
+                                }
                             }
                         }
 //                        } else {
@@ -678,13 +679,15 @@ public class SalesTab_FR extends Fragment {
                     boolean hasPermissions = myPref.isUseClerks() && SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.SHIFT_CLERK);
                     if (hasPermissions) {
-                        if (myPref.isUseClerks()) {
+                        if (validateClerkShift(Global.TransactionType.getByCode(pos))) {
+//                        if (myPref.isUseClerks()) {
                             intent = new Intent(activity, ShiftsActivity.class);
                             startActivity(intent);
-                        } else {
-                            Global.showPrompt(getActivity(), R.string.admin_use_clerks,
-                                    getString(R.string.dlog_msg_error_shift_needs_use_clerk));
                         }
+//                        else {
+//                            Global.showPrompt(getActivity(), R.string.admin_use_clerks,
+//                                    getString(R.string.dlog_msg_error_shift_needs_use_clerk));
+//                        }
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                     }
@@ -714,6 +717,20 @@ public class SalesTab_FR extends Fragment {
         }
     }
 
+    private boolean validateClerkShift(Global.TransactionType transactionType) {
+        SecurityManager.SecurityResponse response = SecurityManager.validateClerkShift(getActivity());
+        switch (response) {
+            case CHECK_USER_CLERK_REQUIRED_SETTING:
+                Global.showPrompt(getActivity(), R.string.dlog_title_error, getString(R.string.use_clerk_check_required));
+                return false;
+            case OPEN_SHIFT_REQUIRED:
+                if (transactionType != Global.TransactionType.SHIFTS) {
+                    Global.showPrompt(getActivity(), R.string.dlog_title_error, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
+                    return false;
+                }
+        }
+        return true;
+    }
 
     private void askEatInToGo() {
         final Dialog popDlog = new Dialog(activity, R.style.TransparentDialog);
