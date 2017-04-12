@@ -50,7 +50,7 @@ android {
         ems {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.2.1.47"
+            versionName "1.2.1.48"
             versionCode 122
             targetSdkVersion 23
             multiDexEnabled = true
@@ -64,7 +64,7 @@ android {
         icmpevo {
             minSdkVersion 15
             applicationId 'com.emobilepos.icmpevo.app'
-            versionName "1.2.1.47"
+            versionName "1.2.1.48"
             versionCode 122
             targetSdkVersion 23
             multiDexEnabled = true
@@ -92,7 +92,7 @@ android {
         ivupos {
             minSdkVersion 15
             applicationId 'com.emobilepos.ivupos.app'
-            versionName "1.2.1.47"
+            versionName "1.2.1.48"
             versionCode 122
             targetSdkVersion 23
             multiDexEnabled = true
@@ -134,7 +134,9 @@ android {
     }
     buildTypes {
         debug {
-            buildConfigField "boolean", "REPORT_CRASHLITYCS", "false"
+            // Disable fabric build ID generation for debug builds
+            ext.enableCrashlytics = false
+//            buildConfigField "boolean", "REPORT_CRASHLITYCS", "true"
             buildConfigField "String", "OS", "\"Android\""
             buildConfigField "int", "POLLING_PERIOD", "10000"
             buildConfigField "boolean", "PRINT_TO_LOG", "false"
@@ -145,7 +147,9 @@ android {
         }
 
         release {
-            buildConfigField "boolean", "REPORT_CRASHLITYCS", "true"
+            // Disable fabric build ID generation for debug builds
+            ext.enableCrashlytics = true
+//            buildConfigField "boolean", "REPORT_CRASHLITYCS", "true"
             buildConfigField "boolean", "PRINT_TO_LOG", "false"
             buildConfigField "String", "OS", "\"Android\""
             buildConfigField "int", "POLLING_PERIOD", "5000"

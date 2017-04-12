@@ -17,6 +17,7 @@ import com.android.emobilepos.models.realms.Clerk;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.core.CrashlyticsCore;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -67,9 +68,13 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (BuildConfig.REPORT_CRASHLITYCS) {
-            Fabric.with(this, new Crashlytics());
-        }
+//        if (BuildConfig.REPORT_CRASHLITYCS) {
+        // Set up Crashlytics, disabled for debug builds
+        Crashlytics crashlyticsKit = new Crashlytics.Builder()
+                .core(new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build())
+                .build();
+        Fabric.with(this, crashlyticsKit);
+//        }
         if (navigationbarByModels == null || navigationbarByModels.length == 0) {
             navigationbarByModels = getResources().getStringArray(R.array.navigationbarByModels);
         }
@@ -77,18 +82,18 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
             myPref = new MyPreferences(this);
         }
         clerk = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()), false);
-        if (BuildConfig.REPORT_CRASHLITYCS) {
-            setCrashliticAditionalInfo();
-        }
+//        if (BuildConfig.REPORT_CRASHLITYCS) {
+        setCrashliticAditionalInfo();
+//        }
         setActionBar();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_main_menu, menu);
-        if(this instanceof OnHoldActivity){
+        if (this instanceof OnHoldActivity) {
             menu.findItem(R.id.refreshHolds).setVisible(true);
-        }else{
+        } else {
             menu.findItem(R.id.refreshHolds).setVisible(false);
         }
         if (menu.findItem(R.id.logoutMenuItem) != null) {
