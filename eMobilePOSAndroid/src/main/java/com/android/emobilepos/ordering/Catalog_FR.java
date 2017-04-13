@@ -13,11 +13,12 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -48,17 +49,13 @@ import com.android.database.ProductsHandler;
 import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMSCategory;
-import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.ParentAddon;
 import com.android.emobilepos.models.Product;
+import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.support.Global;
 import com.android.support.MyEditText;
 import com.android.support.MyPreferences;
 import com.android.support.OrderProductUtils;
-
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.LinearLayoutManager;
-
 import com.google.gson.Gson;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -70,6 +67,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import util.json.JsonUtils;
+import util.json.UIUtils;
 
 public class Catalog_FR extends Fragment implements OnItemClickListener, OnClickListener, LoaderCallbacks<Cursor>,
         MenuProdGV_Adapter.ProductClickedCallback, CatalogCategories_Adapter.CategoriesCallback {
@@ -99,7 +97,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     private CategoriesHandler catHandler;
     private boolean catalogIsPortrait = false;
     private boolean isFastScanning = false;
-    private long lastClickTime = 0;
+    //    private long lastClickTime = 0;
     private int page = 1;
     private boolean isToGo;
 
@@ -146,7 +144,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
         prodListAdapter = new MenuProdGV_Adapter(this, getActivity(), null, CursorAdapter.NO_SELECTION, imageLoader);
 
-        if (myPref.getPreferences(MyPreferences.pref_restaurant_mode)) {
+        if (myPref.isRestaurantMode()) {
             onRestaurantMode = true;
         }
 
@@ -247,7 +245,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                         loadCursor();
                     }
                 } else {
-                    for (String[] cat: spinnerCategories) {
+                    for (String[] cat : spinnerCategories) {
                         if (defaultCategoryId.equals(cat[1])) {
                             selectedSubcategory = new EMSCategory(defaultCategoryId, cat[0], "", 0);
                             break;
@@ -394,6 +392,9 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
         @Override
         protected void onPostExecute(Catalog_Loader catalog_loader) {
+            if (myCursor != null && !myCursor.isClosed()) {
+                myCursor.close();
+            }
             myCursor = catalog_loader.loadInBackground();
             prodListAdapter.swapCursor(myCursor);
             prodListAdapter.notifyDataSetChanged();
@@ -616,7 +617,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     }
 
     public void automaticAddOrder(Product product) {
-        ((OrderingMain_FA) getActivity()).automaticAddOrder(getActivity(), false, global, new OrderProduct(product), ((OrderingMain_FA) getActivity()).getSelectedSeatNumber());
+        OrderingMain_FA.automaticAddOrder(getActivity(), false, global, new OrderProduct(product), ((OrderingMain_FA) getActivity()).getSelectedSeatNumber());
         refreshListView();
         callBackRefreshView.refreshView();
     }
@@ -639,8 +640,8 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                 if (tempPrice == null || tempPrice.isEmpty())
                     tempPrice = c.getString(c.getColumnIndex("master_price"));
             }
-        } else if (global.orderProducts.contains(product.getId())) {
-            BigDecimal origQty = Global.getBigDecimalNum(OrderProductUtils.getOrderProductQty(global.orderProducts, product.getId()));
+        } else if (global.order.getOrderProducts().contains(product.getId())) {
+            BigDecimal origQty = Global.getBigDecimalNum(OrderProductUtils.getOrderProductQty(global.order.getOrderProducts(), product.getId()));
             BigDecimal newQty = origQty.add(Global.getBigDecimalNum("1"));
             String[] temp = volPriceHandler.getVolumePrice(newQty.toString(), product.getId());
             if (temp[1] != null && !temp[1].isEmpty())
@@ -677,9 +678,9 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     private void performClickEvent() {
         Product product = populateDataForIntent(myCursor);
         if (myPref.isGroupReceiptBySku(isToGo)) {//(myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
-            List<OrderProduct> orderProductsGroupBySKU = OrderProductUtils.getOrderProductsGroupBySKU(global.orderProducts);
-            global.orderProducts.clear();
-            global.orderProducts.addAll(orderProductsGroupBySKU);
+            List<OrderProduct> orderProductsGroupBySKU = OrderProductUtils.getOrderProductsGroupBySKU(global.order.getOrderProducts());
+            global.order.getOrderProducts().clear();
+            global.order.getOrderProducts().addAll(orderProductsGroupBySKU);
         }
         if (!isFastScanning) {
             Intent intent = new Intent(getActivity(), PickerProduct_FA.class);
@@ -768,43 +769,44 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     @Override
     public void onItemClick(AdapterView<?> arg0, View arg1, int pos, long arg3) {
 
-        if (!isFastScanning && SystemClock.elapsedRealtime() - lastClickTime < 1000) {
-            return;
-        }
-        lastClickTime = SystemClock.elapsedRealtime();
-
-        if (catalogIsPortrait && myCursor.moveToPosition(pos)) {
-            if (!onRestaurantMode) {
-                performClickEvent();
-            } else {
-                ProductAddonsHandler prodAddonsHandler = new ProductAddonsHandler(getActivity());
-                List<ParentAddon> parentAddons = prodAddonsHandler.getParentAddons(
-                        myCursor.getString(myCursor.getColumnIndex("_id")));
-                if (parentAddons != null && parentAddons.size() > 0) {
-                    Intent intent = new Intent(getActivity(), PickerAddon_FA.class);
-
-                    Product product = populateDataForIntent(myCursor);
-                    intent.putExtra("orderProduct", new OrderProduct(product).toJson());
-                    intent.putExtra("selectedSeatNumber", ((OrderingMain_FA) getActivity()).getSelectedSeatNumber());
-                    intent.putExtra("prod_id", product.getId());
-                    intent.putExtra("prod_name", product.getProdName());
-                    intent.putExtra("prod_on_hand", product.getProdOnHand());
-                    intent.putExtra("prod_price", product.getProdPrice());
-                    intent.putExtra("prod_desc", product.getProdDesc());
-                    intent.putExtra("url", product.getProdImgName());
-                    intent.putExtra("prod_istaxable", product.getProdIstaxable());
-                    intent.putExtra("prod_type", product.getProdType());
-                    intent.putExtra("prod_taxcode", product.getProdTaxCode());
-                    intent.putExtra("prod_taxtype", product.getProdType());
-                    intent.putExtra("cat_id", product.getCatId());
-                    intent.putExtra("prod_sku", product.getProd_sku());
-                    intent.putExtra("prod_upc", product.getProd_upc());
-                    intent.putExtra("prod_price_points", product.getProdPricePoints());
-                    intent.putExtra("prod_value_points", product.getProdValuePoints());
-
-                    startActivityForResult(intent, 0);
-                } else {
+//        if (!isFastScanning && SystemClock.elapsedRealtime() - lastClickTime < 1000) {
+//            return;
+//        }
+//        lastClickTime = SystemClock.elapsedRealtime();
+        if (isFastScanning || UIUtils.singleOnClick(arg1)) {
+            if (catalogIsPortrait && myCursor.moveToPosition(pos)) {
+                if (!onRestaurantMode) {
                     performClickEvent();
+                } else {
+                    ProductAddonsHandler prodAddonsHandler = new ProductAddonsHandler(getActivity());
+                    List<ParentAddon> parentAddons = prodAddonsHandler.getParentAddons(
+                            myCursor.getString(myCursor.getColumnIndex("_id")));
+                    if (parentAddons != null && parentAddons.size() > 0) {
+                        Intent intent = new Intent(getActivity(), PickerAddon_FA.class);
+
+                        Product product = populateDataForIntent(myCursor);
+                        intent.putExtra("orderProduct", new OrderProduct(product).toJson());
+                        intent.putExtra("selectedSeatNumber", ((OrderingMain_FA) getActivity()).getSelectedSeatNumber());
+                        intent.putExtra("prod_id", product.getId());
+                        intent.putExtra("prod_name", product.getProdName());
+                        intent.putExtra("prod_on_hand", product.getProdOnHand());
+                        intent.putExtra("prod_price", product.getProdPrice());
+                        intent.putExtra("prod_desc", product.getProdDesc());
+                        intent.putExtra("url", product.getProdImgName());
+                        intent.putExtra("prod_istaxable", product.getProdIstaxable());
+                        intent.putExtra("prod_type", product.getProdType());
+                        intent.putExtra("prod_taxcode", product.getProdTaxCode());
+                        intent.putExtra("prod_taxtype", product.getProdType());
+                        intent.putExtra("cat_id", product.getCatId());
+                        intent.putExtra("prod_sku", product.getProd_sku());
+                        intent.putExtra("prod_upc", product.getProd_upc());
+                        intent.putExtra("prod_price_points", product.getProdPricePoints());
+                        intent.putExtra("prod_value_points", product.getProdValuePoints());
+
+                        startActivityForResult(intent, 0);
+                    } else {
+                        performClickEvent();
+                    }
                 }
             }
         }

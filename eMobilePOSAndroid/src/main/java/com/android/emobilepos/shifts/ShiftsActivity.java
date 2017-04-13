@@ -14,9 +14,11 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.android.dao.ClerkDAO;
 import com.android.dao.ShiftDAO;
 import com.android.database.DBManager;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.Shift;
 import com.android.support.DateUtils;
 import com.android.support.Global;
@@ -24,11 +26,13 @@ import com.android.support.MyPreferences;
 import com.android.support.NetworkUtils;
 import com.android.support.NumberUtils;
 import com.android.support.SynchMethods;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.crashlytics.android.Crashlytics;
 
 import java.util.ArrayList;
 import java.util.Date;
 
-public class ShiftsActivity extends Activity implements View.OnClickListener, TextWatcher {
+public class ShiftsActivity extends BaseFragmentActivityActionBar implements View.OnClickListener, TextWatcher {
 
     private EditText oneDollarEditText;
     private EditText fiveDollarEditText;
@@ -287,7 +291,7 @@ public class ShiftsActivity extends Activity implements View.OnClickListener, Te
         shift.setStartTimeLocal(now);
 
         //set the ending petty cash equal to the beginning petty cash, decrease the ending petty cash every time there is an expense
-        shift.setEndingPettyCash(totalAmountEditText.getText().toString());
+        shift.setEndingPettyCash(NumberUtils.cleanCurrencyFormatedNumber(totalAmountEditText.getText().toString()));
         shift.setTotal_ending_cash("0");
         ShiftDAO.insertOrUpdate(shift);
         finish();
@@ -394,7 +398,7 @@ public class ShiftsActivity extends Activity implements View.OnClickListener, Te
                     sm.synchShifts();
                 } catch (Exception e) {
                     e.printStackTrace();
-                }
+                    Crashlytics.logException(e);                }
             }
             return null;
         }
@@ -408,9 +412,9 @@ public class ShiftsActivity extends Activity implements View.OnClickListener, Te
 
     private void openUI() {
         setContentView(R.layout.activity_shifts);
-
+        Clerk clerk = ClerkDAO.getByEmpId(Integer.parseInt(preferences.getClerkID()), true);
         TextView clerkName = (TextView) findViewById(R.id.clerkNameShifttextView);
-        clerkName.setText(preferences.getClerkName());
+        clerkName.setText(clerk.getEmpName());
         shift = ShiftDAO.getCurrentShift(Integer.parseInt(preferences.getClerkID()));
         totalAmountEditText = (TextView) findViewById(R.id.totalAmounteditText);
         openOnLbl = (TextView) findViewById(R.id.openOnLbltextView25);
@@ -516,6 +520,7 @@ public class ShiftsActivity extends Activity implements View.OnClickListener, Te
                     sm.postShift(ShiftsActivity.this);
                 } catch (Exception e) {
                     e.printStackTrace();
+                    Crashlytics.logException(e);
                     return false;
                 }
             }

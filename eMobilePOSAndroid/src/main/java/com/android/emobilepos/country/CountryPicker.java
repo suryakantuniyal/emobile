@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import com.android.emobilepos.R;
+import com.crashlytics.android.Crashlytics;
 
 import org.json.JSONObject;
 
@@ -80,7 +81,8 @@ public class CountryPicker extends DialogFragment implements
 		try {
 			return Currency.getInstance(new Locale("en", countryCode));
 		} catch (Exception e) {
-
+            e.printStackTrace();
+            Crashlytics.logException(e);
 		}
 		return null;
 	}
@@ -120,7 +122,8 @@ public class CountryPicker extends DialogFragment implements
 				return allCountriesList;
 
 			} catch (Exception e) {
-				e.printStackTrace();
+                e.printStackTrace();
+                Crashlytics.logException(e);
 			}
 		}
 		return null;

@@ -55,7 +55,7 @@ public class OrderTaxes_DB {
 	}
 	
 
-	public void insert(List<DataTaxes> _data,String _ord_id) {
+	public void insert(List<DataTaxes> dataTaxes,String _ord_id) {
 
 		DBManager.getDatabase().beginTransaction();
 
@@ -63,15 +63,15 @@ public class OrderTaxes_DB {
 			SQLiteStatement insert;
 			insert = DBManager.getDatabase().compileStatement("INSERT OR REPLACE INTO " + TABLE_NAME + " (" + mainSB1.toString() + ") " + "VALUES (" + mainSB2.toString() + ")");
 
-			int size = _data.size();
+			int size = dataTaxes.size();
 
 			for (int j = 0; j < size; j++) {
 				
-				insert.bindString(index(ord_tax_id),_data.get(j).getOrd_tax_id());
+				insert.bindString(index(ord_tax_id),dataTaxes.get(j).getOrd_tax_id());
 				insert.bindString(index(ord_id), _ord_id);
-				insert.bindString(index(tax_name), _data.get(j).getTax_name());
-				insert.bindString(index(tax_amount), _data.get(j).getTax_amount());
-				insert.bindString(index(tax_rate), _data.get(j).getTax_rate());
+				insert.bindString(index(tax_name), dataTaxes.get(j).getTax_name());
+				insert.bindString(index(tax_amount), dataTaxes.get(j).getTax_amount());
+				insert.bindString(index(tax_rate), dataTaxes.get(j).getTax_rate());
 				
 				insert.execute();
 				insert.clearBindings();

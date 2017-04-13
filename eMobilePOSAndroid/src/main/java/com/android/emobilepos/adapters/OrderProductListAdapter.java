@@ -14,14 +14,13 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.android.emobilepos.R;
-import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.OrderSeatProduct;
+import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.emobilepos.ordering.PickerAddon_FA;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -66,7 +65,11 @@ public class OrderProductListAdapter extends BaseAdapter {
         Collections.sort(orderProducts, new Comparator<OrderProduct>() {
             @Override
             public int compare(OrderProduct lhs, OrderProduct rhs) {
-                return Integer.valueOf(lhs.getAssignedSeat()).compareTo(Integer.valueOf(rhs.getAssignedSeat()));
+                if (!TextUtils.isEmpty(lhs.getAssignedSeat()) && !TextUtils.isEmpty(rhs.getAssignedSeat())) {
+                    return Integer.valueOf(lhs.getAssignedSeat()).compareTo(Integer.valueOf(rhs.getAssignedSeat()));
+                } else {
+                    return 0;
+                }
 //                return Integer.parseInt(lhs.getAssignedSeat()) == (Integer.parseInt(rhs.getAssignedSeat());
             }
         });
@@ -308,11 +311,11 @@ public class OrderProductListAdapter extends BaseAdapter {
 
     public void setHolderValues(ViewHolder holder, final int pos) {
         final OrderProduct product = orderSeatProductList.get(pos).orderProduct;
-        final int orderProductIdx = orderSeatProductList.get(pos).rowType == OrderProductListAdapter.RowType.TYPE_ITEM ? global.orderProducts.indexOf(orderSeatProductList.get(pos).orderProduct) : 0;
+        final int orderProductIdx = orderSeatProductList.get(pos).rowType == OrderProductListAdapter.RowType.TYPE_ITEM ? global.order.getOrderProducts().indexOf(orderSeatProductList.get(pos).orderProduct) : 0;
         final String tempId = product.getOrdprod_id();
 
-        if (!myPref.getPreferences(MyPreferences.pref_restaurant_mode)
-                || (myPref.getPreferences(MyPreferences.pref_restaurant_mode)
+        if (!myPref.isRestaurantMode()
+                || (myPref.isRestaurantMode()
                 && !product.getHasAddons())) {
             if (holder.addonButton != null) {
                 holder.addonButton.setVisibility(View.INVISIBLE);
@@ -372,14 +375,13 @@ public class OrderProductListAdapter extends BaseAdapter {
         } else if (attDisplay.equalsIgnoreCase("prod_extradesc")) {
             holder.itemName.setText(product.getProd_extradesc());
         }
-        String temp = Global.formatNumToLocale(Double.parseDouble(product.getFinalPrice()));
+        String temp = Global.formatNumToLocale(product.getItemTotalCalculated().doubleValue());
         holder.itemAmount.setText(Global.getCurrencyFormat(temp));
 
         holder.distQty.setText(product.getDisAmount());
         temp = Global.formatNumToLocale(Double.parseDouble(product.getDisTotal()));
         holder.distAmount.setText(Global.getCurrencyFormat(temp));
-        BigDecimal itemTotal = product.getItemTotalCalculated();
-        temp = Global.formatNumToLocale(itemTotal.doubleValue());
+        temp = Global.formatNumToLocale(product.getItemSubtotalCalculated().doubleValue());
         holder.granTotal.setText(Global.getCurrencyFormat(temp));
 
     }

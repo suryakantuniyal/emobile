@@ -10,7 +10,7 @@
         android:background="@drawable/blue_gradient_header_horizontal"
         android:ems="15"
         android:gravity="center"
-        android:text="@string/sales_associates"
+        android:text="@string/Waiters"
         android:textAppearance="@style/white_text_appearance"
         android:textSize="@dimen/header_bar_text_size" />
 

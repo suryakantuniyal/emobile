@@ -450,7 +450,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
         hapi.addPendingResultsEventHandler(this);
         hapi.getPendingTransaction();
         boolean succeed = hapi.sale(new BigInteger(payment.getPay_amount().replace(".", "")), currency);
-        if (!succeed) {
+        if (!succeed && activity != null && !activity.isFinishing()) {
             Global.showPrompt(activity, R.string.payment, activity.getString(R.string.handpoint_payment_error));
         }
     }

@@ -14,6 +14,7 @@ import android.widget.FrameLayout;
 import com.android.emobilepos.R;
 import com.android.support.Global;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.crashlytics.android.Crashlytics;
 
 import net.sourceforge.zbar.Config;
 import net.sourceforge.zbar.Image;
@@ -108,6 +109,8 @@ public class TupyxCamera_FA extends BaseFragmentActivityActionBar {
         try {
             c = Camera.open();
         } catch (Exception e){
+            e.printStackTrace();
+            Crashlytics.logException(e);
         }
         return c;
     }

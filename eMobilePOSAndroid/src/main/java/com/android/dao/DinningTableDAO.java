@@ -1,12 +1,16 @@
 package com.android.dao;
 
+import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.DinningTable;
 import com.google.gson.Gson;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import io.realm.Realm;
+import io.realm.RealmList;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import util.json.JsonUtils;
@@ -17,7 +21,6 @@ import util.json.JsonUtils;
 public class DinningTableDAO {
     public static void insert(String json) {
         Gson gson = JsonUtils.getInstance();
-
         Type listType = new com.google.gson.reflect.TypeToken<List<DinningTable>>() {
         }.getType();
         try {
@@ -48,7 +51,7 @@ public class DinningTableDAO {
     private static void removeInvalidLocations() {
         Realm r = Realm.getDefaultInstance();
         try {
-            String defaultLocation = AssignEmployeeDAO.getAssignEmployee().getDefaultLocation();
+            String defaultLocation = AssignEmployeeDAO.getAssignEmployee(false).getDefaultLocation();
             r.beginTransaction();
             r.where(DinningTable.class)
                     .notEqualTo("locationId", defaultLocation)
@@ -59,7 +62,7 @@ public class DinningTableDAO {
     }
 
     public static RealmResults<DinningTable> getAll() {
-        String defaultLocation = AssignEmployeeDAO.getAssignEmployee().getDefaultLocation();
+        String defaultLocation = AssignEmployeeDAO.getAssignEmployee(false).getDefaultLocation();
         return Realm.getDefaultInstance().where(DinningTable.class)
                 .equalTo("locationId", defaultLocation)
                 .findAll();
@@ -78,14 +81,29 @@ public class DinningTableDAO {
     public static DinningTable getById(String tableId) {
         Realm realm = Realm.getDefaultInstance();
         RealmQuery<DinningTable> where = realm.where(DinningTable.class);
-        DinningTable table = where.equalTo("id", tableId).findFirst();
-        return table;
+        return where.equalTo("id", tableId).findFirst();
     }
 
     public static DinningTable getByNumber(String tableNumber) {
         Realm realm = Realm.getDefaultInstance();
         RealmQuery<DinningTable> where = realm.where(DinningTable.class);
-        DinningTable table = where.equalTo("number", tableNumber).findFirst();
-        return table;
+        return where.equalTo("number", tableNumber).findFirst();
+    }
+
+    public static HashMap<String, List<Clerk>> getTableAssignedClerks() {
+        HashMap<String, List<Clerk>> tableAssignedClerks = new HashMap<>();
+        RealmResults<Clerk> clerks = ClerkDAO.getAll();
+        for (DinningTable table : getAll()) {
+            tableAssignedClerks.put(table.getId(), new ArrayList<Clerk>());
+        }
+        for (Clerk c : clerks) {
+            RealmList<DinningTable> clerkTables = c.getAssignedDinningTables();
+            for (DinningTable clerkTable : clerkTables) {
+                if (tableAssignedClerks.containsKey(clerkTable.getId())) {
+                    tableAssignedClerks.get(clerkTable.getId()).add(c);
+                }
+            }
+        }
+        return tableAssignedClerks;
     }
 }

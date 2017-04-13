@@ -22,6 +22,7 @@ import android.preference.PreferenceGroup;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -43,30 +44,25 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.dao.PayMethodsDAO;
-import com.android.dao.ShiftDAO;
 import com.android.database.CategoriesHandler;
 import com.android.database.DBManager;
 import com.android.database.PayMethodsHandler;
-import com.android.database.ShiftPeriodsDBHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.country.CountryPicker;
 import com.android.emobilepos.country.CountryPickerListener;
 import com.android.emobilepos.mainmenu.SettingsTab_FR;
 import com.android.emobilepos.models.realms.PaymentMethod;
-import com.android.emobilepos.models.realms.Shift;
-import com.android.emobilepos.shifts.ShiftExpensesList_FA;
-import com.android.support.DateUtils;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.HttpClient;
 import com.android.support.MyPreferences;
 import com.android.support.SynchMethods;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.crashlytics.android.Crashlytics;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -85,7 +81,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
 
     public final static int CASE_ADMIN = 0, CASE_MANAGER = 1, CASE_GENERAL = 2;
     private static SettingsTab_FR.SettingsRoles settingsType;
-    private static FragmentManager supportFragmentManager;
+//    private FragmentManager supportFragmentManager;
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
@@ -99,12 +95,13 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
 
     @Override
     public void onResume() {
+//        supportFragmentManager = getSupportFragmentManager();
         Global global = (Global) getApplication();
         if (global.isApplicationSentToBackground(this))
-            global.loggedIn = false;
+            Global.loggedIn = false;
         global.stopActivityTransitionTimer();
 
-        if (hasBeenCreated && !global.loggedIn) {
+        if (hasBeenCreated && !Global.loggedIn) {
             if (global.getGlobalDlog() != null)
                 global.getGlobalDlog().dismiss();
             global.promptForMandatoryLogin(this);
@@ -119,7 +116,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         boolean isScreenOn = powerManager.isScreenOn();
         if (!isScreenOn)
-            global.loggedIn = false;
+            Global.loggedIn = false;
         global.startActivityTransitionTimer();
     }
 
@@ -132,7 +129,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
         View recyclerView = findViewById(R.id.setting_list);
         assert recyclerView != null;
         setupRecyclerView((RecyclerView) recyclerView);
-        supportFragmentManager = getSupportFragmentManager();
+//        supportFragmentManager = getSupportFragmentManager();
         if (findViewById(R.id.setting_detail_container) != null) {
             // The detail container view will be present only in the
             // large-screen layouts (res/values-w900dp).
@@ -169,8 +166,8 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
 
     public enum SettingSection {
         GENERAL(0), RESTAURANT(1), GIFTCARD(2), PAYMENT_METHODS(3), PAYMENT_PROCESSING(4), PRINTING(5), PRODUCTS(6),
-        ACCOUNT(7), CASH_DRAWER(8), KIOSK(9), SHIFTS(10), SHIPPING_CALCULATION(11),
-        TRANSACTION(12), HANPOINT(13), SUPPORT(14), OTHERS(15);
+        ACCOUNT(7), CASH_DRAWER(8), KIOSK(9), SHIPPING_CALCULATION(10),
+        TRANSACTION(11), HANPOINT(12), SUPPORT(13), OTHERS(14);
         int code;
 
         SettingSection(int code) {
@@ -200,16 +197,14 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                 case 9:
                     return KIOSK;
                 case 10:
-                    return SHIFTS;
-                case 11:
                     return SHIPPING_CALCULATION;
-                case 12:
+                case 11:
                     return TRANSACTION;
-                case 13:
+                case 12:
                     return HANPOINT;
-                case 14:
+                case 13:
                     return SUPPORT;
-                case 15:
+                case 14:
                     return OTHERS;
                 default:
                     return GENERAL;
@@ -257,13 +252,6 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     }
                 case KIOSK:
                     return R.xml.settings_admin_kiosk_layout;
-                case SHIFTS:
-                    switch (settingsType) {
-                        case MANAGER:
-                            return R.xml.settings_manager_shifts_layout;
-                        default:
-                            return R.xml.settings_admin_shifts_layout;
-                    }
                 case SHIPPING_CALCULATION:
                     return R.xml.settings_admin_shipping_layout;
                 case TRANSACTION:
@@ -361,15 +349,6 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                 case KIOSK:
                     prefManager.findPreference("pref_customer_display").setOnPreferenceClickListener(this);
                     break;
-                case SHIFTS:
-                    openShiftPref = getPreferenceManager().findPreference("pref_open_shift");
-                    if (!myPref.getShiftIsOpen()) {
-                        CharSequence c = "\t\t" + getString(R.string.admin_close_shift) + " <" + myPref.getShiftClerkName() + ">";
-                        openShiftPref.setSummary(c);
-                    }
-                    openShiftPref.setOnPreferenceClickListener(this);
-                    prefManager.findPreference("pref_expenses").setOnPreferenceClickListener(this);
-                    break;
                 case SHIPPING_CALCULATION:
                     break;
                 case TRANSACTION:
@@ -428,8 +407,6 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                         case 1:
                             return SettingSection.CASH_DRAWER;
                         case 2:
-                            return SettingSection.SHIFTS;
-                        case 3:
                             return SettingSection.OTHERS;
                     }
                     break;
@@ -531,7 +508,8 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     connectUSBDevice();
                     break;
                 case R.string.config_redetect_peripherals:
-                    DeviceUtils.autoConnect(getActivity(), true);
+                    String connect = DeviceUtils.autoConnect(getActivity(), true);
+                    Toast.makeText(getActivity(), connect, Toast.LENGTH_LONG).show();
 //                    new autoConnectPrinter().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                     break;
                 case R.string.config_store_and_forward_transactions:
@@ -551,16 +529,16 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
 //                    } else
 //                        promptCloseShift(true, 0);
 //                    break;
-                case R.string.config_expenses:
-                    Shift openShift = ShiftDAO.getOpenShift(Integer.parseInt(myPref.getClerkID()));
-                    //if shift is open then show the expenses option
-                    if (openShift == null) {
-                        Toast.makeText(getActivity(), "A shift must be opened before an expense can be added!", Toast.LENGTH_LONG).show();
-                    } else {
-                        intent = new Intent(getActivity(), ShiftExpensesList_FA.class);
-                        startActivity(intent);
-                    }
-                    break;
+//                case R.string.config_expenses:
+//                    Shift openShift = ShiftDAO.getOpenShift(Integer.parseInt(myPref.getClerkID()));
+//                    //if shift is open then show the expenses option
+//                    if (openShift == null) {
+//                        Toast.makeText(getActivity(), "A shift must be opened before an expense can be added!", Toast.LENGTH_LONG).show();
+//                    } else {
+//                        intent = new Intent(getActivity(), ShiftExpensesList_FA.class);
+//                        startActivity(intent);
+//                    }
+//                    break;
                 case R.string.config_default_country:
                     CountryPicker picker = new CountryPicker();
                     final DialogFragment newFrag = picker;
@@ -570,14 +548,13 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                         public void onSelectCountry(String name, String code) {
                             myPref.defaultCountryCode(false, code);
                             myPref.defaultCountryName(false, name);
-
                             CharSequence temp = "\t\t" + name;
                             defaultCountry.setSummary(temp);
-
                             newFrag.dismiss();
                         }
                     });
-
+                    FragmentActivity activity = (FragmentActivity) getActivity();
+                    FragmentManager supportFragmentManager = activity.getSupportFragmentManager();
                     newFrag.show(supportFragmentManager, "dialog");
                     break;
                 case R.string.config_force_upload:
@@ -723,7 +700,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
             ListPreference lp = (ListPreference) getPreferenceManager()
                     .findPreference(MyPreferences.pref_default_payment_method);
             PayMethodsHandler handler = new PayMethodsHandler(getActivity());
-            List<PaymentMethod> list = handler.getPayMethod();
+            List<PaymentMethod> list = PayMethodsDAO.getAllSortByName(true);
             int size = list.size();
             CharSequence[] entries = new String[size + 1];
             CharSequence[] entriesValues = new String[size + 1];
@@ -1007,63 +984,63 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
             });
         }
 
-        private void promptCloseShift(final boolean askAmount, final double amount) {
-            final MyPreferences myPref = new MyPreferences(getActivity());
-            final Dialog dlog = new Dialog(getActivity(), R.style.Theme_TransparentTest);
-            dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            dlog.setCancelable(false);
-            dlog.setCanceledOnTouchOutside(false);
-            dlog.setContentView(R.layout.dlog_field_single_two_btn);
-
-            final EditText viewField = (EditText) dlog.findViewById(R.id.dlogFieldSingle);
-            TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
-            TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
-            if (askAmount) {
-                viewField.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-                viewTitle.setText(R.string.enter_cash_close_amount);
-                viewMsg.setVisibility(View.GONE);
-
-            } else {
-                viewField.setVisibility(View.GONE);
-                viewTitle.setText(R.string.dlog_title_confirm);
-                viewMsg.setText(
-                        getActivity().getString(R.string.close_amount_is) + " " + Global.formatDoubleToCurrency(amount));
-
-            }
-            Button btnYes = (Button) dlog.findViewById(R.id.btnDlogLeft);
-            Button btnNo = (Button) dlog.findViewById(R.id.btnDlogRight);
-            btnYes.setText(R.string.button_ok);
-            btnNo.setText(R.string.button_cancel);
-
-            btnYes.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    dlog.dismiss();
-                    if (askAmount) {
-                        promptCloseShift(false, Global.formatNumFromLocale(viewField.getText().toString()));
-                    } else {
-
-                        ShiftPeriodsDBHandler handler = new ShiftPeriodsDBHandler(getActivity());
-                        handler.updateShift(myPref.getShiftID(), "entered_close_amount", Double.toString(amount));
-                        handler.updateShift(myPref.getShiftID(), "endTime", DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss));
-                        handler.updateShift(myPref.getShiftID(), "endTimeLocal", DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss));
-
-                        myPref.setShiftIsOpen(true);
-                        myPref.setShiftID(""); //erase the shift ID
-                        openShiftPref.setSummary("");
-                    }
-                }
-            });
-            btnNo.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    dlog.dismiss();
-                }
-            });
-            dlog.show();
-        }
+//        private void promptCloseShift(final boolean askAmount, final double amount) {
+//            final MyPreferences myPref = new MyPreferences(getActivity());
+//            final Dialog dlog = new Dialog(getActivity(), R.style.Theme_TransparentTest);
+//            dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+//            dlog.setCancelable(false);
+//            dlog.setCanceledOnTouchOutside(false);
+//            dlog.setContentView(R.layout.dlog_field_single_two_btn);
+//
+//            final EditText viewField = (EditText) dlog.findViewById(R.id.dlogFieldSingle);
+//            TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
+//            TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+//            if (askAmount) {
+//                viewField.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+//                viewTitle.setText(R.string.enter_cash_close_amount);
+//                viewMsg.setVisibility(View.GONE);
+//
+//            } else {
+//                viewField.setVisibility(View.GONE);
+//                viewTitle.setText(R.string.dlog_title_confirm);
+//                viewMsg.setText(
+//                        getActivity().getString(R.string.close_amount_is) + " " + Global.formatDoubleToCurrency(amount));
+//
+//            }
+//            Button btnYes = (Button) dlog.findViewById(R.id.btnDlogLeft);
+//            Button btnNo = (Button) dlog.findViewById(R.id.btnDlogRight);
+//            btnYes.setText(R.string.button_ok);
+//            btnNo.setText(R.string.button_cancel);
+//
+//            btnYes.setOnClickListener(new View.OnClickListener() {
+//
+//                @Override
+//                public void onClick(View v) {
+//                    dlog.dismiss();
+//                    if (askAmount) {
+//                        promptCloseShift(false, Global.formatNumFromLocale(viewField.getText().toString()));
+//                    } else {
+//
+//                        ShiftPeriodsDBHandler handler = new ShiftPeriodsDBHandler(getActivity());
+//                        handler.updateShift(myPref.getShiftID(), "entered_close_amount", Double.toString(amount));
+//                        handler.updateShift(myPref.getShiftID(), "endTime", DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss));
+//                        handler.updateShift(myPref.getShiftID(), "endTimeLocal", DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss));
+//
+//                        myPref.setShiftIsOpen(true);
+//                        myPref.setShiftID(""); //erase the shift ID
+//                        openShiftPref.setSummary("");
+//                    }
+//                }
+//            });
+//            btnNo.setOnClickListener(new View.OnClickListener() {
+//
+//                @Override
+//                public void onClick(View v) {
+//                    dlog.dismiss();
+//                }
+//            });
+//            dlog.show();
+//        }
 
         private void connectBTDevice() {
             ListView listViewPairedDevices = new ListView(getActivity());
@@ -1251,7 +1228,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                 myPref.setPrinterType(Global.MEPOS);
                 Global.mainPrinterManager = edm.getManager();
                 Global.mainPrinterManager.loadDrivers(getActivity(), Global.MEPOS, false);
-            } else {
+            } else if (myPref.isPOWA()) {
                 myPref.setPrinterType(Global.POWA);
                 Global.mainPrinterManager = edm.getManager();
                 Global.mainPrinterManager.loadDrivers(getActivity(), Global.POWA, false);
@@ -1277,12 +1254,10 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     return nameList;
                 }
             } catch (Exception e) {
-                StringBuilder sb = new StringBuilder();
-                sb.append(e.getMessage())
-                        .append(" [com.android.emobilepos.SettingsMenuActiv (at Class.getPairedDevices)]");
-
+                e.printStackTrace();
+                Crashlytics.logException(e);
             }
-            return null;
+            return new ArrayList<>();
         }
 
         @Override
@@ -1308,6 +1283,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                 }
             }
         }
+
 
         private class autoConnectPrinter extends AsyncTask<Void, Void, String> {
             private ProgressDialog progressDlog;

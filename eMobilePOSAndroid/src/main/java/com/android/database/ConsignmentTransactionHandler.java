@@ -336,7 +336,7 @@ public class ConsignmentTransactionHandler {
             cursor.close();
             stmt.close();
             if (TextUtils.isEmpty(lastID)) {
-                AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+                AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
                 lastID = assignEmployee.getEmpId() + "-" + "00001" + "-" + year;
             }
             myPref.setLastConsTransID(lastID);

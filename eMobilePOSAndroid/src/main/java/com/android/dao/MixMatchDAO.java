@@ -62,6 +62,13 @@ public class MixMatchDAO {
         RealmResults<MixMatch> realmResults = where
                 .equalTo("groupId", group.getGroupId())
                 .equalTo("priceLevelId", group.getPriceLevelId())
+                .or()
+                .equalTo("groupId", group.getGroupId())
+                .equalTo("priceLevelId", "")
+                .equalTo("mixMatchType", 2)
+                .equalTo("xyzSequence", 1)
+                .findAll()
+                .where()
                 .equalTo("isActive", true)
                 .lessThanOrEqualTo("startDate", now)
                 .greaterThanOrEqualTo("endDate", now)

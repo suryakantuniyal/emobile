@@ -102,18 +102,13 @@ public class SettingsTab_FR extends Fragment implements OnClickListener {
                 globalDlog.dismiss();
                 String pass = viewField.getText().toString();
                 if (!pass.isEmpty()) {
-                    openSettings(role);
-//                    Intent intent = new Intent(getActivity(), SettingListActivity.class);
-//                    if (role == SettingsRoles.ADMIN && myPref.getPOSAdminPass().equals(pass.trim())) {
-//                        intent.putExtra("settings_type", SettingsRoles.ADMIN);
-//                        startActivity(intent);
-//
-//                    } else if (role == SettingsRoles.MANAGER && myPref.getPosManagerPass().equals(pass.trim())) {
-//                        intent.putExtra("settings_type", SettingsRoles.MANAGER);
-//                        startActivity(intent);
-//                    } else {
-//                        promptPassword(role);
-//                    }
+                    if (role == SettingsRoles.ADMIN && preferences.loginAdmin(pass.trim())) {
+                        openSettings(role);
+                    } else if (role == SettingsRoles.MANAGER && preferences.loginManager(pass.trim())) {
+                        openSettings(role);
+                    } else {
+                        promptPassword(role);
+                    }
                 }
             }
         });

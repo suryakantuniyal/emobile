@@ -58,6 +58,8 @@ public class OrderDetailsActivity extends BaseFragmentActivityActionBar {
     private String deliveryDate = defaultVal;
     List<OrderAttributes> orderAttributesValues;
     private String inputComment = "";
+    private String inputPo = "";
+
     private Global global;
     private boolean hasBeenCreated = false;
     private int selectedRowIndex;
@@ -403,19 +405,26 @@ public class OrderDetailsActivity extends BaseFragmentActivityActionBar {
                             global.setSelectedComments(inputComment.trim());
                         }
                         break;
-                    default:
+                    case PO:
+                        inputPo = editTextField.getText().toString();
+                        if (inputPo.trim().length() > 0) {
+                            global.setSelectedPO(inputPo.trim());
+                        }
+                        break;
+//                    default:
 //                        inputPO = editTextField.getText().toString();
 //                        if (inputPO.trim().length() > 0) {
 //                            global.setSelectedPO(inputPO.trim());
 //                        }
-                        break;
+//                        break;
                 }
-
                 myListView.invalidateViews();
                 dialog.dismiss();
             }
         });
-        adb.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        adb.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+
+        {
 
             @Override
             public void onClick(DialogInterface dialog, int which) {

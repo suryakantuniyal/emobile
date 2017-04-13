@@ -2,20 +2,16 @@ package com.android.emobilepos.mainmenu.restaurant;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.app.ProgressDialog;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 
-import com.android.database.OrderProductsHandler;
 import com.android.database.OrdersHandler;
-import com.android.emobilepos.OnHoldActivity;
 import com.android.emobilepos.R;
-import com.android.emobilepos.models.Order;
+import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.realms.DinningTable;
 import com.android.emobilepos.models.realms.DinningTableOrder;
 import com.android.emobilepos.ordering.OrderingMain_FA;
@@ -23,16 +19,10 @@ import com.android.emobilepos.ordering.SplittedOrderSummary_FA;
 import com.android.support.Global;
 import com.android.support.NetworkUtils;
 import com.android.support.OnHoldsManager;
-import com.android.support.SynchMethods;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.viewpagerindicator.IconPagerAdapter;
 import com.viewpagerindicator.PageIndicator;
 import com.viewpagerindicator.TitlePageIndicator;
-
-import org.xml.sax.SAXException;
-
-import java.io.IOException;
-import java.util.ArrayList;
 
 public class DinningTablesActivity extends BaseFragmentActivityActionBar {
 
@@ -140,45 +130,45 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
             global.loggedIn = false;
         global.startActivityTransitionTimer();
     }
-
-    private class SynchOnHoldOrders extends AsyncTask<Void, String, Void> {
-        ProgressDialog progressDialog;
-
-        @Override
-        protected void onPreExecute() {
-            progressDialog = new ProgressDialog(DinningTablesActivity.this);
-            progressDialog.setMessage(getString(R.string.loading_orders));
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            progressDialog.setCancelable(false);
-            progressDialog.show();
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            try {
-                if (NetworkUtils.isConnectedToInternet(DinningTablesActivity.this)) {
-                    SynchMethods.synchSalesAssociateDinnindTablesConfiguration(DinningTablesActivity.this);
-                    updateProgress(getString(R.string.sync_dload_ordersonhold));
-                    SynchMethods.synchOrdersOnHoldList(DinningTablesActivity.this);
-                }
-            } catch (SAXException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        public void updateProgress(String msg) {
-            publishProgress(msg);
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            progressDialog.dismiss();
-            refresh(0);
-        }
-    }
+//
+//    private class SynchOnHoldOrders extends AsyncTask<Void, String, Void> {
+//        ProgressDialog progressDialog;
+//
+//        @Override
+//        protected void onPreExecute() {
+//            progressDialog = new ProgressDialog(DinningTablesActivity.this);
+//            progressDialog.setMessage(getString(R.string.loading_orders));
+//            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+//            progressDialog.setCancelable(false);
+//            progressDialog.show();
+//        }
+//
+//        @Override
+//        protected Void doInBackground(Void... params) {
+//            try {
+//                if (NetworkUtils.isConnectedToInternet(DinningTablesActivity.this)) {
+//                    SynchMethods.synchSalesAssociateDinnindTablesConfiguration(DinningTablesActivity.this);
+//                    updateProgress(getString(R.string.sync_dload_ordersonhold));
+//                    SynchMethods.synchOrdersOnHoldList(DinningTablesActivity.this);
+//                }
+//            } catch (SAXException e) {
+//                e.printStackTrace();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//            return null;
+//        }
+//
+//        public void updateProgress(String msg) {
+//            publishProgress(msg);
+//        }
+//
+//        @Override
+//        protected void onPostExecute(Void aVoid) {
+//            progressDialog.dismiss();
+//            refresh(0);
+//        }
+//    }
 
     public class OpenOnHoldOrderTask extends AsyncTask<Object, Void, Boolean> {
 
@@ -194,29 +184,29 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
                 if (claimRequired) {
                     return false;
                 } else {
-                    try {
-                        OnHoldsManager.synchOrdersOnHoldDetails(DinningTablesActivity.this, tableOrder.getCurrentOrderId());
-                        OrderProductsHandler orderProdHandler = new OrderProductsHandler(DinningTablesActivity.this);
-                        Cursor c = orderProdHandler.getOrderProductsOnHold(tableOrder.getCurrentOrderId());
-                        Global global = (Global) DinningTablesActivity.this.getApplication();
-                        global.orderProducts = new ArrayList<>();
-                        OnHoldActivity.addOrderProducts(DinningTablesActivity.this, c);
+//                    try {
+//                        OnHoldsManager.synchOrdersOnHoldDetails(DinningTablesActivity.this, tableOrder.getCurrentOrderId());
+//                        OrderProductsHandler orderProdHandler = new OrderProductsHandler(DinningTablesActivity.this);
+//                        Cursor c = orderProdHandler.getOrderProductsOnHold(tableOrder.getCurrentOrderId());
+//                        Global global = (Global) DinningTablesActivity.this.getApplication();
+//                        global.order.setOrderProducts(new ArrayList<OrderProduct>());
+//                        OnHoldActivity.addOrderProducts(DinningTablesActivity.this, c);
                         Global.isFromOnHold = true;
 
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } catch (SAXException e) {
-                        e.printStackTrace();
-                    }
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    } catch (SAXException e) {
+//                        e.printStackTrace();
+//                    }
                 }
             } else {
                 OrdersHandler ordersHandler = new OrdersHandler(DinningTablesActivity.this);
                 if (ordersHandler.isOrderOffline(tableOrder.getCurrentOrderId())) {
-                    OrderProductsHandler orderProdHandler = new OrderProductsHandler(DinningTablesActivity.this);
-                    Cursor c = orderProdHandler.getOrderProductsOnHold(tableOrder.getCurrentOrderId());
-                    Global global = (Global) DinningTablesActivity.this.getApplication();
-                    global.orderProducts = new ArrayList<>();
-                    OnHoldActivity.addOrderProducts(DinningTablesActivity.this, c);
+//                    OrderProductsHandler orderProdHandler = new OrderProductsHandler(DinningTablesActivity.this);
+//                    Cursor c = orderProdHandler.getOrderProductsOnHold(tableOrder.getCurrentOrderId());
+//                    Global global = (Global) DinningTablesActivity.this.getApplication();
+//                    global.order.setOrderProducts(new ArrayList<OrderProduct>());
+//                    OnHoldActivity.addOrderProducts(DinningTablesActivity.this, c);
                     Global.isFromOnHold = true;
                 } else {
                     return false;

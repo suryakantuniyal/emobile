@@ -291,5 +291,33 @@ public class CreditCardInfo {
     public void setEmvContainer(EMVContainer emvContainer) {
         this.emvContainer = emvContainer;
     }
+
+    public void setCardInfo(CreditCardInfo creditCardInfo) {
+        setCardEncryptedSecCode(creditCardInfo.getCardEncryptedSecCode());
+        setCardExpMonth(creditCardInfo.getCardExpMonth());
+        setCardExpYear(creditCardInfo.getCardExpYear());
+        setCardLast4(creditCardInfo.getCardLast4());
+        setCardNumAESEncrypted(creditCardInfo.getCardNumAESEncrypted());
+        setCardNumUnencrypted(creditCardInfo.getCardNumUnencrypted());
+        setCardOwnerName(creditCardInfo.getCardOwnerName());
+        setCardType(creditCardInfo.getCardType());
+        setDebitPinBlock(creditCardInfo.getDebitPinBlock());
+        setDebitPinSerialNum(creditCardInfo.getDebitPinSerialNum());
+        setDeviceSerialNumber(creditCardInfo.getDeviceSerialNumber());
+        setEmvContainer(creditCardInfo.getEmvContainer());
+        setEncryptedAESTrack1(creditCardInfo.getEncryptedAESTrack1());
+        setEncryptedAESTrack2(creditCardInfo.getEncryptedAESTrack2());
+        setEncryptedTrack1(creditCardInfo.getEncryptedTrack1());
+        setEncryptedTrack2(creditCardInfo.getEncryptedTrack2());
+        setEncryptedBlock(getEncryptedBlock());
+        setMagnePrint(creditCardInfo.getMagnePrint());
+        setOriginalTotalAmount(creditCardInfo.getOriginalTotalAmount());
+        setRedeemAll(creditCardInfo.getRedeemAll());
+        setRedeemType(creditCardInfo.getRedeemType());
+        setResultMessage(creditCardInfo.getResultMessage());
+        setMagnePrintStatus(creditCardInfo.getMagnePrintStatus());
+        setWasSwiped(creditCardInfo.getWasSwiped());
+        setTrackDataKSN(creditCardInfo.getTrackDataKSN());
+    }
 }
 

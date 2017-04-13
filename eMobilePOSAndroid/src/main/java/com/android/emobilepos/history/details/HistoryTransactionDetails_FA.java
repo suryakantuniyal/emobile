@@ -35,17 +35,17 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.android.dao.ShiftDAO;
 import com.android.dao.StoredPaymentsDAO;
 import com.android.database.CustomersHandler;
 import com.android.database.OrderProductsHandler;
 import com.android.database.OrdersHandler;
 import com.android.database.PaymentsHandler;
 import com.android.database.ProductsImagesHandler;
-import com.android.database.ShiftPeriodsDBHandler;
 import com.android.database.VoidTransactionsHandler;
 import com.android.emobilepos.R;
-import com.android.emobilepos.models.Order;
-import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.models.orders.Order;
+import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.security.SecurityManager;
 import com.android.payments.EMSPayGate_Default;
@@ -56,6 +56,7 @@ import com.android.support.MyPreferences;
 import com.android.support.NumberUtils;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.crashlytics.android.Crashlytics;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -206,7 +207,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
         String curDate = sdf.format(new Date());
         if (order.isVoid != null && (order.isVoid.equals("1") ||
-                !curDate.equals(Global.formatToDisplayDate(order.ord_timecreated,  0)))) {
+                !curDate.equals(Global.formatToDisplayDate(order.ord_timecreated, 0)))) {
             btnVoid.setEnabled(false && hasVoidPermissions);
             btnVoid.setClickable(false && hasVoidPermissions);
         } else {
@@ -403,7 +404,8 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                 String otherAmount = "0";
                 if (size > 0) {
 
-                    if (paymentMapList.get(0).getPaymentMethod().getPaymethod_name().equalsIgnoreCase("LoyaltyCard"))
+                    if (paymentMapList.get(0).getPaymentMethod() != null &&
+                            paymentMapList.get(0).getPaymentMethod().getPaymethod_name().equalsIgnoreCase("LoyaltyCard"))
                         otherAmount = Global.addSubsStrings(true, otherAmount, Global.formatNumToLocale(Double.parseDouble(paymentMapList.get(0).getPay_amount())));
                     else
                         temp = Global.formatNumToLocale(Double.parseDouble(paymentMapList.get(0).getPay_amount()));
@@ -490,11 +492,13 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
             image = Drawable.createFromStream(is, "src");
 
         } catch (MalformedURLException e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
             image = null;
-
         } catch (IOException e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
             image = null;
-
         }
         return image;
     }
@@ -520,7 +524,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
             public void onClick(View v) {
                 globalDlog.dismiss();
                 String pass = viewField.getText().toString();
-                if (!pass.isEmpty() && myPref.getPosManagerPass().equals(pass.trim())) {
+                if (!pass.isEmpty() && myPref.loginManager(pass.trim())) {
                     //Void transaction
                     globalDlog.dismiss();
                     startVoidingTransaction();
@@ -576,8 +580,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         btnVoid.setClickable(false);
 
         if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
-            StoredPaymentsDAO dbStoredPayments = new StoredPaymentsDAO(activity);
-            if (dbStoredPayments.getRetryTransCount(order_id) > 0) {
+            if (StoredPaymentsDAO.getRetryTransCount(order_id) > 0) {
                 //There are pending stored&forward cannot void_payment
                 Global.showPrompt(activity, R.string.dlog_title_error, getString(R.string.dlog_msg_pending_stored_forward));
                 btnVoid.setEnabled(true);
@@ -611,15 +614,14 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         ord.ord_type = order.ord_type;
         voidHandler.insert(ord);
         //Section to update the local ShiftPeriods database to reflect the VOID
-        ShiftPeriodsDBHandler handlerSP = new ShiftPeriodsDBHandler(activity);
+//        ShiftPeriodsDBHandler handlerSP = new ShiftPeriodsDBHandler(activity);
         amountToBeSubstracted = Double.parseDouble(NumberUtils.cleanCurrencyFormatedNumber(order.ord_total)); //find total to be credited
         //update ShiftPeriods (isReturn set to true)
-        handlerSP.updateShiftAmounts(myPref.getShiftID(), amountToBeSubstracted, true);
+        ShiftDAO.updateShiftAmounts(Integer.parseInt(myPref.getShiftID()), amountToBeSubstracted, true);
         //Check if Stored&Forward active and delete from record if any payment were made
         if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
             handler.updateOrderStoredFwd(order_id, "0");
-            StoredPaymentsDAO dbStoredPayments = new StoredPaymentsDAO(this);
-            dbStoredPayments.deletePaymentFromJob(order_id);
+            StoredPaymentsDAO.deletePaymentFromJob(order_id);
         }
         payHandler = new PaymentsHandler(activity);
         listVoidPayments = payHandler.getOrderPayments(order_id);
@@ -699,7 +701,8 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                     }
                 }
             } catch (Exception e) {
-
+                e.printStackTrace();
+                Crashlytics.logException(e);
             }
             return null;
         }

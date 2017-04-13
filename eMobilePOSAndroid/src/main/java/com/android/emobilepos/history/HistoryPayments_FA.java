@@ -29,6 +29,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.history.details.HistoryPaymentDetails_FA;
 import com.android.support.Global;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.crashlytics.android.Crashlytics;
 
 public class HistoryPayments_FA extends BaseFragmentActivityActionBar implements OnTabChangeListener {
     private static final String[] TABS = new String[]{"cash", "check", "card", "other"};
@@ -251,7 +252,9 @@ public class HistoryPayments_FA extends BaseFragmentActivityActionBar implements
         public static Limiters toLimit(String str) {
             try {
                 return valueOf(str);
-            } catch (Exception ex) {
+            } catch (Exception e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
                 return null;
             }
         }

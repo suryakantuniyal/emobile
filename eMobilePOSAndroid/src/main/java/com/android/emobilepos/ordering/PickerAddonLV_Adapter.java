@@ -15,8 +15,7 @@ import android.widget.TextView;
 
 import com.android.database.ProductAddonsHandler;
 import com.android.emobilepos.R;
-import com.android.emobilepos.models.OrderProduct;
-import com.android.support.GenerateNewID;
+import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.support.Global;
 import com.android.support.OrderProductUtils;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -26,7 +25,6 @@ import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -247,12 +245,12 @@ public class PickerAddonLV_Adapter extends CursorAdapter implements OnClickListe
             }
             orderProduct.setOrdprod_desc(ordprod_desc.toString());
             ord.setItemTotal(tempPrice);
-            ord.setItemSubtotal(tempPrice);
+//            ord.setItemSubtotal(tempPrice);
             if (!Global.isFromOnHold) {
-                GenerateNewID generator = new GenerateNewID(activity);
-                Global.lastOrdID = generator.getNextID(GenerateNewID.IdType.ORDER_ID);
+//                GenerateNewID generator = new GenerateNewID(activity);
+//                Global.lastOrdID = generator.getNextID(GenerateNewID.IdType.ORDER_ID);
             }
-            ord.setOrd_id(Global.lastOrdID);
+            ord.setOrd_id(orderProduct.getOrd_id());
 
             UUID uuid = UUID.randomUUID();
             ord.setOrdprod_id(uuid.toString());

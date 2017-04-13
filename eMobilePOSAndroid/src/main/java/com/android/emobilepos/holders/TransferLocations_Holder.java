@@ -19,7 +19,7 @@ public class TransferLocations_Holder {
 	{
 //		MyPreferences myPref = new MyPreferences(activity);
 		setTrans_timecreated(DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss));
-		setEmp_id(String.valueOf(AssignEmployeeDAO.getAssignEmployee().getEmpId()));
+		setEmp_id(String.valueOf(AssignEmployeeDAO.getAssignEmployee(false).getEmpId()));
 	}
 
 	public String getTrans_id() {

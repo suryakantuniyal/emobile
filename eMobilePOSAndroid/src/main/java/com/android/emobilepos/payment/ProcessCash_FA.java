@@ -23,10 +23,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.dao.AssignEmployeeDAO;
+import com.android.dao.ShiftDAO;
 import com.android.database.CustomersHandler;
 import com.android.database.InvoicePaymentsHandler;
 import com.android.database.PaymentsHandler;
-import com.android.database.ShiftPeriodsDBHandler;
 import com.android.database.TaxesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.GroupTax;
@@ -40,8 +40,12 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+
+import util.json.UIUtils;
 
 public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener {
     //    private ProgressDialog myProgressDialog;
@@ -90,10 +94,10 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         if (myPref.isCustSelected()) {
             custTaxCode = myPref.getCustTaxCode();
         } else {
-            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
             custTaxCode = assignEmployee.getTaxDefault();
         }
-        groupTaxRate = TaxesHandler.getGroupTaxRate(custTaxCode);
+        groupTaxRate = new TaxesHandler(this).getGroupTaxRate(custTaxCode);
         if (!myPref.getPreferences(MyPreferences.pref_show_tips_for_cash)) {
             showTipField = false;
             LinearLayout layout = (LinearLayout) findViewById(R.id.tipFieldMainHolder);
@@ -204,27 +208,28 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
 
             @Override
             public void onClick(View v) {
-                btnProcess.setEnabled(false);
-                double enteredAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
-                double amountDueDbl = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDue));
-                if (enteredAmount <= 0 && (amountDueDbl > 0 || isFromMainMenu)) {
-                    paid.setBackgroundResource(R.drawable.edittext_wrong_input);
-                    Global.showPrompt(activity, R.string.validation_failed, activity.getString(R.string.error_wrong_amount));
-                } else {
-                    paid.setBackgroundResource(R.drawable.edittext_border);
+                if (UIUtils.singleOnClick(v)) {
+                    btnProcess.setEnabled(false);
+                    double enteredAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
+                    double amountDueDbl = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDue));
+                    if (enteredAmount <= 0 && (amountDueDbl > 0 || isFromMainMenu)) {
+                        paid.setBackgroundResource(R.drawable.edittext_wrong_input);
+                        Global.showPrompt(activity, R.string.validation_failed, activity.getString(R.string.error_wrong_amount));
+                    } else {
+                        paid.setBackgroundResource(R.drawable.edittext_border);
 
-                    if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
-                        Global.mainPrinterManager.getCurrentDevice().openCashDrawer();
-                    }
+                        if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                            Global.mainPrinterManager.getCurrentDevice().openCashDrawer();
+                        }
 
-                    if (!isInvoice || (isInvoice && !isMultiInvoice))
-                        new processPaymentAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
-                    else {
-                        new processPaymentAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
+                        if (!isInvoice || (isInvoice && !isMultiInvoice))
+                            new processPaymentAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
+                        else {
+                            new processPaymentAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
+                        }
                     }
+                    btnProcess.setEnabled(true);
                 }
-                btnProcess.setEnabled(true);
-
             }
         });
 
@@ -408,6 +413,12 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
 
 
     public static void setTaxLabels(List<GroupTax> groupTaxRate, TextView tax1Lbl, TextView tax2Lbl) {
+        Collections.sort(groupTaxRate, new Comparator<GroupTax>() {
+            @Override
+            public int compare(GroupTax o1, GroupTax o2) {
+                return o1.getPrTax().compareTo(o2.getPrTax());
+            }
+        });
         if (groupTaxRate.size() > 0)
             tax1Lbl.setText(groupTaxRate.get(0).getTaxName());
         if (groupTaxRate.size() > 1)
@@ -781,19 +792,36 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
 
 
     private void updateShiftAmount() {
-
         if (!myPref.getShiftIsOpen()) {
             double actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDue));
             double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
+            double amountToApply;
             boolean isReturn = false;
             if (Global.ord_type == Global.OrderType.RETURN || isRefund)
                 isReturn = true;
-            ShiftPeriodsDBHandler handler = new ShiftPeriodsDBHandler(activity);
             if (amountToBePaid <= actualAmount) {
-                handler.updateShiftAmounts(myPref.getShiftID(), amountToBePaid, isReturn);
+                amountToApply = amountToBePaid;
             } else {
-                handler.updateShiftAmounts(myPref.getShiftID(), actualAmount, isReturn);
+                amountToApply = actualAmount;
             }
+//            Shift openShift = ShiftDAO.getOpenShift(Integer.parseInt(myPref.getClerkID()));
+            ShiftDAO.updateShiftAmounts(Integer.parseInt(myPref.getClerkID()), amountToApply, isReturn);
+
+
+//            if (!isReturn) {
+//                openShift.setTotalTransactionsCash(String.valueOf(Global.getBigDecimalNum(openShift.getTotalTransactionsCash())
+//                        .add(BigDecimal.valueOf(amountToApply))));
+//            } else {
+//                openShift.setTotalTransactionsCash(String.valueOf(Global.getBigDecimalNum(openShift.getTotalTransactionsCash())
+//                        .subtract(BigDecimal.valueOf(amountToApply))));
+//            }
+//            ShiftDAO.insertOrUpdate(openShift);
+//
+//            if (amountToBePaid <= actualAmount) {
+//                handler.updateShiftAmounts(myPref.getShiftID(), amountToBePaid, isReturn);
+//            } else {
+//                handler.updateShiftAmounts(myPref.getShiftID(), actualAmount, isReturn);
+//            }
         }
 
     }

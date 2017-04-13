@@ -27,6 +27,7 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 
 import org.xml.sax.InputSource;
@@ -103,7 +104,8 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
                     errorMsg = "The provided information could not be validated. Please try again.";
 
             } catch (Exception e) {
-
+                e.printStackTrace();
+                Crashlytics.logException(e);
             }
             return null;
         }
@@ -206,6 +208,8 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
             AssignEmployeeDAO.insertAssignEmployee(assignEmployees);
             return true;
         } catch (Exception e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
             error_msg_id = R.string.dlog_msg_error_downloading_employee_data;
         }
         return false;
@@ -234,6 +238,8 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
                 return false;
             }
         } catch (Exception e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
             error_msg_id = R.string.dlog_msg_error_no_avail_license;
         }
         return false;
@@ -252,6 +258,8 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
             xr.parse(inSource);
             return Boolean.parseBoolean(handler.getData());
         } catch (Exception e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
             error_msg_id = R.string.dlog_msg_error_failed_disable_employee;
         }
         return false;
@@ -276,6 +284,8 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
             }
 
         } catch (Exception e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
             error_msg_id = R.string.dlog_msg_error_failed_download_pay_id;
         }
         return false;
@@ -346,6 +356,7 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
                     preferences.setEmpIdFromPreferences(String.valueOf(assignEmployee.getEmpId()));
                 } catch (Exception e) {
                     e.printStackTrace();
+                    Crashlytics.logException(e);
                 }
                 new selectEmployeesAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
 

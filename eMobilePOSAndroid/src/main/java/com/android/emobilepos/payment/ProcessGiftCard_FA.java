@@ -68,6 +68,7 @@ import drivers.EMSNomad;
 import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
 import interfaces.EMSCallBack;
+import util.json.UIUtils;
 
 public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener {
 
@@ -107,12 +108,12 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         global = (Global) getApplication();
         activity = this;
         callBack = this;
-        assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+        assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
 
         Global.isEncryptSwipe = true;
         myPref = new MyPreferences(activity);
         setContentView(R.layout.process_giftcard_layout);
-        groupTaxRate = TaxesHandler.getGroupTaxRate(assignEmployee.getTaxDefault());
+        groupTaxRate = new TaxesHandler(this).getGroupTaxRate(assignEmployee.getTaxDefault());
         cardInfoManager = new CreditCardInfo();
         cardSwipe = (CheckBox) findViewById(R.id.checkboxCardSwipe);
         redeemAll = (CheckBox) findViewById(R.id.checkboxRedeemAll);
@@ -165,10 +166,10 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
     public void onResume() {
 
         if (global.isApplicationSentToBackground(this))
-            global.loggedIn = false;
+            Global.loggedIn = false;
         global.stopActivityTransitionTimer();
 
-        if (hasBeenCreated && !global.loggedIn) {
+        if (hasBeenCreated && !Global.loggedIn) {
             if (global.getGlobalDlog() != null)
                 global.getGlobalDlog().dismiss();
             global.promptForMandatoryLogin(this);
@@ -182,7 +183,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         boolean isScreenOn = powerManager.isScreenOn();
         if (!isScreenOn)
-            global.loggedIn = false;
+            Global.loggedIn = false;
         global.startActivityTransitionTimer();
     }
 
@@ -537,8 +538,8 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
                         xr.parse(inSource);
                         parsedMap = handler.getData();
                         payment.setPay_amount(parsedMap.get("AuthorizedAmount"));
-                        double due = Double.parseDouble(payment.getOriginalTotalAmount())
-                                - Double.parseDouble(payment.getPay_amount());
+                        double due = Double.parseDouble(payment.getOriginalTotalAmount() == null ? "0" : payment.getOriginalTotalAmount())
+                                - Double.parseDouble(payment.getPay_amount() == null ? "0" : payment.getPay_amount());
                         payment.setPay_dueamount(String.valueOf(due));
                         Global.amountPaid = payment.getPay_amount();
                         if (parsedMap != null && parsedMap.size() > 0 && parsedMap.get("epayStatusCode").equals("APPROVED"))
@@ -694,14 +695,16 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.exactAmountBut:
-                fieldAmountTendered.setText(fieldAmountDue.getText().toString());
-                break;
-            case R.id.processButton:
-                if (validatePaymentData())
-                    processPayment();
-                break;
+        if (UIUtils.singleOnClick(v)) {
+            switch (v.getId()) {
+                case R.id.exactAmountBut:
+                    fieldAmountTendered.setText(fieldAmountDue.getText().toString());
+                    break;
+                case R.id.processButton:
+                    if (validatePaymentData())
+                        processPayment();
+                    break;
+            }
         }
     }
 

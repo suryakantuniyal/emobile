@@ -24,13 +24,12 @@ import com.android.database.TransferInventory_DB;
 import com.android.database.TransferLocations_DB;
 import com.android.database.VoidTransactionsHandler;
 import com.android.emobilepos.R;
-import com.android.emobilepos.models.Order;
-import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.models.orders.Order;
+import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.OrderAttributes;
 import com.android.emobilepos.models.realms.Shift;
 import com.android.emobilepos.models.realms.ShiftExpense;
-import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.shifts.ClockInOut_FA;
 
 import org.xmlpull.v1.XmlSerializer;
@@ -60,7 +59,7 @@ public class GenerateXML {
     public GenerateXML(Context activity) {
         info = new MyPreferences(activity);
         myPref = new MyPreferences(activity);
-        AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee();
+        AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee(false);
         if (employee == null && !TextUtils.isEmpty(myPref.getEmpIdFromPreferences())) {
             this.assignEmployee = new AssignEmployee();
             this.assignEmployee.setEmpId(Integer.parseInt(myPref.getEmpIdFromPreferences()));
@@ -838,7 +837,7 @@ public class GenerateXML {
                 serializer.endTag(empstr, "Shipping");
 
                 serializer.startTag(empstr, "OrderProducts");
-                if (myPref.getPreferences(MyPreferences.pref_restaurant_mode)) {
+                if (myPref.isRestaurantMode()) {
                     if (order.isOnHold.equalsIgnoreCase("0"))
                         // on
                         // hold
@@ -1033,7 +1032,7 @@ public class GenerateXML {
         serializer.endTag(empstr, "VAT");
 
         serializer.startTag(empstr, "OrderProducts");
-        buildOrderProducts(serializer, order.ord_id, myPref.getPreferences(MyPreferences.pref_restaurant_mode),
+        buildOrderProducts(serializer, order.ord_id, myPref.isRestaurantMode(),
                 isOnHold);
         serializer.endTag(empstr, "OrderProducts");
         serializer.endTag(empstr, "Order");
@@ -1195,7 +1194,7 @@ public class GenerateXML {
                     serializer.startTag(empstr, "totalLineValue");
                     serializer.text(cursor.getString(cursor.getColumnIndex("totalLineValue")));
                     serializer.endTag(empstr, "totalLineValue");
-                    String prod_taxValue = Global.getRoundBigDecimal(new BigDecimal(cursor.getDouble(cursor.getColumnIndex("prod_taxValue"))));
+                    String prod_taxValue = Global.getRoundBigDecimal(product.getProd_taxValue(),2);
 
                     serializer.startTag(empstr, "prod_taxValue");
                     serializer.text(prod_taxValue);
@@ -2618,7 +2617,7 @@ public class GenerateXML {
         Cursor c = handler.getWalletOrdProd(ordID);
         c.moveToFirst();
         int size = c.getCount();
-        boolean isRestMode = info.getPreferences(MyPreferences.pref_restaurant_mode);
+        boolean isRestMode = info.isRestaurantMode();
 
         for (int i = 0; i < size; i++) {
             if (!isRestMode || (isRestMode && ((c.getString(c.getColumnIndex("addon")).equals("false"))))) {

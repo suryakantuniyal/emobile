@@ -1,7 +1,6 @@
 package com.android.support;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -10,19 +9,20 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.dao.AssignEmployeeDAO;
+import com.android.dao.ClerkDAO;
 import com.android.dao.DeviceTableDAO;
 import com.android.dao.DinningTableDAO;
 import com.android.dao.EmployeePermissionDAO;
 import com.android.dao.MixMatchDAO;
 import com.android.dao.OrderAttributesDAO;
 import com.android.dao.OrderProductAttributeDAO;
-import com.android.dao.SalesAssociateDAO;
 import com.android.dao.ShiftDAO;
 import com.android.dao.UomDAO;
 import com.android.database.ConsignmentTransactionHandler;
@@ -39,7 +39,6 @@ import com.android.database.PriceLevelItemsHandler;
 import com.android.database.ProductAddonsHandler;
 import com.android.database.ProductAliases_DB;
 import com.android.database.ProductsHandler;
-import com.android.database.ShiftPeriodsDBHandler;
 import com.android.database.TemplateHandler;
 import com.android.database.TimeClockHandler;
 import com.android.database.TransferLocations_DB;
@@ -50,18 +49,18 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.mainmenu.SyncTab_FR;
 import com.android.emobilepos.models.ItemPriceLevel;
-import com.android.emobilepos.models.Order;
-import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.PriceLevel;
 import com.android.emobilepos.models.Product;
 import com.android.emobilepos.models.ProductAddons;
 import com.android.emobilepos.models.ProductAlias;
+import com.android.emobilepos.models.orders.Order;
+import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
+import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.DinningTable;
 import com.android.emobilepos.models.realms.MixMatch;
 import com.android.emobilepos.models.realms.OrderAttributes;
 import com.android.emobilepos.models.realms.PaymentMethod;
-import com.android.emobilepos.models.realms.SalesAssociate;
 import com.android.emobilepos.models.realms.Shift;
 import com.android.emobilepos.models.response.ClerkEmployeePermissionResponse;
 import com.android.emobilepos.models.salesassociates.DinningLocationConfiguration;
@@ -82,6 +81,9 @@ import com.android.saxhandler.SaxLoginHandler;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -96,7 +98,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.lang.reflect.Type;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
@@ -126,7 +127,7 @@ public class SynchMethods {
     private String tempFilePath;
     private boolean checkoutOnHold = false, downloadHoldList = false;
 
-    private ProgressDialog myProgressDialog;
+    //    private ProgressDialog myProgressDialog;
     private int type;
 
     private boolean didSendData = true;
@@ -138,6 +139,7 @@ public class SynchMethods {
     private boolean isReceive = false;
     private boolean isSending = false;
     private String _server_time = "";
+    MyPreferences preferences;
 
     public SynchMethods(DBManager managerInst) {
         post = new Post();
@@ -145,6 +147,7 @@ public class SynchMethods {
         SAXParserFactory spf = SAXParserFactory.newInstance();
         context = managerInst.getContext();
         data = new ArrayList<>();
+        preferences = new MyPreferences(context);
         if (OAuthManager.isExpired(context) && NetworkUtils.isConnectedToInternet(context)) {
             OAuthManager oAuthManager = getOAuthManager(context);
             try {
@@ -168,19 +171,17 @@ public class SynchMethods {
     }
 
 
-
-
-    public static void postSalesAssociatesConfiguration(Activity activity, List<SalesAssociate> salesAssociates) throws Exception {
+    public static void postSalesAssociatesConfiguration(Activity activity, List<Clerk> clerks) throws Exception {
         List<DinningLocationConfiguration> configurations = new ArrayList<>();
 
-        HashMap<String, List<SalesAssociate>> locations = SalesAssociateDAO.getSalesAssociatesByLocation();
-        for (Map.Entry<String, List<SalesAssociate>> location : locations.entrySet()) {
+        HashMap<String, List<Clerk>> locations = ClerkDAO.getSalesAssociatesByLocation();
+        for (Map.Entry<String, List<Clerk>> location : locations.entrySet()) {
             DinningLocationConfiguration configuration = new DinningLocationConfiguration();
             configuration.setLocationId(location.getKey());
-            configuration.setSalesAssociates(location.getValue());
+            configuration.setClerks(location.getValue());
             configurations.add(configuration);
         }
-        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
 
         MyPreferences preferences = new MyPreferences(activity);
         StringBuilder url = new StringBuilder(activity.getString(R.string.sync_enablermobile_mesasconfig));
@@ -199,63 +200,121 @@ public class SynchMethods {
         httpClient.post(url.toString(), json, authClient);
     }
 
-    public static void synchSalesAssociateDinnindTablesConfiguration(Context activity) throws IOException, SAXException {
+    public boolean syncReceive() {
         try {
-            oauthclient.HttpClient client = new oauthclient.HttpClient();
-            Gson gson = JsonUtils.getInstance();
-            if (OAuthManager.isExpired(activity)) {
-                getOAuthManager(activity);
-            }
-            OAuthClient oauthClient = OAuthManager.getOAuthClient(activity);
-//            String s = client.getString(activity.getString(R.string.sync_enablermobile_mesasconfig), oauthClient);
-            InputStream inputStream = client.get(activity.getString(R.string.sync_enablermobile_mesasconfig), oauthClient);
-            JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
-            List<DinningLocationConfiguration> configurations = new ArrayList<>();
-            reader.beginArray();
-            String defaultLocation = AssignEmployeeDAO.getAssignEmployee().getDefaultLocation();
-            while (reader.hasNext()) {
-                DinningLocationConfiguration configuration = gson.fromJson(reader, DinningLocationConfiguration.class);
-                if (configuration.getLocationId().equalsIgnoreCase(defaultLocation)) {
-                    configurations.add(configuration);
-                }
-            }
+            synchGetServerTime();
+            synchEmployeeData();
+            synchAddresses();
+            synchCategories();
+            synchCustomers();
+            synchEmpInv();
+            synchProdInv();
+            synchInvoices();
+            synchPaymentMethods();
+            synchPriceLevel();
+            synchItemsPriceLevel();
+            synchPrinters();
+            synchProdCatXref();
+            synchProdChain();
+            synchProdAddon();
+            synchProducts();
+            synchOrderAttributes();
+            synchOrderAttributes();
+            synchProductAliases();
+            synchProductImages();
+            synchDownloadProductsAttr();
+            synchGetOrdProdAttr();
+            synchSalesTaxCode();
+            synchShippingMethods();
+            synchTaxes();
+            synchTaxGroup();
+            synchTerms();
+            synchMemoText();
+            synchAccountLogo();
+            synchDeviceDefaultValues();
+            synchDownloadLastPayID();
+            synchVolumePrices();
+            synchUoM();
+            synchGetTemplates();
 
-            reader.endArray();
-            reader.close();
-            for (DinningLocationConfiguration configuration : configurations) {
-                for (SalesAssociate associate : configuration.getSalesAssociates()) {
-                    SalesAssociateDAO.clearAllAssignedTable(associate);
-                    for (DinningTable table : associate.getAssignedDinningTables()) {
-                        DinningTable dinningTable = DinningTableDAO.getById(table.getId());
-                        SalesAssociateDAO.addAssignedTable(associate, dinningTable);
-                    }
-                }
+            if (Global.isIvuLoto) {
+                synchIvuLottoDrawDates();
             }
+            synchDownloadCustomerInventory();
+            synchDownloadConsignmentTransaction();
+            synchShifts();
+            synchDownloadClerks();
+            synchClerkPersmissions();
+            synchDownloadDinnerTable();
+            synchSalesAssociateDinnindTablesConfiguration(context);
+            synchDownloadMixMatch();
+            synchDownloadTermsAndConditions();
+            if (preferences.getPreferences(MyPreferences.pref_enable_location_inventory)) {
+                synchLocations();
+                synchLocationsInventory();
+            }
+            synchUpdateSyncTime();
+
         } catch (Exception e) {
             e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    public static void synchSalesAssociateDinnindTablesConfiguration(Context activity) throws IOException, SAXException {
+        oauthclient.HttpClient client = new oauthclient.HttpClient();
+        Gson gson = JsonUtils.getInstance();
+        if (OAuthManager.isExpired(activity)) {
+            getOAuthManager(activity);
+        }
+        OAuthClient oauthClient = OAuthManager.getOAuthClient(activity);
+//            String s = client.getString(activity.getString(R.string.sync_enablermobile_mesasconfig), oauthClient);
+        InputStream inputStream = client.get(activity.getString(R.string.sync_enablermobile_mesasconfig), oauthClient);
+        JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
+        List<DinningLocationConfiguration> configurations = new ArrayList<>();
+        reader.beginArray();
+        String defaultLocation = AssignEmployeeDAO.getAssignEmployee(false).getDefaultLocation();
+        while (reader.hasNext()) {
+            DinningLocationConfiguration configuration = gson.fromJson(reader, DinningLocationConfiguration.class);
+            if (configuration.getLocationId().equalsIgnoreCase(defaultLocation)) {
+                configurations.add(configuration);
+            }
+        }
+
+        reader.endArray();
+        reader.close();
+        for (DinningLocationConfiguration configuration : configurations) {
+            for (Clerk associate : configuration.getClerks()) {
+                ClerkDAO.clearAllAssignedTable(associate);
+                for (DinningTable table : associate.getAssignedDinningTables()) {
+                    DinningTable dinningTable = DinningTableDAO.getById(table.getId());
+                    ClerkDAO.addAssignedTable(associate, dinningTable);
+                }
+            }
         }
     }
 
-    private void showProgressDialog() {
-        if (myProgressDialog == null) {
-            myProgressDialog = new ProgressDialog(context);
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-        }
-        myProgressDialog.show();
-    }
+//    private void showProgressDialog() {
+//        if (myProgressDialog == null) {
+//            myProgressDialog = new ProgressDialog(context);
+//            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+//            myProgressDialog.setCancelable(false);
+//        }
+//        myProgressDialog.show();
+//    }
+//
+//    private void dismissProgressDialog() {
+//        if (myProgressDialog != null && myProgressDialog.isShowing()) {
+//            myProgressDialog.dismiss();
+//        }
+//    }
 
-    private void dismissProgressDialog() {
-        if (myProgressDialog != null && myProgressDialog.isShowing()) {
-            myProgressDialog.dismiss();
-        }
-    }
-
-    public void synchReceive(int type, Activity activity) {
-        this.type = type;
-        isReceive = true;
-        new ResynchAsync(activity).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
-    }
+//    public void synchReceive(int type, Activity activity) {
+//        this.type = type;
+//        isReceive = true;
+//        new ResynchAsync(activity).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+//    }
 
     public void getLocationsInventory(Activity activity) {
         new AsyncGetLocationsInventory(activity).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -511,36 +570,28 @@ public class SynchMethods {
     }
 
     private void synchClerkPersmissions() throws IOException, SAXException {
-        try {
-            Gson gson = JsonUtils.getInstance();
-            GenerateXML xml = new GenerateXML(context);
-            String jsonRequest = client.httpJsonRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                    xml.downloadAll("ClerkPermissions"));
-            ClerkEmployeePermissionResponse response = gson.fromJson(jsonRequest, ClerkEmployeePermissionResponse.class);
+        Gson gson = JsonUtils.getInstance();
+        GenerateXML xml = new GenerateXML(context);
+        String jsonRequest = client.httpJsonRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                xml.downloadAll("ClerkPermissions"));
+        ClerkEmployeePermissionResponse response = gson.fromJson(jsonRequest, ClerkEmployeePermissionResponse.class);
 //            ClerkDAO.truncate();
-            EmployeePermissionDAO.truncate();
+        EmployeePermissionDAO.truncate();
 //            ClerkDAO.inserOrUpdate(response.getClerks());
-            SalesAssociateDAO.truncate();
-            SalesAssociateDAO.insert(response.getClerks());
-            EmployeePermissionDAO.insertOrUpdate(response.getEmployeePersmissions());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        ClerkDAO.truncate();
+        ClerkDAO.insert(response.getClerks());
+        EmployeePermissionDAO.insertOrUpdate(response.getEmployeePersmissions());
     }
 
     public void synchShifts() throws IOException, SAXException {
-        try {
-            Gson gson = JsonUtils.getInstance();
-            GenerateXML xml = new GenerateXML(context);
-            String jsonRequest = client.httpJsonRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                    xml.downloadAll("Shifts"));
-            Type listType = new com.google.gson.reflect.TypeToken<List<Shift>>() {
-            }.getType();
-            List<Shift> shifts = gson.fromJson(jsonRequest, listType);
-            ShiftDAO.insertOrUpdate(shifts);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Gson gson = JsonUtils.getInstance();
+        GenerateXML xml = new GenerateXML(context);
+        String jsonRequest = client.httpJsonRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                xml.downloadAll("Shifts"));
+        Type listType = new com.google.gson.reflect.TypeToken<List<Shift>>() {
+        }.getType();
+        List<Shift> shifts = gson.fromJson(jsonRequest, listType);
+        ShiftDAO.insertOrUpdate(shifts);
     }
 
     private void sendWalletOrders(Object task) throws IOException, SAXException, ParserConfigurationException {
@@ -636,72 +687,104 @@ public class SynchMethods {
         return xml.split("<" + tagName + ">")[1].split("</" + tagName + ">")[0];
     }
 
-    public static void synchOrdersOnHoldList(Context activity) throws SAXException, IOException {
-        try {
-            Gson gson = JsonUtils.getInstance();
-            GenerateXML xml = new GenerateXML(activity);
-            InputStream inputStream = new HttpClient().httpInputStreamRequest(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                    xml.downloadAll("GetOrdersOnHoldList"));
-            JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
-            List<Order> orders = new ArrayList<>();
-            OrdersHandler ordersHandler = new OrdersHandler(activity);
-            ordersHandler.deleteOnHoldsTable();
-            reader.beginArray();
-            int i = 0;
-            while (reader.hasNext()) {
-                Order order = gson.fromJson(reader, Order.class);
-                order.ord_issync = "1";
-                order.isOnHold = "1";
-                Order onHoldOrder = ordersHandler.getOrder(order.ord_id);
-                if (onHoldOrder == null || onHoldOrder.isOnHold.equals("1")) {
-                    orders.add(order);
-                    i++;
-                }
-                if (i == 1000) {
-                    ordersHandler.insert(orders);
-                    orders.clear();
-                    i = 0;
-                }
+    public static void synchOrdersOnHoldList(Context context) throws SAXException, IOException {
+        Gson gson = JsonUtils.getInstance();
+        GenerateXML xml = new GenerateXML(context);
+        String json = new HttpClient().httpJsonRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                xml.downloadAll("GetOrdersOnHoldList"));
+        Type listType = new com.google.gson.reflect.TypeToken<List<Order>>() {
+        }.getType();
+        List<Order> orders = gson.fromJson(json, listType);
+        OrdersHandler ordersHandler = new OrdersHandler(context);
+        List<Order> ordersToDelete = ordersHandler.getOrdersOnHold();
+        int i = 0;
+        for (Order order : orders) {
+            order.ord_issync = "1";
+            order.isOnHold = "1";
+            Order onHoldOrder = ordersHandler.getOrder(order.ord_id);
+            if (onHoldOrder == null || TextUtils.isEmpty(onHoldOrder.ord_id) || onHoldOrder.isOnHold.equals("1")) {
+                ordersToDelete.remove(order);
+                i++;
             }
-            ordersHandler.insert(orders);
-            reader.endArray();
-            reader.close();
-        } catch (Exception e) {
-            e.printStackTrace();
+            if (i == 1000) {
+                ordersHandler.insert(orders);
+                orders.clear();
+                i = 0;
+            }
+            synchOrdersOnHoldDetails(context, order.ord_id);
         }
+        ordersHandler.insert(orders);
+        ordersHandler.deleteOnHoldsOrders(ordersToDelete);
     }
 
     public static void synchOrdersOnHoldDetails(Context activity, String ordID) throws SAXException, IOException {
+        HttpClient client = new HttpClient();
+        Gson gson = JsonUtils.getInstance();
+        List<OrderProduct> orderProducts = new ArrayList<>();
+        GenerateXML xml = new GenerateXML(activity);
+        String json = client.httpJsonRequest(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                xml.getOnHold(Global.S_ORDERS_ON_HOLD_DETAILS, ordID));
+        JSONArray jsonArray;
         try {
-            HttpClient client = new HttpClient();
-            Gson gson = JsonUtils.getInstance();
-            GenerateXML xml = new GenerateXML(activity);
-            InputStream inputStream = client.httpInputStreamRequest(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                    xml.getOnHold(Global.S_ORDERS_ON_HOLD_DETAILS, ordID));
-            JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
-            List<OrderProduct> orderProducts = new ArrayList<>();
-            OrderProductsHandler orderProductsHandler = new OrderProductsHandler(activity);
-            reader.beginArray();
-            int i = 0;
-            while (reader.hasNext()) {
-                OrderProduct product = gson.fromJson(reader, OrderProduct.class);
-                orderProducts.add(product);
-                i++;
-                if (i == 1000) {
-                    OrderProductUtils.assignAddonsOrderProduct(orderProducts);
-                    orderProductsHandler.insert(orderProducts);
-                    orderProducts.clear();
-                    i = 0;
+            jsonArray = new JSONArray(json);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                String seatGroupId = jsonObject.optString("seatGroupId");
+                if (TextUtils.isEmpty(seatGroupId)) {
+                    jsonObject.put("seatGroupId", "0");
                 }
+                orderProducts.add(gson.fromJson(jsonObject.toString(), OrderProduct.class));
             }
-            OrderProductUtils.assignAddonsOrderProduct(orderProducts);
-            orderProductsHandler.completeProductFields(orderProducts, activity);
-            orderProductsHandler.insert(orderProducts);
-            reader.endArray();
-            reader.close();
-        } catch (Exception e) {
+        } catch (JSONException e) {
             e.printStackTrace();
         }
+//        Type listType = new com.google.gson.reflect.TypeToken<List<OrderProduct>>() {
+//        }.getType();
+//        JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
+//        List<OrderProduct> orderProducts = gson.fromJson(jsonArray, listType);
+        OrderProductsHandler orderProductsHandler = new OrderProductsHandler(activity);
+//        reader.beginArray();
+//        int i = 0;
+        ProductsHandler productsHandler = new ProductsHandler(activity);
+        for (OrderProduct product : orderProducts) {
+//            while (reader.hasNext()) {
+            double discAmount = 0;
+//            OrderProduct product = gson.fromJson(reader, OrderProduct.class);
+            double total = (Double.parseDouble(product.getOrdprod_qty())) * Double.parseDouble(product.getFinalPrice());
+            String[] discountInfo = productsHandler.getDiscount(product.getDiscount_id(), product.getFinalPrice());
+            if (discountInfo != null) {
+                if (discountInfo[1] != null && discountInfo[1].equals("Fixed")) {
+                    product.setDiscount_is_fixed("1");
+                }
+                if (discountInfo[2] != null) {
+                    discAmount = Double.parseDouble(discountInfo[4]);
+                }
+                if (discountInfo[3] != null) {
+                    product.setDiscount_is_taxable(discountInfo[3]);
+                }
+                if (discountInfo[4] != null) {
+                    product.setDisTotal(discountInfo[4]);
+                    discAmount = Double.parseDouble(discountInfo[4]);
+                    product.setDiscount_value(discountInfo[4]);
+                }
+            }
+            product.setDisAmount(String.valueOf(discAmount));
+            product.setItemTotal(Double.toString(total - discAmount));
+//                product.setItemSubtotal(Double.toString(total));
+//                orderProducts.add(product);
+//                i++;
+//                if (i == 1000) {
+//                    OrderProductUtils.assignAddonsOrderProduct(orderProducts);
+//                    orderProductsHandler.insert(orderProducts);
+//                    orderProducts.clear();
+//                    i = 0;
+//                }
+        }
+        OrderProductUtils.assignAddonsOrderProduct(orderProducts);
+        orderProductsHandler.completeProductFields(orderProducts, activity);
+        orderProductsHandler.insert(orderProducts);
+//            reader.endArray();
+//            reader.close();
     }
 
     /************************************
@@ -757,94 +840,81 @@ public class SynchMethods {
     }
 
     private void synchPaymentMethods() throws IOException, SAXException {
-        try {
-            Gson gson = JsonUtils.getInstance();
-            GenerateXML xml = new GenerateXML(context);
-            InputStream inputStream = client.httpInputStreamRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                    xml.downloadAll("PayMethods"));
-            JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
-            List<PaymentMethod> methods = new ArrayList<>();
-            PayMethodsHandler payMethodsHandler = new PayMethodsHandler(context);
-            payMethodsHandler.emptyTable();
-            reader.beginArray();
-            int i = 0;
-            while (reader.hasNext()) {
-                PaymentMethod method = gson.fromJson(reader, PaymentMethod.class);
-                methods.add(method);
-                i++;
-                if (i == 1000) {
-                    payMethodsHandler.insert(methods);
-                    methods.clear();
-                    i = 0;
-                }
+        Gson gson = JsonUtils.getInstance();
+        GenerateXML xml = new GenerateXML(context);
+        InputStream inputStream = client.httpInputStreamRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                xml.downloadAll("PayMethods"));
+        JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
+        List<PaymentMethod> methods = new ArrayList<>();
+        PayMethodsHandler payMethodsHandler = new PayMethodsHandler(context);
+        payMethodsHandler.emptyTable();
+        reader.beginArray();
+        int i = 0;
+        while (reader.hasNext()) {
+            PaymentMethod method = gson.fromJson(reader, PaymentMethod.class);
+            methods.add(method);
+            i++;
+            if (i == 1000) {
+                payMethodsHandler.insert(methods);
+                methods.clear();
+                i = 0;
             }
-            payMethodsHandler.insert(methods);
-            reader.endArray();
-            reader.close();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
+        payMethodsHandler.insert(methods);
+        reader.endArray();
+        reader.close();
     }
 
     private void synchPriceLevel() throws IOException, SAXException {
-        try {
-            Gson gson = JsonUtils.getInstance();
-            GenerateXML xml = new GenerateXML(context);
-            InputStream inputStream = client.httpInputStreamRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                    xml.downloadAll("PriceLevel"));
-            JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
-            List<PriceLevel> priceLevels = new ArrayList<>();
-            PriceLevelHandler priceLevelHandler = new PriceLevelHandler();
-            priceLevelHandler.emptyTable();
-            reader.beginArray();
-            int i = 0;
-            while (reader.hasNext()) {
-                PriceLevel priceLevel = gson.fromJson(reader, PriceLevel.class);
-                priceLevels.add(priceLevel);
-                i++;
-                if (i == 1000) {
-                    priceLevelHandler.insert(priceLevels);
-                    priceLevels.clear();
-                    i = 0;
-                }
+        Gson gson = JsonUtils.getInstance();
+        GenerateXML xml = new GenerateXML(context);
+        InputStream inputStream = client.httpInputStreamRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                xml.downloadAll("PriceLevel"));
+        JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
+        List<PriceLevel> priceLevels = new ArrayList<>();
+        PriceLevelHandler priceLevelHandler = new PriceLevelHandler();
+        priceLevelHandler.emptyTable();
+        reader.beginArray();
+        int i = 0;
+        while (reader.hasNext()) {
+            PriceLevel priceLevel = gson.fromJson(reader, PriceLevel.class);
+            priceLevels.add(priceLevel);
+            i++;
+            if (i == 1000) {
+                priceLevelHandler.insert(priceLevels);
+                priceLevels.clear();
+                i = 0;
             }
-            priceLevelHandler.insert(priceLevels);
-            reader.endArray();
-            reader.close();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-
+        priceLevelHandler.insert(priceLevels);
+        reader.endArray();
+        reader.close();
     }
 
     private void synchItemsPriceLevel() throws IOException, SAXException {
-        try {
-            Gson gson = JsonUtils.getInstance();
-            GenerateXML xml = new GenerateXML(context);
-            InputStream inputStream = client.httpInputStreamRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                    xml.downloadAll("PriceLevelItems"));
-            JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
-            List<ItemPriceLevel> itemPriceLevels = new ArrayList<>();
-            PriceLevelItemsHandler levelItemsHandler = new PriceLevelItemsHandler(context);
-            levelItemsHandler.emptyTable();
-            reader.beginArray();
-            int i = 0;
-            while (reader.hasNext()) {
-                ItemPriceLevel itemPriceLevel = gson.fromJson(reader, ItemPriceLevel.class);
-                itemPriceLevels.add(itemPriceLevel);
-                i++;
-                if (i == 1000) {
-                    levelItemsHandler.insert(itemPriceLevels);
-                    itemPriceLevels.clear();
-                    i = 0;
-                }
+        Gson gson = JsonUtils.getInstance();
+        GenerateXML xml = new GenerateXML(context);
+        InputStream inputStream = client.httpInputStreamRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                xml.downloadAll("PriceLevelItems"));
+        JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
+        List<ItemPriceLevel> itemPriceLevels = new ArrayList<>();
+        PriceLevelItemsHandler levelItemsHandler = new PriceLevelItemsHandler(context);
+        levelItemsHandler.emptyTable();
+        reader.beginArray();
+        int i = 0;
+        while (reader.hasNext()) {
+            ItemPriceLevel itemPriceLevel = gson.fromJson(reader, ItemPriceLevel.class);
+            itemPriceLevels.add(itemPriceLevel);
+            i++;
+            if (i == 1000) {
+                levelItemsHandler.insert(itemPriceLevels);
+                itemPriceLevels.clear();
+                i = 0;
             }
-            levelItemsHandler.insert(itemPriceLevels);
-            reader.endArray();
-            reader.close();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
+        levelItemsHandler.insert(itemPriceLevels);
+        reader.endArray();
+        reader.close();
     }
 
     private void synchPrinters() throws IOException, SAXException {
@@ -877,144 +947,127 @@ public class SynchMethods {
     }
 
     private void synchProdAddon() throws IOException, SAXException {
-        try {
-            Gson gson = JsonUtils.getInstance();
-            GenerateXML xml = new GenerateXML(context);
-            InputStream inputStream = client.httpInputStreamRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                    xml.downloadAll("Product_addons"));
-            JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
-            List<ProductAddons> addonses = new ArrayList<>();
-            ProductAddonsHandler addonsHandler = new ProductAddonsHandler(context);
-            addonsHandler.emptyTable();
-            reader.beginArray();
-            int i = 0;
-            while (reader.hasNext()) {
-                ProductAddons addons = gson.fromJson(reader, ProductAddons.class);
-                addonses.add(addons);
-                i++;
-                if (i == 1000) {
-                    addonsHandler.insert(addonses);
-                    addonses.clear();
-                    i = 0;
-                }
+        Gson gson = JsonUtils.getInstance();
+        GenerateXML xml = new GenerateXML(context);
+        InputStream inputStream = client.httpInputStreamRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                xml.downloadAll("Product_addons"));
+        JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
+        List<ProductAddons> addonses = new ArrayList<>();
+        ProductAddonsHandler addonsHandler = new ProductAddonsHandler(context);
+        addonsHandler.emptyTable();
+        reader.beginArray();
+        int i = 0;
+        while (reader.hasNext()) {
+            ProductAddons addons = gson.fromJson(reader, ProductAddons.class);
+            addonses.add(addons);
+            i++;
+            if (i == 1000) {
+                addonsHandler.insert(addonses);
+                addonses.clear();
+                i = 0;
             }
-            addonsHandler.insert(addonses);
-            reader.endArray();
-            reader.close();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
+        addonsHandler.insert(addonses);
+        reader.endArray();
+        reader.close();
     }
 
     private void synchProducts() throws IOException, SAXException {
-        try {
-            ProductsHandler productsHandler = new ProductsHandler(context);
-            Gson gson = JsonUtils.getInstance();
-            GenerateXML xml = new GenerateXML(context);
-            InputStream inputStream = client.httpInputStreamRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                    xml.downloadAll("Products"));
-            JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
-            List<Product> products = new ArrayList<>();
-            productsHandler.emptyTable();
-            reader.beginArray();
-            int i = 0;
-            while (reader.hasNext()) {
-                Product product = gson.fromJson(reader, Product.class);
-                products.add(product);
-                i++;
-                if (i == 1000) {
-                    productsHandler.insert(products);
-                    products.clear();
-                    i = 0;
-                }
+        ProductsHandler productsHandler = new ProductsHandler(context);
+        Gson gson = JsonUtils.getInstance();
+        GenerateXML xml = new GenerateXML(context);
+        InputStream inputStream = client.httpInputStreamRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                xml.downloadAll("Products"));
+        JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
+        List<Product> products = new ArrayList<>();
+        productsHandler.emptyTable();
+        reader.beginArray();
+        int i = 0;
+        while (reader.hasNext()) {
+            Product product = gson.fromJson(reader, Product.class);
+            products.add(product);
+            i++;
+            if (i == 1000) {
+                productsHandler.insert(products);
+                products.clear();
+                i = 0;
             }
-            productsHandler.insert(products);
-            reader.endArray();
-            reader.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
         }
+        productsHandler.insert(products);
+        reader.endArray();
+        reader.close();
+
     }
 
     private void synchOrderAttributes() throws IOException, SAXException {
-        try {
-            Gson gson = JsonUtils.getInstance();
-            GenerateXML xml = new GenerateXML(context);
-            InputStream inputStream = client.httpInputStreamRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                    xml.downloadAll("OrderAttributes"));
-            JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
-            List<OrderAttributes> orderAttributes = new ArrayList<>();
-            reader.beginArray();
-            int i = 0;
-            while (reader.hasNext()) {
-                OrderAttributes attributes = gson.fromJson(reader, OrderAttributes.class);
-                orderAttributes.add(attributes);
-                i++;
-                if (i == 1000) {
-                    OrderAttributesDAO.insert(orderAttributes);
-                    orderAttributes.clear();
-                    i = 0;
-                }
+        Gson gson = JsonUtils.getInstance();
+        GenerateXML xml = new GenerateXML(context);
+        InputStream inputStream = client.httpInputStreamRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                xml.downloadAll("OrderAttributes"));
+        JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
+        List<OrderAttributes> orderAttributes = new ArrayList<>();
+        reader.beginArray();
+        int i = 0;
+        while (reader.hasNext()) {
+            OrderAttributes attributes = gson.fromJson(reader, OrderAttributes.class);
+            orderAttributes.add(attributes);
+            i++;
+            if (i == 1000) {
+                OrderAttributesDAO.insert(orderAttributes);
+                orderAttributes.clear();
+                i = 0;
             }
-            OrderAttributesDAO.insert(orderAttributes);
-            reader.endArray();
-            reader.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
         }
+        OrderAttributesDAO.insert(orderAttributes);
+        reader.endArray();
+        reader.close();
     }
 
     public void postShift(Context context) throws Exception {
         SAXParserPost handler = new SAXParserPost();
-        ShiftPeriodsDBHandler dbHandler = new ShiftPeriodsDBHandler(context);
+//        ShiftPeriodsDBHandler dbHandler = new ShiftPeriodsDBHandler(context);
         List<Shift> pendingSyncShifts = ShiftDAO.getPendingSyncShifts();
         if (pendingSyncShifts != null && !pendingSyncShifts.isEmpty()) {
             xml = post.postData(Global.S_SUBMIT_SHIFT, context, "");
             inSource = new InputSource(new StringReader(xml));
             xr.setContentHandler(handler);
             xr.parse(inSource);
-            data = handler.getData();
+//            data = handler.getData();
             for (Shift s : pendingSyncShifts) {
                 s.setSync(true);
             }
             ShiftDAO.updateShiftToSync(pendingSyncShifts);
-            dbHandler.updateIsSync(data);
-            if (data.isEmpty())
-                didSendData = false;
-            data.clear();
+//            dbHandler.updateIsSync(data);
+//            if (data.isEmpty())
+//                didSendData = false;
+//            data.clear();
         }
     }
 
     private void synchProductAliases() throws IOException, SAXException {
-        try {
-            ProductAliases_DB productAliasesDB = new ProductAliases_DB(context);
-            Gson gson = JsonUtils.getInstance();
-            GenerateXML xml = new GenerateXML(context);
-            InputStream inputStream = client.httpInputStreamRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                    xml.downloadAll("ProductAliases"));
-            JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
-            List<ProductAlias> productAliases = new ArrayList<>();
-            productAliasesDB.emptyTable();
-            reader.beginArray();
-            int i = 0;
-            while (reader.hasNext()) {
-                ProductAlias alias = gson.fromJson(reader, Product.class);
-                productAliases.add(alias);
-                i++;
-                if (i == 1000) {
-                    productAliasesDB.insert(productAliases);
-                    productAliases.clear();
-                    i = 0;
-                }
+        ProductAliases_DB productAliasesDB = new ProductAliases_DB(context);
+        Gson gson = JsonUtils.getInstance();
+        GenerateXML xml = new GenerateXML(context);
+        InputStream inputStream = client.httpInputStreamRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                xml.downloadAll("ProductAliases"));
+        JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
+        List<ProductAlias> productAliases = new ArrayList<>();
+        productAliasesDB.emptyTable();
+        reader.beginArray();
+        int i = 0;
+        while (reader.hasNext()) {
+            ProductAlias alias = gson.fromJson(reader, Product.class);
+            productAliases.add(alias);
+            i++;
+            if (i == 1000) {
+                productAliasesDB.insert(productAliases);
+                productAliases.clear();
+                i = 0;
             }
-            productAliasesDB.insert(productAliases);
-            reader.endArray();
-            reader.close();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
+        productAliasesDB.insert(productAliases);
+        reader.endArray();
+        reader.close();
     }
 
     private void synchProductImages() throws IOException, SAXException {
@@ -1105,16 +1158,15 @@ public class SynchMethods {
         tempFile.delete();
     }
 
-    private void synchAccountLogo() {
+    private void synchAccountLogo() throws IOException {
         GenerateXML generator = new GenerateXML(context);
         MyPreferences myPref = new MyPreferences(context);
         URL url;
         InputStream is;
-        try {
-            url = new URL(generator.getAccountLogo());
-            is = url.openStream();
-            Bitmap bmp = BitmapFactory.decodeStream(is);
-
+        url = new URL(generator.getAccountLogo());
+        is = url.openStream();
+        Bitmap bmp = BitmapFactory.decodeStream(is);
+        if (bmp != null) {
             int width = bmp.getWidth();
             int height = bmp.getHeight();
             float scale = 0;
@@ -1133,11 +1185,8 @@ public class SynchMethods {
             os.close();
             bmp.recycle();
             newBitmap.recycle();
-
-        } catch (MalformedURLException e) {
-        } catch (IOException e) {
-        } catch (Exception e) {
         }
+
     }
 
     private void synchDownloadProductsAttr() throws SAXException, IOException {
@@ -1186,47 +1235,38 @@ public class SynchMethods {
     }
 
     private void synchDownloadMixMatch() throws SAXException, IOException {
-        try {
-            client = new HttpClient();
-            GenerateXML xml = new GenerateXML(context);
-            InputStream inputStream = client.httpInputStreamRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                    xml.getMixMatch());
-            JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
-            List<MixMatch> mixMatches = new ArrayList<MixMatch>();
-            MixMatchDAO.truncate();
-            reader.beginArray();
-            int i = 0;
-            while (reader.hasNext()) {
-                MixMatch mixMatch = gson.fromJson(reader, MixMatch.class);
-                mixMatches.add(mixMatch);
-                i++;
-                if (i == 1000) {
-                    MixMatchDAO.insert(mixMatches);
-                    mixMatches.clear();
-                    i = 0;
-                }
+        client = new HttpClient();
+        GenerateXML xml = new GenerateXML(context);
+        InputStream inputStream = client.httpInputStreamRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                xml.getMixMatch());
+        JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
+        List<MixMatch> mixMatches = new ArrayList<MixMatch>();
+        MixMatchDAO.truncate();
+        reader.beginArray();
+        int i = 0;
+        while (reader.hasNext()) {
+            MixMatch mixMatch = gson.fromJson(reader, MixMatch.class);
+            mixMatches.add(mixMatch);
+            i++;
+            if (i == 1000) {
+                MixMatchDAO.insert(mixMatches);
+                mixMatches.clear();
+                i = 0;
             }
-            MixMatchDAO.insert(mixMatches);
-            reader.endArray();
-            reader.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
         }
+        MixMatchDAO.insert(mixMatches);
+        reader.endArray();
+        reader.close();
     }
 
     private void synchDownloadSalesAssociate() throws SAXException, IOException {
+        client = new HttpClient();
+        GenerateXML xml = new GenerateXML(context);
+        String jsonRequest = client.httpJsonRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                xml.getSalesAssociate());
         try {
-            client = new HttpClient();
-            GenerateXML xml = new GenerateXML(context);
-            String jsonRequest = client.httpJsonRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                    xml.getSalesAssociate());
-            try {
-                SalesAssociateDAO.truncate();
-                SalesAssociateDAO.insert(jsonRequest);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            ClerkDAO.truncate();
+            ClerkDAO.insert(jsonRequest);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1241,38 +1281,21 @@ public class SynchMethods {
     }
 
     private void synchUoM() throws IOException, SAXException {
-        try {
-            client = new HttpClient();
-            GenerateXML xml = new GenerateXML(context);
-            String jsonRequest = client.httpJsonRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                    xml.downloadAll("UoM"));
-            try {
-                UomDAO.truncate();
-                UomDAO.insert(jsonRequest);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+        client = new HttpClient();
+        GenerateXML xml = new GenerateXML(context);
+        String jsonRequest = client.httpJsonRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                xml.downloadAll("UoM"));
+        UomDAO.truncate();
+        UomDAO.insert(jsonRequest);
     }
 
     private void synchGetOrdProdAttr() throws IOException, SAXException {
-        try {
-            client = new HttpClient();
-            GenerateXML xml = new GenerateXML(context);
-            String jsonRequest = client.httpJsonRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                    xml.downloadAll("GetOrderProductsAttr"));
-            try {
-                OrderProductAttributeDAO.truncate();
-                OrderProductAttributeDAO.insert(jsonRequest);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        client = new HttpClient();
+        GenerateXML xml = new GenerateXML(context);
+        String jsonRequest = client.httpJsonRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                xml.downloadAll("GetOrderProductsAttr"));
+        OrderProductAttributeDAO.truncate();
+        OrderProductAttributeDAO.insert(jsonRequest);
     }
 
     private void synchGetServerTime() throws IOException, SAXException {
@@ -1288,36 +1311,31 @@ public class SynchMethods {
         post.postData(Global.S_UPDATE_SYNC_TIME, context, _server_time);
     }
 
-    private void synchEmployeeData() throws IOException, SAXException {
-        try {
-            String xml = post.postData(4, context, "");
-            Gson gson = JsonUtils.getInstance();
-            Type listType = new com.google.gson.reflect.TypeToken<List<AssignEmployee>>() {
-            }.getType();
-            List<AssignEmployee> assignEmployees = gson.fromJson(xml, listType);
-            AssignEmployeeDAO.insertAssignEmployee(assignEmployees);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    private void synchEmployeeData() throws Exception {
+        String xml = post.postData(4, context, "");
+        Gson gson = JsonUtils.getInstance();
+        Type listType = new com.google.gson.reflect.TypeToken<List<AssignEmployee>>() {
+        }.getType();
+        List<AssignEmployee> assignEmployees = gson.fromJson(xml, listType);
+        AssignEmployeeDAO.insertAssignEmployee(assignEmployees);
+
     }
 
-    private void synchDownloadLastPayID() {
+    private void synchDownloadLastPayID() throws ParserConfigurationException, SAXException, IOException {
         SAXParserFactory spf = SAXParserFactory.newInstance();
         SaxLoginHandler handler = new SaxLoginHandler();
-        try {
-            String xml = post.postData(6, context, "");
-            InputSource inSource = new InputSource(new StringReader(xml));
-            SAXParser sp = spf.newSAXParser();
-            XMLReader xr = sp.getXMLReader();
-            xr.setContentHandler(handler);
-            xr.parse(inSource);
-            if (!handler.getData().isEmpty()) {
-                MyPreferences myPref = new MyPreferences(context);
-                myPref.setLastPayID(handler.getData());
-            }
-
-        } catch (Exception e) {
+        String xml = post.postData(6, context, "");
+        InputSource inSource = new InputSource(new StringReader(xml));
+        SAXParser sp = spf.newSAXParser();
+        XMLReader xr = sp.getXMLReader();
+        xr.setContentHandler(handler);
+        xr.parse(inSource);
+        if (!handler.getData().isEmpty()) {
+            MyPreferences myPref = new MyPreferences(context);
+            myPref.setLastPayID(handler.getData());
         }
+
+
     }
 
     private void synchDeviceDefaultValues() throws IOException, SAXException {
@@ -1353,169 +1371,183 @@ public class SynchMethods {
         tempFile.delete();
     }
 
-    private class ResynchAsync extends AsyncTask<String, String, String> {
-        MyPreferences myPref = new MyPreferences(context);
-        private Activity activity;
-
-        private ResynchAsync(Activity activity) {
-            this.activity = activity;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            int orientation = context.getResources().getConfiguration().orientation;
-            activity.setRequestedOrientation(Global.getScreenOrientation(context));
-            showProgressDialog();
-        }
-
-        @Override
-        protected void onProgressUpdate(String... params) {
-            myProgressDialog.setMessage(params[0]);
-        }
-
-        public void updateProgress(String msg) {
-            publishProgress(msg);
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            try {
-                updateProgress("Getting Server Time");
-                synchGetServerTime();
-                updateProgress(context.getString(R.string.sync_dload_employee_data));
-                synchEmployeeData();
-                updateProgress(context.getString(R.string.sync_dload_address));
-                synchAddresses();
-                updateProgress(context.getString(R.string.sync_dload_categories));
-                synchCategories();
-                updateProgress(context.getString(R.string.sync_dload_cust));
-                synchCustomers();
-                updateProgress(context.getString(R.string.sync_dload_emp_inv));
-                synchEmpInv();
-                updateProgress(context.getString(R.string.sync_dload_prod_inv));
-                synchProdInv();
-                updateProgress(context.getString(R.string.sync_dload_invoices));
-                synchInvoices();
-                updateProgress(context.getString(R.string.sync_dload_pay_methods));
-                synchPaymentMethods();
-                updateProgress(context.getString(R.string.sync_dload_price_levels));
-                synchPriceLevel();
-                updateProgress(context.getString(R.string.sync_dload_item_price_levels));
-                synchItemsPriceLevel();
-                updateProgress(context.getString(R.string.sync_dload_printers));
-                synchPrinters();
-                updateProgress(context.getString(R.string.sync_dload_prodcatxref));
-                synchProdCatXref();
-                updateProgress(context.getString(R.string.sync_dload_productchainxref));
-                synchProdChain();
-                updateProgress(context.getString(R.string.sync_dload_product_addons));
-                synchProdAddon();
-                updateProgress(context.getString(R.string.sync_dload_products));
-                synchProducts();
-                synchOrderAttributes();
-                updateProgress(context.getString(R.string.sync_dload_product_aliases));
-                synchOrderAttributes();
-                synchProductAliases();
-                updateProgress(context.getString(R.string.sync_dload_products_images));
-                synchProductImages();
-                updateProgress(context.getString(R.string.sync_dload_products_attributes));
-                synchDownloadProductsAttr();
-                updateProgress(context.getString(R.string.sync_dload_ordprodattr));
-                synchGetOrdProdAttr();
-                updateProgress(context.getString(R.string.sync_dload_salestaxcodes));
-                synchSalesTaxCode();
-                updateProgress(context.getString(R.string.sync_dload_shipmethod));
-                synchShippingMethods();
-                updateProgress(context.getString(R.string.sync_dload_taxes));
-                synchTaxes();
-                updateProgress(context.getString(R.string.sync_dload_taxes_group));
-                synchTaxGroup();
-                updateProgress(context.getString(R.string.sync_dload_terms));
-                synchTerms();
-                updateProgress(context.getString(R.string.sync_dload_memotext));
-                synchMemoText();
-                updateProgress(context.getString(R.string.sync_dload_logo));
-                synchAccountLogo();
-                updateProgress(context.getString(R.string.sync_dload_device_default_values));
-                synchDeviceDefaultValues();
-                updateProgress(context.getString(R.string.sync_dload_last_pay_id));
-                synchDownloadLastPayID();
-                updateProgress(context.getString(R.string.sync_dload_volume_prices));
-                synchVolumePrices();
-                updateProgress(context.getString(R.string.sync_dload_uom));
-                synchUoM();
-                updateProgress(context.getString(R.string.sync_dload_templates));
-                synchGetTemplates();
-
-                if (Global.isIvuLoto) {
-                    updateProgress(context.getString(R.string.sync_dload_ivudrawdates));
-                    synchIvuLottoDrawDates();
-                }
-                updateProgress(context.getString(R.string.sync_dload_customer_inventory));
-                synchDownloadCustomerInventory();
-                updateProgress(context.getString(R.string.sync_dload_consignment_transaction));
-                synchDownloadConsignmentTransaction();
-                updateProgress(context.getString(R.string.sync_dload_shifts));
-                synchShifts();
-                updateProgress(context.getString(R.string.sync_dload_clerks));
-                synchDownloadClerks();
-                synchClerkPersmissions();
-//                updateProgress(context.getString(R.string.sync_dload_salesassociate));
-//                synchDownloadSalesAssociate();
-                updateProgress(context.getString(R.string.sync_dload_dinnertables));
-                synchDownloadDinnerTable();
-                synchSalesAssociateDinnindTablesConfiguration(context);
-                updateProgress(context.getString(R.string.sync_dload_mixmatch));
-                synchDownloadMixMatch();
-                updateProgress(context.getString(R.string.sync_dload_termsandconditions));
-                synchDownloadTermsAndConditions();
-                if (myPref.getPreferences(MyPreferences.pref_enable_location_inventory)) {
-                    if (isReceive)
-                        updateProgress(context.getString(R.string.sync_dload_locations));
-                    else
-                        updateProgress(context.getString(R.string.sync_dload_locations));
-                    synchLocations();
-                    if (isReceive)
-                        updateProgress(context.getString(R.string.sync_dload_locations_inventory));
-                    else
-                        updateProgress(context.getString(R.string.sync_dload_locations_inventory));
-                    synchLocationsInventory();
-                }
-                updateProgress("Updating Sync Time");
-                synchUpdateSyncTime();
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        protected void onPostExecute(String unused) {
-            isReceive = false;
-            SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy h:mm a", Locale.getDefault());
-            String date = sdf.format(new Date());
-
-            myPref.setLastReceiveSync(date);
-
-            if (!activity.isFinishing() && !activity.isDestroyed()) {
-                dismissProgressDialog();
-            }
-            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-            if (type == Global.FROM_LOGIN_ACTIVITTY) {
-                Intent intent = new Intent(context, MainMenu_FA.class);
-                context.startActivity(intent);
-                activity.finish();
-            } else if (type == Global.FROM_REGISTRATION_ACTIVITY) {
-                Intent intent = new Intent(context, MainMenu_FA.class);
-                activity.setResult(-1);
-                context.startActivity(intent);
-                activity.finish();
-            } else if (type == Global.FROM_SYNCH_ACTIVITY) {
-                SyncTab_FR.syncTabHandler.sendEmptyMessage(0);
-            }
-        }
-
-    }
+//    private class ResynchAsync extends AsyncTask<Void, String, Boolean> {
+//        MyPreferences myPref = new MyPreferences(context);
+//        private Activity activity;
+//
+//        private ResynchAsync(Activity activity) {
+//            this.activity = activity;
+//        }
+//
+//        @Override
+//        protected void onPreExecute() {
+//            int orientation = context.getResources().getConfiguration().orientation;
+//            activity.setRequestedOrientation(Global.getScreenOrientation(context));
+////            showProgressDialog();
+//        }
+//
+//        @Override
+//        protected void onProgressUpdate(String... params) {
+////            myProgressDialog.setMessage(params[0]);
+//        }
+//
+//        public void updateProgress(String msg) {
+//            publishProgress(msg);
+//        }
+//
+//        @Override
+//        protected Boolean doInBackground(Void... params) {
+//            try {
+//                updateProgress("Getting Server Time");
+//                synchGetServerTime();
+//                updateProgress(context.getString(R.string.sync_dload_employee_data));
+//                synchEmployeeData();
+//                updateProgress(context.getString(R.string.sync_dload_address));
+//                synchAddresses();
+//                updateProgress(context.getString(R.string.sync_dload_categories));
+//                synchCategories();
+//                updateProgress(context.getString(R.string.sync_dload_cust));
+//                synchCustomers();
+//                updateProgress(context.getString(R.string.sync_dload_emp_inv));
+//                synchEmpInv();
+//                updateProgress(context.getString(R.string.sync_dload_prod_inv));
+//                synchProdInv();
+//                updateProgress(context.getString(R.string.sync_dload_invoices));
+//                synchInvoices();
+//                updateProgress(context.getString(R.string.sync_dload_pay_methods));
+//                synchPaymentMethods();
+//                updateProgress(context.getString(R.string.sync_dload_price_levels));
+//                synchPriceLevel();
+//                updateProgress(context.getString(R.string.sync_dload_item_price_levels));
+//                synchItemsPriceLevel();
+//                updateProgress(context.getString(R.string.sync_dload_printers));
+//                synchPrinters();
+//                updateProgress(context.getString(R.string.sync_dload_prodcatxref));
+//                synchProdCatXref();
+//                updateProgress(context.getString(R.string.sync_dload_productchainxref));
+//                synchProdChain();
+//                updateProgress(context.getString(R.string.sync_dload_product_addons));
+//                synchProdAddon();
+//                updateProgress(context.getString(R.string.sync_dload_products));
+//                synchProducts();
+//                synchOrderAttributes();
+//                updateProgress(context.getString(R.string.sync_dload_product_aliases));
+//                synchOrderAttributes();
+//                synchProductAliases();
+//                updateProgress(context.getString(R.string.sync_dload_products_images));
+//                synchProductImages();
+//                updateProgress(context.getString(R.string.sync_dload_products_attributes));
+//                synchDownloadProductsAttr();
+//                updateProgress(context.getString(R.string.sync_dload_ordprodattr));
+//                synchGetOrdProdAttr();
+//                updateProgress(context.getString(R.string.sync_dload_salestaxcodes));
+//                synchSalesTaxCode();
+//                updateProgress(context.getString(R.string.sync_dload_shipmethod));
+//                synchShippingMethods();
+//                updateProgress(context.getString(R.string.sync_dload_taxes));
+//                synchTaxes();
+//                updateProgress(context.getString(R.string.sync_dload_taxes_group));
+//                synchTaxGroup();
+//                updateProgress(context.getString(R.string.sync_dload_terms));
+//                synchTerms();
+//                updateProgress(context.getString(R.string.sync_dload_memotext));
+//                synchMemoText();
+//                updateProgress(context.getString(R.string.sync_dload_logo));
+//                synchAccountLogo();
+//                updateProgress(context.getString(R.string.sync_dload_device_default_values));
+//                synchDeviceDefaultValues();
+//                updateProgress(context.getString(R.string.sync_dload_last_pay_id));
+//                synchDownloadLastPayID();
+//                updateProgress(context.getString(R.string.sync_dload_volume_prices));
+//                synchVolumePrices();
+//                updateProgress(context.getString(R.string.sync_dload_uom));
+//                synchUoM();
+//                updateProgress(context.getString(R.string.sync_dload_templates));
+//                synchGetTemplates();
+//
+//                if (Global.isIvuLoto) {
+//                    updateProgress(context.getString(R.string.sync_dload_ivudrawdates));
+//                    synchIvuLottoDrawDates();
+//                }
+//                updateProgress(context.getString(R.string.sync_dload_customer_inventory));
+//                synchDownloadCustomerInventory();
+//                updateProgress(context.getString(R.string.sync_dload_consignment_transaction));
+//                synchDownloadConsignmentTransaction();
+//                updateProgress(context.getString(R.string.sync_dload_shifts));
+//                synchShifts();
+//                updateProgress(context.getString(R.string.sync_dload_clerks));
+//                synchDownloadClerks();
+//                synchClerkPersmissions();
+////                updateProgress(context.getString(R.string.sync_dload_salesassociate));
+////                synchDownloadSalesAssociate();
+//                updateProgress(context.getString(R.string.sync_dload_dinnertables));
+//                synchDownloadDinnerTable();
+//                synchSalesAssociateDinnindTablesConfiguration(context);
+//                updateProgress(context.getString(R.string.sync_dload_mixmatch));
+//                synchDownloadMixMatch();
+//                updateProgress(context.getString(R.string.sync_dload_termsandconditions));
+//                synchDownloadTermsAndConditions();
+//                if (myPref.getPreferences(MyPreferences.pref_enable_location_inventory)) {
+//                    if (isReceive)
+//                        updateProgress(context.getString(R.string.sync_dload_locations));
+//                    else
+//                        updateProgress(context.getString(R.string.sync_dload_locations));
+//                    synchLocations();
+//                    if (isReceive)
+//                        updateProgress(context.getString(R.string.sync_dload_locations_inventory));
+//                    else
+//                        updateProgress(context.getString(R.string.sync_dload_locations_inventory));
+//                    synchLocationsInventory();
+//                }
+////                SynchMethods.synchOrdersOnHoldList(context);
+////                Intent intent = new Intent(MainMenu_FA.NOTIFICATION_RECEIVED);
+////                intent.putExtra(MainMenu_FA.NOTIFICATION_MESSAGE, String.valueOf(NotificationEvent.NotificationEventAction.SYNC_HOLDS.getCode()));
+////                context.sendBroadcast(intent);
+//                updateProgress("Updating Sync Time");
+//                synchUpdateSyncTime();
+//
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//                return false;
+//            }
+//            return true;
+//        }
+//
+//        protected void onPostExecute(Boolean result) {
+//            isReceive = false;
+//            SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy h:mm a", Locale.getDefault());
+//            String date = sdf.format(new Date());
+//            myPref.setLastReceiveSync(date);
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+//                if (!activity.isFinishing() && !activity.isDestroyed()) {
+////                    dismissProgressDialog();
+//                }
+//            } else {
+//                if (!activity.isFinishing()) {
+////                    dismissProgressDialog();
+//                }
+//            }
+//            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+//            if (type == Global.FROM_LOGIN_ACTIVITTY) {
+//                Intent intent = new Intent(context, MainMenu_FA.class);
+//                context.startActivity(intent);
+//                activity.finish();
+//            } else if (type == Global.FROM_REGISTRATION_ACTIVITY) {
+//                Intent intent = new Intent(context, MainMenu_FA.class);
+//                activity.setResult(-1);
+//                context.startActivity(intent);
+//                activity.finish();
+//            } else if (type == Global.FROM_SYNCH_ACTIVITY) {
+//                if (SyncTab_FR.syncTabHandler != null) {
+//                    SyncTab_FR.syncTabHandler.sendEmptyMessage(0);
+//                }
+//            }
+//            if (!result) {
+//                Global.showPrompt(context, R.string.sync_title, context.getString(R.string.sync_fail));
+//            }
+//        }
+//
+//    }
 
     private class SendAsync extends AsyncTask<String, String, String> {
         boolean proceed = false;
@@ -1540,21 +1572,23 @@ public class SynchMethods {
                 synchTextView = synchActivity.getSynchTextView();
             }
 
-            myProgressDialog = new ProgressDialog(context);
-
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            myProgressDialog.setMax(100);
-            myProgressDialog.show();
+//            myProgressDialog = new ProgressDialog(context);
+//
+//            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+//            myProgressDialog.setCancelable(false);
+//            myProgressDialog.setMax(100);
+//            if(!(context instanceof MainMenu_FA)) {
+//                myProgressDialog.show();
+//            }
 
         }
 
         @Override
         protected void onProgressUpdate(String... params) {
             if (!isFromMainMenu) {
-                if (!myProgressDialog.isShowing())
-                    myProgressDialog.show();
-                myProgressDialog.setMessage(params[0]);
+//                if (!myProgressDialog.isShowing())
+//                    myProgressDialog.show();
+//                myProgressDialog.setMessage(params[0]);
             } else {
                 if (!synchTextView.isShown())
                     synchTextView.setVisibility(View.VISIBLE);
@@ -1651,15 +1685,25 @@ public class SynchMethods {
             myPref.setLastSendSync(date);
 
             isSending = false;
-            myProgressDialog.dismiss();
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+//                if (!activity.isDestroyed()) {
+//                    if (myProgressDialog != null && myProgressDialog.isShowing()) {
+//                        myProgressDialog.dismiss();
+//                    }
+//                }
+//            } else {
+//            if (myProgressDialog != null && myProgressDialog.isShowing()) {
+//                myProgressDialog.dismiss();
+//            }
+//            }
 
             if (type == Global.FROM_SYNCH_ACTIVITY) {
-                if (!isFromMainMenu) {
-                    SyncTab_FR.syncTabHandler.sendEmptyMessage(0);
-                } else {
+                if (isFromMainMenu) {
                     synchTextView.setVisibility(View.GONE);
                 }
-
+                if (SyncTab_FR.syncTabHandler != null) {
+                    SyncTab_FR.syncTabHandler.sendEmptyMessage(0);
+                }
             }
 
 //            if (proceed && dbManager.isSendAndReceive()) {
@@ -1670,7 +1714,13 @@ public class SynchMethods {
                 if (TextUtils.isEmpty(xml)) {
                     xml = context.getString(R.string.sync_fail);
                 }
-                Global.showPrompt(context, R.string.dlog_title_error, xml);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                    if (!activity.isFinishing() && !activity.isDestroyed()) {
+                        Global.showPrompt(activity, R.string.dlog_title_error, xml);
+                    }
+                } else if (!activity.isFinishing()) {
+                    Global.showPrompt(activity, R.string.dlog_title_error, xml);
+                }
             }
 
             activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
@@ -1692,11 +1742,11 @@ public class SynchMethods {
 
             activity.setRequestedOrientation(Global.getScreenOrientation(context));
 
-            myProgressDialog = new ProgressDialog(context);
-
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            myProgressDialog.setMax(100);
+//            myProgressDialog = new ProgressDialog(context);
+//
+//            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+//            myProgressDialog.setCancelable(false);
+//            myProgressDialog.setMax(100);
         }
 
         public void updateProgress(String msg) {
@@ -1706,9 +1756,9 @@ public class SynchMethods {
         @Override
         protected void onProgressUpdate(String... params) {
 
-            if (!myProgressDialog.isShowing())
-                myProgressDialog.show();
-            myProgressDialog.setMessage(params[0]);
+//            if (!myProgressDialog.isShowing())
+//                myProgressDialog.show();
+//            myProgressDialog.setMessage(params[0]);
 
         }
 
@@ -1786,7 +1836,7 @@ public class SynchMethods {
             myPref.setLastSendSync(date);
 
             isSending = false;
-            myProgressDialog.dismiss();
+//            myProgressDialog.dismiss();
 
             activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         }
@@ -1806,15 +1856,15 @@ public class SynchMethods {
             int orientation = context.getResources().getConfiguration().orientation;
             activity.setRequestedOrientation(Global.getScreenOrientation(context));
 
-            myProgressDialog = new ProgressDialog(context);
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            myProgressDialog.show();
+//            myProgressDialog = new ProgressDialog(context);
+//            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+//            myProgressDialog.setCancelable(false);
+//            myProgressDialog.show();
         }
 
         @Override
         protected void onProgressUpdate(String... params) {
-            myProgressDialog.setMessage(params[0]);
+//            myProgressDialog.setMessage(params[0]);
         }
 
         public void updateProgress(String msg) {
@@ -1838,7 +1888,7 @@ public class SynchMethods {
 //            SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy h:mm a", Locale.getDefault());
             String date = DateUtils.getDateAsString(new Date(), DateUtils.DATE_MMM_dd_yyyy_h_mm_a);
             myPref.setLastReceiveSync(date);
-            myProgressDialog.dismiss();
+//            myProgressDialog.dismiss();
             activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
             Intent intent = new Intent(context, OnHoldActivity.class);
             context.startActivity(intent);
@@ -1859,15 +1909,15 @@ public class SynchMethods {
 
             int orientation = context.getResources().getConfiguration().orientation;
             activity.setRequestedOrientation(Global.getScreenOrientation(context));
-            myProgressDialog = new ProgressDialog(context);
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            myProgressDialog.show();
+//            myProgressDialog = new ProgressDialog(context);
+//            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+//            myProgressDialog.setCancelable(false);
+//            myProgressDialog.show();
         }
 
         @Override
         protected void onProgressUpdate(String... params) {
-            myProgressDialog.setMessage(params[0]);
+//            myProgressDialog.setMessage(params[0]);
         }
 
         public void updateProgress(String msg) {
@@ -1878,13 +1928,13 @@ public class SynchMethods {
         protected String doInBackground(String... params) {
             try {
                 updateProgress(context.getString(R.string.sync_dload_ordersonhold));
-                synchOrdersOnHoldDetails(context, params[0]);
+//                synchOrdersOnHoldDetails(context, params[0]);
                 OrderProductsHandler orderProdHandler = new OrderProductsHandler(context);
                 Cursor c = orderProdHandler.getOrderProductsOnHold(params[0]);
                 if (BuildConfig.DELETE_INVALID_HOLDS || (c != null && c.getCount() > 0)) {
                     proceedToView = true;
-                    if (type == 0)
-                        ((OnHoldActivity) context).addOrderProducts(activity, c);
+//                    if (type == 0)
+//                        OnHoldActivity.addOrderProducts(activity, c);
                 } else
                     proceedToView = false;
                 if (c != null) {
@@ -1897,7 +1947,7 @@ public class SynchMethods {
         }
 
         protected void onPostExecute(String unused) {
-            myProgressDialog.dismiss();
+//            myProgressDialog.dismiss();
             if (proceedToView) {
                 if (type == 0) {
                     activity.startActivityForResult(onHoldIntent, 0);
@@ -1925,21 +1975,21 @@ public class SynchMethods {
         protected void onPreExecute() {
             int orientation = context.getResources().getConfiguration().orientation;
             activity.setRequestedOrientation(Global.getScreenOrientation(context));
-            if (myProgressDialog != null && myProgressDialog.isShowing())
-                myProgressDialog.dismiss();
-            myProgressDialog = new ProgressDialog(context);
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-
-            if (!checkoutOnHold) {
-                myProgressDialog.show();
-            }
+//            if (myProgressDialog != null && myProgressDialog.isShowing())
+//                myProgressDialog.dismiss();
+//            myProgressDialog = new ProgressDialog(context);
+//            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+//            myProgressDialog.setCancelable(false);
+//
+//            if (!checkoutOnHold) {
+//                myProgressDialog.show();
+//            }
 
         }
 
         @Override
         protected void onProgressUpdate(String... params) {
-            myProgressDialog.setMessage(params[0]);
+//            myProgressDialog.setMessage(params[0]);
         }
 
         public void updateProgress(String msg) {
@@ -1968,8 +2018,8 @@ public class SynchMethods {
         }
 
         protected void onPostExecute(String unused) {
-            if (!activity.isFinishing() && myProgressDialog != null && myProgressDialog.isShowing())
-                myProgressDialog.dismiss();
+//            if (!activity.isFinishing() && myProgressDialog != null && myProgressDialog.isShowing())
+//                myProgressDialog.dismiss();
             if (!downloadHoldList) {
                 boolean closeActivity = true;
                 if (context instanceof OrderingMain_FA &&
@@ -2002,15 +2052,15 @@ public class SynchMethods {
 
             int orientation = context.getResources().getConfiguration().orientation;
             activity.setRequestedOrientation(Global.getScreenOrientation(context));
-            myProgressDialog = new ProgressDialog(context);
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            myProgressDialog.show();
+//            myProgressDialog = new ProgressDialog(context);
+//            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+//            myProgressDialog.setCancelable(false);
+//            myProgressDialog.show();
         }
 
         @Override
         protected void onProgressUpdate(String... params) {
-            myProgressDialog.setMessage(params[0]);
+//            myProgressDialog.setMessage(params[0]);
         }
 
         public void updateProgress(String msg) {
@@ -2037,7 +2087,7 @@ public class SynchMethods {
 
         @Override
         protected void onPostExecute(Void unused) {
-            myProgressDialog.dismiss();
+//            myProgressDialog.dismiss();
         }
 
     }

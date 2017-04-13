@@ -108,10 +108,6 @@ public class PayMethodsHandler {
         PaymentMethodDAO.truncate();
     }
 
-    public List<PaymentMethod> getPayMethod() {
-        return PayMethodsDAO.getAllSortByName();
-    }
-
 
     public List<String[]> getPayMethodsName() {
         List<String[]> list = new ArrayList<>();

@@ -3,7 +3,7 @@ package com.android.emobilepos.models.realms;
 import android.app.Activity;
 
 import com.android.database.OrdersHandler;
-import com.android.emobilepos.models.Order;
+import com.android.emobilepos.models.orders.Order;
 import com.android.support.DateUtils;
 
 import java.util.Date;
@@ -24,7 +24,7 @@ public class DinningTableOrder extends RealmObject {
     @PrimaryKey
     private String currentOrderId;
     private int numberOfGuest;
-    private RealmList<SalesAssociate> salesAssociates;
+    private RealmList<Clerk> clerks;
 
     public DinningTable getDinningTable() {
         return dinningTable;
@@ -68,11 +68,11 @@ public class DinningTableOrder extends RealmObject {
         return ordersHandler.getOrder(getCurrentOrderId());
     }
 
-    public RealmList<SalesAssociate> getSalesAssociates() {
-        return salesAssociates;
+    public RealmList<Clerk> getClerks() {
+        return clerks;
     }
 
-    public void setSalesAssociates(RealmList<SalesAssociate> salesAssociates) {
-        this.salesAssociates = salesAssociates;
+    public void setClerks(RealmList<Clerk> clerks) {
+        this.clerks = clerks;
     }
 }

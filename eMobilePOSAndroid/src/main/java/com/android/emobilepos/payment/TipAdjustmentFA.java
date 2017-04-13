@@ -26,6 +26,7 @@ import com.android.support.NetworkUtils;
 import com.android.support.NumberUtils;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.crashlytics.android.Crashlytics;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -229,10 +230,13 @@ public class TipAdjustmentFA extends BaseFragmentActivityActionBar implements Vi
                     }
                 } catch (ParserConfigurationException e) {
                     e.printStackTrace();
+                    Crashlytics.logException(e);
                 } catch (SAXException e) {
                     e.printStackTrace();
+                    Crashlytics.logException(e);
                 } catch (IOException e) {
                     e.printStackTrace();
+                    Crashlytics.logException(e);
                 }
 
             }
@@ -347,7 +351,8 @@ public class TipAdjustmentFA extends BaseFragmentActivityActionBar implements Vi
                     }
 
                 } catch (Exception e) {
-
+                    e.printStackTrace();
+                    Crashlytics.logException(e);
                     errorMsg = e.getMessage();
                 }
             }

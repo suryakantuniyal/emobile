@@ -23,7 +23,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class DBManager {
-    public static final int VERSION = 49;
+    public static final int VERSION = 50;
     private static final String DB_NAME_OLD = "emobilepos.sqlite";
     private static final String CIPHER_DB_NAME = "emobilepos.sqlcipher";
 
@@ -80,12 +80,13 @@ public class DBManager {
         this.context = context;
         myPref = new MyPreferences(context);
         managerInstance = this;
-        SQLiteDatabase.loadLibs(context);
+        if ((getDatabase() == null || !getDatabase().isOpen())) {
+            SQLiteDatabase.loadLibs(context);
 //		exportDBFile();
-        dbMigration();
-        this.DBHelper = new DatabaseHelper(this.context);
-        if ((getDatabase() == null || !getDatabase().isOpen()))
+            dbMigration();
+            this.DBHelper = new DatabaseHelper(this.context);
             InitializeSQLCipher();
+        }
 
     }
 
@@ -95,13 +96,13 @@ public class DBManager {
         if (type == Global.FROM_REGISTRATION_ACTIVITY) {
             resetDatabase();
         }
-
         myPref = new MyPreferences(context);
-        SQLiteDatabase.loadLibs(context);
+        if ((getDatabase() == null || !getDatabase().isOpen())) {
+            SQLiteDatabase.loadLibs(context);
 //		exportDBFile();
-        dbMigration();
-        if ((getDatabase() == null || !getDatabase().isOpen()))
+            dbMigration();
             InitializeSQLCipher();
+        }
 
     }
 
@@ -254,14 +255,10 @@ public class DBManager {
     }
 
     public void alterTables() {
-        switch (VERSION) {
-            case 47:
-                Cursor cursor = getDatabase().rawQuery("select * from  [Orders] limit 1", new String[]{});
-                boolean exist = cursor.getColumnIndex("ord_timeStarted") > -1;
-                if (!exist) {
-                    getDatabase().execSQL("ALTER TABLE [Orders] ADD COLUMN [ord_timeStarted] [datetime] NULL");
-                }
-                break;
+        Cursor cursor = getDatabase().rawQuery("select * from  [Orders] limit 1", new String[]{});
+        boolean exist = cursor.getColumnIndex("ord_timeStarted") > -1;
+        if (!exist) {
+            getDatabase().execSQL("ALTER TABLE [Orders] ADD COLUMN [ord_timeStarted] [datetime] NULL");
         }
     }
 
@@ -364,7 +361,7 @@ public class DBManager {
             + "[addr_s_country]varchar,[addr_s_zipcode]varchar,[qb_cust_id]varchar, [addr_b_type]VARCHAR, [addr_s_type]VARCHAR, PRIMARY KEY ([addr_id],"
             + "[cust_id]) )";
 
-    private final String CREATE_SALES_ASSOCIATE = "CREATE TABLE [SalesAssociate]([emp_id] [int] PRIMARY KEY NOT NULL,"
+    private final String CREATE_SALES_ASSOCIATE = "CREATE TABLE [Clerk]([emp_id] [int] PRIMARY KEY NOT NULL,"
             + "[zone_id] [varchar](50),[emp_name][varchar](50),[emp_init] [varchar](50),[emp_pcs] [varchar](50)," +
             "[emp_lastlogin] [datetime],[emp_pos][int],[qb_emp_id] [varchar](50),[qb_salesrep_id] [varchar](50)," +
             "[isactive] [int],[tax_default][varchar](50),[loc_items] [tinyint]NOT NULL,[_rowversion][varchar](50)," +
@@ -642,7 +639,7 @@ public class DBManager {
 
     private final String CREATE_PAYMENTS_XML = "CREATE TABLE [PaymentsXML]([app_id] [varchar](100) PRIMARY KEY NOT NULL, [payment_xml] [varchar] NOT NULL)";
 
-    private final String[] TABLE_NAME = new String[]{"Address", "Categories", "SalesAssociate", "Customers", "DrawDateInfo", "EmpInv",
+    private final String[] TABLE_NAME = new String[]{"Address", "Categories", "Clerk", "Customers", "DrawDateInfo", "EmpInv",
             "Employees", "InvProducts", "InvoicePayments", "Invoices", "OrderProduct", "Orders", "PayMethods",
             "Payments", "PaymentsDeclined", "PriceLevel", "PriceLevelItems", "Printers", "Printers_Locations", "ProdCatXRef",
             "ProductChainXRef", "Product_addons", "Products", "Products_Images", "PublicVariables", "Reasons",

@@ -43,7 +43,9 @@ public class NotificationEvent {
                     return NONE;
             }
         }
-
+        public int getCode(){
+            return  code;
+        }
         NotificationEventAction(int code) {
             this.code = code;
         }
