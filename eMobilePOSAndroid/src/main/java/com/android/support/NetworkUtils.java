@@ -29,7 +29,7 @@ public class NetworkUtils {
         return connectedNetworks;
     }
 
-    public static boolean isConnectedToInternet(final Activity activity) {
+    public static boolean isConnectedToInternet(final Context activity) {
         final boolean[] retVal = {false};
         try {
             final ConnectivityManager connManager = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);

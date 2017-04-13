@@ -1,8 +1,11 @@
 package com.android.database;
 
 import android.app.Activity;
+import android.content.Context;
 import android.database.Cursor;
 
+import com.android.dao.AssignEmployeeDAO;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.support.MyPreferences;
 
 import net.sqlcipher.database.SQLiteStatement;
@@ -36,9 +39,9 @@ public class MemoTextHandler {
 	private List<HashMap<String,Integer>>dictionaryListMap;
 	
 
-	public MemoTextHandler(Activity activity) {
-		attrHash = new HashMap<String, Integer>();
-		addrData = new ArrayList<String[]>();
+	public MemoTextHandler(Context activity) {
+		attrHash = new HashMap<>();
+		addrData = new ArrayList<>();
 		myPref = new MyPreferences(activity);
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();
@@ -147,7 +150,7 @@ public class MemoTextHandler {
 	public HashMap<String,String>getOrderInfo()
 	{
 		HashMap<String,String>map = new HashMap<String,String>();
-		
+		AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
 		String query = "SELECT * FROM memotext";
 		
 		Cursor c = DBManager.getDatabase().rawQuery(query, null);
@@ -163,7 +166,7 @@ public class MemoTextHandler {
 				map.put("footer1", c.getString(c.getColumnIndex(memo_footerLine1)));
 				map.put("footer2", c.getString(c.getColumnIndex(memo_footerLine2)));
 				map.put("footer3", c.getString(c.getColumnIndex(memo_footerLine3)));
-				map.put("EMPLOYEE_NAME", myPref.getEmpName());
+				map.put("EMPLOYEE_NAME", assignEmployee.getEmpName());
 				map.put("CLERK_NAME", myPref.getClerkName());
 			}while(c.moveToNext());
 		}

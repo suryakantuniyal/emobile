@@ -1,6 +1,7 @@
 package com.android.database;
 
 import android.app.Activity;
+import android.content.Context;
 import android.database.Cursor;
 
 import net.sqlcipher.database.SQLiteStatement;
@@ -32,9 +33,9 @@ public class TaxesGroupHandler {
 	
 	private static final String table_name = "Taxes_Group";
 
-	public TaxesGroupHandler(Activity activity) {
-		attrHash = new HashMap<String, Integer>();
-		addrData = new ArrayList<String[]>();
+	public TaxesGroupHandler(Context activity) {
+		attrHash = new HashMap<>();
+		addrData = new ArrayList<>();
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();
 		new DBManager(activity);

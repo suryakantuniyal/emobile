@@ -1,13 +1,10 @@
-/eMobilePOSAndroid/build
 *.bin
-eMobilePOSAndroid/.idea/
 .idea/
 local.properties
 build/
-eMobilePOSAndroid.iml
 gradlew.bat
 projectFilesBackup/
 .gradle/
 emobileposblm/
-eMobilePOSAndroid-eMobilePOSAndroid.iml
+*.iml
 

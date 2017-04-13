@@ -18,19 +18,25 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.database.DBManager;
 import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.saxhandler.SaxLoginHandler;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
+import com.android.support.SynchMethods;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.crashlytics.android.Crashlytics;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import javax.xml.parsers.SAXParser;
@@ -41,7 +47,6 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
     private ProgressDialog myProgressDialog;
     private Activity activity;
     private Dialog promptDialog;
-
     private DBManager dbManager;
 
     public enum PermissionType {
@@ -76,24 +81,35 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
             }
         }
     }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         activity = this;
+        new DBManager(activity);
         final MyPreferences myPref = new MyPreferences(this);
-
         if (myPref.getLogIn()) {
             dbManager = new DBManager(activity, Global.FROM_LOGIN_ACTIVITTY);
             if (dbManager.isNewDBVersion()) {
                 dbManager.alterTables();
+                AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(true);
+                if (assignEmployee == null && !myPref.getEmpIdFromPreferences().isEmpty()) {
+                    assignEmployee = new AssignEmployee();
+                    assignEmployee.setEmpId(Integer.parseInt(myPref.getEmpIdFromPreferences()));
+                    List<AssignEmployee> assignEmployees = new ArrayList<>();
+                    assignEmployees.add(assignEmployee);
+                    try {
+                        AssignEmployeeDAO.insertAssignEmployee(assignEmployees);
+                    } catch (Exception e) {
+                        Crashlytics.logException(e);
+                    }
+                }
                 if (dbManager.unsynchItemsLeft()) {
                     //there are unsynch item left...
-
                     Intent intent = new Intent(this, MainMenu_FA.class);
                     Bundle extras = new Bundle();
                     extras.putBoolean("unsynched_items", true);
-
                     intent.putExtras(extras);
                     startActivity(intent);
                     finish();
@@ -106,7 +122,10 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
                                         @Override
                                         public void onClick(DialogInterface thisDialog, int which) {
                                             dbManager.updateDB();
+//                                            SynchMethods sm = new SynchMethods(dbManager);
+//                                            sm.synchReceive(Global.FROM_REGISTRATION_ACTIVITY, activity);
                                             promptDialog.dismiss();
+                                            new SyncReceiveTask().execute(dbManager);
                                         }
                                     }).create();
                     promptDialog.show();
@@ -118,30 +137,58 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
                 finish();
             }
         } else {
-
             setContentView(R.layout.initialization_layout);
             final EditText acctNumber = (EditText) findViewById(R.id.initAccountNumber);
             final EditText acctPassword = (EditText) findViewById(R.id.initPassword);
             Button login = (Button) findViewById(R.id.loginButton);
             thisContext = this;
-
-
             login.setOnClickListener(new View.OnClickListener() {
 
                 @Override
                 public void onClick(View v) {
-                    // TODO Auto-generated method stub
                     if (!myPref.getLogIn()) {
                         myPref.setAcctNumber(acctNumber.getText().toString());
                         myPref.setAcctPassword(acctPassword.getText().toString());
                         String android_id = Secure.getString(thisContext.getContentResolver(), Secure.ANDROID_ID);
                         myPref.setDeviceID(android_id);
-
                         new validateLoginAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
                     }
                 }
             });
             checkLocationPermissions();
+        }
+    }
+
+    public class SyncReceiveTask extends AsyncTask<DBManager, Void, Boolean> {
+        ProgressDialog dialog;
+
+        @Override
+        protected void onPreExecute() {
+            dialog = new ProgressDialog(SelectAccount_FA.this);
+            dialog.setTitle(R.string.sync_title);
+            dialog.setIndeterminate(true);
+            dialog.setMessage(getString(R.string.sync_inprogress));
+            dialog.show();
+        }
+
+        @Override
+        protected Boolean doInBackground(DBManager... params) {
+            DBManager dbManager = params[0];
+            SynchMethods sm = new SynchMethods(dbManager);
+            return sm.syncReceive();
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            dialog.dismiss();
+            if (!result) {
+                Global.showPrompt(SelectAccount_FA.this, R.string.sync_title, getString(R.string.sync_fail));
+            }else{
+                Intent intent = new Intent(SelectAccount_FA.this, MainMenu_FA.class);
+                activity.setResult(-1);
+                startActivity(intent);
+                activity.finish();
+            }
         }
     }
 
@@ -154,7 +201,6 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);
             myProgressDialog.show();
-
         }
 
         @Override
@@ -163,17 +209,16 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SaxLoginHandler handler = new SaxLoginHandler();
             boolean proceed = false;
-
             try {
                 String xml = post.postData(0, activity, "");
                 InputSource inSource = new InputSource(new StringReader(xml));
-
                 SAXParser sp = spf.newSAXParser();
                 XMLReader xr = sp.getXMLReader();
                 xr.setContentHandler(handler);
                 xr.parse(inSource);
                 proceed = Boolean.parseBoolean(handler.getData().toLowerCase(Locale.getDefault()));
             } catch (Exception e) {
+                Crashlytics.logException(e);
             }
             return proceed;
         }
@@ -183,7 +228,6 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
             myProgressDialog.dismiss();
             MyPreferences myPref = new MyPreferences(activity);
             if (proceed) {
-
                 Intent intent = new Intent(thisContext, SelectEmployee_FA.class);
                 startActivityForResult(intent, 0);
 

@@ -2,6 +2,9 @@ package com.android.support;
 
 import android.app.Activity;
 
+import com.android.dao.AssignEmployeeDAO;
+import com.android.emobilepos.models.realms.AssignEmployee;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -30,13 +33,11 @@ public class Invoice {
 	private String inv_update = empstr;
 
 	public Invoice(Activity activity) {
-
-		MyPreferences myPref = new MyPreferences(activity);
-
+		AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
 		SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy h:mm a");
 		inv_timecreated = sdf.format(new Date());
 
-		emp_id = myPref.getEmpID();
+		emp_id = String.valueOf(assignEmployee.getEmpId());
 	}
 
 	public enum Limiters {

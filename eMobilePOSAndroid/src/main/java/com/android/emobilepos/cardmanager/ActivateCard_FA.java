@@ -29,6 +29,7 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.crashlytics.android.Crashlytics;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -152,19 +153,23 @@ public class ActivateCard_FA extends BaseFragmentActivityActionBar implements EM
         if (audioManager.isWiredHeadsetOn()) {
             String _audio_reader_type = myPref.getPreferencesValue(MyPreferences.pref_audio_card_reader);
             if (_audio_reader_type != null && !_audio_reader_type.isEmpty() && !_audio_reader_type.equals("-1")) {
-                if (_audio_reader_type.equals(Global.AUDIO_MSR_UNIMAG)) {
-                    uniMagReader = new EMSUniMagDriver();
-                    uniMagReader.initializeReader(activity);
-                } else if (_audio_reader_type.equals(Global.AUDIO_MSR_MAGTEK)) {
-                    magtekReader = new EMSMagtekAudioCardReader(activity);
-                    new Thread(new Runnable() {
-                        public void run() {
-                            magtekReader.connectMagtek(true, msrCallBack);
-                        }
-                    }).start();
-                } else if (_audio_reader_type.equals(Global.AUDIO_MSR_ROVER)) {
-                    roverReader = new EMSRover();
-                    roverReader.initializeReader(activity, false);
+                switch (_audio_reader_type) {
+                    case Global.AUDIO_MSR_UNIMAG:
+                        uniMagReader = new EMSUniMagDriver();
+                        uniMagReader.initializeReader(activity);
+                        break;
+                    case Global.AUDIO_MSR_MAGTEK:
+                        magtekReader = new EMSMagtekAudioCardReader(activity);
+                        new Thread(new Runnable() {
+                            public void run() {
+                                magtekReader.connectMagtek(true, msrCallBack);
+                            }
+                        }).start();
+                        break;
+                    case Global.AUDIO_MSR_ROVER:
+                        roverReader = new EMSRover();
+                        roverReader.initializeReader(activity, false);
+                        break;
                 }
             }
 
@@ -204,7 +209,6 @@ public class ActivateCard_FA extends BaseFragmentActivityActionBar implements EM
 
     @Override
     public void onClick(View v) {
-        // TODO Auto-generated method stub
         switch (v.getId()) {
             case R.id.processButton:
                 processInquiry();
@@ -280,7 +284,7 @@ public class ActivateCard_FA extends BaseFragmentActivityActionBar implements EM
             payment.setCard_type(cardType);
 
             EMSPayGate_Default payGate = new EMSPayGate_Default(this, payment);
-            String generatedURL = new String();
+            String generatedURL = "";
 
             payment.setPay_type("0");
             if (typeCase == CASE_GIFT)
@@ -295,7 +299,7 @@ public class ActivateCard_FA extends BaseFragmentActivityActionBar implements EM
 
     private class processAsync extends AsyncTask<String, String, String> {
 
-        private HashMap<String, String> parsedMap = new HashMap<String, String>();
+        private HashMap<String, String> parsedMap = new HashMap<>();
         private String urlToPost;
         private boolean wasProcessed = false;
         private String errorMsg = "Request could not be processed.";
@@ -312,45 +316,45 @@ public class ActivateCard_FA extends BaseFragmentActivityActionBar implements EM
 
         @Override
         protected String doInBackground(String... params) {
-            // TODO Auto-generated method stub
 
             Post httpClient = new Post();
 
             SAXParserFactory spf = SAXParserFactory.newInstance();
-            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(activity);
+            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
             urlToPost = params[0];
 
             try {
                 String xml = httpClient.postData(13, activity, urlToPost);
 
-                if (xml.equals(Global.TIME_OUT)) {
-                    errorMsg = "TIME OUT, would you like to try again?";
-                } else if (xml.equals(Global.NOT_VALID_URL)) {
-                    errorMsg = "Can not proceed...";
-                } else {
-                    InputSource inSource = new InputSource(new StringReader(xml));
+                switch (xml) {
+                    case Global.TIME_OUT:
+                        errorMsg = "TIME OUT, would you like to try again?";
+                        break;
+                    case Global.NOT_VALID_URL:
+                        errorMsg = "Can not proceed...";
+                        break;
+                    default:
+                        InputSource inSource = new InputSource(new StringReader(xml));
 
-                    SAXParser sp = spf.newSAXParser();
-                    XMLReader xr = sp.getXMLReader();
-                    xr.setContentHandler(handler);
-                    xr.parse(inSource);
-                    parsedMap = handler.getData();
+                        SAXParser sp = spf.newSAXParser();
+                        XMLReader xr = sp.getXMLReader();
+                        xr.setContentHandler(handler);
+                        xr.parse(inSource);
+                        parsedMap = handler.getData();
 
-                    if (parsedMap != null && parsedMap.size() > 0 && parsedMap.get("epayStatusCode").equals("APPROVED"))
-                        wasProcessed = true;
-                    else if (parsedMap != null && parsedMap.size() > 0) {
-                        StringBuilder sb = new StringBuilder();
-                        sb.append("statusCode = ").append(parsedMap.get("statusCode")).append("\n");
-                        sb.append(parsedMap.get("statusMessage"));
-                        errorMsg = sb.toString();
-                    } else
-                        errorMsg = xml;
+                        if (parsedMap != null && parsedMap.size() > 0 && parsedMap.get("epayStatusCode").equals("APPROVED"))
+                            wasProcessed = true;
+                        else if (parsedMap != null && parsedMap.size() > 0) {
+                            errorMsg = "statusCode = " + parsedMap.get("statusCode") + "\n" +
+                                    parsedMap.get("statusMessage");
+                        } else
+                            errorMsg = xml;
+                        break;
                 }
 
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-//				Tracker tracker = EasyTracker.getInstance(activity);
-//				tracker.send(MapBuilder.createException(e.getStackTrace().toString(), false).build());
+                e.printStackTrace();
+                Crashlytics.logException(e);
             }
 
             return null;
@@ -360,22 +364,13 @@ public class ActivateCard_FA extends BaseFragmentActivityActionBar implements EM
         protected void onPostExecute(String unused) {
             myProgressDialog.dismiss();
 
-            if (wasProcessed) // payment processing succeeded
-            {
+            if (wasProcessed) {
                 StringBuilder sb = new StringBuilder();
-                // sb.append("Status:
-                // ").append(parsedMap.get("epayStatusCode")).append("\n");
-                // sb.append("Auth. Amount:
-                // ").append(parsedMap.get("AuthorizedAmount")==null?
-                // "0.00":parsedMap.get("AuthorizedAmount")).append("\n");
                 ordProdDB.updateOrdProdCardActivated(giftCardMap.get("ordprod_id"));
                 String temp = (parsedMap.get("CardBalance") == null ? "0.0" : parsedMap.get("CardBalance"));
                 sb.append("Card Balance: ").append(Global.getCurrencyFrmt(temp));
-
                 showBalancePrompt(sb.toString());
-
-            } else // payment processing failed
-            {
+            } else {
                 Global.showPrompt(activity, R.string.dlog_title_error, errorMsg);
             }
         }
@@ -396,7 +391,6 @@ public class ActivateCard_FA extends BaseFragmentActivityActionBar implements EM
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 finish();
             }
@@ -405,35 +399,28 @@ public class ActivateCard_FA extends BaseFragmentActivityActionBar implements EM
     }
 
     private void updateViewAfterSwipe() {
-        // month.setText(cardInfoManager.getCardExpMonth());
         SimpleDateFormat dt = new SimpleDateFormat("yyyy", Locale.getDefault());
         SimpleDateFormat dt2 = new SimpleDateFormat("yy", Locale.getDefault());
-        String formatedYear = new String();
+        String formatedYear = "";
         try {
             Date date = dt2.parse(cardInfoManager.getCardExpYear());
             formatedYear = dt.format(date);
         } catch (ParseException e) {
-            // TODO Auto-generated catch block
-//			Tracker tracker = EasyTracker.getInstance(activity);
-//			tracker.send(MapBuilder.createException(e.getStackTrace().toString(), false).build());
+            e.printStackTrace();
+            Crashlytics.logException(e);
         }
-
         cardInfoManager.setCardExpYear(formatedYear);
         fieldCardNum.setText(cardInfoManager.getCardNumUnencrypted());
-
         giftCardMap = ordProdDB.getOrdProdGiftCard(cardInfoManager.getCardNumUnencrypted());
-
         TextView labelAmount = (TextView) findViewById(R.id.labelAmount);
         String temp = giftCardMap.get("overwrite_price") == null ? "-1" : giftCardMap.get("overwrite_price");
         giftCardMap.put("overwrite_price", temp);
         labelAmount.setText(Global.formatDoubleStrToCurrency(temp));
-
         wasReadFromReader = true;
     }
 
     @Override
     public void cardWasReadSuccessfully(boolean read, CreditCardInfo cardManager) {
-        // TODO Auto-generated method stub
         this.cardInfoManager = cardManager;
         updateViewAfterSwipe();
         if (uniMagReader != null && uniMagReader.readerIsConnected()) {
@@ -444,7 +431,6 @@ public class ActivateCard_FA extends BaseFragmentActivityActionBar implements EM
 
     @Override
     public void readerConnectedSuccessfully(boolean didConnect) {
-        // TODO Auto-generated method stub
         if (didConnect) {
             cardReaderConnected = true;
             if (uniMagReader != null && uniMagReader.readerIsConnected())
@@ -460,13 +446,10 @@ public class ActivateCard_FA extends BaseFragmentActivityActionBar implements EM
 
     @Override
     public void scannerWasRead(String data) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void startSignature() {
-        // TODO Auto-generated method stub
 
     }
 

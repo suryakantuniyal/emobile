@@ -1,18 +1,23 @@
 package com.android.emobilepos;
 
-
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.PowerManager;
 import android.support.v4.widget.CursorAdapter;
 import android.text.InputType;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -23,38 +28,48 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.dao.ClerkDAO;
+import com.android.dao.ShiftDAO;
 import com.android.database.CustomersHandler;
 import com.android.database.DBManager;
 import com.android.database.OrderProductsHandler;
 import com.android.database.OrdersHandler;
-import com.android.database.ProductAddonsHandler;
-import com.android.database.ProductsHandler;
 import com.android.database.SalesTaxCodesHandler;
-import com.android.emobilepos.models.Order;
-import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.firebase.PollingNotificationService;
+import com.android.emobilepos.mainmenu.MainMenu_FA;
+import com.android.emobilepos.models.firebase.NotificationEvent;
+import com.android.emobilepos.models.orders.Order;
+import com.android.emobilepos.models.realms.Clerk;
+import com.android.emobilepos.models.realms.Shift;
 import com.android.emobilepos.ordering.OrderingMain_FA;
+import com.android.support.DateUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NetworkUtils;
 import com.android.support.OnHoldsManager;
+import com.android.support.SynchMethods;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.crashlytics.android.Crashlytics;
 
-import java.util.ArrayList;
+import org.xml.sax.SAXException;
+
+import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
-
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class OnHoldActivity extends BaseFragmentActivityActionBar {
     private Activity activity;
     private Cursor myCursor;
     private Global global;
     private Global.OrderType orderType = Global.OrderType.SALES_RECEIPT;
-    boolean validPassword = true;
     private boolean isUpdateOnHold = false;
     private boolean hasBeenCreated = false;
     private MyPreferences myPref;
     private int selectedPos = 0;
-
+    boolean validPassword = true;
+    private HoldsCursorAdapter myAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,40 +80,246 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         myPref = new MyPreferences(activity);
         ListView listView = (ListView) findViewById(R.id.onHoldListView);
         OrdersHandler ordersHandler = new OrdersHandler(activity);
-        myCursor = ordersHandler.getOrderOnHold();
-        ListViewCursorAdapter myAdapter = new ListViewCursorAdapter(activity, myCursor, CursorAdapter.NO_SELECTION);
+        myCursor = ordersHandler.getOrdersOnHoldCursor();
+        myAdapter = new HoldsCursorAdapter(activity, myCursor, CursorAdapter.NO_SELECTION);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
-            public void onItemClick(AdapterView<?> arg0, View arg1, int pos,
-                                    long arg3) {
+            public void onItemClick(AdapterView<?> adapterView, View view, int pos,
+                                    long count) {
                 selectedPos = pos;
                 openPrintOnHold();
             }
         });
         listView.setAdapter(myAdapter);
         hasBeenCreated = true;
+        if (!PollingNotificationService.isServiceRunning(this)) {
+            PollingNotificationService.start(this);
+        }
 
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id) {
+            case R.id.refreshHolds: {
+                new RefreshHolds().execute();
+                break;
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    public class RefreshHolds extends AsyncTask<Void, Void, Void> {
+        private ProgressDialog myProgressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog.setMessage("Loading...");
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setCancelable(true);
+            myProgressDialog.setCanceledOnTouchOutside(true);
+            myProgressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                if(!PollingNotificationService.isServiceRunning(OnHoldActivity.this)){
+                    PollingNotificationService.start(OnHoldActivity.this);
+                }
+                SynchMethods.synchOrdersOnHoldList(OnHoldActivity.this);
+                Intent intent = new Intent(MainMenu_FA.NOTIFICATION_RECEIVED);
+                intent.putExtra(MainMenu_FA.NOTIFICATION_MESSAGE, String.valueOf(NotificationEvent.NotificationEventAction.SYNC_HOLDS.getCode()));
+                sendBroadcast(intent);
+                Log.d("NotificationHandler", "sendBroadcast");
+            } catch (SAXException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
+            } catch (IOException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            if (myProgressDialog != null && myProgressDialog.isShowing()) {
+                myProgressDialog.dismiss();
+            }
+        }
+    }
+
+
+    private BroadcastReceiver messageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Handler handler = new Handler();
+            String eventAction = intent.getStringExtra(MainMenu_FA.NOTIFICATION_MESSAGE);
+            NotificationEvent.NotificationEventAction action = NotificationEvent.NotificationEventAction.getNotificationEventByCode(Integer.parseInt(eventAction));
+            switch (action) {
+                case SYNC_HOLDS:
+                    if (myCursor != null && !myCursor.isClosed()) {
+                        myCursor.close();
+                    }
+                    OrdersHandler ordersHandler = new OrdersHandler(activity);
+                    myCursor = ordersHandler.getOrdersOnHoldCursor();
+                    myAdapter.swapCursor(myCursor);
+                    myAdapter.notifyDataSetChanged();
+                    break;
+                case SYNC_MESAS_CONFIG:
+                    break;
+            }
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                }
+            };
+            handler.post(runnable);
+        }
+    };
+
+    private void askWaiterSignin() {
+        if (myPref.isUseClerks()) {
+            Shift openShift = ShiftDAO.getOpenShift(Integer.parseInt(myPref.getClerkID()));
+            int empId;
+            if (openShift != null) {
+                empId = openShift.getAssigneeId();
+            } else {
+                empId = Integer.parseInt(myPref.getClerkID());
+            }
+            Clerk associate = ClerkDAO.getByEmpId(empId, true);
+            long count = associate == null ? 0 : associate.getAssignedDinningTables().where().equalTo("number", myCursor.getString(myCursor.getColumnIndex("assignedTable"))).count();
+            if (associate != null && count > 0) {
+                validPassword = true;
+                new checkHoldStatus().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            } else {
+                final Dialog popDlog = new Dialog(this, R.style.TransparentDialogFullScreen);
+                popDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                popDlog.setCancelable(true);
+                popDlog.setCanceledOnTouchOutside(false);
+                popDlog.setContentView(R.layout.dlog_field_single_layout);
+                final EditText viewField = (EditText) popDlog.findViewById(R.id.dlogFieldSingle);
+                viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                TextView viewTitle = (TextView) popDlog.findViewById(R.id.dlogTitle);
+                TextView viewMsg = (TextView) popDlog.findViewById(R.id.dlogMessage);
+                viewTitle.setText(R.string.dlog_title_enter_manager_password);
+                if (!validPassword)
+                    viewMsg.setText(R.string.invalid_password);
+                else
+                    viewMsg.setText(R.string.enter_password);
+                Button btnOk = (Button) popDlog.findViewById(R.id.btnDlogSingle);
+                Button btnCancel = (Button) popDlog.findViewById(R.id.btnCancelDlogSingle);
+
+                btnOk.setText(R.string.button_ok);
+                btnOk.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        popDlog.dismiss();
+                        myCursor.moveToPosition(selectedPos);
+                        String enteredPass = viewField.getText().toString().trim();
+                        enteredPass = TextUtils.isEmpty(enteredPass) ? "0" : enteredPass;
+                        if (myPref.loginManager(enteredPass)) // validate manager password
+                        {
+                            validPassword = true;
+                            isUpdateOnHold = true;
+                            new checkHoldStatus().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                        } else {
+                            validPassword = false;
+                            askWaiterSignin();
+                        }
+                    }
+                });
+                btnCancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        popDlog.dismiss();
+                    }
+                });
+                popDlog.show();
+            }
+        } else {
+            final Dialog popDlog = new Dialog(this, R.style.TransparentDialogFullScreen);
+            popDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            popDlog.setCancelable(true);
+            popDlog.setCanceledOnTouchOutside(false);
+            popDlog.setContentView(R.layout.dlog_field_single_layout);
+            final EditText viewField = (EditText) popDlog.findViewById(R.id.dlogFieldSingle);
+            viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            TextView viewTitle = (TextView) popDlog.findViewById(R.id.dlogTitle);
+            TextView viewMsg = (TextView) popDlog.findViewById(R.id.dlogMessage);
+            viewTitle.setText(R.string.dlog_title_waiter_manager_signin);
+            if (!validPassword)
+                viewMsg.setText(R.string.invalid_password);
+            else
+                viewMsg.setText(R.string.enter_password);
+            Button btnOk = (Button) popDlog.findViewById(R.id.btnDlogSingle);
+            Button btnCancel = (Button) popDlog.findViewById(R.id.btnCancelDlogSingle);
+
+            btnOk.setText(R.string.button_ok);
+            btnOk.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    popDlog.dismiss();
+                    myCursor.moveToPosition(selectedPos);
+                    String enteredPass = viewField.getText().toString().trim();
+                    enteredPass = TextUtils.isEmpty(enteredPass) ? "0" : enteredPass;
+                    boolean isDigits = org.apache.commons.lang3.math.NumberUtils.isDigits(enteredPass);
+                    Clerk salesAssociates = null;
+                    if (isDigits) {
+                        salesAssociates = ClerkDAO.getByEmpId(Integer.parseInt(enteredPass), true); //SalesAssociateHandler.getSalesAssociate(enteredPass);
+                    }
+                    long count = salesAssociates == null ? 0 : salesAssociates.getAssignedDinningTables().where().equalTo("number", myCursor.getString(myCursor.getColumnIndex("assignedTable"))).count();
+                    if (salesAssociates != null && count > 0) {
+                        validPassword = true;
+                        new checkHoldStatus().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    } else {
+                        if (myPref.loginManager(enteredPass)) // validate manager password
+                        {
+                            validPassword = true;
+                            isUpdateOnHold = true;
+                            new checkHoldStatus().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                        } else {
+                            validPassword = false;
+                            askWaiterSignin();
+                        }
+                    }
+                }
+            });
+
+            btnCancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    popDlog.dismiss();
+                }
+            });
+            popDlog.show();
+        }
+    }
 
     @Override
     public void onDestroy() {
         myCursor.close();
         super.onDestroy();
+        unregisterReceiver(messageReceiver);
     }
-
 
     @Override
     public void onResume() {
         if (global.isApplicationSentToBackground(activity))
-            global.loggedIn = false;
+            Global.loggedIn = false;
         global.stopActivityTransitionTimer();
-        if (hasBeenCreated && !global.loggedIn) {
+        if (hasBeenCreated && !Global.loggedIn) {
             if (global.getGlobalDlog() != null)
                 global.getGlobalDlog().dismiss();
             global.promptForMandatoryLogin(activity);
         }
+        registerReceiver(messageReceiver, new IntentFilter(MainMenu_FA.NOTIFICATION_RECEIVED));
         super.onResume();
     }
 
@@ -108,10 +329,9 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         boolean isScreenOn = powerManager.isScreenOn();
         if (!isScreenOn)
-            global.loggedIn = false;
+            Global.loggedIn = false;
         global.startActivityTransitionTimer();
     }
-
 
     public class checkHoldStatus extends AsyncTask<Void, String, String> {
         boolean wasProcessed = false;
@@ -144,6 +364,8 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                         OnHoldsManager.updateStatusOnHold(ordID, activity);
                     }
                 } catch (Exception e) {
+                    e.printStackTrace();
+                    Crashlytics.logException(e);
                 }
                 return null;
             } else {
@@ -165,7 +387,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             }
         }
     }
-
 
     private class executeOnHoldAsync extends AsyncTask<Boolean, Void, Intent> {
         private boolean proceed = false;
@@ -240,27 +461,26 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             if (proceed) {
                 DBManager dbManager = new DBManager(activity);
                 if (!forPrinting)
-                    dbManager.synchDownloadOnHoldDetails(intent, myCursor.getString(myCursor.getColumnIndex("ord_id")), 0);
+                    dbManager.synchDownloadOnHoldDetails(intent, myCursor.getString(myCursor.getColumnIndex("ord_id")), 0, activity);
                 else
-                    dbManager.synchDownloadOnHoldDetails(intent, myCursor.getString(myCursor.getColumnIndex("ord_id")), 1);
+                    dbManager.synchDownloadOnHoldDetails(intent, myCursor.getString(myCursor.getColumnIndex("ord_id")), 1, activity);
             } else {
                 Cursor c = orderProdHandler.getOrderProductsOnHold(myCursor.getString(myCursor.getColumnIndex("ord_id")));
                 int size = c.getCount();
                 if (size > 0) {
                     if (!forPrinting) {
-                        addOrderProducts(OnHoldActivity.this, c);
+//                        addOrderProducts(OnHoldActivity.this, c);
                         startActivityForResult(intent, 0);
                         activity.finish();
                     } else {
                         DBManager dbManager = new DBManager(activity);
-                        dbManager.synchDownloadOnHoldDetails(intent, myCursor.getString(myCursor.getColumnIndex("ord_id")), 1);
+                        dbManager.synchDownloadOnHoldDetails(intent, myCursor.getString(myCursor.getColumnIndex("ord_id")), 1, activity);
                     }
                 } else
                     Toast.makeText(activity, "no available items", Toast.LENGTH_LONG).show();
             }
         }
     }
-
 
     public void printOnHoldTransaction() {
         new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -337,7 +557,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         dlog.show();
     }
 
-
     private void claimedTransactionPrompt() {
 
         final Dialog dlog = new Dialog(activity, R.style.Theme_TransparentTest);
@@ -375,7 +594,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
     }
 
-
     private void askForManagerPassDlg()        //type 0 = Change Password, type 1 = Configure Home Menu
     {
 
@@ -410,7 +628,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             public void onClick(View v) {
                 globalDlog.dismiss();
                 String value = viewField.getText().toString();
-                if (value.equals(myPref.posManagerPass(true, null))) // validate manager password
+                if (myPref.loginManager(value)) // validate manager password
                 {
                     validPassword = true;
                     isUpdateOnHold = true;
@@ -425,7 +643,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
     }
 
-
     private void openPrintOnHold()        //type 0 = Change Password, type 1 = Configure Home Menu
     {
 
@@ -434,7 +651,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         dlog.setCancelable(true);
         dlog.setCanceledOnTouchOutside(true);
         dlog.setContentView(R.layout.dlog_btn_left_right_layout);
-
+        myCursor.moveToPosition(selectedPos);
         TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
         TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_choose_action);
@@ -456,9 +673,11 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             @Override
             public void onClick(View v) {
                 dlog.dismiss();
-                new checkHoldStatus().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
-
+                if (myAdapter.isRestaurantHold(selectedPos)) {
+                    askWaiterSignin();
+                } else {
+                    new checkHoldStatus().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                }
             }
         });
         btnPrint.setOnClickListener(new View.OnClickListener() {
@@ -466,7 +685,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             @Override
             public void onClick(View v) {
                 dlog.dismiss();
-                myCursor.moveToPosition(selectedPos);
                 if (myCursor.getString(myCursor.getColumnIndex("ord_issync")).equals("0")) {
                     Global.lastOrdID = myCursor.getString(myCursor.getColumnIndex("ord_id"));
                     new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -479,55 +697,50 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
     }
 
-
-    public static void addOrderProducts(Activity activity, Cursor c) {
-        OrderProductsHandler orderProductsHandler = new OrderProductsHandler(activity);
-        c.moveToFirst();
-        List<OrderProduct> orderProducts = orderProductsHandler.getOrderProducts(c.getString(c.getColumnIndex("ord_id")));
-        ProductAddonsHandler prodAddonHandler = new ProductAddonsHandler(activity);
-        ProductsHandler prodHandler = new ProductsHandler(activity);
-        String[] discountInfo;
-        double total;
-        double itemTotal = 0;
-        Global global = (Global) activity.getApplication();
-        global.orderProducts = new ArrayList<>();
-
-        for (OrderProduct ord : orderProducts) {
-            double discAmount = 0;
-            total = (Double.parseDouble(ord.getOrdprod_qty())) * Double.parseDouble(ord.getFinalPrice());
-            discountInfo = prodHandler.getDiscount(ord.getDiscount_id(), ord.getFinalPrice());
-            if (discountInfo != null) {
-                if (discountInfo[1] != null && discountInfo[1].equals("Fixed")) {
-                    ord.setDiscount_is_fixed("1");
-                }
-                if (discountInfo[2] != null) {
-                    discAmount = Double.parseDouble(discountInfo[4]);
-                }
-                if (discountInfo[3] != null) {
-                    ord.setDiscount_is_taxable(discountInfo[3]);
-                }
-                if (discountInfo[4] != null) {
-                    ord.setDisTotal(discountInfo[4]);
-                    discAmount = Double.parseDouble(discountInfo[4]);
-                    ord.setDiscount_value(discountInfo[4]);
-                }
-            }
-            ord.setDisAmount(ord.getDisAmount());
-            if (itemTotal < 0)
-                itemTotal = 0;
-            ord.setItemTotal(Double.toString(total - discAmount));
-            ord.setItemSubtotal(Double.toString(total));
-            if (ord.isAddon()) {
-                int pos = global.orderProducts.size();
-                if (pos > 0) {
-                    String[] tempVal = prodAddonHandler.getAddonDetails(ord.getAddon_ordprod_id(), ord.getProd_id());
-                }
-            } else {
-                global.orderProducts.add(ord);
-            }
-        }
-    }
-
+//    public static void addOrderProducts(Activity activity, Cursor c) {
+//        OrderProductsHandler orderProductsHandler = new OrderProductsHandler(activity);
+//        c.moveToFirst();
+//        List<OrderProduct> orderProducts = orderProductsHandler.getOrderProducts(c.getString(c.getColumnIndex("ord_id")));
+//        ProductAddonsHandler prodAddonHandler = new ProductAddonsHandler(activity);
+//        ProductsHandler prodHandler = new ProductsHandler(activity);
+//        String[] discountInfo;
+//        double total;
+//        Global global = (Global) activity.getApplication();
+////        global.order.setOrderProducts(new ArrayList<OrderProduct>());
+//
+//        for (OrderProduct ord : orderProducts) {
+//            double discAmount = 0;
+//            total = (Double.parseDouble(ord.getOrdprod_qty())) * Double.parseDouble(ord.getFinalPrice());
+//            discountInfo = prodHandler.getDiscount(ord.getDiscount_id(), ord.getFinalPrice());
+//            if (discountInfo != null) {
+//                if (discountInfo[1] != null && discountInfo[1].equals("Fixed")) {
+//                    ord.setDiscount_is_fixed("1");
+//                }
+//                if (discountInfo[2] != null) {
+//                    discAmount = Double.parseDouble(discountInfo[4]);
+//                }
+//                if (discountInfo[3] != null) {
+//                    ord.setDiscount_is_taxable(discountInfo[3]);
+//                }
+//                if (discountInfo[4] != null) {
+//                    ord.setDisTotal(discountInfo[4]);
+//                    discAmount = Double.parseDouble(discountInfo[4]);
+//                    ord.setDiscount_value(discountInfo[4]);
+//                }
+//            }
+//            ord.setDisAmount(ord.getDisAmount());
+//            ord.setItemTotal(Double.toString(total - discAmount));
+//            ord.setItemSubtotal(Double.toString(total));
+//            if (ord.isAddon()) {
+//                int pos = global.order.getOrderProducts().size();
+//                if (pos > 0) {
+//                    String[] tempVal = prodAddonHandler.getAddonDetails(ord.getAddon_ordprod_id(), ord.getProd_id());
+//                }
+//            } else {
+//                global.order.getOrderProducts().add(ord);
+//            }
+//        }
+//    }
 
     private void selectCustomer(String custID) {
         if (custID != null && !custID.isEmpty()) {
@@ -545,12 +758,18 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         }
     }
 
-    public class ListViewCursorAdapter extends CursorAdapter {
+    public class HoldsCursorAdapter extends CursorAdapter {
         private LayoutInflater inflater;
 
-        ListViewCursorAdapter(Context context, Cursor c, int flags) {
+        HoldsCursorAdapter(Context context, Cursor c, int flags) {
             super(context, c, flags);
+
             inflater = LayoutInflater.from(context);
+        }
+
+        boolean isRestaurantHold(int position) {
+            getCursor().moveToPosition(position);
+            return !TextUtils.isEmpty(getCursor().getString(getCursor().getColumnIndex("assignedTable")));
         }
 
         @Override
@@ -558,11 +777,32 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             final ViewHolder myHolder = (ViewHolder) view.getTag();
             myHolder.holdID.setText(cursor.getString(myHolder.i_holdID));
             myHolder.holdName.setText(cursor.getString(myHolder.i_holdName));
-            if (cursor.getString(myHolder.i_issync).equals("1"))//it is synched
-            {
+            if (cursor.getString(myHolder.i_issync).equals("1")) {
                 myHolder.offlineFlag.setVisibility(View.GONE);
             } else {
                 myHolder.offlineFlag.setVisibility(View.VISIBLE);
+            }
+            String table = cursor.getString(myHolder.i_assignedTable);
+            String seats = cursor.getString(myHolder.i_numberOfSeats);
+            String createdTime = cursor.getString(myHolder.i_timeCreated);
+            String total = Global.getCurrencyFormat(cursor.getString(myHolder.i_orderTotal));
+            Map<TimeUnit, Long> map = DateUtils.computeDiff(DateUtils.getDateStringAsDate(createdTime, DateUtils.DATE_yyyy_MM_ddTHH_mm_ss), new Date());
+            String timeOnSite = String.format("%02d:%02d", map.get(TimeUnit.HOURS), map.get(TimeUnit.MINUTES));
+            if (TextUtils.isEmpty(table)) {
+                myHolder.tableTextView.setVisibility(View.INVISIBLE);
+                myHolder.guestsNumber.setVisibility(View.INVISIBLE);
+                myHolder.timeOnSite.setVisibility(View.INVISIBLE);
+                myHolder.orderTotal.setVisibility(View.INVISIBLE);
+            } else {
+                myHolder.tableTextView.setVisibility(View.VISIBLE);
+                myHolder.tableTextView.setVisibility(View.VISIBLE);
+                myHolder.guestsNumber.setVisibility(View.VISIBLE);
+                myHolder.timeOnSite.setVisibility(View.VISIBLE);
+                myHolder.orderTotal.setVisibility(View.VISIBLE);
+                myHolder.tableTextView.setText(table);
+                myHolder.guestsNumber.setText(seats);
+                myHolder.timeOnSite.setText(timeOnSite);
+                myHolder.orderTotal.setText(total);
             }
         }
 
@@ -572,18 +812,28 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             retView = inflater.inflate(R.layout.onhold_listview_adapter, parent, false);
             ViewHolder holder = new ViewHolder();
             holder.holdID = (TextView) retView.findViewById(R.id.onHoldID);
+            holder.tableTextView = (TextView) retView.findViewById(R.id.restaurantTabletextView);
             holder.holdName = (TextView) retView.findViewById(R.id.onHoldName);
+            holder.guestsNumber = (TextView) retView.findViewById(R.id.guestNumbertextView);
+            holder.orderTotal = (TextView) retView.findViewById(R.id.orderTotaltextView);
+            holder.timeOnSite = (TextView) retView.findViewById(R.id.timeOnSitetextView);
             holder.offlineFlag = (TextView) retView.findViewById(R.id.onHoldOfflineFlag);
             holder.i_holdID = cursor.getColumnIndex("_id");
             holder.i_holdName = cursor.getColumnIndex("ord_HoldName");
             holder.i_issync = cursor.getColumnIndex("ord_issync");
+            holder.i_assignedTable = cursor.getColumnIndex("assignedTable");
+            holder.i_timeCreated = cursor.getColumnIndex("ord_timecreated");
+            holder.i_numberOfSeats = cursor.getColumnIndex("numberOfSeats");
+            holder.i_orderTotal = cursor.getColumnIndex("ord_total");
+
             retView.setTag(holder);
             return retView;
         }
 
         private class ViewHolder {
-            TextView holdID, holdName, offlineFlag;
-            int i_issync, i_holdID, i_holdName;
+            TextView holdID, holdName, offlineFlag, guestsNumber, orderTotal, timeOnSite;
+            TextView tableTextView;
+            int i_issync, i_holdID, i_holdName, i_assignedTable, i_orderTotal, i_numberOfSeats, i_timeCreated;
         }
     }
 }

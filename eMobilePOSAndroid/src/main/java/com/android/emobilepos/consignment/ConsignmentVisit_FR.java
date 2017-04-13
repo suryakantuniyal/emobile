@@ -21,6 +21,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.database.ConsignmentSignaturesDBHandler;
 import com.android.database.ConsignmentTransactionHandler;
 import com.android.database.CustomerInventoryHandler;
@@ -32,8 +33,9 @@ import com.android.database.TaxesHandler;
 import com.android.emobilepos.DrawReceiptActivity;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.DataTaxes;
-import com.android.emobilepos.models.Order;
-import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.models.orders.Order;
+import com.android.emobilepos.models.orders.OrderProduct;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.GenerateNewID;
@@ -115,6 +117,8 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
         @Override
         protected String doInBackground(String... params) {
             ordersHandler = new OrdersHandler(activity);
+            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+
             orderProductsHandler = new OrderProductsHandler(activity);
             consTransDBHandler = new ConsignmentTransactionHandler(activity);
             ProductsHandler prodHandler = new ProductsHandler(activity);
@@ -132,7 +136,7 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
             consTransID = generator.getNextID(IdType.CONSIGNMENT_ID);
             signatureMap.put("ConsTrans_ID", consTransID);
             for (int i = 0; i < size; i++) {
-                consTransaction.ConsEmp_ID = myPref.getEmpID();
+                consTransaction.ConsEmp_ID = String.valueOf(assignEmployee.getEmpId());
                 consTransaction.ConsCust_ID = myPref.getCustID();
                 consTransaction.ConsProd_ID = Global.consignMapKey.get(i);
                 consTransaction.ConsTrans_ID = consTransID;
@@ -226,14 +230,14 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
             ord.setOrd_id(Global.consignment_order.ord_id);
 
 
-            if (global.orderProducts == null) {
-                global.orderProducts = new ArrayList<OrderProduct>();
+            if (global.order.getOrderProducts() == null) {
+                global.order.setOrderProducts(new ArrayList<OrderProduct>());
             }
 
             UUID uuid = UUID.randomUUID();
             String randomUUIDString = uuid.toString();
 
-            global.orderProducts.add(ord);
+            global.order.getOrderProducts().add(ord);
             ord.setOrdprod_id(randomUUIDString);
 
             // end of adding to db;
@@ -297,7 +301,7 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
             _order_total = _order_total.add(_tax_amount).setScale(4, RoundingMode.HALF_UP);
         } else {
             global.order.ord_taxamount = "0.00";
-            for (DataTaxes taxes : global.listOrderTaxes) {
+            for (DataTaxes taxes : global.order.getListOrderTaxes()) {
                 _tax_amount = _tax_amount.add(new BigDecimal(taxes.getTax_rate()).
                         divide(new BigDecimal(100)).multiply(new BigDecimal(ordTotal))).setScale(4, RoundingMode.HALF_UP);
                 taxes.setTax_amount(new BigDecimal(taxes.getTax_rate()).
@@ -321,7 +325,7 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
 
         global.order.ord_type = Global.OrderType.CONSIGNMENT_INVOICE.getCodeString();
 
-        global.order.total_lines = Integer.toString(global.orderProducts.size());
+        global.order.total_lines = Integer.toString(global.order.getOrderProducts().size());
         global.order.ord_signature = encodedImage;
 
         Location location = Global.getCurrLocation(activity, false);
@@ -330,12 +334,12 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
         global.order.processed = "1";
         ordersHandler.insert(global.order);
 
-        orderProductsHandler.insert(global.orderProducts);
-        if (global.listOrderTaxes != null
-                && global.listOrderTaxes.size() > 0
+        orderProductsHandler.insert(global.order.getOrderProducts());
+        if (global.order.getListOrderTaxes() != null
+                && global.order.getListOrderTaxes().size() > 0
                 ) {
             OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB();
-            ordTaxesDB.insert(global.listOrderTaxes, global.order.ord_id);
+            ordTaxesDB.insert(global.order.getListOrderTaxes(), global.order.ord_id);
         }
     }
 

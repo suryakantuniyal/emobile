@@ -23,17 +23,16 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class DBManager {
-    public static final int VERSION = 48;
+    public static final int VERSION = 50;
     private static final String DB_NAME_OLD = "emobilepos.sqlite";
     private static final String CIPHER_DB_NAME = "emobilepos.sqlcipher";
 
-    private Activity activity;
+    private Context context;
 
     private DBManager managerInstance;
     private DatabaseHelper DBHelper;
-    private int type;
     private MyPreferences myPref;
-    private boolean sendAndReceive = false;
+    //    private boolean sendAndReceive = false;
     private static SQLiteDatabase database;
 
     private static final String PASSWORD = "em0b1l3p05";
@@ -49,7 +48,7 @@ public class DBManager {
     private String getPassword() {
         MessageDigest digester;
         String md5;
-        String android_id = Secure.getString(activity.getContentResolver(), Secure.ANDROID_ID);
+        String android_id = Secure.getString(context.getContentResolver(), Secure.ANDROID_ID);
         try {
             digester = MessageDigest.getInstance("MD5");
             digester.update(android_id.getBytes());
@@ -65,7 +64,7 @@ public class DBManager {
 
     private void InitializeSQLCipher() {
         try {
-            setDatabase(SQLiteDatabase.openDatabase(activity.getDatabasePath(CIPHER_DB_NAME).getAbsolutePath(), getPassword(),
+            setDatabase(SQLiteDatabase.openDatabase(context.getDatabasePath(CIPHER_DB_NAME).getAbsolutePath(), getPassword(),
                     null, SQLiteDatabase.OPEN_READWRITE));
         } catch (Exception e) {
             e.printStackTrace();
@@ -73,43 +72,44 @@ public class DBManager {
     }
 
     public boolean resetDatabase() {
-        return activity.deleteDatabase(CIPHER_DB_NAME);
+        return context.deleteDatabase(CIPHER_DB_NAME);
     }
 
-    public DBManager(Activity activity) {
+    public DBManager(Context context) {
 
-        this.activity = activity;
-        myPref = new MyPreferences(activity);
+        this.context = context;
+        myPref = new MyPreferences(context);
         managerInstance = this;
-        SQLiteDatabase.loadLibs(activity);
+        if ((getDatabase() == null || !getDatabase().isOpen())) {
+            SQLiteDatabase.loadLibs(context);
 //		exportDBFile();
-        dbMigration();
-        this.DBHelper = new DatabaseHelper(this.activity);
-        if ((getDatabase() == null || !getDatabase().isOpen()))
+            dbMigration();
+            this.DBHelper = new DatabaseHelper(this.context);
             InitializeSQLCipher();
+        }
 
     }
 
-    public DBManager(Activity activ, int type) {
-        this.activity = activ;
+    public DBManager(Context context, int type) {
+        this.context = context;
         managerInstance = this;
-        this.type = type;
         if (type == Global.FROM_REGISTRATION_ACTIVITY) {
             resetDatabase();
         }
-        myPref = new MyPreferences(activity);
-        SQLiteDatabase.loadLibs(activity);
+        myPref = new MyPreferences(context);
+        if ((getDatabase() == null || !getDatabase().isOpen())) {
+            SQLiteDatabase.loadLibs(context);
 //		exportDBFile();
-        dbMigration();
-        if ((getDatabase() == null || !getDatabase().isOpen()))
+            dbMigration();
             InitializeSQLCipher();
+        }
 
     }
 
     private void dbMigration() {
         File dbPath = null;
         try {
-            dbPath = activity.getDatabasePath(DB_NAME_OLD);
+            dbPath = context.getDatabasePath(DB_NAME_OLD);
 //            dbPath = new File(Environment.getExternalStorageDirectory() + "/emobilepos.sqlite");
 //            myPref.setEmpID("1");
 //            myPref.setDeviceID("355b9d6313e9f4cb");
@@ -119,10 +119,10 @@ public class DBManager {
         } catch (Exception e1) {
             e1.printStackTrace();
         }
-        File dbCipherPath = activity.getDatabasePath(CIPHER_DB_NAME);
+        File dbCipherPath = context.getDatabasePath(CIPHER_DB_NAME);
         if (dbPath.exists() && !dbCipherPath.exists()) {
             try {
-                encrypt(activity, DB_NAME_OLD, getPassword());
+                encrypt(context, DB_NAME_OLD, getPassword());
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -206,13 +206,13 @@ public class DBManager {
 
     public void exportDBFile() {
         try {
-            decrypt(activity, CIPHER_DB_NAME, getPassword());
+            decrypt(context, CIPHER_DB_NAME, getPassword());
         } catch (IOException e) {
             e.printStackTrace();
         }
 //        File dbFile = null;
 //        try {
-//            dbFile = activity.getDatabasePath(CIPHER_DB_NAME);
+//            dbFile = context.getDatabasePath(CIPHER_DB_NAME);
 //        } catch (Exception e1) {
 //            e1.printStackTrace();
 //        }
@@ -236,12 +236,12 @@ public class DBManager {
         return false;
     }
 
-    public Activity getActivity() {
-        return this.activity;
+    public Context getContext() {
+        return this.context;
     }
 
     public void updateDB() {
-        this.DBHelper = new DatabaseHelper(this.activity);
+        this.DBHelper = new DatabaseHelper(this.context);
         this.DBHelper.getWritableDatabase(getPassword());
     }
 
@@ -255,14 +255,10 @@ public class DBManager {
     }
 
     public void alterTables() {
-        switch (VERSION) {
-            case 47:
-                Cursor cursor = getDatabase().rawQuery("select * from  [Orders] limit 1", new String[]{});
-                boolean exist = cursor.getColumnIndex("ord_timeStarted") > -1;
-                if (!exist) {
-                    getDatabase().execSQL("ALTER TABLE [Orders] ADD COLUMN [ord_timeStarted] [datetime] NULL");
-                }
-                break;
+        Cursor cursor = getDatabase().rawQuery("select * from  [Orders] limit 1", new String[]{});
+        boolean exist = cursor.getColumnIndex("ord_timeStarted") > -1;
+        if (!exist) {
+            getDatabase().execSQL("ALTER TABLE [Orders] ADD COLUMN [ord_timeStarted] [datetime] NULL");
         }
     }
 
@@ -279,16 +275,12 @@ public class DBManager {
             for (String sql : CREATE_INDEX) {
                 db.execSQL(sql);
             }
-
             if (getDatabase() != null && getDatabase().isOpen())
                 getDatabase().close();
-
             myPref.setDBpath(db.getPath());
-
             setDatabase(db);
-
-            SynchMethods sm = new SynchMethods(managerInstance);
-            sm.synchReceive(type);
+//            SynchMethods sm = new SynchMethods(managerInstance);
+//            sm.synchReceive(type, context);
         }
 
         @Override
@@ -302,36 +294,34 @@ public class DBManager {
     }
 
     public boolean unsynchItemsLeft() {
-        CustomersHandler custHandler = new CustomersHandler(activity);
-
-        OrdersHandler ordersHandler = new OrdersHandler(activity);
-        PaymentsHandler payHandler = new PaymentsHandler(activity);
-        TemplateHandler templateHandler = new TemplateHandler(activity);
-        ConsignmentTransactionHandler consHandler = new ConsignmentTransactionHandler(activity);
-
+        CustomersHandler custHandler = new CustomersHandler(context);
+        OrdersHandler ordersHandler = new OrdersHandler(context);
+        PaymentsHandler payHandler = new PaymentsHandler(context);
+        TemplateHandler templateHandler = new TemplateHandler(context);
+        ConsignmentTransactionHandler consHandler = new ConsignmentTransactionHandler(context);
         return custHandler.unsyncCustomersLeft() || ordersHandler.unsyncOrdersLeft() || payHandler.unsyncPaymentsLeft()
                 || templateHandler.unsyncTemplatesLeft() || consHandler.unsyncConsignmentsLeft();
     }
 
-    public void synchReceive() {
+//    public void synchReceive(Activity activity) {
+//        SynchMethods sm = new SynchMethods(managerInstance);
+//        sm.synchReceive(type, activity);
+//    }
+
+//    public void synchSend(boolean sendAndReceive, boolean isFromMainMenu, Activity activity) {
+//        this.sendAndReceive = sendAndReceive;
+//        SynchMethods sm = new SynchMethods(managerInstance);
+//        sm.synchSend(type, isFromMainMenu, activity);
+//    }
+
+    public void forceSend(Activity activity) {
         SynchMethods sm = new SynchMethods(managerInstance);
-        sm.synchReceive(type);
+        sm.synchForceSend(activity);
     }
 
-    public void synchSend(boolean sendAndReceive, boolean isFromMainMenu) {
-        this.sendAndReceive = sendAndReceive;
+    public void synchDownloadOnHoldDetails(Intent intent, String ordID, int type, Activity activity) {
         SynchMethods sm = new SynchMethods(managerInstance);
-        sm.synchSend(type, isFromMainMenu);
-    }
-
-    public void forceSend() {
-        SynchMethods sm = new SynchMethods(managerInstance);
-        sm.synchForceSend();
-    }
-
-    public void synchDownloadOnHoldDetails(Intent intent, String ordID, int type) {
-        SynchMethods sm = new SynchMethods(managerInstance);
-        sm.synchGetOnHoldDetails(type, intent, ordID);
+        sm.synchGetOnHoldDetails(type, intent, ordID, activity);
     }
 
 //    public void synchSendOrdersOnHold(boolean downloadHoldList, boolean checkOutOnHold) {
@@ -339,9 +329,9 @@ public class DBManager {
 //        sm.synchSendOnHold(downloadHoldList, checkOutOnHold);
 //    }
 
-    public boolean isSendAndReceive() {
-        return this.sendAndReceive;
-    }
+//    public boolean isSendAndReceive() {
+//        return this.sendAndReceive;
+//    }
 
     private final String[] CREATE_INDEX = {
             "CREATE INDEX prod_id_index ON EmpInv (prod_id)",
@@ -371,7 +361,7 @@ public class DBManager {
             + "[addr_s_country]varchar,[addr_s_zipcode]varchar,[qb_cust_id]varchar, [addr_b_type]VARCHAR, [addr_s_type]VARCHAR, PRIMARY KEY ([addr_id],"
             + "[cust_id]) )";
 
-    private final String CREATE_SALES_ASSOCIATE = "CREATE TABLE [SalesAssociate]([emp_id] [int] PRIMARY KEY NOT NULL,"
+    private final String CREATE_SALES_ASSOCIATE = "CREATE TABLE [Clerk]([emp_id] [int] PRIMARY KEY NOT NULL,"
             + "[zone_id] [varchar](50),[emp_name][varchar](50),[emp_init] [varchar](50),[emp_pcs] [varchar](50)," +
             "[emp_lastlogin] [datetime],[emp_pos][int],[qb_emp_id] [varchar](50),[qb_salesrep_id] [varchar](50)," +
             "[isactive] [int],[tax_default][varchar](50),[loc_items] [tinyint]NOT NULL,[_rowversion][varchar](50)," +
@@ -649,7 +639,7 @@ public class DBManager {
 
     private final String CREATE_PAYMENTS_XML = "CREATE TABLE [PaymentsXML]([app_id] [varchar](100) PRIMARY KEY NOT NULL, [payment_xml] [varchar] NOT NULL)";
 
-    private final String[] TABLE_NAME = new String[]{"Address", "Categories", "SalesAssociate", "Customers", "DrawDateInfo", "EmpInv",
+    private final String[] TABLE_NAME = new String[]{"Address", "Categories", "Clerk", "Customers", "DrawDateInfo", "EmpInv",
             "Employees", "InvProducts", "InvoicePayments", "Invoices", "OrderProduct", "Orders", "PayMethods",
             "Payments", "PaymentsDeclined", "PriceLevel", "PriceLevelItems", "Printers", "Printers_Locations", "ProdCatXRef",
             "ProductChainXRef", "Product_addons", "Products", "Products_Images", "PublicVariables", "Reasons",

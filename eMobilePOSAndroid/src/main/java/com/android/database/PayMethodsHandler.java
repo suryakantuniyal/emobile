@@ -1,6 +1,7 @@
 package com.android.database;
 
 import android.app.Activity;
+import android.content.Context;
 import android.database.Cursor;
 
 import com.android.dao.PayMethodsDAO;
@@ -37,7 +38,7 @@ public class PayMethodsHandler {
 
     private static final String table_name = "PayMethods";
 
-    public PayMethodsHandler(Activity activity) {
+    public PayMethodsHandler(Context activity) {
         attrHash = new HashMap<>();
         sb1 = new StringBuilder();
         sb2 = new StringBuilder();
@@ -105,10 +106,6 @@ public class PayMethodsHandler {
     public void emptyTable() {
         DBManager.getDatabase().execSQL("DELETE FROM " + table_name);
         PaymentMethodDAO.truncate();
-    }
-
-    public List<PaymentMethod> getPayMethod() {
-        return PayMethodsDAO.getAllSortByName();
     }
 
 

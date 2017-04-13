@@ -59,16 +59,12 @@ public class SAXPostHandler extends DefaultHandler {
 	}
 
 
-	public SAXPostHandler(Activity activity) {
-
-		temp_data = new HashMap<String, Integer>();
-		list_data = new ArrayList<String>();
+	public SAXPostHandler() {
+		temp_data = new HashMap<>();
+		list_data = new ArrayList<>();
 		data = new StringBuilder();
-		
-		
-		dictionaryListMap = new ArrayList<HashMap<String,Integer>>();
-		dataList = new ArrayList<String[]>();
-
+		dictionaryListMap = new ArrayList<>();
+		dataList = new ArrayList<>();
 	}
 
 	@Override

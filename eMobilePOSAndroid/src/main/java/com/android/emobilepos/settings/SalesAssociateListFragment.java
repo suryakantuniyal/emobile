@@ -10,11 +10,12 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.android.dao.SalesAssociateDAO;
+import com.android.dao.ClerkDAO;
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.SalesAssociateListAdapter;
-import com.android.emobilepos.models.realms.SalesAssociate;
+import com.android.emobilepos.models.realms.Clerk;
 import com.android.support.SynchMethods;
+import com.crashlytics.android.Crashlytics;
 
 import org.xml.sax.SAXException;
 
@@ -28,7 +29,7 @@ import io.realm.RealmResults;
 public class SalesAssociateListFragment extends Fragment implements AdapterView.OnItemClickListener {
 
     private ListView list;
-    RealmResults<SalesAssociate> associates = SalesAssociateDAO.getAll();
+    RealmResults<Clerk> associates = ClerkDAO.getAll();
     private SalesAssociateListAdapter adapter;
 
     public SalesAssociateListFragment() {
@@ -50,7 +51,7 @@ public class SalesAssociateListFragment extends Fragment implements AdapterView.
         list.setAdapter(adapter);
         if (associates != null && !associates.isEmpty()) {
             SalesAssociateConfigurationActivity activity = (SalesAssociateConfigurationActivity) getActivity();
-            activity.setSelectedSalesAssociate(associates.get(0));
+            activity.setSelectedClerk(associates.get(0));
         }
         new SynchDinnindTablesConfiguration().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
@@ -59,8 +60,8 @@ public class SalesAssociateListFragment extends Fragment implements AdapterView.
     private String[] getListValues() {
         String[] vals = new String[associates.size()];
         int i = 0;
-        for (SalesAssociate associate : associates) {
-            vals[i] = String.format("%s (%s)", associate.getEmp_name(), String.valueOf(associate.getEmp_id()));
+        for (Clerk associate : associates) {
+            vals[i] = String.format("%s (%s)", associate.getEmpName(), String.valueOf(associate.getEmpId()));
             i++;
         }
         return vals;
@@ -74,9 +75,9 @@ public class SalesAssociateListFragment extends Fragment implements AdapterView.
     private void reloadGrid(int i) {
         adapter.selectedIdx = i;
         if (associates != null && !associates.isEmpty()) {
-            SalesAssociate associate = SalesAssociateDAO.getByEmpId(associates.get(i).getEmp_id());
+            Clerk associate = ClerkDAO.getByEmpId(associates.get(i).getEmpId(),true);
             SalesAssociateConfigurationActivity activity = (SalesAssociateConfigurationActivity) getActivity();
-            activity.setSelectedSalesAssociate(associate);
+            activity.setSelectedClerk(associate);
             activity.getDinningTablesGridFragment().refreshGrid();
             adapter.notifyDataSetChanged();
         }
@@ -100,8 +101,10 @@ public class SalesAssociateListFragment extends Fragment implements AdapterView.
                 SynchMethods.synchSalesAssociateDinnindTablesConfiguration(getActivity());
             } catch (SAXException e) {
                 e.printStackTrace();
+                Crashlytics.logException(e);
             } catch (IOException e) {
                 e.printStackTrace();
+                Crashlytics.logException(e);
             }
             return null;
         }

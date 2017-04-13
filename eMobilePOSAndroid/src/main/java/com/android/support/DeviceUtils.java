@@ -1,17 +1,24 @@
 package com.android.support;
 
 import android.app.Activity;
+import android.content.Context;
+import android.hardware.usb.UsbDevice;
+import android.hardware.usb.UsbManager;
 import android.os.Looper;
 import android.text.TextUtils;
+import android.util.Base64;
+import android.util.Log;
 
 import com.android.dao.DeviceTableDAO;
 import com.android.emobilepos.models.realms.Device;
-import com.starmicronics.stario.StarIOPortException;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
-import drivers.EMSBluetoothStarPrinter;
-import io.realm.RealmResults;
+import drivers.EMSDeviceDriver;
+import drivers.EMSPowaPOS;
+import drivers.EMSmePOS;
 import main.EMSDeviceManager;
 
 /**
@@ -22,10 +29,10 @@ public class DeviceUtils {
     public static String autoConnect(final Activity activity, boolean forceReload) {
         final MyPreferences myPref = new MyPreferences(activity);
         final StringBuilder sb = new StringBuilder();
-        RealmResults<Device> devices = DeviceTableDAO.getAll();
+        List<Device> devices = DeviceTableDAO.getAll();
         HashMap<String, Integer> tempMap = new HashMap<>();
         EMSDeviceManager edm = null;
-        if (forceReload) {
+        if (forceReload || Global.multiPrinterMap.size() != devices.size()) {
             int i = 0;
             for (Device device : devices) {
                 if (tempMap.containsKey(device.getId())) {
@@ -47,7 +54,11 @@ public class DeviceUtils {
                 }
             }
         }
-
+        EMSDeviceDriver usbDevice = getUSBDeviceDriver(activity);
+        if (usbDevice instanceof EMSPowaPOS) {
+            myPref.setIsMEPOS(false);
+            myPref.setIsPOWA(true);
+        }
         String _portName;
         String _peripheralName;
         if (myPref.getSwiperType() != -1)
@@ -56,7 +67,7 @@ public class DeviceUtils {
                 _portName = myPref.getSwiperMACAddress();
                 _peripheralName = Global.getPeripheralName(myPref.getSwiperType());
                 Global.btSwiper = edm.getManager();
-                if (_peripheralName.equalsIgnoreCase(Global.getPeripheralName(Global.WALKER))) {
+                if (_peripheralName.equalsIgnoreCase(Global.getPeripheralName(Global.NOMAD))) {
                     final String final_peripheralName = _peripheralName;
                     activity.runOnUiThread(new Runnable() {
                         @Override
@@ -113,6 +124,7 @@ public class DeviceUtils {
             int txtAreaSize = myPref.printerAreaSize(true, -1);
             if (myPref.getPrinterType() != Global.POWA
                     && myPref.getPrinterType() != Global.MEPOS
+                    && myPref.getPrinterType() != Global.MIURA
                     && myPref.getPrinterType() != Global.ELOPAYPOINT
                     && myPref.getPrinterType() != Global.PAT215) {
                 if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
@@ -120,17 +132,6 @@ public class DeviceUtils {
                         forceReload = true;
                     }
                 }
-//                if (myPref.getPrinterName().toUpperCase().contains("MPOP") && Global.mainPrinterManager != null) {
-//                    EMSBluetoothStarPrinter mpop = (EMSBluetoothStarPrinter) Global.mainPrinterManager.getCurrentDevice();
-//                    try {
-//                        if (mpop.getPort().retreiveStatus().offline) {
-//                            forceReload = true;
-//                        }
-//                    } catch (StarIOPortException e) {
-//                        e.printStackTrace();
-//                        forceReload = true;
-//                    }
-//                }
                 if (Global.mainPrinterManager == null || Global.mainPrinterManager.getCurrentDevice() == null
                         || forceReload) {
                     if (Global.mainPrinterManager == null) {
@@ -156,7 +157,33 @@ public class DeviceUtils {
                 else
                     sb.append(myPref.getStarIPAddress()).append(": ").append("Failed to connect\n\r");
             }
-
         return sb.toString();
+    }
+
+    public static Collection<UsbDevice> getUSBDevices(Context context) {
+        UsbManager manager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
+        HashMap<String, UsbDevice> deviceList = manager.getDeviceList();
+        return deviceList.values();
+    }
+
+    public static EMSDeviceDriver getUSBDeviceDriver(Activity context) {
+        Collection<UsbDevice> usbDevices = getUSBDevices(context);
+        MyPreferences preferences = new MyPreferences(context);
+        for (UsbDevice device : usbDevices) {
+            Log.d("USB product ID:", String.valueOf(device.getProductId()));
+            int productId = device.getProductId();
+            switch (productId) {
+                case 22321:
+                case 21541:
+                    Log.d("USB POWA detected:", "true");
+                    preferences.setIsPOWA(true);
+                    preferences.setPrinterType(Global.POWA);
+                    return new EMSPowaPOS();
+                case 9220:
+                    preferences.setIsMEPOS(true);
+                    return new EMSmePOS();
+            }
+        }
+        return null;
     }
 }

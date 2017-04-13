@@ -23,12 +23,14 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.database.DrawInfoHandler;
 import com.android.database.PaymentsHandler;
 import com.android.database.TaxesHandler;
 import com.android.emobilepos.DrawReceiptActivity;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.GroupTax;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.ivu.MersenneTwisterFast;
 import com.android.payments.EMSPayGate_Default;
@@ -66,6 +68,7 @@ import drivers.EMSNomad;
 import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
 import interfaces.EMSCallBack;
+import util.json.UIUtils;
 
 public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener {
 
@@ -96,6 +99,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
     private EMSIDTechUSB _msrUsbSams;
     private NumberUtils numberUtils = new NumberUtils();
     private GiftCardTextWatcher msrTextWatcher;
+    private AssignEmployee assignEmployee;
 
 
     @Override
@@ -104,10 +108,12 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         global = (Global) getApplication();
         activity = this;
         callBack = this;
+        assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+
         Global.isEncryptSwipe = true;
         myPref = new MyPreferences(activity);
         setContentView(R.layout.process_giftcard_layout);
-        groupTaxRate = TaxesHandler.getGroupTaxRate(myPref.getEmployeeDefaultTax());
+        groupTaxRate = new TaxesHandler(this).getGroupTaxRate(assignEmployee.getTaxDefault());
         cardInfoManager = new CreditCardInfo();
         cardSwipe = (CheckBox) findViewById(R.id.checkboxCardSwipe);
         redeemAll = (CheckBox) findViewById(R.id.checkboxRedeemAll);
@@ -160,10 +166,10 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
     public void onResume() {
 
         if (global.isApplicationSentToBackground(this))
-            global.loggedIn = false;
+            Global.loggedIn = false;
         global.stopActivityTransitionTimer();
 
-        if (hasBeenCreated && !global.loggedIn) {
+        if (hasBeenCreated && !Global.loggedIn) {
             if (global.getGlobalDlog() != null)
                 global.getGlobalDlog().dismiss();
             global.promptForMandatoryLogin(this);
@@ -177,7 +183,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         boolean isScreenOn = powerManager.isScreenOn();
         if (!isScreenOn)
-            global.loggedIn = false;
+            Global.loggedIn = false;
         global.startActivityTransitionTimer();
     }
 
@@ -282,13 +288,13 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
                     roverReader.initializeReader(activity, false);
                 } else if (_audio_reader_type.equals(Global.AUDIO_MSR_WALKER)) {
                     walkerReader = new EMSNomad();
-                    myPref.setSwiperType(Global.WALKER);
+                    myPref.setSwiperType(Global.NOMAD);
                 }
             }
 
         } else if (_audio_reader_type.equals(Global.AUDIO_MSR_WALKER)) {
             walkerReader = new EMSNomad();
-            myPref.setSwiperType(Global.WALKER);
+            myPref.setSwiperType(Global.NOMAD);
 
         } else {
             int _swiper_type = myPref.getSwiperType();
@@ -386,7 +392,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         String cardType = extras.getString("paymentmethod_type");
         payment.setPay_id(extras.getString("pay_id"));
 
-        payment.setEmp_id(myPref.getEmpID());
+        payment.setEmp_id(String.valueOf(assignEmployee.getEmpId()));
 
         if (!extras.getBoolean("histinvoices")) {
             payment.setJob_id(inv_id);
@@ -396,7 +402,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
 
         if (!myPref.getShiftIsOpen())
             payment.setClerk_id(myPref.getShiftClerkID());
-        else if (myPref.getPreferences(MyPreferences.pref_use_clerks))
+        else if (myPref.isUseClerks())
             payment.setClerk_id(myPref.getClerkID());
 
         payment.setCust_id(extras.getString("cust_id"));
@@ -511,7 +517,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
             Post httpClient = new Post();
 
             SAXParserFactory spf = SAXParserFactory.newInstance();
-            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(activity);
+            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
             urlToPost = params[0];
 
             try {
@@ -532,8 +538,8 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
                         xr.parse(inSource);
                         parsedMap = handler.getData();
                         payment.setPay_amount(parsedMap.get("AuthorizedAmount"));
-                        double due = Double.parseDouble(payment.getOriginalTotalAmount())
-                                - Double.parseDouble(payment.getPay_amount());
+                        double due = Double.parseDouble(payment.getOriginalTotalAmount() == null ? "0" : payment.getOriginalTotalAmount())
+                                - Double.parseDouble(payment.getPay_amount() == null ? "0" : payment.getPay_amount());
                         payment.setPay_dueamount(String.valueOf(due));
                         Global.amountPaid = payment.getPay_amount();
                         if (parsedMap != null && parsedMap.size() > 0 && parsedMap.get("epayStatusCode").equals("APPROVED"))
@@ -689,14 +695,16 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.exactAmountBut:
-                fieldAmountTendered.setText(fieldAmountDue.getText().toString());
-                break;
-            case R.id.processButton:
-                if (validatePaymentData())
-                    processPayment();
-                break;
+        if (UIUtils.singleOnClick(v)) {
+            switch (v.getId()) {
+                case R.id.exactAmountBut:
+                    fieldAmountTendered.setText(fieldAmountDue.getText().toString());
+                    break;
+                case R.id.processButton:
+                    if (validatePaymentData())
+                        processPayment();
+                    break;
+            }
         }
     }
 

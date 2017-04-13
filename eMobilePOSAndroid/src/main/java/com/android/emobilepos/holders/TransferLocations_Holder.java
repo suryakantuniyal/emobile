@@ -2,6 +2,7 @@ package com.android.emobilepos.holders;
 
 import android.app.Activity;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.support.DateUtils;
 import com.android.support.MyPreferences;
 
@@ -16,9 +17,9 @@ public class TransferLocations_Holder {
 	
 	public TransferLocations_Holder(Activity activity)
 	{
-		MyPreferences myPref = new MyPreferences(activity);
+//		MyPreferences myPref = new MyPreferences(activity);
 		setTrans_timecreated(DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss));
-		setEmp_id(myPref.getEmpID());
+		setEmp_id(String.valueOf(AssignEmployeeDAO.getAssignEmployee(false).getEmpId()));
 	}
 
 	public String getTrans_id() {

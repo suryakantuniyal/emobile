@@ -125,7 +125,7 @@ public class HistoryInventoryTransferDetails_FA extends BaseFragmentActivityActi
 				data = locationTo.getLoc_name();
 				break;
 			case CASE_DATE:
-				data = Global.formatToDisplayDate(trans_date, this, 0);
+				data = Global.formatToDisplayDate(trans_date,  0);
 				break;
 		}
 		return data;

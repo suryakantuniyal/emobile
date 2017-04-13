@@ -1,10 +1,9 @@
 package com.android.database;
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.database.Cursor;
 
-import com.android.emobilepos.models.Order;
+import com.android.emobilepos.models.orders.Order;
 
 import net.sqlcipher.database.SQLiteStatement;
 
@@ -24,7 +23,7 @@ public class VoidTransactionsHandler {
 
 	private HashMap<String, String> hashedValues;
 
-	public VoidTransactionsHandler(Activity activity) {
+	public VoidTransactionsHandler() {
 	}
 
 	public String getValue(String key) {

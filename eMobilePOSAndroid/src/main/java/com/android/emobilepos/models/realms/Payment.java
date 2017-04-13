@@ -1,9 +1,11 @@
 package com.android.emobilepos.models.realms;
 
 import android.app.Activity;
+import android.content.Context;
 import android.location.Location;
 import android.text.TextUtils;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.PaymentMethodDAO;
 import com.android.database.DrawInfoHandler;
 import com.android.emobilepos.models.EMVContainer;
@@ -24,6 +26,7 @@ public class Payment extends RealmObject {
 
 
     private static final long serialVersionUID = 1L;
+    private AssignEmployee assignEmployee;
     @PrimaryKey
     private String pay_id = "";
     private String group_pay_id = "";
@@ -153,21 +156,21 @@ public class Payment extends RealmObject {
     }
 
     public Payment() {
-
+        assignEmployee = AssignEmployeeDAO.getAssignEmployee(true);
     }
 
-    public Payment(Activity activity) {
-        MyPreferences myPref = new MyPreferences(activity);
+    public Payment(Context activity) {
 
         setPay_issync("0");
         setIsVoid("0");
         setStatus("1");
 
-        String date = DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss);
+        String date = DateUtils.getDateAsString(new Date(), DateUtils.DATE_PATTERN);
         setPay_timecreated(date);
         setPay_date(date);
+        assignEmployee = AssignEmployeeDAO.getAssignEmployee(true);
 
-        setEmp_id(myPref.getEmpID());
+        setEmp_id(String.valueOf(assignEmployee.getEmpId()));
         Location currLocation = Global.getCurrLocation(activity, false);
         setPay_latitude(String.valueOf(currLocation.getLatitude()));
         setPay_longitude(String.valueOf(currLocation.getLongitude()));
@@ -181,8 +184,7 @@ public class Payment extends RealmObject {
                    String isRefund, String paymentType, String creditCardType, String cardNumberEnc, String cardNumberLast4,
                    String cardExpMonth, String cardExpYear, String cardPostalCode, String cardSecurityCode, String trackOne,
                    String trackTwo, String transactionId, String authcode) {
-
-        MyPreferences myPref = new MyPreferences(activity);
+        assignEmployee = AssignEmployeeDAO.getAssignEmployee(true);
         setPay_issync("0");
         setIsVoid("0");
         setStatus("1");
@@ -199,14 +201,14 @@ public class Payment extends RealmObject {
         this.setTrack_one(trackOne);
         this.setTrack_two(trackTwo);
 
-        String date = DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss);
+        String date = DateUtils.getDateAsString(new Date(), DateUtils.DATE_PATTERN);
         setPay_timecreated(date);
         setPay_date(date);
 
-        setEmp_id(myPref.getEmpID());
+        setEmp_id(String.valueOf(assignEmployee.getEmpId()));
 
         setPay_id(paymentId);
-        setEmp_id(myPref.getEmpID());
+        setEmp_id(String.valueOf(assignEmployee.getEmpId()));
         setCust_id(customerId);
         setJob_id(jobId);
         setInv_id(invoiceId);

@@ -13,6 +13,7 @@ import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.GenerateNewID;
 import com.android.support.Global;
 import com.android.support.Post;
+import com.crashlytics.android.Crashlytics;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -41,7 +42,7 @@ public class BoloroPayment {
     public static HashMap<String, String> executeNFCCheckout(Activity activity, String xml, Payment payment) throws ParserConfigurationException, SAXException, IOException {
         isPolling = true;
         SAXParserFactory spf = SAXParserFactory.newInstance();
-        SAXProcessCardPayHandler myParser = new SAXProcessCardPayHandler(activity);
+        SAXProcessCardPayHandler myParser = new SAXProcessCardPayHandler();
         Post httpClient = new Post();
         String xmlResponse = httpClient.postData(13, activity, xml);
 
@@ -64,7 +65,7 @@ public class BoloroPayment {
 
     private static HashMap<String, String> executeBoloroPolling(Activity activity, Payment payment, boolean isPolling) {
         SAXParserFactory spf = SAXParserFactory.newInstance();
-        SAXProcessCardPayHandler myParser = new SAXProcessCardPayHandler(activity);
+        SAXProcessCardPayHandler myParser = new SAXProcessCardPayHandler();
         HashMap<String, String> response = null;
         try {
             EMSPayGate_Default payGate = new EMSPayGate_Default(activity, payment);
@@ -97,6 +98,8 @@ public class BoloroPayment {
                         try {
                             Thread.sleep(ProcessBoloro_FA.POLLING_SLEEP_TIME);
                         } catch (InterruptedException e) {
+                            e.printStackTrace();
+                            Crashlytics.logException(e);
                         }
                     } else if (response.containsKey("next_action") && response.get("next_action").equals("SUCCESS")) {
                         Realm.getDefaultInstance().beginTransaction();
@@ -121,6 +124,7 @@ public class BoloroPayment {
             } while (!failed && isPolling && !transCompleted);
         } catch (Exception e) {
             e.printStackTrace();
+            Crashlytics.logException(e);
             if (Realm.getDefaultInstance().isInTransaction()) {
                 Realm.getDefaultInstance().cancelTransaction();
             }
@@ -130,7 +134,6 @@ public class BoloroPayment {
 
     public static void seveBoloroAsInvoice(Activity activity, StoreAndForward storeAndForward, HashMap<String, String> parsedMap) {
         OrdersHandler dbOrdHandler = new OrdersHandler(activity);
-        StoredPaymentsDAO dbStoredPay = new StoredPaymentsDAO(activity);
         //remove from StoredPayment and change order to Invoice
         StringBuilder sb = new StringBuilder();
         String job_id = storeAndForward.getPayment().getJob_id();
@@ -154,7 +157,7 @@ public class BoloroPayment {
         dbOrdHandler.updateOrderComment(job_id, sb.toString());
 
         //Remove as pending stored & forward if no more payments are pending to be processed.
-        if (dbStoredPay.getCountPendingStoredPayments(job_id) <= 0)
+        if (StoredPaymentsDAO.getCountPendingStoredPayments(job_id) <= 0)
             dbOrdHandler.updateOrderStoredFwd(job_id, "0");
 
     }

@@ -1,6 +1,7 @@
 package com.android.saxhandler;
 
 import android.app.Activity;
+import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
 import org.xml.sax.Attributes;
@@ -155,7 +156,6 @@ public class SAXProcessCardPayHandler extends DefaultHandler
 
 	}*/
 	
-	private Activity activity;
 	private boolean isTable;
 	private boolean isAttribute = false;
 	
@@ -185,11 +185,7 @@ public class SAXProcessCardPayHandler extends DefaultHandler
 	}
 
 
-	public SAXProcessCardPayHandler(Activity activity) {
-		
-		this.activity = activity;
-		
-		
+	public SAXProcessCardPayHandler() {
 		data = new StringBuilder();
 	}
 

@@ -1,6 +1,7 @@
 package com.android.database;
 
 import android.app.Activity;
+import android.content.Context;
 import android.database.Cursor;
 
 import net.sqlcipher.database.SQLiteStatement;
@@ -36,9 +37,9 @@ public class InvProdHandler {
 	
 	public static final String table_name = "InvProducts";
 
-	public InvProdHandler(Activity activity) {
-		attrHash = new HashMap<String, Integer>();
-		addrData = new ArrayList<String[]>();
+	public InvProdHandler(Context activity) {
+		attrHash = new HashMap<>();
+		addrData = new ArrayList<>();
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();
 		new DBManager(activity);

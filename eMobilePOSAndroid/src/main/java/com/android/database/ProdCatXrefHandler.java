@@ -1,6 +1,7 @@
 package com.android.database;
 
 import android.app.Activity;
+import android.content.Context;
 
 import net.sqlcipher.database.SQLiteStatement;
 
@@ -26,9 +27,9 @@ public class ProdCatXrefHandler {
 
 	public static final String table_name = "ProdCatXref";
 
-	public ProdCatXrefHandler(Activity activity) {
-		attrHash = new HashMap<String, Integer>();
-		addrData = new ArrayList<String[]>();
+	public ProdCatXrefHandler(Context activity) {
+		attrHash = new HashMap<>();
+		addrData = new ArrayList<>();
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();
 		initDictionary();

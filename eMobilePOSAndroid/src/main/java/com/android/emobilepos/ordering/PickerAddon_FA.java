@@ -22,7 +22,7 @@ import android.widget.TextView;
 import com.android.database.ProductAddonsHandler;
 import com.android.database.ProductsHandler;
 import com.android.emobilepos.R;
-import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.ParentAddon;
 import com.android.emobilepos.models.Product;
 import com.android.support.Global;
@@ -176,7 +176,7 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
         LinearLayout addonParentLL = (LinearLayout) findViewById(R.id.addonParentHolder);
 
         if (parentAddons.size() >= 1) {
-            listParentViews = new ArrayList<View>();
+            listParentViews = new ArrayList<>();
             int pos = 0;
             for (ParentAddon parentAddon : parentAddons) {
                 final View view = inflater.inflate(R.layout.catalog_gridview_adapter, null);
@@ -220,16 +220,16 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
         temp = temp.add(addedAddon);
         if (temp.compareTo(new BigDecimal("0")) == -1)
             temp = new BigDecimal("0");
-        orderProduct.setOverwrite_price(temp);
-        orderProduct.setItemSubtotal(Global.getRoundBigDecimal(temp));
+//        orderProduct.setOverwrite_price(temp);
+//        orderProduct.setItemSubtotal(Global.getRoundBigDecimal(temp));
         orderProduct.setItemTotal(Global.getRoundBigDecimal(temp));
         orderProduct.setOrdprod_desc(product.getProdDesc() + _ord_desc.toString());
         orderProduct.setProd_sku(product.getProd_sku());
         orderProduct.setProd_upc(product.getProd_upc());
-        int idx = global.orderProducts.indexOf(orderProduct);
+        int idx = global.order.getOrderProducts().indexOf(orderProduct);
         if (idx > -1) {
-            global.orderProducts.remove(idx);
-            global.orderProducts.add(orderProduct);
+            global.order.getOrderProducts().remove(idx);
+            global.order.getOrderProducts().add(orderProduct);
         }
     }
 

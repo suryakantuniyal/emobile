@@ -1,6 +1,6 @@
 package com.android.database;
 
-import android.app.Activity;
+import android.content.Context;
 import android.database.Cursor;
 
 import com.android.emobilepos.models.GroupTax;
@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+
+import util.StringUtil;
 
 public class TaxesHandler {
 
@@ -40,9 +42,9 @@ public class TaxesHandler {
 
     private static final String table_name = "Taxes";
 
-    public TaxesHandler(Activity activity) {
-        attrHash = new HashMap<String, Integer>();
-        addrData = new ArrayList<String[]>();
+    public TaxesHandler(Context activity) {
+        attrHash = new HashMap<>();
+        addrData = new ArrayList<>();
         sb1 = new StringBuilder();
         sb2 = new StringBuilder();
         myPref = new MyPreferences(activity);
@@ -188,10 +190,12 @@ public class TaxesHandler {
         return list;
     }
 
-    public static List<GroupTax> getGroupTaxRate(String taxGroupId) {
+    public List<GroupTax> getGroupTaxRate(String taxGroupId) {
         List<GroupTax> list = new ArrayList<GroupTax>();
         GroupTax data = new GroupTax();
-        Cursor cursor = DBManager.getDatabase().rawQuery("SELECT t.tax_name,t.tax_rate/100 as 'tax_rate',t.prTax FROM Taxes t INNER JOIN Taxes_Group tg ON t.tax_id = tg.taxId WHERE tg.taxGroupId ='" + taxGroupId + "' ORDER BY t.tax_name ASC", null);
+        Cursor cursor = DBManager.getDatabase().rawQuery("SELECT t.tax_name,t.tax_rate/100 as 'tax_rate',t.prTax " +
+                "FROM Taxes t INNER JOIN Taxes_Group tg ON t.tax_id = tg.taxId " +
+                "WHERE tg.taxGroupId ='" + StringUtil.nullStringToEmpty(taxGroupId) + "' ORDER BY t.tax_name ASC", null);
         if (cursor.moveToFirst()) {
             do {
                 data.setTaxName(cursor.getString(cursor.getColumnIndex(tax_name)));
@@ -207,7 +211,7 @@ public class TaxesHandler {
 
     public Tax getTax(String taxID, String taxType, double prodPrice) {
         Tax tax = new Tax(taxID);
-
+        tax.setTaxType(taxType);
         String taxRate;
 
         String subquery1 = "SELECT tax_rate,tax_name, tax_type FROM ";
@@ -217,8 +221,8 @@ public class TaxesHandler {
 
         sb.append(subquery1).append(table_name).append(subquery2).append(taxID).append("'");
 
-        if (myPref.getPreferences(MyPreferences.pref_retail_taxes)) {
-            sb.append(" AND tax_code_id = '").append(taxType).append("'");
+        if (myPref.isRetailTaxes()) {
+            sb.append(" AND tax_code_id IS NOT NULL AND tax_code_id != '' AND tax_code_id = '").append(taxType).append("'");
         }
 
         Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
@@ -233,7 +237,7 @@ public class TaxesHandler {
 
         cursor.close();
 
-        if (isGroupTax && myPref.getPreferences(MyPreferences.pref_retail_taxes) && !taxType.isEmpty()) {
+        if (isGroupTax && myPref.isRetailTaxes() && !taxType.isEmpty()) {
             sb.setLength(0);
             sb.append("SELECT tax_rate,taxLowRange,taxHighRange FROM Taxes_Group WHERE taxgroupid= ? AND taxcode_id = ?");
             cursor = DBManager.getDatabase().rawQuery(sb.toString(), new String[]{taxID, taxType});
@@ -323,7 +327,7 @@ public class TaxesHandler {
 
         sb.append(subquery1).append(table_name).append(subquery2).append(taxID).append("'");
 
-        if (myPref.getPreferences(MyPreferences.pref_retail_taxes)) {
+        if (myPref.isRetailTaxes()) {
             sb.append(" AND tax_code_id = '").append(taxType).append("'");
         }
 

@@ -33,6 +33,7 @@ import com.android.support.Global;
 import com.android.support.NetworkUtils;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.crashlytics.android.Crashlytics;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -75,7 +76,6 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
         btnProcessAll = (Button) findViewById(R.id.btnProcessAll);
         btnProcessAll.setOnClickListener(this);
         btnProcessAll.setEnabled(true);
-        dbStoredPay = new StoredPaymentsDAO(this);
         RecyclerView listView = (RecyclerView) findViewById(R.id.listView);
         storeAndForwards = realm.where(StoreAndForward.class).findAll();
         RealmChangeListener<RealmResults<StoreAndForward>> changeListener = new RealmChangeListener<RealmResults<StoreAndForward>>() {
@@ -153,7 +153,7 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
             OrdersHandler dbOrdHandler = new OrdersHandler(activity);
             Post httpClient = new Post();
             SAXParserFactory spf = SAXParserFactory.newInstance();
-            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(activity);
+            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
             String xml = httpClient.postData(13, activity, verify_payment_xml);
 
             if (xml.equals(Global.TIME_OUT) || xml.equals(Global.NOT_VALID_URL) || xml.isEmpty()) {
@@ -222,7 +222,7 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
             OrdersHandler dbOrdHandler = new OrdersHandler(activity);
             Post httpClient = new Post();
             SAXParserFactory spf = SAXParserFactory.newInstance();
-            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(activity);
+            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
             String xml = httpClient.postData(13, activity, charge_xml);
             if (xml.equals(Global.TIME_OUT) || xml.equals(Global.NOT_VALID_URL) || xml.isEmpty()) {
                 //mark StoredPayment for retry
@@ -374,11 +374,16 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
 
                         } catch (ParserConfigurationException e) {
                             e.printStackTrace();
+                            Crashlytics.logException(e);
                         } catch (SAXException e) {
                             e.printStackTrace();
+                            Crashlytics.logException(e);
                         } catch (IOException e) {
                             e.printStackTrace();
+                            Crashlytics.logException(e);
                         } catch (Exception e) {
+                            e.printStackTrace();
+                            Crashlytics.logException(e);
                             StoredPaymentsDAO.updateStoreForwardPaymentToRetry(storeAndForward);
                         }
 

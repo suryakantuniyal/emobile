@@ -2,6 +2,7 @@ package com.android.database;
 
 import android.app.Activity;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 
 import com.android.emobilepos.models.TimeClock;
@@ -31,9 +32,9 @@ public class TimeClockHandler
 	private HashMap<String, Integer> attrHash;
 	private static final String table_name = "TimeClock";
 
-	public TimeClockHandler(Activity activity) {
+	public TimeClockHandler(Context activity) {
 
-		attrHash = new HashMap<String, Integer>();
+		attrHash = new HashMap<>();
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();
 		new DBManager(activity);

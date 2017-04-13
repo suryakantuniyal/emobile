@@ -9,7 +9,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.R;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -27,6 +26,7 @@ import drivers.EMSIngenico;
 import drivers.EMSIngenicoEVO;
 import drivers.EMSKDC500;
 import drivers.EMSMagtekAudioCardReader;
+import drivers.EMSMiura;
 import drivers.EMSNomad;
 import drivers.EMSOT310;
 import drivers.EMSOneil4te;
@@ -46,32 +46,17 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
     private AlertDialog.Builder dialogBuilder;
     private Activity activity;
 
-    EMSDeviceDriver aDevice = null;
+    private EMSDeviceDriver aDevice = null;
     private EMSDeviceManager instance;
-
-	/* Singleton */
-    //private static EMSDeviceManager instance = new EMSDeviceManager();
 
     public EMSDeviceManager() {
         instance = this;
-        return;
     }
 
 
     public EMSDeviceManager getManager() {
-
-        //instance = new EMSDeviceManager();
         return instance;
     }
-    /*
-    public  EMSDeviceManager getInstance()
-	{
-		return instance;
-	}
-	*/
-
-	/* Generic */
-
 
     public void loadDrivers(Activity activity, int type, boolean isTCP) {
 
@@ -95,6 +80,10 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 break;
             case Global.BIXOLON:
                 aDevice = new EMSBixolon();
+                aDevice.connect(activity, -1, false, instance);
+                break;
+            case Global.MIURA:
+                aDevice = new EMSMiura();
                 aDevice.connect(activity, -1, false, instance);
                 break;
             case Global.ZEBRA:
@@ -123,7 +112,6 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 break;
             case Global.PAT215:
                 aDevice = new EMSPAT215();
-//                aDevice.autoConnect(activity,instance,0,false,"","");
                 aDevice.connect(activity, -1, true, instance);
                 break;
             case Global.EM100:
@@ -146,7 +134,7 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 aDevice = new EMSHandpoint();
                 aDevice.connect(activity, -1, false, instance);
                 break;
-            case Global.WALKER:
+            case Global.NOMAD:
                 aDevice = new EMSNomad();
                 aDevice.connect(activity, -1, false, instance);
                 break;
@@ -227,7 +215,7 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
             case Global.MEPOS:
                 aDevice = new EMSmePOS();
                 break;
-            case Global.WALKER:
+            case Global.NOMAD:
                 aDevice = new EMSNomad();
                 break;
             case Global.ELOPAYPOINT:
@@ -236,11 +224,12 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
             case Global.ICMPEVO:
                 aDevice = new EMSIngenicoEVO();
                 break;
+            case Global.MIURA:
+                aDevice = new EMSMiura();
+                break;
         }
-        if (aDevice != null)
-            return aDevice.autoConnect(activity, instance, paperSize, isPOSPrinter, portName, portNumber);
+        return aDevice != null && aDevice.autoConnect(activity, instance, paperSize, isPOSPrinter, portName, portNumber);
 
-        return false;
     }
 
 
@@ -250,7 +239,7 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
         dialogBuilder = new AlertDialog.Builder(activity);
 
         String[] values = new String[]{"Thermal POS Printer", "Portable Printer"};
-        typesAdapter = new ArrayAdapter<String>(activity, android.R.layout.simple_list_item_1, values);
+        typesAdapter = new ArrayAdapter<>(activity, android.R.layout.simple_list_item_1, values);
 
         listViewPrinterType.setAdapter(typesAdapter);
         listViewPrinterType.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -260,7 +249,6 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                                     long arg3) {
                 promptDialog.dismiss();
                 if (pos == 0)
-
                     promptStarPrinterSize(true);
                 else
                     promptStarPrinterSize(false);
@@ -284,7 +272,7 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
 
         String[] values = new String[]{"2inch (58mm)", "3inch (78mm)", "4inch (112mm)"};
         final int[] paperSize = new int[]{32, 48, 69};
-        bondedAdapter = new ArrayAdapter<String>(activity, android.R.layout.simple_list_item_1, values);
+        bondedAdapter = new ArrayAdapter<>(activity, android.R.layout.simple_list_item_1, values);
 
         listViewPaperSizes.setAdapter(bondedAdapter);
 
@@ -311,9 +299,6 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
         promptDialog.show();
     }
 
-
-    /* Printer */
-    public EMSPrintingDelegate printingDelegate;
     private EMSDeviceManagerPrinterDelegate currentDevice;
 
     public EMSDeviceManagerPrinterDelegate getCurrentDevice() {
@@ -363,7 +348,5 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
             alert.setMessage("Failed to connect device: \n" + err);
             alert.show();
         }
-
-
     }
 }

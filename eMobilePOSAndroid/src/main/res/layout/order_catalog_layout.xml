@@ -46,6 +46,44 @@
             android:layout_weight="0.40" />
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/categoriesWrapLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/categoriesInnerWrapLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/categoriesBackButton"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="&lt;"
+                android:layout_gravity="center"/>
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/categoriesRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/catalog_image_size"
+                android:background="@color/white">
+            </android.support.v7.widget.RecyclerView>
+
+        </LinearLayout>
+        <TextView
+            android:id="@+id/categoriesBannerTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:background="@color/green"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:text="Category"/>
+
+    </LinearLayout>
+
     <ListView
         android:id="@+id/catalogListview"
         android:layout_width="match_parent"
@@ -57,25 +95,5 @@
         android:paddingTop="5dp"
         android:scrollingCache="false" >
     </ListView>
-
-    <LinearLayout
-        android:id="@+id/categoriesButtonLayoutHolder"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/add_orders_bottom_section_size"
-        android:background="#262526"
-        android:paddingTop="5dp"
-        android:paddingBottom="5dp"
-        android:paddingLeft="20dp">
-
-        <Button
-            style="@style/action_button_text_appearance"
-            android:id="@+id/buttonAllCategories"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:background="@drawable/action_button_selector"
-            android:textSize="@dimen/ordering_checkout_btn_txt_size"
-            android:text="All"
-            android:layout_gravity="center_vertical"/>
-    </LinearLayout>
 
 </LinearLayout>

@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.database.DBManager;
 import com.android.database.MemoTextHandler;
 import com.android.database.OrderProductsHandler;
@@ -24,12 +25,12 @@ import com.android.database.OrdersHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.OrderProductListAdapter;
 import com.android.emobilepos.adapters.SplittedOrderSummaryAdapter;
-import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.OrderSeatProduct;
 import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.support.DateUtils;
-import com.android.support.GenerateNewID;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.SynchMethods;
@@ -59,6 +60,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
     private LayoutInflater inflater;
     public SplitedOrder restaurantSplitedOrder;
     private LinearLayout receiptPreview;
+    private AssignEmployee assignEmployee;
 
     @Nullable
     @Override
@@ -67,6 +69,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                 container, false);
         this.inflater = inflater;
         myPref = new MyPreferences(getActivity());
+        assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
         LinearLayout previewContainer = (LinearLayout) detailView.findViewById(R.id.receiptPreviewContainer);
         ViewGroup.LayoutParams params = previewContainer.getLayoutParams();
         params.width = myPref.getPrintPreviewLayoutWidth();
@@ -102,7 +105,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         TextView footer3 = (TextView) detailView.findViewById(R.id.footerLine3textView);
         orderProductSection = (LinearLayout) detailView.findViewById(R.id.order_products_section_linearlayout);
         receiptPreview = (LinearLayout) detailView.findViewById(R.id.receiptPreviewContainer);
-        deviceName.setText(String.format("%s(%s)", myPref.getEmpName(), myPref.getEmpID()));
+        deviceName.setText(String.format("%s(%s)", assignEmployee.getEmpName(), String.valueOf(assignEmployee.getEmpId())));
         orderDate.setText(DateUtils.getDateAsString(new Date(), "MMM/dd/yyyy"));
 
         if (header[0] != null && !header[0].isEmpty()) {
@@ -193,6 +196,8 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                         orderSummaryFa.getTax(), orderSummaryFa.getDiscount(), Global.getBigDecimalNum(splitedOrder.ord_subtotal),
                         Global.getBigDecimalNum(splitedOrder.ord_discount));
                 orderTaxes = orderTaxes.add(taxesCalculator.getTaxableAmount());
+                splitedOrder.setListOrderTaxes(taxesCalculator.getListOrderTaxes());
+
             }
         }
         orderGranTotal = orderSubtotal.subtract(itemDiscountTotal).setScale(6, RoundingMode.HALF_UP)
@@ -249,6 +254,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                         orderSummaryFa.getTax(), orderSummaryFa.getDiscount(), Global.getBigDecimalNum(splitedOrder.ord_subtotal),
                         Global.getBigDecimalNum(splitedOrder.ord_discount));
                 orderTaxes = orderTaxes.add(taxesCalculator.getTaxableAmount());
+                splitedOrder.setListOrderTaxes(taxesCalculator.getListOrderTaxes());
             }
             orderProductSection.addView(productSectionLL);
         }
@@ -261,12 +267,12 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         splitedOrder.ord_taxamount = orderTaxes.toString();
         splitedOrder.ord_discount = globalDiscountTotal.toString();
         splitedOrder.ord_lineItemDiscount = itemDiscountTotal.toString();
-        subtotal.setText(Global.formatDoubleStrToCurrency(orderSubtotal.toString()));
-        lineItemDiscountTotal.setText(Global.formatDoubleStrToCurrency(itemDiscountTotal.toString()));
-        taxTotal.setText(Global.formatDoubleStrToCurrency(orderTaxes.toString()));
-        granTotal.setText(Global.formatDoubleStrToCurrency(orderGranTotal.toString()));
+        subtotal.setText(Global.formatDoubleToCurrency(orderSubtotal.doubleValue()));
+        lineItemDiscountTotal.setText(Global.formatDoubleToCurrency(itemDiscountTotal.doubleValue()));
+        taxTotal.setText(Global.formatDoubleToCurrency(orderTaxes.doubleValue()));
+        granTotal.setText(Global.formatDoubleToCurrency(orderGranTotal.doubleValue()));
         orderId.setText(splitedOrder.ord_id);
-        globalDiscountTextView.setText(Global.formatDoubleStrToCurrency(globalDiscountTotal.toString()));
+        globalDiscountTextView.setText(Global.formatDoubleToCurrency(globalDiscountTotal.doubleValue()));
     }
 
     @Override
@@ -342,13 +348,11 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB();
         Global global = (Global) getActivity().getApplication();
         OrderProductsHandler productsHandler = new OrderProductsHandler(getActivity());
-        GenerateNewID idGen = new GenerateNewID(getActivity());
         SplittedOrderSummary_FA summaryFa = (SplittedOrderSummary_FA) getActivity();
-        String nextOrderID;
         if (summaryFa.getOrderSummaryFR().getGridView().getAdapter().getCount() > 1) {
             for (OrderProduct product : splitedOrder.getOrderProducts()) {
-                if (global.orderProducts.contains(product)) {
-                    global.orderProducts.remove(product);
+                if (global.order.getOrderProducts().contains(product)) {
+                    global.order.getOrderProducts().remove(product);
                 }
             }
             if (summaryFa.splitType != SplittedOrderSummary_FA.SalesReceiptSplitTypes.SPLIT_EQUALLY) {
@@ -374,18 +378,16 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                 splitedOrder.isOnHold = "0";
                 global.order.isOnHold = "0";
                 global.order.processed = "10";
+                splitedOrder.total_lines = String.valueOf(splitedOrder.getOrderProducts().size());
                 global.order.total_lines = String.valueOf(splitedOrder.getOrderProducts().size());
-                splitedOrder.ord_id = global.order.ord_id;
-
                 if (summaryFa.splitType == SplittedOrderSummary_FA.SalesReceiptSplitTypes.SPLIT_EQUALLY) {
                     for (OrderSeatProduct seatProduct : summaryFa.orderSeatProducts) {
                         if (seatProduct.rowType == OrderProductListAdapter.RowType.TYPE_ITEM && seatProduct.orderProduct != null) {
                             splitedOrder.getOrderProducts().add(seatProduct.orderProduct);
                         }
                     }
-                    splitedOrder.total_lines = String.valueOf(splitedOrder.getOrderProducts().size());
                     splitedOrder.syncOrderProductIds();
-                    ordersHandler.insert(global.order);
+                    ordersHandler.insert(splitedOrder);
                 } else {
                     splitedOrder.total_lines = String.valueOf(splitedOrder.getOrderProducts().size());
                     splitedOrder.syncOrderProductIds();
@@ -393,24 +395,25 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                 }
                 global.encodedImage = "";
                 productsHandler.insert(splitedOrder.getOrderProducts());
-                if (global.listOrderTaxes != null && global.listOrderTaxes.size() > 0) {
-                    ordTaxesDB.insert(global.listOrderTaxes, global.order.ord_id);
+                if (splitedOrder.getListOrderTaxes() != null && splitedOrder.getListOrderTaxes().size() > 0) {
+                    ordTaxesDB.insert(splitedOrder.getListOrderTaxes(), splitedOrder.ord_id);
                 }
                 DBManager dbManager = new DBManager(getActivity());
                 SynchMethods sm = new SynchMethods(dbManager);
-                sm.synchSendOnHold(false, true);
+                sm.synchSendOnHold(false, true, getActivity());
             } else if (summaryFa.splitType == SplittedOrderSummary_FA.SalesReceiptSplitTypes.SPLIT_EQUALLY) {
-                splitedOrder.ord_id = global.order.ord_id;
-                splitedOrder.syncOrderProductIds();
-            } else {
-                nextOrderID = idGen.getNextID(GenerateNewID.IdType.ORDER_ID);
-                splitedOrder.ord_id = nextOrderID;
                 splitedOrder.processed = "10";
-                splitedOrder.isOnHold = "1";
+                splitedOrder.isOnHold = "0";
                 splitedOrder.syncOrderProductIds();
                 ordersHandler.insert(splitedOrder);
                 productsHandler.insert(splitedOrder.getOrderProducts());
-                ordTaxesDB.insert(global.listOrderTaxes, splitedOrder.ord_id);
+            } else {
+                splitedOrder.processed = "10";
+                splitedOrder.isOnHold = "0";
+                splitedOrder.syncOrderProductIds();
+                ordersHandler.insert(splitedOrder);
+                productsHandler.insert(splitedOrder.getOrderProducts());
+                ordTaxesDB.insert(splitedOrder.getListOrderTaxes(), splitedOrder.ord_id);
             }
             Receipt_FR.updateLocalInventory(getActivity(), splitedOrder.getOrderProducts(), false);
             if (Global.getBigDecimalNum(splitedOrder.gran_total).compareTo(new BigDecimal(0)) != -1) {
@@ -447,7 +450,8 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         SplittedOrderSummary_FA summaryFa = (SplittedOrderSummary_FA) getActivity();
         summaryFa.checkoutCount++;
         if (resultCode == SplittedOrderSummary_FA.NavigationResult.PAYMENT_SELECTION_VOID.getCode()) {
-            summaryFa.voidTransaction(false);
+            summaryFa.voidTransaction(false, restaurantSplitedOrder.ord_id);
+            removeCheckoutOrder(summaryFa);
         } else if (summaryFa.splitType == SplittedOrderSummary_FA.SalesReceiptSplitTypes.SPLIT_EQUALLY
                 && resultCode != SplittedOrderSummary_FA.NavigationResult.BACK_SELECT_PAYMENT.getCode()) {
             removeCheckoutOrder(summaryFa);
@@ -471,7 +475,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
             Global global = (Global) getActivity().getApplication();
             for (OrderProduct product : restaurantSplitedOrder.getOrderProducts()) {
                 product.setOrd_id(global.order.ord_id);
-                global.orderProducts.add(product);
+                global.order.getOrderProducts().add(product);
                 if (summaryFa.splitType != SplittedOrderSummary_FA.SalesReceiptSplitTypes.SPLIT_EQUALLY) {
                     global.order.ord_subtotal = Global.getBigDecimalNum(global.order.ord_subtotal)
                             .add(Global.getBigDecimalNum(restaurantSplitedOrder.ord_subtotal)).toString();
@@ -487,7 +491,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
             OrderProductsHandler productsHandler = new OrderProductsHandler(getActivity());
             ordersHandler.insert(global.order);
             productsHandler.insert(restaurantSplitedOrder.getOrderProducts());
-            orderTaxesDB.insert(global.listOrderTaxes, global.order.ord_id);
+            orderTaxesDB.insert(global.order.getListOrderTaxes(), global.order.ord_id);
             ordersHandler.deleteOrder(restaurantSplitedOrder.ord_id);
 
         }
@@ -500,6 +504,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         if (!adapter.isEmpty()) {
             adapter.setSelectedIndex(0);
             restaurantSplitedOrder = (SplitedOrder) adapter.getItem(0);
+            summaryFa.getOrderDetailsFR().setReceiptOrder(restaurantSplitedOrder);
         }
     }
 

@@ -21,12 +21,14 @@ import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.TextView;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.database.CustomersHandler;
 import com.android.database.InvoicePaymentsHandler;
 import com.android.database.PaymentsHandler;
 import com.android.database.TaxesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.GroupTax;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCheckHandler;
@@ -35,6 +37,7 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NumberUtils;
 import com.android.support.Post;
+import com.crashlytics.android.Crashlytics;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -47,6 +50,8 @@ import java.util.List;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+
+import util.json.UIUtils;
 
 public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChangeListener, OnClickListener {
 
@@ -89,6 +94,7 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
     private EditText subtotal, tax1, tax2, amountField;//,tipAmount,promptTipField
     private List<GroupTax> groupTaxRate;
     private NumberUtils numberUtils = new NumberUtils();
+    private AssignEmployee assignEmployee;
 
 
     @Override
@@ -96,13 +102,15 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
         super.onCreate(savedInstanceState);
         extras = this.getIntent().getExtras();
         activity = this;
+        assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+
         myPref = new MyPreferences(activity);
         String custTaxCode;
 
         if (myPref.isCustSelected()) {
             custTaxCode = myPref.getCustTaxCode();
         } else {
-            custTaxCode = myPref.getEmployeeDefaultTax();
+            custTaxCode = assignEmployee.getTaxDefault();
         }
 
         if (myPref.getPreferences(MyPreferences.pref_process_check_online)) {
@@ -117,7 +125,7 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
         tax2 = (EditText) findViewById(R.id.tax2CashEdit);
         TextView tax1Lbl = (TextView) findViewById(R.id.tax1CashLbl);
         TextView tax2Lbl = (TextView) findViewById(R.id.tax2CashLbl);
-        groupTaxRate = TaxesHandler.getGroupTaxRate(custTaxCode);
+        groupTaxRate = new TaxesHandler(this).getGroupTaxRate(custTaxCode);
         ProcessCash_FA.setTaxLabels(groupTaxRate, tax1Lbl, tax2Lbl);
         this.amountField = (EditText) findViewById(R.id.checkAmount);
 
@@ -410,7 +418,7 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
         payment.setAmountTender(amountTender);
         payment.setPay_id(extras.getString("pay_id"));
 
-        payment.setEmp_id(myPref.getEmpID());
+        payment.setEmp_id(String.valueOf(assignEmployee.getEmpId()));
 
         if (!extras.getBoolean("histinvoices")) {
             payment.setJob_id(inv_id);
@@ -424,7 +432,7 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
 
         if (!myPref.getShiftIsOpen())
             payment.setClerk_id(myPref.getShiftClerkID());
-        else if (myPref.getPreferences(MyPreferences.pref_use_clerks))
+        else if (myPref.isUseClerks())
             payment.setClerk_id(myPref.getClerkID());
 
         payment.setRef_num(field[CHECK_REFERENCE].getText().toString());
@@ -614,13 +622,13 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
         payment = new Payment(activity);
 
         payment.setPay_id(extras.getString("pay_id"));
-        payment.setEmp_id(myPref.getEmpID());
+        payment.setEmp_id(String.valueOf(assignEmployee.getEmpId()));
         payment.setCust_id(extras.getString("cust_id"));
         payment.setCustidkey(custidkey);
 
         if (!myPref.getShiftIsOpen())
             payment.setClerk_id(myPref.getShiftClerkID());
-        else if (myPref.getPreferences(MyPreferences.pref_use_clerks))
+        else if (myPref.isUseClerks())
             payment.setClerk_id(myPref.getClerkID());
 
         payment.setRef_num(field[CHECK_REFERENCE].getText().toString());
@@ -788,7 +796,8 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
 
 
             } catch (Exception e) {
-
+                e.printStackTrace();
+                Crashlytics.logException(e);
             }
             return null;
         }
@@ -1030,29 +1039,31 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.processCheckBut:
-                btnProcess.setEnabled(false);
-                if (!validInput()) {
-                    Global.showPrompt(activity, R.string.validation_failed, activity.getString(R.string.card_validation_error));
-                } else {
-                    if (!isLivePayment && Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
-                        Global.mainPrinterManager.getCurrentDevice().openCashDrawer();
+        if (UIUtils.singleOnClick(v)) {
+            switch (v.getId()) {
+                case R.id.processCheckBut:
+                    btnProcess.setEnabled(false);
+                    if (!validInput()) {
+                        Global.showPrompt(activity, R.string.validation_failed, activity.getString(R.string.card_validation_error));
+                    } else {
+                        if (!isLivePayment && Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                            Global.mainPrinterManager.getCurrentDevice().openCashDrawer();
+                        }
+                        if (!isOpenInvoice || (isOpenInvoice && !isMultiInvoice))
+                            processPayment();
+                        else
+                            processMultiInvoicePayment();
                     }
-                    if (!isOpenInvoice || (isOpenInvoice && !isMultiInvoice))
-                        processPayment();
-                    else
-                        processMultiInvoicePayment();
-                }
-                btnProcess.setEnabled(true);
-                break;
-            case R.id.exactAmountBut:
-                field[CHECK_AMOUNT_PAID].setText(field[CHECK_AMOUNT].getText().toString().replace(",", ""));
-                break;
-            case R.id.btnCheckCapture:
-                Intent intent = new Intent(this, CaptureCheck_FA.class);
-                startActivityForResult(intent, INTENT_CAPTURE_CHECK);
-                break;
+                    btnProcess.setEnabled(true);
+                    break;
+                case R.id.exactAmountBut:
+                    field[CHECK_AMOUNT_PAID].setText(field[CHECK_AMOUNT].getText().toString().replace(",", ""));
+                    break;
+                case R.id.btnCheckCapture:
+                    Intent intent = new Intent(this, CaptureCheck_FA.class);
+                    startActivityForResult(intent, INTENT_CAPTURE_CHECK);
+                    break;
+            }
         }
     }
 

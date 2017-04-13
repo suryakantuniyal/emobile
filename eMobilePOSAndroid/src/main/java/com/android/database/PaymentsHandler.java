@@ -1,13 +1,15 @@
 package com.android.database;
 
-import android.app.Activity;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.PaymentDetails;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.DateUtils;
 import com.android.support.GenerateNewID;
@@ -17,6 +19,7 @@ import com.android.support.MyPreferences;
 import com.android.support.NumberUtils;
 import com.google.gson.Gson;
 
+import net.sqlcipher.database.SQLiteDatabase;
 import net.sqlcipher.database.SQLiteStatement;
 
 import java.math.BigDecimal;
@@ -26,6 +29,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+
+import io.realm.Realm;
 
 public class PaymentsHandler {
 
@@ -106,7 +111,11 @@ public class PaymentsHandler {
     }
 
     public static void setLastPaymentInserted(Payment payment) {
-        lastPaymentInserted = payment;
+        if (payment != null && payment.isManaged()) {
+            lastPaymentInserted = Realm.getDefaultInstance().copyFromRealm(payment);
+        } else {
+            lastPaymentInserted = payment;
+        }
     }
 
     public final List<String> attr = Arrays.asList(pay_id, group_pay_id, cust_id, tupyx_user_id, emp_id,
@@ -120,21 +129,28 @@ public class PaymentsHandler {
 
     private StringBuilder sb1, sb2;
     private HashMap<String, Integer> attrHash;
-    private Global global;
+    //    private Global global;
     private MyPreferences myPref;
     private static final String table_name = "Payments";
     private static final String table_name_declined = "PaymentsDeclined";
-    private Activity activity;
+    private Context activity;
 
-    public PaymentsHandler(Activity activity) {
-        global = (Global) activity.getApplication();
-        myPref = new MyPreferences(activity);
-        this.activity = activity;
+    public PaymentsHandler(Context context) {
+//        global = (Global) activity.getApplication();
+        myPref = new MyPreferences(context);
+        this.activity = context;
         attrHash = new HashMap<>();
         sb1 = new StringBuilder();
         sb2 = new StringBuilder();
-        new DBManager(activity);
+        new DBManager(context);
         initDictionary();
+    }
+
+    public SQLiteDatabase getDatabase() {
+        if (DBManager.getDatabase() == null || !DBManager.getDatabase().isOpen()) {
+            new DBManager(activity);
+        }
+        return DBManager.getDatabase();
     }
 
     public void initDictionary() {
@@ -157,10 +173,10 @@ public class PaymentsHandler {
 
     public void insert(Payment payment) {
 
-        DBManager.getDatabase().beginTransaction();
+        getDatabase().beginTransaction();
         try {
             SQLiteStatement insert;
-            insert = DBManager.getDatabase().compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ")" +
+            insert = getDatabase().compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ")" +
                     "VALUES (" + sb2.toString() + ")");
             insert.bindString(index(pay_id), payment.getPay_id() == null ? "" : payment.getPay_id()); // pay_id
             insert.bindString(index(group_pay_id), payment.getGroup_pay_id() == null ? "" : payment.getGroup_pay_id()); // group_pay_id
@@ -238,19 +254,19 @@ public class PaymentsHandler {
             insert.execute();
             insert.clearBindings();
             insert.close();
-            DBManager.getDatabase().setTransactionSuccessful();
+            getDatabase().setTransactionSuccessful();
 
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             myPref.setLastPayID(payment.getPay_id());
-            DBManager.getDatabase().endTransaction();
+            getDatabase().endTransaction();
             lastPaymentInserted = payment;
         }
     }
 
     public void emptyTable() {
-        DBManager.getDatabase().execSQL("DELETE FROM " + table_name);
+        getDatabase().execSQL("DELETE FROM " + table_name);
     }
 
 
@@ -258,7 +274,7 @@ public class PaymentsHandler {
     // unsynchronized payments (used in
     // generation of XML for post)
     {
-        return DBManager.getDatabase().rawQuery("SELECT " + sb1.toString() + " FROM " + table_name + " WHERE pay_issync = '0'", null);
+        return getDatabase().rawQuery("SELECT " + sb1.toString() + " FROM " + table_name + " WHERE pay_issync = '0'", null);
     }
 
     public String getTotalPayAmount(String paymethod_id, String pay_date) {
@@ -275,7 +291,7 @@ public class PaymentsHandler {
 
         sb.append("' AND date = '").append(pay_date).append("' AND is_refund='0' AND isVoid != '1'");
 
-        Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
+        Cursor cursor = getDatabase().rawQuery(sb.toString(), null);
         String total = "0.00";
         if (cursor.moveToFirst()) {
             total = cursor.getString(cursor.getColumnIndex("total"));
@@ -287,7 +303,7 @@ public class PaymentsHandler {
     }
 
     public String getTotalRefundAmount(String paymethod_id, String pay_date) {
-        Cursor cursor = DBManager.getDatabase().rawQuery("SELECT ROUND(SUM(pay_amount),2) AS 'total',date(pay_timecreated,'localtime') as 'date' FROM Payments WHERE  paymethod_id = '" + paymethod_id + "' AND date = '" + pay_date + "' AND is_refund = '1' AND isVoid != '1'", null);
+        Cursor cursor = getDatabase().rawQuery("SELECT ROUND(SUM(pay_amount),2) AS 'total',date(pay_timecreated,'localtime') as 'date' FROM Payments WHERE  paymethod_id = '" + paymethod_id + "' AND date = '" + pay_date + "' AND is_refund = '1' AND isVoid != '1'", null);
         String total = "0.00";
         if (cursor.moveToFirst()) {
             total = cursor.getString(cursor.getColumnIndex("total"));
@@ -299,14 +315,14 @@ public class PaymentsHandler {
     }
 
     public long getNumUnsyncPayments() {
-        SQLiteStatement stmt = DBManager.getDatabase().compileStatement("SELECT Count(*) FROM " + table_name + " WHERE pay_issync = '0'");
+        SQLiteStatement stmt = getDatabase().compileStatement("SELECT Count(*) FROM " + table_name + " WHERE pay_issync = '0'");
         long count = stmt.simpleQueryForLong();
         stmt.close();
         return count;
     }
 
     public boolean unsyncPaymentsLeft() {
-        SQLiteStatement stmt = DBManager.getDatabase().compileStatement("SELECT Count(*) FROM " + table_name + " WHERE pay_issync = '0'");
+        SQLiteStatement stmt = getDatabase().compileStatement("SELECT Count(*) FROM " + table_name + " WHERE pay_issync = '0'");
         long count = stmt.simpleQueryForLong();
         stmt.close();
         return count != 0;
@@ -328,7 +344,7 @@ public class PaymentsHandler {
         } else {
             sql = String.format(sql, table_name, pay_id);
         }
-        SQLiteStatement stmt = DBManager.getDatabase().compileStatement(sql);
+        SQLiteStatement stmt = getDatabase().compileStatement(sql);
         long count = stmt.simpleQueryForLong();
         stmt.close();
         return count;
@@ -347,23 +363,23 @@ public class PaymentsHandler {
                 args.put(pay_issync, "1");
             else
                 args.put(pay_issync, "0");
-            DBManager.getDatabase().update(table_name, args, sb.toString(), new String[]{list.get(i)[1]});
+            getDatabase().update(table_name, args, sb.toString(), new String[]{list.get(i)[1]});
         }
     }
 
-    public String updateSignaturePayment(String payID) {
+    public String updateSignaturePayment(String payID, String encodedImage) {
 
         StringBuilder sb = new StringBuilder();
         sb.append(pay_id).append(" = ?");
 
         ContentValues args = new ContentValues();
 
-        args.put(pay_signature, global.encodedImage);
+        args.put(pay_signature, encodedImage);
 
-        DBManager.getDatabase().update(table_name, args, sb.toString(), new String[]{payID});
+        getDatabase().update(table_name, args, sb.toString(), new String[]{payID});
         sb.setLength(0);
         sb.append("SELECT pay_amount FROM Payments WHERE pay_id = '").append(payID).append("'");
-        Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
+        Cursor cursor = getDatabase().rawQuery(sb.toString(), null);
         String returningVal = "";
         if (cursor.moveToFirst()) {
             returningVal = cursor.getString(cursor.getColumnIndex("pay_amount"));
@@ -378,7 +394,7 @@ public class PaymentsHandler {
         ContentValues args = new ContentValues();
 
         args.put(isVoid, "1");
-        DBManager.getDatabase().update(table_name, args, pay_id + " = ?", new String[]{param});
+        getDatabase().update(table_name, args, pay_id + " = ?", new String[]{param});
     }
 
     public void createVoidPayment(Payment payment, boolean onlineVoid, HashMap<String, String> response) {
@@ -394,8 +410,8 @@ public class PaymentsHandler {
         payment.setPay_issync("0");
 
         payment.setOriginal_pay_id(_orig_pay_id);
-        payment.setPay_timecreated(DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss));
-        payment.setPay_date(DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss));
+        payment.setPay_timecreated(DateUtils.getDateAsString(new Date(), DateUtils.DATE_PATTERN));
+        payment.setPay_date(DateUtils.getDateAsString(new Date(), DateUtils.DATE_PATTERN));
 
         if (onlineVoid) {
             payment.setPay_resultcode(response.get(pay_resultcode));
@@ -422,11 +438,10 @@ public class PaymentsHandler {
                 " WHERE pay_id = ?";
 
         PaymentDetails paymentDetails = new PaymentDetails();
-        Cursor cursor = DBManager.getDatabase().rawQuery(sql, new String[]{payID});
+        Cursor cursor = getDatabase().rawQuery(sql, new String[]{payID});
         if (cursor.moveToFirst()) {
             do {
-                paymentDetails.setPay_date(Global.formatToDisplayDate(cursor.getString(cursor.getColumnIndex(pay_date)), activity,
-                        0));
+                paymentDetails.setPay_date(Global.formatToDisplayDate(cursor.getString(cursor.getColumnIndex(pay_date)), 0));
                 paymentDetails.setPay_comment(cursor.getString(cursor.getColumnIndex(pay_comment)));
                 paymentDetails.setInv_id(cursor.getString(cursor.getColumnIndex(inv_id)));// is
                 // actually
@@ -452,7 +467,7 @@ public class PaymentsHandler {
 
     public Payment getPaymentForVoid(String payID) {
         Payment payment = null;
-        Cursor cursor = DBManager.getDatabase().rawQuery("SELECT * FROM Payments WHERE pay_id = '" + payID + "'", null);
+        Cursor cursor = getDatabase().rawQuery("SELECT * FROM Payments WHERE pay_id = '" + payID + "'", null);
         if (cursor.moveToFirst()) {
             payment = getPayment(cursor);
 
@@ -463,7 +478,7 @@ public class PaymentsHandler {
 
     public List<Payment> getOrderPayments(String _ordID) {
 
-        Cursor c = DBManager.getDatabase().rawQuery("SELECT * FROM Payments WHERE job_id = '" + _ordID + "'", null);
+        Cursor c = getDatabase().rawQuery("SELECT * FROM Payments WHERE job_id = '" + _ordID + "'", null);
 
         List<Payment> listPayment = new ArrayList<>();
         if (c.moveToFirst()) {
@@ -540,7 +555,7 @@ public class PaymentsHandler {
 
     public List<Payment> getPaymentDetailsForTransactions(String jobID) {
         List<Payment> payments = new ArrayList<>();
-        Cursor cursor = DBManager.getDatabase().rawQuery("SELECT p.isVoid as 'isVoid', p.paymethod_id as 'paymethod_id', p.pay_transid as 'pay_transid', p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip'," +
+        Cursor cursor = getDatabase().rawQuery("SELECT p.isVoid as 'isVoid', p.paymethod_id as 'paymethod_id', p.pay_transid as 'pay_transid', p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip'," +
                 "pm.paymentmethod_type AS 'paymethod_name', amount_tender,p.pay_id AS 'pay_id', p.pay_type as 'pay_type' FROM Payments p," + "PayMethods pm " +
                 "WHERE p.paymethod_id = pm.paymethod_id  AND pay_type != '1' AND p.job_id = '" + jobID + "' " +
                 "UNION " + "SELECT p.isVoid as 'isVoid',p.paymethod_id as 'paymethod_id',p.pay_transid as 'pay_transid', p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip','Wallet' AS  'paymethod_name', amount_tender," +
@@ -586,13 +601,13 @@ public class PaymentsHandler {
             sb.append("1' ORDER BY substr(p.pay_id,10,4) desc, p.pay_id DESC");
         else
             sb.append("0' ORDER BY substr(p.pay_id,10,4) desc, p.pay_id DESC");
-        return DBManager.getDatabase().rawQuery(sb.toString(), null);
+        return getDatabase().rawQuery(sb.toString(), null);
     }
 
     public Cursor searchCashCheckGift(String type, String search) {
         String subquery1 = "SELECT p.pay_id as _id, p.pay_amount,c.cust_name,p.job_id,p.isVoid,p.pay_issync,p.pay_tip FROM Payments p, PayMethods m LEFT OUTER JOIN Customers c ON p.cust_id = c.cust_id WHERE p.paymethod_id = m.paymethod_id AND m.paymentmethod_type = '";// cust_name
         String subquery2 = "' AND pay_type !='1' AND c.cust_name LIKE ? ORDER BY p.pay_id DESC";
-        Cursor cursor = DBManager.getDatabase().rawQuery(subquery1 + type + subquery2, new String[]{"%" + search + "%"});
+        Cursor cursor = getDatabase().rawQuery(subquery1 + type + subquery2, new String[]{"%" + search + "%"});
         cursor.moveToFirst();
         return cursor;
     }
@@ -618,7 +633,7 @@ public class PaymentsHandler {
                 "m.paymentmethod_type = 'MasterCard' OR m.paymentmethod_type = 'Visa') " +
                 "AND pay_type !='1'  AND is_refund='" + is_refund + "' ");
 
-        return DBManager.getDatabase().rawQuery(sb, null);
+        return getDatabase().rawQuery(sb, null);
     }
 
     public Cursor searchCards(String search) {
@@ -627,7 +642,7 @@ public class PaymentsHandler {
         String subquery2 = "'AmericanExpress' OR m.paymentmethod_type = 'Discover' OR m.paymentmethod_type = 'MasterCard' OR m.paymentmethod_type = 'Visa') AND c.cust_name LIKE '%";
         String subquery3 = "%' ORDER BY p.pay_id DESC";
 
-        Cursor cursor = DBManager.getDatabase().rawQuery(subquery1 + subquery2 + search + subquery3, null);
+        Cursor cursor = getDatabase().rawQuery(subquery1 + subquery2 + search + subquery3, null);
         cursor.moveToFirst();
 
         return cursor;
@@ -658,33 +673,33 @@ public class PaymentsHandler {
                         " AND is_refund = '" + is_refund + "' GROUP BY p.pay_id "
         );
 
-        return DBManager.getDatabase().rawQuery(sb.toString(), null);
+        return getDatabase().rawQuery(sb.toString(), null);
     }
 
     public Cursor getLoyaltyPayments() {
 
-        return DBManager.getDatabase().rawQuery("SELECT p.pay_id as _id,p.pay_amount,c.cust_name,p.job_id,p.isVoid,p.pay_issync,p.pay_tip FROM Payments p, " + "PayMethods m LEFT OUTER JOIN Customers c ON p.cust_id = c.cust_id WHERE p.paymethod_id = 'LoyaltyCard' " + "AND pay_type!=1 " + " AND is_refund = '0' GROUP BY p.pay_id ORDER BY p.pay_id DESC ", null);
+        return getDatabase().rawQuery("SELECT p.pay_id as _id,p.pay_amount,c.cust_name,p.job_id,p.isVoid,p.pay_issync,p.pay_tip FROM Payments p, " + "PayMethods m LEFT OUTER JOIN Customers c ON p.cust_id = c.cust_id WHERE p.paymethod_id = 'LoyaltyCard' " + "AND pay_type!=1 " + " AND is_refund = '0' GROUP BY p.pay_id ORDER BY p.pay_id DESC ", null);
     }
 
     public Cursor getLoyaltyAddBalance() {
 
-        return DBManager.getDatabase().rawQuery("SELECT p.pay_id as _id,p.pay_amount,c.cust_name,p.job_id,p.isVoid,p.pay_issync,p.pay_tip FROM Payments p, " + "PayMethods m LEFT OUTER JOIN Customers c ON p.cust_id = c.cust_id WHERE p.paymethod_id = 'LoyaltyCardBalance' " + "AND pay_type!=1 " + " AND is_refund = '0' GROUP BY p.pay_id ORDER BY p.pay_id DESC ", null);
+        return getDatabase().rawQuery("SELECT p.pay_id as _id,p.pay_amount,c.cust_name,p.job_id,p.isVoid,p.pay_issync,p.pay_tip FROM Payments p, " + "PayMethods m LEFT OUTER JOIN Customers c ON p.cust_id = c.cust_id WHERE p.paymethod_id = 'LoyaltyCardBalance' " + "AND pay_type!=1 " + " AND is_refund = '0' GROUP BY p.pay_id ORDER BY p.pay_id DESC ", null);
     }
 
     public Cursor getGiftCardAddBalance() {
 
 
-        return DBManager.getDatabase().rawQuery("SELECT p.pay_id as _id,p.pay_amount,c.cust_name,p.job_id,p.isVoid,p.pay_issync,p.pay_tip FROM Payments p, " + "PayMethods m LEFT OUTER JOIN Customers c ON p.cust_id = c.cust_id WHERE p.paymethod_id = 'GiftCardBalance' " + "AND pay_type!=1 " + " AND is_refund = '0' GROUP BY p.pay_id ORDER BY p.pay_id DESC ", null);
+        return getDatabase().rawQuery("SELECT p.pay_id as _id,p.pay_amount,c.cust_name,p.job_id,p.isVoid,p.pay_issync,p.pay_tip FROM Payments p, " + "PayMethods m LEFT OUTER JOIN Customers c ON p.cust_id = c.cust_id WHERE p.paymethod_id = 'GiftCardBalance' " + "AND pay_type!=1 " + " AND is_refund = '0' GROUP BY p.pay_id ORDER BY p.pay_id DESC ", null);
     }
 
     public Cursor getRewardPayments() {
 
-        return DBManager.getDatabase().rawQuery("SELECT p.pay_id as _id,p.pay_amount,c.cust_name,p.job_id,p.isVoid,p.pay_issync,p.pay_tip FROM Payments p, " + "PayMethods m LEFT OUTER JOIN Customers c ON p.cust_id = c.cust_id WHERE p.paymethod_id = 'Reward' " + "AND pay_type!=1 " + " AND is_refund = '0' GROUP BY p.pay_id ORDER BY p.pay_id DESC ", null);
+        return getDatabase().rawQuery("SELECT p.pay_id as _id,p.pay_amount,c.cust_name,p.job_id,p.isVoid,p.pay_issync,p.pay_tip FROM Payments p, " + "PayMethods m LEFT OUTER JOIN Customers c ON p.cust_id = c.cust_id WHERE p.paymethod_id = 'Reward' " + "AND pay_type!=1 " + " AND is_refund = '0' GROUP BY p.pay_id ORDER BY p.pay_id DESC ", null);
     }
 
     public Cursor getRewardAddBalance() {
 
-        return DBManager.getDatabase().rawQuery("SELECT p.pay_id as _id,p.pay_amount,c.cust_name,p.job_id,p.isVoid,p.pay_issync,p.pay_tip FROM Payments p, " + "PayMethods m LEFT OUTER JOIN Customers c ON p.cust_id = c.cust_id WHERE p.paymethod_id = 'RewardBalance' " + "AND pay_type!=1 " + " AND is_refund = '0' GROUP BY p.pay_id ORDER BY p.pay_id DESC ", null);
+        return getDatabase().rawQuery("SELECT p.pay_id as _id,p.pay_amount,c.cust_name,p.job_id,p.isVoid,p.pay_issync,p.pay_tip FROM Payments p, " + "PayMethods m LEFT OUTER JOIN Customers c ON p.cust_id = c.cust_id WHERE p.paymethod_id = 'RewardBalance' " + "AND pay_type!=1 " + " AND is_refund = '0' GROUP BY p.pay_id ORDER BY p.pay_id DESC ", null);
     }
 
     public Cursor searchOther(String search) {
@@ -694,7 +709,7 @@ public class PaymentsHandler {
         String subquery2 = "'AmericanExpress' AND m.paymentmethod_type != 'Discover' AND m.paymentmethod_type != 'MasterCard' "
                 + "AND m.paymentmethod_type != 'Visa' AND m.paymentmethod_type != 'Cash' AND m.paymentmethod_type != 'GiftCard') AND c.cust_name LIKE ? ORDER BY p.pay_id DESC";
 
-        Cursor cursor = DBManager.getDatabase().rawQuery(subquery1 + subquery2, new String[]{"%" + search + "%"});
+        Cursor cursor = getDatabase().rawQuery(subquery1 + subquery2, new String[]{"%" + search + "%"});
         cursor.moveToFirst();
 
         return cursor;
@@ -704,7 +719,7 @@ public class PaymentsHandler {
 
         List<PaymentDetails> list = new ArrayList<>();
 
-        Cursor cursor = DBManager.getDatabase().rawQuery("SELECT p.pay_type as 'pay_type', p.is_refund as 'is_refund', " +
+        Cursor cursor = getDatabase().rawQuery("SELECT p.pay_type as 'pay_type', p.is_refund as 'is_refund', " +
                 "p.isVoid as 'isVoid', p.pay_id, p.pay_amount AS 'pay_amount', amount_tender,pm.paymethod_name AS 'paymethod_name'," +
                 "p.pay_tip AS 'pay_tip',p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid'," +
                 "p.ccnum_last4 AS 'ccnum_last4',p.IvuLottoDrawDate AS 'IvuLottoDrawDate'," +
@@ -864,17 +879,15 @@ public class PaymentsHandler {
         }
 //        sb.append(payID).append("'");
 
-        Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
+        Cursor cursor = getDatabase().rawQuery(sb.toString(), null);
         PaymentDetails payDetail = new PaymentDetails();
 
         if (cursor.moveToFirst()) {
 
             do {
                 payDetail.setPaymethod_name(cursor.getString(cursor.getColumnIndex("paymethod_name")));
-                payDetail.setPay_date(Global.formatToDisplayDate(cursor.getString(cursor.getColumnIndex(pay_date)), activity,
-                        0));
-                payDetail.setPay_timecreated(Global.formatToDisplayDate(cursor.getString(cursor.getColumnIndex(pay_timecreated)),
-                        activity, 2));
+                payDetail.setPay_date(Global.formatToDisplayDate(cursor.getString(cursor.getColumnIndex(pay_date)), 0));
+                payDetail.setPay_timecreated(Global.formatToDisplayDate(cursor.getString(cursor.getColumnIndex(pay_timecreated)), 2));
                 payDetail.setCust_name(cursor.getString(cursor.getColumnIndex("cust_name")));
                 payDetail.setOrd_total(cursor.getString(cursor.getColumnIndex("ord_total")));
                 payDetail.setPay_amount(cursor.getString(cursor.getColumnIndex(pay_amount)));
@@ -923,7 +936,7 @@ public class PaymentsHandler {
                 break;
         }
 
-        Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), new String[]{date});
+        Cursor cursor = getDatabase().rawQuery(sb.toString(), new String[]{date});
         HashMap<String, String> map = new HashMap<>();
         BigDecimal bg;
         if (cursor.moveToFirst()) {
@@ -977,7 +990,7 @@ public class PaymentsHandler {
             where_values = new String[]{date};
         }
 
-        Cursor c = DBManager.getDatabase().rawQuery(query.toString(), where_values);
+        Cursor c = getDatabase().rawQuery(query.toString(), where_values);
 
         if (c.moveToFirst()) {
             int i_card_type = c.getColumnIndex(card_type);
@@ -1042,7 +1055,7 @@ public class PaymentsHandler {
 
         query.append(" GROUP BY paymethod_id");
 
-        Cursor c = DBManager.getDatabase().rawQuery(query.toString(), where_values);
+        Cursor c = getDatabase().rawQuery(query.toString(), where_values);
 
         if (c.moveToFirst()) {
             int i_card_type = c.getColumnIndex(card_type);
@@ -1088,29 +1101,30 @@ public class PaymentsHandler {
             sb.append("select max(pay_id) from ").append(table_name).append(" WHERE pay_id like '").append(deviceId)
                     .append("-%-").append(year).append("'");
 
-            SQLiteStatement stmt = DBManager.getDatabase().compileStatement(sb.toString());
-            Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
+            SQLiteStatement stmt = getDatabase().compileStatement(sb.toString());
+            Cursor cursor = getDatabase().rawQuery(sb.toString(), null);
             cursor.moveToFirst();
             lastPayID = cursor.getString(0);
             cursor.close();
             stmt.close();
             if (TextUtils.isEmpty(lastPayID)) {
-                lastPayID = myPref.getEmpID() + "-" + "00001" + "-" + year;
+                AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+                lastPayID = assignEmployee.getEmpId() + "-" + "00001" + "-" + year;
             }
             myPref.setLastPayID(lastPayID);
         }
         return lastPayID;
     }
 
-    public static PaymentsHandler getInstance(Activity activity) {
+    public static PaymentsHandler getInstance(Context activity) {
         return new PaymentsHandler(activity);
     }
 
     public void insertDeclined(Payment payment) {
-        DBManager.getDatabase().beginTransaction();
+        getDatabase().beginTransaction();
         try {
             SQLiteStatement insert;
-            insert = DBManager.getDatabase().compileStatement("INSERT INTO " + table_name_declined + " (" + sb1.toString() + ")" + "VALUES (" + sb2.toString() + ")");
+            insert = getDatabase().compileStatement("INSERT INTO " + table_name_declined + " (" + sb1.toString() + ")" + "VALUES (" + sb2.toString() + ")");
             insert.bindString(index(pay_id), payment.getPay_id() == null ? "" : payment.getPay_id()); // pay_id
             insert.bindString(index(group_pay_id), payment.getGroup_pay_id() == null ? "" : payment.getGroup_pay_id()); // group_pay_id
             insert.bindString(index(original_pay_id), payment.getOriginal_pay_id() == null ? "" : payment.getOriginal_pay_id()); // group_pay_id
@@ -1185,14 +1199,14 @@ public class PaymentsHandler {
             insert.execute();
             insert.clearBindings();
             insert.close();
-            DBManager.getDatabase().setTransactionSuccessful();
+            getDatabase().setTransactionSuccessful();
 
         } catch (Exception e) {
             Log.d("Exception", e.getMessage() + " [com.android.emobilepos.PaymentsHandler (at Class.insertDeclined)]");
         } finally {
             myPref.setLastPayID(payment.getPay_id());
             lastPaymentInserted = payment;
-            DBManager.getDatabase().endTransaction();
+            getDatabase().endTransaction();
         }
     }
 }

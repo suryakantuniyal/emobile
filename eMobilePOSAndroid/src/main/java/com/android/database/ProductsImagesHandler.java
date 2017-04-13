@@ -1,6 +1,7 @@
 package com.android.database;
 
 import android.app.Activity;
+import android.content.Context;
 import android.database.Cursor;
 
 import net.sqlcipher.database.SQLiteStatement;
@@ -27,9 +28,9 @@ public class ProductsImagesHandler {
 	private List<String[]> prodData;
 	private List<HashMap<String,Integer>>dictionaryListMap;
 	
-	public ProductsImagesHandler(Activity activity) {
-		attrHash = new HashMap<String, Integer>();
-		prodData = new ArrayList<String[]>();
+	public ProductsImagesHandler(Context activity) {
+		attrHash = new HashMap<>();
+		prodData = new ArrayList<>();
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();
 		new DBManager(activity);

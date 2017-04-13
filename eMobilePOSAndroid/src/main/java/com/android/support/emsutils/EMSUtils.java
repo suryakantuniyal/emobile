@@ -37,7 +37,7 @@ public class EMSUtils {
         String xml = httpClient.postData(Global.S_SUBMIT_WORKINGKEY_REQUEST, activity, request);
 
         SAXParserFactory spf = SAXParserFactory.newInstance();
-        SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(activity);
+        SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
         InputSource inSource = new InputSource(new StringReader(xml));
         String workingKey = null;
         SAXParser sp;

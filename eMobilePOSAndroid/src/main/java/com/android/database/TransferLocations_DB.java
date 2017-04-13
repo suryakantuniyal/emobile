@@ -2,8 +2,10 @@ package com.android.database;
 
 import android.app.Activity;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.emobilepos.holders.TransferLocations_Holder;
 import com.android.support.MyPreferences;
 
@@ -29,7 +31,7 @@ public class TransferLocations_DB {
     private HashMap<String, Integer> attrHash;
     private MyPreferences myPref;
 
-    public TransferLocations_DB(Activity activity) {
+    public TransferLocations_DB(Context activity) {
         attrHash = new HashMap<>();
         sb1 = new StringBuilder();
         sb2 = new StringBuilder();
@@ -76,7 +78,8 @@ public class TransferLocations_DB {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            myPref.setLastTransferID(location.getTrans_id());
+            AssignEmployeeDAO.updateLastTransferId(location.getTrans_id());
+//            myPref.setLastTransferID(location.getTrans_id());
             DBManager.getDatabase().endTransaction();
         }
     }

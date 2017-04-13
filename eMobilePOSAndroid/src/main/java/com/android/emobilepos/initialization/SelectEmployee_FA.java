@@ -18,14 +18,16 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.emobilepos.R;
-import com.android.emobilepos.models.AssignEmployee;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.saxhandler.SaxAllEmployeesHandler;
 import com.android.saxhandler.SaxLoginHandler;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 
 import org.xml.sax.InputSource;
@@ -48,7 +50,7 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
     private Context thisContext;
     private Activity activity;
     private ProgressDialog myProgressDialog;
-
+    MyPreferences preferences;
     private int error_msg_id = 0;
 
     @Override
@@ -58,6 +60,7 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
         setContentView(R.layout.initialization_select_employee);
         thisContext = this;
         activity = this;
+        preferences = new MyPreferences(this);
         new validateEmployeesAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
     }
 
@@ -101,7 +104,8 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
                     errorMsg = "The provided information could not be validated. Please try again.";
 
             } catch (Exception e) {
-
+                e.printStackTrace();
+                Crashlytics.logException(e);
             }
             return null;
         }
@@ -196,17 +200,16 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
     public boolean AssignEmployees() {
         Post post = new Post();
         try {
-            String xml = post.postData(Global.S_GET_ASSIGN_EMPLOYEE, activity, "");
+            String xml = post.postData(Global.S_GET_ASSIGN_EMPLOYEES, activity, "");
             Gson gson = JsonUtils.getInstance();
             Type listType = new com.google.gson.reflect.TypeToken<List<AssignEmployee>>() {
             }.getType();
             List<AssignEmployee> assignEmployees = gson.fromJson(xml, listType);
-            MyPreferences myPref = new MyPreferences(activity);
-            if (assignEmployees != null && !assignEmployees.isEmpty()) {
-                myPref.setAllEmpData(assignEmployees.get(0));
-            }
+            AssignEmployeeDAO.insertAssignEmployee(assignEmployees);
             return true;
         } catch (Exception e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
             error_msg_id = R.string.dlog_msg_error_downloading_employee_data;
         }
         return false;
@@ -235,6 +238,8 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
                 return false;
             }
         } catch (Exception e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
             error_msg_id = R.string.dlog_msg_error_no_avail_license;
         }
         return false;
@@ -253,6 +258,8 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
             xr.parse(inSource);
             return Boolean.parseBoolean(handler.getData());
         } catch (Exception e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
             error_msg_id = R.string.dlog_msg_error_failed_disable_employee;
         }
         return false;
@@ -277,6 +284,8 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
             }
 
         } catch (Exception e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
             error_msg_id = R.string.dlog_msg_error_failed_download_pay_id;
         }
         return false;
@@ -336,8 +345,19 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
-                MyPreferences myPref = new MyPreferences(activity);
-                myPref.setEmpID(empID.get(position));
+//                MyPreferences myPref = new MyPreferences(activity);
+//                myPref.setEmpID(empID.get(position));
+                AssignEmployee assignEmployee = new AssignEmployee();
+                assignEmployee.setEmpId(Integer.parseInt(empID.get(position)));
+                try {
+                    List<AssignEmployee> assignEmployees = new ArrayList<>();
+                    assignEmployees.add(assignEmployee);
+                    AssignEmployeeDAO.insertAssignEmployee(assignEmployees);
+                    preferences.setEmpIdFromPreferences(String.valueOf(assignEmployee.getEmpId()));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Crashlytics.logException(e);
+                }
                 new selectEmployeesAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
 
             }

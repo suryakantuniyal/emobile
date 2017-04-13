@@ -18,6 +18,7 @@ import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.crashlytics.android.Crashlytics;
 import com.starmicronics.stario.StarIOPortException;
 
 import java.util.HashMap;
@@ -72,7 +73,12 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
         if (interface_usb == null) {
             interface_usb = new POSUSBAPI(activity);
         } else {
-            interface_usb.CloseDevice();
+            try {
+                interface_usb.CloseDevice();
+            } catch (Exception e) {
+                Crashlytics.logException(e);
+                e.printStackTrace();
+            }
         }
 
         error_code = interface_usb.OpenDevice();
@@ -267,7 +273,6 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     }
 
 
-
     public boolean openUsbInterface() {
         boolean didConnect = false;
 
@@ -437,6 +442,7 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
             e.printStackTrace();
         }
     }
+
     @Override
     public void salePayment(Payment payment) {
 

@@ -137,10 +137,9 @@ public class RewardCard_FA extends BaseFragmentActivityActionBar implements OnIt
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 globalDlog.dismiss();
                 String pass = viewField.getText().toString();
-                if (!pass.isEmpty() && myPref.posManagerPass(true, null).equals(pass.trim())) {
+                if (!pass.isEmpty() && myPref.loginManager(pass.trim())) {
                     startActivity(intent);
                 } else {
                     promptManagerPassword(intent);

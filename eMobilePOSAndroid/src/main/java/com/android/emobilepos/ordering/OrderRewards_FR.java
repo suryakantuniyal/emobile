@@ -12,11 +12,13 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.database.OrdersHandler;
 import com.android.database.PayMethodsHandler;
 import com.android.database.PaymentsHandler;
 import com.android.emobilepos.R;
-import com.android.emobilepos.models.Order;
+import com.android.emobilepos.models.orders.Order;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.CreditCardInfo;
 import com.android.support.GenerateNewID;
@@ -84,7 +86,7 @@ public class OrderRewards_FR extends Fragment implements OnClickListener {
 
         if (savedInstanceState == null && OrderTotalDetails_FR.getFrag() != null) {
             Global global = (Global) getActivity().getApplication();
-            OrderTotalDetails_FR.getFrag().reCalculate(global.orderProducts);
+            OrderTotalDetails_FR.getFrag().reCalculate(global.order.getOrderProducts());
         }
 
         if (OrderingMain_FA.rewardsWasRead)
@@ -103,7 +105,8 @@ public class OrderRewards_FR extends Fragment implements OnClickListener {
                 Global global = (Global) getActivity().getApplication();
                 Order order = Receipt_FR.buildOrder(getActivity(), global, "", "",
                         ((OrderingMain_FA) getActivity()).getSelectedDinningTableNumber(),
-                        ((OrderingMain_FA) getActivity()).getAssociateId(),((OrderingMain_FA) getActivity()).getOrderAttributes());
+                        ((OrderingMain_FA) getActivity()).getAssociateId(),((OrderingMain_FA) getActivity()).getOrderAttributes(),
+                        ((OrderingMain_FA) getActivity()).getListOrderTaxes(),global.order.getOrderProducts());
                 OrdersHandler ordersHandler = new OrdersHandler(getActivity());
                 ordersHandler.insert(order);
                 global.order = order;
@@ -130,10 +133,10 @@ public class OrderRewards_FR extends Fragment implements OnClickListener {
                 Global global = (Global) getActivity().getApplication();
                 OrderingMain_FA mainFa = (OrderingMain_FA) getActivity();
                 BigDecimal rewardDiscount = mainFa.getLeftFragment()
-                        .applyRewardDiscount(result.getApprovedAmount(), global.orderProducts);
+                        .applyRewardDiscount(result.getApprovedAmount(), global.order.getOrderProducts());
 
                 if (OrderTotalDetails_FR.getFrag() != null) {
-                    OrderTotalDetails_FR.getFrag().reCalculate(global.orderProducts);
+                    OrderTotalDetails_FR.getFrag().reCalculate(global.order.getOrderProducts());
                 }
                 btnPayRewards.setClickable(false);
                 btnPayRewards.setEnabled(false);
@@ -155,6 +158,7 @@ public class OrderRewards_FR extends Fragment implements OnClickListener {
     }
 
     private Payment getPayment(boolean isLoyalty, BigDecimal chargeAmount) {
+        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
 
         Payment loyaltyRewardPayment = new Payment(getActivity());
         MyPreferences preferences = new MyPreferences(getActivity());
@@ -176,7 +180,7 @@ public class OrderRewards_FR extends Fragment implements OnClickListener {
 
         loyaltyRewardPayment.setCust_id(Global.getValidString(preferences.getCustID()));
         loyaltyRewardPayment.setCustidkey(Global.getValidString(preferences.getCustIDKey()));
-        loyaltyRewardPayment.setEmp_id(preferences.getEmpID());
+        loyaltyRewardPayment.setEmp_id(String.valueOf(assignEmployee.getEmpId()));
         loyaltyRewardPayment.setJob_id(Global.lastOrdID);
 
         loyaltyRewardPayment.setPay_name(cardInfoManager.getCardOwnerName());

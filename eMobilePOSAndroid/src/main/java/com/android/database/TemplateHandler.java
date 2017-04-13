@@ -1,10 +1,10 @@
 package com.android.database;
 
-import android.app.Activity;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 
-import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.support.GenerateNewID;
 import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
@@ -47,12 +47,12 @@ public class TemplateHandler {
 	private List<String[]> addrData;
 	private List<HashMap<String, Integer>> dictionaryListMap;
 	private static final String table_name = "Templates";
-	private Activity activity;
-	private Global global;
+	private Context activity;
+//	private Global global;
 
-	public TemplateHandler(Activity activity) {
+	public TemplateHandler(Context activity) {
 		// global = (Global) activity.getApplication();
-		global = (Global) activity.getApplication();
+//		global = (Global) activity.getApplication();
 		attrHash = new HashMap<String, Integer>();
 		this.activity = activity;
 		sb1 = new StringBuilder();
@@ -87,7 +87,7 @@ public class TemplateHandler {
 		return empStr;
 	}
 
-	public void insert(String custID) {
+	public void insert(String custID, List<OrderProduct> orderProducts) {
 		// SQLiteDatabase db =
 		// SQLiteDatabase.openDatabase(myPref.getDBpath(),Global.dbPass, null,
 		// SQLiteDatabase.NO_LOCALIZED_COLLATORS|
@@ -105,9 +105,9 @@ public class TemplateHandler {
 			DBManager.getDatabase().execSQL("DELETE FROM Templates WHERE cust_id='" + custID + "'");
 			insert = DBManager.getDatabase().compileStatement(sb.toString());
 
-			int size = global.orderProducts.size();
+			int size = orderProducts.size();
 			for (int i = 0; i < size; i++) {
-				OrderProduct prod = global.orderProducts.get(i);
+				OrderProduct prod = orderProducts.get(i);
 				insert.bindString(index(_id), empStr); // _id
 				insert.bindString(index(cust_id), custID); // cust_id
                 insert.bindString(index(product_id), prod.getProd_id() == null ? "" : prod.getProd_id()); // product_id

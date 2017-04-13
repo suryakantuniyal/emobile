@@ -1,12 +1,14 @@
 package com.android.dao;
 
 import android.app.Activity;
+import android.content.Context;
 import android.database.Cursor;
 import android.text.TextUtils;
 
 import com.android.database.DBManager;
 import com.android.database.PaymentsHandler;
 import com.android.emobilepos.models.PaymentDetails;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.StoreAndForward;
 import com.android.support.Global;
@@ -22,41 +24,36 @@ import io.realm.RealmResults;
 
 public class StoredPaymentsDAO {
 
-
-    private Global global;
-    private Activity activity;
-
-    public StoredPaymentsDAO(Activity activity) {
-        global = (Global) activity.getApplication();
-        this.activity = activity;
-
-    }
-
-    public String updateSignaturePayment(String pay_uuid) {
+    public static StoreAndForward getStoreAndForward(String pay_uuid) {
         Realm realm = Realm.getDefaultInstance();
-        StoreAndForward storeAndForward;
-        try {
-            realm.beginTransaction();
-            storeAndForward = realm.where(StoreAndForward.class).equalTo("payment.pay_uuid", pay_uuid).findFirst();
-            storeAndForward.getPayment().setPay_signature(global.encodedImage);
-        } finally {
-            realm.commitTransaction();
-        }
-        return storeAndForward.getPayment().getPay_amount();
+        return realm.where(StoreAndForward.class).equalTo("payment.pay_uuid", pay_uuid).findFirst();
     }
 
+//    public static void updateSignaturePayment(final String pay_uuid, final String encodedImage) {
+//        Realm realm = Realm.getDefaultInstance();
+//        Payment payment;
+//        try {
+//            realm.beginTransaction();
+//            payment = realm.where(Payment.class).equalTo("pay_uuid", pay_uuid).findFirst();
+//            payment.setPay_signature(encodedImage);
+//        } finally {
+//            realm.commitTransaction();
+//        }
+////        return storeAndForward.getPayment().getPay_amount();
+//    }
 
-    public long getRetryTransCount(String _job_id) {
+
+    public static long getRetryTransCount(String _job_id) {
         return (long) Realm.getDefaultInstance().where(StoreAndForward.class).equalTo("payment.job_id", _job_id)
                 .equalTo("payment.is_retry", "1").findAll().size();
     }
 
-    public long getCountPendingStoredPayments(String job_id) {
+    public static long getCountPendingStoredPayments(String job_id) {
         return (long) Realm.getDefaultInstance().where(StoreAndForward.class)
                 .equalTo("payment.job_id", job_id).findAll().size();
     }
 
-    public void deletePaymentFromJob(String _job_id) {
+    public static void deletePaymentFromJob(String _job_id) {
         Realm realm = Realm.getDefaultInstance();
         try {
             realm.beginTransaction();
@@ -71,7 +68,7 @@ public class StoredPaymentsDAO {
     }
 
 
-    public PaymentDetails getPrintingForPaymentDetails(String payID, int type) {
+    public static PaymentDetails getPrintingForPaymentDetails(String payID, int type) {
         StringBuilder sb = new StringBuilder();
         Realm realm = Realm.getDefaultInstance();
         Payment payment = null;
@@ -137,8 +134,8 @@ public class StoredPaymentsDAO {
             } else {
                 paymentDetails.setPaymethod_name(payment.getPaymentMethod().getPaymethod_name());
             }
-            paymentDetails.setPay_date(Global.formatToDisplayDate(payment.getPay_date(), activity, 0));
-            paymentDetails.setPay_timecreated(Global.formatToDisplayDate(payment.getPay_timecreated(), activity, 2));
+            paymentDetails.setPay_date(Global.formatToDisplayDate(payment.getPay_date(), 0));
+            paymentDetails.setPay_timecreated(Global.formatToDisplayDate(payment.getPay_timecreated(), 2));
             paymentDetails.setCust_name(haveCustomer ? cursor.getString(cursor.getColumnIndex("cust_name")) : "Unknown");
             paymentDetails.setOrd_total(payment.getPay_amount());
             paymentDetails.setPay_amount(payment.getPay_amount());
@@ -166,7 +163,7 @@ public class StoredPaymentsDAO {
         return paymentDetails;
     }
 
-    public List<PaymentDetails> getPaymentForPrintingTransactions(String jobID) {
+    public static List<PaymentDetails> getPaymentForPrintingTransactions(String jobID) {
         Realm realm = Realm.getDefaultInstance();
         RealmResults<StoreAndForward> storeAndForwards;
         try {
@@ -221,7 +218,7 @@ public class StoredPaymentsDAO {
         }
     }
 
-    public void updateStoredPaymentForRetry(StoreAndForward storeAndForward) {
+    public static void updateStoredPaymentForRetry(StoreAndForward storeAndForward) {
         Realm realm = Realm.getDefaultInstance();
         try {
             realm.beginTransaction();
@@ -232,21 +229,22 @@ public class StoredPaymentsDAO {
     }
 
 
-    public void insert(Activity activity, Payment payment, StoreAndForward.PaymentType paymentType) {
+    public static void insert(Activity activity, Payment payment, StoreAndForward.PaymentType paymentType) {
         Realm realm = Realm.getDefaultInstance();
         try {
             realm.beginTransaction();
-            StoreAndForward storeAndForward = realm.createObject(StoreAndForward.class);
+            StoreAndForward storeAndForward = new StoreAndForward();
             storeAndForward.setPaymentType(paymentType);
             storeAndForward.setPaymentXml(payment.getPayment_xml());
-            storeAndForward.setPayment(realm.copyToRealm(payment));
+            storeAndForward.setPayment(payment);
             storeAndForward.setStoreAndForwatdStatus(StoreAndForward.StoreAndForwatdStatus.PENDING);
             storeAndForward.setRetry(false);
             storeAndForward.setCreationDate(new Date());
             storeAndForward.setId(System.currentTimeMillis());
-            realm.insert(storeAndForward);
-        } finally {
+            realm.insertOrUpdate(storeAndForward);
             realm.commitTransaction();
+        } catch (Exception e) {
+            realm.cancelTransaction();
         }
         PaymentsHandler.setLastPaymentInserted(payment);
         new MyPreferences(activity).setLastPayID(payment.getPay_id());
@@ -262,7 +260,7 @@ public class StoredPaymentsDAO {
         }
     }
 
-    public static String getLastPaymentId(Activity activity, int deviceId, int year) {
+    public static String getLastPaymentId(Context activity, int deviceId, int year) {
         MyPreferences myPref = new MyPreferences(activity);
         String lastPayID = myPref.getLastPayID();
         boolean getIdFromRealm = false;
@@ -282,7 +280,8 @@ public class StoredPaymentsDAO {
                     .endsWith("pay_id", "-" + year).findFirst();
             lastPayID = storeAndForward.getPayment().getPay_id();
             if (TextUtils.isEmpty(lastPayID)) {
-                lastPayID = myPref.getEmpID() + "-" + "00001" + "-" + year;
+                AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+                lastPayID = assignEmployee.getEmpId() + "-" + "00001" + "-" + year;
             }
             myPref.setLastPayID(lastPayID);
         }

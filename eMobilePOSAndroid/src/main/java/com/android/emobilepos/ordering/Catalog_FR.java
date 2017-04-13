@@ -12,12 +12,15 @@ import android.graphics.Bitmap.CompressFormat;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.SystemClock;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.TypedValue;
 import android.view.KeyEvent;
@@ -45,9 +48,10 @@ import com.android.database.ProductAddonsHandler;
 import com.android.database.ProductsHandler;
 import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.R;
-import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.models.EMSCategory;
 import com.android.emobilepos.models.ParentAddon;
 import com.android.emobilepos.models.Product;
+import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.support.Global;
 import com.android.support.MyEditText;
 import com.android.support.MyPreferences;
@@ -63,33 +67,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 import util.json.JsonUtils;
+import util.json.UIUtils;
 
 public class Catalog_FR extends Fragment implements OnItemClickListener, OnClickListener, LoaderCallbacks<Cursor>,
-        MenuCatGV_Adapter.ItemClickedCallback, MenuProdGV_Adapter.ProductClickedCallback {
+        MenuProdGV_Adapter.ProductClickedCallback, CatalogCategories_Adapter.CategoriesCallback {
 
-
-    public static final int CASE_CATEGORY = 1, CASE_SUBCATEGORY = 2, CASE_PRODUCTS = 0, CASE_SEARCH_PROD = 3;
-    private static final int THE_LOADER = 0x01;
+    private static final int CURSOR_LOADER_ID = 0x01;
     public static Catalog_FR instance;
-    public static int _typeCase = -1;
-    public static String search_text = "", search_type = "";
-    public static List<String> btnListID = new ArrayList<String>();
-    public static List<String> btnListName = new ArrayList<String>();
+    private String search_text = "", search_type = "";
     private AbsListView catalogList;
     private ImageLoader imageLoader;
     private Cursor myCursor;
-    private LinearLayout catButLayout;
     private MyPreferences myPref;
     private Global global;
     private boolean onRestaurantMode = false;
-    private boolean restModeViewingProducts = false;
 
     private VolumePricesHandler volPriceHandler;
-    private MenuCatGV_Adapter categoryListAdapter;
     private MenuProdGV_Adapter prodListAdapter;
     private RefreshReceiptViewCallback callBackRefreshView;
     private MyEditText searchField;
-
 
     private ListViewAdapter tempLVAdapter;
     private Dialog dialog;
@@ -101,17 +97,32 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     private CategoriesHandler catHandler;
     private boolean catalogIsPortrait = false;
     private boolean isFastScanning = false;
-    private long lastClickTime = 0;
+    //    private long lastClickTime = 0;
     private int page = 1;
+    private boolean isToGo;
+
+    private LinearLayout categoriesInnerWrapLayout;
+    private RecyclerView catalogRecyclerView;
+    private CatalogCategories_Adapter categoriesAdapter;
+    private Button categoriesBackButton;
+    private TextView categoriesBannerTextView;
+    private List<EMSCategory> categoryStack = new ArrayList<>();
+    private EMSCategory selectedSubcategory;
+    private SearchType searchType = SearchType.NAME;
+    private boolean isRestoringSelectedCategory = false;
+    private static String BUNDLE_CATEGORY_STACK = "BUNDLE_CATEGORY_STACK";
+    private static String BUNDLE_SELECTED_CATEGORY = "BUNDLE_SELECTED_CATEGORY";
+    private static String BUNDLE_SEARCH_TEXT = "BUNDLE_SEARCH_TEXT";
+    private static String BUNDLE_SEARCH_TYPE = "BUNDLE_SEARCH_TYPE";
+    private static String BUNDLE_SEARCH_TYPE_ENUM = "BUNDLE_SEARCH_TYPE_ENUM";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.order_catalog_layout, container, false);
         instance = this;
-        catButLayout = (LinearLayout) view.findViewById(R.id.categoriesButtonLayoutHolder);
+        isToGo = ((OrderingMain_FA) getActivity()).isToGo;
         searchField = (MyEditText) view.findViewById(R.id.catalogSearchField);
         searchField.setIsForSearching(getActivity(), OrderingMain_FA.invisibleSearchMain);
-        // searchField.setText("58187869354"); //test upc
         catalogList = (AbsListView) view.findViewById(R.id.catalogListview);
         catalogList.setOnItemClickListener(this);
         catalogIsPortrait = Global.isPortrait(getActivity());
@@ -129,21 +140,12 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         isFastScanning = myPref.getPreferences(MyPreferences.pref_fast_scanning_mode);
 
         global = (Global) getActivity().getApplication();
+        catHandler = new CategoriesHandler(getActivity());
 
+        prodListAdapter = new MenuProdGV_Adapter(this, getActivity(), null, CursorAdapter.NO_SELECTION, imageLoader);
 
-        if (Global.cat_id.equals("0"))
-            Global.cat_id = myPref.getPreferencesValue(MyPreferences.pref_default_category);
-
-        if (myPref.getPreferences(MyPreferences.pref_restaurant_mode)) {
-            if (_typeCase == -1)
-                _typeCase = CASE_CATEGORY;
-            else if (_typeCase == CASE_PRODUCTS || _typeCase == CASE_SEARCH_PROD)
-                restModeViewingProducts = true;
-
+        if (myPref.isRestaurantMode()) {
             onRestaurantMode = true;
-        } else {
-            if (_typeCase == -1)
-                _typeCase = CASE_PRODUCTS;
         }
 
         catalogList.setOnScrollListener(new AbsListView.OnScrollListener() {
@@ -154,7 +156,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                if (totalItemCount > 0 && myCursor.getCount() >= page * 200) {
+                if (totalItemCount > 0 && myCursor.getCount() >= page * Integer.parseInt(getString(R.string.sqlLimit))) {
                     int lastInScreen = firstVisibleItem + visibleItemCount;
                     if (lastInScreen == totalItemCount) {
                         page++;
@@ -163,14 +165,211 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                 }
             }
         });
-        setupSpinners(view);
-        setupCategoriesButtons();
 
+        categoriesInnerWrapLayout = (LinearLayout) view.findViewById(R.id.categoriesInnerWrapLayout);
+        categoriesInnerWrapLayout.setVisibility(onRestaurantMode ? View.VISIBLE : View.GONE);
+
+        setupSpinners(view);
         setupSearchField();
-        loadCursor();
+
+        getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
+
+        categoriesBannerTextView = (TextView) view.findViewById(R.id.categoriesBannerTextView);
+        categoriesBackButton = (Button) view.findViewById(R.id.categoriesBackButton);
+        categoriesBackButton.setVisibility(View.GONE);
+        categoriesBackButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                search_text = "";
+
+                // Go Back one level
+                selectedSubcategory = null;
+                if (categoryStack.size() > 0) {
+                    int lastIndex = categoryStack.size() - 1;
+                    categoryStack.remove(lastIndex);
+
+                    if (categoryStack.size() == 0) {
+                        loadRootCategories();
+                    } else {
+                        loadSubCategories(categoryStack.get(categoryStack.size() - 1));
+                    }
+                } else {
+                    loadRootCategories();
+                }
+                loadCursor();
+            }
+        });
+
+        catalogRecyclerView = (RecyclerView) view.findViewById(R.id.categoriesRecyclerView);
+        LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
+        catalogRecyclerView.setLayoutManager(horizontalLayoutManager);
+
+        if (savedInstanceState != null) {
+            search_text = savedInstanceState.getString(BUNDLE_SEARCH_TEXT);
+            search_type = savedInstanceState.getString(BUNDLE_SEARCH_TYPE);
+            searchType = (SearchType) savedInstanceState.getSerializable(BUNDLE_SEARCH_TYPE_ENUM);
+
+            categoryStack = savedInstanceState.getParcelableArrayList(BUNDLE_CATEGORY_STACK);
+            categoriesBackButton.setVisibility(categoryStack.size() > 0 ? View.VISIBLE : View.GONE);
+
+            if (categoryStack.size() > 0) {
+                // Load last subcategory
+                loadSubCategories(categoryStack.get(categoryStack.size() - 1));
+            } else {
+                // Load root categories
+                loadRootCategories();
+            }
+
+            selectedSubcategory = savedInstanceState.getParcelable(BUNDLE_SELECTED_CATEGORY); // DO NOT MOVE THIS ABOVE
+            if (selectedSubcategory != null) {
+                isRestoringSelectedCategory = true;
+                categoriesAdapter.selectItemWithCategoryId(selectedSubcategory.getCategoryId());
+                isRestoringSelectedCategory = false;
+            } else {
+                loadCursor();
+            }
+        } else {
+            loadRootCategories();
+
+            // Check for default category in settings
+            String defaultCategoryId = myPref.getPreferencesValue(MyPreferences.pref_default_category);
+
+            if (!"0".equals(defaultCategoryId) && !TextUtils.isEmpty(defaultCategoryId)) {
+                if (onRestaurantMode) {
+                    selectedSubcategory = categoriesAdapter.getCategoryWithId(defaultCategoryId);
+                    if (selectedSubcategory != null) {
+                        isRestoringSelectedCategory = true;
+                        categoriesAdapter.selectItemWithCategoryId(selectedSubcategory.getCategoryId());
+                        isRestoringSelectedCategory = false;
+                    } else {
+                        loadCursor();
+                    }
+                } else {
+                    for (String[] cat : spinnerCategories) {
+                        if (defaultCategoryId.equals(cat[1])) {
+                            selectedSubcategory = new EMSCategory(defaultCategoryId, cat[0], "", 0);
+                            break;
+                        }
+                    }
+                    loadCursor();
+                }
+            } else {
+                loadCursor();
+            }
+        }
+
         return view;
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableArrayList(BUNDLE_CATEGORY_STACK, (ArrayList<? extends Parcelable>) categoryStack);
+        outState.putParcelable(BUNDLE_SELECTED_CATEGORY, selectedSubcategory);
+        outState.putString(BUNDLE_SEARCH_TEXT, search_text);
+        outState.putString(BUNDLE_SEARCH_TYPE, search_type);
+        outState.putSerializable(BUNDLE_SEARCH_TYPE_ENUM, searchType);
+        super.onSaveInstanceState(outState);
+    }
+
+    private enum SearchType {
+        NAME(0), DESCRIPTION(1), TYPE(2), UPC(3), SKU(4);
+
+        public int id;
+
+        SearchType(int id) {
+            this.id = id;
+        }
+
+        public static SearchType valueOf(int code) {
+            switch (code) {
+                case 0:
+                    return NAME;
+                case 1:
+                    return DESCRIPTION;
+                case 2:
+                    return TYPE;
+                case 3:
+                    return UPC;
+                case 4:
+                    return SKU;
+                default:
+                    return UPC;
+            }
+        }
+
+    }
+
+    @Override
+    public void categorySelected(EMSCategory category) {
+
+        if (!isRestoringSelectedCategory) {
+            search_text = "";
+        }
+
+        selectedSubcategory = null;
+
+        if (EMSCategory.ROOT_CATEGORY_ID.equals(category.getCategoryId())) {
+            loadRootCategories();
+        } else if (category.getNumberOfSubCategories() > 0) {
+            categoryStack.add(category);
+            loadSubCategories(category);
+        } else {
+            selectedSubcategory = category;
+            refreshCategoriesBanner();
+        }
+
+        loadCursor();
+
+        categoriesBackButton.setVisibility(categoryStack.size() > 0 ? View.VISIBLE : View.GONE);
+//        categoriesBannerTextView.setVisibility(categoryStack.size() > 0 ? View.VISIBLE : View.GONE);
+    }
+
+    private void loadRootCategories() {
+        categoryStack.clear();
+        selectedSubcategory = null;
+        categoriesBackButton.setVisibility(View.GONE);
+
+
+        List<EMSCategory> cats = catHandler.getMainCategories();
+        categoriesAdapter = new CatalogCategories_Adapter(getActivity(), this, cats, imageLoader);
+        catalogRecyclerView.swapAdapter(categoriesAdapter, true);
+
+        refreshCategoriesBanner();
+    }
+
+    private void loadSubCategories(EMSCategory category) {
+        List<EMSCategory> cats = catHandler.getSubCategories(category.getCategoryId());
+//        EMSCategory rootCategory = new EMSCategory("0", "All", "", 0);
+//        cats.add(0, rootCategory);
+
+        categoriesAdapter = new CatalogCategories_Adapter(getActivity(), this, cats, imageLoader);
+        catalogRecyclerView.swapAdapter(categoriesAdapter, true);
+
+        refreshCategoriesBanner();
+    }
+
+    private void refreshCategoriesBanner() {
+        StringBuilder sb = new StringBuilder();
+
+        if (categoryStack.size() > 0) {
+            for (int i = 0; i < categoryStack.size(); i++) {
+                if (i > 0) {
+                    sb.append(" > ");
+                }
+                sb.append(categoryStack.get(i).getCategoryName());
+            }
+
+            if (selectedSubcategory != null) {
+                sb.append(" > ");
+            }
+        }
+
+        if (selectedSubcategory != null) {
+            sb.append(selectedSubcategory.getCategoryName());
+        }
+
+        categoriesBannerTextView.setText(sb.toString());
+    }
 
     public class CatalogProductLoader extends AsyncTask<Integer, Void, Catalog_Loader> {
 
@@ -188,11 +387,14 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
         @Override
         protected Catalog_Loader doInBackground(Integer... params) {
-            return new Catalog_Loader(getActivity(), (int) params[0] + Integer.parseInt(getString(R.string.sqlLimit)), 1);
+            return new Catalog_Loader(getActivity(), params[0] + Integer.parseInt(getString(R.string.sqlLimit)), 1, selectedSubcategory, search_text, search_type, onRestaurantMode);
         }
 
         @Override
         protected void onPostExecute(Catalog_Loader catalog_loader) {
+            if (myCursor != null && !myCursor.isClosed()) {
+                myCursor.close();
+            }
             myCursor = catalog_loader.loadInBackground();
             prodListAdapter.swapCursor(myCursor);
             prodListAdapter.notifyDataSetChanged();
@@ -247,19 +449,13 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             @Override
             public void onTextChanged(CharSequence s, int arg1, int arg2, int arg3) {
                 String test = s.toString().trim();
-                if (test.isEmpty() && _typeCase == CASE_SEARCH_PROD) {
-                    if (onRestaurantMode) {
-                        restModeViewingProducts = false;
-                        _typeCase = CASE_CATEGORY;
-                    } else
-                        _typeCase = CASE_PRODUCTS;
+                if (test.isEmpty() && !TextUtils.isEmpty(search_text)) {
+                    search_text = "";
+                    search_type = "";
                     loadCursor();
-
                 }
             }
         });
-        if (_typeCase == CASE_SEARCH_PROD)
-            performSearch(search_text);
     }
 
     private void setupSpinners(View v) {
@@ -270,8 +466,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         else
             btnCategory.setOnClickListener(this);
 
-
-        catHandler = new CategoriesHandler(getActivity());
         Spinner spinnerFilter = (Spinner) v.findViewById(R.id.filterButton);
 
         Resources resources = getActivity().getResources();
@@ -295,36 +489,8 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         spinnerFilter.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                global.searchType = position;
-                //hide the keyboard
-                switch (position) {
-                    case 0: //Name
-                    {
-//                        searchField.setRawInputType(Configuration.KEYBOARD_NOKEYS);
-                        break;
-                    }
-                    case 1: //description
-                    {
-//                        searchField.setRawInputType(Configuration.KEYBOARD_NOKEYS);
-                        break;
-                    }
-                    case 2: //type
-                    {
-//                        searchField.setRawInputType(Configuration.KEYBOARD_NOKEYS);
-                        break;
-                    }
-
-                    case 3: //upc
-                    {
-//                        searchField.setRawInputType(Configuration.KEYBOARD_QWERTY);
-                        break;
-                    }
-                    case 4: //sku
-                    {
-//                        searchField.setRawInputType(Configuration.KEYBOARD_QWERTY);
-                        break;
-                    }
-                }
+//                global.searchType = position;
+                searchType = SearchType.valueOf(position);
             }
 
             @Override
@@ -351,19 +517,17 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         list.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-                _typeCase = CASE_PRODUCTS;
                 if (position == 0 && !isSubcategory) {
-                    Global.cat_id = "0";
-
+                    selectedSubcategory = null;
                 } else {
 
                     int index = position;
-                    if (!isSubcategory)
+                    if (!isSubcategory) {
                         index -= 1;
-                    Global.cat_id = categories.get(index)[1];
-                    // it has sub-category
-                    global.hasSubcategory = myPref.getPreferences(MyPreferences.pref_enable_multi_category) && !categories.get(index)[2].equals("0");
-                    global.isSubcategory = false;
+                    }
+
+                    selectedSubcategory = new EMSCategory(categories.get(index)[1], categories.get(index)[0], "", 0);
+
                 }
                 dialog.dismiss();
                 loadCursor();
@@ -375,47 +539,20 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
     }
 
-    private void setupCategoriesButtons() {
-        if (!onRestaurantMode)
-            catButLayout.setVisibility(View.GONE);
-        else {
-            Button but = (Button) catButLayout.findViewById(R.id.buttonAllCategories);
-            but.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    int size = btnListID.size();
-                    if (size > 0) {
-                        for (int i = 0; i < size; i++)
-                            removeCategoryButton(btnListID.get(i));
-                        btnListID.clear();
-                        btnListName.clear();
-
-
-                    }
-                    _typeCase = CASE_CATEGORY;
-                    Global.cat_id = "0";
-                    restModeViewingProducts = false;
-                    loadCursor();
-                }
-            });
-
-            int size = btnListID.size();
-            for (int i = 0; i < size; i++) {
-                addCategoryButton(btnListName.get(i), btnListID.get(i));
-            }
-        }
-    }
-
     public void loadCursor() {
-        getLoaderManager().initLoader(THE_LOADER, null, this).forceLoad();
+        getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this).forceLoad();
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-        return new Catalog_Loader(getActivity(), Integer.parseInt(getString(R.string.sqlLimit)), 0);
-    }
+        EMSCategory categoryToLoad = selectedSubcategory;
 
+        if (onRestaurantMode && categoryToLoad == null && categoryStack.size() > 0) {
+            categoryToLoad = categoryStack.get(categoryStack.size() - 1);
+        }
+
+        return new Catalog_Loader(getActivity(), Integer.parseInt(getString(R.string.sqlLimit)), 0, categoryToLoad, search_text, search_type, onRestaurantMode);
+    }
 
     @Override
     public void onDestroy() {
@@ -426,25 +563,17 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     @Override
     public void onLoadFinished(Loader<Cursor> arg0, Cursor c) {
         myCursor = c;
-        if (_typeCase != CASE_PRODUCTS && _typeCase != CASE_SEARCH_PROD) {
-            categoryListAdapter = new MenuCatGV_Adapter(this, getActivity(), c, CursorAdapter.NO_SELECTION, imageLoader);
-            catalogList.setAdapter(categoryListAdapter);
-            if (myPref.getPreferences(MyPreferences.pref_restaurant_mode) && myCursor.getCount() == 1
-                    && _typeCase == CASE_CATEGORY && !Global.cat_id.equalsIgnoreCase("0"))
-                itemClicked(false);
-        } else {
-            prodListAdapter = new MenuProdGV_Adapter(this, getActivity(), c, CursorAdapter.NO_SELECTION, imageLoader);
-            catalogList.setAdapter(prodListAdapter);
+        prodListAdapter = new MenuProdGV_Adapter(this, getActivity(), c, CursorAdapter.NO_SELECTION, imageLoader);
+        catalogList.setAdapter(prodListAdapter);
+
+        if (!onRestaurantMode) {
+            categoriesBannerTextView.setVisibility(selectedSubcategory != null ? View.VISIBLE : View.GONE);
+            refreshCategoriesBanner();
         }
     }
 
-
     @Override
     public void onLoaderReset(Loader<Cursor> arg0) {
-        myCursor.close();
-        if (categoryListAdapter != null) {
-            categoryListAdapter.swapCursor(null);
-        }
         if (catalogList != null) {
             catalogList.setAdapter(null);
         }
@@ -453,134 +582,42 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     @Override
     public void productClicked(int position) {
         myCursor.moveToPosition(position);
-        itemClicked(false);
-    }
-
-    @Override
-    public void itemClicked(int position, boolean showAllProducts) {
-        myCursor.moveToPosition(position);
-        itemClicked(showAllProducts);
+        itemClicked();
     }
 
     public void searchUPC(String upc) {
         search_text = upc;
-        _typeCase = CASE_SEARCH_PROD;
         search_type = "prod_upc";
-
         loadCursor();
-        restModeViewingProducts = true;
     }
 
     public void performSearch(String text) {
-
-
         search_text = text;
-        _typeCase = CASE_SEARCH_PROD;
 
-        switch (global.searchType) {
-            case 0: // search by Name
-            {
+        switch (searchType) {
+            case NAME: // search by Name
                 search_type = "prod_name";
                 break;
-            }
-            case 1: // search by Description
-            {
+            case DESCRIPTION: // search by Description
                 search_type = "prod_desc";
                 break;
-            }
-            case 2: // search by Type
-            {
+            case TYPE: // search by Type
                 search_type = "prod_type";
                 break;
-            }
-            case 3: // search by UPC
-            {
+            case UPC: // search by UPC
                 search_type = "prod_upc";
-//                searchField.setRawInputType(Configuration.KEYBOARD_QWERTY);
                 break;
-            }
-            case 4:
+            case SKU: // search by SKU
                 search_type = "prod_sku";
-//                searchField.setRawInputType(Configuration.KEYBOARD_QWERTY);
                 break;
         }
 
         loadCursor();
-        restModeViewingProducts = true;
         OrderingMain_FA.invisibleSearchMain.requestFocus();
     }
 
-    private void getCategoryCursor(int i_id, int i_cat_name, int i_num_subcategories, boolean showAllProducts) {
-        restModeViewingProducts = false;
-        String catID = myCursor.getString(myCursor.getColumnIndex("_id"));
-        boolean found_category_name = myCursor.getColumnIndex("cat_name") != -1;
-        if (found_category_name) {
-            String catName = myCursor.getString(myCursor.getColumnIndex("cat_name"));
-            Global.cat_id = catID;
-
-            int num_subcategories = Integer.parseInt(myCursor.getString(myCursor.getColumnIndex("num_subcategories")));
-            if (num_subcategories > 0 && !showAllProducts) {
-
-                btnListID.add(catID);
-                btnListName.add(catName);
-                addCategoryButton(catName, catID);
-                _typeCase = CASE_SUBCATEGORY;
-                loadCursor();
-            } else {
-                restModeViewingProducts = true;
-                btnListID.add(catID);
-                btnListName.add(catName);
-                addCategoryButton(catName, catID);
-
-                _typeCase = CASE_PRODUCTS;
-                loadCursor();
-            }
-        }
-    }
-
-    private void addCategoryButton(String categoryName, String cat_id) {
-        Button btn = new Button(getActivity());
-        btn.setTag(cat_id);
-        btn.setText(categoryName);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT);
-        catButLayout.addView(btn, params);
-        btn.setTextAppearance(getActivity(), R.style.black_text_appearance);
-        btn.setPadding(5, 0, 5, 0);
-        btn.setTextSize(TypedValue.COMPLEX_UNIT_PX, getActivity().getResources().getDimension(R.dimen.ordering_checkout_btn_txt_size));
-        btn.setBackgroundResource(R.drawable.blue_btn_selector);
-        btn.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                int size1 = btnListID.size();
-                int temp = btnListID.indexOf(v.getTag());
-                List<String> tempList = new ArrayList<String>(btnListID);
-                for (int i = temp + 1; i < size1; i++) {
-                    removeCategoryButton(tempList.get(i));
-                    btnListName.remove(btnListID.indexOf(tempList.get(i)));
-                    btnListID.remove(btnListID.indexOf(tempList.get(i)));
-                }
-                int size2 = btnListID.size();
-                if (size2 < size1) {
-                    Global.cat_id = btnListID.get(size2 - 1);
-                    _typeCase = CASE_SUBCATEGORY;
-                    loadCursor();
-                }
-            }
-        });
-    }
-
-    private void removeCategoryButton(String cat_id) {
-        Button temp = (Button) catButLayout.findViewWithTag(cat_id);
-        if (temp != null) {
-            restModeViewingProducts = false;
-            catButLayout.removeView(temp);
-        }
-    }
-
     public void automaticAddOrder(Product product) {
-        ((OrderingMain_FA) getActivity()).automaticAddOrder(getActivity(), false, global, new OrderProduct(product), ((OrderingMain_FA) getActivity()).getSelectedSeatNumber());
+        OrderingMain_FA.automaticAddOrder(getActivity(), false, global, new OrderProduct(product), ((OrderingMain_FA) getActivity()).getSelectedSeatNumber());
         refreshListView();
         callBackRefreshView.refreshView();
     }
@@ -603,8 +640,8 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                 if (tempPrice == null || tempPrice.isEmpty())
                     tempPrice = c.getString(c.getColumnIndex("master_price"));
             }
-        } else if (global.orderProducts.contains(product.getId())) {
-            BigDecimal origQty = Global.getBigDecimalNum(OrderProductUtils.getOrderProductQty(global.orderProducts, product.getId()));
+        } else if (global.order.getOrderProducts().contains(product.getId())) {
+            BigDecimal origQty = Global.getBigDecimalNum(OrderProductUtils.getOrderProductQty(global.order.getOrderProducts(), product.getId()));
             BigDecimal newQty = origQty.add(Global.getBigDecimalNum("1"));
             String[] temp = volPriceHandler.getVolumePrice(newQty.toString(), product.getId());
             if (temp[1] != null && !temp[1].isEmpty())
@@ -640,10 +677,10 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
     private void performClickEvent() {
         Product product = populateDataForIntent(myCursor);
-        if (myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
-            List<OrderProduct> orderProductsGroupBySKU = OrderProductUtils.getOrderProductsGroupBySKU(global.orderProducts);
-            global.orderProducts.clear();
-            global.orderProducts.addAll(orderProductsGroupBySKU);
+        if (myPref.isGroupReceiptBySku(isToGo)) {//(myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
+            List<OrderProduct> orderProductsGroupBySKU = OrderProductUtils.getOrderProductsGroupBySKU(global.order.getOrderProducts());
+            global.order.getOrderProducts().clear();
+            global.order.getOrderProducts().addAll(orderProductsGroupBySKU);
         }
         if (!isFastScanning) {
             Intent intent = new Intent(getActivity(), PickerProduct_FA.class);
@@ -651,6 +688,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             product.setAssignedSeat(((OrderingMain_FA) getActivity()).getSelectedSeatNumber());
             String json = gson.toJson(new OrderProduct(product));
             intent.putExtra("orderProduct", json);
+            intent.putExtra("isToGo", isToGo);
 
             if (Global.isConsignment)
                 intent.putExtra("consignment_qty", myCursor.getString(myCursor.getColumnIndex("consignment_qty")));
@@ -661,7 +699,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             if (!orderingMain.validAutomaticAddQty(product)) {
                 Global.showPrompt(getActivity(), R.string.dlog_title_error, getActivity().getString(R.string.limit_onhand));
             } else {
-                if (myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
+                if (myPref.isGroupReceiptBySku(isToGo)) {//(myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
                     int orderIndex = global.checkIfGroupBySKU(getActivity(), product.getId(), "1");
                     if (orderIndex != -1 && !OrderingMain_FA.returnItem) {
                         global.refreshParticularOrder(getActivity(), orderIndex, product);
@@ -690,14 +728,10 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         }
     }
 
-    private void itemClicked(boolean showAllProducts) {
-        if (!onRestaurantMode)
+    // Called in landscape
+    private void itemClicked() {
+        if (!onRestaurantMode) {
             performClickEvent();
-        else if (!restModeViewingProducts) {
-            int i_id = myCursor.getColumnIndex("_id");
-            int i_cat_name = myCursor.getColumnIndex("cat_name");
-            int i_num_subcategories = myCursor.getColumnIndex("num_subcategories");
-            getCategoryCursor(i_id, i_cat_name, i_num_subcategories, showAllProducts);
         } else {
             ProductAddonsHandler prodAddonsHandler = new ProductAddonsHandler(getActivity());
             List<ParentAddon> parentAddons = prodAddonsHandler.getParentAddons(
@@ -724,75 +758,62 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                 intent.putExtra("prod_price_points", product.getProdPricePoints());
                 intent.putExtra("prod_value_points", product.getProdValuePoints());
 
-//                Global.productParentAddons = tempListMap;
-
-//                global.addonSelectionType = new HashMap<>();
                 startActivityForResult(intent, 0);
-            } else
+            } else {
                 performClickEvent();
+            }
         }
     }
 
+    // Called in portrait
     @Override
     public void onItemClick(AdapterView<?> arg0, View arg1, int pos, long arg3) {
 
-        if (!isFastScanning && SystemClock.elapsedRealtime() - lastClickTime < 1000) {
-            return;
-        }
-        lastClickTime = SystemClock.elapsedRealtime();
-
-        if (catalogIsPortrait && myCursor.moveToPosition(pos)) {
-            if (!onRestaurantMode)
-                performClickEvent();
-            else if (!restModeViewingProducts) {
-                int i_id = myCursor.getColumnIndex("_id");
-                int i_cat_name = myCursor.getColumnIndex("cat_name");
-                int i_num_subcategories = myCursor.getColumnIndex("num_subcategories");
-                getCategoryCursor(i_id, i_cat_name, i_num_subcategories, false);
-            } else {
-                ProductAddonsHandler prodAddonsHandler = new ProductAddonsHandler(getActivity());
-                List<ParentAddon> parentAddons = prodAddonsHandler.getParentAddons(
-                        myCursor.getString(myCursor.getColumnIndex("_id")));
-                if (parentAddons != null && parentAddons.size() > 0) {
-                    Intent intent = new Intent(getActivity(), PickerAddon_FA.class);
-                    // intent.putExtra("prod_id",
-                    // myCursor.getString(myCursor.getColumnIndex("_id")));
-                    Product product = populateDataForIntent(myCursor);
-                    intent.putExtra("orderProduct", new OrderProduct(product).toJson());
-                    intent.putExtra("selectedSeatNumber", ((OrderingMain_FA) getActivity()).getSelectedSeatNumber());
-                    intent.putExtra("prod_id", product.getId());
-                    intent.putExtra("prod_name", product.getProdName());
-                    intent.putExtra("prod_on_hand", product.getProdOnHand());
-                    intent.putExtra("prod_price", product.getProdPrice());
-                    intent.putExtra("prod_desc", product.getProdDesc());
-                    intent.putExtra("url", product.getProdImgName());
-                    intent.putExtra("prod_istaxable", product.getProdIstaxable());
-                    intent.putExtra("prod_type", product.getProdType());
-                    intent.putExtra("prod_taxcode", product.getProdTaxCode());
-                    intent.putExtra("prod_taxtype", product.getProdType());
-                    intent.putExtra("cat_id", product.getCatId());
-                    intent.putExtra("prod_sku", product.getProd_sku());
-                    intent.putExtra("prod_upc", product.getProd_upc());
-                    intent.putExtra("prod_price_points", product.getProdPricePoints());
-                    intent.putExtra("prod_value_points", product.getProdValuePoints());
-
-//                    Global.productParentAddons = tempListMap;
-
-//                    global.addonSelectionType = new HashMap<>();
-                    startActivityForResult(intent, 0);
-                } else
+//        if (!isFastScanning && SystemClock.elapsedRealtime() - lastClickTime < 1000) {
+//            return;
+//        }
+//        lastClickTime = SystemClock.elapsedRealtime();
+        if (isFastScanning || UIUtils.singleOnClick(arg1)) {
+            if (catalogIsPortrait && myCursor.moveToPosition(pos)) {
+                if (!onRestaurantMode) {
                     performClickEvent();
+                } else {
+                    ProductAddonsHandler prodAddonsHandler = new ProductAddonsHandler(getActivity());
+                    List<ParentAddon> parentAddons = prodAddonsHandler.getParentAddons(
+                            myCursor.getString(myCursor.getColumnIndex("_id")));
+                    if (parentAddons != null && parentAddons.size() > 0) {
+                        Intent intent = new Intent(getActivity(), PickerAddon_FA.class);
+
+                        Product product = populateDataForIntent(myCursor);
+                        intent.putExtra("orderProduct", new OrderProduct(product).toJson());
+                        intent.putExtra("selectedSeatNumber", ((OrderingMain_FA) getActivity()).getSelectedSeatNumber());
+                        intent.putExtra("prod_id", product.getId());
+                        intent.putExtra("prod_name", product.getProdName());
+                        intent.putExtra("prod_on_hand", product.getProdOnHand());
+                        intent.putExtra("prod_price", product.getProdPrice());
+                        intent.putExtra("prod_desc", product.getProdDesc());
+                        intent.putExtra("url", product.getProdImgName());
+                        intent.putExtra("prod_istaxable", product.getProdIstaxable());
+                        intent.putExtra("prod_type", product.getProdType());
+                        intent.putExtra("prod_taxcode", product.getProdTaxCode());
+                        intent.putExtra("prod_taxtype", product.getProdType());
+                        intent.putExtra("cat_id", product.getCatId());
+                        intent.putExtra("prod_sku", product.getProd_sku());
+                        intent.putExtra("prod_upc", product.getProd_upc());
+                        intent.putExtra("prod_price_points", product.getProdPricePoints());
+                        intent.putExtra("prod_value_points", product.getProdValuePoints());
+
+                        startActivityForResult(intent, 0);
+                    } else {
+                        performClickEvent();
+                    }
+                }
             }
         }
     }
 
     public void refreshListView() {
-        if (_typeCase != CASE_PRODUCTS && _typeCase != CASE_SEARCH_PROD) {
-            categoryListAdapter.notifyDataSetChanged();
-
-        } else {
-            prodListAdapter.notifyDataSetChanged();
-        }
+        prodListAdapter.notifyDataSetChanged();
     }
 
     public void showSubcategories(String subCategoryName) {
@@ -810,7 +831,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         setupCategoryView();
         dialog.show();
     }
-
 
     public interface RefreshReceiptViewCallback {
         void refreshView();

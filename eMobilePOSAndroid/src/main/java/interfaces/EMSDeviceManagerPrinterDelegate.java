@@ -2,7 +2,6 @@ package interfaces;
 
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.view.View;
 
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;

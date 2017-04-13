@@ -21,8 +21,10 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.database.PaymentsHandler;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
@@ -30,6 +32,7 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NumberUtils;
 import com.android.support.Post;
+import com.crashlytics.android.Crashlytics;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -56,12 +59,15 @@ public class ProcessTupyx_FA extends FragmentActivity implements OnClickListener
     private Global global;
     private boolean hasBeenCreated = false;
     private NumberUtils numberUtils = new NumberUtils();
+    private AssignEmployee assignEmployee;
 
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activity = this;
         global = (Global) getApplication();
+        assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.tupyx_main_layout);
 
@@ -225,7 +231,7 @@ public class ProcessTupyx_FA extends FragmentActivity implements OnClickListener
 
         payment.setPay_id(extras.getString("pay_id"));
 
-        payment.setEmp_id(myPref.getEmpID());
+        payment.setEmp_id(String.valueOf(assignEmployee.getEmpId()));
 
         if (!extras.getBoolean("histinvoices")) {
             payment.setJob_id(extras.getString("job_id"));
@@ -235,7 +241,7 @@ public class ProcessTupyx_FA extends FragmentActivity implements OnClickListener
 
         if (!myPref.getShiftIsOpen())
             payment.setClerk_id(myPref.getShiftClerkID());
-        else if (myPref.getPreferences(MyPreferences.pref_use_clerks))
+        else if (myPref.isUseClerks())
             payment.setClerk_id(myPref.getClerkID());
 
         payment.setCust_id(extras.getString("cust_id") != null ? extras.getString("cust_id") : "");
@@ -325,7 +331,7 @@ public class ProcessTupyx_FA extends FragmentActivity implements OnClickListener
             Post httpClient = new Post();
 
             SAXParserFactory spf = SAXParserFactory.newInstance();
-            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(activity);
+            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
             urlToPost = params[0];
 
 
@@ -357,9 +363,8 @@ public class ProcessTupyx_FA extends FragmentActivity implements OnClickListener
                 }
 
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-//				Tracker tracker = EasyTracker.getInstance(activity);
-//				tracker.send(MapBuilder.createException(e.getStackTrace().toString(), false).build());
+                e.printStackTrace();
+                Crashlytics.logException(e);
             }
 
             return null;

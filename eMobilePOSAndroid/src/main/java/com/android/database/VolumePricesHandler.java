@@ -1,8 +1,11 @@
 package com.android.database;
 
 import android.app.Activity;
+import android.content.Context;
 import android.database.Cursor;
 
+import com.android.dao.AssignEmployeeDAO;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.support.MyPreferences;
 
 import net.sqlcipher.database.SQLiteStatement;
@@ -10,6 +13,8 @@ import net.sqlcipher.database.SQLiteStatement;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+
+import util.StringUtil;
 
 public class VolumePricesHandler {
 
@@ -32,8 +37,8 @@ public class VolumePricesHandler {
     private List<HashMap<String, Integer>> dictionaryListMap;
     private MyPreferences myPref;
 
-    public VolumePricesHandler(Activity activity) {
-        attrHash = new HashMap<String, Integer>();
+    public VolumePricesHandler(Context activity) {
+        attrHash = new HashMap<>();
         sb1 = new StringBuilder();
         sb2 = new StringBuilder();
         myPref = new MyPreferences(activity);
@@ -110,8 +115,10 @@ public class VolumePricesHandler {
         }
         if (myPref.isCustSelected())
             priceLevelID = myPref.getCustPriceLevel();
-        else
-            priceLevelID = myPref.getEmployeePriceLevel();
+        else {
+            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+            priceLevelID = StringUtil.nullStringToEmpty(assignEmployee.getPricelevelId());
+        }
         sb.append("SELECT * From VolumePrices WHERE prod_id = '");
         sb.append(prod_id).append("' and pricelevel_id = '");
         sb.append(priceLevelID).append("' ORDER BY minQty");

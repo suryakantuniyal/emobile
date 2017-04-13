@@ -1,8 +1,11 @@
 package com.android.database;
 
 import android.app.Activity;
+import android.content.Context;
 import android.database.Cursor;
 
+import com.android.dao.AssignEmployeeDAO;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.support.MyPreferences;
 
 import net.sqlcipher.database.SQLiteStatement;
@@ -13,9 +16,9 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import util.StringUtil;
 
-
-public class ProductsAttrHandler 
+public class ProductsAttrHandler
 {
 	private final String prodAttrKey = "prodAttrKey";
 	private final String prod_id = "prod_id";
@@ -34,7 +37,7 @@ public class ProductsAttrHandler
 	private MyPreferences myPref;
 	private final String TABLE_NAME = "ProductsAttr";
 
-	public ProductsAttrHandler(Activity activity)
+	public ProductsAttrHandler(Context activity)
 	{
 		myPref = new MyPreferences(activity);
 		attrHash = new HashMap<>();
@@ -199,8 +202,10 @@ public class ProductsAttrHandler
 			String priceLevelID;
 			if(myPref.isCustSelected())
 				priceLevelID = myPref.getCustPriceLevel();
-			else
-				priceLevelID = myPref.getEmployeePriceLevel();
+			else {
+				AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+				priceLevelID = StringUtil.nullStringToEmpty(assignEmployee.getPricelevelId());
+			}
 
 			
 			sb_1.append("SELECT  p.prod_id as '_id',p.prod_price as 'master_price',vp.price as 'volume_price', ch.over_price_net as 'chain_price',");

@@ -1,6 +1,7 @@
 package com.android.database;
 
 import android.app.Activity;
+import android.content.Context;
 import android.database.Cursor;
 
 import net.sqlcipher.database.SQLiteStatement;
@@ -33,7 +34,7 @@ public class SalesTaxCodesHandler {
 
     private static final String table_name = "SalesTaxCodes";
 
-    public SalesTaxCodesHandler(Activity activity) {
+    public SalesTaxCodesHandler(Context activity) {
         attrHash = new HashMap<>();
         addrData = new ArrayList<>();
         sb1 = new StringBuilder();

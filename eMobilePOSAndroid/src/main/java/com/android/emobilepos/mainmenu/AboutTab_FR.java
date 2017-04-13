@@ -17,7 +17,7 @@ import android.widget.Toast;
 import com.android.dao.AssignEmployeeDAO;
 import com.android.database.DBManager;
 import com.android.emobilepos.R;
-import com.android.emobilepos.models.AssignEmployee;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.support.MyPreferences;
 
 public class AboutTab_FR extends Fragment implements OnClickListener {
@@ -33,7 +33,7 @@ public class AboutTab_FR extends Fragment implements OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.about_layout, container, false);
-        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
         activity = getActivity();
         MyPreferences myPref = new MyPreferences(getActivity());
         TextView acctNumber = (TextView) view.findViewById(R.id.acctNum);
@@ -44,7 +44,11 @@ public class AboutTab_FR extends Fragment implements OnClickListener {
         posLogo = (ImageView) view.findViewById(R.id.aboutMainLogo);
         posLogo.setOnClickListener(this);
         acctNumber.setText(myPref.getAcctNumber());
-        employee.setText(assignEmployee.getEmpName() + " (" + assignEmployee.getEmpId() + ")");
+        if (assignEmployee != null) {
+            employee.setText(assignEmployee.getEmpName() + " (" + assignEmployee.getEmpId() + ")");
+        } else {
+            employee.setText(getString(R.string.unknown));
+        }
         version.setText(myPref.getBundleVersion());
 
         return view;
@@ -85,7 +89,6 @@ public class AboutTab_FR extends Fragment implements OnClickListener {
 
         @Override
         protected Void doInBackground(Void... params) {
-            // TODO Auto-generated method stub
             DBManager dbManager = new DBManager(activity);
             dbManager.deleteAllTablesData();
             return null;

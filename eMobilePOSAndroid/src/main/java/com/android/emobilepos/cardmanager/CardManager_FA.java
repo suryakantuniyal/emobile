@@ -22,11 +22,13 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.PaymentMethodDAO;
 import com.android.database.OrderProductsHandler;
 import com.android.database.PaymentsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.PaymentDetails;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.PaymentMethod;
 import com.android.payments.EMSPayGate_Default;
@@ -40,6 +42,7 @@ import com.android.support.NumberUtils;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.android.support.textwatcher.GiftCardTextWatcher;
+import com.crashlytics.android.Crashlytics;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -67,6 +70,7 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
     private EditText hiddenField;
     private String finalMessage;
     private String amountAdded;
+    private EMSRover roverReader;
 
     public enum GiftCardActions {
         CASE_ACTIVATE(0), CASE_ADD_BALANCE(1), CASE_BALANCE_INQUIRY(2), CASE_MANUAL_ADD(3), CASE_DEACTIVATE(4);
@@ -277,38 +281,39 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
 
                 break;
         }
+        cardInfoManager = new CreditCardInfo();
         hiddenField.addTextChangedListener(new GiftCardTextWatcher(activity, hiddenField, fieldCardNum, cardInfoManager, Global.isEncryptSwipe));
 
         setUpCardReader();
         hasBeenCreated = true;
     }
-
-    private TextWatcher hiddenTxtWatcher(final EditText hiddenField) {
-
-        return new TextWatcher() {
-            @Override
-            public void afterTextChanged(Editable s) {
-                String value = s.toString();
-                if (value.contains("\n") && value.split("\n").length >= 2
-                        && value.substring(value.length() - 1).contains("\n")) {
-                    String data = hiddenField.getText().toString().replace("\n", "");
-                    hiddenField.setText("");
-
-                    cardInfoManager = Global.parseSimpleMSR(activity, data);
-                    updateViewAfterSwipe();
-                }
-            }
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-        };
-    }
+//
+//    private TextWatcher hiddenTxtWatcher(final EditText hiddenField) {
+//
+//        return new TextWatcher() {
+//            @Override
+//            public void afterTextChanged(Editable s) {
+//                String value = s.toString();
+//                if (value.contains("\n") && value.split("\n").length >= 2
+//                        && value.substring(value.length() - 1).contains("\n")) {
+//                    String data = hiddenField.getText().toString().replace("\n", "");
+//                    hiddenField.setText("");
+//
+//                    cardInfoManager = Global.parseSimpleMSR(activity, data);
+//                    updateViewAfterSwipe();
+//                }
+//            }
+//
+//            @Override
+//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence s, int start, int before, int count) {
+//
+//            }
+//        };
+//    }
 
     @Override
     public void onResume() {
@@ -358,8 +363,8 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
     @SuppressWarnings("deprecation")
     private void setUpCardReader() {
         AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        String _audio_reader_type = myPref.getPreferencesValue(MyPreferences.pref_audio_card_reader);
         if (audioManager.isWiredHeadsetOn()) {
-            String _audio_reader_type = myPref.getPreferencesValue(MyPreferences.pref_audio_card_reader);
             if (_audio_reader_type != null && !_audio_reader_type.isEmpty() && !_audio_reader_type.equals("-1")) {
                 if (_audio_reader_type.equals(Global.AUDIO_MSR_UNIMAG)) {
                     uniMagReader = new EMSUniMagDriver();
@@ -372,30 +377,39 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
                         }
                     }).start();
                 } else if (_audio_reader_type.equals(Global.AUDIO_MSR_ROVER)) {
-                    EMSRover roverReader = new EMSRover();
+                    roverReader = new EMSRover();
                     roverReader.initializeReader(activity, false);
                 }
             }
-
         } else {
             int _swiper_type = myPref.getSwiperType();
             int _printer_type = myPref.getPrinterType();
-            if (_swiper_type != -1 && Global.btSwiper != null && Global.btSwiper.getCurrentDevice() != null && !cardReaderConnected) {
+            int _sled_type = myPref.sledType(true, -2);
+            if (_swiper_type != -1 && Global.btSwiper != null && Global.btSwiper.getCurrentDevice() != null
+                    && !cardReaderConnected) {
                 Global.btSwiper.getCurrentDevice().loadCardReader(msrCallBack, false);
-            } else if (_printer_type != -1
-                    && (_printer_type == Global.STAR || _printer_type == Global.BAMBOO || _printer_type == Global.ZEBRA)) {
-                if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null && !cardReaderConnected)
+            }
+            if (_sled_type != -1 && Global.btSled != null && Global.btSled.getCurrentDevice() != null
+                    && !cardReaderConnected) {
+                Global.btSled.getCurrentDevice().loadCardReader(msrCallBack, false);
+            }
+            if (_printer_type != -1 && Global.deviceHasMSR(_printer_type)) {
+                if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null
+                        && !cardReaderConnected)
                     Global.mainPrinterManager.getCurrentDevice().loadCardReader(msrCallBack, false);
             }
         }
-        // }
+
         if (myPref.isET1(true, false) || myPref.isMC40(true, false)) {
             ourIntentAction = getString(R.string.intentAction3);
             Intent i = getIntent();
             handleDecodeData(i);
             cardSwipe.setChecked(true);
-        } else if (myPref.isSam4s() || myPref.isPAT100()) {
+        } else if (myPref.isSam4s() || myPref.isPAT100() || EMSIDTechUSB.isUSBConnected(this)) {
             cardSwipe.setChecked(true);
+            _msrUsbSams = new EMSIDTechUSB(activity, msrCallBack);
+            if (_msrUsbSams.OpenDevice())
+                _msrUsbSams.StartReadingThread();
         } else if (myPref.isESY13P1()) {
             if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
                 Global.mainPrinterManager.getCurrentDevice().loadCardReader(msrCallBack, false);
@@ -509,6 +523,7 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
             cardType = "Reward";
         PaymentMethod paymentMethod = PaymentMethodDAO.getPaymentMethodByType(cardType);
         if (populateCardInfo() && paymentMethod != null) {
+            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
             payment = new Payment(this);
             GenerateNewID generator = new GenerateNewID(this);
             String tempPay_id;
@@ -516,7 +531,8 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
             payment.setPay_id(tempPay_id);
             payment.setCust_id(myPref.getCustID());
             payment.setCustidkey(myPref.getCustIDKey());
-            payment.setEmp_id(myPref.getEmpID());
+            payment.setEmp_id(String.valueOf(assignEmployee.getEmpId()));
+
             payment.setPay_name(cardInfoManager.getCardOwnerName());
             payment.setPay_ccnum(cardInfoManager.getCardNumAESEncrypted());
             payment.setCcnum_last4(cardInfoManager.getCardLast4());
@@ -578,7 +594,7 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
         protected String doInBackground(String... params) {
             Post httpClient = new Post();
             SAXParserFactory spf = SAXParserFactory.newInstance();
-            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(activity);
+            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
             urlToPost = params[0];
             try {
                 String xml = httpClient.postData(13, activity, urlToPost);
@@ -606,7 +622,9 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
                         errorMsg = xml;
                 }
 
-            } catch (Exception ignored) {
+            } catch (Exception e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
             }
             return null;
         }
@@ -724,7 +742,9 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
         try {
             Date date = dt2.parse(cardInfoManager.getCardExpYear());
             formatedYear = dt.format(date);
-        } catch (ParseException ignored) {
+        } catch (ParseException e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
 
         }
 

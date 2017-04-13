@@ -48,7 +48,7 @@ public class RoutesTab_FR extends Fragment {
 				
 				//getDimensions();
 			
-//				DBManager manag = new DBManager(getActivity());
+//				DBManager manag = new DBManager(getContext());
 //				manag.dbBackupDB();
 //				
 		        /*Intent sharingIntent = new Intent(Intent.ACTION_SEND);

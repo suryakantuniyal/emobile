@@ -24,6 +24,8 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 
+import util.json.UIUtils;
+
 public class MenuProdGV_Adapter extends CursorAdapter {
     private final Global global;
     LayoutInflater inflater;
@@ -37,7 +39,7 @@ public class MenuProdGV_Adapter extends CursorAdapter {
 
     private VolumePricesHandler volPriceHandler;
     private String attrToDisplay = "";
-    private long lastClickTime = 0;
+//    private long lastClickTime = 0;
     private boolean isFastScanning = false;
     private boolean isRestMode = false;
 
@@ -56,7 +58,7 @@ public class MenuProdGV_Adapter extends CursorAdapter {
         imageLoader = _imageLoader;
         attrToDisplay = myPref.getPreferencesValue(MyPreferences.pref_attribute_to_display);
         isFastScanning = myPref.getPreferences(MyPreferences.pref_fast_scanning_mode);
-        isRestMode = myPref.getPreferences(MyPreferences.pref_restaurant_mode);
+        isRestMode = myPref.isRestaurantMode();
         global = (Global) activity.getApplication();
         if (isPortrait) {
             options = new DisplayImageOptions.Builder().resetViewBeforeLoading(true).displayer(new FadeInBitmapDisplayer(800)).cacheOnDisc(true)
@@ -71,6 +73,8 @@ public class MenuProdGV_Adapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, final Cursor cursor) {
         final int position = cursor.getPosition();
+
+        if (cursor.isClosed()) return;
 
         holder = (ViewHolder) view.getTag();
         if (holder.i_prod_name != -1) {
@@ -97,24 +101,26 @@ public class MenuProdGV_Adapter extends CursorAdapter {
             holder.itemImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if ((!isFastScanning || (isFastScanning && isRestMode)) && SystemClock.elapsedRealtime() - lastClickTime < 1000) {
-                        return;
-                    }
-                    lastClickTime = SystemClock.elapsedRealtime();
-                    if (isPortrait) {
-                        Intent intent = new Intent(activity, ShowProductImageActivity.class);
-                        cursor.moveToPosition(position);
-                        intent.putExtra("url", cursor.getString(holder.i_prod_img_name));
-                        activity.startActivity(intent);
-                    } else {
-                        callBack.productClicked(position);
+//                    if ((!isFastScanning || (isFastScanning && isRestMode)) && SystemClock.elapsedRealtime() - lastClickTime < 1000) {
+//                        return;
+//                    }
+//                    lastClickTime = SystemClock.elapsedRealtime();
+                    if((isFastScanning && !isRestMode) || UIUtils.singleOnClick(v)) {
+                        if (isPortrait) {
+                            Intent intent = new Intent(activity, ShowProductImageActivity.class);
+                            cursor.moveToPosition(position);
+                            intent.putExtra("url", cursor.getString(holder.i_prod_img_name));
+                            activity.startActivity(intent);
+                        } else {
+                            callBack.productClicked(position);
+                        }
                     }
                 }
             });
 
             if (isPortrait) {
                 String prod_id = cursor.getString(holder.i_id);
-                holder.qty.setText(OrderProductUtils.getOrderProductQty(global.orderProducts, prod_id));//getQty(prod_id));
+                holder.qty.setText(OrderProductUtils.getOrderProductQty(global.order.getOrderProducts(), prod_id));//getQty(prod_id));
                 String tempPrice = cursor.getString(holder.i_volume_price);
                 if (tempPrice == null || tempPrice.isEmpty()) {
                     tempPrice = cursor.getString(holder.i_pricelevel_price);
@@ -124,7 +130,7 @@ public class MenuProdGV_Adapter extends CursorAdapter {
                             tempPrice = cursor.getString(holder.i_master_price);
                     }
                 } else {
-                    String[] temp = volPriceHandler.getVolumePrice(OrderProductUtils.getOrderProductQty(global.orderProducts, prod_id), prod_id);
+                    String[] temp = volPriceHandler.getVolumePrice(OrderProductUtils.getOrderProductQty(global.order.getOrderProducts(), prod_id), prod_id);
                     if (temp[1] != null && !temp[1].isEmpty())
                         tempPrice = temp[1];
                 }
@@ -165,7 +171,6 @@ public class MenuProdGV_Adapter extends CursorAdapter {
         ViewHolder holder = new ViewHolder();
         retView = inflater.inflate(R.layout.catalog_listview_adapter, parent, false);
         if (isPortrait) {
-//            retView = inflater.inflate(R.layout.catalog_listview_adapter, parent, false);
             holder.title = (TextView) retView.findViewById(R.id.catalogItemName);
             holder.qty = (TextView) retView.findViewById(R.id.catalogItemQty);
             holder.consignment_qty = (TextView) retView.findViewById(R.id.catalogConsignmentQty);
@@ -183,10 +188,7 @@ public class MenuProdGV_Adapter extends CursorAdapter {
             holder.i_prod_img_name = cursor.getColumnIndex("prod_img_name");
             holder.i_chain_price = cursor.getColumnIndex("chain_price");
             holder.i_consignment_qty = cursor.getColumnIndex("consignment_qty");
-
         } else {
-//            retView = inflater.inflate(R.layout.catalog_gridview_adapter, parent, false);
-
             holder.title = (TextView) retView.findViewById(R.id.gridViewImageTitle);
             holder.itemImage = (ImageView) retView.findViewById(R.id.gridViewImage);
             holder.productNameTxt = (TextView) retView.findViewById(R.id.gridCatalogProducttNametextView);

@@ -5,7 +5,6 @@ import android.app.ProgressDialog;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
-import android.os.Handler;
 import android.util.Log;
 
 import com.StarMicronics.jasura.JAException;
@@ -29,7 +28,6 @@ import interfaces.EMSDeviceManagerPrinterDelegate;
 import jpos.JposConst;
 import jpos.JposException;
 import jpos.POSPrinter;
-import jpos.POSPrinterConst;
 import jpos.config.JposEntry;
 import jpos.events.DirectIOEvent;
 import jpos.events.DirectIOListener;

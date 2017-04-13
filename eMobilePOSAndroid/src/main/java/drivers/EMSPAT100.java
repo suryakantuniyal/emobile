@@ -182,8 +182,7 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         long pay_count = payHandler.paymentExist(payID);
         if (pay_count == 0) {
             isStoredFwd = true;
-            StoredPaymentsDAO dbStoredPay = new StoredPaymentsDAO(activity);
-            paymentDetails = dbStoredPay.getPrintingForPaymentDetails(payID, type);
+            paymentDetails = StoredPaymentsDAO.getPrintingForPaymentDetails(payID, type);
         } else {
             paymentDetails = payHandler.getPrintingForPaymentDetails(payID, type);
         }
@@ -396,7 +395,7 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
             printerApi.printData(textHandler.newLines(1));
 
             sb.append(textHandler.centeredString("REPORT", LINE_WIDTH));
-            sb.append(textHandler.centeredString(Global.formatToDisplayDate(curDate, activity, 0), LINE_WIDTH));
+            sb.append(textHandler.centeredString(Global.formatToDisplayDate(curDate, 0), LINE_WIDTH));
             sb.append(textHandler.newLines(1));
             sb.append(textHandler.oneColumnLineWithLeftAlignedText(getString(R.string.receipt_pay_summary), LINE_WIDTH,
                     0));
@@ -404,9 +403,9 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
                     LINE_WIDTH, 0));
 
             HashMap<String, String> paymentMap = paymentHandler
-                    .getPaymentsRefundsForReportPrinting(Global.formatToDisplayDate(curDate, activity, 4), 0);
+                    .getPaymentsRefundsForReportPrinting(Global.formatToDisplayDate(curDate, 4), 0);
             HashMap<String, String> refundMap = paymentHandler
-                    .getPaymentsRefundsForReportPrinting(Global.formatToDisplayDate(curDate, activity, 4), 1);
+                    .getPaymentsRefundsForReportPrinting(Global.formatToDisplayDate(curDate, 4), 1);
             List<String[]> payMethodsNames = payMethodHandler.getPayMethodsName();
             int size = payMethodsNames.size();
             double payGranTotal = 0.00;

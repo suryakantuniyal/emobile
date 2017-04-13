@@ -1,6 +1,7 @@
 package com.android.support;
 
 import android.app.Activity;
+import android.content.Context;
 
 import com.android.emobilepos.R;
 
@@ -35,7 +36,7 @@ import javax.net.ssl.TrustManagerFactory;
 public class Post {
 
     private String entity = new String();
-    private Activity activity;
+    private Context activity;
     private boolean isShortResponse = false;
     private boolean isPost = false;
     static InputStream keyStoreInputStream;
@@ -73,7 +74,7 @@ public class Post {
 
     }
 
-    public String postData(int type, Activity activity, String varyingVariable) {
+    public String postData(int type, Context activity, String varyingVariable) {
         GenerateXML xml = new GenerateXML(activity);
         this.activity = activity;
         StringBuilder baseURL = new StringBuilder();
@@ -105,7 +106,7 @@ public class Post {
                 isShortResponse = true;
                 break;
             }
-            case Global.S_GET_ASSIGN_EMPLOYEE: {
+            case Global.S_GET_ASSIGN_EMPLOYEES: {
                 url = baseURL.append(xml.assignEmployees());
                 isShortResponse = true;
                 break;
@@ -274,7 +275,8 @@ public class Post {
         if (!isPost) {
             try {
                 if (type != 11)
-                    if (type == Global.S_GET_XML_SALES_ASSOCIATE || type == Global.S_GET_ASSIGN_EMPLOYEE
+                    if (type == Global.S_GET_XML_SALES_ASSOCIATE
+                            || type == Global.S_GET_ASSIGN_EMPLOYEES
                             || type == Global.S_GET_XML_DINNER_TABLES) {
                         response = this.getRequest(new URL(url.toString()), true);
                     } else {
@@ -282,9 +284,7 @@ public class Post {
                     }
                 else
                     response = getRequestUnsecure(new URI(url.toString()));
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (URISyntaxException e) {
+            } catch (MalformedURLException | URISyntaxException e) {
                 e.printStackTrace();
             }
         } else {

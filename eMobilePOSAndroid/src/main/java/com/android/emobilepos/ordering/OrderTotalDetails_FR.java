@@ -17,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.MixMatchDAO;
 import com.android.database.ProductsHandler;
 import com.android.database.TaxesGroupHandler;
@@ -27,12 +28,13 @@ import com.android.emobilepos.models.Discount;
 import com.android.emobilepos.models.MixAndMatchDiscount;
 import com.android.emobilepos.models.MixMatchProductGroup;
 import com.android.emobilepos.models.MixMatchXYZProduct;
-import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.Tax;
+import com.android.emobilepos.models.orders.OrderProduct;
+import com.android.emobilepos.models.orders.OrderTotalDetails;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.MixMatch;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
-import com.android.support.TaxesCalculator;
 import com.crashlytics.android.Crashlytics;
 
 import java.math.BigDecimal;
@@ -49,26 +51,27 @@ import io.realm.RealmResults;
 import io.realm.Sort;
 
 public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.RecalculateCallback {
+    public static String discountID = "", taxID = "";
+    public static BigDecimal tax_amount = new BigDecimal("0"), discount_amount = new BigDecimal("0"),
+            discount_rate = new BigDecimal("0"), discountable_sub_total = new BigDecimal("0"),
+            sub_total = new BigDecimal("0"), gran_total = new BigDecimal("0");
+    public static BigDecimal itemsDiscountTotal = new BigDecimal(0);
+    private static OrderTotalDetails_FR myFrag;
     private Spinner taxSpinner, discountSpinner;
     private List<Tax> taxList;
     private List<Discount> discountList;
     private int taxSelected, discountSelected;
     private EditText globalDiscount, globalTax, subTotal;
     private TextView granTotal, itemCount;
-    public static String discountID = "", taxID = "";
-    public static BigDecimal tax_amount = new BigDecimal("0"), discount_amount = new BigDecimal("0"),
-            discount_rate = new BigDecimal("0"), discountable_sub_total = new BigDecimal("0"),
-            sub_total = new BigDecimal("0"), gran_total = new BigDecimal("0");
-    public static BigDecimal itemsDiscountTotal = new BigDecimal(0);
-
+    private List<HashMap<String, String>> listMapTaxes = new ArrayList<>();
     private Activity activity;
     private MyPreferences myPref;
     private Global global;
-    private BigDecimal taxableSubtotal;
-    private static OrderTotalDetails_FR myFrag;
-
     private TaxesHandler taxHandler;
     private TaxesGroupHandler taxGroupHandler;
+    private AssignEmployee assignEmployee;
+    private boolean isToGo;
+    private BigDecimal tempTaxableAmount = new BigDecimal("0");
 
     public static OrderTotalDetails_FR init(int val) {
         OrderTotalDetails_FR frag = new OrderTotalDetails_FR();
@@ -88,341 +91,6 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         myFrag = null;
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.order_total_details_layout, container, false);
-
-        myFrag = this;
-        taxSelected = 0;
-        discountSelected = 0;
-        subTotal = (EditText) view.findViewById(R.id.subtotalField);
-        taxSpinner = (Spinner) view.findViewById(R.id.globalTaxSpinner);
-        globalTax = (EditText) view.findViewById(R.id.globalTaxField);
-        discountSpinner = (Spinner) view.findViewById(R.id.globalDiscountSpinner);
-        globalDiscount = (EditText) view.findViewById(R.id.globalDiscountField);
-        granTotal = (TextView) view.findViewById(R.id.grandTotalValue);
-        LinearLayout leftHolder = (LinearLayout) view.findViewById(R.id.leftColumnHolder);
-        activity = getActivity();
-        global = (Global) activity.getApplication();
-        myPref = new MyPreferences(activity);
-        taxableSubtotal = new BigDecimal("0");
-
-        if (!myPref.getIsTablet() && leftHolder != null) {
-            leftHolder.setVisibility(View.GONE);
-        } else if (myPref.getIsTablet() && leftHolder != null)
-            itemCount = (TextView) view.findViewById(R.id.itemCount);
-        initSpinners();
-        return view;
-    }
-
-    public void initSpinners() {
-
-        listMapTaxes = new ArrayList<>();
-        List<String> taxes = new ArrayList<>();
-        List<String> discount = new ArrayList<>();
-        String custTaxCode;
-        if (myPref.isCustSelected()) {
-            custTaxCode = myPref.getCustTaxCode();
-            if (custTaxCode == null) {
-                custTaxCode = myPref.getEmployeeDefaultTax();
-            }
-        } else if (Global.isFromOnHold && !TextUtils.isEmpty(Global.taxID))
-            custTaxCode = Global.taxID;
-        else {
-            custTaxCode = myPref.getEmployeeDefaultTax();
-        }
-        taxes.add("Global Tax");
-        discount.add("Global Discount");
-
-        taxHandler = new TaxesHandler(activity);
-        taxGroupHandler = new TaxesGroupHandler(activity);
-        taxList = taxHandler.getTaxes();
-        ProductsHandler handler2 = new ProductsHandler(activity);
-        discountList = handler2.getDiscounts();
-        int size = taxList.size();
-        int size2 = discountList.size();
-        boolean custTaxWasFound = false;
-        int mSize = size;
-        if (size < size2)
-            mSize = size2;
-        for (int i = 0; i < mSize; i++) {
-            if (i < size) {
-                taxes.add(taxList.get(i).getTaxName());
-                if (!TextUtils.isEmpty(custTaxCode) && custTaxCode.equals(taxList.get(i).getTaxId())) {
-                    taxSelected = i + 1;
-                    custTaxWasFound = true;
-                }
-            }
-            if (i < size2)
-                discount.add(discountList.get(i).getProductName());
-        }
-
-        if (!custTaxWasFound) {
-            taxSelected = 0;
-            Global.taxID = "";
-
-        }
-        List<String[]> taxArr = new ArrayList<>();
-        for (Tax tax : taxList) {
-            String[] arr = new String[5];
-            arr[0] = tax.getTaxName();
-            arr[1] = tax.getTaxId();
-            arr[2] = tax.getTaxRate();
-            arr[3] = tax.getTaxType();
-            taxArr.add(arr);
-        }
-        MySpinnerAdapter taxAdapter = new MySpinnerAdapter(activity, android.R.layout.simple_spinner_item, taxes, taxArr, true);
-        List<String[]> discountArr = new ArrayList<>();
-        for (Discount disc : discountList) {
-            String[] arr = new String[5];
-            arr[0] = disc.getProductName();
-            arr[1] = disc.getProductDiscountType();
-            arr[2] = disc.getProductPrice();
-            arr[3] = disc.getTaxCodeIsTaxable();
-            arr[4] = disc.getProductId();
-            discountArr.add(arr);
-        }
-        MySpinnerAdapter discountAdapter = new MySpinnerAdapter(activity, android.R.layout.simple_spinner_item, discount, discountArr,
-                false);
-
-        taxSpinner.setAdapter(taxAdapter);
-        taxSpinner.setOnItemSelectedListener(setSpinnerListener(false));
-        taxSpinner.setSelection(taxSelected, false);
-
-        discountSpinner.setAdapter(discountAdapter);
-        discountSpinner.setOnItemSelectedListener(setSpinnerListener(true));
-    }
-
-    private class MySpinnerAdapter extends ArrayAdapter<String> {
-        private Activity context;
-        List<String> leftData = null;
-        List<String[]> rightData = null;
-        boolean isTax = false;
-
-        public MySpinnerAdapter(Activity activity, int resource, List<String> left, List<String[]> right,
-                                boolean isTax) {
-            super(activity, resource, left);
-            this.context = activity;
-            this.leftData = left;
-            this.rightData = right;
-            this.isTax = isTax;
-        }
-
-        public int getDiscountIdPosition(String discountId) {
-            for (int i = 0; i < rightData.size(); i++) {
-                if (rightData.get(i)[4].equalsIgnoreCase(discountId)) {
-                    return i;
-                }
-            }
-            return -1;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            View view = super.getView(position, convertView, parent);
-
-            // we know that simple_spinner_item has android.R.id.text1 TextView:
-            TextView text = (TextView) view.findViewById(android.R.id.text1);
-            text.setTextAppearance(activity, R.style.black_text_appearance);// choose your color
-            text.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                    activity.getResources().getDimension(R.dimen.ordering_checkout_btn_txt_size));
-            return view;
-        }
-
-        @Override
-        public View getDropDownView(int position, View convertView, ViewGroup parent) {
-            View row = convertView;
-            if (row == null) {
-                LayoutInflater inflater = context.getLayoutInflater();
-                row = inflater.inflate(R.layout.spinner_layout, parent, false);
-            }
-
-            TextView taxName = (TextView) row.findViewById(R.id.taxName);
-            TextView taxValue = (TextView) row.findViewById(R.id.taxValue);
-            ImageView checked = (ImageView) row.findViewById(R.id.checkMark);
-            checked.setVisibility(View.INVISIBLE);
-            taxName.setText(leftData.get(position));
-            int type = getItemViewType(position);
-            switch (type) {
-                case 0: {
-                    taxValue.setText("");
-                    break;
-                }
-                case 1: {
-                    setValues(taxValue, position);
-                    checked.setVisibility(View.VISIBLE);
-                    break;
-                }
-                case 2: {
-                    setValues(taxValue, position);
-                    break;
-                }
-            }
-            return row;
-        }
-
-        public void setValues(TextView taxValue, int position) {
-            StringBuilder sb = new StringBuilder();
-            if (isTax) {
-                sb.append("%").append(rightData.get(position - 1)[2]);
-                taxValue.setText(sb.toString());
-            } else {
-                if (rightData.get(position - 1)[1].equals("Fixed")) {
-                    sb.append(Global.formatDoubleStrToCurrency(rightData.get(position - 1)[2]));
-                    taxValue.setText(sb.toString());
-                } else {
-                    sb.append("%").append(rightData.get(position - 1)[2]);
-                    taxValue.setText(sb.toString());
-                }
-            }
-        }
-
-        @Override
-        public int getItemViewType(int position) {
-            if (position == 0) {
-                return 0;
-            } else if ((isTax && position == taxSelected) || (!isTax && position == discountSelected)) {
-                return 1;
-            }
-            return 2;
-        }
-    }
-
-    private OnItemSelectedListener setSpinnerListener(final boolean isDiscount) {
-        return new OnItemSelectedListener() {
-
-            @Override
-            public void onItemSelected(AdapterView<?> arg0, View arg1, int pos, long arg3) {
-                if (isDiscount) {
-                    discountSelected = pos;
-                    setDiscountValue(pos);
-                } else {
-                    taxSelected = pos;
-                    setTaxValue(pos);
-                }
-                reCalculate(global.orderProducts);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> arg0) {
-                if (isDiscount)
-                    discountSelected = 0;
-                else
-                    taxSelected = 0;
-            }
-
-        };
-    }
-
-    public void setTaxValue(int position) {
-        if (position == 0) {
-            tax_amount = new BigDecimal("0");
-            Global.taxAmount = new BigDecimal("0");
-            taxID = "";
-        } else {
-
-            taxID = taxList.get(taxSelected - 1).getTaxId();
-            Global.taxAmount = Global.getBigDecimalNum(taxList.get(taxSelected - 1).getTaxRate());
-            if (!myPref.getPreferences(MyPreferences.pref_retail_taxes)) {
-                listMapTaxes = taxHandler.getTaxDetails(taxID, "");
-                if (listMapTaxes.size() > 0 && listMapTaxes.get(0).get("tax_type").equals("G")) {
-                    listMapTaxes = taxGroupHandler.getIndividualTaxes(listMapTaxes.get(0).get("tax_id"),
-                            listMapTaxes.get(0).get("tax_code_id"));
-                    setupTaxesHolder();
-                }
-            } else {
-                listMapTaxes.clear();
-                HashMap<String, String> mapTax = new HashMap<>();
-                mapTax.put("tax_id", taxID);
-                mapTax.put("tax_name", taxList.get(taxSelected - 1).getTaxName());
-                mapTax.put("tax_rate", taxList.get(taxSelected - 1).getTaxRate());
-                listMapTaxes.add(mapTax);
-            }
-        }
-        taxSelected = position;
-        Global.taxPosition = position;
-        Global.taxID = taxID;
-    }
-
-    public void setDiscountValue(int position) {
-        DecimalFormat frmt = new DecimalFormat("0.00");
-        if (position == 0) {
-            if (global.order == null || global.order.ord_discount_id.isEmpty()) {
-                discount_rate = new BigDecimal("0");
-                discount_amount = new BigDecimal("0");
-                discountID = "";
-            } else {
-                discountSelected = ((MySpinnerAdapter) discountSpinner.getAdapter()).getDiscountIdPosition(global.order.ord_discount_id) + 1;
-                discountID = discountList.get(discountSelected - 1).getProductId();
-                if (discountList.get(discountSelected - 1).getProductDiscountType().equals("Fixed")) {
-                    discount_rate = Global.getBigDecimalNum(discountList.get(discountSelected - 1).getProductPrice());
-                    discount_amount = Global.getBigDecimalNum(discountList.get(discountSelected - 1).getProductPrice());
-
-                } else {
-                    discount_rate = Global.getBigDecimalNum(discountList.get(discountSelected - 1).getProductPrice())
-                            .divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
-                    BigDecimal total = discountable_sub_total.subtract(itemsDiscountTotal);
-                    discount_amount = total.multiply(discount_rate).setScale(2, RoundingMode.HALF_UP);
-                }
-            }
-        } else if (discountList != null && discountSelected > 0) {
-            discountID = discountList.get(discountSelected - 1).getProductId();
-            if (discountList.get(discountSelected - 1).getProductDiscountType().equals("Fixed")) {
-                discount_rate = Global.getBigDecimalNum(discountList.get(discountSelected - 1).getProductPrice());
-                discount_amount = Global.getBigDecimalNum(discountList.get(discountSelected - 1).getProductPrice());
-
-            } else {
-                discount_rate = Global.getBigDecimalNum(discountList.get(discountSelected - 1).getProductPrice())
-                        .divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
-                BigDecimal total = discountable_sub_total.subtract(itemsDiscountTotal);
-                discount_amount = total.multiply(discount_rate).setScale(2, RoundingMode.HALF_UP);
-            }
-        }
-
-
-        globalDiscount.setText(Global.getCurrencyFormat(frmt.format(discount_amount)));
-
-        Global.discountPosition = position;
-        Global.discountAmount = discount_amount;
-    }
-
-    private List<HashMap<String, String>> listMapTaxes = new ArrayList<>();
-
-
-    private void setupTaxesHolder() {
-        int size = listMapTaxes.size();
-        global.listOrderTaxes = new ArrayList<>();
-        DataTaxes tempTaxes;
-        for (int i = 0; i < size; i++) {
-            tempTaxes = new DataTaxes();
-            tempTaxes.setTax_name(listMapTaxes.get(i).get("tax_name"));
-            tempTaxes.setOrd_id("");
-            tempTaxes.setTax_amount("0");
-            tempTaxes.setTax_rate(listMapTaxes.get(i).get("tax_rate"));
-            global.listOrderTaxes.add(tempTaxes);
-        }
-    }
-
-    private void calculateTaxes(OrderProduct orderProduct) {
-        Discount dis = null;
-        if (discountSelected > 0) {
-            dis = discountList.get(discountSelected - 1);
-        }
-        if (taxSelected > 0) {
-            TaxesCalculator taxesCalculator = new TaxesCalculator(activity, orderProduct, Global.taxID,
-                    taxList.get(taxSelected - 1), dis, discountable_sub_total, itemsDiscountTotal);
-            tempTaxableAmount = tempTaxableAmount.add(taxesCalculator.getTaxableAmount());
-        }
-    }
-
-    private BigDecimal tempTaxableAmount = new BigDecimal("0");
-
-
     private static void calculateMixAndMatch(List<OrderProduct> orderProducts, boolean isGroupBySKU) {
         List<OrderProduct> noMixMatchProducts = new ArrayList<>();
         HashMap<String, MixMatchProductGroup> mixMatchProductGroupHashMap = new HashMap<>();
@@ -437,7 +105,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             } else {
                 product.setMixAndMatchDiscounts(new ArrayList<MixAndMatchDiscount>());
                 if (product.getMixMatchOriginalPrice() == null || product.getMixMatchOriginalPrice().compareTo(new BigDecimal(0)) == 0) {
-                    product.setMixMatchOriginalPrice(new BigDecimal(product.getProd_price()));
+                    product.setMixMatchOriginalPrice(Global.getBigDecimalNum(product.getProd_price()));
                 }
                 MixMatchProductGroup mixMatchProductGroup = mixMatchProductGroupHashMap.get(product.getPricesXGroupid());
                 if (mixMatchProductGroup != null) {
@@ -458,15 +126,18 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         for (Map.Entry<String, MixMatchProductGroup> mixMatchProductGroupEntry : mixMatchProductGroupHashMap.entrySet()) {
             MixMatchProductGroup group = mixMatchProductGroupEntry.getValue();
             RealmResults<MixMatch> mixMatches = MixMatchDAO.getDiscountsBygroupId(group);
-            mixMatches.sort("qty", Sort.DESCENDING);
             if (!mixMatches.isEmpty()) {
                 MixMatch mixMatch = mixMatches.get(0);
                 int mixMatchType = mixMatch.getMixMatchType();
                 if (mixMatchType == 1) {
+                    mixMatches = mixMatches.sort("qty", Sort.DESCENDING);
                     orderProducts.addAll(applyMixMatch(group, mixMatches));
                 } else {
                     if (mixMatches.size() == 2) {
+                        mixMatches = mixMatches.sort("xyzSequence", Sort.ASCENDING);
                         orderProducts.addAll(applyXYZMixMatchToGroup(group, mixMatches, isGroupBySKU));
+                    } else {
+                        orderProducts.addAll(group.getOrderProducts());
                     }
                 }
             } else if (!group.getOrderProducts().isEmpty()) {
@@ -548,7 +219,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                     orderProduct.setOrdprod_qty(String.valueOf(prodQty));
                     orderProduct.setMixMatchQtyApplied(prodQty);
                     orderProduct.setItemTotal(String.valueOf(xyzProduct.getPrice().multiply(Global.getBigDecimalNum(orderProduct.getOrdprod_qty()))));
-                    orderProduct.setItemSubtotal(String.valueOf(xyzProduct.getPrice().multiply(Global.getBigDecimalNum(orderProduct.getOrdprod_qty()))));
+//                    orderProduct.setItemSubtotal(String.valueOf(xyzProduct.getPrice().multiply(Global.getBigDecimalNum(orderProduct.getOrdprod_qty()))));
                     orderProducts.add(orderProduct);
                 } else {
                     for (OrderProduct orderProduct : xyzProduct.getOrderProducts()) {
@@ -563,7 +234,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                         clone.setProd_price(String.valueOf(xyzProduct.getPrice()));
                         clone.setMixMatchQtyApplied(1);
                         clone.setItemTotal(clone.getProd_price());
-                        clone.setItemSubtotal(clone.getProd_price());
+//                        clone.setItemSubtotal(clone.getProd_price());
                         orderProducts.add(clone);
                     }
                 }
@@ -585,8 +256,8 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                         orderProduct.setMixMatchQtyApplied(regularPriced);
                         orderProduct.setItemTotal(String.valueOf(xyzProduct.getPrice()
                                 .multiply(Global.getBigDecimalNum(orderProduct.getOrdprod_qty()))));
-                        orderProduct.setItemSubtotal(String.valueOf(xyzProduct.getPrice()
-                                .multiply(Global.getBigDecimalNum(orderProduct.getOrdprod_qty()))));
+//                        orderProduct.setItemSubtotal(String.valueOf(xyzProduct.getPrice()
+//                                .multiply(Global.getBigDecimalNum(orderProduct.getOrdprod_qty()))));
 
                         orderProducts.add(orderProduct);
                     } else {
@@ -597,7 +268,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                                 clone.setOrdprod_qty("1");
                                 clone.setMixMatchQtyApplied(1);
                                 clone.setItemTotal(clone.getProd_price());
-                                clone.setItemSubtotal(clone.getProd_price());
+//                                clone.setItemSubtotal(clone.getProd_price());
                                 orderProducts.add(clone);
                             } catch (CloneNotSupportedException e) {
                                 e.printStackTrace();
@@ -629,7 +300,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                         }
                         orderProduct.setProd_price(String.valueOf(discountPrice));
                         orderProduct.setItemTotal(String.valueOf(Global.getBigDecimalNum(orderProduct.getProd_price()).multiply(Global.getBigDecimalNum(orderProduct.getOrdprod_qty()))));
-                        orderProduct.setItemSubtotal(String.valueOf(Global.getBigDecimalNum(orderProduct.getProd_price()).multiply(Global.getBigDecimalNum(orderProduct.getOrdprod_qty()))));
+//                        orderProduct.setItemSubtotal(String.valueOf(Global.getBigDecimalNum(orderProduct.getProd_price()).multiply(Global.getBigDecimalNum(orderProduct.getOrdprod_qty()))));
 
                         orderProducts.add(orderProduct);
                     } else {
@@ -649,7 +320,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                                 }
                                 clone.setProd_price(String.valueOf(discountPrice));
                                 clone.setItemTotal(clone.getProd_price());
-                                clone.setItemSubtotal(clone.getProd_price());
+//                                clone.setItemSubtotal(clone.getProd_price());
                                 orderProducts.add(clone);
                             } catch (CloneNotSupportedException e) {
                                 e.printStackTrace();
@@ -743,6 +414,245 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         return group.getOrderProducts();
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.order_total_details_layout, container, false);
+        assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+        isToGo = ((OrderingMain_FA) getActivity()).isToGo;
+        myFrag = this;
+        taxSelected = 0;
+        discountSelected = 0;
+        subTotal = (EditText) view.findViewById(R.id.subtotalField);
+        taxSpinner = (Spinner) view.findViewById(R.id.globalTaxSpinner);
+        globalTax = (EditText) view.findViewById(R.id.globalTaxField);
+        discountSpinner = (Spinner) view.findViewById(R.id.globalDiscountSpinner);
+        globalDiscount = (EditText) view.findViewById(R.id.globalDiscountField);
+        granTotal = (TextView) view.findViewById(R.id.grandTotalValue);
+        LinearLayout leftHolder = (LinearLayout) view.findViewById(R.id.leftColumnHolder);
+        activity = getActivity();
+        global = (Global) activity.getApplication();
+        myPref = new MyPreferences(activity);
+
+        if (!myPref.getIsTablet() && leftHolder != null) {
+            leftHolder.setVisibility(View.GONE);
+        } else if (myPref.getIsTablet() && leftHolder != null)
+            itemCount = (TextView) view.findViewById(R.id.itemCount);
+        initSpinners();
+        return view;
+    }
+
+    public void initSpinners() {
+
+        listMapTaxes = new ArrayList<>();
+        List<String> taxes = new ArrayList<>();
+        List<String> discount = new ArrayList<>();
+        String custTaxCode;
+        if (myPref.isCustSelected()) {
+            custTaxCode = myPref.getCustTaxCode();
+            if (custTaxCode == null) {
+                custTaxCode = assignEmployee.getTaxDefault();
+            }
+        } else if (Global.isFromOnHold && !TextUtils.isEmpty(Global.taxID))
+            custTaxCode = Global.taxID;
+        else {
+            custTaxCode = assignEmployee.getTaxDefault();
+        }
+        taxes.add("Global Tax");
+        discount.add("Global Discount");
+
+        taxHandler = new TaxesHandler(activity);
+        taxGroupHandler = new TaxesGroupHandler(activity);
+        taxList = taxHandler.getTaxes();
+        ProductsHandler handler2 = new ProductsHandler(activity);
+        discountList = handler2.getDiscounts();
+        int size = taxList.size();
+        int size2 = discountList.size();
+        boolean custTaxWasFound = false;
+        int mSize = size;
+        if (size < size2)
+            mSize = size2;
+        for (int i = 0; i < mSize; i++) {
+            if (i < size) {
+                taxes.add(taxList.get(i).getTaxName());
+                if (!TextUtils.isEmpty(custTaxCode) && custTaxCode.equals(taxList.get(i).getTaxId())) {
+                    taxSelected = i + 1;
+                    custTaxWasFound = true;
+                }
+            }
+            if (i < size2)
+                discount.add(discountList.get(i).getProductName());
+        }
+
+        if (!custTaxWasFound) {
+            taxSelected = 0;
+            Global.taxID = "";
+
+        }
+        List<String[]> taxArr = new ArrayList<>();
+        for (Tax tax : taxList) {
+            String[] arr = new String[5];
+            arr[0] = tax.getTaxName();
+            arr[1] = tax.getTaxId();
+            arr[2] = tax.getTaxRate();
+            arr[3] = tax.getTaxType();
+            taxArr.add(arr);
+        }
+        MySpinnerAdapter taxAdapter = new MySpinnerAdapter(activity, android.R.layout.simple_spinner_item, taxes, taxArr, true);
+        List<String[]> discountArr = new ArrayList<>();
+        for (Discount disc : discountList) {
+            String[] arr = new String[5];
+            arr[0] = disc.getProductName();
+            arr[1] = disc.getProductDiscountType();
+            arr[2] = disc.getProductPrice();
+            arr[3] = disc.getTaxCodeIsTaxable();
+            arr[4] = disc.getProductId();
+            discountArr.add(arr);
+        }
+        MySpinnerAdapter discountAdapter = new MySpinnerAdapter(activity, android.R.layout.simple_spinner_item, discount, discountArr,
+                false);
+
+        taxSpinner.setAdapter(taxAdapter);
+        taxSpinner.setOnItemSelectedListener(setSpinnerListener(false));
+        taxSpinner.setSelection(taxSelected, false);
+
+        discountSpinner.setAdapter(discountAdapter);
+        discountSpinner.setOnItemSelectedListener(setSpinnerListener(true));
+    }
+
+    private OnItemSelectedListener setSpinnerListener(final boolean isDiscount) {
+        return new OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> arg0, View arg1, int pos, long arg3) {
+                if (isDiscount) {
+                    discountSelected = pos;
+                    setDiscountValue(pos);
+                } else {
+                    taxSelected = pos;
+                    setTaxValue(pos);
+                }
+                reCalculate(global.order.getOrderProducts());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+                if (isDiscount)
+                    discountSelected = 0;
+                else
+                    taxSelected = 0;
+            }
+
+        };
+    }
+
+    public void setTaxValue(int position) {
+        if (position == 0) {
+            tax_amount = new BigDecimal("0");
+            Global.taxAmount = new BigDecimal("0");
+            taxID = "";
+        } else {
+
+            taxID = taxList.get(taxSelected - 1).getTaxId();
+            Global.taxAmount = Global.getBigDecimalNum(taxList.get(taxSelected - 1).getTaxRate());
+            if (!myPref.isRetailTaxes()) {
+                listMapTaxes = taxHandler.getTaxDetails(taxID, "");
+                if (listMapTaxes.size() > 0 && listMapTaxes.get(0).get("tax_type").equals("G")) {
+                    listMapTaxes = taxGroupHandler.getIndividualTaxes(listMapTaxes.get(0).get("tax_id"),
+                            listMapTaxes.get(0).get("tax_code_id"));
+                    setupTaxesHolder();
+                }
+            } else {
+                listMapTaxes.clear();
+                HashMap<String, String> mapTax = new HashMap<>();
+                mapTax.put("tax_id", taxID);
+                mapTax.put("tax_name", taxList.get(taxSelected - 1).getTaxName());
+                mapTax.put("tax_rate", taxList.get(taxSelected - 1).getTaxRate());
+                listMapTaxes.add(mapTax);
+            }
+        }
+        taxSelected = position;
+        Global.taxPosition = position;
+        Global.taxID = taxID;
+    }
+
+    public void setDiscountValue(int position) {
+        DecimalFormat frmt = new DecimalFormat("0.00");
+        if (position == 0) {
+            if (global.order == null || global.order.ord_discount_id.isEmpty()) {
+                discount_rate = new BigDecimal("0");
+                discount_amount = new BigDecimal("0");
+                discountID = "";
+            } else {
+                discountSelected = ((MySpinnerAdapter) discountSpinner.getAdapter()).getDiscountIdPosition(global.order.ord_discount_id) + 1;
+                discountID = discountList.get(discountSelected - 1).getProductId();
+                if (discountList.get(discountSelected - 1).getProductDiscountType().equals("Fixed")) {
+                    discount_rate = Global.getBigDecimalNum(discountList.get(discountSelected - 1).getProductPrice());
+                    discount_amount = Global.getBigDecimalNum(discountList.get(discountSelected - 1).getProductPrice());
+
+                } else {
+                    discount_rate = Global.getBigDecimalNum(discountList.get(discountSelected - 1).getProductPrice())
+                            .divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
+                    BigDecimal total = discountable_sub_total.subtract(itemsDiscountTotal);
+                    discount_amount = total.multiply(discount_rate).setScale(2, RoundingMode.HALF_UP);
+                }
+            }
+        } else if (discountList != null && discountSelected > 0) {
+            discountID = discountList.get(discountSelected - 1).getProductId();
+            if (discountList.get(discountSelected - 1).getProductDiscountType().equals("Fixed")) {
+                discount_rate = Global.getBigDecimalNum(discountList.get(discountSelected - 1).getProductPrice());
+                discount_amount = Global.getBigDecimalNum(discountList.get(discountSelected - 1).getProductPrice());
+
+            } else {
+                discount_rate = Global.getBigDecimalNum(discountList.get(discountSelected - 1).getProductPrice())
+                        .divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
+                BigDecimal total = discountable_sub_total.subtract(itemsDiscountTotal);
+                discount_amount = total.multiply(discount_rate).setScale(2, RoundingMode.HALF_UP);
+            }
+        }
+
+
+        globalDiscount.setText(Global.getCurrencyFormat(frmt.format(discount_amount)));
+
+        Global.discountPosition = position;
+        Global.discountAmount = discount_amount;
+    }
+
+//    private void calculateTaxes(OrderProduct orderProduct) {
+//        Discount dis = null;
+//        if (discountSelected > 0) {
+//            dis = discountList.get(discountSelected - 1);
+//        }
+//        if (taxSelected > 0) {
+//            TaxesCalculator taxesCalculator = new TaxesCalculator(activity, orderProduct, Global.taxID,
+//                    taxList.get(taxSelected - 1), dis, discountable_sub_total, itemsDiscountTotal);
+//            tempTaxableAmount = tempTaxableAmount.add(taxesCalculator.getTaxableAmount());
+//            getOrderingMainFa().setListOrderTaxes(taxesCalculator.getListOrderTaxes());
+//        }
+//    }
+
+    private OrderingMain_FA getOrderingMainFa() {
+        return (OrderingMain_FA) getActivity();
+    }
+
+    private void setupTaxesHolder() {
+        int size = listMapTaxes.size();
+        getOrderingMainFa().setListOrderTaxes(new ArrayList<DataTaxes>());
+        DataTaxes tempTaxes;
+        for (int i = 0; i < size; i++) {
+            tempTaxes = new DataTaxes();
+            tempTaxes.setTax_name(listMapTaxes.get(i).get("tax_name"));
+            tempTaxes.setOrd_id("");
+            tempTaxes.setTax_amount("0");
+            tempTaxes.setTax_rate(listMapTaxes.get(i).get("tax_rate"));
+            getOrderingMainFa().getListOrderTaxes().add(tempTaxes);
+        }
+    }
+
     public void reCalculate(List<OrderProduct> orderProducts) {
         //TODO Temporary fix. Need verify why SDK 5.0 calls with null global and why sdk 4.3 not
 
@@ -751,89 +661,203 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         }
 
         if (myPref.isMixAnMatch() && orderProducts != null && !orderProducts.isEmpty()) {
-            boolean isGroupBySKU = myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku);
+            boolean isGroupBySKU = myPref.isGroupReceiptBySku(isToGo);//myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku) && isToGo;
             calculateMixAndMatch(orderProducts, isGroupBySKU);
         }
-
-        int size = 0;
-        if (orderProducts != null) {
-            size = orderProducts.size();
+        Discount discount = discountSelected > 0 ? discountList.get(discountSelected - 1) : null;
+        global.order.setRetailTaxes(myPref.isRetailTaxes());
+        global.order.ord_globalDiscount = String.valueOf(discount_amount);
+        global.order.setListOrderTaxes(getOrderingMainFa().getListOrderTaxes());
+        Tax tax = taxSelected > 0 ? taxList.get(taxSelected - 1) : null;
+        if (myPref.isRetailTaxes()) {
+            global.order.setRetailTax(getActivity(), taxID);
         }
-        taxableSubtotal = new BigDecimal("0.00");
-        tempTaxableAmount = new BigDecimal("0");
-        itemsDiscountTotal = new BigDecimal(0);
-        setupTaxesHolder();
-        boolean isVAT = myPref.getIsVAT();
-
-        if (size > 0) {
-            BigDecimal amount = new BigDecimal("0.00");
-            BigDecimal discountableAmount = new BigDecimal("0");
-            BigDecimal prodPrice;
-            String val;
-            int pointsSubTotal = 0, pointsInUse = 0, pointsAcumulable = 0;
-            for (int i = 0; i < size; i++) {
-                calculateTaxes(orderProducts.get(i));
-                if (myPref.getPreferences(MyPreferences.pref_show_removed_void_items_in_printout)) {
-                    String temp = orderProducts.get(i).getItem_void();
-
-                    if (temp.equals("1"))
-                        val = "0.00";
-                    else {
-                        if (isVAT) {
-                            val = orderProducts.get(i).getItemTotalVatExclusive();
-                        } else
-                            val = orderProducts.get(i).getItemTotal();
-                    }
-                } else {
-                    if (isVAT) {
-                        val = orderProducts.get(i).getItemTotalVatExclusive();
-                    } else
-                        val = orderProducts.get(i).getItemSubtotal();
-                }
-                if (val == null || val.isEmpty())
-                    val = "0.00";
-                prodPrice = new BigDecimal(val);
-                discountableAmount = discountableAmount.add(prodPrice);
-
-                if (orderProducts.get(i).getDiscount_value() != null
-                        && !orderProducts.get(i).getDiscount_value().isEmpty())
-                    itemsDiscountTotal = itemsDiscountTotal.add(new BigDecimal(orderProducts.get(i).getDiscount_value()));
-
-                amount = amount.add(prodPrice);
-                pointsSubTotal += Double.parseDouble(orderProducts.get(i).getProd_price_points());
-                pointsAcumulable += Double.parseDouble(orderProducts.get(i).getProd_value_points());
-                if (Boolean.parseBoolean(orderProducts.get(i).getPayWithPoints()))
-                    pointsInUse += Double.parseDouble(orderProducts.get(i).getProd_price_points());
-            }
-            if (itemCount != null)
-                itemCount.setText(String.valueOf(size));
-            discountable_sub_total = discountableAmount.subtract(Global.rewardChargeAmount);
-            sub_total = amount.subtract(Global.rewardChargeAmount);
-            subTotal.setText(Global.getCurrencyFrmt(Global.getRoundBigDecimal(sub_total)));
-            tax_amount = new BigDecimal(Global.getRoundBigDecimal(tempTaxableAmount, 2));
-            setDiscountValue(discountSelected);
-            globalDiscount.setText(Global.getCurrencyFrmt(discount_amount.toString()));
-            globalTax.setText(Global.getCurrencyFrmt(Global.getRoundBigDecimal(tax_amount, 2)));
-            gran_total = sub_total.subtract(discount_amount).add(tax_amount)
-                    .subtract(itemsDiscountTotal);
-            OrderLoyalty_FR.recalculatePoints(Integer.toString(pointsSubTotal), Integer.toString(pointsInUse),
-                    Integer.toString(pointsAcumulable), gran_total.toString());
-            OrderRewards_FR.setRewardSubTotal(discountable_sub_total.toString());
-            granTotal.setText(Global.getCurrencyFrmt(Global.getRoundBigDecimal(gran_total)));
-        } else {
-            discountable_sub_total = new BigDecimal(0.00);
-            sub_total = new BigDecimal(0.00);
-            gran_total = new BigDecimal(0.00);
-            this.subTotal.setText(activity.getString(R.string.amount_zero_lbl));
-            globalTax.setText(activity.getString(R.string.amount_zero_lbl));
-            setDiscountValue(discountSelected);
-            granTotal.setText(activity.getString(R.string.amount_zero_lbl));
-            OrderLoyalty_FR.recalculatePoints("0", "0", "0", gran_total.toString());
-        }
+//        if (assignEmployee.isVAT() || true) {
+//            global.order.setVATTax(tax);
+//        }
+        OrderTotalDetails totalDetails = global.order.getOrderTotalDetails(discount, tax, assignEmployee.isVAT(), getActivity());
+//        int size = 0;
+//        if (orderProducts != null) {
+//            size = orderProducts.size();
+//        }
+//
+//        tempTaxableAmount = new BigDecimal("0");
+//        itemsDiscountTotal = new BigDecimal(0);
+//        setupTaxesHolder();
+//        boolean isVAT = assignEmployee.isVAT();
+//
+//        if (size > 0) {
+//            BigDecimal amount = new BigDecimal("0.00");
+//            BigDecimal discountableAmount = new BigDecimal("0");
+//            BigDecimal prodPrice;
+//            String val;
+//            int pointsSubTotal = 0, pointsInUse = 0, pointsAcumulable = 0;
+//            for (int i = 0; i < size; i++) {
+//        calculateTaxes(orderProducts.get(i));
+//                if (myPref.getPreferences(MyPreferences.pref_show_removed_void_items_in_printout)) {
+//                    String temp = orderProducts.get(i).getItem_void();
+//
+//                    if (temp.equals("1"))
+//                        val = "0.00";
+//                    else {
+//                        if (isVAT) {
+//                            val = orderProducts.get(i).getItemTotalVatExclusive();
+//                        } else
+//                            val = orderProducts.get(i).getItemTotal();
+//                    }
+//                } else {
+//                    if (isVAT) {
+//                        val = orderProducts.get(i).getItemTotalVatExclusive();
+//                    } else
+//                        val = String.valueOf(orderProducts.get(i).getFinalPrice());
+//                }
+//                if (val == null || val.isEmpty())
+//                    val = "0.00";
+//                prodPrice = new BigDecimal(val);
+//                discountableAmount = discountableAmount.add(prodPrice);
+//
+//                if (orderProducts.get(i).getDiscount_value() != null
+//                        && !orderProducts.get(i).getDiscount_value().isEmpty())
+//                    itemsDiscountTotal = itemsDiscountTotal.add(new BigDecimal(orderProducts.get(i).getDiscount_value()));
+//
+//                amount = amount.add(prodPrice);
+//                pointsSubTotal += Double.parseDouble(orderProducts.get(i).getProd_price_points());
+//                pointsAcumulable += Double.parseDouble(orderProducts.get(i).getProd_value_points());
+//                if (Boolean.parseBoolean(orderProducts.get(i).getPayWithPoints()))
+//                    pointsInUse += Double.parseDouble(orderProducts.get(i).getProd_price_points());
+//            }
+//            if (itemCount != null)
+//                itemCount.setText(String.valueOf(size));
+//            discountable_sub_total = discountableAmount.subtract(Global.rewardChargeAmount);
+//            sub_total = amount.subtract(Global.rewardChargeAmount);
+//            subTotal.setText(Global.getCurrencyFrmt(Global.getRoundBigDecimal(sub_total)));
+//            tax_amount = new BigDecimal(Global.getRoundBigDecimal(tempTaxableAmount, 2));
+//            setDiscountValue(discountSelected);
+//            globalDiscount.setText(Global.getCurrencyFrmt(discount_amount.toString()));
+//            globalTax.setText(Global.getCurrencyFrmt(Global.getRoundBigDecimal(tax_amount, 2)));
+//            gran_total = sub_total.subtract(discount_amount).add(tax_amount)
+//                    .subtract(itemsDiscountTotal);
+//            OrderLoyalty_FR.recalculatePoints(Integer.toString(pointsSubTotal), Integer.toString(pointsInUse),
+//                    Integer.toString(pointsAcumulable), gran_total.toString());
+//            OrderRewards_FR.setRewardSubTotal(discountable_sub_total.toString());
+//            granTotal.setText(Global.getCurrencyFrmt(Global.getRoundBigDecimal(gran_total)));
+//        } else {
+//            discountable_sub_total = new BigDecimal(0.00);
+//            sub_total = new BigDecimal(0.00);
+//            gran_total = new BigDecimal(0.00);
+//            this.subTotal.setText(activity.getString(R.string.amount_zero_lbl));
+//            globalTax.setText(activity.getString(R.string.amount_zero_lbl));
+//            setDiscountValue(discountSelected);
+//            granTotal.setText(activity.getString(R.string.amount_zero_lbl));
+//            OrderLoyalty_FR.recalculatePoints("0", "0", "0", gran_total.toString());
+//        }
+        gran_total = new BigDecimal(Global.getRoundBigDecimal(totalDetails.getGranTotal(), 2));
+        sub_total = totalDetails.getSubtotal();
+        tax_amount = new BigDecimal(Global.getRoundBigDecimal(totalDetails.getTax(),2));
+        discount_amount = totalDetails.getGlobalDiscount();
+        subTotal.setText(Global.getCurrencyFrmt(String.valueOf(sub_total)));
+        granTotal.setText(Global.getCurrencyFrmt(String.valueOf(gran_total)));
+        globalTax.setText(Global.getCurrencyFrmt(String.valueOf(tax_amount)));
+        globalDiscount.setText(Global.getCurrencyFrmt(String.valueOf(discount_amount)));
     }
 
     @Override
     public void recalculateTotal() {
-        reCalculate(global.orderProducts);
+        reCalculate(global.order.getOrderProducts());
+    }
+
+    private class MySpinnerAdapter extends ArrayAdapter<String> {
+        List<String> leftData = null;
+        List<String[]> rightData = null;
+        boolean isTax = false;
+        private Activity context;
+
+        MySpinnerAdapter(Activity activity, int resource, List<String> left, List<String[]> right,
+                         boolean isTax) {
+            super(activity, resource, left);
+            this.context = activity;
+            this.leftData = left;
+            this.rightData = right;
+            this.isTax = isTax;
+        }
+
+        int getDiscountIdPosition(String discountId) {
+            for (int i = 0; i < rightData.size(); i++) {
+                if (rightData.get(i)[4].equalsIgnoreCase(discountId)) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View view = super.getView(position, convertView, parent);
+
+            // we know that simple_spinner_item has android.R.id.text1 TextView:
+            TextView text = (TextView) view.findViewById(android.R.id.text1);
+            text.setTextAppearance(activity, R.style.black_text_appearance);// choose your color
+            text.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                    activity.getResources().getDimension(R.dimen.ordering_checkout_btn_txt_size));
+            return view;
+        }
+
+        @Override
+        public View getDropDownView(int position, View convertView, ViewGroup parent) {
+            View row = convertView;
+            if (row == null) {
+                LayoutInflater inflater = context.getLayoutInflater();
+                row = inflater.inflate(R.layout.spinner_layout, parent, false);
+            }
+
+            TextView taxName = (TextView) row.findViewById(R.id.taxName);
+            TextView taxValue = (TextView) row.findViewById(R.id.taxValue);
+            ImageView checked = (ImageView) row.findViewById(R.id.checkMark);
+            checked.setVisibility(View.INVISIBLE);
+            taxName.setText(leftData.get(position));
+            int type = getItemViewType(position);
+            switch (type) {
+                case 0: {
+                    taxValue.setText("");
+                    break;
+                }
+                case 1: {
+                    setValues(taxValue, position);
+                    checked.setVisibility(View.VISIBLE);
+                    break;
+                }
+                case 2: {
+                    setValues(taxValue, position);
+                    break;
+                }
+            }
+            return row;
+        }
+
+        void setValues(TextView taxValue, int position) {
+            StringBuilder sb = new StringBuilder();
+            if (isTax) {
+                sb.append("%").append(rightData.get(position - 1)[2]);
+                taxValue.setText(sb.toString());
+            } else {
+                if (rightData.get(position - 1)[1].equals("Fixed")) {
+                    sb.append(Global.formatDoubleStrToCurrency(rightData.get(position - 1)[2]));
+                    taxValue.setText(sb.toString());
+                } else {
+                    sb.append("%").append(rightData.get(position - 1)[2]);
+                    taxValue.setText(sb.toString());
+                }
+            }
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            if (position == 0) {
+                return 0;
+            } else if ((isTax && position == taxSelected) || (!isTax && position == discountSelected)) {
+                return 1;
+            }
+            return 2;
+        }
     }
 }
