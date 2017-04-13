@@ -17,14 +17,15 @@ import io.realm.RealmResults;
  */
 
 public class ShiftDAO {
-    public static Shift getCurrentShift(int employeeId) {
+
+    public static Shift getShiftByEmployeeId(int employeeId) {
         Realm r = Realm.getDefaultInstance();
         Shift shift = r.where(Shift.class)
                 .equalTo("assigneeId", employeeId)
                 .findAll().where()
-                .equalTo("shiftStatusCode", 0)
+                .equalTo("shiftStatusCode", Shift.ShiftStatus.OPEN.code)
                 .or()
-                .equalTo("shiftStatusCode", 1)
+                .equalTo("shiftStatusCode", Shift.ShiftStatus.PENDING.code)
                 .findFirst();
         if (shift != null) {
             return r.copyFromRealm(shift);
@@ -32,11 +33,27 @@ public class ShiftDAO {
         return null;
     }
 
-    public static Shift getOpenShift(int clerkId) {
+    public static Shift getShiftByClerkId(int clerkId) {
         Realm r = Realm.getDefaultInstance();
         Shift shift = r.where(Shift.class)
-                .equalTo("assigneeId", clerkId)
-                .equalTo("shiftStatusCode", 0)
+                .equalTo("clerkId", clerkId)
+                .findAll().where()
+                .equalTo("shiftStatusCode", Shift.ShiftStatus.OPEN.code)
+                .or()
+                .equalTo("shiftStatusCode", Shift.ShiftStatus.PENDING.code)
+                .findFirst();
+        if (shift != null) {
+            return r.copyFromRealm(shift);
+        }
+        return null;
+    }
+
+    public static Shift getOpenShift() {
+        int empId = AssignEmployeeDAO.getAssignEmployee(false).getEmpId();
+        Realm r = Realm.getDefaultInstance();
+        Shift shift = r.where(Shift.class)
+                .equalTo("assigneeId", empId)
+                .equalTo("shiftStatusCode", Shift.ShiftStatus.OPEN.code)
                 .findFirst();
         if (shift != null) {
             return r.copyFromRealm(shift);
@@ -64,9 +81,9 @@ public class ShiftDAO {
         RealmResults<Shift> sync = r.where(Shift.class)
                 .equalTo("sync", false)
                 .findAll().where()
-                .equalTo("shiftStatusCode", 2)
+                .equalTo("shiftStatusCode", Shift.ShiftStatus.CLOSED.code)
                 .or()
-                .equalTo("shiftStatusCode", 1)
+                .equalTo("shiftStatusCode", Shift.ShiftStatus.PENDING.code)
                 .findAll();
         return r.copyFromRealm(sync);
     }
@@ -94,25 +111,23 @@ public class ShiftDAO {
         }
     }
 
-    public static boolean isShiftOpen(String clerkID) {
-        Shift shift = getOpenShift(Integer.parseInt(clerkID));
+    public static boolean isShiftOpen() {
+        Shift shift = getOpenShift();
         return shift != null;
     }
 
-    public static void updateShiftAmounts(int clerkID, double amountToApply, boolean isReturn) {
-        Shift openShift = getOpenShift(clerkID);
-        if(openShift==null) {
+    public static void updateShiftAmounts(double amountToApply, boolean isReturn) {
+        Shift openShift = getOpenShift();
+        if (openShift == null) {
             return;
         }
 
         if (isReturn) {
-            openShift.setTotalTransactionsCash(String.valueOf(Global.getBigDecimalNum(openShift != null
-                    ? openShift.getTotalTransactionsCash() :
-                    "0").subtract(BigDecimal.valueOf(amountToApply))));
+            openShift.setTotalTransactionsCash(String.valueOf(Global.getBigDecimalNum(openShift.getTotalTransactionsCash())
+                    .subtract(BigDecimal.valueOf(amountToApply))));
         } else {
-            openShift.setTotalTransactionsCash(String.valueOf(Global.getBigDecimalNum(openShift != null
-                    ? openShift.getTotalTransactionsCash()
-                    : "0").add(BigDecimal.valueOf(amountToApply))));
+            openShift.setTotalTransactionsCash(String.valueOf(Global.getBigDecimalNum(openShift.getTotalTransactionsCash())
+                    .add(BigDecimal.valueOf(amountToApply))));
         }
         insertOrUpdate(openShift);
     }

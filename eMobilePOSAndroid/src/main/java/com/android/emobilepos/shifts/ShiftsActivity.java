@@ -287,7 +287,7 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
         shift.setShiftStatus(Shift.ShiftStatus.OPEN);
         shift.setAssigneeId(employee.getEmpId());
         shift.setAssigneeName(employee.getEmpName());
-        shift.setEmpId(Integer.parseInt(preferences.getClerkID()));
+        shift.setClerkId(Integer.parseInt(preferences.getClerkID()));
         shift.setBeginningPettyCash(NumberUtils.cleanCurrencyFormatedNumber(totalAmountEditText.getText().toString()));
         shift.setCreationDate(now);
         shift.setStartTime(now);
@@ -417,12 +417,19 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
     private void openUI() {
         setContentView(R.layout.activity_shifts);
 //        Clerk clerk = ClerkDAO.getByEmpId(Integer.parseInt(preferences.getClerkID()), true);
-        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
-        shift = ShiftDAO.getCurrentShift(assignEmployee.getEmpId());
-        Clerk clerk = ClerkDAO.getByEmpId(shift.getEmpId(), false);
+//        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+        shift = ShiftDAO.getOpenShift();
+        Clerk clerk;
+        if (shift == null) {
+            shift = ShiftDAO.getShiftByClerkId(Integer.parseInt(preferences.getClerkID()));
+        }
+        if (shift == null) {
+            clerk = ClerkDAO.getByEmpId(Integer.parseInt(preferences.getClerkID()), false);
+        } else {
+            clerk = ClerkDAO.getByEmpId(shift.getClerkId(), false);
+        }
         TextView clerkName = (TextView) findViewById(R.id.clerkNameShifttextView);
-        clerkName.setText(clerk.getEmpName());
-
+        clerkName.setText(clerk == null ? "" : clerk.getEmpName());
 
         totalAmountEditText = (TextView) findViewById(R.id.totalAmounteditText);
         openOnLbl = (TextView) findViewById(R.id.openOnLbltextView25);

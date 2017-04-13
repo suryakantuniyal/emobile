@@ -66,7 +66,7 @@ public class Shift extends RealmObject {
     private String totalTransactionsCash = "0";
     @SerializedName("emp_id")
     @Expose
-    private int empId;
+    private int clerkId;
     @SerializedName("Shift_status")
     @Expose
     @Index
@@ -79,6 +79,7 @@ public class Shift extends RealmObject {
     private boolean sync;
     @Ignore
     private ShiftStatus shiftStatus;
+
     public Shift() {
         setShiftId(UUID.randomUUID().toString());
         setShiftStatus(ShiftStatus.CLOSED);
@@ -223,14 +224,6 @@ public class Shift extends RealmObject {
         this.totalTransactionsCash = totalTransactionsCash;
     }
 
-    public int getEmpId() {
-        return empId;
-    }
-
-    public void setEmpId(int empId) {
-        this.empId = empId;
-    }
-
     public String getTotal_ending_cash() {
         return total_ending_cash;
     }
@@ -253,6 +246,14 @@ public class Shift extends RealmObject {
 
     public void setSync(boolean sync) {
         this.sync = sync;
+    }
+
+    public int getClerkId() {
+        return clerkId;
+    }
+
+    public void setClerkId(int clerkId) {
+        this.clerkId = clerkId;
     }
 
     public enum ShiftStatus {

@@ -40,7 +40,7 @@ public class ShiftExpensesList_FA extends BaseFragmentActivityActionBar implemen
         Button btnProcess = (Button) findViewById(R.id.processAddExpenseButton);
         btnProcess.setOnClickListener(this);
         lView = (ListView) findViewById(R.id.shiftExpensesListView);
-        openShift = ShiftDAO.getOpenShift(Integer.parseInt(myPref.getClerkID()));
+        openShift = ShiftDAO.getOpenShift();
         expenses = ShiftExpensesDAO.getShiftExpenses(openShift.getShiftId());
         adapter = new ShiftExpensesListAdapter(this, R.layout.shift_expenses_lvadapter, expenses);
         lView.setAdapter(adapter);

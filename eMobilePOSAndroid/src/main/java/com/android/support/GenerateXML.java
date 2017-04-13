@@ -1044,7 +1044,7 @@ public class GenerateXML {
             serializer.startTag(empstr, "OrderAttributes");
             List<OrderAttributes> subList = order.orderAttributes.subList(6, order.orderAttributes.size());
             for (OrderAttributes attributes : subList) {
-                if(!TextUtils.isEmpty(attributes.getInputValue())) {
+                if (!TextUtils.isEmpty(attributes.getInputValue())) {
                     serializer.startTag(empstr, "OrderAttribute");
 
                     serializer.startTag(empstr, "ord_attr_id");
@@ -1194,7 +1194,7 @@ public class GenerateXML {
                     serializer.startTag(empstr, "totalLineValue");
                     serializer.text(cursor.getString(cursor.getColumnIndex("totalLineValue")));
                     serializer.endTag(empstr, "totalLineValue");
-                    String prod_taxValue = Global.getRoundBigDecimal(product.getProd_taxValue(),2);
+                    String prod_taxValue = Global.getRoundBigDecimal(product.getProd_taxValue(), 2);
 
                     serializer.startTag(empstr, "prod_taxValue");
                     serializer.text(prod_taxValue);
@@ -2021,6 +2021,9 @@ public class GenerateXML {
                 serializer.startTag(empstr, "assignee_id");
                 serializer.text(String.valueOf(s.getAssigneeId()));//c.getString(c.getColumnIndex("assignee_id")));
                 serializer.endTag(empstr, "assignee_id");
+                serializer.startTag(empstr, "clerk_id");
+                serializer.text(String.valueOf(s.getClerkId()));//c.getString(c.getColumnIndex("assignee_id")));
+                serializer.endTag(empstr, "clerk_id");
                 serializer.startTag(empstr, "assignee_name");
                 serializer.text(s.getAssigneeName());//c.getString(c.getColumnIndex("assignee_name")));
                 serializer.endTag(empstr, "assignee_name");

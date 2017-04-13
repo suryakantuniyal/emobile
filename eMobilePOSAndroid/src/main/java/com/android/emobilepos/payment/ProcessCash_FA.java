@@ -805,7 +805,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
                 amountToApply = actualAmount;
             }
 //            Shift openShift = ShiftDAO.getOpenShift(Integer.parseInt(myPref.getClerkID()));
-            ShiftDAO.updateShiftAmounts(Integer.parseInt(myPref.getClerkID()), amountToApply, isReturn);
+            ShiftDAO.updateShiftAmounts(amountToApply, isReturn);
 
 
 //            if (!isReturn) {

@@ -617,7 +617,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
 //        ShiftPeriodsDBHandler handlerSP = new ShiftPeriodsDBHandler(activity);
         amountToBeSubstracted = Double.parseDouble(NumberUtils.cleanCurrencyFormatedNumber(order.ord_total)); //find total to be credited
         //update ShiftPeriods (isReturn set to true)
-        ShiftDAO.updateShiftAmounts(Integer.parseInt(myPref.getShiftID()), amountToBeSubstracted, true);
+        ShiftDAO.updateShiftAmounts(amountToBeSubstracted, true);
         //Check if Stored&Forward active and delete from record if any payment were made
         if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
             handler.updateOrderStoredFwd(order_id, "0");

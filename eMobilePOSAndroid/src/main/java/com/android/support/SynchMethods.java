@@ -575,9 +575,7 @@ public class SynchMethods {
         String jsonRequest = client.httpJsonRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
                 xml.downloadAll("ClerkPermissions"));
         ClerkEmployeePermissionResponse response = gson.fromJson(jsonRequest, ClerkEmployeePermissionResponse.class);
-//            ClerkDAO.truncate();
         EmployeePermissionDAO.truncate();
-//            ClerkDAO.inserOrUpdate(response.getClerks());
         ClerkDAO.truncate();
         ClerkDAO.insert(response.getClerks());
         EmployeePermissionDAO.insertOrUpdate(response.getEmployeePersmissions());
@@ -1025,22 +1023,16 @@ public class SynchMethods {
 
     public void postShift(Context context) throws Exception {
         SAXParserPost handler = new SAXParserPost();
-//        ShiftPeriodsDBHandler dbHandler = new ShiftPeriodsDBHandler(context);
         List<Shift> pendingSyncShifts = ShiftDAO.getPendingSyncShifts();
         if (pendingSyncShifts != null && !pendingSyncShifts.isEmpty()) {
             xml = post.postData(Global.S_SUBMIT_SHIFT, context, "");
             inSource = new InputSource(new StringReader(xml));
             xr.setContentHandler(handler);
             xr.parse(inSource);
-//            data = handler.getData();
             for (Shift s : pendingSyncShifts) {
                 s.setSync(true);
             }
             ShiftDAO.updateShiftToSync(pendingSyncShifts);
-//            dbHandler.updateIsSync(data);
-//            if (data.isEmpty())
-//                didSendData = false;
-//            data.clear();
         }
     }
 
