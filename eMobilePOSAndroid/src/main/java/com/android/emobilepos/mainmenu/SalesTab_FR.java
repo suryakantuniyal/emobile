@@ -728,6 +728,7 @@ public class SalesTab_FR extends Fragment {
                     Global.showPrompt(getActivity(), R.string.dlog_title_error, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
                     return false;
                 }
+                break;
             case SHIFT_ALREADY_OPEN:
                 Global.showPrompt(getActivity(), R.string.dlog_title_error, getString(R.string.dlog_msg_error_shift_already_open));
                 return false;

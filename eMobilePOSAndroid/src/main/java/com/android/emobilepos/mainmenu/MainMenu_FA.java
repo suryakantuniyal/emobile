@@ -240,8 +240,8 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
     @Override
     public void onResume() {
-        if (!PollingNotificationService.isServiceRunning(this)) {
-            PollingNotificationService.start(this);
+        if (myPref.isPollingHoldsEnable() && !PollingNotificationService.isServiceRunning(this)) {
+           startPollingService();
         }
         registerReceiver(messageReceiver, new IntentFilter(NOTIFICATION_RECEIVED));
         if (global.isApplicationSentToBackground(activity)) {

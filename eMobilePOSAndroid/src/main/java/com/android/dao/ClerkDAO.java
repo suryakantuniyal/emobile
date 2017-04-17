@@ -163,6 +163,7 @@ public class ClerkDAO {
 
             if (associate != null) {
                 preferences.setClerkID(String.valueOf(associate.getEmpId()));
+                preferences.setClerkName(associate.getEmpName());
                 clerk = r.copyFromRealm(associate);
             }
         } finally {
