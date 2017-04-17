@@ -150,6 +150,26 @@ public class ShiftDAO {
         }
         return r.copyFromRealm(list);
     }
+
+    public static void insertOrUpdatePendingShift(List<Shift> shifts, int clerkId) {
+        Realm r = Realm.getDefaultInstance();
+        try {
+            for (Shift s : shifts) {
+                s.setSync(false);
+            }
+            r.beginTransaction();
+            RealmResults<Shift> all = r.where(Shift.class)
+                    .equalTo("clerkId", clerkId)
+                    .equalTo("shiftStatusCode", Shift.ShiftStatus.PENDING.code)
+                    .findAll();
+            if (all != null && all.isValid()) {
+                all.deleteAllFromRealm();
+            }
+            r.insertOrUpdate(shifts);
+        } finally {
+            r.commitTransaction();
+        }
+    }
 //
 //    public static List<Shift> getShift(String clerkId, Date date) {
 //        List<Shift> list = new ArrayList<>();

@@ -589,7 +589,7 @@ public class SynchMethods {
         Type listType = new com.google.gson.reflect.TypeToken<List<Shift>>() {
         }.getType();
         List<Shift> shifts = gson.fromJson(jsonRequest, listType);
-        ShiftDAO.insertOrUpdate(shifts);
+        ShiftDAO.insertOrUpdatePendingShift(shifts, Integer.parseInt(preferences.getClerkID()));
     }
 
     private void sendWalletOrders(Object task) throws IOException, SAXException, ParserConfigurationException {
