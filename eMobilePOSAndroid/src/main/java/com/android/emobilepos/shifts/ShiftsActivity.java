@@ -83,7 +83,9 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
         super.onCreate(savedInstanceState);
         preferences = new MyPreferences(this);
         global = (Global) this.getApplication();
-        new GetShiftTask().execute();
+        if (preferences.isUseClerks()) {
+            new GetShiftTask().execute();
+        }
     }
 
     private void setShiftUI() {

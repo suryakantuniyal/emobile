@@ -24,7 +24,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.dao.AssignEmployeeDAO;
-import com.android.dao.ClerkDAO;
 import com.android.dao.DinningTableDAO;
 import com.android.dao.ShiftDAO;
 import com.android.database.CustomersHandler;
@@ -43,7 +42,6 @@ import com.android.emobilepos.holders.Locations_Holder;
 import com.android.emobilepos.locations.LocationsPickerDlog_FR;
 import com.android.emobilepos.locations.LocationsPicker_Listener;
 import com.android.emobilepos.mainmenu.restaurant.DinningTablesActivity;
-import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.DinningTable;
 import com.android.emobilepos.models.realms.Shift;
 import com.android.emobilepos.ordering.OrderingMain_FA;
@@ -676,14 +674,17 @@ public class SalesTab_FR extends Fragment {
                     break;
                 }
                 case SHIFTS: {
-                    boolean hasPermissions = myPref.isUseClerks() && SecurityManager.hasPermissions(getActivity(),
+                    boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.SHIFT_CLERK);
                     if (hasPermissions) {
-                        if (validateClerkShift(Global.TransactionType.getByCode(pos))) {
+                        if (!myPref.isUseClerks()) {
+
+                        } else if (validateClerkShift(Global.TransactionType.getByCode(pos))) {
 //                        if (myPref.isUseClerks()) {
                             intent = new Intent(activity, ShiftsActivity.class);
                             startActivity(intent);
                         }
+
 //                        else {
 //                            Global.showPrompt(getActivity(), R.string.admin_use_clerks,
 //                                    getString(R.string.dlog_msg_error_shift_needs_use_clerk));
