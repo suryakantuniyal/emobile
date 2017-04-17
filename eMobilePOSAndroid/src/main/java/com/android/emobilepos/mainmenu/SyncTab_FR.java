@@ -27,10 +27,13 @@ import com.android.database.TemplateHandler;
 import com.android.database.TransferLocations_DB;
 import com.android.database.VoidTransactionsHandler;
 import com.android.emobilepos.R;
+import com.android.support.DateUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NetworkUtils;
 import com.android.support.SynchMethods;
+
+import java.util.Date;
 
 public class SyncTab_FR extends Fragment implements View.OnClickListener {
     public static Handler syncTabHandler;
@@ -131,7 +134,7 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
         NetworkInfo myWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
         NetworkInfo myMobile = connManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
         if (myWifi != null && myWifi.isConnected()) {
-            WifiManager wifiManager = (WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE);
+            WifiManager wifiManager = (WifiManager) getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
             WifiInfo wifiInfo = wifiManager.getConnectionInfo();
             sb.append(getString(R.string.sync_connected_to)).append(": ").append(wifiInfo.getSSID());
             wifiName = sb.toString();
