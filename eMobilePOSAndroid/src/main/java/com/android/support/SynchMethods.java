@@ -254,8 +254,10 @@ public class SynchMethods {
                 synchLocationsInventory();
             }
             synchUpdateSyncTime();
+            preferences.setLastReceiveSync(DateUtils.getDateAsString(new Date(), DateUtils.DATE_MMM_dd_yyyy_h_mm_a));
 
         } catch (Exception e) {
+            preferences.setLastReceiveSync("Sync Fail");
             e.printStackTrace();
             return false;
         }
