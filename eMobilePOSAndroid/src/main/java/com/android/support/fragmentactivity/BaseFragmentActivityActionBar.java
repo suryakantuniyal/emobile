@@ -30,7 +30,7 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
     private boolean showNavigationbar = false;
     private static String[] navigationbarByModels;
     public Menu menu;
-    Clerk clerk;
+    static Clerk clerk;
 
     protected void setActionBar() {
         showNavigationbar = myPref.getPreferences(MyPreferences.pref_use_navigationbar) || isNavigationBarModel() || (this instanceof MainMenu_FA && myPref.isUseClerks());

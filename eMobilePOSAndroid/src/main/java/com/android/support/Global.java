@@ -1501,6 +1501,8 @@ public class Global extends MultiDexApplication {
                             validPassword[0] = false;
                             promptForMandatoryLogin(activity);
                         } else {
+                            myPref.setClerkID(String.valueOf(clerk.getEmpId()));
+                            myPref.setClerkName(clerk.getEmpName());
                             if (activity instanceof MainMenu_FA) {
                                 ((MainMenu_FA) activity).setLogoutButtonClerkname();
                             }
