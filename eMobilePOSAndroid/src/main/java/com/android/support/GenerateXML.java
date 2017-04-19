@@ -333,14 +333,11 @@ public class GenerateXML {
     public String downloadAll(String key) {
         String value = Global.xmlActions.get(key);
         StringBuilder sb = new StringBuilder();
-        if (myPref.isUseClerks()) {
-
-        }
         try {
             sb.append(value).append("?RegID=").append(URLEncoder.encode(info.getAcctNumber(), UTF_8));
             sb.append("&MSemployeeID=").append(URLEncoder.encode(String.valueOf(assignEmployee.getEmpId()), UTF_8));
             sb.append("&MSZoneID=").append(URLEncoder.encode(StringUtil.nullStringToEmpty(assignEmployee.getZoneId()), UTF_8));
-            if (myPref.isUseClerks() && !TextUtils.isEmpty(myPref.getClerkID())) {
+            if (key.equalsIgnoreCase("Shifts") && !TextUtils.isEmpty(myPref.getClerkID())) {
                 sb.append("&clerkid=").append(myPref.getClerkID());
             }
             sb.append(ending.toString());

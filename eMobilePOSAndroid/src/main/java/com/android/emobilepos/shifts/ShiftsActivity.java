@@ -83,9 +83,9 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
         super.onCreate(savedInstanceState);
         preferences = new MyPreferences(this);
         global = (Global) this.getApplication();
-        if (preferences.isUseClerks()) {
-            new GetShiftTask().execute();
-        }
+//        if (preferences.isUseClerks()) {
+        new GetShiftTask().execute();
+//        }
     }
 
     private void setShiftUI() {
@@ -420,7 +420,7 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
         setContentView(R.layout.activity_shifts);
 //        Clerk clerk = ClerkDAO.getByEmpId(Integer.parseInt(preferences.getClerkID()), true);
 //        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
-        shift = ShiftDAO.getOpenShift();
+        shift = ShiftDAO.getShiftByClerkId(Integer.parseInt(preferences.getClerkID()));
         Clerk clerk;
         if (shift == null) {
             shift = ShiftDAO.getShiftByClerkId(Integer.parseInt(preferences.getClerkID()));
