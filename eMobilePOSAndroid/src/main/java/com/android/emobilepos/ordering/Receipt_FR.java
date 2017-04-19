@@ -429,7 +429,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
     private void setupListView() {
         OrderingMain_FA orderingMain_fa = (OrderingMain_FA) getActivity();
-        mainLVAdapter = new OrderProductListAdapter(getActivity(), global.order.getOrderProducts(), orderingMain_fa); //new ReceiptMainLV_Adapter(activity);
+        mainLVAdapter = new OrderProductListAdapter(getActivity(), global.order.getOrderProducts(), orderingMain_fa);
         receiptListView.setAdapter(mainLVAdapter);
         if (orderingMain_fa.openFromHold && !orderingMain_fa.isToGo) {
             addHoldOrderSeats();
@@ -437,12 +437,10 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         mainLVAdapter.notifyDataSetChanged();
     }
 
-    private int addHoldOrderSeats() {
-        HashSet<String> seats = new HashSet<>();
+    private void addHoldOrderSeats() {
         for (OrderProduct product : global.order.getOrderProducts()) {
             mainLVAdapter.addSeat(product);
         }
-        return seats.size();
     }
 
     private void overridePrice(final int position) {
@@ -496,7 +494,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
     @Override
     public void onClick(View v) {
-        Intent intent = null;
+        Intent intent;
         if (SystemClock.elapsedRealtime() - lastClickTime < 500) {
             return;
         }
