@@ -25,7 +25,7 @@ import util.json.UIUtils;
 public class MyPreferences {
     private static final String pref_restaurant_mode = "pref_restaurant_mode";
     public static final String pref_enable_togo_eatin = "pref_enable_togo_eatin";
-    public static final String pref_require_waiter_signin = "pref_require_waiter_signin";
+//    public static final String pref_require_waiter_signin = "pref_require_waiter_signin";
     //    private Global global;
     public static final String pref_enable_table_selection = "pref_enable_table_selection";
     public static final String pref_ask_seats = "pref_ask_seats";
@@ -644,9 +644,9 @@ public class MyPreferences {
         editor.commit();
     }
 
-    public boolean requiresWaiterLogin() {
-        return getPreferences(MyPreferences.pref_require_waiter_signin);
-    }
+//    public boolean requiresWaiterLogin() {
+//        return getPreferences(MyPreferences.pref_require_waiter_signin);
+//    }
 
     public String getPreferencesValue(String key) {
         return sharedPref.getString(key, "");

@@ -118,7 +118,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
     private int totalPayCount = 0;
     private String order_email = "";
     private Global.OrderType orderType;
-    private boolean isClicked;
 
 
     @Override

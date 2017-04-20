@@ -183,7 +183,7 @@ public class TablesMapFragment extends Fragment implements View.OnClickListener,
         switch (v.getId()) {
             case R.id.table_map_container: {
                 DinningTable table = (DinningTable) v.getTag();
-                if (!preferences.requiresWaiterLogin() || (associate != null && associate.getAssignedDinningTables().contains(table))) {
+                if ((associate != null && associate.getAssignedDinningTables().contains(table))) {
                     DinningTableOrder tableOrder = DinningTableOrderDAO.getByNumber(table.getNumber());
                     if (tableOrder != null) {
                         Realm realm = Realm.getDefaultInstance();
@@ -208,7 +208,7 @@ public class TablesMapFragment extends Fragment implements View.OnClickListener,
         switch (v.getId()) {
             case R.id.table_map_container: {
                 final DinningTable table = (DinningTable) v.getTag();
-                if (!preferences.requiresWaiterLogin() || associate.getAssignedDinningTables().contains(table)) {
+                if (associate.getAssignedDinningTables().contains(table)) {
                     PopupMenu popup = new PopupMenu(getActivity(), v);
                     popup.getMenuInflater().inflate(R.menu.dinning_table_map_menu, popup.getMenu());
                     popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
