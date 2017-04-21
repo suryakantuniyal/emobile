@@ -93,7 +93,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         });
         listView.setAdapter(myAdapter);
         hasBeenCreated = true;
-        if (!PollingNotificationService.isServiceRunning(this)) {
+        if (myPref.isPollingHoldsEnable() && !PollingNotificationService.isServiceRunning(this)) {
             PollingNotificationService.start(this);
         }
 
@@ -127,7 +127,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                if(!PollingNotificationService.isServiceRunning(OnHoldActivity.this)){
+                if (myPref.isPollingHoldsEnable() && !PollingNotificationService.isServiceRunning(OnHoldActivity.this)) {
                     PollingNotificationService.start(OnHoldActivity.this);
                 }
                 SynchMethods.synchOrdersOnHoldList(OnHoldActivity.this);
