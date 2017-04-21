@@ -19,6 +19,7 @@ import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.support.DateUtils;
 import com.android.support.HttpClient;
 import com.android.support.MyPreferences;
+import com.android.support.NetworkUtils;
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
@@ -51,7 +52,7 @@ public class PollingNotificationService extends Service {
 
     private static final String TAG = "PollingService";
     private Timer timer;
-    private static final int delay = 3000; // delay for 3 sec before first start
+    private static final int delay = 5000; // delay for 3 sec before first start
     private Date lastPolled;
     private String accountNumber;
 
@@ -132,40 +133,42 @@ public class PollingNotificationService extends Service {
 
     public void pollNotificationEvents(Context context) {
         try {
-            Date tempPollDate = new Date();
-            HttpClient client = new HttpClient();
-            Gson gson = JsonUtils.getInstance();
+            if (NetworkUtils.isConnectedToInternet(context)) {
+                Date tempPollDate = new Date();
+                HttpClient client = new HttpClient();
+                Gson gson = JsonUtils.getInstance();
 
-            String sb = String.format("%spollnotification.ashx?RegID=%s&fromdate=%s",
-                    context.getString(R.string.sync_enablermobile_deviceasxmltrans),
-                    URLEncoder.encode(accountNumber, "utf-8"),
-                    URLEncoder.encode(DateUtils.getDateAsString(lastPolled), "utf-8"));
+                String sb = String.format("%spollnotification.ashx?RegID=%s&fromdate=%s",
+                        context.getString(R.string.sync_enablermobile_deviceasxmltrans),
+                        URLEncoder.encode(accountNumber, "utf-8"),
+                        URLEncoder.encode(DateUtils.getDateAsString(lastPolled), "utf-8"));
 
-            InputStream inputStream = client.httpInputStreamRequest(sb);
-            JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
-            reader.beginArray();
+                InputStream inputStream = client.httpInputStreamRequest(sb);
+                JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
+                reader.beginArray();
 
-            List<PollNotification> notifications = new ArrayList<>();
-            while (reader.hasNext()) {
-                PollNotification notification = gson.fromJson(reader, PollNotification.class);
-                notifications.add(notification);
-            }
-
-            for (PollNotification pn : notifications) {
-                String message = NONE_BROADCAST_ACTION;
-                if (pn.isAvailable()) {
-                    lastPolled = tempPollDate;
-                    if (pn.notificationtype.equalsIgnoreCase("onhold")) {
-                        message = ONHOLD_BROADCAST_ACTION;
-                    } else if (pn.notificationtype.equalsIgnoreCase("mesas")) {
-                        message = MESAS_CONFIG_BROADCAST_ACTION;
-                    }
-                    broadcastMessage(message);
+                List<PollNotification> notifications = new ArrayList<>();
+                while (reader.hasNext()) {
+                    PollNotification notification = gson.fromJson(reader, PollNotification.class);
+                    notifications.add(notification);
                 }
-            }
 
-            reader.endArray();
-            reader.close();
+                for (PollNotification pn : notifications) {
+                    String message = NONE_BROADCAST_ACTION;
+                    if (pn.isAvailable()) {
+                        lastPolled = tempPollDate;
+                        if (pn.notificationtype.equalsIgnoreCase("onhold")) {
+                            message = ONHOLD_BROADCAST_ACTION;
+                        } else if (pn.notificationtype.equalsIgnoreCase("mesas")) {
+                            message = MESAS_CONFIG_BROADCAST_ACTION;
+                        }
+                        broadcastMessage(message);
+                    }
+                }
+
+                reader.endArray();
+                reader.close();
+            }
         } catch (Exception e) {
             Crashlytics.logException(e);
         }
@@ -181,14 +184,14 @@ public class PollingNotificationService extends Service {
         return false;
     }
 
-    public static void start(Context context){
+    public static void start(Context context) {
         Intent startIntent = new Intent(context, PollingNotificationService.class);
         startIntent.setAction(PollingNotificationService.START_ACTION);
         context.startService(startIntent);
         Log.d("Polling service started", new Date().toString());
     }
 
-    public static void stop(Context context){
+    public static void stop(Context context) {
         Intent stopIntent = new Intent(context, PollingNotificationService.class);
         stopIntent.setAction(PollingNotificationService.STOP_ACTION);
         context.startService(stopIntent);
