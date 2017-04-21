@@ -1039,12 +1039,12 @@ public class Global extends MultiDexApplication {
         }
     }
 
-    public static String getRoundBigDecimal(BigDecimal val) {
-        return val.setScale(4, RoundingMode.HALF_UP).toString();
+    public static BigDecimal getRoundBigDecimal(BigDecimal val) {
+        return val.setScale(4, RoundingMode.HALF_UP);
     }
 
-    public static String getRoundBigDecimal(BigDecimal val, int scale) {
-        return val.setScale(scale, RoundingMode.HALF_UP).toString();
+    public static BigDecimal getRoundBigDecimal(BigDecimal val, int scale) {
+        return val.setScale(scale, RoundingMode.HALF_UP);
     }
 
     public static String getCurrencyFrmt(String value) {

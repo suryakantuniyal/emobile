@@ -25,6 +25,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.dao.ShiftDAO;
 import com.android.database.PayMethodsHandler;
 import com.android.database.PaymentsHandler;
 import com.android.emobilepos.R;
@@ -181,10 +182,11 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
         else
             payment.setInv_id(invJobView.getText().toString());
 
-        if (!myPref.getShiftIsOpen())
-            payment.setClerk_id(myPref.getShiftClerkID());
-        else if (myPref.isUseClerks())
+        if (myPref.isUseClerks()) {
             payment.setClerk_id(myPref.getClerkID());
+        } else if (ShiftDAO.isShiftOpen()) {
+            payment.setClerk_id(String.valueOf(ShiftDAO.getOpenShift().getClerkId()));
+        }
 
         payment.setPay_id(extras.getString("pay_id"));
         payment.setPaymethod_id(paymethod_id);
@@ -317,7 +319,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
 
                 BigDecimal aprovedAmount = new BigDecimal(response.getAmountApproved());
                 BigDecimal payAmount = aprovedAmount.subtract(tip).subtract(cashBack);
-                payment.setPay_amount(Global.getRoundBigDecimal(payAmount));
+                payment.setPay_amount(String.valueOf(Global.getRoundBigDecimal(payAmount)));
                 Global.amountPaid = payment.getPay_amount();
                 payment.setAuthcode(response.getAuthorizationCode());
                 payment.setCcnum_last4(response.getAccountNumber());

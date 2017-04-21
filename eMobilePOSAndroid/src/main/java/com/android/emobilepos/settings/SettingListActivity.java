@@ -44,6 +44,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.dao.PayMethodsDAO;
+import com.android.dao.ShiftDAO;
 import com.android.database.CategoriesHandler;
 import com.android.database.DBManager;
 import com.android.database.PayMethodsHandler;
@@ -1278,7 +1279,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
         public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
             if (resultCode == 1) {
-                if (!myPref.getShiftIsOpen()) {
+                if (!ShiftDAO.isShiftOpen()) {
                     CharSequence c = "\t\t" + getString(R.string.admin_close_shift) + " <" + myPref.getShiftClerkName() + ">";
                     openShiftPref.setSummary(c);
                 }

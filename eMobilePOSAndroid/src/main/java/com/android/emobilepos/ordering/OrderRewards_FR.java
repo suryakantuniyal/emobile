@@ -149,7 +149,7 @@ public class OrderRewards_FR extends Fragment implements OnClickListener {
                 if (newBalance.compareTo(zero) == -1) {
                     newBalance = zero;
                 }
-                setRewardBalance(Global.getRoundBigDecimal(newBalance));
+                setRewardBalance(String.valueOf(Global.getRoundBigDecimal(newBalance)));
             } else {
                 Global.showPrompt(getActivity(), R.string.rewards, result.getMessage());
 

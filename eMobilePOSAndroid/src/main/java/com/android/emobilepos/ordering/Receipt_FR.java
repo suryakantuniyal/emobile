@@ -43,6 +43,7 @@ import android.widget.Toast;
 
 import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.DinningTableOrderDAO;
+import com.android.dao.ShiftDAO;
 import com.android.database.DBManager;
 import com.android.database.EmpInvHandler;
 import com.android.database.OrderProductsAttr_DB;
@@ -93,7 +94,6 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
 import drivers.EMSBluetoothStarPrinter;
@@ -160,9 +160,9 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         order.setOrderProducts(orderProducts);
         order.assignedTable = assignedTable;
         order.associateID = associateId;
-        order.ord_total = Global
-                .getRoundBigDecimal(OrderTotalDetails_FR.gran_total);
-        order.ord_subtotal = Global.getRoundBigDecimal(OrderTotalDetails_FR.sub_total);
+        order.ord_total = String.valueOf(Global
+                .getRoundBigDecimal(OrderTotalDetails_FR.gran_total));
+        order.ord_subtotal = String.valueOf(Global.getRoundBigDecimal(OrderTotalDetails_FR.sub_total));
         if (Global.lastOrdID == null || Global.lastOrdID.isEmpty()) {
             GenerateNewID generator = new GenerateNewID(activity);
             Global.lastOrdID = generator.getNextID(IdType.ORDER_ID);
@@ -189,15 +189,17 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             order.ord_lineItemDiscount = String.valueOf(Global.getBigDecimalNum(order.ord_lineItemDiscount)
                     .add(Global.getBigDecimalNum(orderProduct.getDiscount_value())));
         }
-        if (!myPref.getShiftIsOpen())
-            order.clerk_id = myPref.getShiftClerkID();
-        else if (myPref.isUseClerks())
+        if (myPref.isUseClerks()) {
             order.clerk_id = myPref.getClerkID();
+        } else if (ShiftDAO.isShiftOpen()) {
+            order.clerk_id = String.valueOf(ShiftDAO.getOpenShift().getClerkId());
+        }
+
         order.total_lines = Integer.toString(totalLines);
-        order.ord_taxamount = Global
-                .getRoundBigDecimal(OrderTotalDetails_FR.tax_amount);
-        order.ord_discount = Global
-                .getRoundBigDecimal(OrderTotalDetails_FR.discount_amount);
+        order.ord_taxamount = String.valueOf(Global
+                .getRoundBigDecimal(OrderTotalDetails_FR.tax_amount));
+        order.ord_discount = String.valueOf(Global
+                .getRoundBigDecimal(OrderTotalDetails_FR.discount_amount));
         order.ord_shipvia = global.getSelectedShippingMethodString();
         order.ord_delivery = global.getSelectedDeliveryDate();
         order.ord_terms = global.getSelectedTermsMethodsString();
@@ -1458,9 +1460,9 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
         intent.putExtra(
                 "amount",
-                Global.getRoundBigDecimal(OrderTotalDetails_FR.gran_total
+                String.valueOf(Global.getRoundBigDecimal(OrderTotalDetails_FR.gran_total
                         .compareTo(new BigDecimal(0)) == -1 ? OrderTotalDetails_FR.gran_total
-                        .negate() : OrderTotalDetails_FR.gran_total, 2));
+                        .negate() : OrderTotalDetails_FR.gran_total, 2)));
         intent.putExtra("paid", "0.00");
         intent.putExtra("is_receipt", true);
         intent.putExtra("job_id", global.order.ord_id);

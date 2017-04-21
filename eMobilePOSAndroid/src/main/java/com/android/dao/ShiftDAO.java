@@ -129,6 +129,11 @@ public class ShiftDAO {
             openShift.setTotalTransactionsCash(String.valueOf(Global.getBigDecimalNum(openShift.getTotalTransactionsCash())
                     .add(BigDecimal.valueOf(amountToApply))));
         }
+        BigDecimal beginningPettyCash = new BigDecimal(openShift.getBeginningPettyCash());
+        BigDecimal transactionsCash = new BigDecimal(openShift.getTotalTransactionsCash());
+        BigDecimal totalExpenses = ShiftExpensesDAO.getShiftTotalExpenses(openShift.getShiftId());
+        BigDecimal totalEndingCash = Global.getRoundBigDecimal(beginningPettyCash.add(transactionsCash).add(totalExpenses), 2);
+        openShift.setTotal_ending_cash(String.valueOf(totalEndingCash));
         insertOrUpdate(openShift);
     }
 
@@ -140,6 +145,8 @@ public class ShiftDAO {
     public static List<Shift> getShift(Date date) {
         List<Shift> list = new ArrayList<>();
         Realm r = Realm.getDefaultInstance();
+        r.beginTransaction();
+        r.commitTransaction();
         RealmResults<Shift> shifts = r.where(Shift.class).findAll();
         for (Shift shift : shifts) {
             String creationDate = DateUtils.getDateAsString(shift.getCreationDate(), DateUtils.DATE_yyyy_MM_dd);

@@ -152,8 +152,13 @@ public class ShiftExpense_FA extends BaseFragmentActivityActionBar implements Vi
 
         if (openShift != null) {
             openShift.setTotalExpenses(String.valueOf(totalExpense));
+            BigDecimal beginningPettyCash = new BigDecimal(openShift.getBeginningPettyCash());
+            BigDecimal transactionsCash = new BigDecimal(openShift.getTotalTransactionsCash());
+            BigDecimal totalExpenses = ShiftExpensesDAO.getShiftTotalExpenses(openShift.getShiftId());
+            BigDecimal totalEndingCash = Global.getRoundBigDecimal(beginningPettyCash.add(transactionsCash).add(totalExpenses), 2);
+            openShift.setTotal_ending_cash(String.valueOf(totalEndingCash));
+            openShift.setTotalExpenses(String.valueOf(totalExpenses));
         }
-        ShiftDAO.insertOrUpdate(openShift);
         Toast.makeText(activity, "Expense Added", Toast.LENGTH_LONG).show();
         if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)
             Global.mainPrinterManager.getCurrentDevice().openCashDrawer();

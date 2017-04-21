@@ -881,7 +881,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         }
         orderProduct.setOrdprod_qty(qty_picked);
         orderProduct.setProd_id(prodID);
-        orderProduct.setProductPriceLevelTotal(Global.getRoundBigDecimal(productPriceLevelTotal));
+        orderProduct.setProductPriceLevelTotal(String.valueOf(Global.getRoundBigDecimal(productPriceLevelTotal)));
         orderProduct.setProd_price(productPriceLevelTotal.toString());
         orderProduct.setMixMatchOriginalPrice(productPriceLevelTotal);
         if (uomMultiplier.compareTo(new BigDecimal(1)) > 0)

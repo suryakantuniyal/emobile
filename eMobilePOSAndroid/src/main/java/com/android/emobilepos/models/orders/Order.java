@@ -261,11 +261,11 @@ public class Order implements Cloneable {
                     } else {
                         disc = new BigDecimal(product.getDisAmount());
                     }
-                    product.setDiscount_value(Global.getRoundBigDecimal(disc));
-                    product.setDisTotal(Global.getRoundBigDecimal(disc));
+                    product.setDiscount_value(String.valueOf(Global.getRoundBigDecimal(disc)));
+                    product.setDisTotal(String.valueOf(Global.getRoundBigDecimal(disc)));
 
-                    product.setItemTotalVatExclusive(Global
-                            .getRoundBigDecimal(subTotal.subtract(disc)));
+                    product.setItemTotalVatExclusive(String.valueOf(Global
+                            .getRoundBigDecimal(subTotal.subtract(disc))));
                 }
                 BigDecimal qty = Global.getBigDecimalNum(product.getOrdprod_qty());
                 if (qty.compareTo(new BigDecimal("1")) == 1) {

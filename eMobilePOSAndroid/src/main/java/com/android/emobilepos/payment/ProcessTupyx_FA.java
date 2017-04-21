@@ -22,6 +22,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.android.dao.AssignEmployeeDAO;
+import com.android.dao.ShiftDAO;
 import com.android.database.PaymentsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.realms.AssignEmployee;
@@ -239,10 +240,11 @@ public class ProcessTupyx_FA extends FragmentActivity implements OnClickListener
             payment.setInv_id("");
         }
 
-        if (!myPref.getShiftIsOpen())
-            payment.setClerk_id(myPref.getShiftClerkID());
-        else if (myPref.isUseClerks())
+        if (myPref.isUseClerks()) {
             payment.setClerk_id(myPref.getClerkID());
+        } else if (ShiftDAO.isShiftOpen()) {
+            payment.setClerk_id(String.valueOf(ShiftDAO.getOpenShift().getClerkId()));
+        }
 
         payment.setCust_id(extras.getString("cust_id") != null ? extras.getString("cust_id") : "");
         payment.setCustidkey(extras.getString("custidkey") != null ? extras.getString("custidkey") : "");

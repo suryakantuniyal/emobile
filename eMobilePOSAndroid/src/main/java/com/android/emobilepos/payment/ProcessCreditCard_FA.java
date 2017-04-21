@@ -34,6 +34,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.android.dao.AssignEmployeeDAO;
+import com.android.dao.ShiftDAO;
 import com.android.dao.StoredPaymentsDAO;
 import com.android.database.CustomersHandler;
 import com.android.database.InvoicePaymentsHandler;
@@ -564,10 +565,12 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         }
 
         String clerkId = null;
-        if (!myPref.getShiftIsOpen())
-            clerkId = myPref.getShiftClerkID();
-        else if (myPref.isUseClerks())
+
+        if (myPref.isUseClerks()) {
             clerkId = myPref.getClerkID();
+        } else if (ShiftDAO.isShiftOpen()) {
+            clerkId = String.valueOf(ShiftDAO.getOpenShift().getClerkId());
+        }
 
         double amountTender = Global
                 .formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
@@ -713,10 +716,11 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         payHandler = new PaymentsHandler(activity);
 
         String clerkId = null;
-        if (!myPref.getShiftIsOpen())
-            clerkId = myPref.getShiftClerkID();
-        else if (myPref.isUseClerks())
+        if (myPref.isUseClerks()) {
             clerkId = myPref.getClerkID();
+        } else if (ShiftDAO.isShiftOpen()) {
+            clerkId = String.valueOf(ShiftDAO.getOpenShift().getClerkId());
+        }
 
         double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
         double actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDueField));

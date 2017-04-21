@@ -1191,7 +1191,7 @@ public class GenerateXML {
                     serializer.startTag(empstr, "totalLineValue");
                     serializer.text(cursor.getString(cursor.getColumnIndex("totalLineValue")));
                     serializer.endTag(empstr, "totalLineValue");
-                    String prod_taxValue = Global.getRoundBigDecimal(product.getProd_taxValue(), 2);
+                    String prod_taxValue = String.valueOf(Global.getRoundBigDecimal(product.getProd_taxValue(), 2));
 
                     serializer.startTag(empstr, "prod_taxValue");
                     serializer.text(prod_taxValue);
@@ -2042,7 +2042,7 @@ public class GenerateXML {
                 serializer.text(s.getTotalExpenses());
                 serializer.endTag(empstr, "total_expenses");
                 serializer.startTag(empstr, "ending_petty_cash");
-                serializer.text(String.valueOf(s.getEndingCash()));//c.getString(c.getColumnIndex("ending_petty_cash")));
+                serializer.text(String.valueOf(s.getEndingPettyCash()));//c.getString(c.getColumnIndex("ending_petty_cash")));
                 serializer.endTag(empstr, "ending_petty_cash");
                 serializer.startTag(empstr, "ending_cash");
                 serializer.text(s.getTotal_ending_cash());//c.getString(c.getColumnIndex("total_ending_cash")));
@@ -2051,7 +2051,7 @@ public class GenerateXML {
                 serializer.text(String.valueOf(s.getEnteredCloseAmount()));//c.getString(c.getColumnIndex("entered_close_amount")));
                 serializer.endTag(empstr, "entered_close_amount");
                 serializer.startTag(empstr, "total_transactions_cash");
-                serializer.text(s.getTotal_ending_cash());//c.getString(c.getColumnIndex("total_transaction_cash")));
+                serializer.text(s.getTotalTransactionsCash());//c.getString(c.getColumnIndex("total_transaction_cash")));
                 serializer.endTag(empstr, "total_transactions_cash");
                 serializer.startTag(empstr, "Expenses");
                 for (ShiftExpense expense : shiftExpenses) {
@@ -2701,7 +2701,7 @@ public class GenerateXML {
                 serializer.startTag(empstr, "prod_taxId");
                 serializer.text(c.getString(c.getColumnIndex("prod_taxId")));
                 serializer.endTag(empstr, "prod_taxId");
-                String prod_taxValue = Global.getRoundBigDecimal(new BigDecimal(c.getDouble(c.getColumnIndex("prod_taxValue"))));
+                String prod_taxValue = String.valueOf(Global.getRoundBigDecimal(new BigDecimal(c.getDouble(c.getColumnIndex("prod_taxValue")))));
 
                 serializer.startTag(empstr, "prod_taxValue");
                 serializer.text(prod_taxValue);

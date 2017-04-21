@@ -267,6 +267,7 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
 
     private void closeShift() {
         Date now = new Date();
+
         shift.setEnteredCloseAmount(NumberUtils.cleanCurrencyFormatedNumber(totalAmountEditText.getText().toString()));
         shift.setEndTime(now);
         shift.setEndTimeLocal(now);

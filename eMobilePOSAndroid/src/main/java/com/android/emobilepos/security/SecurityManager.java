@@ -34,7 +34,7 @@ public class SecurityManager {
 //        }
 //        if (preferences.isShiftOpenRequired() && preferences.isUseClerks()) {
         boolean shiftOpen = ShiftDAO.isShiftOpen();
-        if (!shiftOpen && transactionType != Global.TransactionType.SHIFTS)
+        if (!shiftOpen && transactionType != Global.TransactionType.SHIFTS && preferences.isShiftOpenRequired())
             return SecurityResponse.OPEN_SHIFT_REQUIRED;
         else {
             Shift openShift = ShiftDAO.getOpenShift();

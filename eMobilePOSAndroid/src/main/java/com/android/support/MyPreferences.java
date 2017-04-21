@@ -1197,14 +1197,14 @@ public class MyPreferences {
         prefEditor.commit();
     }
 
-    public boolean getShiftIsOpen() {
-        return prefs.getBoolean("open_shift", true);
-    }
-
-    public void setShiftIsOpen(boolean value) {
-        prefEditor.putBoolean("open_shift", value);
-        prefEditor.commit();
-    }
+//    public boolean getShiftIsOpen() {
+//        return prefs.getBoolean("open_shift", true);
+//    }
+//
+//    public void setShiftIsOpen(boolean value) {
+//        prefEditor.putBoolean("open_shift", value);
+//        prefEditor.commit();
+//    }
 
     public String getShiftClerkName() {
         return prefs.getString("shift_clerk_name", "");
@@ -1223,15 +1223,15 @@ public class MyPreferences {
         prefEditor.putString("shift_id", value);
         prefEditor.commit();
     }
-
-    public String getShiftClerkID() {
-        return prefs.getString("shift_clerk_id", "");
-    }
-
-    public void setShiftClerkID(String value) {
-        prefEditor.putString("shift_clerk_id", value);
-        prefEditor.commit();
-    }
+//
+//    public String getShiftClerkID() {
+//        return prefs.getString("shift_clerk_id", "");
+//    }
+//
+//    public void setShiftClerkID(String value) {
+//        prefEditor.putString("shift_clerk_id", value);
+//        prefEditor.commit();
+//    }
 
     public String getClerkName() {
         return prefs.getString("clerk_name", "");

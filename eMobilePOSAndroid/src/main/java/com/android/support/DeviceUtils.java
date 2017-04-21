@@ -4,13 +4,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
-import android.os.Looper;
 import android.text.TextUtils;
-import android.util.Base64;
 import android.util.Log;
 
 import com.android.dao.DeviceTableDAO;
 import com.android.emobilepos.models.realms.Device;
+import com.crashlytics.android.Crashlytics;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -161,8 +160,13 @@ public class DeviceUtils {
     }
 
     public static Collection<UsbDevice> getUSBDevices(Context context) {
-        UsbManager manager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
-        HashMap<String, UsbDevice> deviceList = manager.getDeviceList();
+        HashMap<String, UsbDevice> deviceList = new HashMap<>();
+        try {
+            UsbManager manager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
+            deviceList = manager.getDeviceList();
+        } catch (Exception e) {
+            Crashlytics.logException(e);
+        }
         return deviceList.values();
     }
 

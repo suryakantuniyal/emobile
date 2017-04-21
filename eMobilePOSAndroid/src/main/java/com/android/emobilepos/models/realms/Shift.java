@@ -55,9 +55,9 @@ public class Shift extends RealmObject {
     @SerializedName("ending_petty_cash")
     @Expose
     private String endingPettyCash = "0";
-    @SerializedName("ending_cash")
-    @Expose
-    private String endingCash;
+    //    @SerializedName("ending_cash")
+//    @Expose
+//    private String endingCash;
     @SerializedName("entered_close_amount")
     @Expose
     private String enteredCloseAmount = "0";
@@ -71,9 +71,8 @@ public class Shift extends RealmObject {
     @Expose
     @Index
     private int shiftStatusCode;
-    @Expose(deserialize = false, serialize = false)
-
-
+    @SerializedName("ending_cash")
+    @Expose
     private String total_ending_cash = "0";
     private String over_short = "0";
     private boolean sync;
@@ -200,13 +199,13 @@ public class Shift extends RealmObject {
         this.endingPettyCash = endingPettyCash;
     }
 
-    public String getEndingCash() {
-        return endingCash;
-    }
-
-    public void setEndingCash(String endingCash) {
-        this.endingCash = endingCash;
-    }
+//    public String getEndingCash() {
+//        return endingCash;
+//    }
+//
+//    public void setEndingCash(String endingCash) {
+//        this.endingCash = endingCash;
+//    }
 
     public String getEnteredCloseAmount() {
         return enteredCloseAmount;

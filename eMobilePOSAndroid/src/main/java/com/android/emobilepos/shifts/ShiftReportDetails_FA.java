@@ -11,12 +11,14 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.ShiftDAO;
+import com.android.dao.ShiftExpensesDAO;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.realms.Shift;
 import com.android.support.Global;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+
+import java.math.BigDecimal;
 
 public class ShiftReportDetails_FA extends BaseFragmentActivityActionBar implements View.OnClickListener {
 
@@ -27,6 +29,7 @@ public class ShiftReportDetails_FA extends BaseFragmentActivityActionBar impleme
     private Button btnPrint;
     private String shiftID;
     private Shift shift;
+    private BigDecimal totalExpenses;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -40,6 +43,7 @@ public class ShiftReportDetails_FA extends BaseFragmentActivityActionBar impleme
         Bundle extras = this.getIntent().getExtras();
         shiftID = extras.getString("shift_id");
         shift = ShiftDAO.getShift(shiftID);
+        totalExpenses = ShiftExpensesDAO.getShiftTotalExpenses(shiftID);
         hasBeenCreated = true;
         if (shift != null) {
             loadUIInfo();
@@ -49,7 +53,7 @@ public class ShiftReportDetails_FA extends BaseFragmentActivityActionBar impleme
     private void loadUIInfo() {
         ((TextView) findViewById(R.id.salesClerktextView26)).setText(shift.getAssigneeName());
         ((TextView) findViewById(R.id.beginningPettyCashtextView26)).setText(shift.getBeginningPettyCash());
-        ((TextView) findViewById(R.id.totalExpensestextView26)).setText(shift.getTotalExpenses());
+        ((TextView) findViewById(R.id.totalExpensestextView26)).setText(Global.formatDoubleStrToCurrency(String.valueOf(totalExpenses)));
         ((TextView) findViewById(R.id.endingPettyCashtextView26)).setText(shift.getEndingPettyCash());
         ((TextView) findViewById(R.id.totalTransactionCashtextView26)).setText(shift.getTotalTransactionsCash());
         ((TextView) findViewById(R.id.totalEndingCashtextView26)).setText(shift.getTotal_ending_cash());
