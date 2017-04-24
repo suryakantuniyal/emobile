@@ -50,17 +50,16 @@ public class GenerateXML {
 
     public static final String UTF_8 = "utf-8";
     private static String empstr = "";
-    private final AssignEmployee assignEmployee;
+    private AssignEmployee assignEmployee;
     private MyPreferences info;
     private StringBuilder ending = new StringBuilder();
     private Context thisActivity;
     private MyPreferences myPref;
-
     public GenerateXML(Context activity) {
         info = new MyPreferences(activity);
         myPref = new MyPreferences(activity);
-        AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee(false);
-        if (employee == null && !TextUtils.isEmpty(myPref.getEmpIdFromPreferences())) {
+        this.assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+        if (this.assignEmployee == null && !TextUtils.isEmpty(myPref.getEmpIdFromPreferences())) {
             this.assignEmployee = new AssignEmployee();
             this.assignEmployee.setEmpId(Integer.parseInt(myPref.getEmpIdFromPreferences()));
 
@@ -71,8 +70,6 @@ public class GenerateXML {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        } else {
-            assignEmployee = employee;
         }
 
         thisActivity = activity;

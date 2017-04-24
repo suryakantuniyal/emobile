@@ -276,13 +276,13 @@ public class BalanceInquiry_FA extends BaseFragmentActivityActionBar implements 
 
         @Override
         protected String doInBackground(String... params) {
-            Post httpClient = new Post();
+            Post httpClient = new Post(activity);
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
             urlToPost = params[0];
 
             try {
-                String xml = httpClient.postData(13, activity, urlToPost);
+                String xml = httpClient.postData(13, urlToPost);
 
                 if (xml.equals(Global.TIME_OUT)) {
                     errorMsg = "TIME OUT, would you like to try again?";

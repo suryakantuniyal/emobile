@@ -1361,13 +1361,13 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             if (NetworkUtils.isConnectedToInternet(activity) && !livePaymentRunning) {
                 livePaymentRunning = true;
 
-                Post httpClient = new Post();
+                Post httpClient = new Post(activity);
                 SAXParserFactory spf = SAXParserFactory.newInstance();
                 SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
                 _charge_xml = (String) params[0];
 
                 try {
-                    String xml = httpClient.postData(13, activity, _charge_xml);
+                    String xml = httpClient.postData(13, _charge_xml);
 
                     if (xml.equals(Global.TIME_OUT) || xml.equals(Global.NOT_VALID_URL) || xml.isEmpty()) {
                         connectionFailed = true;
@@ -1456,14 +1456,14 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         protected Payment doInBackground(Payment... params) {
 
             if (NetworkUtils.isConnectedToInternet(activity)) {
-                Post httpClient = new Post();
+                Post httpClient = new Post(activity);
 
                 SAXParserFactory spf = SAXParserFactory.newInstance();
                 SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
 
                 try {
                     String reverseXml = "";
-                    String xml = httpClient.postData(13, activity, reverseXml);
+                    String xml = httpClient.postData(13, reverseXml);
 
                     if (xml.equals(Global.TIME_OUT) || xml.equals(Global.NOT_VALID_URL) || xml.isEmpty()) {
                         errorMsg = getString(R.string.dlog_msg_established_connection_failed);
@@ -1483,7 +1483,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                             reverseWasProcessed = true;
                             String _verify_payment_xml = _charge_xml.replaceAll("<action>.*?</action>", "<action>"
                                     + EMSPayGate_Default.getPaymentAction("CheckTransactionStatus") + "</action>");
-                            xml = httpClient.postData(13, activity, _verify_payment_xml);
+                            xml = httpClient.postData(13, _verify_payment_xml);
                             if (xml.equals(Global.TIME_OUT) || xml.equals(Global.NOT_VALID_URL)) {
                                 errorMsg = getString(R.string.dlog_msg_established_connection_failed);
                             } else {

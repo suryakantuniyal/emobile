@@ -373,8 +373,8 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
                 String generatedURL;
                 generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.GetMarketTelcos, false, null, null);
 
-                Post httpClient = new Post();
-                String xml = httpClient.postData(13, activity, generatedURL);
+                Post httpClient = new Post(activity);
+                String xml = httpClient.postData(13, generatedURL);
 
                 InputSource inSource = new InputSource(new StringReader(xml));
 
@@ -436,8 +436,8 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
                 String generatedURL;
                 generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ProcessBoloroCheckout, false, null, null);
 
-                Post httpClient = new Post();
-                String xml = httpClient.postData(13, activity, generatedURL);
+                Post httpClient = new Post(activity);
+                String xml = httpClient.postData(13,  generatedURL);
                 InputSource inSource = new InputSource(new StringReader(xml));
                 SAXParser sp = spf.newSAXParser();
                 XMLReader xr = sp.getXMLReader();
@@ -508,8 +508,8 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
                     realm.commitTransaction();
                     return true;
                 } else {
-                    Post httpClient = new Post();
-                    String xml = httpClient.postData(13, activity, generatedURL);
+                    Post httpClient = new Post(activity);
+                    String xml = httpClient.postData(13,  generatedURL);
 
                     InputSource inSource = new InputSource(new StringReader(xml));
 
@@ -546,7 +546,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
                     Global.showPrompt(activity, R.string.dlog_title_error, response.get("error_message"));
                 } else if (response.containsKey("epayStatusCode")) {
                     Global.showPrompt(activity, R.string.dlog_title_error, "Code:" + response.get("statusCode") + "\n" + "Msg:" + response.get("statusMessage"));
-                }else{
+                } else {
                     Global.showPrompt(activity, R.string.dlog_title_error, getString(R.string.error_processing_payment));
                 }
             } else {
@@ -612,10 +612,10 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
                 InputSource inSource;
                 SAXParser sp = spf.newSAXParser();
                 XMLReader xr = sp.getXMLReader();
-                Post httpClient = new Post();
+                Post httpClient = new Post(activity);
                 String xml;
                 do {
-                    xml = httpClient.postData(13, activity, generatedURL);
+                    xml = httpClient.postData(13,  generatedURL);
                     inSource = new InputSource(new StringReader(xml));
                     xr.setContentHandler(myParser);
                     xr.parse(inSource);

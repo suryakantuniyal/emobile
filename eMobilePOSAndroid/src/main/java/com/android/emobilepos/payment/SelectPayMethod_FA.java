@@ -741,7 +741,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         if (size > 0) {
             EMSPayGate_Default payGate;
 
-            Post post = new Post();
+            Post post = new Post(activity);
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SAXProcessCardPayHandler processCardPayHandler = new SAXProcessCardPayHandler();
             String xml;
@@ -758,10 +758,10 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                     if (paymentType.equals("GIFTCARD") || paymentType.equals("REWARD")) {
                         payGate = new EMSPayGate_Default(activity, listVoidPayments.get(i));
                         if (paymentType.equals("GIFTCARD")) {
-                            xml = post.postData(13, activity, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidGiftCardAction, false,
+                            xml = post.postData(13, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidGiftCardAction, false,
                                     listVoidPayments.get(i).getCard_type(), null));
                         } else {
-                            xml = post.postData(13, activity, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidRewardCardAction, false,
+                            xml = post.postData(13, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidRewardCardAction, false,
                                     listVoidPayments.get(i).getCard_type(), null));
                         }
                         inSource = new InputSource(new StringReader(xml));
@@ -783,7 +783,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                         payHandler.createVoidPayment(listVoidPayments.get(i), false, null);
                     } else if (!paymentType.equals("CHECK") && !paymentType.equals("WALLET")) {
                         payGate = new EMSPayGate_Default(activity, listVoidPayments.get(i));
-                        xml = post.postData(13, activity, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidCreditCardAction, false,
+                        xml = post.postData(13, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidCreditCardAction, false,
                                 listVoidPayments.get(i).getCard_type(), null));
                         inSource = new InputSource(new StringReader(xml));
 
@@ -1088,13 +1088,13 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
         @Override
         protected Void doInBackground(Void... params) {
-            Post httpClient = new Post();
+            Post httpClient = new Post(activity);
 
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
 
             try {
-                String xml = httpClient.postData(13, activity, reqChargeLoyaltyReward);
+                String xml = httpClient.postData(13, reqChargeLoyaltyReward);
                 switch (xml) {
                     case Global.TIME_OUT:
                         errorMsg = "TIME OUT, would you like to try again?";
@@ -1167,13 +1167,13 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
         @Override
         protected HashMap<String, String> doInBackground(Void... params) {
-            Post httpClient = new Post();
+            Post httpClient = new Post(activity);
 
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
             HashMap<String, String> parsedMap = new HashMap<>();
             try {
-                String xml = httpClient.postData(13, activity, reqChargeLoyaltyReward);
+                String xml = httpClient.postData(13, reqChargeLoyaltyReward);
                 Global.generateDebugFile(reqChargeLoyaltyReward);
                 switch (xml) {
                     case Global.TIME_OUT:

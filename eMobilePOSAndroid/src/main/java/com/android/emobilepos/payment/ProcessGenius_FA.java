@@ -236,9 +236,9 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            Post post = new Post();
+                            Post post = new Post(activity);
                             MyPreferences myPref = new MyPreferences(activity);
-                            String json = post.postData(11, activity, "http://" + myPref.getGeniusIP() + ":8080/v1/pos?Action=InitiateKeyedSale&Format=XML");
+                            String json = post.postData(11, "http://" + myPref.getGeniusIP() + ":8080/v1/pos?Action=InitiateKeyedSale&Format=XML");
                         }
                     }).start();
                 }
@@ -251,12 +251,12 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
             GeniusResponse geniusResponse = null;
 //            if (pingGeniusDevice()) {
             geniusConnected = true;
-            Post post = new Post();
+            Post post = new Post(activity);
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SAXProcessGeniusHandler handler = new SAXProcessGeniusHandler(activity);
 
             try {
-                String xml = post.postData(13, activity, params[0]);
+                String xml = post.postData(13,  params[0]);
                 InputSource inSource = new InputSource(new StringReader(xml));
 
                 SAXParser sp = spf.newSAXParser();
@@ -268,7 +268,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                 if (geniusTransportToken != null && geniusTransportToken.getStatusCode().equalsIgnoreCase("APPROVED")) {// && getData("statusCode", 0, 0).equals("APPROVED")) {
                     boProcessed = true;
                     MyPreferences myPref = new MyPreferences(activity);
-                    String json = post.postData(11, activity, "http://" + myPref.getGeniusIP() + ":8080/v2/pos?TransportKey=" + geniusTransportToken.getTransportkey() + "&Format=JSON");
+                    String json = post.postData(11,  "http://" + myPref.getGeniusIP() + ":8080/v2/pos?TransportKey=" + geniusTransportToken.getTransportkey() + "&Format=JSON");
                     geniusResponse = gson.fromJson(json, GeniusResponse.class);
                 } else {
                     geniusResponse = new GeniusResponse();

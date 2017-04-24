@@ -84,7 +84,7 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
         preferences = new MyPreferences(this);
         global = (Global) this.getApplication();
 //        if (preferences.isUseClerks()) {
-        new GetShiftTask().execute();
+        new GetShiftTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 //        }
     }
 
@@ -273,14 +273,14 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
         shift.setEndTimeLocal(now);
         shift.setShiftStatus(Shift.ShiftStatus.CLOSED);
         ShiftDAO.insertOrUpdate(shift);
-        new SendShiftTask().execute();
+        new SendShiftTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     private void startCountDownShift() {
         shift.setShiftStatus(Shift.ShiftStatus.PENDING);
         ShiftDAO.insertOrUpdate(shift);
         setShiftUI();
-        new SendShiftTask().execute();
+        new SendShiftTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     private void openShift() {
@@ -323,10 +323,10 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
     @Override
     public void onResume() {
         if (global.isApplicationSentToBackground(this))
-            global.loggedIn = false;
+            Global.loggedIn = false;
         global.stopActivityTransitionTimer();
 
-        if (!global.loggedIn) {
+        if (!Global.loggedIn) {
             if (global.getGlobalDlog() != null)
                 global.getGlobalDlog().dismiss();
             global.promptForMandatoryLogin(this);
@@ -340,7 +340,7 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         boolean isScreenOn = powerManager.isScreenOn();
         if (!isScreenOn)
-            global.loggedIn = false;
+            Global.loggedIn = false;
         global.startActivityTransitionTimer();
     }
 
@@ -419,8 +419,6 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
 
     private void openUI() {
         setContentView(R.layout.activity_shifts);
-//        Clerk clerk = ClerkDAO.getByEmpId(Integer.parseInt(preferences.getClerkID()), true);
-//        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
         shift = ShiftDAO.getShiftByClerkId(Integer.parseInt(preferences.getClerkID()));
         Clerk clerk;
         if (shift == null) {

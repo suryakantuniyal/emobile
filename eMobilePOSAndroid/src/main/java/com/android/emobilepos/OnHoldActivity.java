@@ -100,7 +100,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         int id = item.getItemId();
         switch (id) {
             case R.id.refreshHolds: {
-                new RefreshHolds().execute();
+                new RefreshHolds().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 break;
             }
         }

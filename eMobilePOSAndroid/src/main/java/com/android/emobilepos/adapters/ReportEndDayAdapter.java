@@ -334,7 +334,7 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
                 mHolder.tvRightColumn.setText(Global.formatDoubleStrToCurrency(listSummary.get(position).ord_total));
                 break;
             case TYPE_SHIFTS:
-                Clerk associate = ClerkDAO.getByEmpId(listShifts.get(position - i_summary).getAssigneeId(), true);
+                Clerk associate = ClerkDAO.getByEmpId(listShifts.get(position - i_summary).getAssigneeId(), false);
                 mHolder.tvClerk.setText(associate.getEmpName());
                 mHolder.tvFrom.setText(DateUtils.getDateAsString(listShifts.get(position - i_summary).getStartTime(), DateUtils.DATE_yyyy_MM_dd));
                 mHolder.tvTo.setText(DateUtils.getDateAsString(listShifts.get(position - i_summary).getEndTime(), DateUtils.DATE_yyyy_MM_dd));

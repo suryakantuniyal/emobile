@@ -18,7 +18,6 @@ import com.android.emobilepos.models.realms.ProductAttribute;
 import com.android.support.DateUtils;
 import com.android.support.GenerateNewID;
 import com.android.support.Global;
-import com.android.support.MyPreferences;
 import com.google.gson.Gson;
 
 import net.sqlcipher.database.SQLiteStatement;
@@ -94,7 +93,6 @@ public class OrdersHandler {
 
     private StringBuilder sb1, sb2;
     private HashMap<String, Integer> attrHash;
-    private MyPreferences myPref;
 
     public static final String table_name = "Orders";
     private Context activity;
@@ -104,7 +102,6 @@ public class OrdersHandler {
     }
 
     public OrdersHandler(Context activity) {
-        myPref = new MyPreferences(activity);
         attrHash = new HashMap<>();
         this.activity = activity;
         sb1 = new StringBuilder();
@@ -132,10 +129,8 @@ public class OrdersHandler {
     }
 
     public void insert(List<Order> orders) {
-
         DBManager.getDatabase().beginTransaction();
         try {
-//            GenerateNewID generateNewID = new GenerateNewID(activity);
             for (Order order : orders) {
                 SQLiteStatement insert;
                 String sb = "INSERT OR REPLACE INTO " + table_name + " (" + sb1.toString() + ") " +
@@ -793,6 +788,26 @@ public class OrdersHandler {
     public void insert(Order order) {
         insert(Arrays.asList(order));
     }
+
+//    public void insert(Order order) {
+//        OrderProductsHandler productsHandler = new OrderProductsHandler(activity);
+//        GenerateNewID newID = new GenerateNewID(activity);
+//        order.processed = "1";
+//        AssignEmployee assignEmployee;
+//        for (int i = 0; i < 500; i++) {
+//            assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+//            insert(Arrays.asList(order));
+//            productsHandler.insert(order.getOrderProducts());
+//            order.ord_id = newID.getNextID(GenerateNewID.IdType.ORDER_ID);
+//            List<OrderProduct> products = order.getOrderProducts();
+//            for (OrderProduct product : products) {
+//                UUID uuid = UUID.randomUUID();
+//                String randomUUIDString = uuid.toString();
+//                product.setOrdprod_id(randomUUIDString);
+//                product.setOrd_id(order.ord_id);
+//            }
+//        }
+//    }
 
     public int deleteOnHoldsOrders(List<Order> ordersToDelete) {
         int delete = 0;

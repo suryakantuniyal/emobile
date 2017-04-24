@@ -328,9 +328,7 @@ public class ProcessTupyx_FA extends FragmentActivity implements OnClickListener
 
         @Override
         protected String doInBackground(String... params) {
-            // TODO Auto-generated method stub
-
-            Post httpClient = new Post();
+            Post httpClient = new Post(activity);
 
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
@@ -338,7 +336,7 @@ public class ProcessTupyx_FA extends FragmentActivity implements OnClickListener
 
 
             try {
-                String xml = httpClient.postData(Global.S_SUBMIT_TUPYX, activity, urlToPost);
+                String xml = httpClient.postData(Global.S_SUBMIT_TUPYX,  urlToPost);
 
                 if (xml.equals(Global.TIME_OUT)) {
                     errorMsg = "TIME OUT, would you like to try again?";
