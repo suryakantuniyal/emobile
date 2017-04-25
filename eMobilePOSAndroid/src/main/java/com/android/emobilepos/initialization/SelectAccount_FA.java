@@ -42,6 +42,8 @@ import java.util.Locale;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import io.realm.Realm;
+
 public class SelectAccount_FA extends BaseFragmentActivityActionBar {
     private Context thisContext;
     private ProgressDialog myProgressDialog;
@@ -93,7 +95,7 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
             dbManager = new DBManager(activity, Global.FROM_LOGIN_ACTIVITTY);
             if (dbManager.isNewDBVersion()) {
                 dbManager.alterTables();
-                AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(true);
+                AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
                 if (assignEmployee == null && !myPref.getEmpIdFromPreferences().isEmpty()) {
                     assignEmployee = new AssignEmployee();
                     assignEmployee.setEmpId(Integer.parseInt(myPref.getEmpIdFromPreferences()));
@@ -183,7 +185,7 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
             dialog.dismiss();
             if (!result) {
                 Global.showPrompt(SelectAccount_FA.this, R.string.sync_title, getString(R.string.sync_fail));
-            }else{
+            } else {
                 Intent intent = new Intent(SelectAccount_FA.this, MainMenu_FA.class);
                 activity.setResult(-1);
                 startActivity(intent);
@@ -205,12 +207,12 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
 
         @Override
         protected Boolean doInBackground(String... params) {
-            Post post = new Post();
+            Post post = new Post(activity);
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SaxLoginHandler handler = new SaxLoginHandler();
             boolean proceed = false;
             try {
-                String xml = post.postData(0, activity, "");
+                String xml = post.postData(0, "");
                 InputSource inSource = new InputSource(new StringReader(xml));
                 SAXParser sp = spf.newSAXParser();
                 XMLReader xr = sp.getXMLReader();

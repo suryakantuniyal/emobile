@@ -30,7 +30,7 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
     private boolean showNavigationbar = false;
     private static String[] navigationbarByModels;
     public Menu menu;
-    Clerk clerk;
+    static Clerk clerk;
 
     protected void setActionBar() {
         showNavigationbar = myPref.getPreferences(MyPreferences.pref_use_navigationbar) || isNavigationBarModel() || (this instanceof MainMenu_FA && myPref.isUseClerks());
@@ -56,25 +56,9 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
         return false;
     }
 
-    private void setCrashliticAditionalInfo() {
-        // You can call any combination of these three methods
-        if (myPref != null) {
-            Crashlytics.setUserIdentifier(myPref.getAcctNumber());
-        }
-//        Crashlytics.setUserEmail("user@fabric.io");
-//        Crashlytics.setUserName("Test User");
-    }
-
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        if (BuildConfig.REPORT_CRASHLITYCS) {
-        // Set up Crashlytics, disabled for debug builds
-        Crashlytics crashlyticsKit = new Crashlytics.Builder()
-                .core(new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build())
-                .build();
-        Fabric.with(this, crashlyticsKit);
-//        }
         if (navigationbarByModels == null || navigationbarByModels.length == 0) {
             navigationbarByModels = getResources().getStringArray(R.array.navigationbarByModels);
         }
@@ -82,9 +66,7 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
             myPref = new MyPreferences(this);
         }
         clerk = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()), false);
-//        if (BuildConfig.REPORT_CRASHLITYCS) {
-        setCrashliticAditionalInfo();
-//        }
+
         setActionBar();
     }
 

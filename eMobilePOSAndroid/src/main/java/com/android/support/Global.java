@@ -2,6 +2,7 @@ package com.android.support;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
@@ -37,8 +38,8 @@ import com.android.crashreport.ExceptionHandler;
 import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.ClerkDAO;
 import com.android.dao.RealmModule;
-import com.android.dao.StoredPaymentsDAO;
 import com.android.database.VolumePricesHandler;
+import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.R;
 import com.android.emobilepos.holders.Locations_Holder;
 import com.android.emobilepos.holders.TransferInventory_Holder;
@@ -54,6 +55,7 @@ import com.android.emobilepos.models.realms.ProductAttribute;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
 import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.core.CrashlyticsCore;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.zxing.BarcodeFormat;
@@ -87,6 +89,7 @@ import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import io.fabric.sdk.android.Fabric;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmList;
@@ -320,34 +323,38 @@ public class Global extends MultiDexApplication {
     private String selectedDeliveryDate;
     private String selectedComments;
     private String selectedPO;
+
     public enum HandlerMessages {
         UPDATE_PAYMENT_SIGNATURE(0);
 
         private int code;
+
         HandlerMessages(int code) {
             this.code = code;
         }
-        public int getCode(){
+
+        public int getCode() {
             return this.code;
         }
     }
 
     private Dialog globalDlog;
-    public static Handler handler = new Handler(Looper.getMainLooper()){
+    public static Handler handler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
-            switch (msg.what){
-                case 0:{
+            switch (msg.what) {
+                case 0: {
                     Realm realm = Realm.getDefaultInstance();
                     realm.beginTransaction();
                     Payment payment = (Payment) msg.obj;
                     realm.insertOrUpdate(payment);
                     realm.commitTransaction();
-                break;
+                    break;
                 }
             }
         }
     };
+
     public static String getPeripheralName(int type) {
         String _name = "Unknown";
         switch (type) {
@@ -1039,12 +1046,12 @@ public class Global extends MultiDexApplication {
         }
     }
 
-    public static String getRoundBigDecimal(BigDecimal val) {
-        return val.setScale(4, RoundingMode.HALF_UP).toString();
+    public static BigDecimal getRoundBigDecimal(BigDecimal val) {
+        return val.setScale(4, RoundingMode.HALF_UP);
     }
 
-    public static String getRoundBigDecimal(BigDecimal val, int scale) {
-        return val.setScale(scale, RoundingMode.HALF_UP).toString();
+    public static BigDecimal getRoundBigDecimal(BigDecimal val, int scale) {
+        return val.setScale(scale, RoundingMode.HALF_UP);
     }
 
     public static String getCurrencyFrmt(String value) {
@@ -1300,6 +1307,11 @@ public class Global extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
         Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
+        Crashlytics crashlyticsKit = new Crashlytics.Builder()
+                .core(new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build())
+                .build();
+        Fabric.with(this, crashlyticsKit);
+        setCrashliticAditionalInfo();
         Realm.init(this);
         isIvuLoto = getPackageName().contains(getString(R.string.ivupos_packageid));
         RealmConfiguration config = new RealmConfiguration.Builder()
@@ -1307,7 +1319,8 @@ public class Global extends MultiDexApplication {
                 .modules(Realm.getDefaultModule(), new RealmModule())
                 .build();
         Realm.setDefaultConfiguration(config);
-        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(true);
+        Realm.compactRealm(config);
+        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
         if (assignEmployee == null) {
             assignEmployee = new AssignEmployee();
             MyPreferences preferences = new MyPreferences(this);
@@ -1322,6 +1335,13 @@ public class Global extends MultiDexApplication {
                 }
             }
         }
+    }
+
+    private void setCrashliticAditionalInfo() {
+        MyPreferences preferences = new MyPreferences(this);
+        Crashlytics.setUserIdentifier(preferences.getAcctNumber());
+        //        Crashlytics.setUserEmail("user@fabric.io");
+//        Crashlytics.setUserName("Test User");
     }
 
     public void resetOrderDetailsValues() {
@@ -1501,6 +1521,8 @@ public class Global extends MultiDexApplication {
                             validPassword[0] = false;
                             promptForMandatoryLogin(activity);
                         } else {
+                            myPref.setClerkID(String.valueOf(clerk.getEmpId()));
+                            myPref.setClerkName(clerk.getEmpName());
                             if (activity instanceof MainMenu_FA) {
                                 ((MainMenu_FA) activity).setLogoutButtonClerkname();
                             }

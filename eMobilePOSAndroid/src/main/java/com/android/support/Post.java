@@ -1,6 +1,5 @@
 package com.android.support;
 
-import android.app.Activity;
 import android.content.Context;
 
 import com.android.emobilepos.R;
@@ -35,23 +34,32 @@ import javax.net.ssl.TrustManagerFactory;
 
 public class Post {
 
-    private String entity = new String();
-    private Context activity;
+    private String entity = "";
+    private Context context;
     private boolean isShortResponse = false;
     private boolean isPost = false;
-    static InputStream keyStoreInputStream;
-    static KeyStore trustStore;
-    static TrustManagerFactory tmf;
-    static SSLContext sslContext;
-    static HttpsURLConnection urlConnection;
-    double apiVersion = Double.valueOf(android.os.Build.VERSION.SDK_INT);
+    private static InputStream keyStoreInputStream;
+    private static KeyStore trustStore;
+    private static TrustManagerFactory tmf;
+    private static SSLContext sslContext;
+    private static HttpsURLConnection urlConnection;
+    private double apiVersion = (double) android.os.Build.VERSION.SDK_INT;
+    private GenerateXML xml;
+    private StringBuilder url = new StringBuilder();
+    private String baseURL;
+
+    public Post(Context context) {
+        xml = new GenerateXML(context);
+        this.context = context;
+        baseURL = context.getString(R.string.sync_enablermobile_deviceasxmltrans);
+    }
 
     public void initSSL() {
         System.setProperty("http.keepAlive", "false");
         if (apiVersion >= 14) // ICS+
-            keyStoreInputStream = activity.getResources().openRawResource(R.raw.azure);
+            keyStoreInputStream = context.getResources().openRawResource(R.raw.azure);
         else // GingerBread
-            keyStoreInputStream = activity.getResources().openRawResource(R.raw.azure_godaddyroot);
+            keyStoreInputStream = context.getResources().openRawResource(R.raw.azure_godaddyroot);
 
         try {
             trustStore = KeyStore.getInstance("BKS");
@@ -74,55 +82,48 @@ public class Post {
 
     }
 
-    public String postData(int type, Context activity, String varyingVariable) {
-        GenerateXML xml = new GenerateXML(activity);
-        this.activity = activity;
-        StringBuilder baseURL = new StringBuilder();
-        baseURL.append(activity.getString(R.string.sync_enablermobile_deviceasxmltrans));
-
-        StringBuilder url = new StringBuilder();
-
+    public String postData(int type, String varyingVariable) {
+        url.setLength(0);
         String postLink = "";
         String response = "";
-
         switch (type) {
             case 0: {
-                url = baseURL.append(xml.getAuth());
+                url.append(baseURL).append(xml.getAuth());
                 isShortResponse = true;
                 break;
             }
             case 1: {
-                url = baseURL.append(xml.getDeviceID());
+                url.append(baseURL + (xml.getDeviceID()));
                 isShortResponse = true;
                 break;
             }
             case 2: {
-                url = baseURL.append(xml.getFirstAvailLic());
+                url.append(baseURL + (xml.getFirstAvailLic()));
                 isShortResponse = true;
                 break;
             }
             case 3: {
-                url = baseURL.append(xml.getEmployees());
+                url.append(baseURL + (xml.getEmployees()));
                 isShortResponse = true;
                 break;
             }
             case Global.S_GET_ASSIGN_EMPLOYEES: {
-                url = baseURL.append(xml.assignEmployees());
+                url.append(baseURL + (xml.assignEmployees()));
                 isShortResponse = true;
                 break;
             }
             case 5: {
-                url = baseURL.append(xml.disableEmployee());
+                url.append(baseURL + (xml.disableEmployee()));
                 isShortResponse = true;
                 break;
             }
             case 6: {
-                url = baseURL.append(xml.downloadPayments());
+                url.append(baseURL + (xml.downloadPayments()));
                 isShortResponse = true;
                 break;
             }
             case 7: {
-                url = baseURL.append(xml.downloadAll(varyingVariable)); // varyingVariable
+                url.append(baseURL + (xml.downloadAll(varyingVariable))); // varyingVariable
                 // will
                 // contain
                 // the table
@@ -133,45 +134,45 @@ public class Post {
             }
             case Global.S_GET_XML_DINNER_TABLES: {
 
-                url = baseURL.append(xml.getDinnerTables());
+                url.append(baseURL + (xml.getDinnerTables()));
                 isShortResponse = true;
                 isPost = false;
                 break;
             }
             case Global.S_GET_XML_SALES_ASSOCIATE: {
-                url = baseURL.append(xml.getSalesAssociate());
+                url.append(baseURL + (xml.getSalesAssociate()));
                 isShortResponse = true;
                 isPost = false;
                 break;
             }
             case Global.S_GET_XML_ORDERS: {
-                postLink = activity.getString(R.string.sync_enablermobile_getxmlorders);
+                postLink = context.getString(R.string.sync_enablermobile_getxmlorders);
                 entity = xml.synchOrders(false);
                 isPost = true;
 
                 break;
             }
             case Global.S_SUBMIT_ON_HOLD: {
-                postLink = activity.getString(R.string.sync_enabler_submitordersonhold);
+                postLink = context.getString(R.string.sync_enabler_submitordersonhold);
                 entity = xml.synchOrders(true);
                 isPost = true;
 
                 break;
             }
             case Global.S_SUBMIT_PAYMENTS: {
-                postLink = activity.getString(R.string.sync_enabler_submitpayments);
+                postLink = context.getString(R.string.sync_enabler_submitpayments);
                 entity = xml.synchPayments();
                 isPost = true;
                 break;
             }
             case Global.S_SUBMIT_TIME_CLOCK: {
-                postLink = activity.getString(R.string.sync_enabler_submittimeclock);
+                postLink = context.getString(R.string.sync_enabler_submittimeclock);
                 entity = xml.synchTimeClock();
                 isPost = true;
                 break;
             }
             case Global.S_SUBMIT_VOID_TRANSACTION: {
-                postLink = activity.getString(R.string.sync_enabler_submitvoidtrans);
+                postLink = context.getString(R.string.sync_enabler_submitvoidtrans);
                 entity = xml.syncVoidTransactions();
                 isPost = true;
 
@@ -183,84 +184,84 @@ public class Post {
                 break;
             }
             case Global.S_SUBMIT_CUSTOMER:
-                postLink = activity.getString(R.string.sync_enabler_submitcustomer);
+                postLink = context.getString(R.string.sync_enabler_submitcustomer);
                 entity = xml.synchNewCustomer();
                 isPost = true;
                 break;
             case 13:
-                postLink = activity.getString(R.string.genius_token_url);//"https://epay.enablermobile.com/index.ashx";
+                postLink = context.getString(R.string.genius_token_url);//"https://epay.enablermobile.com/index.ashx";
                 entity = varyingVariable;
                 isPost = true;
                 break;
             case Global.S_SUBMIT_TUPYX:
-                postLink = activity.getString(R.string.epay_enablermobile_tupix);
+                postLink = context.getString(R.string.epay_enablermobile_tupix);
                 entity = varyingVariable;
                 isPost = true;
                 break;
             case Global.S_SUBMIT_TEMPLATES:
-                postLink = activity.getString(R.string.sync_enabler_submittempletes);
+                postLink = context.getString(R.string.sync_enabler_submittempletes);
                 entity = xml.synchTemplates();
                 isPost = true;
                 break;
             case Global.S_SUBMIT_CONSIGNMENT_TRANSACTION:
-                postLink = activity.getString(R.string.sync_enablersubmitconsignmenttransaction);
+                postLink = context.getString(R.string.sync_enablersubmitconsignmenttransaction);
                 entity = xml.synchConsignmentTransaction();
                 isPost = true;
                 break;
             case Global.S_SUBMIT_CUSTOMER_INVENTORY:
-                postLink = activity.getString(R.string.sync_enabler_submitcustomerinventory);
+                postLink = context.getString(R.string.sync_enabler_submitcustomerinventory);
                 entity = xml.synchCustomerInventory();
                 isPost = true;
                 break;
             case Global.S_SUBMIT_SHIFT:
-                postLink = activity.getString(R.string.sync_enabler_submitshiftperiods);
+                postLink = context.getString(R.string.sync_enabler_submitshiftperiods);
                 entity = xml.synchShift();
                 isPost = true;
                 break;
             case Global.S_SUBMIT_LOCATIONS_INVENTORY:
-                postLink = activity.getString(R.string.sync_enabler_submitlocationinventory);
+                postLink = context.getString(R.string.sync_enabler_submitlocationinventory);
                 entity = xml.synchInventoryTransfer();
                 isPost = true;
                 break;
             case Global.S_SUBMIT_WALLET_RECEIPTS:
-                postLink = activity.getString(R.string.sync_enabler_submitwalletreceipt);
+                postLink = context.getString(R.string.sync_enabler_submitwalletreceipt);
                 entity = xml.synchWalletReceipts();
                 isPost = true;
                 break;
             case Global.S_ORDERS_ON_HOLD_DETAILS:
-                url = baseURL.append(xml.getOnHold(type, varyingVariable));
+                url.append(baseURL + (xml.getOnHold(type, varyingVariable)));
                 isShortResponse = false;
                 isPost = false;
                 break;
             case Global.S_GET_TIME_CLOCK:
-                url = baseURL.append(xml.getTimeClock());
+                url.append(baseURL + (xml.getTimeClock()));
                 isShortResponse = true;
                 isPost = false;
                 break;
             case Global.S_CHECK_STATUS_ON_HOLD:
             case Global.S_UPDATE_STATUS_ON_HOLD:
             case Global.S_CHECKOUT_ON_HOLD:
-                url = baseURL.append(xml.getOnHold(type, varyingVariable));
+                url.append(baseURL + (xml.getOnHold(type, varyingVariable)));
                 isShortResponse = true;
                 isPost = false;
                 break;
             case Global.S_GET_SERVER_TIME:
-                url = baseURL.append(xml.getServerTime());
+                url.append(baseURL + (xml.getServerTime()));
                 isShortResponse = true;
                 isPost = false;
                 break;
             case Global.S_SUBMIT_TIP_ADJUSTMENT:
-                postLink = activity.getString(R.string.genius_token_url);//"https://epay.enablermobile.com/index.ashx";
+                postLink = context.getString(R.string.genius_token_url);//"https://epay.enablermobile.com/index.ashx";
                 entity = varyingVariable;
                 isPost = true;
                 break;
             case Global.S_UPDATE_SYNC_TIME:
-                url = baseURL.append(xml.updateSyncTime(varyingVariable));
+                url.append(baseURL + (xml.updateSyncTime(varyingVariable)));
                 isPost = false;
                 isShortResponse = true;
                 break;
             case Global.S_SUBMIT_WORKINGKEY_REQUEST:
-                postLink = activity.getString(R.string.genius_token_url);//"https://epay.enablermobile.com/index.ashx";
+                postLink = context.getString(R.string.genius_token_url);//"https://epay.enablermobile.com/index.ashx";
                 entity = varyingVariable;
                 isPost = true;
                 break;
@@ -325,7 +326,7 @@ public class Post {
                 return sb.toString();
             } else {
                 File tempFile = new File(
-                        activity.getApplicationContext().getFilesDir().getAbsolutePath() + "/temp.xml");
+                        context.getApplicationContext().getFilesDir().getAbsolutePath() + "/temp.xml");
 //				File tempFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/temp.png");
                 if (!tempFile.exists())
                     tempFile.createNewFile();

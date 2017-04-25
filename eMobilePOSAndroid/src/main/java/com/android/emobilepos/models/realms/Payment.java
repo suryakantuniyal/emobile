@@ -156,7 +156,7 @@ public class Payment extends RealmObject {
     }
 
     public Payment() {
-        assignEmployee = AssignEmployeeDAO.getAssignEmployee(true);
+        assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
     }
 
     public Payment(Context activity) {
@@ -168,7 +168,7 @@ public class Payment extends RealmObject {
         String date = DateUtils.getDateAsString(new Date(), DateUtils.DATE_PATTERN);
         setPay_timecreated(date);
         setPay_date(date);
-        assignEmployee = AssignEmployeeDAO.getAssignEmployee(true);
+        assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
 
         setEmp_id(String.valueOf(assignEmployee.getEmpId()));
         Location currLocation = Global.getCurrLocation(activity, false);
@@ -184,7 +184,7 @@ public class Payment extends RealmObject {
                    String isRefund, String paymentType, String creditCardType, String cardNumberEnc, String cardNumberLast4,
                    String cardExpMonth, String cardExpYear, String cardPostalCode, String cardSecurityCode, String trackOne,
                    String trackTwo, String transactionId, String authcode) {
-        assignEmployee = AssignEmployeeDAO.getAssignEmployee(true);
+        assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
         setPay_issync("0");
         setIsVoid("0");
         setStatus("1");

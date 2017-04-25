@@ -79,12 +79,12 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
 
         @Override
         protected String doInBackground(String... params) {
-            Post post = new Post();
+            Post post = new Post(activity);
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SaxLoginHandler handler = new SaxLoginHandler();
 
             try {
-                String xml = post.postData(1, activity, "");
+                String xml = post.postData(1, "");
                 InputSource inSource = new InputSource(new StringReader(xml));
                 SAXParser sp = spf.newSAXParser();
                 XMLReader xr = sp.getXMLReader();
@@ -92,7 +92,7 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
                 xr.parse(inSource);
                 boolean deviceID = Boolean.parseBoolean(handler.getData().toLowerCase(Locale.getDefault()));
                 if (!deviceID) {
-                    xml = post.postData(3, activity, "");
+                    xml = post.postData(3, "");
                     SaxAllEmployeesHandler hdl = new SaxAllEmployeesHandler();
                     inSource = new InputSource(new StringReader(xml));
                     xr.setContentHandler(hdl);
@@ -198,9 +198,9 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
     String _license = "";
 
     public boolean AssignEmployees() {
-        Post post = new Post();
+        Post post = new Post(activity);
         try {
-            String xml = post.postData(Global.S_GET_ASSIGN_EMPLOYEES, activity, "");
+            String xml = post.postData(Global.S_GET_ASSIGN_EMPLOYEES, "");
             Gson gson = JsonUtils.getInstance();
             Type listType = new com.google.gson.reflect.TypeToken<List<AssignEmployee>>() {
             }.getType();
@@ -216,11 +216,11 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
     }
 
     private boolean getFirstAvailLicense() {
-        Post post = new Post();
+        Post post = new Post(activity);
         SAXParserFactory spf = SAXParserFactory.newInstance();
         SaxLoginHandler handler = new SaxLoginHandler();
         try {
-            String xml = post.postData(2, activity, "");
+            String xml = post.postData(2,  "");
             InputSource inSource = new InputSource(new StringReader(xml));
             SAXParser sp = spf.newSAXParser();
             XMLReader xr = sp.getXMLReader();
@@ -246,11 +246,11 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
     }
 
     public boolean DisableEmployee() {
-        Post post = new Post();
+        Post post = new Post(activity);
         SAXParserFactory spf = SAXParserFactory.newInstance();
         SaxLoginHandler handler = new SaxLoginHandler();
         try {
-            String xml = post.postData(5, activity, "");
+            String xml = post.postData(5,  "");
             InputSource inSource = new InputSource(new StringReader(xml));
             SAXParser sp = spf.newSAXParser();
             XMLReader xr = sp.getXMLReader();
@@ -266,11 +266,11 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
     }
 
     public boolean DownloadPayID() {
-        Post post = new Post();
+        Post post = new Post(activity);
         SAXParserFactory spf = SAXParserFactory.newInstance();
         SaxLoginHandler handler = new SaxLoginHandler();
         try {
-            String xml = post.postData(6, activity, "");
+            String xml = post.postData(6, "");
             InputSource inSource = new InputSource(new StringReader(xml));
             SAXParser sp = spf.newSAXParser();
             XMLReader xr = sp.getXMLReader();

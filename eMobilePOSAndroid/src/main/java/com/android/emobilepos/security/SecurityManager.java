@@ -3,7 +3,10 @@ package com.android.emobilepos.security;
 import android.content.Context;
 
 import com.android.dao.EmployeePermissionDAO;
+import com.android.dao.ShiftDAO;
 import com.android.emobilepos.models.realms.EmployeePersmission;
+import com.android.emobilepos.models.realms.Shift;
+import com.android.support.Global;
 import com.android.support.MyPreferences;
 
 import java.util.List;
@@ -14,6 +17,7 @@ import java.util.List;
 
 public class SecurityManager {
 
+
     public static boolean hasPermissions(Context context, SecurityAction action) {
         MyPreferences preferences = new MyPreferences(context);
         if (preferences.isUseClerks()) {
@@ -21,6 +25,38 @@ public class SecurityManager {
             return persmissions != null && !persmissions.isEmpty();
         } else
             return true;
+    }
+
+    public static SecurityResponse validateClerkShift(Context context, Global.TransactionType transactionType) {
+        MyPreferences preferences = new MyPreferences(context);
+//        if (preferences.isShiftOpenRequired() && !ShiftDAO.isShiftOpen()) {
+//            return SecurityResponse.CHECK_USER_CLERK_REQUIRED_SETTING;
+//        }
+//        if (preferences.isShiftOpenRequired() && preferences.isUseClerks()) {
+        boolean shiftOpen = ShiftDAO.isShiftOpen();
+        if (!shiftOpen && transactionType != Global.TransactionType.SHIFTS && preferences.isShiftOpenRequired())
+            return SecurityResponse.OPEN_SHIFT_REQUIRED;
+        else {
+            Shift openShift = ShiftDAO.getOpenShift();
+            if (openShift != null && openShift.getClerkId() != Integer.parseInt(preferences.getClerkID())) {
+                Shift shift = ShiftDAO.getShiftByClerkId(Integer.parseInt(preferences.getClerkID()));
+                if (shift != null && shift.getShiftStatus() == Shift.ShiftStatus.PENDING) {
+                    return SecurityResponse.CLERK_PENDING_SHIFT_AVAILABLE;
+                } else {
+                    if (transactionType == Global.TransactionType.SHIFTS) {
+                        return SecurityResponse.SHIFT_ALREADY_OPEN;
+                    }
+                }
+            }
+        }
+
+//        }
+        return SecurityResponse.OK;
+    }
+
+    public enum SecurityResponse {
+        OPEN_SHIFT_REQUIRED, CHECK_OPEN_SHIFT_REQUIRED_SETTING, CHECK_USER_CLERK_REQUIRED_SETTING, OK, SHIFT_ALREADY_OPEN,
+        CLERK_PENDING_SHIFT_AVAILABLE
     }
 
     public enum SecurityAction {

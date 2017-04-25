@@ -46,6 +46,17 @@ public class ClerkDAO {
         }
     }
 
+    public static void insertOrUpdate(Clerk clerk) {
+        Realm realm = Realm.getDefaultInstance();
+        try {
+            realm.beginTransaction();
+            realm.insertOrUpdate(clerk);
+        } finally {
+            realm.commitTransaction();
+            realm.close();
+        }
+    }
+
     public static RealmResults<Clerk> getAll() {
         RealmResults<Clerk> all;
         Realm realm = Realm.getDefaultInstance();
@@ -101,10 +112,10 @@ public class ClerkDAO {
     public static void addAssignedTable(Clerk selectedClerk, DinningTable table) {
         Realm realm = Realm.getDefaultInstance();
         try {
-            realm.beginTransaction();
-            getByEmpId(selectedClerk.getEmpId(), true).getAssignedDinningTables().add(table);
+            Clerk clerk = getByEmpId(selectedClerk.getEmpId(), false);
+            clerk.getAssignedDinningTables().add(table);
+            insertOrUpdate(clerk);
         } finally {
-            realm.commitTransaction();
             realm.close();
         }
     }
@@ -112,10 +123,10 @@ public class ClerkDAO {
     public static void clearAllAssignedTable(Clerk associate) {
         Realm realm = Realm.getDefaultInstance();
         try {
-            realm.beginTransaction();
-            getByEmpId(associate.getEmpId(), true).getAssignedDinningTables().clear();
+            Clerk clerk = getByEmpId(associate.getEmpId(), false);
+            clerk.getAssignedDinningTables().clear();
+            insertOrUpdate(clerk);
         } finally {
-            realm.commitTransaction();
             realm.close();
         }
     }
@@ -163,6 +174,7 @@ public class ClerkDAO {
 
             if (associate != null) {
                 preferences.setClerkID(String.valueOf(associate.getEmpId()));
+                preferences.setClerkName(associate.getEmpName());
                 clerk = r.copyFromRealm(associate);
             }
         } finally {

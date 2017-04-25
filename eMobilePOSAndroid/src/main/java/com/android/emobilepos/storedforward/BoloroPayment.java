@@ -43,8 +43,8 @@ public class BoloroPayment {
         isPolling = true;
         SAXParserFactory spf = SAXParserFactory.newInstance();
         SAXProcessCardPayHandler myParser = new SAXProcessCardPayHandler();
-        Post httpClient = new Post();
-        String xmlResponse = httpClient.postData(13, activity, xml);
+        Post httpClient = new Post(activity);
+        String xmlResponse = httpClient.postData(13,  xml);
 
         InputSource inSource = new InputSource(new StringReader(xmlResponse));
 
@@ -81,12 +81,12 @@ public class BoloroPayment {
             InputSource inSource;
             SAXParser sp = spf.newSAXParser();
             XMLReader xr = sp.getXMLReader();
-            Post httpClient = new Post();
+            Post httpClient = new Post(activity);
             String xml;
             boolean transCompleted = false;
             boolean failed = false;
             do {
-                xml = httpClient.postData(13, activity, generatedURL);
+                xml = httpClient.postData(13, generatedURL);
                 inSource = new InputSource(new StringReader(xml));
                 xr.setContentHandler(myParser);
                 xr.parse(inSource);

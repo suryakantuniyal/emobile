@@ -1,6 +1,5 @@
 package com.android.emobilepos.shifts;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -14,10 +13,12 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.ClerkDAO;
 import com.android.dao.ShiftDAO;
 import com.android.database.DBManager;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.Shift;
 import com.android.support.DateUtils;
@@ -82,7 +83,9 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
         super.onCreate(savedInstanceState);
         preferences = new MyPreferences(this);
         global = (Global) this.getApplication();
-        new GetShiftTask().execute();
+//        if (preferences.isUseClerks()) {
+        new GetShiftTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+//        }
     }
 
     private void setShiftUI() {
@@ -264,27 +267,30 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
 
     private void closeShift() {
         Date now = new Date();
+
         shift.setEnteredCloseAmount(NumberUtils.cleanCurrencyFormatedNumber(totalAmountEditText.getText().toString()));
         shift.setEndTime(now);
         shift.setEndTimeLocal(now);
         shift.setShiftStatus(Shift.ShiftStatus.CLOSED);
         ShiftDAO.insertOrUpdate(shift);
-        new SendShiftTask().execute();
+        new SendShiftTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     private void startCountDownShift() {
         shift.setShiftStatus(Shift.ShiftStatus.PENDING);
         ShiftDAO.insertOrUpdate(shift);
         setShiftUI();
-        new SendShiftTask().execute();
+        new SendShiftTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     private void openShift() {
         Date now = new Date();
         shift = new Shift();
+        AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee(false);
         shift.setShiftStatus(Shift.ShiftStatus.OPEN);
-        shift.setAssigneeId(Integer.parseInt(preferences.getClerkID()));
-        shift.setAssigneeName(preferences.getClerkName());
+        shift.setAssigneeId(employee.getEmpId());
+        shift.setAssigneeName(employee.getEmpName());
+        shift.setClerkId(Integer.parseInt(preferences.getClerkID()));
         shift.setBeginningPettyCash(NumberUtils.cleanCurrencyFormatedNumber(totalAmountEditText.getText().toString()));
         shift.setCreationDate(now);
         shift.setStartTime(now);
@@ -317,10 +323,10 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
     @Override
     public void onResume() {
         if (global.isApplicationSentToBackground(this))
-            global.loggedIn = false;
+            Global.loggedIn = false;
         global.stopActivityTransitionTimer();
 
-        if (!global.loggedIn) {
+        if (!Global.loggedIn) {
             if (global.getGlobalDlog() != null)
                 global.getGlobalDlog().dismiss();
             global.promptForMandatoryLogin(this);
@@ -334,7 +340,7 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         boolean isScreenOn = powerManager.isScreenOn();
         if (!isScreenOn)
-            global.loggedIn = false;
+            Global.loggedIn = false;
         global.startActivityTransitionTimer();
     }
 
@@ -398,7 +404,8 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
                     sm.synchShifts();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Crashlytics.logException(e);                }
+                    Crashlytics.logException(e);
+                }
             }
             return null;
         }
@@ -412,10 +419,19 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
 
     private void openUI() {
         setContentView(R.layout.activity_shifts);
-        Clerk clerk = ClerkDAO.getByEmpId(Integer.parseInt(preferences.getClerkID()), true);
+        shift = ShiftDAO.getShiftByClerkId(Integer.parseInt(preferences.getClerkID()));
+        Clerk clerk;
+        if (shift == null) {
+            shift = ShiftDAO.getShiftByClerkId(Integer.parseInt(preferences.getClerkID()));
+        }
+        if (shift == null) {
+            clerk = ClerkDAO.getByEmpId(Integer.parseInt(preferences.getClerkID()), false);
+        } else {
+            clerk = ClerkDAO.getByEmpId(shift.getClerkId(), false);
+        }
         TextView clerkName = (TextView) findViewById(R.id.clerkNameShifttextView);
-        clerkName.setText(clerk.getEmpName());
-        shift = ShiftDAO.getCurrentShift(Integer.parseInt(preferences.getClerkID()));
+        clerkName.setText(clerk == null ? "" : clerk.getEmpName());
+
         totalAmountEditText = (TextView) findViewById(R.id.totalAmounteditText);
         openOnLbl = (TextView) findViewById(R.id.openOnLbltextView25);
         openOnDate = (TextView) findViewById(R.id.openOnDatetextView26);

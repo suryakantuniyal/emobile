@@ -8,7 +8,6 @@ import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmQuery;
-import io.realm.RealmResults;
 import util.json.JsonUtils;
 
 /**
@@ -39,8 +38,18 @@ public class DeviceTableDAO {
         }
     }
 
-    public static RealmResults<Device> getAll() {
-        return Realm.getDefaultInstance().where(Device.class).findAll();
+    public static List<Device> getAll() {
+        Realm realm = Realm.getDefaultInstance();
+        List<Device> all;
+        try {
+            all = realm.where(Device.class).findAll();
+            if (all != null) {
+                all = realm.copyFromRealm(all);
+            }
+        } finally {
+            realm.close();
+        }
+        return all;
     }
 
     public static void truncate() {

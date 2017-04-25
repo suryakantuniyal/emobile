@@ -17,14 +17,15 @@ import io.realm.RealmResults;
  */
 
 public class ShiftDAO {
-    public static Shift getCurrentShift(int clerkId) {
+
+    public static Shift getShiftByEmployeeId(int employeeId) {
         Realm r = Realm.getDefaultInstance();
         Shift shift = r.where(Shift.class)
-                .equalTo("assigneeId", clerkId)
+                .equalTo("assigneeId", employeeId)
                 .findAll().where()
-                .equalTo("shiftStatusCode", 0)
+                .equalTo("shiftStatusCode", Shift.ShiftStatus.OPEN.code)
                 .or()
-                .equalTo("shiftStatusCode", 1)
+                .equalTo("shiftStatusCode", Shift.ShiftStatus.PENDING.code)
                 .findFirst();
         if (shift != null) {
             return r.copyFromRealm(shift);
@@ -32,11 +33,27 @@ public class ShiftDAO {
         return null;
     }
 
-    public static Shift getOpenShift(int clerkId) {
+    public static Shift getShiftByClerkId(int clerkId) {
         Realm r = Realm.getDefaultInstance();
         Shift shift = r.where(Shift.class)
-                .equalTo("assigneeId", clerkId)
-                .equalTo("shiftStatusCode", 0)
+                .equalTo("clerkId", clerkId)
+                .findAll().where()
+                .equalTo("shiftStatusCode", Shift.ShiftStatus.OPEN.code)
+                .or()
+                .equalTo("shiftStatusCode", Shift.ShiftStatus.PENDING.code)
+                .findFirst();
+        if (shift != null) {
+            return r.copyFromRealm(shift);
+        }
+        return null;
+    }
+
+    public static Shift getOpenShift() {
+        int empId = AssignEmployeeDAO.getAssignEmployee(false).getEmpId();
+        Realm r = Realm.getDefaultInstance();
+        Shift shift = r.where(Shift.class)
+                .equalTo("assigneeId", empId)
+                .equalTo("shiftStatusCode", Shift.ShiftStatus.OPEN.code)
                 .findFirst();
         if (shift != null) {
             return r.copyFromRealm(shift);
@@ -64,9 +81,9 @@ public class ShiftDAO {
         RealmResults<Shift> sync = r.where(Shift.class)
                 .equalTo("sync", false)
                 .findAll().where()
-                .equalTo("shiftStatusCode", 2)
+                .equalTo("shiftStatusCode", Shift.ShiftStatus.CLOSED.code)
                 .or()
-                .equalTo("shiftStatusCode", 1)
+                .equalTo("shiftStatusCode", Shift.ShiftStatus.PENDING.code)
                 .findAll();
         return r.copyFromRealm(sync);
     }
@@ -94,26 +111,29 @@ public class ShiftDAO {
         }
     }
 
-    public static boolean isShiftOpen(String clerkID) {
-        Shift shift = getOpenShift(Integer.parseInt(clerkID));
+    public static boolean isShiftOpen() {
+        Shift shift = getOpenShift();
         return shift != null;
     }
 
-    public static void updateShiftAmounts(int clerkID, double amountToApply, boolean isReturn) {
-        Shift openShift = getOpenShift(clerkID);
-        if(openShift==null) {
+    public static void updateShiftAmounts(double amountToApply, boolean isReturn) {
+        Shift openShift = getOpenShift();
+        if (openShift == null) {
             return;
         }
 
         if (isReturn) {
-            openShift.setTotalTransactionsCash(String.valueOf(Global.getBigDecimalNum(openShift != null
-                    ? openShift.getTotalTransactionsCash() :
-                    "0").subtract(BigDecimal.valueOf(amountToApply))));
+            openShift.setTotalTransactionsCash(String.valueOf(Global.getBigDecimalNum(openShift.getTotalTransactionsCash())
+                    .subtract(BigDecimal.valueOf(amountToApply))));
         } else {
-            openShift.setTotalTransactionsCash(String.valueOf(Global.getBigDecimalNum(openShift != null
-                    ? openShift.getTotalTransactionsCash()
-                    : "0").add(BigDecimal.valueOf(amountToApply))));
+            openShift.setTotalTransactionsCash(String.valueOf(Global.getBigDecimalNum(openShift.getTotalTransactionsCash())
+                    .add(BigDecimal.valueOf(amountToApply))));
         }
+        BigDecimal beginningPettyCash = new BigDecimal(openShift.getBeginningPettyCash());
+        BigDecimal transactionsCash = new BigDecimal(openShift.getTotalTransactionsCash());
+        BigDecimal totalExpenses = ShiftExpensesDAO.getShiftTotalExpenses(openShift.getShiftId());
+        BigDecimal totalEndingCash = Global.getRoundBigDecimal(beginningPettyCash.add(transactionsCash).add(totalExpenses), 2);
+        openShift.setTotal_ending_cash(String.valueOf(totalEndingCash));
         insertOrUpdate(openShift);
     }
 
@@ -125,6 +145,8 @@ public class ShiftDAO {
     public static List<Shift> getShift(Date date) {
         List<Shift> list = new ArrayList<>();
         Realm r = Realm.getDefaultInstance();
+        r.beginTransaction();
+        r.commitTransaction();
         RealmResults<Shift> shifts = r.where(Shift.class).findAll();
         for (Shift shift : shifts) {
             String creationDate = DateUtils.getDateAsString(shift.getCreationDate(), DateUtils.DATE_yyyy_MM_dd);
@@ -134,6 +156,26 @@ public class ShiftDAO {
             }
         }
         return r.copyFromRealm(list);
+    }
+
+    public static void insertOrUpdatePendingShift(List<Shift> shifts, int clerkId) {
+        Realm r = Realm.getDefaultInstance();
+        try {
+            for (Shift s : shifts) {
+                s.setSync(false);
+            }
+            r.beginTransaction();
+            RealmResults<Shift> all = r.where(Shift.class)
+                    .equalTo("clerkId", clerkId)
+                    .equalTo("shiftStatusCode", Shift.ShiftStatus.PENDING.code)
+                    .findAll();
+            if (all != null && all.isValid()) {
+                all.deleteAllFromRealm();
+            }
+            r.insertOrUpdate(shifts);
+        } finally {
+            r.commitTransaction();
+        }
     }
 //
 //    public static List<Shift> getShift(String clerkId, Date date) {

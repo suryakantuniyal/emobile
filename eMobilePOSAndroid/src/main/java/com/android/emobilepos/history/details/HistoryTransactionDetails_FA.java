@@ -617,7 +617,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
 //        ShiftPeriodsDBHandler handlerSP = new ShiftPeriodsDBHandler(activity);
         amountToBeSubstracted = Double.parseDouble(NumberUtils.cleanCurrencyFormatedNumber(order.ord_total)); //find total to be credited
         //update ShiftPeriods (isReturn set to true)
-        ShiftDAO.updateShiftAmounts(Integer.parseInt(myPref.getShiftID()), amountToBeSubstracted, true);
+        ShiftDAO.updateShiftAmounts(amountToBeSubstracted, true);
         //Check if Stored&Forward active and delete from record if any payment were made
         if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
             handler.updateOrderStoredFwd(order_id, "0");
@@ -658,7 +658,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         protected Void doInBackground(Void... params) {
             int size = listVoidPayments.size();
             EMSPayGate_Default payGate;
-            Post post = new Post();
+            Post post = new Post(activity);
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
             String xml;
@@ -673,7 +673,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                     paymentType = listVoidPayments.get(i).getCard_type().toUpperCase(Locale.getDefault()).trim();
                     if (paymentType.equals("GIFTCARD")) {
                         payGate = new EMSPayGate_Default(activity, listVoidPayments.get(i));
-                        xml = post.postData(13, activity, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidGiftCardAction, false, listVoidPayments.get(i).getCard_type(), null));
+                        xml = post.postData(13, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidGiftCardAction, false, listVoidPayments.get(i).getCard_type(), null));
                         inSource = new InputSource(new StringReader(xml));
                         xr.setContentHandler(handler);
                         xr.parse(inSource);
@@ -688,7 +688,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                         payHandler.createVoidPayment(listVoidPayments.get(i), false, null);
                     } else if (!paymentType.equals("CHECK") && !paymentType.equals("WALLET")) {
                         payGate = new EMSPayGate_Default(activity, listVoidPayments.get(i));
-                        xml = post.postData(13, activity, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidCreditCardAction, false, listVoidPayments.get(i).getCard_type(), null));
+                        xml = post.postData(13, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidCreditCardAction, false, listVoidPayments.get(i).getCard_type(), null));
                         inSource = new InputSource(new StringReader(xml));
                         xr.setContentHandler(handler);
                         xr.parse(inSource);

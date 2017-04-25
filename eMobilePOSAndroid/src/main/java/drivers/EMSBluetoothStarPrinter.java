@@ -6,9 +6,7 @@ import android.app.ProgressDialog;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Handler;
-import android.text.TextUtils;
 
 import com.StarMicronics.jasura.JAException;
 import com.android.emobilepos.R;
@@ -744,7 +742,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
     @Override
     public boolean isConnected() {
-        StarPrinterStatus status;
+        StarPrinterStatus status = null;
         try {
             if (port == null) {
                 return false;
@@ -759,7 +757,9 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 Thread.sleep(1000);
                 port = getStarIOPort();
                 Thread.sleep(1000);
-                status = port.retreiveStatus();
+                if (port != null) {
+                    status = port.retreiveStatus();
+                }
             } catch (InterruptedException e1) {
                 e1.printStackTrace();
                 return false;
@@ -768,7 +768,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 return false;
             }
         }
-        return !status.offline;
+        return status != null && !status.offline;
     }
 
     private void starIoExtManagerConnect() {
@@ -834,8 +834,8 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
     private StarIOPort getStarIOPort() throws StarIOPortException {
 //        if (!getPortName().toUpperCase().contains("TCP")) {
-            releasePrinter();
-            port = null;
+        releasePrinter();
+        port = null;
 //        }
         if (port == null || port.retreiveStatus() == null || port.retreiveStatus().offline) {
 //            if (getPortName().toUpperCase().contains("TCP")) {

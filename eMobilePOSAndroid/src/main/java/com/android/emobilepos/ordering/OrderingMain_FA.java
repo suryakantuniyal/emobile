@@ -1408,14 +1408,14 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
         @Override
         protected HashMap<String, String> doInBackground(String... params) {
-            Post httpClient = new Post();
+            Post httpClient = new Post(OrderingMain_FA.this);
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
             urlToPost = params[0];
             HashMap<String, String> parsedMap = new HashMap<>();
 
             try {
-                String xml = httpClient.postData(13, OrderingMain_FA.this, urlToPost);
+                String xml = httpClient.postData(13,  urlToPost);
                 switch (xml) {
                     case Global.TIME_OUT:
                         errorMsg = getString(R.string.timeout_try_again);

@@ -25,6 +25,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.dao.ShiftDAO;
 import com.android.database.PayMethodsHandler;
 import com.android.database.PaymentsHandler;
 import com.android.emobilepos.R;
@@ -181,10 +182,11 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
         else
             payment.setInv_id(invJobView.getText().toString());
 
-        if (!myPref.getShiftIsOpen())
-            payment.setClerk_id(myPref.getShiftClerkID());
-        else if (myPref.isUseClerks())
+        if (myPref.isUseClerks()) {
             payment.setClerk_id(myPref.getClerkID());
+        } else if (ShiftDAO.isShiftOpen()) {
+            payment.setClerk_id(String.valueOf(ShiftDAO.getOpenShift().getClerkId()));
+        }
 
         payment.setPay_id(extras.getString("pay_id"));
         payment.setPaymethod_id(paymethod_id);
@@ -234,9 +236,9 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            Post post = new Post();
+                            Post post = new Post(activity);
                             MyPreferences myPref = new MyPreferences(activity);
-                            String json = post.postData(11, activity, "http://" + myPref.getGeniusIP() + ":8080/v1/pos?Action=InitiateKeyedSale&Format=XML");
+                            String json = post.postData(11, "http://" + myPref.getGeniusIP() + ":8080/v1/pos?Action=InitiateKeyedSale&Format=XML");
                         }
                     }).start();
                 }
@@ -249,12 +251,12 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
             GeniusResponse geniusResponse = null;
 //            if (pingGeniusDevice()) {
             geniusConnected = true;
-            Post post = new Post();
+            Post post = new Post(activity);
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SAXProcessGeniusHandler handler = new SAXProcessGeniusHandler(activity);
 
             try {
-                String xml = post.postData(13, activity, params[0]);
+                String xml = post.postData(13,  params[0]);
                 InputSource inSource = new InputSource(new StringReader(xml));
 
                 SAXParser sp = spf.newSAXParser();
@@ -266,7 +268,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                 if (geniusTransportToken != null && geniusTransportToken.getStatusCode().equalsIgnoreCase("APPROVED")) {// && getData("statusCode", 0, 0).equals("APPROVED")) {
                     boProcessed = true;
                     MyPreferences myPref = new MyPreferences(activity);
-                    String json = post.postData(11, activity, "http://" + myPref.getGeniusIP() + ":8080/v2/pos?TransportKey=" + geniusTransportToken.getTransportkey() + "&Format=JSON");
+                    String json = post.postData(11,  "http://" + myPref.getGeniusIP() + ":8080/v2/pos?TransportKey=" + geniusTransportToken.getTransportkey() + "&Format=JSON");
                     geniusResponse = gson.fromJson(json, GeniusResponse.class);
                 } else {
                     geniusResponse = new GeniusResponse();
@@ -317,7 +319,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
 
                 BigDecimal aprovedAmount = new BigDecimal(response.getAmountApproved());
                 BigDecimal payAmount = aprovedAmount.subtract(tip).subtract(cashBack);
-                payment.setPay_amount(Global.getRoundBigDecimal(payAmount));
+                payment.setPay_amount(String.valueOf(Global.getRoundBigDecimal(payAmount)));
                 Global.amountPaid = payment.getPay_amount();
                 payment.setAuthcode(response.getAuthorizationCode());
                 payment.setCcnum_last4(response.getAccountNumber());
