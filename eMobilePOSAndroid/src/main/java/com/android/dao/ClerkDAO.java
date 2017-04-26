@@ -100,19 +100,16 @@ public class ClerkDAO {
 
     public static void removeAssignedTable(Clerk selectedClerk, DinningTable table) {
         Realm realm = Realm.getDefaultInstance();
-        try {
-            realm.beginTransaction();
-            selectedClerk.getAssignedDinningTables().remove(table);
-        } finally {
-            realm.commitTransaction();
-            realm.close();
-        }
+        selectedClerk.getAssignedDinningTables().remove(table);
+        realm.close();
+        insertOrUpdate(selectedClerk);
     }
 
     public static void addAssignedTable(Clerk selectedClerk, DinningTable table) {
         Realm realm = Realm.getDefaultInstance();
         try {
             Clerk clerk = getByEmpId(selectedClerk.getEmpId(), false);
+            clerk.getAssignedDinningTables().remove(table);
             clerk.getAssignedDinningTables().add(table);
             insertOrUpdate(clerk);
         } finally {
