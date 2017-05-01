@@ -112,6 +112,7 @@ public class ClerkDAO {
             clerk.getAssignedDinningTables().remove(table);
             clerk.getAssignedDinningTables().add(table);
             insertOrUpdate(clerk);
+            selectedClerk = clerk;
         } finally {
             realm.close();
         }

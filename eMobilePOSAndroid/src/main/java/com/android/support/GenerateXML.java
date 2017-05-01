@@ -73,7 +73,7 @@ public class GenerateXML {
         }
 
         thisActivity = activity;
-
+        info.setAcctNumber("150430141230");
         if (thisActivity instanceof ClockInOut_FA) {
             try {
                 ending.append("&EmpID=")
