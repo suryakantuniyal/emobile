@@ -13,7 +13,7 @@ public class PriceLevel {
     @SerializedName("pricelevel_type")
     private String pricelevelType;
     @SerializedName("pricelevel_fixedpct")
-    private int pricelevelFixedpct;
+    private float pricelevelFixedpct;
     @SerializedName("pricelevel_update")
     private String pricelevelUpdate;
     @SerializedName("isactive")
@@ -46,11 +46,11 @@ public class PriceLevel {
         this.pricelevelType = pricelevelType;
     }
 
-    public int getPricelevelFixedpct() {
+    public float getPricelevelFixedpct() {
         return pricelevelFixedpct;
     }
 
-    public void setPricelevelFixedpct(int pricelevelFixedpct) {
+    public void setPricelevelFixedpct(float pricelevelFixedpct) {
         this.pricelevelFixedpct = pricelevelFixedpct;
     }
 
