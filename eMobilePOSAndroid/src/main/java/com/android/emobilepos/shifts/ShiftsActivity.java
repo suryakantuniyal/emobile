@@ -546,9 +546,7 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
         @Override
         protected void onPostExecute(Boolean result) {
             dialog.dismiss();
-            if (result) {
-                finish();
-            } else {
+            if (!result) {
                 Global.showPrompt(ShiftsActivity.this, R.string.dlog_title_error, getString(R.string.error_sync_closed_shift));
             }
         }
