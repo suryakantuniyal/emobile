@@ -288,7 +288,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
     }
 
     private void stopPollingService() {
-        PollingNotificationService.start(this);
+        PollingNotificationService.stop(this);
     }
 
     public void forceTabs() {

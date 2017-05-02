@@ -52,7 +52,7 @@ public class PollingNotificationService extends Service {
 
     private static final String TAG = "PollingService";
     private Timer timer;
-    private static final int delay = 3000; // delay for 3 sec before first start
+    private static final int delay = 5000; // delay for 3 sec before first start
     private Date lastPolled;
     private String accountNumber;
 
