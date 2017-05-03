@@ -110,7 +110,7 @@ public class PriceLevelHandler {
                 insert.bindString(index(pricelevel_id), priceLevel.getPricelevelId()); // pricelevel_id
                 insert.bindString(index(pricelevel_name), priceLevel.getPricelevelName()); // pricelevel_name
                 insert.bindString(index(pricelevel_type), priceLevel.getPricelevelType()); // pricelevel_type
-                insert.bindLong(index(pricelevel_fixedpct), priceLevel.getPricelevelFixedpct()); // pricelevel_fixedpct
+                insert.bindDouble(index(pricelevel_fixedpct), priceLevel.getPricelevelFixedpct()); // pricelevel_fixedpct
                 insert.bindString(index(pricelevel_update), priceLevel.getPricelevelUpdate()); // pricelevel_update
                 insert.bindLong(index(isactive), priceLevel.getIsactive()); // isactive
 
