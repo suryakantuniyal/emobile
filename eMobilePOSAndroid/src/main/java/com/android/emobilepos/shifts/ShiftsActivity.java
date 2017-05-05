@@ -1,6 +1,7 @@
 package com.android.emobilepos.shifts;
 
 import android.app.ProgressDialog;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.ClerkDAO;
 import com.android.dao.ShiftDAO;
+import com.android.dao.ShiftExpensesDAO;
 import com.android.database.DBManager;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.realms.AssignEmployee;
@@ -30,6 +32,7 @@ import com.android.support.SynchMethods;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.crashlytics.android.Crashlytics;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -318,6 +321,18 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
         fiftyDollarTextView.setText(Global.getCurrencyFormat(String.valueOf(fiftyDollars * 50)));
         hundredDollarTextView.setText(Global.getCurrencyFormat(String.valueOf(hundredDollars * 100)));
         totalAmountEditText.setText(Global.getCurrencyFormat(total.toString()));
+        BigDecimal totalEndingCash = new BigDecimal(shift.getTotal_ending_cash());
+        switch (totalEndingCash.compareTo(BigDecimal.valueOf(total))){
+            case -1:
+                totalAmountEditText.setTextColor(Color.RED);
+                break;
+            case 1:
+                totalAmountEditText.setTextColor(Color.BLUE);
+                break;
+            case 0:
+                totalAmountEditText.setTextColor(Color.GREEN);
+                break;
+        }
     }
 
     @Override
