@@ -166,16 +166,19 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
     @Override
     protected void onResume() {
         super.onResume();
-        if (!extras.containsKey("GeniusResponse")) {
-            if (global.isApplicationSentToBackground(this))
-                Global.loggedIn = false;
-            global.stopActivityTransitionTimer();
-            if (hasBeenCreated && !Global.loggedIn) {
-                if (global.getGlobalDlog() != null)
-                    global.getGlobalDlog().dismiss();
-                global.promptForMandatoryLogin(this);
-            }
+        boolean skipLogin = extras.containsKey("LocalGeniusResponse");
+        if (global.isApplicationSentToBackground(this) && !skipLogin)
+            Global.loggedIn = false;
+        else {
+            Global.loggedIn = true;
         }
+        global.stopActivityTransitionTimer();
+        if (hasBeenCreated && !Global.loggedIn) {
+            if (global.getGlobalDlog() != null)
+                global.getGlobalDlog().dismiss();
+            global.promptForMandatoryLogin(this);
+        }
+
     }
 
     @Override
@@ -224,6 +227,32 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
             generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ChargeGeniusAction, false, "", null);
 
         new processLivePaymentAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, generatedURL);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.processGeniusButton:
+                Toast.makeText(activity, "Processing Genius", Toast.LENGTH_LONG).show();
+                processPayment();
+                break;
+            case R.id.btnExact:
+                break;
+        }
+    }
+
+    public enum Limiters {
+        VISA, MASTERCARD, AMEX, DISCOVER, DEBIT, GIFT;
+
+        public static Limiters toLimit(String str) {
+            try {
+                return valueOf(str);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
+                return null;
+            }
+        }
     }
 
     private class processLivePaymentAsync extends AsyncTask<String, String, GeniusResponse> {
@@ -367,7 +396,6 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                 if (myPref.getPreferences(MyPreferences.pref_prompt_customer_copy))
                     showPrintDlg(false);
                 else {
-                    finish();
                     if (myPref.getGeniusIP().equalsIgnoreCase("127.0.0.1")) {
                         Intent i = new Intent(ProcessGenius_FA.this, ProcessGenius_FA.class);
 //            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -381,7 +409,11 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                         i.putExtras(extras);
                         i.putExtra("LocalGeniusResponse", json);
 //                        i.putExtra("Payment", gson.toJson(payment));
+                        result.putExtra("LocalGeniusResponse", json);
+                        finish();
                         startActivity(i);
+                    } else {
+                        finish();
                     }
                 }
             } else {
@@ -434,40 +466,6 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
             dlog.show();
         }
 
-
-        private class printAsync extends AsyncTask<Void, Void, Void> {
-            private boolean printSuccessful = true;
-
-            @Override
-            protected void onPreExecute() {
-                myProgressDialog = new ProgressDialog(activity);
-                myProgressDialog.setMessage("Printing...");
-                myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                myProgressDialog.setCancelable(false);
-                myProgressDialog.show();
-
-            }
-
-            @Override
-            protected Void doInBackground(Void... params) {
-
-                if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
-                    printSuccessful = Global.mainPrinterManager.getCurrentDevice().printPaymentDetails(payment.getPay_id(), 1, true, payment.getEmvContainer());
-                }
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void unused) {
-                myProgressDialog.dismiss();
-                if (printSuccessful)
-                    finish();
-                else {
-                    showPrintDlg(true);
-                }
-            }
-        }
-
         private boolean pingGeniusDevice() {
             boolean isReachable = true;
             try {
@@ -484,24 +482,6 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
             }
             return isReachable;
         }
-
-
-//        private String getData(String tag, int record, int type) {
-//            Global global = (Global) getApplication();
-//            Integer i = global.dictionary.get(record).get(tag);
-//            if (i != null) {
-//                switch (type) {
-//                    case 0:
-//                        return returnedPost.get(record)[i];
-//                    case 1: {
-//                        if (i > 13)
-//                            i = i - 1;
-//                        return returnedGenius.get(record)[i];
-//                    }
-//                }
-//            }
-//            return "";
-//        }
 
         private String payMethodDictionary(String value) {
             Limiters test = Limiters.toLimit(value);
@@ -524,6 +504,24 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
             }
             return "";
         }
+
+
+//        private String getData(String tag, int record, int type) {
+//            Global global = (Global) getApplication();
+//            Integer i = global.dictionary.get(record).get(tag);
+//            if (i != null) {
+//                switch (type) {
+//                    case 0:
+//                        return returnedPost.get(record)[i];
+//                    case 1: {
+//                        if (i > 13)
+//                            i = i - 1;
+//                        return returnedGenius.get(record)[i];
+//                    }
+//                }
+//            }
+//            return "";
+//        }
 
         private void parseSignature(String signatureVector) {
             String[] splitFirstSentinel = signatureVector.split(Pattern.quote("^"));
@@ -572,32 +570,38 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                 }
             }
         }
-    }
 
-    public enum Limiters {
-        VISA, MASTERCARD, AMEX, DISCOVER, DEBIT, GIFT;
+        private class printAsync extends AsyncTask<Void, Void, Void> {
+            private boolean printSuccessful = true;
 
-        public static Limiters toLimit(String str) {
-            try {
-                return valueOf(str);
-            } catch (Exception e) {
-                e.printStackTrace();
-                Crashlytics.logException(e);
+            @Override
+            protected void onPreExecute() {
+                myProgressDialog = new ProgressDialog(activity);
+                myProgressDialog.setMessage("Printing...");
+                myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                myProgressDialog.setCancelable(false);
+                myProgressDialog.show();
+
+            }
+
+            @Override
+            protected Void doInBackground(Void... params) {
+
+                if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                    printSuccessful = Global.mainPrinterManager.getCurrentDevice().printPaymentDetails(payment.getPay_id(), 1, true, payment.getEmvContainer());
+                }
                 return null;
             }
-        }
-    }
 
-    @Override
-    public void onClick(View v) {
-        // TODO Auto-generated method stub
-        switch (v.getId()) {
-            case R.id.processGeniusButton:
-                Toast.makeText(activity, "Processing Genius", Toast.LENGTH_LONG).show();
-                processPayment();
-                break;
-            case R.id.btnExact:
-                break;
+            @Override
+            protected void onPostExecute(Void unused) {
+                myProgressDialog.dismiss();
+                if (printSuccessful)
+                    finish();
+                else {
+                    showPrintDlg(true);
+                }
+            }
         }
     }
 

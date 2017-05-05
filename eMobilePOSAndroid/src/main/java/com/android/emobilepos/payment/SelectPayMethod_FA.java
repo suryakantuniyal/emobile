@@ -120,7 +120,117 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
     private Global.OrderType orderType;
     private boolean isClicked;
     private boolean skipLogin;
+    private Dialog dlog;
+    private Handler handler = new Handler();
+    private Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            if (dlog != null && dlog.isShowing())
+                dlog.dismiss();
+        }
+    };
 
+    public static void voidTransaction(Activity activity, String job_id, String orderType) {
+        OrdersHandler handler = new OrdersHandler(activity);
+        handler.updateIsVoid(job_id);
+        handler.updateIsProcessed(job_id, "9");
+
+        VoidTransactionsHandler voidHandler = new VoidTransactionsHandler();
+        Order order = new Order(activity);
+        order.ord_id = job_id;
+        order.ord_type = orderType;
+        voidHandler.insert(order);
+        // Check if Stored&Forward active and delete from record if any payment
+        // were made
+        MyPreferences myPref = new MyPreferences(activity);
+        if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
+            handler.updateOrderStoredFwd(job_id, "0");
+            StoredPaymentsDAO.deletePaymentFromJob(job_id);
+        }
+        HashMap<String, String> parsedMap;
+        PaymentsHandler payHandler = new PaymentsHandler(activity);
+        List<Payment> listVoidPayments = payHandler.getOrderPayments(job_id);
+        int size = listVoidPayments.size();
+        if (size > 0) {
+            EMSPayGate_Default payGate;
+
+            Post post = new Post();
+            SAXParserFactory spf = SAXParserFactory.newInstance();
+            SAXProcessCardPayHandler processCardPayHandler = new SAXProcessCardPayHandler();
+            String xml;
+            InputSource inSource;
+            SAXParser sp;
+            XMLReader xr;
+
+            try {
+                sp = spf.newSAXParser();
+                xr = sp.getXMLReader();
+                String paymentType;
+                for (int i = 0; i < size; i++) {
+                    paymentType = listVoidPayments.get(i).getCard_type().toUpperCase(Locale.getDefault()).trim();
+                    if (paymentType.equals("GIFTCARD") || paymentType.equals("REWARD")) {
+                        payGate = new EMSPayGate_Default(activity, listVoidPayments.get(i));
+                        if (paymentType.equals("GIFTCARD")) {
+                            xml = post.postData(13, activity, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidGiftCardAction, false,
+                                    listVoidPayments.get(i).getCard_type(), null));
+                        } else {
+                            xml = post.postData(13, activity, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidRewardCardAction, false,
+                                    listVoidPayments.get(i).getCard_type(), null));
+                        }
+                        inSource = new InputSource(new StringReader(xml));
+
+                        xr.setContentHandler(processCardPayHandler);
+                        xr.parse(inSource);
+                        parsedMap = processCardPayHandler.getData();
+
+                        if (parsedMap != null && parsedMap.size() > 0
+                                && parsedMap.get("epayStatusCode").equals("APPROVED"))
+                            payHandler.createVoidPayment(listVoidPayments.get(i), true, parsedMap);
+
+                        if (parsedMap != null) {
+                            parsedMap.clear();
+                        }
+                    } else if (paymentType.equals("CASH")) {
+
+                        // payHandler.updateIsVoid(pay_id);
+                        payHandler.createVoidPayment(listVoidPayments.get(i), false, null);
+                    } else if (!paymentType.equals("CHECK") && !paymentType.equals("WALLET")) {
+                        payGate = new EMSPayGate_Default(activity, listVoidPayments.get(i));
+                        xml = post.postData(13, activity, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidCreditCardAction, false,
+                                listVoidPayments.get(i).getCard_type(), null));
+                        inSource = new InputSource(new StringReader(xml));
+
+                        xr.setContentHandler(processCardPayHandler);
+                        xr.parse(inSource);
+                        parsedMap = processCardPayHandler.getData();
+
+                        if (parsedMap != null && parsedMap.size() > 0
+                                && parsedMap.get("epayStatusCode").equals("APPROVED"))
+                            payHandler.createVoidPayment(listVoidPayments.get(i), true, parsedMap);
+
+                        if (parsedMap != null) {
+                            parsedMap.clear();
+                        }
+                    }
+                }
+            } catch (SAXException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
+            } catch (ParserConfigurationException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
+            } catch (IOException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
+            }
+            activity.setResult(3);
+            activity.finish();
+//            new voidPaymentAsync().execute();
+        } else {
+            activity.setResult(3);
+            activity.finish();
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -206,7 +316,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         initHeaderSection();
     }
 
-
     private void initHeaderSection() {
         TextView totalView = (TextView) findViewById(R.id.totalValue);
         TextView paidView = (TextView) findViewById(R.id.paidValue);
@@ -220,17 +329,16 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
     @Override
     public void onResume() {
-        if (skipLogin) {
-            if (global.isApplicationSentToBackground(this))
-                Global.loggedIn = false;
-            global.stopActivityTransitionTimer();
+//        Toast.makeText(this, "Resume:"+String.valueOf(skipLogin), Toast.LENGTH_LONG).show();
+        if (global.isApplicationSentToBackground(this) && !skipLogin)
+            Global.loggedIn = false;
+        global.stopActivityTransitionTimer();
 
-            if (hasBeenCreated && !Global.loggedIn) {
-                if (global.getGlobalDlog() != null && global.getGlobalDlog().isShowing()) {
-                    global.getGlobalDlog().dismiss();
-                }
-                global.promptForMandatoryLogin(this);
+        if (hasBeenCreated && !Global.loggedIn) {
+            if (global.getGlobalDlog() != null && global.getGlobalDlog().isShowing()) {
+                global.getGlobalDlog().dismiss();
             }
+            global.promptForMandatoryLogin(this);
         }
         skipLogin = false;
         initHeaderSection();
@@ -465,126 +573,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         super.onStop();
     }
 
-    private class CardsListAdapter extends BaseAdapter implements Filterable {
-        private Context context;
-        private LayoutInflater myInflater;
-
-        public CardsListAdapter(Activity activity) {
-            this.context = activity.getApplicationContext();
-            myInflater = LayoutInflater.from(context);
-
-            PayMethodsHandler handler = new PayMethodsHandler(activity);
-            payTypeList = PayMethodsDAO.getAllSortByName(true);
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-
-            ViewHolder holder;
-            int iconId;
-
-            if (convertView == null) {
-
-                holder = new ViewHolder();
-
-                convertView = myInflater.inflate(R.layout.card_listrow2_adapter, null);
-
-                holder.textLine2 = (TextView) convertView.findViewById(R.id.cardsListname);
-                holder.ivPayIcon = (ImageView) convertView.findViewById(R.id.ivCardIcon);
-                String key = payTypeList.get(position).getPaymentmethod_type();
-                String name = payTypeList.get(position).getPaymethod_name();
-                String img_url = payTypeList.get(position).getImage_url();
-
-
-                if (TextUtils.isEmpty(img_url)) {
-                    if (key == null) {
-                        iconId = R.drawable.debitcard;// context.getResources().getIdentifier("debitcard", "drawable", context.getString(R.string.pkg_name));
-                    } else {
-                        Log.d("Logo Name", key);
-                        iconId = context.getResources().getIdentifier(key.toLowerCase(), "drawable",
-                                context.getPackageName());
-                    }
-
-                    holder.ivPayIcon.setImageResource(iconId);
-                } else {
-                    Log.d("Logo Name", img_url);
-                    imageLoader.displayImage(img_url, holder.ivPayIcon, options);
-                }
-                holder.textLine2.setTag(name);
-                holder.textLine2.setText(name);
-
-                convertView.setTag(holder);
-
-            } else {
-                holder = (ViewHolder) convertView.getTag();
-                String key = payTypeList.get(position).getPaymentmethod_type();
-                String name = payTypeList.get(position).getPaymethod_name();
-                String img_url = payTypeList.get(position).getImage_url();
-
-                if (TextUtils.isEmpty(img_url)) {
-                    if (key == null) {
-                        iconId = R.drawable.debitcard;//context.getResources().getIdentifier("debitcard", "drawable",
-                    }
-//									context.getString(R.string.pkg_name));
-                    else {
-                        Log.d("Logo Name", key);
-                        iconId = context.getResources().getIdentifier(key.toLowerCase(), "drawable",
-                                context.getPackageName());
-                    }
-
-                    holder.ivPayIcon.setImageResource(iconId);
-                } else {
-                    imageLoader.displayImage(img_url, holder.ivPayIcon, options);
-                }
-                holder.textLine2.setTag(name);
-                holder.textLine2.setText(name);
-
-            }
-            return convertView;
-        }
-
-        private class ViewHolder {
-            TextView textLine2;
-            ImageView ivPayIcon;
-
-        }
-
-        @Override
-        public int getItemViewType(int position) {
-            if (position == 0) {
-                return 0;
-            }
-            return 1;
-
-        }
-
-        @Override
-        public int getViewTypeCount() {
-            return 2;
-        }
-
-        @Override
-        public int getCount() {
-            return payTypeList.size();
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return 0;
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return 0;
-        }
-
-        @Override
-        public Filter getFilter() {
-            return null;
-        }
-
-    }
-
     private void showPrintDlg(final boolean isReprint, boolean isRetry, final EMVContainer emvContainer) {
         final Dialog dlog = new Dialog(activity, R.style.Theme_TransparentTest);
         dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -634,54 +622,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         dlog.show();
     }
 
-    private class printAsync extends AsyncTask<Object, String, String> {
-        private boolean wasReprint = false;
-        private boolean printSuccessful = true;
-
-        @Override
-        protected void onPreExecute() {
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
-                Global.mainPrinterManager.getCurrentDevice().loadScanner(null);
-            }
-            myProgressDialog = new ProgressDialog(activity);
-            myProgressDialog.setMessage("Printing...");
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            myProgressDialog.show();
-
-        }
-
-        @Override
-        protected String doInBackground(Object... params) {
-            wasReprint = (Boolean) params[0];
-            EMVContainer emvContainer = params.length > 1 ? (EMVContainer) params[1] : null;
-
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
-                if (isFromMainMenu || extras.getBoolean("histinvoices") ||
-                        (emvContainer != null && emvContainer.getGeniusResponse() != null &&
-                                emvContainer.getGeniusResponse().getStatus().equalsIgnoreCase("DECLINED")))
-                    printSuccessful = Global.mainPrinterManager.getCurrentDevice().printPaymentDetails(PaymentsHandler.getLastPaymentInserted().getPay_id(), 1,
-                            wasReprint, emvContainer);
-                else
-                    printSuccessful = Global.mainPrinterManager.getCurrentDevice().printTransaction(job_id, orderType,
-                            wasReprint, false, emvContainer);
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String unused) {
-            if (printSuccessful) {
-                if (overAllRemainingBalance <= 0 || (typeOfProcedure == Global.FROM_JOB_INVOICE
-                        || typeOfProcedure == Integer.parseInt(Global.OrderType.INVOICE.getCodeString())))
-                    activity.finish();
-            } else {
-                showPrintDlg(wasReprint, true, null);
-            }
-            myProgressDialog.dismiss();
-        }
-    }
-
     private void promptManagerPassword() {
         final Dialog globalDlog = new Dialog(activity, R.style.Theme_TransparentTest);
         globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -720,116 +660,15 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         globalDlog.show();
     }
 
-
-    public static void voidTransaction(Activity activity, String job_id, String orderType) {
-        OrdersHandler handler = new OrdersHandler(activity);
-        handler.updateIsVoid(job_id);
-        handler.updateIsProcessed(job_id, "9");
-
-        VoidTransactionsHandler voidHandler = new VoidTransactionsHandler();
-        Order order = new Order(activity);
-        order.ord_id = job_id;
-        order.ord_type = orderType;
-        voidHandler.insert(order);
-        // Check if Stored&Forward active and delete from record if any payment
-        // were made
-        MyPreferences myPref = new MyPreferences(activity);
-        if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
-            handler.updateOrderStoredFwd(job_id, "0");
-            StoredPaymentsDAO.deletePaymentFromJob(job_id);
-        }
-        HashMap<String, String> parsedMap;
-        PaymentsHandler payHandler = new PaymentsHandler(activity);
-        List<Payment> listVoidPayments = payHandler.getOrderPayments(job_id);
-        int size = listVoidPayments.size();
-        if (size > 0) {
-            EMSPayGate_Default payGate;
-
-            Post post = new Post();
-            SAXParserFactory spf = SAXParserFactory.newInstance();
-            SAXProcessCardPayHandler processCardPayHandler = new SAXProcessCardPayHandler();
-            String xml;
-            InputSource inSource;
-            SAXParser sp;
-            XMLReader xr;
-
-            try {
-                sp = spf.newSAXParser();
-                xr = sp.getXMLReader();
-                String paymentType;
-                for (int i = 0; i < size; i++) {
-                    paymentType = listVoidPayments.get(i).getCard_type().toUpperCase(Locale.getDefault()).trim();
-                    if (paymentType.equals("GIFTCARD") || paymentType.equals("REWARD")) {
-                        payGate = new EMSPayGate_Default(activity, listVoidPayments.get(i));
-                        if (paymentType.equals("GIFTCARD")) {
-                            xml = post.postData(13, activity, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidGiftCardAction, false,
-                                    listVoidPayments.get(i).getCard_type(), null));
-                        } else {
-                            xml = post.postData(13, activity, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidRewardCardAction, false,
-                                    listVoidPayments.get(i).getCard_type(), null));
-                        }
-                        inSource = new InputSource(new StringReader(xml));
-
-                        xr.setContentHandler(processCardPayHandler);
-                        xr.parse(inSource);
-                        parsedMap = processCardPayHandler.getData();
-
-                        if (parsedMap != null && parsedMap.size() > 0
-                                && parsedMap.get("epayStatusCode").equals("APPROVED"))
-                            payHandler.createVoidPayment(listVoidPayments.get(i), true, parsedMap);
-
-                        if (parsedMap != null) {
-                            parsedMap.clear();
-                        }
-                    } else if (paymentType.equals("CASH")) {
-
-                        // payHandler.updateIsVoid(pay_id);
-                        payHandler.createVoidPayment(listVoidPayments.get(i), false, null);
-                    } else if (!paymentType.equals("CHECK") && !paymentType.equals("WALLET")) {
-                        payGate = new EMSPayGate_Default(activity, listVoidPayments.get(i));
-                        xml = post.postData(13, activity, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidCreditCardAction, false,
-                                listVoidPayments.get(i).getCard_type(), null));
-                        inSource = new InputSource(new StringReader(xml));
-
-                        xr.setContentHandler(processCardPayHandler);
-                        xr.parse(inSource);
-                        parsedMap = processCardPayHandler.getData();
-
-                        if (parsedMap != null && parsedMap.size() > 0
-                                && parsedMap.get("epayStatusCode").equals("APPROVED"))
-                            payHandler.createVoidPayment(listVoidPayments.get(i), true, parsedMap);
-
-                        if (parsedMap != null) {
-                            parsedMap.clear();
-                        }
-                    }
-                }
-            } catch (SAXException e) {
-                e.printStackTrace();
-                Crashlytics.logException(e);
-            } catch (ParserConfigurationException e) {
-                e.printStackTrace();
-                Crashlytics.logException(e);
-            } catch (IOException e) {
-                e.printStackTrace();
-                Crashlytics.logException(e);
-            }
-            activity.setResult(3);
-            activity.finish();
-//            new voidPaymentAsync().execute();
-        } else {
-            activity.setResult(3);
-            activity.finish();
-        }
-    }
-
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         myListview.setSelection(0);
         myListview.setSelected(false);
-        skipLogin = data.hasExtra("LocalGeniusResponse");
+        skipLogin = data != null && data.hasExtra("LocalGeniusResponse");
+//        Toast.makeText(this, "Activity Result:"+String.valueOf(skipLogin), Toast.LENGTH_LONG).show();
+
+        EMVContainer emvContainer = null;
         if (data != null && data.hasExtra("emvcontainer"))
             emvContainer = new Gson().fromJson(data.getStringExtra("emvcontainer"), EMVContainer.class);
 
@@ -896,8 +735,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             }
         }
     }
-
-    private Dialog dlog;
 
     private void showBoloroDlog() {
         dlog = new Dialog(this, R.style.Theme_TransparentTest);
@@ -999,16 +836,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         }
     }
 
-
-    private Handler handler = new Handler();
-    private Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-            if (dlog != null && dlog.isShowing())
-                dlog.dismiss();
-        }
-    };
-
     private void processInquiry(boolean isLoyalty) {
         AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
 
@@ -1072,6 +899,292 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             new processRewardAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
 
+    }
+
+    public void showBalancePrompt(String msg) {
+        final Dialog dlog = new Dialog(this, R.style.Theme_TransparentTest);
+        dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dlog.setContentView(R.layout.dlog_btn_single_layout);
+        dlog.setCancelable(false);
+        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+        viewTitle.setText(R.string.dlog_title_confirm);
+        viewMsg.setText(msg);
+        Button btnOk = (Button) dlog.findViewById(R.id.btnDlogSingle);
+        btnOk.setText(R.string.button_ok);
+        btnOk.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                dlog.dismiss();
+                if (myPref.getPreferences(MyPreferences.pref_enable_printing)) {
+                    if (!myPref.getPreferences(MyPreferences.pref_automatic_printing))
+                        showPrintDlg(false, false, null);
+                    else
+                        new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
+                } else {
+                    finish();
+                }
+            }
+        });
+        dlog.show();
+    }
+
+    @Override
+    public void onClick(View v) {
+        Intent intent = new Intent(activity, ProcessBoloro_FA.class);
+        intent.putExtra("paymethod_id", payTypeList.get(selectedPosition).getPaymethod_id());
+        switch (v.getId()) {
+            case R.id.btnDlogTop:
+                dlog.dismiss();
+                intent.putExtra("isNFC", true);
+                initIntents(extras, intent);
+                break;
+            case R.id.btnDlogBottom:
+                dlog.dismiss();
+                intent.putExtra("isNFC", false);
+                initIntents(extras, intent);
+                break;
+        }
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        if (UIUtils.singleOnClick(view)) {
+            selectPayment(position);
+        } else {
+            Toast.makeText(this, "Multiple click detected", Toast.LENGTH_LONG);
+        }
+    }
+
+    private void selectPayment(int position) {
+        selectedPosition = position;
+        PaymentMethodDAO.incrementPriority(payTypeList.get(position));
+        if (payTypeList.get(position).getPaymentmethod_type().equals("Cash")) {
+            Intent intent = new Intent(this, ProcessCash_FA.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());
+
+            initIntents(extras, intent);
+        } else if (payTypeList.get(position).getPaymentmethod_type().equals("Check")) {
+            Intent intent = new Intent(this, ProcessCheck_FA.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());
+            initIntents(extras, intent);
+        } else if (payTypeList.get(position).getPaymentmethod_type().equals("Genius")) {
+            Intent intent = new Intent(this, ProcessGenius_FA.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());
+            initIntents(extras, intent);
+        } else if (payTypeList.get(position).getPaymentmethod_type().equals("Wallet")) {
+            Intent intent = new Intent(activity, ProcessTupyx_FA.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());
+            initIntents(extras, intent);
+        } else if (payTypeList.get(position).getPaymentmethod_type().equals("Boloro")) {
+            //If store & forward is selected then boloro only accept NFC payments
+            if (myPref.isPrefUseStoreForward()) {
+                Intent intent = new Intent(activity, ProcessBoloro_FA.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                intent.putExtra("paymethod_id", payTypeList.get(selectedPosition).getPaymethod_id());
+                intent.putExtra("isNFC", true);
+                initIntents(extras, intent);
+            } else {
+                showBoloroDlog();
+            }
+        } else if (payTypeList.get(position).getPaymentmethod_type().toUpperCase(Locale.getDefault()).contains("GIFT") ||
+                payTypeList.get(position).getPaymentmethod_type().toUpperCase(Locale.getDefault()).contains("REWARD") ||
+                payTypeList.get(position).getPaymentmethod_type().toUpperCase(Locale.getDefault()).contains("STADIS")) {
+            Intent intent = new Intent(activity, ProcessGiftCard_FA.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());
+            intent.putExtra("paymentmethod_type", payTypeList.get(position).getPaymentmethod_type());
+            initIntents(extras, intent);
+        } else {
+            boolean isDebit = payTypeList.get(position).getPaymentmethod_type().toUpperCase(Locale.getDefault()).trim().contains("DEBIT");
+            if (myPref.isPrefUseStoreForward() && isDebit) {
+                Global.showPrompt(activity, R.string.invalid_payment_type, getString(R.string.invalid_storeforward_payment_type));
+            } else {
+                Intent intent = new Intent(this, ProcessCreditCard_FA.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());
+                intent.putExtra("paymentmethod_type", payTypeList.get(position).getPaymentmethod_type());
+                intent.putExtra("requireTransID", payTypeList.get(position).getOriginalTransid().equalsIgnoreCase("1"));
+                if (payTypeList.get(position).getPaymentmethod_type().toUpperCase(Locale.getDefault()).trim().contains("DEBIT"))
+                    intent.putExtra("isDebit", true);
+                else
+                    intent.putExtra("isDebit", false);
+                initIntents(extras, intent);
+            }
+        }
+    }
+
+    private class CardsListAdapter extends BaseAdapter implements Filterable {
+        private Context context;
+        private LayoutInflater myInflater;
+
+        public CardsListAdapter(Activity activity) {
+            this.context = activity.getApplicationContext();
+            myInflater = LayoutInflater.from(context);
+
+            PayMethodsHandler handler = new PayMethodsHandler(activity);
+            payTypeList = PayMethodsDAO.getAllSortByName(true);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+
+            ViewHolder holder;
+            int iconId;
+
+            if (convertView == null) {
+
+                holder = new ViewHolder();
+
+                convertView = myInflater.inflate(R.layout.card_listrow2_adapter, null);
+
+                holder.textLine2 = (TextView) convertView.findViewById(R.id.cardsListname);
+                holder.ivPayIcon = (ImageView) convertView.findViewById(R.id.ivCardIcon);
+                String key = payTypeList.get(position).getPaymentmethod_type();
+                String name = payTypeList.get(position).getPaymethod_name();
+                String img_url = payTypeList.get(position).getImage_url();
+
+
+                if (TextUtils.isEmpty(img_url)) {
+                    if (key == null) {
+                        iconId = R.drawable.debitcard;// context.getResources().getIdentifier("debitcard", "drawable", context.getString(R.string.pkg_name));
+                    } else {
+                        Log.d("Logo Name", key);
+                        iconId = context.getResources().getIdentifier(key.toLowerCase(), "drawable",
+                                context.getPackageName());
+                    }
+
+                    holder.ivPayIcon.setImageResource(iconId);
+                } else {
+                    Log.d("Logo Name", img_url);
+                    imageLoader.displayImage(img_url, holder.ivPayIcon, options);
+                }
+                holder.textLine2.setTag(name);
+                holder.textLine2.setText(name);
+
+                convertView.setTag(holder);
+
+            } else {
+                holder = (ViewHolder) convertView.getTag();
+                String key = payTypeList.get(position).getPaymentmethod_type();
+                String name = payTypeList.get(position).getPaymethod_name();
+                String img_url = payTypeList.get(position).getImage_url();
+
+                if (TextUtils.isEmpty(img_url)) {
+                    if (key == null) {
+                        iconId = R.drawable.debitcard;//context.getResources().getIdentifier("debitcard", "drawable",
+                    }
+//									context.getString(R.string.pkg_name));
+                    else {
+                        Log.d("Logo Name", key);
+                        iconId = context.getResources().getIdentifier(key.toLowerCase(), "drawable",
+                                context.getPackageName());
+                    }
+
+                    holder.ivPayIcon.setImageResource(iconId);
+                } else {
+                    imageLoader.displayImage(img_url, holder.ivPayIcon, options);
+                }
+                holder.textLine2.setTag(name);
+                holder.textLine2.setText(name);
+
+            }
+            return convertView;
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            if (position == 0) {
+                return 0;
+            }
+            return 1;
+
+        }
+
+        @Override
+        public int getViewTypeCount() {
+            return 2;
+        }
+
+        @Override
+        public int getCount() {
+            return payTypeList.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return 0;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        @Override
+        public Filter getFilter() {
+            return null;
+        }
+
+        private class ViewHolder {
+            TextView textLine2;
+            ImageView ivPayIcon;
+
+        }
+
+    }
+
+    private class printAsync extends AsyncTask<Object, String, String> {
+        private boolean wasReprint = false;
+        private boolean printSuccessful = true;
+
+        @Override
+        protected void onPreExecute() {
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                Global.mainPrinterManager.getCurrentDevice().loadScanner(null);
+            }
+            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog.setMessage("Printing...");
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setCancelable(false);
+            myProgressDialog.show();
+
+        }
+
+        @Override
+        protected String doInBackground(Object... params) {
+            wasReprint = (Boolean) params[0];
+            EMVContainer emvContainer = params.length > 1 ? (EMVContainer) params[1] : null;
+
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                if (isFromMainMenu || extras.getBoolean("histinvoices") ||
+                        (emvContainer != null && emvContainer.getGeniusResponse() != null &&
+                                emvContainer.getGeniusResponse().getStatus().equalsIgnoreCase("DECLINED")))
+                    printSuccessful = Global.mainPrinterManager.getCurrentDevice().printPaymentDetails(PaymentsHandler.getLastPaymentInserted().getPay_id(), 1,
+                            wasReprint, emvContainer);
+                else
+                    printSuccessful = Global.mainPrinterManager.getCurrentDevice().printTransaction(job_id, orderType,
+                            wasReprint, false, emvContainer);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String unused) {
+            if (printSuccessful) {
+                if (overAllRemainingBalance <= 0 || (typeOfProcedure == Global.FROM_JOB_INVOICE
+                        || typeOfProcedure == Integer.parseInt(Global.OrderType.INVOICE.getCodeString())))
+                    activity.finish();
+            } else {
+                showPrintDlg(wasReprint, true, null);
+            }
+            myProgressDialog.dismiss();
+        }
     }
 
     private class processLoyaltyAsync extends AsyncTask<Void, Void, Void> {
@@ -1235,123 +1348,5 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             }
         }
 
-    }
-
-    public void showBalancePrompt(String msg) {
-        final Dialog dlog = new Dialog(this, R.style.Theme_TransparentTest);
-        dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dlog.setContentView(R.layout.dlog_btn_single_layout);
-        dlog.setCancelable(false);
-        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
-        viewTitle.setText(R.string.dlog_title_confirm);
-        viewMsg.setText(msg);
-        Button btnOk = (Button) dlog.findViewById(R.id.btnDlogSingle);
-        btnOk.setText(R.string.button_ok);
-        btnOk.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                dlog.dismiss();
-                if (myPref.getPreferences(MyPreferences.pref_enable_printing)) {
-                    if (!myPref.getPreferences(MyPreferences.pref_automatic_printing))
-                        showPrintDlg(false, false, null);
-                    else
-                        new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
-                } else {
-                    finish();
-                }
-            }
-        });
-        dlog.show();
-    }
-
-    @Override
-    public void onClick(View v) {
-        Intent intent = new Intent(activity, ProcessBoloro_FA.class);
-        intent.putExtra("paymethod_id", payTypeList.get(selectedPosition).getPaymethod_id());
-        switch (v.getId()) {
-            case R.id.btnDlogTop:
-                dlog.dismiss();
-                intent.putExtra("isNFC", true);
-                initIntents(extras, intent);
-                break;
-            case R.id.btnDlogBottom:
-                dlog.dismiss();
-                intent.putExtra("isNFC", false);
-                initIntents(extras, intent);
-                break;
-        }
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        if (UIUtils.singleOnClick(view)) {
-            selectPayment(position);
-        } else {
-            Toast.makeText(this, "Multiple click detected", Toast.LENGTH_LONG);
-        }
-    }
-
-    private void selectPayment(int position) {
-        selectedPosition = position;
-        PaymentMethodDAO.incrementPriority(payTypeList.get(position));
-        if (payTypeList.get(position).getPaymentmethod_type().equals("Cash")) {
-            Intent intent = new Intent(this, ProcessCash_FA.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-            intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());
-
-            initIntents(extras, intent);
-        } else if (payTypeList.get(position).getPaymentmethod_type().equals("Check")) {
-            Intent intent = new Intent(this, ProcessCheck_FA.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-            intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());
-            initIntents(extras, intent);
-        } else if (payTypeList.get(position).getPaymentmethod_type().equals("Genius")) {
-            Intent intent = new Intent(this, ProcessGenius_FA.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-            intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());
-            initIntents(extras, intent);
-        } else if (payTypeList.get(position).getPaymentmethod_type().equals("Wallet")) {
-            Intent intent = new Intent(activity, ProcessTupyx_FA.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-            intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());
-            initIntents(extras, intent);
-        } else if (payTypeList.get(position).getPaymentmethod_type().equals("Boloro")) {
-            //If store & forward is selected then boloro only accept NFC payments
-            if (myPref.isPrefUseStoreForward()) {
-                Intent intent = new Intent(activity, ProcessBoloro_FA.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                intent.putExtra("paymethod_id", payTypeList.get(selectedPosition).getPaymethod_id());
-                intent.putExtra("isNFC", true);
-                initIntents(extras, intent);
-            } else {
-                showBoloroDlog();
-            }
-        } else if (payTypeList.get(position).getPaymentmethod_type().toUpperCase(Locale.getDefault()).contains("GIFT") ||
-                payTypeList.get(position).getPaymentmethod_type().toUpperCase(Locale.getDefault()).contains("REWARD") ||
-                payTypeList.get(position).getPaymentmethod_type().toUpperCase(Locale.getDefault()).contains("STADIS")) {
-            Intent intent = new Intent(activity, ProcessGiftCard_FA.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-            intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());
-            intent.putExtra("paymentmethod_type", payTypeList.get(position).getPaymentmethod_type());
-            initIntents(extras, intent);
-        } else {
-            boolean isDebit = payTypeList.get(position).getPaymentmethod_type().toUpperCase(Locale.getDefault()).trim().contains("DEBIT");
-            if (myPref.isPrefUseStoreForward() && isDebit) {
-                Global.showPrompt(activity, R.string.invalid_payment_type, getString(R.string.invalid_storeforward_payment_type));
-            } else {
-                Intent intent = new Intent(this, ProcessCreditCard_FA.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());
-                intent.putExtra("paymentmethod_type", payTypeList.get(position).getPaymentmethod_type());
-                intent.putExtra("requireTransID", payTypeList.get(position).getOriginalTransid().equalsIgnoreCase("1"));
-                if (payTypeList.get(position).getPaymentmethod_type().toUpperCase(Locale.getDefault()).trim().contains("DEBIT"))
-                    intent.putExtra("isDebit", true);
-                else
-                    intent.putExtra("isDebit", false);
-                initIntents(extras, intent);
-            }
-        }
     }
 }
