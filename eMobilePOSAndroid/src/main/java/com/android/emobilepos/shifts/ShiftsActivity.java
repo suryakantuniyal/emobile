@@ -80,6 +80,7 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
     private TextView pettyCash;
     private MyPreferences preferences;
     Global global;
+    private TextView endingCashAmounteditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,6 +121,7 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
             closeAmountLbl.setText(getString(R.string.entered_close_amount));
             openOnDate.setText(DateUtils.getDateAsString(shift.getCreationDate(), DateUtils.DATE_MMM_dd_yyyy_h_mm_a));
             pettyCash.setText(Global.formatDoubleStrToCurrency(shift.getBeginningPettyCash()));
+            endingCashAmounteditText.setText(Global.formatDoubleStrToCurrency(shift.getTotal_ending_cash()));
         }
 
     }
@@ -446,7 +448,7 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
         }
         TextView clerkName = (TextView) findViewById(R.id.clerkNameShifttextView);
         clerkName.setText(clerk == null ? "" : clerk.getEmpName());
-
+        endingCashAmounteditText = (TextView) findViewById(R.id.endingCashAmounteditText);
         totalAmountEditText = (TextView) findViewById(R.id.totalAmounteditText);
         openOnLbl = (TextView) findViewById(R.id.openOnLbltextView25);
         openOnDate = (TextView) findViewById(R.id.openOnDatetextView26);
