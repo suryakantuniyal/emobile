@@ -119,6 +119,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
     private String order_email = "";
     private Global.OrderType orderType;
     private boolean isClicked;
+    private boolean skipLogin;
 
 
     @Override
@@ -219,17 +220,19 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
     @Override
     public void onResume() {
+        if (skipLogin) {
+            if (global.isApplicationSentToBackground(this))
+                Global.loggedIn = false;
+            global.stopActivityTransitionTimer();
 
-        if (global.isApplicationSentToBackground(this))
-            Global.loggedIn = false;
-        global.stopActivityTransitionTimer();
-
-        if (hasBeenCreated && !Global.loggedIn) {
-            if (global.getGlobalDlog() != null && global.getGlobalDlog().isShowing()) {
-                global.getGlobalDlog().dismiss();
+            if (hasBeenCreated && !Global.loggedIn) {
+                if (global.getGlobalDlog() != null && global.getGlobalDlog().isShowing()) {
+                    global.getGlobalDlog().dismiss();
+                }
+                global.promptForMandatoryLogin(this);
             }
-            global.promptForMandatoryLogin(this);
         }
+        skipLogin = false;
         initHeaderSection();
         super.onResume();
     }
@@ -826,7 +829,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         super.onActivityResult(requestCode, resultCode, data);
         myListview.setSelection(0);
         myListview.setSelected(false);
-        EMVContainer emvContainer = null;
+        skipLogin = data.hasExtra("LocalGeniusResponse");
         if (data != null && data.hasExtra("emvcontainer"))
             emvContainer = new Gson().fromJson(data.getStringExtra("emvcontainer"), EMVContainer.class);
 

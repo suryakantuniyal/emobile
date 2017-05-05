@@ -85,7 +85,6 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
         activity = this;
         global = (Global) this.getApplication();
         extras = this.getIntent().getExtras();
-
         invJobView = (EditText) findViewById(R.id.geniusJobIDView);
         amountView = (EditText) findViewById(R.id.geniusAmountView);
 
@@ -128,7 +127,25 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
             }
         });
         hasBeenCreated = true;
+        if (extras.containsKey("LocalGeniusResponse")) {
+            String response = extras.getString("LocalGeniusResponse");
+            Gson gson = JsonUtils.getInstance();
+            GeniusResponse geniusResponse = gson.fromJson(response, GeniusResponse.class);
+//            Payment payment = gson.fromJson(extras.getString("Payment"), Payment.class);
+            showResponse(geniusResponse);
+        }
 
+    }
+
+    private void showResponse(GeniusResponse response) {
+        Intent result = new Intent();
+        result.putExtras(getIntent());
+        if (response.getStatus().equalsIgnoreCase("APPROVED")) {
+            setResult(-2, result);
+        } else {
+            setResult(0, result);
+        }
+        finish();
     }
 
     private TextWatcher getTextWatcher(final EditText editText) {
@@ -149,15 +166,15 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
     @Override
     protected void onResume() {
         super.onResume();
-
-        if (global.isApplicationSentToBackground(this))
-            global.loggedIn = false;
-        global.stopActivityTransitionTimer();
-
-        if (hasBeenCreated && !global.loggedIn) {
-            if (global.getGlobalDlog() != null)
-                global.getGlobalDlog().dismiss();
-            global.promptForMandatoryLogin(this);
+        if (!extras.containsKey("GeniusResponse")) {
+            if (global.isApplicationSentToBackground(this))
+                Global.loggedIn = false;
+            global.stopActivityTransitionTimer();
+            if (hasBeenCreated && !Global.loggedIn) {
+                if (global.getGlobalDlog() != null)
+                    global.getGlobalDlog().dismiss();
+                global.promptForMandatoryLogin(this);
+            }
         }
     }
 
@@ -168,7 +185,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         boolean isScreenOn = powerManager.isScreenOn();
         if (!isScreenOn)
-            global.loggedIn = false;
+            Global.loggedIn = false;
         global.startActivityTransitionTimer();
     }
 
@@ -349,13 +366,27 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                 }
                 if (myPref.getPreferences(MyPreferences.pref_prompt_customer_copy))
                     showPrintDlg(false);
-                else
+                else {
                     finish();
+                    if (myPref.getGeniusIP().equalsIgnoreCase("127.0.0.1")) {
+                        Intent i = new Intent(ProcessGenius_FA.this, ProcessGenius_FA.class);
+//            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        i.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+//                i.setAction("com.emobilepos.app.VIEW_RESPONSE");
+                        Gson gson = JsonUtils.getInstance();
+                        String json = gson.toJson(response);
+//            ComponentName.createRelative(ProcessGenius_FA.this,".payment.ProcessGenius_FA");
+//                i.setComponent(new ComponentName(ProcessGenius_FA.this, ProcessGenius_FA.class));
+//            i.setComponent(ComponentName.unflattenFromString("com.emobilepos.app/com.android.emobilepos.payment.ProcessGenius_FA"));
+                        i.putExtras(extras);
+                        i.putExtra("LocalGeniusResponse", json);
+//                        i.putExtra("Payment", gson.toJson(payment));
+                        startActivity(i);
+                    }
+                }
             } else {
                 Global.showPrompt(activity, R.string.dlog_title_error, response != null ? response.getStatus() : getString(R.string.failed_genius_connectivity));
             }
-
-
         }
 
 
