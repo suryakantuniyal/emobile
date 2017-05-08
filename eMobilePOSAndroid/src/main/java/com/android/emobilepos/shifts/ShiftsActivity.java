@@ -17,7 +17,6 @@ import android.widget.TextView;
 import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.ClerkDAO;
 import com.android.dao.ShiftDAO;
-import com.android.dao.ShiftExpensesDAO;
 import com.android.database.DBManager;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.realms.AssignEmployee;
@@ -326,8 +325,9 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
         hundredDollarTextView.setText(Global.getCurrencyFormat(String.valueOf(hundredDollars * 100)));
         totalAmountEditText.setText(Global.getCurrencyFormat(total.toString()));
         BigDecimal totalEndingCash = new BigDecimal(shift.getTotal_ending_cash());
-        switch (totalEndingCash.compareTo(BigDecimal.valueOf(total))){
+        switch (totalEndingCash.compareTo(BigDecimal.valueOf(total))) {
             case -1:
+                accrualStatusTextView.setText(getString(R.string.over));
                 totalAmountEditText.setTextColor(Color.RED);
                 accrualStatusTextView.setTextColor(Color.RED);
                 accrualStatusTextView.setVisibility(View.VISIBLE);
@@ -336,10 +336,11 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
                 totalAmountEditText.setTextColor(Color.BLUE);
                 accrualStatusTextView.setTextColor(Color.BLUE);
                 accrualStatusTextView.setVisibility(View.VISIBLE);
+                accrualStatusTextView.setText(getString(R.string.under));
                 break;
             case 0:
-                totalAmountEditText.setTextColor(Color.GREEN);
-                accrualStatusTextView.setTextColor(Color.GREEN);
+                totalAmountEditText.setTextColor(Color.BLUE);
+                accrualStatusTextView.setTextColor(Color.BLACK);
                 accrualStatusTextView.setVisibility(View.GONE);
                 break;
         }
