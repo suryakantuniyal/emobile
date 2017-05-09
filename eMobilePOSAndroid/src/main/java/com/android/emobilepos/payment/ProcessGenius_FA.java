@@ -65,6 +65,7 @@ import javax.xml.parsers.SAXParserFactory;
 import util.json.JsonUtils;
 
 public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements OnClickListener {
+    public static final int REOPEN_PROCESS_GENIUS_SCREEN = 548;
     private String paymethod_id;
     private Activity activity;
     private Bundle extras;
@@ -128,11 +129,17 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
             }
         });
         hasBeenCreated = true;
+        if(extras.containsKey("isReopen")){
+            finish();
+        }
         if (extras.containsKey("LocalGeniusResponse")) {
             String response = extras.getString("LocalGeniusResponse");
             Gson gson = JsonUtils.getInstance();
             GeniusResponse geniusResponse = gson.fromJson(response, GeniusResponse.class);
 //            Payment payment = gson.fromJson(extras.getString("Payment"), Payment.class);
+            invJobView.setText(extras.getString("job_id"));
+            amountView.setText(
+                    Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(extras.getString("amount")))));
             showResponse(geniusResponse);
         }
 
@@ -141,12 +148,16 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
     private void showResponse(GeniusResponse response) {
         Intent result = new Intent();
         result.putExtras(getIntent());
-        if (response.getStatus().equalsIgnoreCase("APPROVED")) {
+        if (response.getStatus().equalsIgnoreCase("DECLINED_DUPLICATE")) {
+            Global.showPrompt(activity, R.string.dlog_title_error, response.getStatus());
+        } else if (response.getStatus().equalsIgnoreCase("APPROVED")) {
             setResult(-2, result);
+            finish();
         } else {
             setResult(0, result);
+            finish();
         }
-        finish();
+
     }
 
     private TextWatcher getTextWatcher(final EditText editText) {
@@ -419,10 +430,27 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                     }
                 }
             } else {
-                Global.showPrompt(activity, R.string.dlog_title_error, response != null ? response.getStatus() : getString(R.string.failed_genius_connectivity));
+                if (myPref.getGeniusIP().equalsIgnoreCase("127.0.0.1")) {
+                    Intent i = new Intent(ProcessGenius_FA.this, ProcessGenius_FA.class);
+                    i.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                    i.putExtra("isReopen", true);
+                    i.putExtras(extras);
+
+                    Intent result = new Intent();
+                    Gson gson = JsonUtils.getInstance();
+                    String json = gson.toJson(response);
+                    result.putExtras(extras);
+                    result.putExtra("job_id", invJobView.getText().toString());
+                    result.putExtra("amount", NumberUtils.cleanCurrencyFormatedNumber(amountView.getText().toString()));
+                    result.putExtra("LocalGeniusResponse", json);
+                    setResult(REOPEN_PROCESS_GENIUS_SCREEN, result);
+                    finish();
+                    startActivity(i);
+                } else {
+                    Global.showPrompt(activity, R.string.dlog_title_error, response != null ? response.getStatus() : getString(R.string.failed_genius_connectivity));
+                }
             }
         }
-
 
         private void showPrintDlg(boolean isRetry) {
             final Dialog dlog = new Dialog(activity, R.style.Theme_TransparentTest);
