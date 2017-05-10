@@ -17,14 +17,17 @@ import com.android.emobilepos.models.realms.Payment;
 import com.android.support.CardParser;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
-import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+
+import org.bouncycastle.jcajce.provider.symmetric.AES;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.crypto.spec.IvParameterSpec;
 
 import interfaces.EMSCallBack;
 import interfaces.EMSDeviceManagerPrinterDelegate;
@@ -40,7 +43,9 @@ import koamtac.kdc.sdk.KDCReader;
 import koamtac.kdc.sdk.KPOSConstants;
 import koamtac.kdc.sdk.KPOSData;
 import koamtac.kdc.sdk.KPOSDataReceivedListener;
+import koamtac.kdc.sdk.KPOSHSM;
 import main.EMSDeviceManager;
+import util.AESCipher;
 
 /**
  * Created by Guarionex on 12/8/2015.
@@ -57,11 +62,9 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 {
 
     private EMSCallBack scannerCallBack;
-    private Encrypt encrypt;
-    private CreditCardInfo cardManager;
     private EMSDeviceManager edm;
     private EMSKDC500 thisInstance;
-    KDCReader kdcReader;
+    private static KDCReader kdcReader;
     String msg = "Failed to connect";
 
 
@@ -74,8 +77,6 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     public void connect(Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
-        cardManager = new CreditCardInfo();
-        encrypt = new Encrypt(activity);
         this.edm = edm;
         thisInstance = this;
         new processConnectionAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -87,8 +88,6 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
                                String _portName, String _portNumber) {
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
-        cardManager = new CreditCardInfo();
-        encrypt = new Encrypt(activity);
         this.edm = edm;
         thisInstance = this;
         if (connectKDC500()) {
@@ -104,12 +103,11 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         if (kdcReader == null) {
             kdcReader = new KDCReader(this, null, null, null, null, this, this, false);
         }
-        btDev = null;
         if (KDCReader.GetAvailableDeviceList() != null && KDCReader.GetAvailableDeviceList().size() > 0) {
             btDev = KDCReader.GetAvailableDeviceList().get(0);
             kdcReader.Connect(btDev);
         }
-        return true;
+        return kdcReader.IsConnected();
     }
 
     @Override
@@ -262,6 +260,13 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
             scannerCallBack = callBack;
             kdcReader.EnableMSR_POS();
             kdcReader.EnableNFC_POS();
+            String SAMPLE_AES256_KEY = "4b44434b6f616d4b44435461634b44434b44434b6f616d4b44435461634b4443";
+            kdcReader.SetMSRDataEncryption(KDCConstants.MSRDataEncryption.AES);
+            kdcReader.SetAESKeyLength(KDCConstants.AESBitLengths.AES_256_BITS);
+            kdcReader.SetAESKey(SAMPLE_AES256_KEY);
+
+
+            kdcReader.EnableCardReader_POS((short) (KPOSConstants.CARD_TYPE_MAGNETIC | KPOSConstants.CARD_TYPE_EMV_CONTACT));
         }
         handler.post(doUpdateDidConnect);
     }
@@ -385,6 +390,7 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         switch (state) {
             case KDCConstants.CONNECTION_STATE_CONNECTED:
                 Log.d("KDCReader", "Connected");
+                this.edm.driverDidConnectToDevice(thisInstance, false);
                 break;
 
             case KDCConstants.CONNECTION_STATE_CONNECTING:
@@ -401,12 +407,37 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         }
     }
 
-
     @Override
     public void DataReceived(KDCData kdcData) {
+        String SAMPLE_AES256_KEY = "4b44434b6f616d4b44435461634b44434b44434b6f616d4b44435461634b4443";
         String data = "";
         data = kdcData.GetData();
+        byte[] IV = new byte[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
+        String iv= String.valueOf(IV);
+        byte[] decryptedData_hex = new byte[0];
+        try {
+            decryptedData_hex = KPOSHSM.decryptWithAES(kdcData.GetDataBytes(), this.hexStringToByteArray(SAMPLE_AES256_KEY));
+            data = new String(decryptedData_hex);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+//        byte[] decryptedTrack2Data = new byte[unencryptedTrack2Length];
+//        System.arraycopy(decryptedData_hex, 4, decryptedTrack2Data, 0, unencryptedTrack2Length); // first 4 bytes are random data
+//        DisplayString(I, "decrypted track2 data [ " + new String(decryptedTrack2Data, "UTF-8") + " ]");
+    }
+
+    public byte[] hexStringToByteArray(String s) {
+
+        if (s == null) return null;
+
+        byte[] result = new byte[s.length() / 2];
+        for (int i = 0; i < result.length; i++) {
+            int index = i * 2;
+            int v = Integer.parseInt(s.substring(index, index + 2), 16);
+            result[i] = (byte) v;
+        }
+        return result;
     }
 
     @Override
@@ -416,7 +447,8 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
     @Override
     public void MSRDataReceived(KDCData kdcData) {
-
+        String data = "";
+        data = kdcData.GetData();
     }
 
 

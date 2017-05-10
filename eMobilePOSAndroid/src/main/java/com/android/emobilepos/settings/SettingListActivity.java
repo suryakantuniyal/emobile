@@ -1136,7 +1136,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();
                                 Global.mainPrinterManager.loadDrivers(getActivity(), Global.ONEIL, false);
-                            } else if (val[pos].toUpperCase(Locale.getDefault()).contains("KDC500")) {
+                            } else if (val[pos].toUpperCase(Locale.getDefault()).startsWith("KDC")) {
                                 myPref.setPrinterType(Global.KDC500);
                                 myPref.setPrinterMACAddress(macAddressList.get(pos));
                                 myPref.setSwiperType(Global.KDC500);
