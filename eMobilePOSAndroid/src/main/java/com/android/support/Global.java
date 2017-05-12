@@ -1532,6 +1532,9 @@ public class Global extends MultiDexApplication {
                     } else if (enteredPass.equals(myPref.getApplicationPassword())) {
                         loggedIn = true;
                         validPassword[0] = true;
+                        if(activity instanceof MainMenu_FA) {
+                            ((MainMenu_FA) activity).hideLogoutButton();
+                        }
                     } else {
                         validPassword[0] = false;
                         promptForMandatoryLogin(activity);

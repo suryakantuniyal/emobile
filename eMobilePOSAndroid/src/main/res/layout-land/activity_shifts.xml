@@ -835,7 +835,6 @@
                 android:orientation="horizontal"
                 app:layout_constraintRight_toRightOf="@+id/textView24"
                 app:layout_constraintTop_toTopOf="@+id/clerkNameShifttextView">
-
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -843,6 +842,34 @@
                     android:orientation="vertical"
                     android:layout_marginEnd="10dp"
                     android:layout_marginRight="10dp">
+
+                    <TextView
+                        android:id="@+id/endingCashAmountLbltextView21"
+                        style="@style/black_text_appearance"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal"
+                        android:text="@string/total_ending_cash" />
+
+                    <TextView
+                        android:id="@+id/endingCashAmounteditText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical|center_horizontal"
+                        style="@style/black_text_appearance"
+                        android:text="@string/add_main_hint2"
+                        android:textSize="@dimen/history_title_text_size"
+                        android:layout_margin="10dp" />
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginRight="10dp"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/closeAmountLbltextView21"
@@ -854,13 +881,20 @@
 
                     <TextView
                         android:id="@+id/totalAmounteditText"
+                        style="@style/black_text_appearance"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
                         android:gravity="center_vertical|center_horizontal"
-                        style="@style/black_text_appearance"
                         android:text="@string/add_main_hint2"
-                        android:textSize="@dimen/history_title_text_size"
-                        android:layout_margin="10dp" />
+                        android:textSize="@dimen/history_title_text_size" />
+
+                    <TextView
+                        android:id="@+id/accrualStatustextView23"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal"
+                        android:text="@string/under" />
                 </LinearLayout>
 
                 <Button

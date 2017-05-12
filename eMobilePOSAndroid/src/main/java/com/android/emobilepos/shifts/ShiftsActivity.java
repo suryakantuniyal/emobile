@@ -1,6 +1,7 @@
 package com.android.emobilepos.shifts;
 
 import android.app.ProgressDialog;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
@@ -30,6 +31,7 @@ import com.android.support.SynchMethods;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.crashlytics.android.Crashlytics;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -68,6 +70,8 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
     private int fiftyDollars;
     private int hundredDollars;
     private TextView totalAmountEditText;
+    private TextView accrualStatusTextView;
+
     private Shift shift;
     private Button submitShiftbutton;
     private TextView openOnLbl;
@@ -77,6 +81,7 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
     private TextView pettyCash;
     private MyPreferences preferences;
     Global global;
+    private TextView endingCashAmounteditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,6 +122,7 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
             closeAmountLbl.setText(getString(R.string.entered_close_amount));
             openOnDate.setText(DateUtils.getDateAsString(shift.getCreationDate(), DateUtils.DATE_MMM_dd_yyyy_h_mm_a));
             pettyCash.setText(Global.formatDoubleStrToCurrency(shift.getBeginningPettyCash()));
+            endingCashAmounteditText.setText(Global.formatDoubleStrToCurrency(shift.getTotal_ending_cash()));
         }
 
     }
@@ -318,6 +324,26 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
         fiftyDollarTextView.setText(Global.getCurrencyFormat(String.valueOf(fiftyDollars * 50)));
         hundredDollarTextView.setText(Global.getCurrencyFormat(String.valueOf(hundredDollars * 100)));
         totalAmountEditText.setText(Global.getCurrencyFormat(total.toString()));
+        BigDecimal totalEndingCash = new BigDecimal(shift.getTotal_ending_cash());
+        switch (totalEndingCash.compareTo(BigDecimal.valueOf(total))) {
+            case -1:
+                accrualStatusTextView.setText(getString(R.string.over));
+                totalAmountEditText.setTextColor(Color.RED);
+                accrualStatusTextView.setTextColor(Color.RED);
+                accrualStatusTextView.setVisibility(View.VISIBLE);
+                break;
+            case 1:
+                totalAmountEditText.setTextColor(Color.BLUE);
+                accrualStatusTextView.setTextColor(Color.BLUE);
+                accrualStatusTextView.setVisibility(View.VISIBLE);
+                accrualStatusTextView.setText(getString(R.string.under));
+                break;
+            case 0:
+                totalAmountEditText.setTextColor(Color.BLUE);
+                accrualStatusTextView.setTextColor(Color.BLACK);
+                accrualStatusTextView.setVisibility(View.GONE);
+                break;
+        }
     }
 
     @Override
@@ -431,8 +457,10 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
         }
         TextView clerkName = (TextView) findViewById(R.id.clerkNameShifttextView);
         clerkName.setText(clerk == null ? "" : clerk.getEmpName());
-
+        endingCashAmounteditText = (TextView) findViewById(R.id.endingCashAmounteditText);
         totalAmountEditText = (TextView) findViewById(R.id.totalAmounteditText);
+        accrualStatusTextView = (TextView) findViewById(R.id.accrualStatustextView23);
+        accrualStatusTextView.setVisibility(View.GONE);
         openOnLbl = (TextView) findViewById(R.id.openOnLbltextView25);
         openOnDate = (TextView) findViewById(R.id.openOnDatetextView26);
         closeAmountLbl = (TextView) findViewById(R.id.closeAmountLbltextView21);
@@ -546,9 +574,7 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
         @Override
         protected void onPostExecute(Boolean result) {
             dialog.dismiss();
-            if (result) {
-                finish();
-            } else {
+            if (!result) {
                 Global.showPrompt(ShiftsActivity.this, R.string.dlog_title_error, getString(R.string.error_sync_closed_shift));
             }
         }

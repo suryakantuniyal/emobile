@@ -73,7 +73,6 @@ public class GenerateXML {
         }
 
         thisActivity = activity;
-
         if (thisActivity instanceof ClockInOut_FA) {
             try {
                 ending.append("&EmpID=")

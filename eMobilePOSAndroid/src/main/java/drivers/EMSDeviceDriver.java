@@ -693,7 +693,7 @@ public class EMSDeviceDriver {
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
                     Global.formatToDisplayDate(anOrder.ord_timecreated, 3), lineWidth, 0));
 
-            if (!ShiftDAO.isShiftOpen() || myPref.isUseClerks()) {
+            if (ShiftDAO.isShiftOpen() && myPref.isUseClerks()) {
                 String clerk_id = anOrder.clerk_id;
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_clerk),
                         clerk.getEmpName() + "(" + clerk_id + ")", lineWidth, 0));
