@@ -2,7 +2,6 @@ package com.android.support;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
@@ -1532,7 +1531,7 @@ public class Global extends MultiDexApplication {
                     } else if (enteredPass.equals(myPref.getApplicationPassword())) {
                         loggedIn = true;
                         validPassword[0] = true;
-                        if(activity instanceof MainMenu_FA) {
+                        if (activity instanceof MainMenu_FA) {
                             ((MainMenu_FA) activity).hideLogoutButton();
                         }
                     } else {

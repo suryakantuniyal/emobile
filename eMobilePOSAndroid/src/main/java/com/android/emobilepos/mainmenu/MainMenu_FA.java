@@ -238,8 +238,8 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         }
     }
 
-    public void hideLogoutButton(){
-       invalidateOptionsMenu();
+    public void hideLogoutButton() {
+        invalidateOptionsMenu();
     }
     @Override
     public void onResume() {

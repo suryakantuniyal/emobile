@@ -291,7 +291,7 @@ public class SynchMethods {
                 ClerkDAO.clearAllAssignedTable(associate);
                 for (DinningTable table : associate.getAssignedDinningTables()) {
                     DinningTable dinningTable = DinningTableDAO.getById(table.getId());
-                    if (dinningTable != null ) {
+                    if (dinningTable != null) {
                         ClerkDAO.addAssignedTable(associate, dinningTable);
                     }
                 }
