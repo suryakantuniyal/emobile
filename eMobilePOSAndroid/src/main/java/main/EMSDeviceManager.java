@@ -15,6 +15,7 @@ import com.android.support.MyPreferences;
 
 import drivers.EMSAsura;
 import drivers.EMSBixolon;
+import drivers.EMSBixolonRD;
 import drivers.EMSBlueBambooP25;
 import drivers.EMSBluetoothStarPrinter;
 import drivers.EMSDeviceDriver;
@@ -73,6 +74,10 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                     promptTypeOfStarPrinter();
                 else
                     promptStarPrinterSize(true);
+                break;
+            case Global.BIXOLON_RD:
+                aDevice = new EMSBixolonRD();
+                aDevice.connect(activity, -1, true, instance);
                 break;
             case Global.BAMBOO:
                 aDevice = new EMSBlueBambooP25();
@@ -169,6 +174,9 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 break;
             case Global.BIXOLON:
                 aDevice = new EMSBixolon();
+                break;
+            case Global.BIXOLON_RD:
+                aDevice = new EMSBixolonRD();
                 break;
             case Global.ZEBRA:
                 aDevice = new EMSZebraEM220ii();

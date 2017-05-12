@@ -253,6 +253,7 @@ dependencies {
     compile files('libs/spm2_1_2_1.jar')
     compile files('libs/walker_1_2_1.jar')
     compile files('libs/coresdk_1_2_3.jar')
+    compile files('libs/TfhkaAndroid.jar')
 }
 
 dependencies {

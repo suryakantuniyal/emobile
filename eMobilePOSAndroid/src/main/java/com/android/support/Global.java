@@ -133,6 +133,8 @@ public class Global extends MultiDexApplication {
     public static final int PAT215 = 19;
     public static final int MEPOS = 20;
     public static final int MIURA = 21;
+    public static final int BIXOLON_RD = 22;
+
     public static final String AUDIO_MSR_UNIMAG = "0";
     public static final String AUDIO_MSR_MAGTEK = "1";
     public static final String AUDIO_MSR_ROVER = "2";
@@ -408,6 +410,7 @@ public class Global extends MultiDexApplication {
             case KDC500:
                 _name = "KDC500";
                 break;
+            case BIXOLON_RD:
             case BIXOLON:
                 _name = "BIXOLON";
                 break;

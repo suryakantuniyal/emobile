@@ -1099,6 +1099,13 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                                 Global.mainPrinterManager = edm.getManager();
                                 Global.mainPrinterManager.loadDrivers(getActivity(), Global.STAR, false);
 
+                            } else if (val[pos].toUpperCase(Locale.getDefault()).contains("SERIAL ADAPTOR")) {
+                                myPref.setPrinterType(Global.BIXOLON_RD);
+                                myPref.setPrinterMACAddress(macAddressList.get(pos));
+                                myPref.setPrinterName(strDeviceName);
+                                EMSDeviceManager edm = new EMSDeviceManager();
+                                Global.mainPrinterManager = edm.getManager();
+                                Global.mainPrinterManager.loadDrivers(getActivity(), Global.BIXOLON_RD, false);
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("SPP-R")) {
                                 myPref.setPrinterType(Global.BIXOLON);
                                 myPref.setPrinterMACAddress("BT:" + macAddressList.get(pos));
