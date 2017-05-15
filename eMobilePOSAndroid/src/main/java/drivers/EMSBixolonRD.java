@@ -4,15 +4,20 @@ import android.app.Activity;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 
+import com.android.database.MemoTextHandler;
+import com.android.database.TaxesHandler;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.Tax;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.DateUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.thefactoryhka.android.rd.TfhkaAndroid;
+
+import org.springframework.util.StringUtils;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -66,14 +71,46 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
         return printerTFHKA.estado || printerTFHKA.OpenBTPrinter(myPref.getPrinterMACAddress());
     }
 
-    private void setPrintrConfiguration(){
+    private boolean setPrintrConfiguration() {
+        boolean cmd = true;
         try {
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(new Date());
-            boolean cmd = printerTFHKA.SendCmd("PJ3201");
-            cmd = printerTFHKA.SendCmd("PG"+ DateUtils.getDateAsString(new Date(),"ddMMyy"));
-            cmd = printerTFHKA.SendCmd("PG"+ DateUtils.getDateAsString(new Date(),"HH:mm:ss"));
-            cmd = printerTFHKA.SendCmd("PG"+ DateUtils.getDateAsString(new Date(),"HH:mm:ss"));
+            cmd = cmd && printerTFHKA.SendCmd("PJ3201");
+            cmd = cmd && printerTFHKA.SendCmd("PG" + DateUtils.getDateAsString(new Date(), "ddMMyy"));
+            cmd = cmd && printerTFHKA.SendCmd("PF" + DateUtils.getDateAsString(new Date(), "HH:mm:ss"));
+            cmd = cmd && printerTFHKA.SendCmd("PG" + DateUtils.getDateAsString(new Date(), "HH:mm:ss"));
+            cmd = cmd && printerTFHKA.SendCmd("I0Z0");
+            TaxesHandler taxesHandler = new TaxesHandler(activity);
+            List<Tax> taxes = taxesHandler.getTaxes();
+            String taxCmd = "PT";
+            for (Tax tax : taxes) {
+                taxCmd += "2" + Global.getRoundBigDecimal(Global.getBigDecimalNum(tax.getTaxRate()), 2).toString();
+            }
+            taxCmd = StringUtils.deleteAny(taxCmd, ".");
+//            cmd = cmd && printerTFHKA.SendCmd(taxCmd);
+            //PT command apply the taxes rates. Can be executed 64 times max.
+            //cmd = cmd && printerTFHKA.SendCmd("Pt");
+
+
+            MemoTextHandler handler = new MemoTextHandler(activity);
+            String[] header = handler.getHeader();
+            if (header[0] != null && !header[0].isEmpty())
+                cmd = cmd && printerTFHKA.SendCmd("PH01" + header[0]);
+            if (header[1] != null && !header[1].isEmpty())
+                cmd = cmd && printerTFHKA.SendCmd("PH02" + header[1]);
+            if (header[2] != null && !header[2].isEmpty())
+                cmd = cmd && printerTFHKA.SendCmd("PH03" + header[2]);
+
+            String[] footer = handler.getFooter();
+            if (footer[0] != null && !footer[0].isEmpty())
+                cmd = cmd && printerTFHKA.SendCmd("PH91" + footer[0]);
+            if (footer[1] != null && !footer[1].isEmpty())
+                cmd = printerTFHKA.SendCmd("PH92" + footer[1]);
+            if (footer[2] != null && !footer[2].isEmpty())
+                cmd = cmd && printerTFHKA.SendCmd("PH93" + footer[2]);
+
+            return cmd;
         } catch (Exception e) {
             e.printStackTrace();
         }
