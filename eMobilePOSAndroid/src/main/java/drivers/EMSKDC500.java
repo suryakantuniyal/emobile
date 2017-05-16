@@ -39,7 +39,6 @@ import koamtac.kdc.sdk.KDCReader;
 import koamtac.kdc.sdk.KPOSConstants;
 import koamtac.kdc.sdk.KPOSData;
 import koamtac.kdc.sdk.KPOSDataReceivedListener;
-import koamtac.kdc.sdk.KPOSHSM;
 import main.EMSDeviceManager;
 
 /**
@@ -67,6 +66,7 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     private String scannedData = "";
     private BluetoothDevice btDev;
     private boolean isAutoConect = false;
+    private CreditCardInfo cardInfo;
 
 
     @Override
@@ -265,10 +265,10 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
             scannerCallBack = callBack;
             kdcReader.EnableMSR_POS();
             kdcReader.EnableNFC_POS();
-            String SAMPLE_AES128_KEY = "1AAEAF7E7ABE338A942844F7F189BD49";
-            kdcReader.SetMSRDataEncryption(KDCConstants.MSRDataEncryption.AES);
-            kdcReader.SetAESKeyLength(KDCConstants.AESBitLengths.AES_128_BITS);
-            kdcReader.SetAESKey(SAMPLE_AES128_KEY);
+//            String SAMPLE_AES128_KEY = "1AAEAF7E7ABE338A942844F7F189BD49";
+//            kdcReader.SetMSRDataEncryption(KDCConstants.MSRDataEncryption.AES);
+//            kdcReader.SetAESKeyLength(KDCConstants.AESBitLengths.AES_128_BITS);
+//            kdcReader.SetAESKey(SAMPLE_AES128_KEY);
 
 
             kdcReader.EnableCardReader_POS((short) (KPOSConstants.CARD_TYPE_MAGNETIC | KPOSConstants.CARD_TYPE_EMV_CONTACT));
@@ -296,6 +296,12 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
                 e.printStackTrace();
             }
             showConnectionMessage();
+        }
+    };
+
+    private Runnable cardReadCallBack = new Runnable() {
+        public void run() {
+            scannerCallBack.cardWasReadSuccessfully(true, cardInfo);
         }
     };
 
@@ -447,19 +453,22 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
             handler.post(runnableScannedData);
 //            scannerCallBack.scannerWasRead(kdcData.GetData());
         } else {
-            String SAMPLE_AES128_KEY = "1AAEAF7E7ABE338A942844F7F189BD49";
-            String data = "";
-            data = kdcData.GetData();
-            byte[] IV = new byte[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-
-            String iv = String.valueOf(IV);
-            byte[] decryptedData_hex = new byte[0];
-            try {
-                decryptedData_hex = KPOSHSM.decryptWithAES(kdcData.GetDataBytes(), this.hexStringToByteArray(SAMPLE_AES128_KEY));
-                data = new String(decryptedData_hex);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            cardInfo = new CreditCardInfo();
+            CardParser.parseCreditCard(activity, kdcData.GetData(), cardInfo);
+            handler.post(cardReadCallBack);
+//            String SAMPLE_AES128_KEY = "1AAEAF7E7ABE338A942844F7F189BD49";
+//            String data = "";
+//            data = kdcData.GetData();
+//            byte[] IV = new byte[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+//
+//            String iv = String.valueOf(IV);
+//            byte[] decryptedData_hex = new byte[0];
+//            try {
+//                decryptedData_hex = KPOSHSM.decryptWithAES(kdcData.GetDataBytes(), this.hexStringToByteArray(SAMPLE_AES128_KEY));
+//                data = new String(decryptedData_hex);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
 //        byte[] decryptedTrack2Data = new byte[unencryptedTrack2Length];
 //        System.arraycopy(decryptedData_hex, 4, decryptedTrack2Data, 0, unencryptedTrack2Length); // first 4 bytes are random data
 //        DisplayString(I, "decrypted track2 data [ " + new String(decryptedTrack2Data, "UTF-8") + " ]");
