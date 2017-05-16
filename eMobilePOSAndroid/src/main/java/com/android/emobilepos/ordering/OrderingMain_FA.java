@@ -253,14 +253,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         Intent i = getIntent();
         handleDecodeData(i);
 
-        if (Global.deviceHasBarcodeScanner(myPref.getPrinterType())
-                || Global.deviceHasBarcodeScanner(myPref.sledType(true, -2))) {
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)
-                Global.mainPrinterManager.getCurrentDevice().loadScanner(callBackMSR);
-            if (Global.btSled != null && Global.btSled.getCurrentDevice() != null)
-                Global.btSled.getCurrentDevice().loadScanner(callBackMSR);
-        }
-
         hasBeenCreated = true;
 
     }
@@ -713,7 +705,13 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 e.printStackTrace();
             }
         }
-
+        if (Global.deviceHasBarcodeScanner(myPref.getPrinterType())
+                || Global.deviceHasBarcodeScanner(myPref.sledType(true, -2))) {
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)
+                Global.mainPrinterManager.getCurrentDevice().loadScanner(callBackMSR);
+            if (Global.btSled != null && Global.btSled.getCurrentDevice() != null)
+                Global.btSled.getCurrentDevice().loadScanner(callBackMSR);
+        }
         super.onResume();
     }
 
