@@ -96,15 +96,14 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         isAutoConect = true;
         thisInstance = this;
 
-        connectKDC500();
+        boolean connected = connectKDC500();
+        if (connected) {
+            this.edm.driverDidConnectToDevice(thisInstance, false);
+        } else {
+            this.edm.driverDidNotConnectToDevice(thisInstance, msg, false);
+        }
+
         return true;
-//        if (connectKDC500()) {
-//            this.edm.driverDidConnectToDevice(thisInstance, false);
-//            return true;
-//        } else {
-//            this.edm.driverDidNotConnectToDevice(thisInstance, msg, false);
-//            return false;
-//        }
     }
 
     private boolean connectKDC500() {
@@ -243,8 +242,8 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
 
     public void registerPrinter() {
-
         edm.setCurrentDevice(thisInstance);
+        Global.mainPrinterManager.setCurrentDevice(this);
     }
 
     public void unregisterPrinter() {
@@ -450,7 +449,9 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     public void DataReceived(KDCData kdcData) {
         if (kdcData.GetDataType() == KDCConstants.DataType.BARCODE) {
             scannedData = kdcData.GetData();
-            handler.post(runnableScannedData);
+            if (handler != null) {
+                handler.post(runnableScannedData);
+            }
 //            scannerCallBack.scannerWasRead(kdcData.GetData());
         } else {
             cardInfo = new CreditCardInfo();
