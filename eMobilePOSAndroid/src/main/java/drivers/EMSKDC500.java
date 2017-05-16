@@ -46,13 +46,13 @@ import main.EMSDeviceManager;
  * Created by Guarionex on 12/8/2015.
  */
 public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate,
-        KDCDataReceivedListener,        // required for KDC Barcode Solution models
-        KDCBarcodeDataReceivedListener,  // required for KDC Barcode Solution models
-        KDCGPSDataReceivedListener,        // required for KDC Barcode Solution models
-        KDCMSRDataReceivedListener,        // required for KDC Barcode Solution models
-        KDCNFCDataReceivedListener,        // required for KDC Barcode Solution models
-        KPOSDataReceivedListener,        // required for KDC Payment Solution models
-        KDCConnectionListener            // required for all
+        KDCDataReceivedListener, // required for KDC Barcode Solution models
+        KDCBarcodeDataReceivedListener, // required for KDC Barcode Solution models
+        KDCGPSDataReceivedListener, // required for KDC Barcode Solution models
+        KDCMSRDataReceivedListener, // required for KDC Barcode Solution models
+        KDCNFCDataReceivedListener, // required for KDC Barcode Solution models
+        KPOSDataReceivedListener, // required for KDC Payment Solution models
+        KDCConnectionListener // required for all
 
 {
 
@@ -245,18 +245,24 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     }
 
     public void unregisterPrinter() {
-        kdcReader.DisableNFC_POS();
-
+        if (kdcReader != null && kdcReader.IsConnected()) {
+            kdcReader.DisableNFC_POS();
+            kdcReader.DisableMSR_POS();
+            kdcReader.DisableCardReader_POS((short) (KPOSConstants.CARD_TYPE_MAGNETIC | KPOSConstants.CARD_TYPE_EMV_CONTACT));
+        }
         edm.setCurrentDevice(null);
     }
 
     @Override
     public void loadCardReader(EMSCallBack callBack, boolean isDebitCard) {
-        if (handler == null)
+        if (handler == null) {
             handler = new Handler();
-        scannerCallBack = callBack;
-        kdcReader.EnableMSR_POS();
-        kdcReader.EnableNFC_POS();
+        }
+        if (kdcReader != null && kdcReader.IsConnected()) {
+            scannerCallBack = callBack;
+            kdcReader.EnableMSR_POS();
+            kdcReader.EnableNFC_POS();
+        }
         handler.post(doUpdateDidConnect);
     }
 
@@ -277,6 +283,7 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         scannerCallBack = callBack;
         kdcReader.EnableMSR_POS();
         kdcReader.EnableNFC_POS();
+        kdcReader.EnableCardReader_POS((short) (KPOSConstants.CARD_TYPE_MAGNETIC | KPOSConstants.CARD_TYPE_EMV_CONTACT));
         if (handler == null)
             handler = new Handler();
 
@@ -397,6 +404,8 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
     @Override
     public void DataReceived(KDCData kdcData) {
+        String data = "";
+        data = kdcData.GetData();
 
     }
 
