@@ -1344,6 +1344,7 @@
     <string name="dlog_msg_error_shift_already_open">Shift already open.</string>
     <string name="over">Over</string>
     <string name="under">Under</string>
+    <string name="bixolon_title">Bixolon Configuration</string>
 
 
 </resources>
