@@ -46,8 +46,8 @@ public class AESCipher {
 
     }
 
-    public String encrypt(String key, byte[] initVector, String value) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, IOException {
-        IvParameterSpec iv = new IvParameterSpec(initVector);
+    public String encrypt(String key, String initVector, String value) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, IOException {
+        IvParameterSpec iv = new IvParameterSpec(Base64.decode(initVector));
         SecretKeySpec skeySpec = new SecretKeySpec(Base64.decode(key), "AES");
 
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS7Padding");
@@ -56,8 +56,8 @@ public class AESCipher {
         return Base64.encodeBytes(encrypted);
     }
 
-    public String decrypt(String key, byte[] initVector, String encrypted) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, IOException {
-        IvParameterSpec iv = new IvParameterSpec(initVector);
+    public String decrypt(String key, String initVector, String encrypted) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, IOException {
+        IvParameterSpec iv = new IvParameterSpec(Base64.decode(initVector));
         SecretKeySpec skeySpec = new SecretKeySpec(Base64.decode(key), "AES");
 
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
