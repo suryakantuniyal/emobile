@@ -1345,6 +1345,8 @@
     <string name="over">Over</string>
     <string name="under">Under</string>
     <string name="bixolon_title">Bixolon Configuration</string>
+    <string name="time">Time</string>
+    <string name="config_bixolon_setup">Bixolon Setup</string>
 
 
 </resources>

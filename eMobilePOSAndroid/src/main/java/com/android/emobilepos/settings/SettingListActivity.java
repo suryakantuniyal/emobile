@@ -3,6 +3,7 @@ package com.android.emobilepos.settings;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -329,6 +330,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                         prefManager.findPreference("pref_printek_info").setOnPreferenceClickListener(this);
                         prefManager.findPreference("pref_star_info").setOnPreferenceClickListener(this);
                         prefManager.findPreference("pref_snbc_setup").setOnPreferenceClickListener(this);
+                        prefManager.findPreference("pref_bixolon_setup").setOnPreferenceClickListener(this);
                         prefManager.findPreference("pref_configure_ingenico_settings").setOnPreferenceClickListener(this);
                     }
                     prefManager.findPreference("pref_connect_to_bluetooth_peripheral").setOnPreferenceClickListener(this);
@@ -502,6 +504,9 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                 case R.string.config_snbc_setup:
                     promptSNBCSetup();
                     break;
+                case R.string.config_bixolon_setup:
+                    openBixolonSetting();
+                    break;
                 case R.string.config_configure_ingenico_settings:
                     break;
                 case R.string.config_connect_to_bluetooth_peripheral:
@@ -586,6 +591,21 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     break;
             }
             return false;
+        }
+
+        private void openBixolonSetting() {
+            if (getActivity().findViewById(R.id.setting_detail_container) != null) {
+                Fragment fragment = new BixolonFragment();
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.setting_detail_container, fragment)
+                        .commit();
+            } else {
+//                Context context = v.getContext();
+//                Intent intent = new Intent(context, SettingDetailActivity.class);
+//                intent.putExtra("section", SettingSection.getInstance(position).getCode());
+//
+//                context.startActivity(intent);
+            }
         }
 
 

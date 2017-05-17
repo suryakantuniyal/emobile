@@ -33,7 +33,7 @@ import main.EMSDeviceManager;
  */
 
 public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
-    private TfhkaAndroid printerTFHKA;
+    private static TfhkaAndroid printerTFHKA;
     private EMSDeviceManager edm;
     String msg = "Failed to connect";
 
@@ -41,7 +41,9 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
     public void connect(final Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
         this.activity = activity;
         this.edm = edm;
-        printerTFHKA = new TfhkaAndroid();
+        if (printerTFHKA == null) {
+            printerTFHKA = new TfhkaAndroid();
+        }
         myPref = new MyPreferences(activity);
         boolean connect = connect();
         if (connect) {
@@ -56,7 +58,9 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
     public boolean autoConnect(final Activity activity, EMSDeviceManager edm, int paperSize, boolean isPOSPrinter, String portName, String portNumber) {
         this.activity = activity;
         this.edm = edm;
-        printerTFHKA = new TfhkaAndroid();
+        if (printerTFHKA == null) {
+            printerTFHKA = new TfhkaAndroid();
+        }
         myPref = new MyPreferences(activity);
         boolean connect = connect();
         if (connect) {
@@ -79,7 +83,7 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
             cmd = cmd && printerTFHKA.SendCmd("PJ3201");
             cmd = cmd && printerTFHKA.SendCmd("PG" + DateUtils.getDateAsString(new Date(), "ddMMyy"));
             cmd = cmd && printerTFHKA.SendCmd("PF" + DateUtils.getDateAsString(new Date(), "HH:mm:ss"));
-            cmd = cmd && printerTFHKA.SendCmd("PG" + DateUtils.getDateAsString(new Date(), "HH:mm:ss"));
+
             cmd = cmd && printerTFHKA.SendCmd("I0Z0");
             TaxesHandler taxesHandler = new TaxesHandler(activity);
             List<Tax> taxes = taxesHandler.getTaxes();
@@ -114,6 +118,11 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return cmd;
+    }
+
+    public TfhkaAndroid getPrinterTFHKA() {
+        return printerTFHKA;
     }
 
     @Override
@@ -193,8 +202,13 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
     }
 
     @Override
-    public void registerPrinter() {
+    public void registerAll() {
+        this.registerPrinter();
+    }
 
+
+    public void registerPrinter() {
+        edm.setCurrentDevice(this);
     }
 
     @Override
