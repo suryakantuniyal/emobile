@@ -9,6 +9,7 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
@@ -60,6 +61,7 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     private EMSKDC500 thisInstance;
     private static KDCReader kdcReader;
     String msg = "Failed to connect";
+    private static final String AES_KEY = "ThisIsMyTestKeyForAESEncryption.";
 
 
     private static Handler handler;
@@ -108,7 +110,7 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
     private boolean connectKDC500() {
         if (kdcReader == null) {
-            kdcReader = new KDCReader(this, null, null, null, null, this, this, false);
+            kdcReader = new KDCReader(this,this,null,this,null,this,false);
         }
         if (!kdcReader.IsConnected() && KDCReader.GetAvailableDeviceList() != null && KDCReader.GetAvailableDeviceList().size() > 0) {
             btDev = KDCReader.GetAvailableDeviceList().get(0);
@@ -264,6 +266,7 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
             scannerCallBack = callBack;
             kdcReader.EnableMSR_POS();
             kdcReader.EnableNFC_POS();
+            enableAES();
 //            String SAMPLE_AES128_KEY = "1AAEAF7E7ABE338A942844F7F189BD49";
 //            kdcReader.SetMSRDataEncryption(KDCConstants.MSRDataEncryption.AES);
 //            kdcReader.SetAESKeyLength(KDCConstants.AESBitLengths.AES_128_BITS);
@@ -273,6 +276,37 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
             kdcReader.EnableCardReader_POS((short) (KPOSConstants.CARD_TYPE_MAGNETIC | KPOSConstants.CARD_TYPE_EMV_CONTACT));
         }
         handler.post(doUpdateDidConnect);
+    }
+
+    private void enableAES() {
+        if (kdcReader == null || !kdcReader.IsConnected()) {
+            return;
+        }
+
+        // Change encryption key in KDC device - Optional
+        kdcReader.SetAESKey(AES_KEY);
+        kdcReader.SetAESKeyLength(KDCConstants.AESBitLengths.AES_128_BITS);
+
+        // Enable KDC device to encrypt MSR data by AES algorithms. - Optional
+        kdcReader.SetMSRDataEncryption(KDCConstants.MSRDataEncryption.AES);
+
+        // Get AES Key and Length from connected kdc device
+        String key = kdcReader.GetAESKey();
+        KDCConstants.AESBitLengths length = kdcReader.GetAESKeyLength();
+
+        // Enable KDCReader to decrypt MSR data using AES Key from KDC Device.
+        if (key != null && kdcReader.EnableDecryptMSRData(true, key, length)) {
+            activity.runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+                    Toast.makeText(activity, "Encrypted MSR Data from KDC device will be decrypted from now.", Toast.LENGTH_LONG).show();
+                }
+            });
+        } else {
+//            Log.d(TAG, "Error");
+        }
+
     }
 
     private Runnable doUpdateDidConnect = new Runnable() {
@@ -496,8 +530,9 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
     @Override
     public void MSRDataReceived(KDCData kdcData) {
-        String data = "";
-        data = kdcData.GetData();
+        cardInfo = new CreditCardInfo();
+        CardParser.parseCreditCard(activity, kdcData.GetMSRData(), cardInfo);
+        handler.post(cardReadCallBack);
     }
 
 
