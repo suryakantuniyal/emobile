@@ -305,4 +305,35 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
     public boolean isConnected() {
         return false;
     }
+
+    public boolean sendDateTimeCommand(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        boolean cmd = printerTFHKA.SendCmd("PJ3201"); //set print for retail mode
+        cmd = cmd && printerTFHKA.SendCmd("PG" + DateUtils.getDateAsString(new Date(), "ddMMyy"));
+        cmd = cmd && printerTFHKA.SendCmd("PF" + DateUtils.getDateAsString(new Date(), "HH:mm:ss"));
+        return cmd;
+    }
+
+    public boolean sendHeaders(String[] headers) {
+        printerTFHKA.SendCmd("I0Z0");
+        boolean cmd = true;
+        for (int i = 0; i < headers.length; i++) {
+            cmd = cmd && printerTFHKA.SendCmd("PH0" + i + 1 + headers[i]);
+        }
+        return cmd;
+    }
+
+    public boolean sendFooters(String[] footers) {
+        printerTFHKA.SendCmd("I0Z0");
+        boolean cmd = true;
+        for (int i = 0; i < footers.length; i++) {
+            cmd = cmd && printerTFHKA.SendCmd("PH9" + i + 1 + footers[i]);
+        }
+        return cmd;
+    }
+
+    public boolean sendTaxes(List<Tax> taxes) {
+        return true;
+    }
 }

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -596,9 +597,10 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
         private void openBixolonSetting() {
             if (getActivity().findViewById(R.id.setting_detail_container) != null) {
                 Fragment fragment = new BixolonFragment();
-                getFragmentManager().beginTransaction()
-                        .replace(R.id.setting_detail_container, fragment)
-                        .commit();
+                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                transaction.replace(R.id.setting_detail_container, fragment);
+                transaction.addToBackStack(null);
+                transaction.commit();
             } else {
 //                Context context = v.getContext();
 //                Intent intent = new Intent(context, SettingDetailActivity.class);

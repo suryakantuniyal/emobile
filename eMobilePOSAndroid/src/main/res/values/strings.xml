@@ -1294,6 +1294,11 @@
     <string name="bixolon_title">Bixolon Configuration</string>
     <string name="time">Time</string>
     <string name="config_bixolon_setup">Bixolon Setup</string>
+    <string name="taxes">Taxes</string>
+    <string name="taxtype">Tax Type</string>
+    <string name="processing">Processing</string>
+    <string name="bixolon_command_succeed">Bixolon command succeed</string>
+    <string name="bixolon_command_fail">Bixolon command fail.</string>
 
 
 </resources>
