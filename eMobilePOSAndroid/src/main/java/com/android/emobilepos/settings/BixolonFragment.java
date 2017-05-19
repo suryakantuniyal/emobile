@@ -81,6 +81,7 @@ public class BixolonFragment extends Fragment implements View.OnClickListener {
                 new SendBixolonCommandTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, Bixoloncommand.SEND_HEADER);
                 break;
             case R.id.sendFooterbutton2c:
+                new SendBixolonCommandTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, Bixoloncommand.SEND_FOOTER);
                 break;
             case R.id.sendTaxesbutton28:
                 break;

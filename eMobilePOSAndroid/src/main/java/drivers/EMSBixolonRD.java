@@ -33,6 +33,7 @@ import main.EMSDeviceManager;
  */
 
 public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
+    private static final int HEADER_LENGTH = 8;
     private static TfhkaAndroid printerTFHKA;
     private EMSDeviceManager edm;
     String msg = "Failed to connect";
@@ -318,8 +319,15 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
     public boolean sendHeaders(String[] headers) {
         printerTFHKA.SendCmd("I0Z0");
         boolean cmd = true;
-        for (int i = 0; i < headers.length; i++) {
-            cmd = cmd && printerTFHKA.SendCmd("PH0" + i + 1 + headers[i]);
+        for (int i = 0; i < HEADER_LENGTH; i++) {
+            if (!cmd) {
+                return false;
+            }
+            if (i < headers.length) {
+                cmd = printerTFHKA.SendCmd("PH0" + (i + 1) + headers[i]);
+            } else {
+                cmd = printerTFHKA.SendCmd("PH0" + (i + 1) + "");
+            }
         }
         return cmd;
     }
@@ -327,8 +335,15 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
     public boolean sendFooters(String[] footers) {
         printerTFHKA.SendCmd("I0Z0");
         boolean cmd = true;
-        for (int i = 0; i < footers.length; i++) {
-            cmd = cmd && printerTFHKA.SendCmd("PH9" + i + 1 + footers[i]);
+        for (int i = 0; i < HEADER_LENGTH; i++) {
+            if (!cmd) {
+                return false;
+            }
+            if (i < footers.length) {
+                cmd = printerTFHKA.SendCmd("PH9" + (i + 1) + footers[i]);
+            } else {
+                cmd = printerTFHKA.SendCmd("PH9" + (i + 1) + "");
+            }
         }
         return cmd;
     }
