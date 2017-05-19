@@ -11,6 +11,7 @@ import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Looper;
 import android.os.Message;
 import android.os.PowerManager;
 import android.text.Editable;
@@ -78,6 +79,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TimerTask;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -353,6 +355,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         }
     }
 
+
     private void setHandopintUIFields() {
         cardNum.setVisibility(View.GONE);
         secCode.setVisibility(View.GONE);
@@ -518,7 +521,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                 Global.mainPrinterManager.getCurrentDevice().loadCardReader(callBack, isDebit);
                 cardSwipe.setChecked(true);
             }
-        } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310() || myPref.isKDC5000()) {
+        } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310() || myPref.isKDC500()) {
             cardSwipe.setChecked(true);
         } else if (myPref.isPAT215() && Global.btSwiper == null) {
             if (Global.embededMSR != null && Global.embededMSR.getCurrentDevice() != null) {

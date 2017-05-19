@@ -268,7 +268,7 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
             scannerCallBack = callBack;
             kdcReader.EnableMSR_POS();
             kdcReader.EnableNFC_POS();
-            enableAES();
+//            enableAES();
 //            String SAMPLE_AES128_KEY = "1AAEAF7E7ABE338A942844F7F189BD49";
 //            kdcReader.SetMSRDataEncryption(KDCConstants.MSRDataEncryption.AES);
 //            kdcReader.SetAESKeyLength(KDCConstants.AESBitLengths.AES_128_BITS);
@@ -456,6 +456,7 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         switch (state) {
             case KDCConstants.CONNECTION_STATE_CONNECTED:
                 Log.d("KDCReader", "Connected");
+                enableAES();
                 if (!isAutoConect) {
                     handler.post(connectionCallBack);
                 } else {
