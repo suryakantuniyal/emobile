@@ -11,7 +11,6 @@ import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Looper;
 import android.os.Message;
 import android.os.PowerManager;
 import android.text.Editable;
@@ -79,7 +78,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.TimerTask;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -494,12 +492,10 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             if (_swiper_type != -1 && Global.btSwiper != null && Global.btSwiper.getCurrentDevice() != null
                     && !cardReaderConnected) {
                 Global.btSwiper.getCurrentDevice().loadCardReader(callBack, isDebit);
-            }
-            if (_sled_type != -1 && Global.btSled != null && Global.btSled.getCurrentDevice() != null
+            } else if (_sled_type != -1 && Global.btSled != null && Global.btSled.getCurrentDevice() != null
                     && !cardReaderConnected) {
                 Global.btSled.getCurrentDevice().loadCardReader(callBack, isDebit);
-            }
-            if (_printer_type != -1 && Global.deviceHasMSR(_printer_type)) {
+            } else if (_printer_type != -1 && Global.deviceHasMSR(_printer_type)) {
                 if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null
                         && !cardReaderConnected)
                     Global.mainPrinterManager.getCurrentDevice().loadCardReader(callBack, isDebit);

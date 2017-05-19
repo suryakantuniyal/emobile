@@ -247,7 +247,7 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
     public void registerPrinter() {
         edm.setCurrentDevice(thisInstance);
-        Global.mainPrinterManager.setCurrentDevice(this);
+        Global.btSwiper.setCurrentDevice(this);
     }
 
     public void unregisterPrinter() {
