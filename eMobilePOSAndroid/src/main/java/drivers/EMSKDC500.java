@@ -109,9 +109,11 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     }
 
     private boolean connectKDC500() {
-        if (kdcReader == null) {
-            kdcReader = new KDCReader(this,this,null,this,null,this,false);
+        if (kdcReader != null) {
+            kdcReader.Disconnect();
+            kdcReader.Dispose();
         }
+        kdcReader = new KDCReader(this, null, null, this, null, this, false);
         if (!kdcReader.IsConnected() && KDCReader.GetAvailableDeviceList() != null && KDCReader.GetAvailableDeviceList().size() > 0) {
             btDev = KDCReader.GetAvailableDeviceList().get(0);
             kdcReader.Connect(btDev);
@@ -446,6 +448,7 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
     @Override
     public void BarcodeDataReceived(KDCData kdcData) {
+        String data = kdcData.GetData();
     }
 
     @Override
