@@ -84,6 +84,7 @@ public class BixolonFragment extends Fragment implements View.OnClickListener {
                 new SendBixolonCommandTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, Bixoloncommand.SEND_FOOTER);
                 break;
             case R.id.sendTaxesbutton28:
+                new SendBixolonCommandTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, Bixoloncommand.SEND_TAXES);
                 break;
         }
     }
@@ -108,6 +109,9 @@ public class BixolonFragment extends Fragment implements View.OnClickListener {
                     return bixolon.sendHeaders(headers);
                 case SEND_FOOTER:
                     return bixolon.sendFooters(footers);
+                case SEND_TAXES:
+                    TaxesHandler taxesHandler = new TaxesHandler(getActivity());
+                    return bixolon.sendTaxes(taxesHandler.getTaxes());
             }
             return null;
         }

@@ -34,6 +34,7 @@ import main.EMSDeviceManager;
 
 public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
     private static final int HEADER_LENGTH = 8;
+    private static final int TAX_LENGTH = 5;
     private static TfhkaAndroid printerTFHKA;
     private EMSDeviceManager edm;
     String msg = "Failed to connect";
@@ -349,6 +350,18 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
     }
 
     public boolean sendTaxes(List<Tax> taxes) {
-        return true;
+        String taxCmd = "PT";
+        for (int i = 0; i < TAX_LENGTH; i++) {
+            if (i < taxes.size()) {
+                taxCmd += "2" + String.format("%05.02f", Global.getRoundBigDecimal(Global.getBigDecimalNum(taxes.get(i).getTaxRate()), 2));
+            }else{
+                taxCmd += "20000";
+            }
+        }
+        taxCmd = StringUtils.deleteAny(taxCmd, ".");
+        boolean cmd = printerTFHKA.SendCmd(taxCmd);
+        //PT command apply the taxes rates. Can be executed 64 times max.
+        cmd = cmd && printerTFHKA.SendCmd("Pt");
+        return cmd;
     }
 }
