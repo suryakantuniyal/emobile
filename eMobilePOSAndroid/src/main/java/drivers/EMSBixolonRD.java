@@ -367,4 +367,8 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
         }
         return cmd;
     }
+
+    private boolean printRUC(String ruc) {
+        return printerTFHKA.SendCmd(String.format("jR%s", ruc));
+    }
 }

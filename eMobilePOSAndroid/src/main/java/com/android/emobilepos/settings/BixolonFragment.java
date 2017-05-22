@@ -15,6 +15,7 @@ import com.android.database.MemoTextHandler;
 import com.android.database.TaxesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.Tax;
+import com.android.emobilepos.models.realms.Bixolon;
 import com.android.support.DateUtils;
 import com.android.support.Global;
 import com.thefactoryhka.android.controls.PrinterException;
@@ -65,6 +66,16 @@ public class BixolonFragment extends Fragment implements View.OnClickListener {
             getView().findViewById(R.id.sendFooterbutton2c).setOnClickListener(this);
             getView().findViewById(R.id.sendTaxesbutton28).setOnClickListener(this);
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        saveInfo();
+    }
+
+    private void saveInfo() {
+        Bixolon bixolon;
     }
 
     private enum Bixoloncommand {

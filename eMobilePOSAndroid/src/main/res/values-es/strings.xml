@@ -1352,6 +1352,7 @@
     <string name="processing">Processing</string>
     <string name="bixolon_command_succeed">Bixolon command succeed</string>
     <string name="bixolon_command_fail">Bixolon command fail.</string>
+    <string name="customerRUC">RUC</string>
 
 
 </resources>
