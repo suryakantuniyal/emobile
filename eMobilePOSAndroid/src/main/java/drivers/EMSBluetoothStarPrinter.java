@@ -6,9 +6,7 @@ import android.app.ProgressDialog;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Handler;
-import android.text.TextUtils;
 
 import com.StarMicronics.jasura.JAException;
 import com.android.emobilepos.R;
@@ -51,7 +49,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     private ProgressDialog myProgressDialog;
     private EMSDeviceDriver thisInstance;
     private boolean stopLoop = false;
-
+    int connectionRetries = 0;
     private String portNumber = "";
     private EMSDeviceManager edm;
     private CreditCardInfo cardManager;
@@ -283,7 +281,6 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         this.registerPrinter();
     }
 
-    int connectionRetries = 0;
 
     private void verifyConnectivity() throws StarIOPortException, InterruptedException {
         try {
@@ -414,6 +411,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     @Override
     public void registerPrinter() {
         edm.setCurrentDevice(this);
+        Global.mainPrinterManager = edm;
     }
 
     @Override
@@ -834,8 +832,8 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
     private StarIOPort getStarIOPort() throws StarIOPortException {
 //        if (!getPortName().toUpperCase().contains("TCP")) {
-            releasePrinter();
-            port = null;
+        releasePrinter();
+        port = null;
 //        }
         if (port == null || port.retreiveStatus() == null || port.retreiveStatus().offline) {
 //            if (getPortName().toUpperCase().contains("TCP")) {
