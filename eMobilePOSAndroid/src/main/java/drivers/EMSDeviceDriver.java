@@ -801,7 +801,8 @@ public class EMSDeviceDriver {
                         }
 
                     }
-
+                    print(sb.toString(), FORMAT);
+                    sb.setLength(0);
                 }
             } else {
                 int padding = lineWidth / 4;
@@ -1456,6 +1457,7 @@ public class EMSDeviceDriver {
             for (TermsNConditions terms : termsNConditions) {
                 print(terms.getTcTerm());
             }
+            print("\n");
         }
     }
 

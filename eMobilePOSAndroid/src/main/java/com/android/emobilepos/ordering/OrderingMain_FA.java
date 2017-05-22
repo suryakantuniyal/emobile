@@ -15,7 +15,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.PowerManager;
 import android.os.RemoteException;
-import android.os.SystemClock;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
@@ -33,7 +32,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.dao.OrderProductAttributeDAO;
 import com.android.database.AddressHandler;
@@ -705,7 +703,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 e.printStackTrace();
             }
         }
-        if (Global.deviceHasBarcodeScanner(myPref.getPrinterType())
+        if (Global.deviceHasBarcodeScanner(myPref.getPrinterType()) ||
+                Global.deviceHasBarcodeScanner(myPref.getSwiperType())
                 || Global.deviceHasBarcodeScanner(myPref.sledType(true, -2))) {
             if (Global.btSwiper != null && Global.btSwiper.getCurrentDevice() != null)
                 Global.btSwiper.getCurrentDevice().loadScanner(callBackMSR);
