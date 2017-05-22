@@ -5,4 +5,13 @@ package com.android.emobilepos.models.realms;
  */
 
 public class Bixolon {
+    private String ruc;
+
+    public void setRuc(String ruc) {
+        this.ruc = ruc;
+    }
+
+    public String getRuc() {
+        return ruc;
+    }
 }

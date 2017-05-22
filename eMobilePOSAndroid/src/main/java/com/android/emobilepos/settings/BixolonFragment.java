@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.android.database.MemoTextHandler;
@@ -74,8 +75,17 @@ public class BixolonFragment extends Fragment implements View.OnClickListener {
         saveInfo();
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        saveInfo();
+    }
+
     private void saveInfo() {
-        Bixolon bixolon;
+        Bixolon bixolon = new Bixolon();
+        bixolon.setRuc(((EditText) getView().findViewById(R.id.bixolonructextView2)).getText().toString());
+
+        
     }
 
     private enum Bixoloncommand {
