@@ -24,6 +24,7 @@ import com.android.dao.MixMatchDAO;
 import com.android.dao.OrderAttributesDAO;
 import com.android.dao.OrderProductAttributeDAO;
 import com.android.dao.ShiftDAO;
+import com.android.dao.TermsNConditionsDAO;
 import com.android.dao.UomDAO;
 import com.android.database.ConsignmentTransactionHandler;
 import com.android.database.CustomerInventoryHandler;
@@ -62,6 +63,7 @@ import com.android.emobilepos.models.realms.MixMatch;
 import com.android.emobilepos.models.realms.OrderAttributes;
 import com.android.emobilepos.models.realms.PaymentMethod;
 import com.android.emobilepos.models.realms.Shift;
+import com.android.emobilepos.models.realms.TermsNConditions;
 import com.android.emobilepos.models.response.ClerkEmployeePermissionResponse;
 import com.android.emobilepos.models.salesassociates.DinningLocationConfiguration;
 import com.android.emobilepos.ordering.OrderingMain_FA;
@@ -1275,11 +1277,16 @@ public class SynchMethods {
     }
 
     private void synchDownloadTermsAndConditions() throws SAXException, IOException {
-        post.postData(7, context, "TermsAndConditions");
-        SAXSynchHandler synchHandler = new SAXSynchHandler(context, Global.S_TERMS_AND_CONDITIONS);
-        File tempFile = new File(tempFilePath);
-        sp.parse(tempFile, synchHandler);
-        tempFile.delete();
+        GenerateXML xml = new GenerateXML(context);
+        String jsonRequest = client.httpJsonRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                xml.downloadAll("TermsAndConditions"));
+        TermsNConditionsDAO.insert(jsonRequest);
+//
+//        post.postData(7, context, "TermsAndConditions");
+//        SAXSynchHandler synchHandler = new SAXSynchHandler(context, Global.S_TERMS_AND_CONDITIONS);
+//        File tempFile = new File(tempFilePath);
+//        sp.parse(tempFile, synchHandler);
+//        tempFile.delete();
     }
 
     private void synchUoM() throws IOException, SAXException {
