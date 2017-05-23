@@ -166,7 +166,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
             String ordetTaxId = extras.getString("orderTaxId");
             int discountSelected = extras.getInt("discountSelected");
             TaxesHandler taxesHandler = new TaxesHandler(this);
-            List<Tax> taxList = taxesHandler.getTaxes();
+            List<Tax> taxList = taxesHandler.getTaxes(preferences.getPreferences(MyPreferences.pref_show_only_group_taxes));
             int idx = taxList.indexOf(new Tax(ordetTaxId));
             setTax(idx == -1 ? null : taxList.get(idx));
 //            listMapTaxes = taxesHandler.getTaxDetails(tax.getTaxId(), "");

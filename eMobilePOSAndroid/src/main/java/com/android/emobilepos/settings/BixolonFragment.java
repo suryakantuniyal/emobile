@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.android.dao.BixolonDAO;
 import com.android.database.MemoTextHandler;
 import com.android.database.TaxesHandler;
 import com.android.emobilepos.R;
@@ -19,6 +20,7 @@ import com.android.emobilepos.models.Tax;
 import com.android.emobilepos.models.realms.Bixolon;
 import com.android.support.DateUtils;
 import com.android.support.Global;
+import com.android.support.MyPreferences;
 import com.thefactoryhka.android.controls.PrinterException;
 
 import java.util.Date;
@@ -49,7 +51,6 @@ public class BixolonFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
@@ -67,6 +68,10 @@ public class BixolonFragment extends Fragment implements View.OnClickListener {
             getView().findViewById(R.id.sendFooterbutton2c).setOnClickListener(this);
             getView().findViewById(R.id.sendTaxesbutton28).setOnClickListener(this);
         }
+        Bixolon bixolon = BixolonDAO.getBixolon();
+        if (bixolon != null) {
+            ((EditText) getView().findViewById(R.id.bixolonructextView2)).setText(bixolon.getRuc());
+        }
     }
 
     @Override
@@ -78,14 +83,12 @@ public class BixolonFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        saveInfo();
     }
 
     private void saveInfo() {
         Bixolon bixolon = new Bixolon();
         bixolon.setRuc(((EditText) getView().findViewById(R.id.bixolonructextView2)).getText().toString());
-
-        
+        BixolonDAO.save(bixolon);
     }
 
     private enum Bixoloncommand {
@@ -132,7 +135,7 @@ public class BixolonFragment extends Fragment implements View.OnClickListener {
                     return bixolon.sendFooters(footers);
                 case SEND_TAXES:
                     TaxesHandler taxesHandler = new TaxesHandler(getActivity());
-                    return bixolon.sendTaxes(taxesHandler.getTaxes());
+                    return bixolon.sendTaxes(taxesHandler.getTaxes(true));
             }
             return null;
         }
@@ -166,8 +169,7 @@ public class BixolonFragment extends Fragment implements View.OnClickListener {
         protected Void doInBackground(Void... params) {
             try {
                 TaxesHandler taxesHandler = new TaxesHandler(getActivity());
-                taxes = taxesHandler.getTaxes();
-
+                taxes = taxesHandler.getTaxes(true);
                 printerDate = bixolon.getPrinterTFHKA().getS1PrinterData().getCurrentPrinterDate();
 //                this.taxes[0] = bixolon.getPrinterTFHKA().getS3PrinterData().getTax1();
 //                typeTaxes[0] = bixolon.getPrinterTFHKA().getS3PrinterData().getTypeTax1();

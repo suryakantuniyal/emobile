@@ -4,12 +4,15 @@ import android.app.Activity;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 
-import com.android.database.MemoTextHandler;
-import com.android.database.TaxesHandler;
+import com.android.dao.BixolonDAO;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplitedOrder;
 import com.android.emobilepos.models.Tax;
+import com.android.emobilepos.models.orders.Order;
+import com.android.emobilepos.models.orders.OrderProduct;
+import com.android.emobilepos.models.realms.Bixolon;
+import com.android.emobilepos.models.realms.BixolonTax;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.DateUtils;
@@ -75,52 +78,6 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
 
     private boolean connect() {
         return printerTFHKA.estado || printerTFHKA.OpenBTPrinter(myPref.getPrinterMACAddress());
-    }
-
-    private boolean setPrintrConfiguration() {
-        boolean cmd = true;
-        try {
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(new Date());
-            cmd = cmd && printerTFHKA.SendCmd("PJ3201");
-            cmd = cmd && printerTFHKA.SendCmd("PG" + DateUtils.getDateAsString(new Date(), "ddMMyy"));
-            cmd = cmd && printerTFHKA.SendCmd("PF" + DateUtils.getDateAsString(new Date(), "HH:mm:ss"));
-
-            cmd = cmd && printerTFHKA.SendCmd("I0Z0");
-            TaxesHandler taxesHandler = new TaxesHandler(activity);
-            List<Tax> taxes = taxesHandler.getTaxes();
-            String taxCmd = "PT";
-            for (Tax tax : taxes) {
-                taxCmd += "2" + Global.getRoundBigDecimal(Global.getBigDecimalNum(tax.getTaxRate()), 2).toString();
-            }
-            taxCmd = StringUtils.deleteAny(taxCmd, ".");
-//            cmd = cmd && printerTFHKA.SendCmd(taxCmd);
-            //PT command apply the taxes rates. Can be executed 64 times max.
-            //cmd = cmd && printerTFHKA.SendCmd("Pt");
-
-
-            MemoTextHandler handler = new MemoTextHandler(activity);
-            String[] header = handler.getHeader();
-            if (header[0] != null && !header[0].isEmpty())
-                cmd = cmd && printerTFHKA.SendCmd("PH01" + header[0]);
-            if (header[1] != null && !header[1].isEmpty())
-                cmd = cmd && printerTFHKA.SendCmd("PH02" + header[1]);
-            if (header[2] != null && !header[2].isEmpty())
-                cmd = cmd && printerTFHKA.SendCmd("PH03" + header[2]);
-
-            String[] footer = handler.getFooter();
-            if (footer[0] != null && !footer[0].isEmpty())
-                cmd = cmd && printerTFHKA.SendCmd("PH91" + footer[0]);
-            if (footer[1] != null && !footer[1].isEmpty())
-                cmd = printerTFHKA.SendCmd("PH92" + footer[1]);
-            if (footer[2] != null && !footer[2].isEmpty())
-                cmd = cmd && printerTFHKA.SendCmd("PH93" + footer[2]);
-
-            return cmd;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return cmd;
     }
 
     public TfhkaAndroid getPrinterTFHKA() {
@@ -357,6 +314,17 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
             } else {
                 taxCmd += "20000";
             }
+            switch (i) {
+                case 0:
+                    BixolonDAO.addTax(taxes.get(i).getTaxId(), taxes.get(i).getTaxCodeId(), "!");
+                    break;
+                case 1:
+                    BixolonDAO.addTax(taxes.get(i).getTaxId(), taxes.get(i).getTaxCodeId(), "\"");
+                    break;
+                case 2:
+                    BixolonDAO.addTax(taxes.get(i).getTaxId(), taxes.get(i).getTaxCodeId(), "#");
+                    break;
+            }
         }
         printerTFHKA.SendCmd("I0Z0");
         taxCmd = StringUtils.deleteAny(taxCmd, ".");
@@ -371,4 +339,37 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
     private boolean printRUC(String ruc) {
         return printerTFHKA.SendCmd(String.format("jR%s", ruc));
     }
+
+    private boolean printItemComments(String comments) {
+        return printerTFHKA.SendCmd(String.format("@%s", comments));
+    }
+
+    private boolean printCustomerInfo(String data) {
+        return printerTFHKA.SendCmd(String.format("j2%s", data));
+    }
+
+    private boolean printSubTotal() {
+        return printerTFHKA.SendCmd("3");
+    }
+
+    private boolean printSubTotalDiscount(Order order) {
+        String command;
+        if (order.ord_discount_id.equalsIgnoreCase("")) {
+            command = "p-" + order.ord_globalDiscount;
+        } else {
+            command = "q-" + order.ord_discount;
+        }
+        return printerTFHKA.SendCmd(command);
+    }
+
+    private boolean printItem(OrderProduct product) {
+        BixolonTax tax = BixolonDAO.getTax(product.getProd_taxId(), product.getProd_taxcode());
+        String cmnd = String.format("%s%s%s%s",
+                tax.getBixolonChar(),
+                product.getFinalPrice(),
+                product.getOrdprod_qty(),
+                product.getOrdprod_name());
+        return printerTFHKA.SendCmd(cmnd);
+    }
+
 }

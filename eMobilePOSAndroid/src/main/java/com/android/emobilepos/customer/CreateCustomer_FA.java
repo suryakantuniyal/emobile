@@ -208,9 +208,9 @@ public class CreateCustomer_FA extends BaseFragmentActivityActionBar implements 
         List<String> priceLevel = new ArrayList<String>();
         taxes.add("Select One");
         priceLevel.add("Select One");
-
+        MyPreferences myPref = new MyPreferences(activity);
         TaxesHandler handler = new TaxesHandler(this);
-        taxList = handler.getTaxes();
+        taxList = handler.getTaxes(myPref.getPreferences(MyPreferences.pref_show_only_group_taxes));
         PriceLevelHandler handler2 = new PriceLevelHandler();
         priceLevelList = handler2.getPriceLevel();
 

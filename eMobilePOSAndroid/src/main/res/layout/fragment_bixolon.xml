@@ -35,6 +35,25 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 
         <TextView
+            android:id="@+id/textView22"
+            style="@style/white_text_appearance"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/header_background"
+            android:padding="8dp"
+            android:text="@string/merchantName"
+            tools:layout_editor_absoluteX="8dp"
+            tools:layout_editor_absoluteY="0dp" />
+
+        <com.android.support.MyEditText
+            android:id="@+id/bixolonmerchantNametextView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_weight="1"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+        <TextView
             android:id="@+id/textView23"
             style="@style/white_text_appearance"
             android:layout_width="match_parent"

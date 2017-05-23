@@ -467,7 +467,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
 
         taxHandler = new TaxesHandler(activity);
         taxGroupHandler = new TaxesGroupHandler(activity);
-        taxList = taxHandler.getTaxes();
+        taxList = taxHandler.getTaxes(myPref.getPreferences(MyPreferences.pref_show_only_group_taxes));
         ProductsHandler handler2 = new ProductsHandler(activity);
         discountList = handler2.getDiscounts();
         int size = taxList.size();
