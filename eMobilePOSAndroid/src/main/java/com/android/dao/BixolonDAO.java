@@ -1,7 +1,9 @@
 package com.android.dao;
 
 import com.android.emobilepos.models.realms.Bixolon;
+import com.android.emobilepos.models.realms.BixolonPaymentMethod;
 import com.android.emobilepos.models.realms.BixolonTax;
+import com.android.emobilepos.models.realms.PaymentMethod;
 
 import io.realm.Realm;
 
@@ -60,5 +62,33 @@ public class BixolonDAO {
             realm.close();
         }
         return null;
+    }
+
+    public static void clearTaxes() {
+        Bixolon bixolon = getBixolon();
+        if (bixolon != null) {
+            bixolon.getBixolontaxes().clear();
+            save(bixolon);
+        }
+    }
+
+    public static void clearPaymentMethods() {
+        Bixolon bixolon = getBixolon();
+        if (bixolon != null) {
+            bixolon.getPaymentMethods().clear();
+            save(bixolon);
+        }
+    }
+
+    public static void addPaymentMethod(int id, PaymentMethod paymentMethod) {
+        Bixolon bixolon = getBixolon();
+        if (bixolon == null) {
+            bixolon = new Bixolon();
+        }
+        BixolonPaymentMethod bixolonPaymentMethod = new BixolonPaymentMethod();
+        bixolonPaymentMethod.setId(id);
+        bixolonPaymentMethod.setPaymentMethod(paymentMethod);
+        bixolon.getPaymentMethods().add(bixolonPaymentMethod);
+        save(bixolon);
     }
 }

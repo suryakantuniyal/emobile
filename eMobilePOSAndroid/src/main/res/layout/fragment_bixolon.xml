@@ -53,6 +53,7 @@
             android:layout_marginRight="8dp"
             android:layout_weight="1"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+
         <TextView
             android:id="@+id/textView23"
             style="@style/white_text_appearance"
@@ -339,6 +340,64 @@
 
             <Button
                 android:id="@+id/sendTaxesbutton28"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/button_send" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/textView24"
+            style="@style/white_text_appearance"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/header_background"
+            android:padding="8dp"
+            android:text="@string/taxes" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/bixolon_paymentMethodsContainer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <!--<LinearLayout-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="match_parent"-->
+                    <!--android:orientation="horizontal">-->
+
+                    <!--<TextView-->
+                        <!--android:id="@+id/bixolontaxes1textView25"-->
+                        <!--android:layout_width="0dp"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_marginLeft="8dp"-->
+                        <!--android:layout_marginRight="8dp"-->
+                        <!--android:layout_weight="1"-->
+                        <!--android:textAppearance="@style/TextAppearance.AppCompat.Body2" />-->
+
+                    <!--<TextView-->
+                        <!--android:id="@+id/taxType1textView25"-->
+                        <!--android:layout_width="0dp"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_marginLeft="8dp"-->
+                        <!--android:layout_marginRight="8dp"-->
+                        <!--android:layout_weight="1"-->
+                        <!--android:textAppearance="@style/TextAppearance.AppCompat.Body2" />-->
+
+                <!--</LinearLayout>-->
+
+
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/sendPaymentMethodsbutton28"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/button_send" />

@@ -10,17 +10,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.dao.BixolonDAO;
+import com.android.dao.PaymentMethodDAO;
 import com.android.database.MemoTextHandler;
 import com.android.database.TaxesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.Tax;
 import com.android.emobilepos.models.realms.Bixolon;
+import com.android.emobilepos.models.realms.PaymentMethod;
 import com.android.support.DateUtils;
 import com.android.support.Global;
-import com.android.support.MyPreferences;
 import com.thefactoryhka.android.controls.PrinterException;
 
 import java.util.Date;
@@ -40,6 +42,7 @@ public class BixolonFragment extends Fragment implements View.OnClickListener {
     private List<Tax> taxes;
     private String[] headers;
     private String[] footers;
+    private List<PaymentMethod> paymentMethods;
 
     public BixolonFragment() {
         if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null
@@ -67,6 +70,7 @@ public class BixolonFragment extends Fragment implements View.OnClickListener {
             getView().findViewById(R.id.sendHeaderbutton2b).setOnClickListener(this);
             getView().findViewById(R.id.sendFooterbutton2c).setOnClickListener(this);
             getView().findViewById(R.id.sendTaxesbutton28).setOnClickListener(this);
+            getView().findViewById(R.id.sendPaymentMethodsbutton28).setOnClickListener(this);
         }
         Bixolon bixolon = BixolonDAO.getBixolon();
         if (bixolon != null) {
@@ -92,7 +96,7 @@ public class BixolonFragment extends Fragment implements View.OnClickListener {
     }
 
     private enum Bixoloncommand {
-        SEND_DATE, SEND_HEADER, SEND_FOOTER, SEND_TAXES
+        SEND_DATE, SEND_HEADER, SEND_FOOTER, SEND_TAXES, SEND_PAYMENT_METHODS
     }
 
     @Override
@@ -110,6 +114,10 @@ public class BixolonFragment extends Fragment implements View.OnClickListener {
             case R.id.sendTaxesbutton28:
                 new SendBixolonCommandTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, Bixoloncommand.SEND_TAXES);
                 break;
+            case R.id.sendPaymentMethodsbutton28:
+                new SendBixolonCommandTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, Bixoloncommand.SEND_PAYMENT_METHODS);
+                break;
+
         }
     }
 
@@ -136,6 +144,8 @@ public class BixolonFragment extends Fragment implements View.OnClickListener {
                 case SEND_TAXES:
                     TaxesHandler taxesHandler = new TaxesHandler(getActivity());
                     return bixolon.sendTaxes(taxesHandler.getTaxes(true));
+                case SEND_PAYMENT_METHODS:
+                    return bixolon.sendPaymentMethods(paymentMethods);
             }
             return null;
         }
@@ -185,6 +195,7 @@ public class BixolonFragment extends Fragment implements View.OnClickListener {
                 MemoTextHandler handler = new MemoTextHandler(getActivity());
                 headers = handler.getHeader();
                 footers = handler.getFooter();
+                paymentMethods = PaymentMethodDAO.getPaymentMethods();
             } catch (PrinterException e) {
                 e.printStackTrace();
             }
@@ -197,6 +208,16 @@ public class BixolonFragment extends Fragment implements View.OnClickListener {
             footersViews = new TextView[3];
             taxesViews = new TextView[5];
             typeTaxesViews = new TextView[5];
+            LinearLayout payMethodContainer = (LinearLayout) getView().findViewById(R.id.bixolon_paymentMethodsContainer);
+            LayoutInflater layoutInflater = getActivity().getLayoutInflater();
+            for (PaymentMethod paymentMethod : paymentMethods) {
+                LinearLayout row = (LinearLayout) layoutInflater.inflate(R.layout.bixolon_two_cols_row_layout, null);
+                TextView col1 = (TextView) row.findViewById(R.id.bixoloncolumn1);
+                TextView col2 = (TextView) row.findViewById(R.id.bixoloncolumn2);
+                col1.setText(paymentMethod.getPaymentmethod_type());
+                col2.setText(paymentMethod.getPaymethod_name());
+                payMethodContainer.addView(row);
+            }
 
             date = (TextView) getView().findViewById(R.id.bixolondatetextView25);
             headersViews[0] = (TextView) getView().findViewById(R.id.bixolonheader1textView25b);
@@ -221,15 +242,13 @@ public class BixolonFragment extends Fragment implements View.OnClickListener {
 
             int i = 0;
             for (Tax tax : taxes) {
-                if (tax.getTaxType().equalsIgnoreCase("S")) {
-                    taxesViews[i].setText(String.format("%s %s%%", getString(R.string.text_tax),
-                            String.valueOf(tax.getTaxRate())));
-                    typeTaxesViews[i].setText(String.format("%s %s", getString(R.string.taxtype),
-                            String.valueOf(tax.getTaxName())));
-                    i++;
-                    if (i >= taxesViews.length) {
-                        break;
-                    }
+                taxesViews[i].setText(String.format("%s %s%%", getString(R.string.text_tax),
+                        String.valueOf(tax.getTaxRate())));
+                typeTaxesViews[i].setText(String.format("%s %s", getString(R.string.taxtype),
+                        String.valueOf(tax.getTaxName())));
+                i++;
+                if (i >= taxesViews.length) {
+                    break;
                 }
             }
 

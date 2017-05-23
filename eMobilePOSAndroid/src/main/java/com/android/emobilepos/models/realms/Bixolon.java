@@ -1,6 +1,5 @@
 package com.android.emobilepos.models.realms;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.RealmList;
@@ -16,6 +15,7 @@ public class Bixolon extends RealmObject {
     private int pkid = 1;
     private String ruc;
     private RealmList<BixolonTax> bixolontaxes = new RealmList<>();
+    private RealmList<BixolonPaymentMethod> paymentMethods = new RealmList<>();
 
     public void setRuc(String ruc) {
         this.ruc = ruc;
@@ -31,5 +31,13 @@ public class Bixolon extends RealmObject {
 
     public void setBixolontaxes(RealmList<BixolonTax> bixolontaxes) {
         this.bixolontaxes = bixolontaxes;
+    }
+
+    public List<BixolonPaymentMethod> getPaymentMethods() {
+        return paymentMethods;
+    }
+
+    public void setPaymentMethods(RealmList<BixolonPaymentMethod> paymentMethods) {
+        this.paymentMethods = paymentMethods;
     }
 }

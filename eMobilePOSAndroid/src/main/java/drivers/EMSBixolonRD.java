@@ -11,9 +11,9 @@ import com.android.emobilepos.models.SplitedOrder;
 import com.android.emobilepos.models.Tax;
 import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.orders.OrderProduct;
-import com.android.emobilepos.models.realms.Bixolon;
 import com.android.emobilepos.models.realms.BixolonTax;
 import com.android.emobilepos.models.realms.Payment;
+import com.android.emobilepos.models.realms.PaymentMethod;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.DateUtils;
 import com.android.support.Global;
@@ -308,6 +308,7 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
 
     public boolean sendTaxes(List<Tax> taxes) {
         String taxCmd = "PT";
+        BixolonDAO.clearTaxes();
         for (int i = 0; i < TAX_LENGTH; i++) {
             if (i < taxes.size()) {
                 taxCmd += "1" + String.format("%05.02f", Global.getRoundBigDecimal(Global.getBigDecimalNum(taxes.get(i).getTaxRate()), 2));
@@ -331,7 +332,27 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
         boolean cmd = printerTFHKA.SendCmd(taxCmd);
         //PT command apply the taxes rates. Can be executed 64 times max.
         if (cmd) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             cmd = printerTFHKA.SendCmd("Pt");
+        }
+        return cmd;
+    }
+
+    public boolean sendPaymentMethods(List<PaymentMethod> paymentMethods) {
+        boolean cmd = true;
+        int i = 1;
+        BixolonDAO.clearPaymentMethods();
+        for (PaymentMethod paymentMethod : paymentMethods) {
+            BixolonDAO.addPaymentMethod(i, paymentMethod);
+            cmd = printerTFHKA.SendCmd("PE" + String.format("%02d", i) + paymentMethod.getPaymethod_name());
+            i++;
+            if (!cmd) {
+                break;
+            }
         }
         return cmd;
     }
