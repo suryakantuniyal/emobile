@@ -75,6 +75,8 @@ public class BixolonFragment extends Fragment implements View.OnClickListener {
         Bixolon bixolon = BixolonDAO.getBixolon();
         if (bixolon != null) {
             ((EditText) getView().findViewById(R.id.bixolonructextView2)).setText(bixolon.getRuc());
+            ((EditText) getView().findViewById(R.id.bixolonmerchantNametextView2)).setText(bixolon.getMerchantName());
+
         }
     }
 
@@ -92,6 +94,7 @@ public class BixolonFragment extends Fragment implements View.OnClickListener {
     private void saveInfo() {
         Bixolon bixolon = new Bixolon();
         bixolon.setRuc(((EditText) getView().findViewById(R.id.bixolonructextView2)).getText().toString());
+        bixolon.setMerchantName(((EditText) getView().findViewById(R.id.bixolonmerchantNametextView2)).getText().toString());
         BixolonDAO.save(bixolon);
     }
 

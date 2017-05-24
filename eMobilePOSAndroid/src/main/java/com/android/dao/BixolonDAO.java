@@ -51,17 +51,21 @@ public class BixolonDAO {
         save(bixolon);
     }
 
-    public static BixolonTax getTax(String prod_taxId, String prod_taxcode) {
+    public static BixolonTax getTax(String prod_taxcode, String prod_taxId) {
         Realm realm = Realm.getDefaultInstance();
+        BixolonTax bixolonTax;
         try {
-            BixolonTax first = realm.where(BixolonTax.class)
+            bixolonTax = realm.where(BixolonTax.class)
                     .equalTo("taxId", prod_taxId)
                     .equalTo("taxCode", prod_taxcode)
                     .findFirst();
+            if (bixolonTax != null) {
+                bixolonTax = realm.copyFromRealm(bixolonTax);
+            }
         } finally {
             realm.close();
         }
-        return null;
+        return bixolonTax;
     }
 
     public static void clearTaxes() {
@@ -90,5 +94,20 @@ public class BixolonDAO {
         bixolonPaymentMethod.setPaymentMethod(paymentMethod);
         bixolon.getPaymentMethods().add(bixolonPaymentMethod);
         save(bixolon);
+    }
+
+    public static int getPaymentmetodId(PaymentMethod paymentMethod) {
+        Realm realm = Realm.getDefaultInstance();
+        try {
+            BixolonPaymentMethod method = realm.where(BixolonPaymentMethod.class)
+                    .equalTo("paymentMethod.paymethod_id", paymentMethod.getPaymethod_id())
+                    .findFirst();
+            if (method != null) {
+                return method.getId();
+            }
+        } finally {
+            realm.close();
+        }
+        return -1;
     }
 }

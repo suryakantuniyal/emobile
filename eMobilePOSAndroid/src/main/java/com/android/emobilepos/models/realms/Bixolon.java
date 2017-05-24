@@ -16,6 +16,7 @@ public class Bixolon extends RealmObject {
     private String ruc;
     private RealmList<BixolonTax> bixolontaxes = new RealmList<>();
     private RealmList<BixolonPaymentMethod> paymentMethods = new RealmList<>();
+    private String merchantName;
 
     public void setRuc(String ruc) {
         this.ruc = ruc;
@@ -39,5 +40,13 @@ public class Bixolon extends RealmObject {
 
     public void setPaymentMethods(RealmList<BixolonPaymentMethod> paymentMethods) {
         this.paymentMethods = paymentMethods;
+    }
+
+    public void setMerchantName(String merchantName) {
+        this.merchantName = merchantName;
+    }
+
+    public String getMerchantName() {
+        return merchantName;
     }
 }
