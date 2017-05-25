@@ -45,7 +45,7 @@ import main.EMSDeviceManager;
 public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
     private static final int HEADER_LENGTH = 8;
     private static final int TAX_LENGTH = 3;
-    private static TfhkaAndroid printerTFHKA;
+    private static final int LINE_WIDTH = 48;
     private EMSDeviceManager edm;
     String msg = "Failed to connect";
 
@@ -97,17 +97,16 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
 
     @Override
     public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
-        return printTransaction(ordID, null, false, false);
-    }
-
-    @Override
-    public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
         OrdersHandler ordersHandler = new OrdersHandler(activity);
         Order order = ordersHandler.getOrder(ordID);
         Bixolon bixolon = BixolonDAO.getBixolon();
         boolean cmd = printOrderId(order);
         cmd = printRUC(bixolon.getRuc());
         cmd = printMerchantName(bixolon.getMerchantName());
+        Global.OrderType type = Global.OrderType.getByCode(Integer.parseInt(order.ord_type));
+        String typeDetails = getOrderTypeDetails(fromOnHold, order, LINE_WIDTH, type).replace(" ", "");
+        cmd = printerTFHKA.SendCmd(String.format("@%s", typeDetails));
+//        printerTFHKA.SendCmd("#000000090000001000Tax Rate 3 Item");
         List<OrderProduct> orderProducts = order.getOrderProducts();
         for (OrderProduct product : orderProducts) {
             cmd = printItemComments(product.getOrdprod_desc());
@@ -115,7 +114,19 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
         }
         cmd = printSubTotal();
         cmd = printTotal(order);
+        if (!cmd) {
+            voidLastTransaction();
+        }
         return cmd;
+    }
+
+
+    @Override
+    public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
+        setPaperWidth(LINE_WIDTH);
+        printReceipt(ordID, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, null);
+//        return printTransaction(ordID, null, false, false, null);
+        return true;
     }
 
     @Override
@@ -452,6 +463,10 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
             }
         }
         return printerTFHKA.SendCmd(command);
+    }
+
+    private boolean voidLastTransaction() {
+        return printerTFHKA.SendCmd("7");
     }
 
     private boolean printOrderId(Order order) {

@@ -61,6 +61,7 @@ import com.partner.pt100.printer.PrinterApiContext;
 import com.starmicronics.stario.StarIOPort;
 import com.starmicronics.stario.StarIOPortException;
 import com.starmicronics.starioextension.commandbuilder.Bitmap.SCBBitmapConverter;
+import com.thefactoryhka.android.rd.TfhkaAndroid;
 import com.uniquesecure.meposconnect.MePOS;
 import com.uniquesecure.meposconnect.MePOSConnectionType;
 import com.uniquesecure.meposconnect.MePOSException;
@@ -124,6 +125,7 @@ public class EMSDeviceDriver {
     PrinterAPI eloPrinterApi;
     POSPrinter bixolonPrinter;
     MePOSReceipt mePOSReceipt;
+    static TfhkaAndroid printerTFHKA;
 
     private final int ALIGN_LEFT = 0, ALIGN_CENTER = 1;
 
@@ -227,7 +229,12 @@ public class EMSDeviceDriver {
             Log.d("Print", str);
             return;
         }
-        if (this instanceof EMSELO) {
+        if (this instanceof EMSBixolonRD) {
+            String[] split = str.split(("\n"));
+            for (String line : split) {
+                printerTFHKA.SendCmd(String.format("80*%s", line));
+            }
+        } else if (this instanceof EMSELO) {
             eloPrinterApi.print(str);
         } else if (this instanceof EMSMiura) {
             String[] split = str.split(("\n"));
@@ -309,8 +316,12 @@ public class EMSDeviceDriver {
             Log.d("Print", new String(byteArray));
             return;
         }
-
-        if (this instanceof EMSELO) {
+        if (this instanceof EMSBixolonRD) {
+            String[] split = new String(byteArray).split(("\n"));
+            for (String line : split) {
+                printerTFHKA.SendCmd(String.format("80*%s", line));
+            }
+        } else if (this instanceof EMSELO) {
             eloPrinterApi.print(new String(byteArray));
         } else if (this instanceof EMSMiura) {
             print(new String(byteArray));
@@ -490,7 +501,16 @@ public class EMSDeviceDriver {
             Log.d("Print", str);
             return;
         }
-        if (this instanceof EMSELO) {
+        if (this instanceof EMSBixolonRD) {
+            String[] split = str.split(("\n"));
+            for (String line : split) {
+                if (isLargeFont) {
+                    printerTFHKA.SendCmd(String.format("80>%s", str));
+                } else {
+                    printerTFHKA.SendCmd(String.format("80*%s", line));
+                }
+            }
+        } else if (this instanceof EMSELO) {
             eloPrinterApi.print(str);
         } else if (this instanceof EMSMiura) {
             print(str);
@@ -660,35 +680,9 @@ public class EMSDeviceDriver {
                 printHeader(lineWidth);
             if (anOrder.isVoid.equals("1"))
                 sb.append(textHandler.centeredString("*** VOID ***", lineWidth)).append("\n\n");
-
-            if (fromOnHold) {
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText("[" + getString(R.string.on_hold) + "]",
-                        anOrder.ord_HoldName, lineWidth, 0));
-            }
-
-            switch (type) {
-                case ORDER: // Order
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.order) + ":", ordID,
-                            lineWidth, 0));
-                    break;
-                case RETURN: // Return
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.return_tag) + ":", ordID,
-                            lineWidth, 0));
-                    break;
-                case INVOICE: // Invoice
-                case CONSIGNMENT_INVOICE:// Consignment Invoice
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.invoice) + ":", ordID,
-                            lineWidth, 0));
-                    break;
-                case ESTIMATE: // Estimate
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.estimate) + ":", ordID,
-                            lineWidth, 0));
-                    break;
-                case SALES_RECEIPT: // Sales Receipt
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.sales_receipt) + ":", ordID,
-                            lineWidth, 0));
-                    break;
-            }
+            print(sb.toString());
+            sb.setLength(0);
+            print(getOrderTypeDetails(fromOnHold, anOrder, lineWidth, type));
 
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
                     Global.formatToDisplayDate(anOrder.ord_timecreated, 3), lineWidth, 0));
@@ -1007,6 +1001,39 @@ public class EMSDeviceDriver {
 
     }
 
+    public String getOrderTypeDetails(boolean fromOnHold, Order anOrder, int lineWidth, Global.OrderType type) {
+        StringBuilder sb = new StringBuilder();
+        if (fromOnHold) {
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText("[" + getString(R.string.on_hold) + "]",
+                    anOrder.ord_HoldName, lineWidth, 0));
+        }
+
+        switch (type) {
+            case ORDER: // Order
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.order) + ":", anOrder.ord_id,
+                        lineWidth, 0));
+                break;
+            case RETURN: // Return
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.return_tag) + ":", anOrder.ord_id,
+                        lineWidth, 0));
+                break;
+            case INVOICE: // Invoice
+            case CONSIGNMENT_INVOICE:// Consignment Invoice
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.invoice) + ":", anOrder.ord_id,
+                        lineWidth, 0));
+                break;
+            case ESTIMATE: // Estimate
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.estimate) + ":", anOrder.ord_id,
+                        lineWidth, 0));
+                break;
+            case SALES_RECEIPT: // Sales Receipt
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.sales_receipt) + ":", anOrder.ord_id,
+                        lineWidth, 0));
+                break;
+        }
+        return sb.toString();
+    }
+
     private void printOrderAttributes(int lineWidth, Order order) {
         StringBuilder sb = new StringBuilder();
         sb.setLength(0);
@@ -1030,7 +1057,9 @@ public class EMSDeviceDriver {
     }
 
     public void cutPaper() {
-        if (this instanceof EMSsnbc) {
+        if (this instanceof EMSBixolonRD) {
+            printerTFHKA.SendCmd(String.format("81*%s", " "));
+        } else if (this instanceof EMSsnbc) {
             // ******************************************************************************************
             // print in page mode
             pos_sdk.pageModePrint();
