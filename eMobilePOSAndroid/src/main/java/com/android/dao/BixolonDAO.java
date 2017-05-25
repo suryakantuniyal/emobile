@@ -3,6 +3,7 @@ package com.android.dao;
 import com.android.emobilepos.models.realms.Bixolon;
 import com.android.emobilepos.models.realms.BixolonPaymentMethod;
 import com.android.emobilepos.models.realms.BixolonTax;
+import com.android.emobilepos.models.realms.BixolonTransaction;
 import com.android.emobilepos.models.realms.PaymentMethod;
 
 import io.realm.Realm;
@@ -109,5 +110,16 @@ public class BixolonDAO {
             realm.close();
         }
         return -1;
+    }
+
+    public static void insertFailedOrder(BixolonTransaction bixolonTransaction) {
+        Realm realm = Realm.getDefaultInstance();
+        try {
+            realm.beginTransaction();
+            realm.insertOrUpdate(bixolonTransaction);
+            realm.commitTransaction();
+        } finally {
+            realm.close();
+        }
     }
 }

@@ -183,7 +183,7 @@ public class BixolonFragment extends Fragment implements View.OnClickListener {
             try {
                 TaxesHandler taxesHandler = new TaxesHandler(getActivity());
                 taxes = taxesHandler.getTaxes(true);
-                printerDate = bixolon.getPrinterTFHKA().getS1PrinterData().getCurrentPrinterDate();
+                printerDate = bixolon.getPrinterTFHKA().getS1PrinterData().getCurrentPrinterDateTime();
 //                this.taxes[0] = bixolon.getPrinterTFHKA().getS3PrinterData().getTax1();
 //                typeTaxes[0] = bixolon.getPrinterTFHKA().getS3PrinterData().getTypeTax1();
 //                this.taxes[1] = bixolon.getPrinterTFHKA().getS3PrinterData().getTax2();

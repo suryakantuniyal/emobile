@@ -61,7 +61,7 @@ import com.partner.pt100.printer.PrinterApiContext;
 import com.starmicronics.stario.StarIOPort;
 import com.starmicronics.stario.StarIOPortException;
 import com.starmicronics.starioextension.commandbuilder.Bitmap.SCBBitmapConverter;
-import com.thefactoryhka.android.rd.TfhkaAndroid;
+import com.thefactoryhka.android.pa.TfhkaAndroid;
 import com.uniquesecure.meposconnect.MePOS;
 import com.uniquesecure.meposconnect.MePOSConnectionType;
 import com.uniquesecure.meposconnect.MePOSException;

@@ -18,13 +18,17 @@ import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Bixolon;
 import com.android.emobilepos.models.realms.BixolonTax;
+import com.android.emobilepos.models.realms.BixolonTransaction;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.PaymentMethod;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.DateUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
-import com.thefactoryhka.android.rd.TfhkaAndroid;
+import com.thefactoryhka.android.controls.PrinterException;
+import com.thefactoryhka.android.pa.ReportData;
+import com.thefactoryhka.android.pa.S1PrinterData;
+import com.thefactoryhka.android.pa.TfhkaAndroid;
 
 import org.springframework.util.StringUtils;
 
@@ -114,8 +118,20 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
         }
         cmd = printSubTotal();
         cmd = printTotal(order);
+        try {
+            ReportData xReport = printerTFHKA.getXReport();
+            S1PrinterData printerData = printerTFHKA.getS1PrinterData();
+            String machineNumber = printerData.getRegisteredMachineNumber();
+            int lastInvoice = xReport.getNumberOfLastInvoice();
+            order.setBixolonTransactionId(String.format(Locale.getDefault(), "%s-%08d", machineNumber, lastInvoice));
+            ordersHandler.updateBixolonTransactionId(order);
+        } catch (PrinterException e) {
+            e.printStackTrace();
+        }
         if (!cmd) {
             voidLastTransaction();
+            BixolonTransaction bixolonTransaction = new BixolonTransaction(order);
+            BixolonDAO.insertFailedOrder(bixolonTransaction);
         }
         return cmd;
     }
@@ -404,11 +420,19 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
     }
 
     private boolean printRUC(String ruc) {
-        return printerTFHKA.SendCmd(String.format("jR%s", ruc));
+        if (TextUtils.isEmpty(ruc)) {
+            return true;
+        } else {
+            return printerTFHKA.SendCmd(String.format("jR%s", ruc));
+        }
     }
 
     private boolean printMerchantName(String merchantName) {
-        return printerTFHKA.SendCmd(String.format("jS%s", merchantName));
+        if (TextUtils.isEmpty(merchantName)) {
+            return true;
+        } else {
+            return printerTFHKA.SendCmd(String.format("jS%s", merchantName));
+        }
     }
 
     private boolean printItemComments(String comments) {

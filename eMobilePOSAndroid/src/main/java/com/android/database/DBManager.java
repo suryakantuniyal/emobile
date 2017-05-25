@@ -23,7 +23,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class DBManager {
-    public static final int VERSION = 51;
+    public static final int VERSION = 52;
     private static final String DB_NAME_OLD = "emobilepos.sqlite";
     private static final String CIPHER_DB_NAME = "emobilepos.sqlcipher";
 
@@ -260,6 +260,10 @@ public class DBManager {
         if (!exist) {
             getDatabase().execSQL("ALTER TABLE [Orders] ADD COLUMN [ord_timeStarted] [datetime] NULL");
         }
+        exist = cursor.getColumnIndex("bixolonTransactionId") > -1;
+        if (!exist) {
+            getDatabase().execSQL("ALTER TABLE [Orders] ADD COLUMN [bixolonTransactionId] [varchar](50) NULL");
+        }
     }
 
     private class DatabaseHelper extends net.sqlcipher.database.SQLiteOpenHelper {
@@ -435,7 +439,7 @@ public class DBManager {
             + "[addr_s_country] [varchar](31) NULL, [addr_s_zipcode] [varchar](13) NULL, [c_email] [varchar](100) NULL, [loc_id] [varchar](50) NULL, "
             + "[ord_HoldName] [varchar](50) NULL,[isOnHold] [tinyint] NULL, [clerk_id][varchar](50) NULL, [ord_discount_id][varchar](50) NULL, [ord_latitude][varchar](50) NULL, "
             + "[ord_longitude][varchar](50) NULL, [tipAmount][varchar](50) NULL , isVoid tinyint, [is_stored_fwd] BOOL DEFAULT (0), VAT tinyint," +
-            " [assignedTable] [varchar](10) NULL, [numberOfSeats] [int] NULL, associateID [varchar](10) NULL, [ord_timeStarted] [datetime] NULL,[orderAttributes] [varchar](1000) NULL)";
+            " [bixolonTransactionId] [varchar](50) NULL, [assignedTable] [varchar](10) NULL, [numberOfSeats] [int] NULL, associateID [varchar](10) NULL, [ord_timeStarted] [datetime] NULL,[orderAttributes] [varchar](1000) NULL)";
 
     private final String CREATE_PAYMETHODS = "CREATE TABLE [PayMethods]( [paymethod_id] [varchar](50) PRIMARY KEY NOT NULL, "
             + "[paymethod_name] [varchar](255) NOT NULL, [paymentmethod_type] [varchar](50) NULL, [paymethod_update] [datetime] NOT NULL, "
