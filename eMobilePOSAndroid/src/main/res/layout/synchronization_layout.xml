@@ -393,15 +393,116 @@
                     android:id="@+id/textView30"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="TextView" />
+                    android:text="@string/serialNumber"
+                    android:textAppearance="@style/dark_blue_text_appearance_unbold"
+                    android:textSize="@dimen/sync_date_text_size" />
+
+                <TextView
+                    android:id="@+id/bixolonSerialNumbertextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:text="AABBCC11223344556"
+                    android:textAppearance="@style/dark_blue_text_appearance"
+                    android:textSize="@dimen/sync_date_text_size" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView301"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/lastDebiteNoteNumber"
+                    android:textAppearance="@style/dark_blue_text_appearance_unbold"
+                    android:textSize="@dimen/sync_date_text_size" />
+
+                <TextView
+                    android:id="@+id/bixolonLastDRNoteNumbertextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:text="AABBCC11223344556"
+                    android:textAppearance="@style/dark_blue_text_appearance"
+                    android:textSize="@dimen/sync_date_text_size" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView301"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/lastCreditNoteNumber"
+                    android:textAppearance="@style/dark_blue_text_appearance_unbold"
+                    android:textSize="@dimen/sync_date_text_size" />
+
+                <TextView
+                    android:id="@+id/bixolonLastCRNoteNumbertextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:text="AABBCC11223344556"
+                    android:textAppearance="@style/dark_blue_text_appearance"
+                    android:textSize="@dimen/sync_date_text_size" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView301"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/lastInvoiceNumber"
+                    android:textAppearance="@style/dark_blue_text_appearance_unbold"
+                    android:textSize="@dimen/sync_date_text_size" />
+
+                <TextView
+                    android:id="@+id/bixolonLastInvoiceNumbertextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:text="AABBCC11223344556"
+                    android:textAppearance="@style/dark_blue_text_appearance"
+                    android:textSize="@dimen/sync_date_text_size" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView302"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/lastNoFiscalDocNumber"
+                    android:textAppearance="@style/dark_blue_text_appearance_unbold"
+                    android:textSize="@dimen/sync_date_text_size" />
+
+                <TextView
+                    android:id="@+id/bixolonLastNoFiscalDocNumbertextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:text="AABBCC11223344556"
+                    android:textAppearance="@style/dark_blue_text_appearance"
+                    android:textSize="@dimen/sync_date_text_size" />
             </LinearLayout>
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/textView25"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="TextView" />
     </LinearLayout>
 
 </ScrollView>

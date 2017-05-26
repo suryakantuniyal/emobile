@@ -220,8 +220,12 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
 
         @Override
         protected void onPostExecute(S1PrinterData printerData) {
-            if(printerData!=null){
-
+            if (printerData != null) {
+                ((TextView)getView().findViewById(R.id.bixolonLastCRNoteNumbertextView)).setText(printerData.getLastCNNumber());
+                ((TextView)getView().findViewById(R.id.bixolonLastInvoiceNumbertextView)).setText(printerData.getLastInvoiceNumber());
+                ((TextView)getView().findViewById(R.id.bixolonLastDRNoteNumbertextView)).setText(printerData.getLastNDNumber());
+                ((TextView)getView().findViewById(R.id.bixolonLastNoFiscalDocNumbertextView)).setText(printerData.getNumberNonFiscalDocuments());
+                ((TextView)getView().findViewById(R.id.bixolonSerialNumbertextView)).setText(printerData.getCashierNumber());
             }
         }
     }

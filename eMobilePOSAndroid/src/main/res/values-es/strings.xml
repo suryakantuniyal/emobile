@@ -1355,6 +1355,11 @@
     <string name="customerRUC">RUC</string>
     <string name="merchantName">Merchant Name</string>
     <string name="bixolonStatus">Bixolon Status</string>
+    <string name="serialNumber">Serial Number:</string>
+    <string name="lastDebiteNoteNumber">last Debit Note #:</string>
+    <string name="lastCreditNoteNumber">Last Credit Note #:</string>
+    <string name="lastInvoiceNumber">Last Invoice #:</string>
+    <string name="lastNoFiscalDocNumber">Last No Fiscal Doc #:</string>
 
 
 </resources>
