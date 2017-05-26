@@ -1451,6 +1451,7 @@ public class EMSDeviceDriver {
     }
 
     public void printTermsNConds() {
+        printPref = myPref.getPrintingPreferences();
         if (printPref.contains(MyPreferences.print_terms_conditions)) {
             List<TermsNConditions> termsNConditions = TermsNConditionsDAO.getTermsNConds();
             if (termsNConditions != null) {
@@ -2499,7 +2500,6 @@ public class EMSDeviceDriver {
             //print refunds
             print(sb_refunds.toString(), FORMAT);
             print(textHandler.newLines(5), FORMAT);
-            printTermsNConds();
 
             printEnablerWebSite(lineWidth);
             if (isPOSPrinter) {
