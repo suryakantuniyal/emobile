@@ -1000,7 +1000,7 @@ public class EMSDeviceDriver {
                 print(sb.toString());
                 print(textHandler.newLines(1));
             }
-            printTermsNConds(lineWidth);
+            printTermsNConds();
             printEnablerWebSite(lineWidth);
             cutPaper();
         } catch (StarIOPortException ignored) {
@@ -1450,14 +1450,15 @@ public class EMSDeviceDriver {
 
     }
 
-    public void printTermsNConds(int lineWidth) {
+    public void printTermsNConds() {
         if (printPref.contains(MyPreferences.print_terms_conditions)) {
-            EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
             List<TermsNConditions> termsNConditions = TermsNConditionsDAO.getTermsNConds();
-            for (TermsNConditions terms : termsNConditions) {
-                print(terms.getTcTerm());
+            if (termsNConditions != null) {
+                for (TermsNConditions terms : termsNConditions) {
+                    print(terms.getTcTerm());
+                }
+                print("\n");
             }
-            print("\n");
         }
     }
 
@@ -1532,7 +1533,7 @@ public class EMSDeviceDriver {
             sb.append("\n");
             print(sb.toString(), FORMAT);
             sb.setLength(0);
-            printTermsNConds(lineWidth);
+            printTermsNConds();
             printEnablerWebSite(lineWidth);
             cutPaper();
         } catch (StarIOPortException ignored) {
@@ -1724,7 +1725,7 @@ public class EMSDeviceDriver {
                 sb.append(textHandler.centeredString("*** Copy ***", lineWidth));
                 print(sb.toString(), FORMAT);
             }
-            printTermsNConds(lineWidth);
+            printTermsNConds();
             printEnablerWebSite(lineWidth);
             cutPaper();
         } catch (StarIOPortException ignored) {
@@ -1888,7 +1889,7 @@ public class EMSDeviceDriver {
             sb.append(textHandler.centeredString(getString(R.string.receipt_thankyou), lineWidth));
             print(sb.toString(), FORMAT);
             print(textHandler.newLines(1), FORMAT);
-            printTermsNConds(lineWidth);
+            printTermsNConds();
             printEnablerWebSite(lineWidth);
             cutPaper();
         } catch (StarIOPortException e) {
@@ -1991,7 +1992,7 @@ public class EMSDeviceDriver {
             } catch (JAException e) {
                 e.printStackTrace();
             }
-            printTermsNConds(lineWidth);
+            printTermsNConds();
             printEnablerWebSite(lineWidth);
             print(textHandler.newLines(1), FORMAT);
             cutPaper();
@@ -2098,7 +2099,7 @@ public class EMSDeviceDriver {
                 printFooter(lineWidth);
             printImage(1);
             print(textHandler.newLines(3), FORMAT);
-            printTermsNConds(lineWidth);
+            printTermsNConds();
             printEnablerWebSite(lineWidth);
             cutPaper();
         } catch (StarIOPortException ignored) {
@@ -2161,7 +2162,7 @@ public class EMSDeviceDriver {
                 print(sb.toString(), FORMAT);
                 print(textHandler.newLines(3), FORMAT);
             }
-            printTermsNConds(lineWidth);
+            printTermsNConds();
             printEnablerWebSite(lineWidth);
             cutPaper();
         } catch (StarIOPortException ignored) {
@@ -2498,7 +2499,7 @@ public class EMSDeviceDriver {
             //print refunds
             print(sb_refunds.toString(), FORMAT);
             print(textHandler.newLines(5), FORMAT);
-            printTermsNConds(lineWidth);
+            printTermsNConds();
 
             printEnablerWebSite(lineWidth);
             if (isPOSPrinter) {
