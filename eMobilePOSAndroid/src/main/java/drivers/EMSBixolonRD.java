@@ -141,7 +141,7 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
     public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
         setPaperWidth(LINE_WIDTH);
         printReceipt(ordID, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, null);
-//        return printTransaction(ordID, null, false, false, null);
+        //        return printTransaction(ordID, null, false, false, null);
         return true;
     }
 

@@ -1354,6 +1354,7 @@
     <string name="bixolon_command_fail">Bixolon command fail.</string>
     <string name="customerRUC">RUC</string>
     <string name="merchantName">Merchant Name</string>
+    <string name="bixolonStatus">Bixolon Status</string>
 
 
 </resources>

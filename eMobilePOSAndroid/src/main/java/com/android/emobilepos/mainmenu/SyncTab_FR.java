@@ -27,13 +27,14 @@ import com.android.database.TemplateHandler;
 import com.android.database.TransferLocations_DB;
 import com.android.database.VoidTransactionsHandler;
 import com.android.emobilepos.R;
-import com.android.support.DateUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NetworkUtils;
 import com.android.support.SynchMethods;
+import com.thefactoryhka.android.controls.PrinterException;
+import com.thefactoryhka.android.pa.S1PrinterData;
 
-import java.util.Date;
+import drivers.EMSBixolonRD;
 
 public class SyncTab_FR extends Fragment implements View.OnClickListener {
     public static Handler syncTabHandler;
@@ -194,6 +195,34 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
                 Global.showPrompt(getActivity(), R.string.sync_title, getString(R.string.sync_fail));
             }
             SyncTab_FR.syncTabHandler.sendEmptyMessage(0);
+        }
+    }
+
+    private class LoadBixolonInfoTask extends AsyncTask<Object, Object, S1PrinterData> {
+
+        @Override
+        protected S1PrinterData doInBackground(Object... params) {
+            EMSBixolonRD bixolon = null;
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null
+                    && Global.mainPrinterManager.getCurrentDevice() instanceof EMSBixolonRD) {
+                bixolon = (EMSBixolonRD) Global.mainPrinterManager.getCurrentDevice();
+            }
+            S1PrinterData printerData = null;
+            try {
+                if (bixolon != null) {
+                    printerData = bixolon.getPrinterTFHKA().getS1PrinterData();
+                }
+            } catch (PrinterException e) {
+                e.printStackTrace();
+            }
+            return printerData;
+        }
+
+        @Override
+        protected void onPostExecute(S1PrinterData printerData) {
+            if(printerData!=null){
+
+            }
         }
     }
 }
