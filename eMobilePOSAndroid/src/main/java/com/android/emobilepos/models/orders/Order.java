@@ -148,11 +148,6 @@ public class Order implements Cloneable {
         if (getOrderProducts() != null && !getOrderProducts().isEmpty()) {
             for (OrderProduct orderProduct : getOrderProducts()) {
                 setupProductTax(context, orderProduct);
-//                if (!isRetailTaxes()) {
-//                    orderProduct.setTaxAmount(tax != null ? tax.getTaxRate() : "0");
-//                    orderProduct.setProd_taxId(tax != null ? tax.getTaxId() : "");
-//                    orderProduct.setTax_type(tax != null ? tax.getTaxType() : "");
-//                }
                 if (isVAT) {
                     setVATTax(tax);
                 }
