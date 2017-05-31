@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Handler;
 
 import com.StarMicronics.jasura.JAException;

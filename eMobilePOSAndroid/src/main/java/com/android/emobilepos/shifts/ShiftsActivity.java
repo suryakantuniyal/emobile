@@ -570,6 +570,8 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
                     Crashlytics.logException(e);
                     return false;
                 }
+            } else {
+                return false;
             }
             return true;
         }
@@ -577,10 +579,13 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
         @Override
         protected void onPostExecute(Boolean result) {
             dialog.dismiss();
-            if (!result) {
+            if (result) {
+                if (shift.getShiftStatus() == Shift.ShiftStatus.CLOSED) {
+                    finish();
+                }
+            } else {
                 Global.showPrompt(ShiftsActivity.this, R.string.dlog_title_error, getString(R.string.error_sync_closed_shift));
             }
-            finish();
         }
     }
 }

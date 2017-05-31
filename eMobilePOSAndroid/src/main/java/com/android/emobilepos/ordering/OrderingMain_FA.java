@@ -481,18 +481,13 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     @Override
     public void onClick(View v) {
         if (UIUtils.singleOnClick(v)) {
-//        Receipt_FR.lastClickTime = SystemClock.elapsedRealtime();
             if (!buildOrderStarted) {
                 switch (v.getId()) {
                     case R.id.btnCheckOut:
-//                        disableCheckoutButton();
                         orderingAction = OrderingAction.CHECKOUT;
-//                btnCheckout.setEnabled(false);
                         if (leftFragment != null) {
                             leftFragment.checkoutOrder();
                         }
-//                        enableCheckoutButton();
-//                btnCheckout.setEnabled(true);
                         break;
                     case R.id.headerMenubutton:
                         showSeatHeaderPopMenu(v);
@@ -503,40 +498,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             }
         }
     }
-//
-//    private void enableCheckoutButton() {
-//        runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                btnCheckout.setEnabled(true);
-//                btnCheckout.setClickable(true);
-////                try {
-////                    Thread.sleep(3000);
-////                } catch (InterruptedException e) {
-////                    e.printStackTrace();
-////                }
-////                btnCheckout.setEnabled(true);
-////                btnCheckout.setClickable(true);
-//            }
-//        });
-//    }
-//
-//    private void disableCheckoutButton() {
-//        runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                btnCheckout.setEnabled(false);
-//                btnCheckout.setClickable(false);
-////                try {
-////                    Thread.sleep(3000);
-////                } catch (InterruptedException e) {
-////                    e.printStackTrace();
-////                }
-////                btnCheckout.setEnabled(true);
-////                btnCheckout.setClickable(true);
-//            }
-//        });
-//    }
 
     private void showSeatHeaderPopMenu(final View v) {
         final OrderSeatProduct orderSeatProduct = (OrderSeatProduct) v.getTag();

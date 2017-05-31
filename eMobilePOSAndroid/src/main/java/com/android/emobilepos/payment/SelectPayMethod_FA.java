@@ -154,7 +154,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         if (size > 0) {
             EMSPayGate_Default payGate;
 
-            Post post = new Post();
+            Post post = new Post(activity);
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SAXProcessCardPayHandler processCardPayHandler = new SAXProcessCardPayHandler();
             String xml;
@@ -171,10 +171,10 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                     if (paymentType.equals("GIFTCARD") || paymentType.equals("REWARD")) {
                         payGate = new EMSPayGate_Default(activity, listVoidPayments.get(i));
                         if (paymentType.equals("GIFTCARD")) {
-                            xml = post.postData(13, activity, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidGiftCardAction, false,
+                            xml = post.postData(13, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidGiftCardAction, false,
                                     listVoidPayments.get(i).getCard_type(), null));
                         } else {
-                            xml = post.postData(13, activity, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidRewardCardAction, false,
+                            xml = post.postData(13,  payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidRewardCardAction, false,
                                     listVoidPayments.get(i).getCard_type(), null));
                         }
                         inSource = new InputSource(new StringReader(xml));
@@ -196,7 +196,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                         payHandler.createVoidPayment(listVoidPayments.get(i), false, null);
                     } else if (!paymentType.equals("CHECK") && !paymentType.equals("WALLET")) {
                         payGate = new EMSPayGate_Default(activity, listVoidPayments.get(i));
-                        xml = post.postData(13, activity, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidCreditCardAction, false,
+                        xml = post.postData(13, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidCreditCardAction, false,
                                 listVoidPayments.get(i).getCard_type(), null));
                         inSource = new InputSource(new StringReader(xml));
 

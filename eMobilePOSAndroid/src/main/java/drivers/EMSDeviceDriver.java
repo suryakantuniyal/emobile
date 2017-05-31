@@ -1534,7 +1534,6 @@ public class EMSDeviceDriver {
             sb.append("\n");
             print(sb.toString(), FORMAT);
             sb.setLength(0);
-            printTermsNConds();
             printEnablerWebSite(lineWidth);
             cutPaper();
         } catch (StarIOPortException ignored) {
@@ -1890,7 +1889,6 @@ public class EMSDeviceDriver {
             sb.append(textHandler.centeredString(getString(R.string.receipt_thankyou), lineWidth));
             print(sb.toString(), FORMAT);
             print(textHandler.newLines(1), FORMAT);
-            printTermsNConds();
             printEnablerWebSite(lineWidth);
             cutPaper();
         } catch (StarIOPortException e) {
@@ -1993,7 +1991,6 @@ public class EMSDeviceDriver {
             } catch (JAException e) {
                 e.printStackTrace();
             }
-            printTermsNConds();
             printEnablerWebSite(lineWidth);
             print(textHandler.newLines(1), FORMAT);
             cutPaper();
@@ -2100,7 +2097,6 @@ public class EMSDeviceDriver {
                 printFooter(lineWidth);
             printImage(1);
             print(textHandler.newLines(3), FORMAT);
-            printTermsNConds();
             printEnablerWebSite(lineWidth);
             cutPaper();
         } catch (StarIOPortException ignored) {
@@ -2163,7 +2159,6 @@ public class EMSDeviceDriver {
                 print(sb.toString(), FORMAT);
                 print(textHandler.newLines(3), FORMAT);
             }
-            printTermsNConds();
             printEnablerWebSite(lineWidth);
             cutPaper();
         } catch (StarIOPortException ignored) {
