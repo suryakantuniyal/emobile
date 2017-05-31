@@ -4,6 +4,7 @@ import com.android.emobilepos.models.realms.TermsNConditions;
 import com.google.gson.Gson;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.Realm;
@@ -41,6 +42,6 @@ public class TermsNConditionsDAO {
             all = realm.copyFromRealm(all);
             return all;
         }
-        return null;
+        return new ArrayList<>();
     }
 }

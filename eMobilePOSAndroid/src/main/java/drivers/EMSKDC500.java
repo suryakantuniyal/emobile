@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothDevice;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -152,13 +153,15 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
         @Override
         protected void onPostExecute(Boolean result) {
-            myProgressDialog.dismiss();
-//            if (result) {
-//                edm.driverDidConnectToDevice(thisInstance, true);
-//            } else {
-//                edm.driverDidNotConnectToDevice(thisInstance, msg, true);
-//            }
-
+            boolean isDestroyed = false;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                if (activity.isDestroyed()) {
+                    isDestroyed = true;
+                }
+            }
+            if (!activity.isFinishing() && !isDestroyed && myProgressDialog.isShowing()) {
+                myProgressDialog.dismiss();
+            }
         }
     }
 

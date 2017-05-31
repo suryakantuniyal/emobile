@@ -1281,12 +1281,6 @@ public class SynchMethods {
         String jsonRequest = client.httpJsonRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
                 xml.downloadAll("TermsAndConditions"));
         TermsNConditionsDAO.insert(jsonRequest);
-//
-//        post.postData(7, context, "TermsAndConditions");
-//        SAXSynchHandler synchHandler = new SAXSynchHandler(context, Global.S_TERMS_AND_CONDITIONS);
-//        File tempFile = new File(tempFilePath);
-//        sp.parse(tempFile, synchHandler);
-//        tempFile.delete();
     }
 
     private void synchUoM() throws IOException, SAXException {

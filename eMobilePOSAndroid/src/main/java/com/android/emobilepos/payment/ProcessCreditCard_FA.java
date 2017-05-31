@@ -412,11 +412,11 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         CustomersHandler handler2 = new CustomersHandler(activity);
         HashMap<String, String> customerInfo = handler2.getCustomerMap(extras.getString("cust_id"));
         if (customerInfo != null) {
-            if (!customerInfo.get("cust_name").isEmpty())
+            if (!TextUtils.isEmpty(customerInfo.get("cust_name")))
                 ownersName.setText(customerInfo.get("cust_name"));
-            if (!customerInfo.get("cust_phone").isEmpty())
+            if (!TextUtils.isEmpty(customerInfo.get("cust_phone")))
                 phoneNumberField.setText(customerInfo.get("cust_phone"));
-            if (!customerInfo.get("cust_email").isEmpty())
+            if (!TextUtils.isEmpty(customerInfo.get("cust_email")))
                 customerEmailField.setText(customerInfo.get("cust_email"));
         }
     }

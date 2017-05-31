@@ -746,6 +746,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             if (Global.btSled != null && Global.btSled.getCurrentDevice() != null)
                 Global.btSled.getCurrentDevice().releaseCardReader();
         }
+        Log.d("Ordering Main", "Destroing OrderingMain");
     }
 
     @Override
