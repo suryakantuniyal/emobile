@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.method.PasswordTransformationMethod;
 import android.view.View;
@@ -69,6 +70,7 @@ public class SelectPassword_FA extends BaseFragmentActivityActionBar {
             finish();
         }
     }
+
     public class SyncReceiveTask extends AsyncTask<DBManager, Void, Boolean> {
         ProgressDialog dialog;
 
@@ -90,10 +92,19 @@ public class SelectPassword_FA extends BaseFragmentActivityActionBar {
 
         @Override
         protected void onPostExecute(Boolean result) {
-            dialog.dismiss();
+            boolean isDestroyed = false;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                if (activity.isDestroyed()) {
+                    isDestroyed = true;
+                }
+            }
+            if (!activity.isFinishing() && !isDestroyed && dialog.isShowing()) {
+                dialog.dismiss();
+            }
+
             if (!result) {
                 Global.showPrompt(SelectPassword_FA.this, R.string.sync_title, getString(R.string.sync_fail));
-            }else{
+            } else {
                 Intent intent = new Intent(SelectPassword_FA.this, MainMenu_FA.class);
                 activity.setResult(-1);
                 startActivity(intent);

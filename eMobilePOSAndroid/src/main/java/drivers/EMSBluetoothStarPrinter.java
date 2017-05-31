@@ -19,6 +19,7 @@ import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.crashlytics.android.Crashlytics;
 import com.starmicronics.stario.StarIOPort;
 import com.starmicronics.stario.StarIOPortException;
 import com.starmicronics.stario.StarPrinterStatus;
@@ -49,7 +50,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     private ProgressDialog myProgressDialog;
     private EMSDeviceDriver thisInstance;
     private boolean stopLoop = false;
-
+    int connectionRetries = 0;
     private String portNumber = "";
     private EMSDeviceManager edm;
     private CreditCardInfo cardManager;
@@ -264,7 +265,15 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
         @Override
         protected void onPostExecute(String unused) {
-            myProgressDialog.dismiss();
+            boolean isDestroyed = false;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                if (activity.isDestroyed()) {
+                    isDestroyed = true;
+                }
+            }
+            if (!activity.isFinishing() && !isDestroyed && myProgressDialog.isShowing()) {
+                myProgressDialog.dismiss();
+            }
 
             if (didConnect) {
                 edm.driverDidConnectToDevice(thisInstance, true);
@@ -281,7 +290,6 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         this.registerPrinter();
     }
 
-    int connectionRetries = 0;
 
     private void verifyConnectivity() throws StarIOPortException, InterruptedException {
         try {
@@ -412,6 +420,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     @Override
     public void registerPrinter() {
         edm.setCurrentDevice(this);
+        Global.mainPrinterManager = edm;
     }
 
     @Override
@@ -765,6 +774,9 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 return false;
             } catch (StarIOPortException e1) {
                 e1.printStackTrace();
+                return false;
+            } catch (Exception ex) {
+                Crashlytics.logException(ex);
                 return false;
             }
         }

@@ -284,4 +284,7 @@ dependencies {
 //    compile 'com.google.firebase:firebase-core:9.2.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.0-beta4'
 }
+dependencies {
+    compile 'com.android.support:support-v4:25.+'
+}
 apply plugin: 'com.google.gms.google-services'
