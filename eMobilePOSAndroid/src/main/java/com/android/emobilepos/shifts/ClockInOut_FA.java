@@ -76,7 +76,7 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
         global = (Global) getApplication();
         Bundle extras = getIntent().getExtras();
         String mClerkName = extras.getString("clerk_name");
-        mClerkID = extras.getString("clerk_id");
+        mClerkID = String.valueOf(extras.getInt("clerk_id"));
         listTimeClock = new ArrayList<>();
         timeClockHandler = new TimeClockHandler(activity);
         TextView clockTodayDate = (TextView) findViewById(R.id.topDate);

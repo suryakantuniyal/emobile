@@ -15,7 +15,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.PowerManager;
 import android.os.RemoteException;
-import android.os.SystemClock;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
@@ -33,7 +32,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.dao.OrderProductAttributeDAO;
 import com.android.database.AddressHandler;
@@ -756,7 +754,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         boolean isScreenOn = powerManager.isScreenOn();
         if (!isScreenOn)
-            global.loggedIn = false;
+            Global.loggedIn = false;
 
         if (PickerAddon_FA.instance == null && PickerProduct_FA.instance == null)
             global.startActivityTransitionTimer();
@@ -1415,7 +1413,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             HashMap<String, String> parsedMap = new HashMap<>();
 
             try {
-                String xml = httpClient.postData(13,  urlToPost);
+                String xml = httpClient.postData(13, urlToPost);
                 switch (xml) {
                     case Global.TIME_OUT:
                         errorMsg = getString(R.string.timeout_try_again);
@@ -1549,18 +1547,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             return null;
         }
     }
-//
-//    private void deleteTransaction() {
-//        if (!Global.lastOrdID.isEmpty()) {
-//            OrdersHandler dbOrders = new OrdersHandler(this);
-//            OrderProductsHandler dbOrdProd = new OrderProductsHandler(this);
-//            OrderProductsAttr_DB dbOrdAttr = new OrderProductsAttr_DB(this);
-//            dbOrders.deleteOrder(Global.lastOrdID);
-//            dbOrdProd.deleteAllOrdProd(Global.lastOrdID);
-//            for (ProductAttribute val : global.ordProdAttr)
-//                dbOrdAttr.deleteOrderProduct(String.valueOf(val.getProductId()));
-//        }
-//    }
+
 
     @Override
     public void startSignature() {
