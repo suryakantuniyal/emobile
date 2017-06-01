@@ -353,6 +353,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         }
     }
 
+
     private void setHandopintUIFields() {
         cardNum.setVisibility(View.GONE);
         secCode.setVisibility(View.GONE);
@@ -411,11 +412,11 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         CustomersHandler handler2 = new CustomersHandler(activity);
         HashMap<String, String> customerInfo = handler2.getCustomerMap(extras.getString("cust_id"));
         if (customerInfo != null) {
-            if (!customerInfo.get("cust_name").isEmpty())
+            if (!TextUtils.isEmpty(customerInfo.get("cust_name")))
                 ownersName.setText(customerInfo.get("cust_name"));
-            if (!customerInfo.get("cust_phone").isEmpty())
+            if (!TextUtils.isEmpty(customerInfo.get("cust_phone")))
                 phoneNumberField.setText(customerInfo.get("cust_phone"));
-            if (!customerInfo.get("cust_email").isEmpty())
+            if (!TextUtils.isEmpty(customerInfo.get("cust_email")))
                 customerEmailField.setText(customerInfo.get("cust_email"));
         }
     }
@@ -491,12 +492,10 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             if (_swiper_type != -1 && Global.btSwiper != null && Global.btSwiper.getCurrentDevice() != null
                     && !cardReaderConnected) {
                 Global.btSwiper.getCurrentDevice().loadCardReader(callBack, isDebit);
-            }
-            if (_sled_type != -1 && Global.btSled != null && Global.btSled.getCurrentDevice() != null
+            } else if (_sled_type != -1 && Global.btSled != null && Global.btSled.getCurrentDevice() != null
                     && !cardReaderConnected) {
                 Global.btSled.getCurrentDevice().loadCardReader(callBack, isDebit);
-            }
-            if (_printer_type != -1 && Global.deviceHasMSR(_printer_type)) {
+            } else if (_printer_type != -1 && Global.deviceHasMSR(_printer_type)) {
                 if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null
                         && !cardReaderConnected)
                     Global.mainPrinterManager.getCurrentDevice().loadCardReader(callBack, isDebit);
@@ -518,7 +517,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                 Global.mainPrinterManager.getCurrentDevice().loadCardReader(callBack, isDebit);
                 cardSwipe.setChecked(true);
             }
-        } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310() || myPref.isKDC5000()) {
+        } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310() || myPref.isKDC500()) {
             cardSwipe.setChecked(true);
         } else if (myPref.isPAT215() && Global.btSwiper == null) {
             if (Global.embededMSR != null && Global.embededMSR.getCurrentDevice() != null) {

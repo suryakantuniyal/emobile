@@ -982,7 +982,7 @@ public class MyPreferences {
         return false;
     }
 
-    public boolean isKDC5000() {
+    public boolean isKDC500() {
         String device_kdc500 = "device_kdc500";
         return prefs.getBoolean(device_kdc500, false);
     }

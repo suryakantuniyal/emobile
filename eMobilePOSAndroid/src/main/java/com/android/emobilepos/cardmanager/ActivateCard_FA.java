@@ -197,7 +197,7 @@ public class ActivateCard_FA extends BaseFragmentActivityActionBar implements EM
                 Global.mainPrinterManager.getCurrentDevice().loadCardReader(msrCallBack, false);
                 cardSwipe.setChecked(true);
             }
-        } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310() || myPref.isKDC5000()) {
+        } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310() || myPref.isKDC500()) {
             cardSwipe.setChecked(true);
         } else if (myPref.isPAT215() && Global.btSwiper == null) {
             if (Global.embededMSR != null && Global.embededMSR.getCurrentDevice() != null) {
