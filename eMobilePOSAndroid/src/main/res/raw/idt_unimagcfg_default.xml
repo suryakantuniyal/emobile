@@ -2624,6 +2624,14 @@
                 <baudRate>9600</baudRate>
                 <volumeLevelAdjust>1</volumeLevelAdjust>
             </sm-g920k>
+            <sm-g950u>
+                <support_status val="ump=m;um2=m;um2i=m;shuttle=m"></support_status>
+                <directionOutputWave>1</directionOutputWave>
+                <InputFreq>48000</InputFreq>
+                <OutputFreq>48000</OutputFreq>
+                <baudRate>9600</baudRate>
+                <volumeLevelAdjust>1</volumeLevelAdjust>
+            </sm-g950u>
             <sm-g920p>
                 <support_status val="ump=m;um2=m;um2i=m;shuttle=m"></support_status>
                 <directionOutputWave>1</directionOutputWave>
