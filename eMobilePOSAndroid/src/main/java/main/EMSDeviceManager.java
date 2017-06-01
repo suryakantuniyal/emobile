@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;
+import android.os.Build;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -322,8 +323,14 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
     }
 
     public void driverDidConnectToDevice(EMSDeviceDriver theDevice, boolean showPrompt) {
-        if (showPrompt) {
-            Builder dialog = new AlertDialog.Builder(this.activity);
+        boolean isDestroyed = false;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            if (this.activity.isDestroyed()) {
+                isDestroyed = true;
+            }
+        }
+        if (showPrompt && !this.activity.isFinishing() && !isDestroyed) {
+            Builder dialog = new Builder(this.activity);
             dialog.setNegativeButton(R.string.button_ok, null);
             AlertDialog alert = dialog.create();
             alert.setTitle(R.string.dlog_title_confirm);
@@ -340,7 +347,13 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
 
     public void driverDidNotConnectToDevice(EMSDeviceDriver theDevice, String err, boolean showPrompt) {
 
-        if (showPrompt) {
+        boolean isDestroyed = false;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            if (this.activity.isDestroyed()) {
+                isDestroyed = true;
+            }
+        }
+        if (showPrompt && !this.activity.isFinishing() && !isDestroyed) {
             Builder dialog = new AlertDialog.Builder(this.activity);
             dialog.setNegativeButton("Ok", null);
             AlertDialog alert = dialog.create();

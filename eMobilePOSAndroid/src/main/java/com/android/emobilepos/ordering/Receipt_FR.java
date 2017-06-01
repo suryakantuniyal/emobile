@@ -19,6 +19,7 @@ import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -236,6 +237,10 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             } else {
                 global.order = onHoldOrder;
             }
+        } else if (global.order == null) {
+            Log.d("Ordering Main", "Restore OrderingMain NULL order global. Activity finished.");
+            getActivity().finish();
+            return null;
         }
         final Bundle extras = activity.getIntent().getExtras();
         typeOfProcedure = (Global.TransactionType) extras.get("option_number");
