@@ -709,21 +709,15 @@ public class SalesTab_FR extends Fragment {
                     break;
                 }
                 case SHIFT_EXPENSES: {
-                    boolean hasPermissions = myPref.isUseClerks() && SecurityManager.hasPermissions(getActivity(),
+                    boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.NO_SALE);
                     if (hasPermissions) {
-                        if (validateClerkShift(Global.TransactionType.getByCode(pos))) {
-//                            Shift openShift = ShiftDAO.getOpenShift();
-//                            if (openShift != null) {
+                        if (myPref.isUseClerks() && validateClerkShift(Global.TransactionType.getByCode(pos))) {
                             intent = new Intent(activity, ShiftExpensesList_FA.class);
                             startActivity(intent);
-                        } else {
-                            Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
+                        } else if (!myPref.isUseClerks()) {
+                            promptClerkLogin(Global.TransactionType.getByCode(pos));
                         }
-//                        }
-//                        else {
-//                            Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
-//                        }
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                     }
@@ -769,8 +763,18 @@ public class SalesTab_FR extends Fragment {
                     myPref.setClerkID(String.valueOf(clerk.getEmpId()));
                     myPref.setClerkName(clerk.getEmpName());
                     if (validateClerkShift(transactionType)) {
-                        Intent intent = new Intent(getActivity(), ShiftsActivity.class);
-                        startActivity(intent);
+                        switch (transactionType) {
+                            case SHIFTS: {
+                                Intent intent = new Intent(getActivity(), ShiftsActivity.class);
+                                startActivity(intent);
+                                break;
+                            }
+                            case SHIFT_EXPENSES: {
+                                Intent intent = new Intent(activity, ShiftExpensesList_FA.class);
+                                startActivity(intent);
+                                break;
+                            }
+                        }
                     }
                 }
             }

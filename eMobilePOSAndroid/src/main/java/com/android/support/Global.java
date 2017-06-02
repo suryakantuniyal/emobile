@@ -101,7 +101,7 @@ public class Global extends MultiDexApplication {
     private Timer mActivityTransitionTimer;
     private TimerTask mActivityTransitionTimerTask;
     private boolean wasInBackground;
-    private final long MAX_ACTIVITY_TRANSITION_TIME_MS = 3000;
+    private final long MAX_ACTIVITY_TRANSITION_TIME_MS = 5000;
 
     public static final int MAGTEK = 0;
     //Load JNI from the library project. Refer MainActivity.java from library project elotouchCashDrawer.

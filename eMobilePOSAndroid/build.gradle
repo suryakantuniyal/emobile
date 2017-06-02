@@ -50,7 +50,7 @@ android {
         ems {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.2.1.59"
+            versionName "1.2.2.02"
             versionCode 125
             targetSdkVersion 23
             multiDexEnabled = true
@@ -64,7 +64,7 @@ android {
         icmpevo {
             minSdkVersion 15
             applicationId 'com.emobilepos.icmpevo.app'
-            versionName "1.2.1.59"
+            versionName "1.2.2.02"
             versionCode 125
             targetSdkVersion 23
             multiDexEnabled = true
@@ -92,7 +92,7 @@ android {
         ivupos {
             minSdkVersion 15
             applicationId 'com.emobilepos.ivupos.app'
-            versionName "1.2.1.59"
+            versionName "1.2.2.02"
             versionCode 125
             targetSdkVersion 23
             multiDexEnabled = true
@@ -284,5 +284,8 @@ dependencies {
 //    compile 'com.google.firebase:firebase-messaging:9.2.1'
 //    compile 'com.google.firebase:firebase-core:9.2.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.0-beta4'
+}
+dependencies {
+    compile 'com.android.support:support-v4:25.+'
 }
 apply plugin: 'com.google.gms.google-services'

@@ -35,6 +35,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 
+
 public class ShiftsActivity extends BaseFragmentActivityActionBar implements View.OnClickListener, TextWatcher {
 
     private EditText oneDollarEditText;
@@ -298,13 +299,13 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
         shift.setAssigneeName(employee.getEmpName());
         shift.setClerkId(Integer.parseInt(preferences.getClerkID()));
         shift.setBeginningPettyCash(NumberUtils.cleanCurrencyFormatedNumber(totalAmountEditText.getText().toString()));
+        shift.setTotal_ending_cash(shift.getBeginningPettyCash());
         shift.setCreationDate(now);
         shift.setStartTime(now);
         shift.setStartTimeLocal(now);
 
         //set the ending petty cash equal to the beginning petty cash, decrease the ending petty cash every time there is an expense
         shift.setEndingPettyCash(NumberUtils.cleanCurrencyFormatedNumber(totalAmountEditText.getText().toString()));
-        shift.setTotal_ending_cash("0");
         ShiftDAO.insertOrUpdate(shift);
         finish();
     }
@@ -324,25 +325,27 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
         fiftyDollarTextView.setText(Global.getCurrencyFormat(String.valueOf(fiftyDollars * 50)));
         hundredDollarTextView.setText(Global.getCurrencyFormat(String.valueOf(hundredDollars * 100)));
         totalAmountEditText.setText(Global.getCurrencyFormat(total.toString()));
-        BigDecimal totalEndingCash = new BigDecimal(shift.getTotal_ending_cash());
-        switch (totalEndingCash.compareTo(BigDecimal.valueOf(total))) {
-            case -1:
-                accrualStatusTextView.setText(getString(R.string.over));
-                totalAmountEditText.setTextColor(Color.RED);
-                accrualStatusTextView.setTextColor(Color.RED);
-                accrualStatusTextView.setVisibility(View.VISIBLE);
-                break;
-            case 1:
-                totalAmountEditText.setTextColor(Color.BLUE);
-                accrualStatusTextView.setTextColor(Color.BLUE);
-                accrualStatusTextView.setVisibility(View.VISIBLE);
-                accrualStatusTextView.setText(getString(R.string.under));
-                break;
-            case 0:
-                totalAmountEditText.setTextColor(Color.BLUE);
-                accrualStatusTextView.setTextColor(Color.BLACK);
-                accrualStatusTextView.setVisibility(View.GONE);
-                break;
+        if (shift != null && shift.getShiftStatus() == Shift.ShiftStatus.PENDING) {
+            BigDecimal totalEndingCash = new BigDecimal(shift.getTotal_ending_cash());
+            switch (totalEndingCash.compareTo(BigDecimal.valueOf(total))) {
+                case -1:
+                    accrualStatusTextView.setText(getString(R.string.over));
+                    totalAmountEditText.setTextColor(Color.RED);
+                    accrualStatusTextView.setTextColor(Color.RED);
+                    accrualStatusTextView.setVisibility(View.VISIBLE);
+                    break;
+                case 1:
+                    totalAmountEditText.setTextColor(Color.BLUE);
+                    accrualStatusTextView.setTextColor(Color.BLUE);
+                    accrualStatusTextView.setVisibility(View.VISIBLE);
+                    accrualStatusTextView.setText(getString(R.string.under));
+                    break;
+                case 0:
+                    totalAmountEditText.setTextColor(Color.BLUE);
+                    accrualStatusTextView.setTextColor(Color.BLACK);
+                    accrualStatusTextView.setVisibility(View.GONE);
+                    break;
+            }
         }
     }
 
@@ -567,6 +570,8 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
                     Crashlytics.logException(e);
                     return false;
                 }
+            } else {
+                return false;
             }
             return true;
         }
@@ -574,7 +579,11 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
         @Override
         protected void onPostExecute(Boolean result) {
             dialog.dismiss();
-            if (!result) {
+            if (result) {
+                if (shift.getShiftStatus() == Shift.ShiftStatus.CLOSED) {
+                    finish();
+                }
+            } else {
                 Global.showPrompt(ShiftsActivity.this, R.string.dlog_title_error, getString(R.string.error_sync_closed_shift));
             }
         }

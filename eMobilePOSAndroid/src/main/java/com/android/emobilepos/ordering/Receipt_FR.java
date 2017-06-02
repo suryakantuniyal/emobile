@@ -19,6 +19,7 @@ import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -236,6 +237,10 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             } else {
                 global.order = onHoldOrder;
             }
+        } else if (global.order == null) {
+            Log.d("Ordering Main", "Restore OrderingMain NULL order global. Activity finished.");
+            getActivity().finish();
+            return null;
         }
         final Bundle extras = getActivity().getIntent().getExtras();
         typeOfProcedure = (Global.TransactionType) extras.get("option_number");
@@ -707,7 +712,9 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     public void checkoutOrder() {
         if (!OrderingMain_FA.isRequiredAttributeConmpleted(global.order.getOrderProducts())) {
             Global.showPrompt(getActivity(), R.string.dlog_title_error, getActivity().getString(R.string.dlog_msg_required_attributes));
-        } else if (receiptListView.getCount() == 0 && caseSelected != Global.TransactionType.CONSIGNMENT) {
+        } else if (receiptListView.getCount() == 0 &&
+                (caseSelected != Global.TransactionType.CONSIGNMENT ||
+                        (caseSelected == Global.TransactionType.CONSIGNMENT && consignmentType == Global.OrderType.CONSIGNMENT_PICKUP))) {
             Toast.makeText(getActivity(),
                     getString(R.string.warning_empty_products),
                     Toast.LENGTH_SHORT).show();
@@ -1110,7 +1117,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 }
                 case CONSIGNMENT: // Consignment
                 {
-
                     if (consignmentType == Global.OrderType.CONSIGNMENT_PICKUP || consignmentType == Global.OrderType.CONSIGNMENT_FILLUP) {
                         processConsignment();
                         global.order.setOrderProducts(new ArrayList<OrderProduct>());
@@ -1124,6 +1130,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     } else {
                         updateConsignmentType(true);
                     }
+                    getOrderingMainFa().buildOrderStarted = false;
                     break;
                 }
             }

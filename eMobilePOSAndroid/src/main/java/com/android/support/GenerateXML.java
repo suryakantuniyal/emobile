@@ -76,7 +76,7 @@ public class GenerateXML {
         if (thisActivity instanceof ClockInOut_FA) {
             try {
                 ending.append("&EmpID=")
-                        .append(URLEncoder.encode(((ClockInOut_FA) (thisActivity)).getClerkID(), UTF_8));
+                        .append(URLEncoder.encode(info.getClerkID(), UTF_8));
                 ending.append("&ActivationKey=").append(URLEncoder.encode(info.getActivKey(), UTF_8));
                 ending.append("&DeviceID=").append(URLEncoder.encode(info.getDeviceID(), UTF_8));
                 ending.append("&BundleVersion=").append(URLEncoder.encode(info.getBundleVersion(), UTF_8));

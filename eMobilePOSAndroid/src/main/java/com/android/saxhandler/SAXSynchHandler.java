@@ -391,14 +391,14 @@ public class SAXSynchHandler extends DefaultHandler {
 //				clerksHandler.emptyTable();
 //			}
 //			break;
-            case Global.S_TERMS_AND_CONDITIONS:
-                if (isInsert)
-                    termsAndConditionsHandler.insert(dataList, dictionaryListMap);
-                else {
-                    termsAndConditionsHandler = new TermsAndConditionsHandler(activity);
-                    termsAndConditionsHandler.emptyTable();
-                }
-                break;
+//            case Global.S_TERMS_AND_CONDITIONS:
+//                if (isInsert)
+//                    termsAndConditionsHandler.insert(dataList, dictionaryListMap);
+//                else {
+//                    termsAndConditionsHandler = new TermsAndConditionsHandler(activity);
+//                    termsAndConditionsHandler.emptyTable();
+//                }
+//                break;
 //		case Global.S_ORDERS_ON_HOLD_LIST:
 //			if(isInsert)
 //				ordersHandler.insertOnHold(dataList,dictionaryListMap);

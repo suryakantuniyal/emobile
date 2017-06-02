@@ -15,7 +15,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.PowerManager;
 import android.os.RemoteException;
-import android.os.SystemClock;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
@@ -33,7 +32,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.dao.OrderProductAttributeDAO;
 import com.android.database.AddressHandler;
@@ -252,14 +250,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         // using the StartActivity method let's handle the intent
         Intent i = getIntent();
         handleDecodeData(i);
-
-        if (Global.deviceHasBarcodeScanner(myPref.getPrinterType())
-                || Global.deviceHasBarcodeScanner(myPref.sledType(true, -2))) {
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)
-                Global.mainPrinterManager.getCurrentDevice().loadScanner(callBackMSR);
-            if (Global.btSled != null && Global.btSled.getCurrentDevice() != null)
-                Global.btSled.getCurrentDevice().loadScanner(callBackMSR);
-        }
 
         hasBeenCreated = true;
 
@@ -491,18 +481,13 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     @Override
     public void onClick(View v) {
         if (UIUtils.singleOnClick(v)) {
-//        Receipt_FR.lastClickTime = SystemClock.elapsedRealtime();
             if (!buildOrderStarted) {
                 switch (v.getId()) {
                     case R.id.btnCheckOut:
-//                        disableCheckoutButton();
                         orderingAction = OrderingAction.CHECKOUT;
-//                btnCheckout.setEnabled(false);
                         if (leftFragment != null) {
                             leftFragment.checkoutOrder();
                         }
-//                        enableCheckoutButton();
-//                btnCheckout.setEnabled(true);
                         break;
                     case R.id.headerMenubutton:
                         showSeatHeaderPopMenu(v);
@@ -513,40 +498,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             }
         }
     }
-//
-//    private void enableCheckoutButton() {
-//        runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                btnCheckout.setEnabled(true);
-//                btnCheckout.setClickable(true);
-////                try {
-////                    Thread.sleep(3000);
-////                } catch (InterruptedException e) {
-////                    e.printStackTrace();
-////                }
-////                btnCheckout.setEnabled(true);
-////                btnCheckout.setClickable(true);
-//            }
-//        });
-//    }
-//
-//    private void disableCheckoutButton() {
-//        runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                btnCheckout.setEnabled(false);
-//                btnCheckout.setClickable(false);
-////                try {
-////                    Thread.sleep(3000);
-////                } catch (InterruptedException e) {
-////                    e.printStackTrace();
-////                }
-////                btnCheckout.setEnabled(true);
-////                btnCheckout.setClickable(true);
-//            }
-//        });
-//    }
 
     private void showSeatHeaderPopMenu(final View v) {
         final OrderSeatProduct orderSeatProduct = (OrderSeatProduct) v.getTag();
@@ -713,7 +664,16 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 e.printStackTrace();
             }
         }
-
+        if (Global.deviceHasBarcodeScanner(myPref.getPrinterType()) ||
+                Global.deviceHasBarcodeScanner(myPref.getSwiperType())
+                || Global.deviceHasBarcodeScanner(myPref.sledType(true, -2))) {
+            if (Global.btSwiper != null && Global.btSwiper.getCurrentDevice() != null)
+                Global.btSwiper.getCurrentDevice().loadScanner(callBackMSR);
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)
+                Global.mainPrinterManager.getCurrentDevice().loadScanner(callBackMSR);
+            if (Global.btSled != null && Global.btSled.getCurrentDevice() != null)
+                Global.btSled.getCurrentDevice().loadScanner(callBackMSR);
+        }
         super.onResume();
     }
 
@@ -747,6 +707,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             if (Global.btSled != null && Global.btSled.getCurrentDevice() != null)
                 Global.btSled.getCurrentDevice().releaseCardReader();
         }
+        Log.d("Ordering Main", "Destroing OrderingMain");
     }
 
     @Override
@@ -756,7 +717,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         boolean isScreenOn = powerManager.isScreenOn();
         if (!isScreenOn)
-            global.loggedIn = false;
+            Global.loggedIn = false;
 
         if (PickerAddon_FA.instance == null && PickerProduct_FA.instance == null)
             global.startActivityTransitionTimer();
@@ -1415,7 +1376,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             HashMap<String, String> parsedMap = new HashMap<>();
 
             try {
-                String xml = httpClient.postData(13,  urlToPost);
+                String xml = httpClient.postData(13, urlToPost);
                 switch (xml) {
                     case Global.TIME_OUT:
                         errorMsg = getString(R.string.timeout_try_again);
@@ -1549,18 +1510,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             return null;
         }
     }
-//
-//    private void deleteTransaction() {
-//        if (!Global.lastOrdID.isEmpty()) {
-//            OrdersHandler dbOrders = new OrdersHandler(this);
-//            OrderProductsHandler dbOrdProd = new OrderProductsHandler(this);
-//            OrderProductsAttr_DB dbOrdAttr = new OrderProductsAttr_DB(this);
-//            dbOrders.deleteOrder(Global.lastOrdID);
-//            dbOrdProd.deleteAllOrdProd(Global.lastOrdID);
-//            for (ProductAttribute val : global.ordProdAttr)
-//                dbOrdAttr.deleteOrderProduct(String.valueOf(val.getProductId()));
-//        }
-//    }
+
 
     @Override
     public void startSignature() {

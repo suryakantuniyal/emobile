@@ -25,6 +25,7 @@ import com.android.dao.ClerkDAO;
 import com.android.dao.ShiftDAO;
 import com.android.dao.ShiftExpensesDAO;
 import com.android.dao.StoredPaymentsDAO;
+import com.android.dao.TermsNConditionsDAO;
 import com.android.database.InvProdHandler;
 import com.android.database.InvoicesHandler;
 import com.android.database.MemoTextHandler;
@@ -49,6 +50,7 @@ import com.android.emobilepos.models.realms.OrderAttributes;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.Shift;
 import com.android.emobilepos.models.realms.ShiftExpense;
+import com.android.emobilepos.models.realms.TermsNConditions;
 import com.android.emobilepos.payment.ProcessGenius_FA;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.DateUtils;
@@ -793,7 +795,8 @@ public class EMSDeviceDriver {
                         }
 
                     }
-
+                    print(sb.toString(), FORMAT);
+                    sb.setLength(0);
                 }
             } else {
                 int padding = lineWidth / 4;
@@ -991,6 +994,7 @@ public class EMSDeviceDriver {
                 print(sb.toString());
                 print(textHandler.newLines(1));
             }
+            printTermsNConds();
             printEnablerWebSite(lineWidth);
             cutPaper();
         } catch (StarIOPortException ignored) {
@@ -1475,6 +1479,19 @@ public class EMSDeviceDriver {
 
     }
 
+    public void printTermsNConds() {
+        printPref = myPref.getPrintingPreferences();
+        if (printPref.contains(MyPreferences.print_terms_conditions)) {
+            List<TermsNConditions> termsNConditions = TermsNConditionsDAO.getTermsNConds();
+            if (termsNConditions != null) {
+                for (TermsNConditions terms : termsNConditions) {
+                    print(terms.getTcTerm());
+                }
+                print("\n");
+            }
+        }
+    }
+
     public void printFooter(int lineWidth) {
 
         EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
@@ -1546,7 +1563,6 @@ public class EMSDeviceDriver {
             sb.append("\n");
             print(sb.toString(), FORMAT);
             sb.setLength(0);
-
             printEnablerWebSite(lineWidth);
             cutPaper();
         } catch (StarIOPortException ignored) {
@@ -1717,13 +1733,13 @@ public class EMSDeviceDriver {
                 }
                 sb.setLength(0);
             }
-            sb.append("\n");
-            print(sb.toString(), FORMAT);
+//            sb.append("\n");
+//            print(sb.toString(), FORMAT);
             sb.setLength(0);
             printFooter(lineWidth);
-            sb.append("\n");
-            print(sb.toString(), FORMAT);
-            sb.setLength(0);
+//            sb.append("\n");
+//            print(sb.toString(), FORMAT);
+//            sb.setLength(0);
 
             if (fromHtml == null) {
                 if (!isCashPayment && !isCheckPayment) {
@@ -1738,6 +1754,7 @@ public class EMSDeviceDriver {
                 sb.append(textHandler.centeredString("*** Copy ***", lineWidth));
                 print(sb.toString(), FORMAT);
             }
+            printTermsNConds();
             printEnablerWebSite(lineWidth);
             cutPaper();
         } catch (StarIOPortException ignored) {
@@ -2507,6 +2524,7 @@ public class EMSDeviceDriver {
             //print refunds
             print(sb_refunds.toString(), FORMAT);
             print(textHandler.newLines(5), FORMAT);
+
             printEnablerWebSite(lineWidth);
             if (isPOSPrinter) {
                 port.writePort(new byte[]{0x1b, 0x64, 0x02}, 0, 3); // Cut
