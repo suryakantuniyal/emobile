@@ -6,6 +6,8 @@ import com.android.emobilepos.models.realms.BixolonTax;
 import com.android.emobilepos.models.realms.BixolonTransaction;
 import com.android.emobilepos.models.realms.PaymentMethod;
 
+import java.util.List;
+
 import io.realm.Realm;
 
 /**
@@ -121,5 +123,19 @@ public class BixolonDAO {
         } finally {
             realm.close();
         }
+    }
+
+    public static List<BixolonTransaction> getFailedTransactions() {
+        Realm realm = Realm.getDefaultInstance();
+        List<BixolonTransaction> all;
+        try {
+            all = realm.where(BixolonTransaction.class).findAll();
+            if (all != null) {
+                all = realm.copyFromRealm(all);
+            }
+        } finally {
+            realm.close();
+        }
+        return all;
     }
 }

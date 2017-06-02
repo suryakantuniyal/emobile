@@ -1125,6 +1125,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                                 myPref.setPrinterType(Global.BIXOLON_RD);
                                 myPref.setPrinterMACAddress(macAddressList.get(pos));
                                 myPref.setPrinterName(strDeviceName);
+                                myPref.setIsBixolonRD(true);
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();
                                 Global.mainPrinterManager.loadDrivers(getActivity(), Global.BIXOLON_RD, false);

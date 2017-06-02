@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.android.dao.BixolonDAO;
 import com.android.database.ConsignmentTransactionHandler;
 import com.android.database.CustomersHandler;
 import com.android.database.DBManager;
@@ -27,6 +28,7 @@ import com.android.database.TemplateHandler;
 import com.android.database.TransferLocations_DB;
 import com.android.database.VoidTransactionsHandler;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.realms.BixolonTransaction;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NetworkUtils;
@@ -34,10 +36,13 @@ import com.android.support.SynchMethods;
 import com.thefactoryhka.android.controls.PrinterException;
 import com.thefactoryhka.android.pa.S1PrinterData;
 
+import java.util.List;
+
 import drivers.EMSBixolonRD;
 
 public class SyncTab_FR extends Fragment implements View.OnClickListener {
     public static Handler syncTabHandler;
+    private MyPreferences preferences;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -54,6 +59,10 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
         syncSendButton.setOnClickListener(this);
         syncReceiveButton.setOnClickListener(this);
         setHandler();
+        preferences = new MyPreferences(getActivity());
+        if (preferences.isBixolonRD()) {
+            new LoadBixolonInfoTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }
     }
 
     private void setHandler() {
@@ -199,6 +208,15 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
     }
 
     private class LoadBixolonInfoTask extends AsyncTask<Object, Object, S1PrinterData> {
+        ProgressDialog dialog;
+
+        @Override
+        protected void onPreExecute() {
+            dialog = new ProgressDialog(getActivity());
+            dialog.setIndeterminate(true);
+            dialog.setMessage(getString(R.string.loading));
+            dialog.show();
+        }
 
         @Override
         protected S1PrinterData doInBackground(Object... params) {
@@ -221,12 +239,15 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
         @Override
         protected void onPostExecute(S1PrinterData printerData) {
             if (printerData != null) {
-                ((TextView)getView().findViewById(R.id.bixolonLastCRNoteNumbertextView)).setText(printerData.getLastCNNumber());
-                ((TextView)getView().findViewById(R.id.bixolonLastInvoiceNumbertextView)).setText(printerData.getLastInvoiceNumber());
-                ((TextView)getView().findViewById(R.id.bixolonLastDRNoteNumbertextView)).setText(printerData.getLastNDNumber());
-                ((TextView)getView().findViewById(R.id.bixolonLastNoFiscalDocNumbertextView)).setText(printerData.getNumberNonFiscalDocuments());
-                ((TextView)getView().findViewById(R.id.bixolonSerialNumbertextView)).setText(printerData.getCashierNumber());
+                ((TextView) getView().findViewById(R.id.bixolonLastCRNoteNumbertextView)).setText(String.valueOf(printerData.getLastCNNumber()));
+                ((TextView) getView().findViewById(R.id.bixolonLastInvoiceNumbertextView)).setText(String.valueOf(printerData.getLastInvoiceNumber()));
+                ((TextView) getView().findViewById(R.id.bixolonLastDRNoteNumbertextView)).setText(String.valueOf(printerData.getLastNDNumber()));
+                ((TextView) getView().findViewById(R.id.bixolonLastNoFiscalDocNumbertextView)).setText(String.valueOf(printerData.getNumberNonFiscalDocuments()));
+                ((TextView) getView().findViewById(R.id.bixolonSerialNumbertextView)).setText(String.valueOf(printerData.getCashierNumber()));
             }
+            List<BixolonTransaction> failedTrans = BixolonDAO.getFailedTransactions();
+
+            dialog.dismiss();
         }
     }
 }
