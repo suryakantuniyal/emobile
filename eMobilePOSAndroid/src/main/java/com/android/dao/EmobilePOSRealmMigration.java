@@ -10,7 +10,7 @@ public class EmobilePOSRealmMigration implements io.realm.RealmMigration {
     @Override
     public void migrate(DynamicRealm realm, long oldVersion, long newVersion) {
         if (oldVersion != newVersion) {
-           realm.deleteAll();
+//           realm.deleteAll();
         }
     }
 }

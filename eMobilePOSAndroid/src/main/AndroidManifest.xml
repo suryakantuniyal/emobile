@@ -56,8 +56,8 @@
         android:allowBackup="false"
         android:icon="@drawable/icon"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme"
         android:largeHeap="true"
+        android:theme="@style/AppTheme"
         tools:replace="android:icon,android:theme,android:allowBackup">
         <meta-data
             android:name="android.nfc.disable_beam_default"
@@ -231,12 +231,13 @@
             android:name=".payment.ProcessGenius_FA"
             android:configChanges="orientation|screenSize"
             android:exported="false"
-            android:windowSoftInputMode="stateAlwaysHidden" >
+            android:windowSoftInputMode="stateAlwaysHidden">
             <intent-filter>
                 <action android:name="com.emobilepos.app.VIEW_RESPONSE" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-            </activity>
+        </activity>
         <activity
             android:name=".payment.TupyxCamera_FA"
             android:configChanges="orientation|screenSize"
@@ -323,6 +324,7 @@
             android:windowSoftInputMode="stateAlwaysHidden">
             <intent-filter>
                 <action android:name="com.android.emobilepos.RECVR" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
@@ -387,7 +389,6 @@
             android:exported="false"
             android:theme="@style/LightTheme"
             android:windowSoftInputMode="stateHidden|adjustResize" />
-
         <activity
             android:name=".shifts.ShiftReportDetails_FA"
             android:configChanges="orientation|screenSize"
@@ -445,7 +446,6 @@
             android:launchMode="singleTop"
             android:theme="@style/LightTheme"
             android:windowSoftInputMode="stateAlwaysHidden" />
-
         <activity android:name="com.android.crashreport.CrashActivity" />
 
         <service
@@ -475,16 +475,15 @@
             android:name=".settings.SalesAssociateConfigurationActivity"
             android:label="@string/title_activity_sales_associate_configuration" />
 
-        <!--<service android:name=".firebase.FirebaseInstanceIdSrv">-->
-        <!--<intent-filter>-->
-        <!--<action android:name="com.google.firebase.INSTANCE_ID_EVENT" />-->
-        <!--</intent-filter>-->
-        <!--</service>-->
+        <!-- <service android:name=".firebase.FirebaseInstanceIdSrv"> -->
+        <!-- <intent-filter> -->
+        <!-- <action android:name="com.google.firebase.INSTANCE_ID_EVENT" /> -->
+        <!-- </intent-filter> -->
+        <!-- </service> -->
 
         <service
             android:name=".firebase.RegistrationIntentService"
             android:exported="false" />
-
         <service
             android:name=".firebase.PollingNotificationService"
             android:exported="false"
@@ -506,6 +505,9 @@
         <!-- </intent-filter> -->
         <!-- </service> -->
         <activity android:name=".shifts.ShiftsActivity" />
+        <activity
+            android:name=".bixolon.BixolonTransactionsActivity"
+            android:label="@string/title_activity_bixolon_transactions"></activity>
     </application>
 
 </manifest>

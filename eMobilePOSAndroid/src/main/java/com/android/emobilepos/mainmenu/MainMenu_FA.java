@@ -469,7 +469,6 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
                     myViewPager.setCurrentItem(i);
                 }
             }
-
             if (myTabs.get(0) == tag && hasBeenCreated) {
                 SalesTab_FR.startDefault(activity, myPref.getPreferencesValue(MyPreferences.pref_default_transaction));
             }

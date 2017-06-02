@@ -1360,6 +1360,10 @@
     <string name="lastCreditNoteNumber">Last Credit Note #:</string>
     <string name="lastInvoiceNumber">Last Invoice #:</string>
     <string name="lastNoFiscalDocNumber">Last No Fiscal Doc #:</string>
+    <string name="bixolonFailedTrans">Bixolon failed transactions</string>
+    <string name="bixolonTransactions">Bixolon Transaction Summary</string>
+    <string name="review">Review</string>
+    <string name="failed">Failed</string>
 
 
 </resources>

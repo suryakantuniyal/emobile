@@ -2,6 +2,7 @@ package com.android.emobilepos.mainmenu;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
@@ -28,6 +29,7 @@ import com.android.database.TemplateHandler;
 import com.android.database.TransferLocations_DB;
 import com.android.database.VoidTransactionsHandler;
 import com.android.emobilepos.R;
+import com.android.emobilepos.bixolon.BixolonTransactionsActivity;
 import com.android.emobilepos.models.realms.BixolonTransaction;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -45,6 +47,22 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
     private MyPreferences preferences;
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setUserVisibleHint(false);
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser) {
+            if (preferences.isBixolonRD()) {
+                new LoadBixolonInfoTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            }
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.synchronization_layout, container, false);
 
@@ -56,6 +74,8 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
         setViewData(view);
         Button syncSendButton = (Button) view.findViewById(R.id.syncSendButton);
         Button syncReceiveButton = (Button) view.findViewById(R.id.syncReceiveButton);
+        Button bixolonFailedReviewButton = (Button) view.findViewById(R.id.bixolonFailedReviewbutton);
+        bixolonFailedReviewButton.setOnClickListener(this);
         syncSendButton.setOnClickListener(this);
         syncReceiveButton.setOnClickListener(this);
         setHandler();
@@ -158,6 +178,10 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.bixolonFailedReviewbutton:
+                Intent intent = new Intent(getActivity(), BixolonTransactionsActivity.class);
+                startActivity(intent);
+                break;
             case R.id.syncSendButton:
                 DBManager dbManager = new DBManager(getActivity(), Global.FROM_SYNCH_ACTIVITY);
                 SynchMethods sm = new SynchMethods(dbManager);
@@ -246,8 +270,9 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
                 ((TextView) getView().findViewById(R.id.bixolonSerialNumbertextView)).setText(String.valueOf(printerData.getCashierNumber()));
             }
             List<BixolonTransaction> failedTrans = BixolonDAO.getFailedTransactions();
-
+            ((TextView) getView().findViewById(R.id.bixolonFailedTransactionsNumbertextView)).setText(failedTrans != null ? String.valueOf(failedTrans.size()) : "0");
             dialog.dismiss();
         }
     }
+
 }

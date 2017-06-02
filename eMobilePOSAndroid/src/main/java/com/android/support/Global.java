@@ -36,6 +36,7 @@ import android.widget.TextView;
 import com.android.crashreport.ExceptionHandler;
 import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.ClerkDAO;
+import com.android.dao.EmobilePOSRealmMigration;
 import com.android.dao.RealmModule;
 import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.BuildConfig;
@@ -1317,8 +1318,9 @@ public class Global extends MultiDexApplication {
         Realm.init(this);
         isIvuLoto = getPackageName().contains(getString(R.string.ivupos_packageid));
         RealmConfiguration config = new RealmConfiguration.Builder()
-                .deleteRealmIfMigrationNeeded()
+//                .deleteRealmIfMigrationNeeded()
                 .modules(Realm.getDefaultModule(), new RealmModule())
+                .migration(new EmobilePOSRealmMigration())
                 .build();
         Realm.setDefaultConfiguration(config);
         Realm.compactRealm(config);

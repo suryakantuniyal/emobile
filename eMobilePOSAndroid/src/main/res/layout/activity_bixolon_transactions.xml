@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.android.emobilepos.bixolon.BixolonTransactionsActivity">
+
+
+    <TextView
+        android:id="@+id/transHeaderTitle"
+        style="@style/text_shadow"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/blue_gradient_header_horizontal"
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="@string/bixolonTransactions"
+        android:textAppearance="@style/white_text_appearance"
+        android:textSize="@dimen/header_bar_text_size" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/bixolonTransactionlistView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:divider="@color/listview_divider"
+        android:dividerHeight="0.1dp" />
+</LinearLayout>
