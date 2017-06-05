@@ -122,7 +122,7 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
 
         payHandler = new PaymentsHandler(activity);
         PaymentDetails paymentDetails = payHandler.getPaymentDetails(pay_id, isDeclined);
-        voidButton.setEnabled(hasVoidPermissions && !paymentDetails.isVoid() && TextUtils.isEmpty(paymentDetails.getJob_id()));
+        voidButton.setEnabled(!myPref.isBixolonRD() && hasVoidPermissions && !paymentDetails.isVoid() && TextUtils.isEmpty(paymentDetails.getJob_id()));
         if (extras.getBoolean("histpay")) {
             if (paymentDetails.getJob_id() != null && paymentDetails.getJob_id().isEmpty()) {
                 if (paymentDetails.getInv_id().isEmpty()) {

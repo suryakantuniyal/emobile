@@ -206,13 +206,13 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         }
         SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
         String curDate = sdf.format(new Date());
-        if (order.isVoid != null && (order.isVoid.equals("1") ||
-                !curDate.equals(Global.formatToDisplayDate(order.ord_timecreated, 0)))) {
-            btnVoid.setEnabled(false && hasVoidPermissions);
-            btnVoid.setClickable(false && hasVoidPermissions);
+        if (myPref.isBixolonRD() || ((order.isVoid != null && (order.isVoid.equals("1"))) ||
+                (!curDate.equals(Global.formatToDisplayDate(order.ord_timecreated, 0))))) {
+            btnVoid.setEnabled(false);
+            btnVoid.setClickable(false);
         } else {
-            btnVoid.setEnabled(true && hasVoidPermissions);
-            btnVoid.setClickable(true && hasVoidPermissions);
+            btnVoid.setEnabled(hasVoidPermissions);
+            btnVoid.setClickable(hasVoidPermissions);
         }
         myPref = new MyPreferences(activity);
         ListViewAdapter myAdapter = new ListViewAdapter(activity);
@@ -228,9 +228,9 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
     @Override
     public void onResume() {
         if (global.isApplicationSentToBackground(activity))
-            global.loggedIn = false;
+            Global.loggedIn = false;
         global.stopActivityTransitionTimer();
-        if (hasBeenCreated && !global.loggedIn) {
+        if (hasBeenCreated && !Global.loggedIn) {
             if (global.getGlobalDlog() != null)
                 global.getGlobalDlog().dismiss();
             global.promptForMandatoryLogin(activity);
@@ -244,7 +244,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         boolean isScreenOn = powerManager.isScreenOn();
         if (!isScreenOn)
-            global.loggedIn = false;
+            Global.loggedIn = false;
         global.startActivityTransitionTimer();
     }
 
@@ -287,8 +287,8 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
     public void cardWasReadSuccessfully(boolean read, CreditCardInfo cardManager) {
         if (read) {
             if (paymentsToVoid.size() > 0) {
-                String voidAmount = NumberUtils.cleanCurrencyFormatedNumber(paymentsToVoid.get(0).getPay_amount());
-                BigInteger voidAmountInt = new BigInteger(voidAmount.replace(".", ""));
+//                String voidAmount = NumberUtils.cleanCurrencyFormatedNumber(paymentsToVoid.get(0).getPay_amount());
+//                BigInteger voidAmountInt = new BigInteger(voidAmount.replace(".", ""));
                 Global.mainPrinterManager.getCurrentDevice().saleReversal(paymentsToVoid.get(0), paymentsToVoid.get(0).getPay_transid());
                 payHandler.createVoidPayment(paymentsToVoid.get(0), false, null);
                 paymentsToVoid.remove(0);
@@ -473,7 +473,6 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                 break;
             case CASE_PAID_AMOUNT_NO_CURRENCY:
                 data = paymentMapList.get(position).getPay_amount();
-                ;
                 break;
         }
         return data;
@@ -630,7 +629,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
             if (myPref.getSwiperType() == Global.HANDPOINT) {
                 paymentsToVoid = new ArrayList<>();
                 paymentsToVoid.addAll(listVoidPayments);
-                String voidAmount = NumberUtils.cleanCurrencyFormatedNumber(paymentsToVoid.get(0).getPay_amount());
+//                String voidAmount = NumberUtils.cleanCurrencyFormatedNumber(paymentsToVoid.get(0).getPay_amount());
                 Global.mainPrinterManager.getCurrentDevice().saleReversal(paymentsToVoid.get(0), paymentsToVoid.get(0).getPay_transid());
                 payHandler.createVoidPayment(paymentsToVoid.get(0), false, null);
                 paymentsToVoid.remove(0);
@@ -642,8 +641,8 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         activity.setResult(100);
     }
 
-    public class voidPaymentAsync extends AsyncTask<Void, Void, Void> {
-        HashMap<String, String> parsedMap = new HashMap<String, String>();
+    private class voidPaymentAsync extends AsyncTask<Void, Void, Void> {
+        HashMap<String, String> parsedMap = new HashMap<>();
 
         @Override
         protected void onPreExecute() {
@@ -716,7 +715,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         }
     }
 
-    public class ListViewAdapter extends BaseAdapter implements Filterable {
+    private class ListViewAdapter extends BaseAdapter implements Filterable {
         private LayoutInflater myInflater;
         private ProductsImagesHandler imgHandler;
         private Context context;
@@ -852,7 +851,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
             return null;
         }
 
-        public class ViewHolder {
+        class ViewHolder {
             TextView textLine1;
             TextView textLine2;
             TextView ordProdQty;
