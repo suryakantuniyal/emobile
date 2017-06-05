@@ -267,7 +267,7 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
                 ((TextView) getView().findViewById(R.id.bixolonLastInvoiceNumbertextView)).setText(String.valueOf(printerData.getLastInvoiceNumber()));
                 ((TextView) getView().findViewById(R.id.bixolonLastDRNoteNumbertextView)).setText(String.valueOf(printerData.getLastNDNumber()));
                 ((TextView) getView().findViewById(R.id.bixolonLastNoFiscalDocNumbertextView)).setText(String.valueOf(printerData.getNumberNonFiscalDocuments()));
-                ((TextView) getView().findViewById(R.id.bixolonSerialNumbertextView)).setText(String.valueOf(printerData.getCashierNumber()));
+                ((TextView) getView().findViewById(R.id.bixolonSerialNumbertextView)).setText(String.valueOf(printerData.getRegisteredMachineNumber()));
             }
             List<BixolonTransaction> failedTrans = BixolonDAO.getFailedTransactions();
             ((TextView) getView().findViewById(R.id.bixolonFailedTransactionsNumbertextView)).setText(failedTrans != null ? String.valueOf(failedTrans.size()) : "0");

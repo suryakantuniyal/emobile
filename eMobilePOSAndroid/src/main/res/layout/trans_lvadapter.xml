@@ -45,12 +45,23 @@
                 android:textAppearance="@style/red_text_appearance_bold"
                 android:textSize="@dimen/large_button_text_size" />
 
+            <Button
+                android:id="@+id/bixolonTransactionRetrybutton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/action_button_selector"
+                android:text="@string/button_retry"
+                android:visibility="gone" />
+
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <TextView
@@ -81,6 +92,7 @@
                 android:text=""
                 android:textAppearance="@style/grey_text_appearance_unbold"
                 android:textSize="@dimen/listview_text_size" />
+
         </LinearLayout>
 
     </LinearLayout>

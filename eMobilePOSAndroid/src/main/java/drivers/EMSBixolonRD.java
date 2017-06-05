@@ -129,9 +129,11 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
             e.printStackTrace();
         }
         if (!cmd) {
-            voidLastTransaction();
+//            voidLastTransaction();
             BixolonTransaction bixolonTransaction = new BixolonTransaction(order);
             BixolonDAO.insertFailedOrder(bixolonTransaction);
+        } else {
+            BixolonDAO.removeFailedOrder(order.ord_id);
         }
         return cmd;
     }

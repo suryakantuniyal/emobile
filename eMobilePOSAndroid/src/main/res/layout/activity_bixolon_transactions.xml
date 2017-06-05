@@ -20,6 +20,15 @@
         android:textAppearance="@style/white_text_appearance"
         android:textSize="@dimen/header_bar_text_size" />
 
+    <TextView
+        android:id="@+id/noTransFounttextView"
+        style="@style/black_text_appearance"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="@string/no_transaction_found"
+        android:textSize="@dimen/header_bar_text_size" />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/bixolonTransactionlistView"
         android:layout_width="match_parent"

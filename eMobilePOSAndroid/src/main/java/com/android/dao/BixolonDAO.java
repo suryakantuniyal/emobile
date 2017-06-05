@@ -138,4 +138,18 @@ public class BixolonDAO {
         }
         return all;
     }
+
+    public static void removeFailedOrder(String ord_id) {
+        Realm realm = Realm.getDefaultInstance();
+        try {
+            realm.beginTransaction();
+            BixolonTransaction transaction = realm.where(BixolonTransaction.class).equalTo("orderId", ord_id).findFirst();
+            if (transaction != null) {
+                transaction.deleteFromRealm();
+            }
+        } finally {
+            realm.commitTransaction();
+            realm.close();
+        }
+    }
 }

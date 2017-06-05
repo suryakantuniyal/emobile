@@ -1364,6 +1364,7 @@
     <string name="bixolonTransactions">Bixolon Transaction Summary</string>
     <string name="review">Review</string>
     <string name="failed">Failed</string>
+    <string name="no_transaction_found">No Transaction Found.</string>
 
 
 </resources>

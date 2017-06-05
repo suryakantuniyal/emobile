@@ -1401,6 +1401,7 @@
         "when a user tries to pick up one of cards.\n\n"
     </string>
     <string name="failed">Failed</string>
+    <string name="no_transaction_found">No Transaction Found.</string>
 
 
 </resources>
