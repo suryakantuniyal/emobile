@@ -81,7 +81,10 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
         setHandler();
         preferences = new MyPreferences(getActivity());
         if (preferences.isBixolonRD()) {
+            view.findViewById(R.id.bixolonContainerLinearLayout).setVisibility(View.VISIBLE);
             new LoadBixolonInfoTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        } else {
+            view.findViewById(R.id.bixolonContainerLinearLayout).setVisibility(View.GONE);
         }
     }
 

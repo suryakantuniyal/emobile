@@ -1402,6 +1402,8 @@
     </string>
     <string name="failed">Failed</string>
     <string name="no_transaction_found">No Transaction Found.</string>
+    <string name="print_z_report">Print Report Z</string>
+    <string name="print_x_report">Print Report X</string>
 
 
 </resources>

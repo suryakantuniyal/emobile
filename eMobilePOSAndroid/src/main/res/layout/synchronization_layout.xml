@@ -27,6 +27,7 @@
                 android:layout_marginRight="5dp"
                 android:layout_weight="1"
                 android:background="@drawable/blue_btn_selector"
+                android:drawableLeft="@drawable/ic_cloud_upload_black_48dp"
                 android:padding="15dp"
                 android:text="@string/sync_send_btn"
                 android:textSize="@dimen/large_button_text_size" />
@@ -40,6 +41,7 @@
                 android:layout_marginRight="5dp"
                 android:layout_weight="1"
                 android:background="@drawable/blue_btn_selector"
+                android:drawableLeft="@drawable/ic_cloud_download_black_48dp"
                 android:padding="15dp"
                 android:text="@string/sync_receive_btn"
                 android:textSize="@dimen/large_button_text_size" />
