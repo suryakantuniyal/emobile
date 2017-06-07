@@ -1,7 +1,6 @@
 <resources>
 
     <string name="app_name">eMobilePOS</string>
-    <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Settings</string>
     <string name="title_activity_main_menu">eMobilePOS</string>
     <string name="main_menu_header">Sales</string>
@@ -10,11 +9,11 @@
     <string name="add_main_hint2">$0.00</string>
     <string name="search_hint">Search by: Name/ID</string>
     <string name="synch_subtitle">Synchronized items are marked green</string>
-    <string name="intentAction">com.android.emobilepos.RECVR</string>
-    <string name="intentAction2">com.android.emobilepos.RECVR2</string>
-    <string name="intentAction3">com.android.emobilepos.RECVR3</string>
-    <string name="intentAction4">com.android.emobilepos.RECVR4</string>
-    <string name="intentAction5">com.android.emobilepos.RECVR5</string>
+    <string name="intentAction" translatable="false">com.android.emobilepos.RECVR</string>
+    <string name="intentAction2" translatable="false">com.android.emobilepos.RECVR2</string>
+    <string name="intentAction3" translatable="false">com.android.emobilepos.RECVR3</string>
+    <string name="intentAction4" translatable="false">com.android.emobilepos.RECVR4</string>
+    <string name="intentAction5" translatable="false">com.android.emobilepos.RECVR5</string>
     <string name="hint_enter_pwd">Enter Password</string>
     <string name="hint_search">Search</string>
     <string name="enter_name">Enter Name</string>
@@ -1061,7 +1060,7 @@
     <string name="amount_zero_lbl">0.00</string>
     <string name="none_uppercase_lbl">NONE</string>
     <string name="enabler_prefix">EN</string>
-    <string name="enabler_website">www.emobilepos.com/</string>
+    <string name="enabler_website" translatable="false">www.emobilepos.com/</string>
     <string name="powered_by_enabler">Powered by Enabler</string>
     <string name="ivuloto_control_label">"CONTROL: "</string>
     <string name="menu_back">Back</string>
@@ -1069,7 +1068,7 @@
     <string name="sync_send_btn">Send</string>
     <string name="sync_receive_btn">Receive</string>
     <string name="pay_button">Pay</string>
-    <string name="sync_enabler_submitlocationinventory">https://sync.enablermobile.com/deviceASXMLTrans/submitLocationInventory.aspx</string>
+    <string name="sync_enabler_submitlocationinventory" translatable="false">https://sync.enablermobile.com/deviceASXMLTrans/submitLocationInventory.aspx</string>
     <string name="genius_aid">AID:</string>
     <string name="cryptogram_type">Cryptogram Type:</string>
     <string name="cryptogram">Cryptogram:</string>
@@ -1080,9 +1079,9 @@
     <string name="error_reading_card">Card swipe read error.</string>
     <string name="endofdayBtn">End of day</string>
     <string name="declined">DECLINED</string>
-    <string name="ten_percent">10%</string>
-    <string name="fifteen_percent">15%</string>
-    <string name="twenty_percent">20%</string>
+    <string name="ten_percent" translatable="false">10%</string>
+    <string name="fifteen_percent" translatable="false">15%</string>
+    <string name="twenty_percent" translatable="false">20%</string>
     <string name="other">Other:</string>
     <string name="config_toggle_elo_bcr">Elo barcode reader on/off</string>
     <string name="config_use_navigationbar">Enable Navigation Bar</string>
@@ -1155,7 +1154,7 @@
     <string name="table_label_map">"Table: "</string>
     <string name="table_map">Floor Map</string>
     <string name="table_list">Table List</string>
-    <string name="enabler_support_email">support@e-nablercorp.com</string>
+    <string name="enabler_support_email" translatable="false">support@e-nablercorp.com</string>
     <string name="handpoint_log_file">Handpoint Log File</string>
     <string name="send_email">Send Email</string>
     <string name="config_send_handpoint_log">Send Handpoint Log</string>
@@ -1288,6 +1287,32 @@
     <string name="dlog_msg_error_shift_already_open">Shift already open.</string>
     <string name="over">Over</string>
     <string name="under">Under</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="bixolon_title">Bixolon Configuration</string>
+    <string name="time">Time</string>
+    <string name="config_bixolon_setup">Bixolon Setup</string>
+    <string name="taxes">Taxes</string>
+    <string name="taxtype">Tax Type</string>
+    <string name="processing">Processing</string>
+    <string name="bixolon_command_succeed">Bixolon command succeed</string>
+    <string name="bixolon_command_fail">Bixolon command fail.</string>
+    <string name="customerRUC">RUC</string>
+    <string name="merchantName">Merchant Name</string>
+    <string name="bixolonStatus">Bixolon Status</string>
+    <string name="serialNumber">Serial Number:</string>
+    <string name="lastDebiteNoteNumber">last Debit Note #:</string>
+    <string name="lastCreditNoteNumber">Last Credit Note #:</string>
+    <string name="lastInvoiceNumber">Last Invoice #:</string>
+    <string name="lastNoFiscalDocNumber">Last No Fiscal Doc #:</string>
+    <string name="bixolonFailedTrans">Failed</string>
+    <string name="bixolonTransactions">Bixolon Transaction Summary</string>
+    <string name="review">Review</string>
+    <string name="title_activity_bixolon_transactions">BixolonTransactionsActivity</string>
+    <string name="failed">Failed</string>
+    <string name="no_transaction_found">No Transaction Found.</string>
+    <string name="print_z_report">Print Report Z</string>
+    <string name="print_x_report">Print Report X</string>
 
 
 </resources>
