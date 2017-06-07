@@ -236,7 +236,7 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
 
     @Override
     public void printShiftDetailsReport(String shiftID) {
-
+        super.printShiftDetailsReceipt(LINE_WIDTH, shiftID);
     }
 
     @Override

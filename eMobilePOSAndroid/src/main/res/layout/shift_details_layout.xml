@@ -45,137 +45,163 @@ android:orientation="vertical" >
 
         <TableRow
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+            android:layout_height="match_parent"
+            android:layout_margin="8dp">
 
             <TextView
-                android:text="@string/sales_clerk"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
                 android:id="@+id/textView27"
                 style="@style/black_text_appearance_unbold"
-                android:layout_weight="1" />
-
-            <TextView
-                android:text="TextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/salesClerktextView26"
-                style="@style/black_text_appearance" />
-        </TableRow>
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" >
-
-            <TextView
-                android:text="@string/begging_petty_cash"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/sales_clerk"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+            <TextView
+                android:id="@+id/salesClerktextView26"
+                style="@style/black_text_appearance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TextView"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="8dp">
+
+            <TextView
                 android:id="@+id/textView27a"
                 style="@style/black_text_appearance_unbold"
-                android:layout_weight="1" />
-
-            <TextView
-                android:text="TextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/beginningPettyCashtextView26"
-                style="@style/black_text_appearance" />
-        </TableRow>
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" >
-
-            <TextView
-                android:text="@string/total_expenses"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/begging_petty_cash"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+            <TextView
+                android:id="@+id/beginningPettyCashtextView26"
+                style="@style/black_text_appearance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TextView"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="8dp">
+
+            <TextView
                 android:id="@+id/textView27b"
                 style="@style/black_text_appearance_unbold"
-                android:layout_weight="1" />
-
-            <TextView
-                android:text="TextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/totalExpensestextView26"
-                style="@style/black_text_appearance" />
-        </TableRow>
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" >
-
-            <TextView
-                android:text="@string/ending_petty_cash"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/total_expenses"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+            <TextView
+                android:id="@+id/totalExpensestextView26"
+                style="@style/black_text_appearance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TextView"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="8dp">
+
+            <TextView
                 android:id="@+id/textView27c"
                 style="@style/black_text_appearance_unbold"
-                android:layout_weight="1" />
-
-            <TextView
-                android:text="TextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/endingPettyCashtextView26"
-                style="@style/black_text_appearance" />
-        </TableRow>
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" >
-
-            <TextView
-                android:text="@string/total_transactions_cash"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/ending_petty_cash"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+            <TextView
+                android:id="@+id/endingPettyCashtextView26"
+                style="@style/black_text_appearance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TextView"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="8dp">
+
+            <TextView
                 android:id="@+id/textView27d"
                 style="@style/black_text_appearance_unbold"
-                android:layout_weight="1" />
-
-            <TextView
-                android:text="TextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/totalTransactionCashtextView26"
-                style="@style/black_text_appearance" />
-        </TableRow>
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" >
-
-            <TextView
-                android:text="@string/total_ending_cash"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/total_transactions_cash"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+            <TextView
+                android:id="@+id/totalTransactionCashtextView26"
+                style="@style/black_text_appearance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TextView"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="8dp">
+
+            <TextView
                 android:id="@+id/textView27e"
                 style="@style/black_text_appearance_unbold"
-                android:layout_weight="1" />
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/total_ending_cash"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
             <TextView
-                android:text="TextView"
+                android:id="@+id/totalEndingCashtextView26"
+                style="@style/black_text_appearance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/totalEndingCashtextView26"
-                style="@style/black_text_appearance" />
+                android:text="TextView"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
         </TableRow>
 
         <TableRow
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+            android:layout_height="match_parent"
+            android:layout_margin="8dp">
 
             <TextView
-                android:text="@string/entered_close_amount"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
                 android:id="@+id/textView27f"
                 style="@style/black_text_appearance_unbold"
-                android:layout_weight="1" />
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/entered_close_amount"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
             <TextView
-                android:text="TextView"
+                android:id="@+id/enteredCloseAmounttextView26"
+                style="@style/black_text_appearance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/enteredCloseAmounttextView26"
-                style="@style/black_text_appearance" />
+                android:text="TextView"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
         </TableRow>
 
 
