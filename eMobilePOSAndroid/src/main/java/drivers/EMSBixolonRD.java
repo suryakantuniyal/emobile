@@ -230,7 +230,8 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
 
     @Override
     public boolean printReport(String curDate) {
-        return false;
+        printReportReceipt(curDate, LINE_WIDTH);
+        return true;
     }
 
     @Override
@@ -240,7 +241,7 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
 
     @Override
     public void printEndOfDayReport(String date, String clerk_id, boolean printDetails) {
-
+        printEndOfDayReportReceipt(date, LINE_WIDTH, printDetails);
     }
 
     @Override
