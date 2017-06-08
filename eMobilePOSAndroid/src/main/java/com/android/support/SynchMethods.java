@@ -1060,7 +1060,7 @@ public class SynchMethods {
         reader.beginArray();
         int i = 0;
         while (reader.hasNext()) {
-            ProductAlias alias = gson.fromJson(reader, Product.class);
+            ProductAlias alias = gson.fromJson(reader, ProductAlias.class);
             productAliases.add(alias);
             i++;
             if (i == 1000) {
