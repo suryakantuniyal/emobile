@@ -23,7 +23,7 @@
 
     <string name="header_title_addons">Addons</string>
     <string name="header_title_customers">Customers</string>
-    <string name="header_title_method">Method</string>
+    <string name="header_title_method">Payment Method</string>
     <string name="header_title_gift_card">Gift Card</string>
     <string name="header_title_loyalty_card">Loyalty Card</string>
     <string name="header_title_reward_card">Reward Card</string>
@@ -456,7 +456,7 @@
 
 
     <!-- Catalog/Picker -->
-    <string name="cat_picker_title">Picker</string>
+    <string name="cat_picker_title">Item</string>
     <string name="cat_picker_attributes">Attributes</string>
     <string name="cat_picker_onhand">On Hand:</string>
     <string name="cat_picker_add_but">Add</string>
@@ -1313,6 +1313,14 @@
     <string name="no_transaction_found">No Transaction Found.</string>
     <string name="print_z_report">Print Report Z</string>
     <string name="print_x_report">Print Report X</string>
+    <string name="password">Password</string>
+    <string name="login">Log In</string>
+    <string name="initialization">Initialization</string>
+    <string name="reload">Reload</string>
+    <string name="set_password">Set Password</string>
+    <string name="application_password">Application Password</string>
+    <string name="select_employee">Select Employee</string>
+    <string name="password_configuration">Password Setup</string>
 
 
 </resources>

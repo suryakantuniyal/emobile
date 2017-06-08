@@ -14,11 +14,11 @@
     <string name="enter_name">"Ingrese su nombre"</string>
     <string name="last_saved">"Última actualización"</string>
 
-    <string name="inventory_transfer">"Transferencia de inventario"</string>
+    <string name="inventory_transfer">"Transferencia inventario"</string>
 
     <string name="header_title_addons">"Complementos"</string>
     <string name="header_title_customers">"Clientes"</string>
-    <string name="header_title_method">"Método"</string>
+    <string name="header_title_method">"Método de Pago"</string>
     <string name="header_title_gift_card">"Tarjeta de regalo"</string>
     <string name="header_title_loyalty_card">"Tarjeta de fidelidad"</string>
     <string name="header_title_reward_card">"Tarjeta de recompensa"</string>
@@ -28,7 +28,7 @@
 
 
     <string name="enter_password">"Introducir la contraseña"</string>
-    <string name="reenter_password">"Escriba la contraseña otra vez"</string>
+    <string name="reenter_password">"Confirmar contraseña"</string>
     <string name="invalid_password">"Contraseña no válida, intente de nuevo"</string>
     <string name="cc_offline">"CC Desconectado"</string>
 
@@ -94,8 +94,8 @@
     <string name="dlog_title_enter_clerk_password">"Introduzca la contraseña del empleado"</string>
     <string name="dlog_msg_swiper_loading">"Swiper es:"</string>
     <string name="connected">"Conectado"</string>
-    <string name="disconnected">"DESCONECTADO"</string>
-    <string name="loading">"CARGANDO"</string>
+    <string name="disconnected">"Desconectado"</string>
+    <string name="loading">"Cargando…"</string>
 
     <string name="dlog_title_enter_number">"Ingresar número"</string>
     <string name="dlog_title_enter_manager_password">"Introduzca la contraseña del administrador"</string>
@@ -112,7 +112,7 @@
     <string name="dlog_star_ip">"Dirección IP"</string>
     <string name="dlog_star_port">"Número de puerto"</string>
 
-    <string name="sales_receipt_title">"Abrir Cuenta"</string>
+    <string name="sales_receipt_title">"Recibo de Compra"</string>
 
     <!-- Button -->
     <string name="button_print">"Imprimir"</string>
@@ -167,7 +167,7 @@
 
 
     <!-- Sync Main tab -->
-    <string name="sync_title">"Sincronizar"</string>
+    <string name="sync_title">"Sincronización"</string>
     <string name="sync_send">"Enviar"</string>
     <string name="sync_receive">"Recibir"</string>
     <string name="sync_status">"Estado:"</string>
@@ -332,7 +332,7 @@
     <string name="admin_filter_by_cust">"Filtrar productos por cliente"</string>
     <string name="admin_limit_product_onhand">"Límite de productos disponibles"</string>
 
-    <string name="admin_prit_settings">"Configuración de impresión"</string>
+    <string name="admin_prit_settings">"Configuración de impresora"</string>
     <string name="admin_detect_periph">"Re Detectar periféricos"</string>
     <string name="admin_forget_periph">"Olvidar los periféricos"</string>
     <string name="admin_enable_print">"Habilitar impresión"</string>
@@ -449,7 +449,7 @@
 
 
     <!-- Catalog/Picker -->
-    <string name="cat_picker_title">"Selector"</string>
+    <string name="cat_picker_title">"Articulo"</string>
     <string name="cat_picker_attributes">"Atributos"</string>
     <string name="cat_picker_onhand">"En mano:"</string>
     <string name="cat_picker_add_but">"Añadir"</string>
@@ -637,7 +637,7 @@
     <string name="number">"Número"</string>
     <string name="state">"Estado"</string>
     <string name="dob_year">"Año de Nacimiento"</string>
-    <string name="check_account_number">"Cuenta"</string>
+    <string name="check_account_number">"Número de Cuenta"</string>
     <string name="check_routing_number">"Enrutamiento"</string>
     <string name="check_zipcode">"Código postal"</string>
     <string name="check_address">"Dirección"</string>
@@ -796,8 +796,7 @@
     <string name="consignment_qty">"Cantidad:"</string>
     <string name="consignment_total">"Total:"</string>
 
-    <string name="login_select_this_employee">"Seleccione este empleado?"</string>
-
+    <string name="login_select_this_employee">"Seleccionar este empleado?"</string>
 
     <string name="clock_in_on">"Encendido en:"</string>
     <string name="confirm_clock_out">"Confirme la salida:"</string>
@@ -848,7 +847,7 @@
     <string name="config_general_settings">"Configuración general"</string>
     <string name="config_account_settings">"Configuraciones de la cuenta"</string>
     <string name="config_product_settings">"Configuración del producto"</string>
-    <string name="config_printing_settings">"Configuración de impresión"</string>
+    <string name="config_printing_settings">"Configuración de impresora"</string>
     <string name="config_other_settings">"Otros ajustes"</string>
     <string name="config_shifts">"Turnos"</string>
     <string name="config_cash_drawer">"Cajón de dinero"</string>
@@ -1287,7 +1286,14 @@
     <string name="no_transaction_found">"Ninguna transacción encontrada"</string>
     <string name="print_z_report">"Imprimir informe Z"</string>
     <string name="print_x_report">"Imprimir informe X"</string>
-
+    <string name="password">Contraseña</string>
+    <string name="login">Entrar</string>
+    <string name="initialization">Inicialización</string>
+    <string name="reload">Recargar</string>
+    <string name="set_password">Configurar la clave</string>
+    <string name="application_password">Clave de la Aplicación</string>
+    <string name="select_employee">Seleción del Empleado</string>
+    <string name="password_configuration">Configuración de Contraseña</string>
 
 
 </resources>

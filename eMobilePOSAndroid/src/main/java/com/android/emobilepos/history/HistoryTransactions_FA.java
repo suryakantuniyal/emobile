@@ -164,7 +164,6 @@ public class HistoryTransactions_FA extends BaseFragmentActivityActionBar implem
             finish();
     }
 
-
     private void initTabs() {
         tabHost.setup();
         int length = TABS.length;
@@ -172,7 +171,6 @@ public class HistoryTransactions_FA extends BaseFragmentActivityActionBar implem
             tabHost.addTab(newTab(TABS[i], TABS_TAG[i], TABS_ID[i]));
         }
     }
-
 
     private TabSpec newTab(String tag, String label, int tabView) {
         View indicator = LayoutInflater.from(activity).inflate(R.layout.tabs_layout, (ViewGroup) findViewById(android.R.id.tabs), false);

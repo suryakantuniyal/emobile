@@ -51,8 +51,6 @@ public class HistoryTab_FR extends Fragment {
 
 					@Override
 					public void onItemClick(AdapterView<?> arg0, View arg1,final int position, long arg3) {
-						// TODO Auto-generated method stub
-
 						Intent intent = null;
 						switch(position)
 						{

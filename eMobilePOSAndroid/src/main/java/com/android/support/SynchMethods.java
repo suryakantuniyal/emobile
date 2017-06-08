@@ -1053,7 +1053,7 @@ public class SynchMethods {
         reader.beginArray();
         int i = 0;
         while (reader.hasNext()) {
-            ProductAlias alias = gson.fromJson(reader, Product.class);
+            ProductAlias alias = gson.fromJson(reader, ProductAlias.class);
             productAliases.add(alias);
             i++;
             if (i == 1000) {
@@ -1587,7 +1587,7 @@ public class SynchMethods {
         @Override
         protected String doInBackground(String... params) {
 
-            updateProgress("Please Wait...");
+            updateProgress(context.getString(R.string.please_wait_message));
             if (NetworkUtils.isConnectedToInternet(context)) {
                 try {
 
