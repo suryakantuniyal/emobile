@@ -1257,7 +1257,7 @@
     <string name="config_holds_polling_service">"Habilitar servicio de polling"</string>
     <string name="sync_inprogress">"Sincronización en curso. Por favor espera."</string>
     <string name="use_clerk_check_required">"La configuración uso de empleado es necesario para completar esta acción."</string>
-    <string name="dlog_msg_error_shift_already_open">"El turno ya está abierto."</string>
+    <string name="dlog_msg_error_shift_already_open">%s ya tiene un turno abierto.</string>
     <string name="over">"Sobre"</string>
     <string name="under">"Bajo"</string>
 

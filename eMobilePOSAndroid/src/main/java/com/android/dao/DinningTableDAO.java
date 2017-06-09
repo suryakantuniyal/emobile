@@ -80,8 +80,17 @@ public class DinningTableDAO {
 
     public static DinningTable getById(String tableId) {
         Realm realm = Realm.getDefaultInstance();
-        RealmQuery<DinningTable> where = realm.where(DinningTable.class);
-        return where.equalTo("id", tableId).findFirst();
+        DinningTable table;
+        try {
+            RealmQuery<DinningTable> where = realm.where(DinningTable.class);
+            table = where.equalTo("id", tableId).findFirst();
+            if (table != null) {
+                table = realm.copyFromRealm(table);
+            }
+        } finally {
+            realm.close();
+        }
+        return table;
     }
 
     public static DinningTable getByNumber(String tableNumber) {

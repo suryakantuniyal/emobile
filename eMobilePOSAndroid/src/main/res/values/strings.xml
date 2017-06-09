@@ -1284,7 +1284,7 @@
     <string name="config_holds_polling_service">Enable holds polling service</string>
     <string name="sync_inprogress">Synchronization in progress. Please wait.</string>
     <string name="use_clerk_check_required">Use clerk setting is required to complete this action.</string>
-    <string name="dlog_msg_error_shift_already_open">Shift already open.</string>
+    <string name="dlog_msg_error_shift_already_open">%s already has an open shift.</string>
     <string name="over">Over</string>
     <string name="under">Under</string>
 
