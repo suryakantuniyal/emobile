@@ -9,6 +9,7 @@ import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -44,6 +45,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.dao.PayMethodsDAO;
+import com.android.dao.ShiftDAO;
 import com.android.database.CategoriesHandler;
 import com.android.database.DBManager;
 import com.android.database.PayMethodsHandler;
@@ -290,6 +292,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                 case GENERAL:
                     prefManager.findPreference("pref_use_clerks").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_transaction_num_prefix").setOnPreferenceClickListener(this);
+                    prefManager.findPreference("pref_require_shift_transactions").setOnPreferenceClickListener(this);
                     break;
                 case RESTAURANT:
                     if (prefManager.findPreference("pref_salesassociate_config") != null) {
@@ -508,8 +511,9 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     connectUSBDevice();
                     break;
                 case R.string.config_redetect_peripherals:
-                    String connect = DeviceUtils.autoConnect(getActivity(), true);
-                    Toast.makeText(getActivity(), connect, Toast.LENGTH_LONG).show();
+                    new Redetect(getActivity()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+//                    String connect = DeviceUtils.autoConnect(getActivity(), true);
+//                    Toast.makeText(getActivity(), connect, Toast.LENGTH_LONG).show();
 //                    new autoConnectPrinter().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                     break;
                 case R.string.config_store_and_forward_transactions:
@@ -1276,7 +1280,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
         public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
             if (resultCode == 1) {
-                if (!myPref.getShiftIsOpen()) {
+                if (!ShiftDAO.isShiftOpen()) {
                     CharSequence c = "\t\t" + getString(R.string.admin_close_shift) + " <" + myPref.getShiftClerkName() + ">";
                     openShiftPref.setSummary(c);
                 }
@@ -1375,6 +1379,37 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
             public String toString() {
                 return super.toString();
             }
+        }
+    }
+
+    public static class Redetect extends AsyncTask<Void, Void, String> {
+        ProgressDialog dialog;
+        private Activity activity;
+
+        public Redetect(Activity activity) {
+
+            this.activity = activity;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            activity.setRequestedOrientation(Global.getScreenOrientation(activity));
+            dialog = new ProgressDialog(activity);
+            dialog.setIndeterminate(true);
+            dialog.setMessage(activity.getString(R.string.connecting_devices));
+            dialog.show();
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            return DeviceUtils.autoConnect(activity, true);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            Toast.makeText(activity, s, Toast.LENGTH_LONG).show();
+            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+            dialog.dismiss();
         }
     }
 }

@@ -151,10 +151,10 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
 
         private void checkPaymentStatus(StoreAndForward storeAndForward, String verify_payment_xml, String charge_xml) throws SAXException, ParserConfigurationException, IOException {
             OrdersHandler dbOrdHandler = new OrdersHandler(activity);
-            Post httpClient = new Post();
+            Post httpClient = new Post(activity);
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
-            String xml = httpClient.postData(13, activity, verify_payment_xml);
+            String xml = httpClient.postData(13, verify_payment_xml);
 
             if (xml.equals(Global.TIME_OUT) || xml.equals(Global.NOT_VALID_URL) || xml.isEmpty()) {
                 //do nothing
@@ -220,10 +220,10 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
         private void processPayment(StoreAndForward storeAndForward, String charge_xml) throws ParserConfigurationException, SAXException, IOException {
             Realm realm = Realm.getDefaultInstance();
             OrdersHandler dbOrdHandler = new OrdersHandler(activity);
-            Post httpClient = new Post();
+            Post httpClient = new Post(activity);
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
-            String xml = httpClient.postData(13, activity, charge_xml);
+            String xml = httpClient.postData(13, charge_xml);
             if (xml.equals(Global.TIME_OUT) || xml.equals(Global.NOT_VALID_URL) || xml.isEmpty()) {
                 //mark StoredPayment for retry
                 StoredPaymentsDAO.updateStoreForwardPaymentToRetry(storeAndForward);
@@ -310,7 +310,7 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
             Realm realm = Realm.getDefaultInstance();
             if (NetworkUtils.isConnectedToInternet(activity) && !livePaymentRunning) {
                 realm.beginTransaction();
-                storeAndForwards =StoredPaymentsDAO.getAll(); //realm.where(StoreAndForward.class).findAll();
+                storeAndForwards = StoredPaymentsDAO.getAll(); //realm.where(StoreAndForward.class).findAll();
                 realm.commitTransaction();
                 for (StoreAndForward storeAndForward : storeAndForwards) {
                     if (!livePaymentRunning) {
@@ -392,7 +392,7 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
                         _count_conn_error++;
                     }
                 }
-            }else{
+            } else {
                 _count_conn_error++;
             }
             return null;

@@ -17,10 +17,12 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.ShiftDAO;
 import com.android.dao.ShiftExpensesDAO;
 import com.android.database.ProductsHandler;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Shift;
 import com.android.emobilepos.models.realms.ShiftExpense;
 import com.android.support.Global;
@@ -127,7 +129,8 @@ public class ShiftExpense_FA extends BaseFragmentActivityActionBar implements Vi
         Date now = new Date();
         MyPreferences myPref;
         myPref = new MyPreferences(this);
-        Shift openShift = ShiftDAO.getOpenShift(Integer.parseInt(myPref.getClerkID()));
+//        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+        Shift openShift = ShiftDAO.getOpenShift();
         double amount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(cashAmount));
         ShiftExpense expense = new ShiftExpense();
         expense.setProductId(expenseProductIDSelected);
@@ -149,8 +152,13 @@ public class ShiftExpense_FA extends BaseFragmentActivityActionBar implements Vi
 
         if (openShift != null) {
             openShift.setTotalExpenses(String.valueOf(totalExpense));
+            BigDecimal beginningPettyCash = new BigDecimal(openShift.getBeginningPettyCash());
+            BigDecimal transactionsCash = new BigDecimal(openShift.getTotalTransactionsCash());
+            BigDecimal totalExpenses = ShiftExpensesDAO.getShiftTotalExpenses(openShift.getShiftId());
+            BigDecimal totalEndingCash = Global.getRoundBigDecimal(beginningPettyCash.add(transactionsCash).add(totalExpenses), 2);
+            openShift.setTotal_ending_cash(String.valueOf(totalEndingCash));
+            openShift.setTotalExpenses(String.valueOf(totalExpenses));
         }
-        ShiftDAO.insertOrUpdate(openShift);
         Toast.makeText(activity, "Expense Added", Toast.LENGTH_LONG).show();
         if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)
             Global.mainPrinterManager.getCurrentDevice().openCashDrawer();

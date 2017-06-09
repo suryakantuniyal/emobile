@@ -22,7 +22,7 @@ import javax.xml.parsers.SAXParserFactory;
 public class PaymentTask {
 
     public static Response processRewardPayment(Activity activity, BigDecimal chargeAmount, CreditCardInfo cardInfoManager, Payment rewardPayment) {
-        Post httpClient = new Post();
+        Post httpClient = new Post(activity);
 
         SAXParserFactory spf = SAXParserFactory.newInstance();
         SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
@@ -31,7 +31,7 @@ public class PaymentTask {
             EMSPayGate_Default payGate = new EMSPayGate_Default(activity, rewardPayment);
             String reqChargeLoyaltyReward = payGate.paymentWithAction(EMSPayGate_Default.EAction.ChargeRewardAction, cardInfoManager.getWasSwiped(), cardInfoManager.getCardType(),
                     cardInfoManager);
-            String xml = httpClient.postData(13, activity, reqChargeLoyaltyReward);
+            String xml = httpClient.postData(13,  reqChargeLoyaltyReward);
             Global.generateDebugFile(String.valueOf(chargeAmount));
             String errorMsg;
             if (xml.equals(Global.TIME_OUT)) {

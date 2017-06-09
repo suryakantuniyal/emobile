@@ -695,7 +695,7 @@ public class EMSDeviceDriver {
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
                     Global.formatToDisplayDate(anOrder.ord_timecreated, 3), lineWidth, 0));
 
-            if (!myPref.getShiftIsOpen() || myPref.isUseClerks()) {
+            if (ShiftDAO.isShiftOpen() && myPref.isUseClerks()) {
                 String clerk_id = anOrder.clerk_id;
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_clerk),
                         clerk.getEmpName() + "(" + clerk_id + ")", lineWidth, 0));
@@ -1534,7 +1534,6 @@ public class EMSDeviceDriver {
             sb.append("\n");
             print(sb.toString(), FORMAT);
             sb.setLength(0);
-            printTermsNConds();
             printEnablerWebSite(lineWidth);
             cutPaper();
         } catch (StarIOPortException ignored) {
@@ -1890,7 +1889,6 @@ public class EMSDeviceDriver {
             sb.append(textHandler.centeredString(getString(R.string.receipt_thankyou), lineWidth));
             print(sb.toString(), FORMAT);
             print(textHandler.newLines(1), FORMAT);
-            printTermsNConds();
             printEnablerWebSite(lineWidth);
             cutPaper();
         } catch (StarIOPortException e) {
@@ -1993,7 +1991,6 @@ public class EMSDeviceDriver {
             } catch (JAException e) {
                 e.printStackTrace();
             }
-            printTermsNConds();
             printEnablerWebSite(lineWidth);
             print(textHandler.newLines(1), FORMAT);
             cutPaper();
@@ -2100,7 +2097,6 @@ public class EMSDeviceDriver {
                 printFooter(lineWidth);
             printImage(1);
             print(textHandler.newLines(3), FORMAT);
-            printTermsNConds();
             printEnablerWebSite(lineWidth);
             cutPaper();
         } catch (StarIOPortException ignored) {
@@ -2163,7 +2159,6 @@ public class EMSDeviceDriver {
                 print(sb.toString(), FORMAT);
                 print(textHandler.newLines(3), FORMAT);
             }
-            printTermsNConds();
             printEnablerWebSite(lineWidth);
             cutPaper();
         } catch (StarIOPortException ignored) {
@@ -2431,7 +2426,7 @@ public class EMSDeviceDriver {
         }
         sb.append(textHandler.twoColumnLineWithLeftAlignedText("Ending Petty Cash", shift.getEndingPettyCash(), lineWidth, 0));
         sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total Transactions Cash", shift.getTotalTransactionsCash(), lineWidth, 0));
-        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total Ending Cash", shift.getEndingCash(), lineWidth, 0));
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total Ending Cash", shift.getTotal_ending_cash(), lineWidth, 0));
         sb.append(textHandler.twoColumnLineWithLeftAlignedText("Entered Close Amount", shift.getEnteredCloseAmount(), lineWidth, 0));
         sb.append(textHandler.newLines(2));
         sb.append(textHandler.centeredString("** End of shift report **", lineWidth));

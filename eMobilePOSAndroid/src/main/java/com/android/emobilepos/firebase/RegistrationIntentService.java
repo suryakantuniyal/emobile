@@ -12,6 +12,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.models.firebase.HubRegistrationPNS;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.support.MyPreferences;
+import com.android.support.NetworkUtils;
 import com.crashlytics.android.Crashlytics;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.Gson;
@@ -110,8 +111,12 @@ public class RegistrationIntentService extends IntentService {
             request.setPns(settings.getRegistrationToken());
             Gson gson = JsonUtils.getInstance();
             try {
-                String response = httpClient.post(url, gson.toJson(request), authClient);
-                FirebaseDAO.saveHUBRegistrationStatus(NotificationSettings.HUBRegistrationStatus.SUCCEED);
+                if (NetworkUtils.isConnectedToInternet(this)) {
+                    String response = httpClient.post(url, gson.toJson(request), authClient);
+                    FirebaseDAO.saveHUBRegistrationStatus(NotificationSettings.HUBRegistrationStatus.SUCCEED);
+                } else {
+                    FirebaseDAO.saveHUBRegistrationStatus(NotificationSettings.HUBRegistrationStatus.UNKNOWN);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
                 Crashlytics.logException(e);

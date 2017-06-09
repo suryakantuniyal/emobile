@@ -47,6 +47,7 @@ public class DinningTableRealmListConverter implements JsonSerializer<RealmList<
                 ja.add(gson.toJsonTree(table, DinningTable.class));
             }
         }
+        realm.close();
         return ja;
     }
 }

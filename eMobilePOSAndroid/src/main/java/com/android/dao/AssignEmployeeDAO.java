@@ -12,21 +12,40 @@ import io.realm.Realm;
 
 public class AssignEmployeeDAO {
 
+//    public static AssignEmployee getAssignEmployee(boolean returnManaged) {
+//        Realm r = Realm.getDefaultInstance();
+//        AssignEmployee employee;
+//        try {
+//            r.beginTransaction();
+//            employee = r.where(AssignEmployee.class).findFirst();
+//        } finally {
+//            r.commitTransaction();
+//        }
+//        if (returnManaged || employee == null) {
+//            return employee;
+//        } else {
+//            return r.copyFromRealm(employee);
+//        }
+//    }
+
+
     public static AssignEmployee getAssignEmployee(boolean returnManaged) {
         Realm r = Realm.getDefaultInstance();
         AssignEmployee employee;
         try {
             r.beginTransaction();
             employee = r.where(AssignEmployee.class).findFirst();
+
+            if (!returnManaged && employee != null) {
+                employee = r.copyFromRealm(employee);
+            }
         } finally {
             r.commitTransaction();
+            r.close();
         }
-        if (returnManaged || employee == null) {
-            return employee;
-        } else {
-            return r.copyFromRealm(employee);
-        }
+        return employee;
     }
+
 
     public static void insertAssignEmployee(List<AssignEmployee> assignEmployees) throws Exception {
         if (assignEmployees == null) {
@@ -46,7 +65,7 @@ public class AssignEmployeeDAO {
     public static void updateLastOrderId(String ord_id) {
         Realm r = Realm.getDefaultInstance();
         try {
-            AssignEmployee assignEmployee = getAssignEmployee(true);
+            AssignEmployee assignEmployee = getAssignEmployee(false);
             r.beginTransaction();
             assignEmployee.setMSLastOrderID(ord_id);
             r.insertOrUpdate(assignEmployee);
@@ -58,7 +77,7 @@ public class AssignEmployeeDAO {
     public static void updateLastTransferId(String transferId) {
         Realm r = Realm.getDefaultInstance();
         try {
-            AssignEmployee assignEmployee = getAssignEmployee(true);
+            AssignEmployee assignEmployee = getAssignEmployee(false);
             r.beginTransaction();
             assignEmployee.setMSLastTransferID(transferId);
             r.insertOrUpdate(assignEmployee);

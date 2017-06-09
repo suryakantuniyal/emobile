@@ -1,6 +1,5 @@
 package com.android.database;
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -72,8 +71,6 @@ public class ConsignmentTransactionHandler {
     }
 
     public void insert(List<ConsignmentTransaction> list) {
-        // final SQLiteDatabase db = dbManager.openWritableDB();
-
         ContentValues values = new ContentValues();
         int size = list.size();
 
@@ -97,114 +94,23 @@ public class ConsignmentTransactionHandler {
             values.put(ConsPickup_Qty, trans.ConsPickup_Qty);
             values.put(ConsNew_Qty, trans.ConsNew_Qty);
             values.put(Cons_timecreated, trans.Cons_timecreated);
-            // values.put(is_synched,list.get(i).getSetData(is_synched, true,
-            // null));
 
             DBManager.getDatabase().insert(TABLE_NAME, null, values);
 
         }
-
-        myPref.setLastConsTransID(list.get(0).ConsTrans_ID);
-        // db.close();
+        if (!list.isEmpty()) {
+            myPref.setLastConsTransID(list.get(0).ConsTrans_ID);
+        }
     }
 
     public void emptyTable() {
         DBManager.getDatabase().execSQL("DELETE FROM " + TABLE_NAME);
     }
 
-//	public List<ConsignmentTransaction> getLastConsTransaction() {
-//		StringBuilder sb = new StringBuilder();
-//		String priceLevelID;
-//		if (myPref.isCustSelected())
-//			priceLevelID = myPref.getCustPriceLevel();
-//		else
-//			priceLevelID = myPref.getEmployeePriceLevel();
-//		/*
-//		 * sb.append(
-//		 * "SELECT * FROM CustomerInventory ci LEFT OUTER JOIN ConsignmentTransaction ct ON ci.prod_id = ct.ConsProd_ID  "
-//		 * ); sb.append(
-//		 * "AND ci.cust_id = ct.ConsCust_ID WHERE ct.ConsCust_ID = '");
-//		 * sb.append(myPref.getCustID()).append(
-//		 * "'  GROUP BY ct.ConsProd_ID ORDER BY ct.Cons_timecreated DESC ");
-//		 */
-//
-//		sb.append(
-//				"SELECT ct.ConsProd_ID,ct.ConsOriginal_Qty,ct.ConsStock_Qty,ct.ConsReturn_Qty,ct.ConsInvoice_Qty,ct.ConsDispatch_Qty,");
-//		sb.append(
-//				"ct.ConsNew_Qty, p.prod_price as 'master_price',vp.price as 'volume_price', ch.over_price_net as 'chain_price',");
-//		sb.append("pl.pricelevel_price FROM CustomerInventory ci LEFT OUTER JOIN ConsignmentTransaction ct ON ");
-//		sb.append(
-//				"ci.prod_id = ct.ConsProd_ID  AND ci.cust_id = ct.ConsCust_ID LEFT OUTER JOIN Products p ON p.prod_id = ci.prod_id ");
-//		sb.append(
-//				"LEFT OUTER JOIN VolumePrices vp ON ci.prod_id = vp.prod_id AND '1' BETWEEN vp.minQty AND vp.maxQty ");
-//		sb.append("AND vp.pricelevel_id = '").append(priceLevelID).append("' LEFT OUTER JOIN PriceLevelItems pl ON ");
-//		sb.append("ci.prod_id = pl.pricelevel_prod_id AND pl.pricelevel_id = '").append(priceLevelID)
-//				.append("' LEFT OUTER JOIN ProductChainXRef ch ");
-//		sb.append("ON ci.prod_id = ch.prod_id AND ch.cust_chain = ci.cust_id WHERE ct.ConsCust_ID = ?  ");
-//		sb.append("GROUP BY ct.ConsProd_ID ORDER BY ct.Cons_timecreated DESC ");
-//
-//		Cursor c = DBManager.database.rawQuery(sb.toString(), new String[] { myPref.getCustID() });
-//		List<ConsignmentTransaction> ctList = new ArrayList<ConsignmentTransaction>();
-//		ConsignmentTransaction ct = new ConsignmentTransaction();
-//		if (c.moveToFirst()) {
-//			int i_prod_id = c.getColumnIndex(ConsProd_ID);
-//			int i_original_qty = c.getColumnIndex(ConsOriginal_Qty);
-//			int i_stock_qty = c.getColumnIndex(ConsStock_Qty);
-//			int i_return_qty = c.getColumnIndex(ConsReturn_Qty);
-//			int i_invoice_qty = c.getColumnIndex(ConsInvoice_Qty);
-//			int i_dispatch_qty = c.getColumnIndex(ConsDispatch_Qty);
-//			int i_new_qty = c.getColumnIndex(ConsNew_Qty);
-//			int i_volume_price = c.getColumnIndex("volume_price");
-//			int i_pricelevel_price = c.getColumnIndex("pricelevel_price");
-//			int i_chain_price = c.getColumnIndex("chain_price");
-//			int i_master_price = c.getColumnIndex("master_price");
-//
-//			String tempPrice;
-//			double temp = 0;
-//			do {
-//				ct.ConsProd_ID = c.getString(i_prod_id);
-//				ct.ConsOriginal_Qty = c.getString(i_original_qty);
-//				ct.ConsStock_Qty = c.getString(i_stock_qty);
-//				ct.ConsReturn_Qty = c.getString(i_return_qty);
-//				ct.ConsInvoice_Qty = c.getString(i_invoice_qty);
-//				ct.ConsDispatch_Qty = c.getString(i_dispatch_qty);
-//				ct.ConsNew_Qty = c.getString(i_new_qty);
-//
-//				tempPrice = c.getString(i_volume_price);
-//				if (tempPrice == null || tempPrice.isEmpty()) {
-//					tempPrice = c.getString(i_pricelevel_price);
-//					if (tempPrice == null || tempPrice.isEmpty()) {
-//						tempPrice = c.getString(i_chain_price);
-//
-//						if (tempPrice == null || tempPrice.isEmpty()) {
-//							tempPrice = c.getString(i_master_price);
-//							if (tempPrice == null || tempPrice.isEmpty())
-//								tempPrice = "0";
-//						}
-//					}
-//				}
-//
-//				temp = Double.parseDouble(tempPrice) * Double.parseDouble(c.getString(i_invoice_qty));
-//				ct.ConsOriginal_Qty = c.getString(i_original_qty);
-//				ct.invoice_total = Double.toString(temp);
-//				ctList.add(ct);
-//				ct = new ConsignmentTransaction();
-//
-//			} while (c.moveToNext());
-//		}
-//
-//		c.close();
-//		// db.close();
-//		return ctList;
-//
-//	}
-
     public long getDBSize() {
-
         SQLiteStatement stmt = DBManager.getDatabase().compileStatement("SELECT Count(*) FROM " + TABLE_NAME);
         long count = stmt.simpleQueryForLong();
         stmt.close();
-        // db.close();
         return count;
     }
 
@@ -272,7 +178,7 @@ public class ConsignmentTransactionHandler {
                 "sum((((ConsOriginal_Qty-ConsStock_Qty)*p.prod_price)-(ConsReturn_Qty*p.prod_price))) as 'total_grand_total', " +
                 "cs.encoded_signature FROM ConsignmentTransaction ct LEFT OUTER JOIN Products p ON ct.ConsProd_ID = p.prod_id " +
                 "LEFT OUTER JOIN ConsignmentSignatures cs ON cs.ConsTrans_ID = ct.ConsTrans_ID WHERE ct.ConsTrans_ID = ?";
-        HashMap<String, String> map = new HashMap<String, String>();
+        HashMap<String, String> map = new HashMap<>();
 
         Cursor c = DBManager.getDatabase().rawQuery(sb, new String[]{_ConsTrans_ID});
 

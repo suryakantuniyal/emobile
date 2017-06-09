@@ -25,7 +25,7 @@ import util.json.UIUtils;
 public class MyPreferences {
     private static final String pref_restaurant_mode = "pref_restaurant_mode";
     public static final String pref_enable_togo_eatin = "pref_enable_togo_eatin";
-    public static final String pref_require_waiter_signin = "pref_require_waiter_signin";
+//    public static final String pref_require_waiter_signin = "pref_require_waiter_signin";
     //    private Global global;
     public static final String pref_enable_table_selection = "pref_enable_table_selection";
     public static final String pref_ask_seats = "pref_ask_seats";
@@ -644,9 +644,9 @@ public class MyPreferences {
         editor.commit();
     }
 
-    public boolean requiresWaiterLogin() {
-        return getPreferences(MyPreferences.pref_require_waiter_signin);
-    }
+//    public boolean requiresWaiterLogin() {
+//        return getPreferences(MyPreferences.pref_require_waiter_signin);
+//    }
 
     public String getPreferencesValue(String key) {
         return sharedPref.getString(key, "");
@@ -1180,6 +1180,10 @@ public class MyPreferences {
         prefEditor.commit();
     }
 
+    public boolean isShiftOpenRequired() {
+        return getPreferences(MyPreferences.pref_require_shift_transactions);
+    }
+
     public boolean isUseClerks() {
         return getPreferences(MyPreferences.pref_use_clerks);
     }
@@ -1193,14 +1197,14 @@ public class MyPreferences {
         prefEditor.commit();
     }
 
-    public boolean getShiftIsOpen() {
-        return prefs.getBoolean("open_shift", true);
-    }
-
-    public void setShiftIsOpen(boolean value) {
-        prefEditor.putBoolean("open_shift", value);
-        prefEditor.commit();
-    }
+//    public boolean getShiftIsOpen() {
+//        return prefs.getBoolean("open_shift", true);
+//    }
+//
+//    public void setShiftIsOpen(boolean value) {
+//        prefEditor.putBoolean("open_shift", value);
+//        prefEditor.commit();
+//    }
 
     public String getShiftClerkName() {
         return prefs.getString("shift_clerk_name", "");
@@ -1219,15 +1223,15 @@ public class MyPreferences {
         prefEditor.putString("shift_id", value);
         prefEditor.commit();
     }
-
-    public String getShiftClerkID() {
-        return prefs.getString("shift_clerk_id", "");
-    }
-
-    public void setShiftClerkID(String value) {
-        prefEditor.putString("shift_clerk_id", value);
-        prefEditor.commit();
-    }
+//
+//    public String getShiftClerkID() {
+//        return prefs.getString("shift_clerk_id", "");
+//    }
+//
+//    public void setShiftClerkID(String value) {
+//        prefEditor.putString("shift_clerk_id", value);
+//        prefEditor.commit();
+//    }
 
     public String getClerkName() {
         return prefs.getString("clerk_name", "");
@@ -1353,7 +1357,8 @@ public class MyPreferences {
     }
 
     public boolean isPollingHoldsEnable() {
-        return getPreferences(pref_holds_polling_service);    }
+        return getPreferences(pref_holds_polling_service);
+    }
 
     public enum PrinterPreviewWidth {SMALL, MEDIUM, LARGE}
 

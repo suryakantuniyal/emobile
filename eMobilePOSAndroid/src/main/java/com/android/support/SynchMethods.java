@@ -144,10 +144,10 @@ public class SynchMethods {
     MyPreferences preferences;
 
     public SynchMethods(DBManager managerInst) {
-        post = new Post();
+        context = managerInst.getContext();
+        post = new Post(context);
         client = new HttpClient();
         SAXParserFactory spf = SAXParserFactory.newInstance();
-        context = managerInst.getContext();
         data = new ArrayList<>();
         preferences = new MyPreferences(context);
         if (OAuthManager.isExpired(context) && NetworkUtils.isConnectedToInternet(context)) {
@@ -293,7 +293,9 @@ public class SynchMethods {
                 ClerkDAO.clearAllAssignedTable(associate);
                 for (DinningTable table : associate.getAssignedDinningTables()) {
                     DinningTable dinningTable = DinningTableDAO.getById(table.getId());
-                    ClerkDAO.addAssignedTable(associate, dinningTable);
+                    if (dinningTable != null ) {
+                        ClerkDAO.addAssignedTable(associate, dinningTable);
+                    }
                 }
             }
         }
@@ -372,8 +374,7 @@ public class SynchMethods {
 
                 do {
 
-                    String xml = post.postData(13, context,
-                            c.getString(c.getColumnIndex("payment_xml")));
+                    String xml = post.postData(13, c.getString(c.getColumnIndex("payment_xml")));
 
                     if (!xml.equals(Global.TIME_OUT)
                             && !xml.equals(Global.NOT_VALID_URL)) {
@@ -412,7 +413,7 @@ public class SynchMethods {
                 ((ForceSendAsync) task).updateProgress(context.getString(R.string.sync_sending_cust));
             else
                 ((SendAsync) task).updateProgress(context.getString(R.string.sync_sending_cust));
-            xml = post.postData(Global.S_SUBMIT_CUSTOMER, context, "");
+            xml = post.postData(Global.S_SUBMIT_CUSTOMER, "");
             inSource = new InputSource(new StringReader(xml));
             xr.setContentHandler(custSaxHandler);
             xr.parse(inSource);
@@ -433,7 +434,7 @@ public class SynchMethods {
                 ((ForceSendAsync) task).updateProgress(context.getString(R.string.sync_sending_payment));
             else
                 ((SendAsync) task).updateProgress(context.getString(R.string.sync_sending_payment));
-            xml = post.postData(Global.S_SUBMIT_PAYMENTS, context, "");
+            xml = post.postData(Global.S_SUBMIT_PAYMENTS, "");
             inSource = new InputSource(new StringReader(xml));
             xr.setContentHandler(handler2);
             xr.parse(inSource);
@@ -454,7 +455,7 @@ public class SynchMethods {
                 ((ForceSendAsync) task).updateProgress(context.getString(R.string.sync_sending_void));
             else
                 ((SendAsync) task).updateProgress(context.getString(R.string.sync_sending_void));
-            xml = post.postData(Global.S_SUBMIT_VOID_TRANSACTION, context, "");
+            xml = post.postData(Global.S_SUBMIT_VOID_TRANSACTION, "");
             inSource = new InputSource(new StringReader(xml));
             xr.setContentHandler(voidHandler);
             xr.parse(inSource);
@@ -475,7 +476,7 @@ public class SynchMethods {
                 ((ForceSendAsync) task).updateProgress(context.getString(R.string.sync_sending_orders));
             else
                 ((SendAsync) task).updateProgress(context.getString(R.string.sync_sending_orders));
-            xml = post.postData(Global.S_GET_XML_ORDERS, context, "");
+            xml = post.postData(Global.S_GET_XML_ORDERS, "");
             inSource = new InputSource(new StringReader(xml));
             xr.setContentHandler(handler);
             xr.parse(inSource);
@@ -495,7 +496,7 @@ public class SynchMethods {
                 ((ForceSendAsync) task).updateProgress(context.getString(R.string.sync_sending_inventory_transfer));
             else
                 ((SendAsync) task).updateProgress(context.getString(R.string.sync_sending_inventory_transfer));
-            xml = post.postData(Global.S_SUBMIT_LOCATIONS_INVENTORY, context, "");
+            xml = post.postData(Global.S_SUBMIT_LOCATIONS_INVENTORY, "");
             inSource = new InputSource(new StringReader(xml));
             xr.setContentHandler(saxHandler);
             xr.parse(inSource);
@@ -516,7 +517,7 @@ public class SynchMethods {
                 ((ForceSendAsync) task).updateProgress(context.getString(R.string.sync_sending_time_clock));
             else
                 ((SendAsync) task).updateProgress(context.getString(R.string.sync_sending_time_clock));
-            xml = post.postData(Global.S_SUBMIT_TIME_CLOCK, context, null);
+            xml = post.postData(Global.S_SUBMIT_TIME_CLOCK, null);
             inSource = new InputSource(new StringReader(xml));
             xr.setContentHandler(handler);
             xr.parse(inSource);
@@ -541,7 +542,7 @@ public class SynchMethods {
                 ((ForceSendAsync) task).updateProgress(context.getString(R.string.sync_sending_customer_inventory));
             else
                 ((SendAsync) task).updateProgress(context.getString(R.string.sync_sending_customer_inventory));
-            xml = post.postData(Global.S_SUBMIT_CUSTOMER_INVENTORY, context, "");
+            xml = post.postData(Global.S_SUBMIT_CUSTOMER_INVENTORY, "");
             inSource = new InputSource(new StringReader(xml));
             xr.setContentHandler(handler);
             xr.parse(inSource);
@@ -561,7 +562,7 @@ public class SynchMethods {
                 ((ForceSendAsync) task).updateProgress(context.getString(R.string.sync_sending_consignment_transaction));
             else
                 ((SendAsync) task).updateProgress(context.getString(R.string.sync_sending_consignment_transaction));
-            xml = post.postData(Global.S_SUBMIT_CONSIGNMENT_TRANSACTION, context, "");
+            xml = post.postData(Global.S_SUBMIT_CONSIGNMENT_TRANSACTION, "");
             inSource = new InputSource(new StringReader(xml));
             xr.setContentHandler(handler);
             xr.parse(inSource);
@@ -579,9 +580,7 @@ public class SynchMethods {
         String jsonRequest = client.httpJsonRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
                 xml.downloadAll("ClerkPermissions"));
         ClerkEmployeePermissionResponse response = gson.fromJson(jsonRequest, ClerkEmployeePermissionResponse.class);
-//            ClerkDAO.truncate();
         EmployeePermissionDAO.truncate();
-//            ClerkDAO.inserOrUpdate(response.getClerks());
         ClerkDAO.truncate();
         ClerkDAO.insert(response.getClerks());
         EmployeePermissionDAO.insertOrUpdate(response.getEmployeePersmissions());
@@ -595,7 +594,7 @@ public class SynchMethods {
         Type listType = new com.google.gson.reflect.TypeToken<List<Shift>>() {
         }.getType();
         List<Shift> shifts = gson.fromJson(jsonRequest, listType);
-        ShiftDAO.insertOrUpdate(shifts);
+        ShiftDAO.insertOrUpdatePendingShift(shifts, Integer.parseInt(preferences.getClerkID()));
     }
 
     private void sendWalletOrders(Object task) throws IOException, SAXException, ParserConfigurationException {
@@ -608,7 +607,7 @@ public class SynchMethods {
                 ((ForceSendAsync) task).updateProgress(context.getString(R.string.sync_sending_wallet_order));
             else
                 ((SendAsync) task).updateProgress(context.getString(R.string.sync_sending_wallet_order));
-            xml = post.postData(Global.S_SUBMIT_WALLET_RECEIPTS, context, "");
+            xml = post.postData(Global.S_SUBMIT_WALLET_RECEIPTS, "");
             inSource = new InputSource(new StringReader(xml));
             xr.setContentHandler(handler);
             xr.parse(inSource);
@@ -649,7 +648,7 @@ public class SynchMethods {
                 ((ForceSendAsync) task).updateProgress(context.getString(R.string.sync_sending_templates));
             else
                 ((SendAsync) task).updateProgress(context.getString(R.string.sync_sending_templates));
-            xml = post.postData(Global.S_SUBMIT_TEMPLATES, context, "");
+            xml = post.postData(Global.S_SUBMIT_TEMPLATES, "");
             inSource = new InputSource(new StringReader(xml));
             xr.setContentHandler(handler);
             xr.parse(inSource);
@@ -670,7 +669,7 @@ public class SynchMethods {
         OrdersHandler ordersHandler = new OrdersHandler(context);
         if (ordersHandler.getNumUnsyncOrdersOnHold() > 0) {
             task.updateProgress(context.getString(R.string.sync_sending_orders));
-            xml = post.postData(Global.S_SUBMIT_ON_HOLD, context, "");
+            xml = post.postData(Global.S_SUBMIT_ON_HOLD, "");
             if (xml.contains("error")) {
                 return getTagValue(xml, "error");
             } else {
@@ -796,7 +795,7 @@ public class SynchMethods {
      ************************************/
 
     private void synchAddresses() throws SAXException, IOException {
-        post.postData(7, context, "Address");
+        post.postData(7, "Address");
         SAXSynchHandler synchHandler = new SAXSynchHandler(context, Global.S_ADDRESS);
         File tempFile = new File(tempFilePath);
         sp.parse(tempFile, synchHandler);
@@ -804,7 +803,7 @@ public class SynchMethods {
     }
 
     private void synchCategories() throws IOException, SAXException {
-        post.postData(7, context, "Categories");
+        post.postData(7, "Categories");
         SAXSynchHandler synchHandler = new SAXSynchHandler(context, Global.S_CATEGORIES);
         File tempFile = new File(tempFilePath);
         sp.parse(tempFile, synchHandler);
@@ -812,7 +811,7 @@ public class SynchMethods {
     }
 
     private void synchCustomers() throws IOException, SAXException {
-        post.postData(7, context, "Customers");
+        post.postData(7, "Customers");
         SAXSynchHandler synchHandler = new SAXSynchHandler(context, Global.S_CUSTOMERS);
         File tempFile = new File(tempFilePath);
         sp.parse(tempFile, synchHandler);
@@ -820,7 +819,7 @@ public class SynchMethods {
     }
 
     private void synchEmpInv() throws IOException, SAXException {
-        post.postData(7, context, "EmpInv");
+        post.postData(7, "EmpInv");
         SAXSynchHandler synchHandler = new SAXSynchHandler(context, Global.S_EMPLOYEE_INVOICES);
         File tempFile = new File(tempFilePath);
         sp.parse(tempFile, synchHandler);
@@ -828,7 +827,7 @@ public class SynchMethods {
     }
 
     private void synchProdInv() throws IOException, SAXException {
-        post.postData(7, context, "InvProducts");
+        post.postData(7, "InvProducts");
         SAXSynchHandler synchHandler = new SAXSynchHandler(context, Global.S_PRODUCTS_INVOICES);
         File tempFile = new File(tempFilePath);
         sp.parse(tempFile, synchHandler);
@@ -836,7 +835,7 @@ public class SynchMethods {
     }
 
     private void synchInvoices() throws IOException, SAXException {
-        post.postData(7, context, "Invoices");
+        post.postData(7, "Invoices");
         SAXSynchHandler synchHandler = new SAXSynchHandler(context, Global.S_INVOICES);
         File tempFile = new File(tempFilePath);
         sp.parse(tempFile, synchHandler);
@@ -935,7 +934,7 @@ public class SynchMethods {
     }
 
     private void synchProdCatXref() throws IOException, SAXException {
-        post.postData(7, context, "ProdCatXref");
+        post.postData(7, "ProdCatXref");
         SAXSynchHandler synchHandler = new SAXSynchHandler(context, Global.S_PRODCATXREF);
         File tempFile = new File(tempFilePath);
         sp.parse(tempFile, synchHandler);
@@ -943,7 +942,7 @@ public class SynchMethods {
     }
 
     private void synchProdChain() throws IOException, SAXException {
-        post.postData(7, context, "ProductChainXRef");
+        post.postData(7, "ProductChainXRef");
         SAXSynchHandler synchHandler = new SAXSynchHandler(context, Global.S_PROD_CHAIN);
         File tempFile = new File(tempFilePath);
         sp.parse(tempFile, synchHandler);
@@ -1029,22 +1028,16 @@ public class SynchMethods {
 
     public void postShift(Context context) throws Exception {
         SAXParserPost handler = new SAXParserPost();
-//        ShiftPeriodsDBHandler dbHandler = new ShiftPeriodsDBHandler(context);
         List<Shift> pendingSyncShifts = ShiftDAO.getPendingSyncShifts();
         if (pendingSyncShifts != null && !pendingSyncShifts.isEmpty()) {
-            xml = post.postData(Global.S_SUBMIT_SHIFT, context, "");
+            xml = post.postData(Global.S_SUBMIT_SHIFT, "");
             inSource = new InputSource(new StringReader(xml));
             xr.setContentHandler(handler);
             xr.parse(inSource);
-//            data = handler.getData();
             for (Shift s : pendingSyncShifts) {
                 s.setSync(true);
             }
             ShiftDAO.updateShiftToSync(pendingSyncShifts);
-//            dbHandler.updateIsSync(data);
-//            if (data.isEmpty())
-//                didSendData = false;
-//            data.clear();
         }
     }
 
@@ -1060,7 +1053,7 @@ public class SynchMethods {
         reader.beginArray();
         int i = 0;
         while (reader.hasNext()) {
-            ProductAlias alias = gson.fromJson(reader, Product.class);
+            ProductAlias alias = gson.fromJson(reader, ProductAlias.class);
             productAliases.add(alias);
             i++;
             if (i == 1000) {
@@ -1075,7 +1068,7 @@ public class SynchMethods {
     }
 
     private void synchProductImages() throws IOException, SAXException {
-        post.postData(7, context, "Products_Images");
+        post.postData(7, "Products_Images");
         SAXSynchHandler synchHandler = new SAXSynchHandler(context, Global.S_PROD_IMG);
         File tempFile = new File(tempFilePath);
         sp.parse(tempFile, synchHandler);
@@ -1083,7 +1076,7 @@ public class SynchMethods {
     }
 
     private void synchSalesTaxCode() throws IOException, SAXException {
-        post.postData(7, context, "SalesTaxCodes");
+        post.postData(7, "SalesTaxCodes");
         SAXSynchHandler synchHandler = new SAXSynchHandler(context, Global.S_SALES_TAX_CODE);
         File tempFile = new File(tempFilePath);
         sp.parse(tempFile, synchHandler);
@@ -1091,7 +1084,7 @@ public class SynchMethods {
     }
 
     private void synchShippingMethods() throws IOException, SAXException {
-        post.postData(7, context, "ShipMethod");
+        post.postData(7, "ShipMethod");
         SAXSynchHandler synchHandler = new SAXSynchHandler(context, Global.S_SHIP_METHODS);
         File tempFile = new File(tempFilePath);
         sp.parse(tempFile, synchHandler);
@@ -1099,7 +1092,7 @@ public class SynchMethods {
     }
 
     private void synchTaxes() throws IOException, SAXException {
-        post.postData(7, context, "Taxes");
+        post.postData(7, "Taxes");
         SAXSynchHandler synchHandler = new SAXSynchHandler(context, Global.S_TAXES);
         File tempFile = new File(tempFilePath);
         sp.parse(tempFile, synchHandler);
@@ -1107,7 +1100,7 @@ public class SynchMethods {
     }
 
     private void synchTaxGroup() throws IOException, SAXException {
-        post.postData(7, context, "Taxes_Group");
+        post.postData(7, "Taxes_Group");
         SAXSynchHandler synchHandler = new SAXSynchHandler(context, Global.S_TAX_GROUP);
         File tempFile = new File(tempFilePath);
         sp.parse(tempFile, synchHandler);
@@ -1115,7 +1108,7 @@ public class SynchMethods {
     }
 
     private void synchTerms() throws IOException, SAXException {
-        post.postData(7, context, "Terms");
+        post.postData(7, "Terms");
         SAXSynchHandler synchHandler = new SAXSynchHandler(context, Global.S_TERMS);
         File tempFile = new File(tempFilePath);
         sp.parse(tempFile, synchHandler);
@@ -1123,7 +1116,7 @@ public class SynchMethods {
     }
 
     private void synchMemoText() throws IOException, SAXException {
-        post.postData(7, context, "memotext");
+        post.postData(7, "memotext");
         SAXSynchHandler synchHandler = new SAXSynchHandler(context, Global.S_MEMO_TXT);
         File tempFile = new File(tempFilePath);
         sp.parse(tempFile, synchHandler);
@@ -1131,7 +1124,7 @@ public class SynchMethods {
     }
 
     private void synchGetTemplates() throws IOException, SAXException {
-        post.postData(7, context, "Templates");
+        post.postData(7, "Templates");
         SAXSynchHandler synchHandler = new SAXSynchHandler(context, Global.S_TEMPLATES);
         File tempFile = new File(tempFilePath);
         sp.parse(tempFile, synchHandler);
@@ -1139,7 +1132,7 @@ public class SynchMethods {
     }
 
     private void synchDownloadCustomerInventory() throws IOException, SAXException {
-        post.postData(7, context, "GetCustomerInventory");
+        post.postData(7, "GetCustomerInventory");
         SAXSynchHandler synchHandler = new SAXSynchHandler(context, Global.S_CUSTOMER_INVENTORY);
         File tempFile = new File(tempFilePath);
         sp.parse(tempFile, synchHandler);
@@ -1147,7 +1140,7 @@ public class SynchMethods {
     }
 
     private void synchDownloadConsignmentTransaction() throws IOException, SAXException {
-        post.postData(7, context, "GetConsignmentTransaction");
+        post.postData(7, "GetConsignmentTransaction");
         SAXSynchHandler synchHandler = new SAXSynchHandler(context, Global.S_CONSIGNMENT_TRANSACTION);
         File tempFile = new File(tempFilePath);
         sp.parse(tempFile, synchHandler);
@@ -1155,7 +1148,7 @@ public class SynchMethods {
     }
 
     private void synchIvuLottoDrawDates() throws IOException, SAXException {
-        post.postData(7, context, "ivudrawdates");
+        post.postData(7, "ivudrawdates");
         SAXSynchHandler synchHandler = new SAXSynchHandler(context, Global.S_IVU_LOTTO);
         File tempFile = new File(tempFilePath);
         sp.parse(tempFile, synchHandler);
@@ -1194,7 +1187,7 @@ public class SynchMethods {
     }
 
     private void synchDownloadProductsAttr() throws SAXException, IOException {
-        post.postData(7, context, "ProductsAttr");
+        post.postData(7, "ProductsAttr");
         SAXSynchHandler synchHandler = new SAXSynchHandler(context, Global.S_PRODUCTS_ATTRIBUTES);
         File tempFile = new File(tempFilePath);
         sp.parse(tempFile, synchHandler);
@@ -1202,7 +1195,7 @@ public class SynchMethods {
     }
 
     private void synchDownloadClerks() throws SAXException, IOException {
-        post.postData(7, context, "Clerks");
+        post.postData(7, "Clerks");
         SAXSynchHandler synchHandler = new SAXSynchHandler(context, Global.S_CLERKS);
         File tempFile = new File(tempFilePath);
         sp.parse(tempFile, synchHandler);
@@ -1302,7 +1295,7 @@ public class SynchMethods {
     }
 
     private void synchGetServerTime() throws IOException, SAXException {
-        xml = post.postData(Global.S_GET_SERVER_TIME, context, null);
+        xml = post.postData(Global.S_GET_SERVER_TIME, null);
         SAXPostHandler handler = new SAXPostHandler();
         inSource = new InputSource(new StringReader(xml));
         xr.setContentHandler(handler);
@@ -1311,11 +1304,11 @@ public class SynchMethods {
     }
 
     private void synchUpdateSyncTime() throws IOException, SAXException {
-        post.postData(Global.S_UPDATE_SYNC_TIME, context, _server_time);
+        post.postData(Global.S_UPDATE_SYNC_TIME, _server_time);
     }
 
     private void synchEmployeeData() throws Exception {
-        String xml = post.postData(4, context, "");
+        String xml = post.postData(4, "");
         Gson gson = JsonUtils.getInstance();
         Type listType = new com.google.gson.reflect.TypeToken<List<AssignEmployee>>() {
         }.getType();
@@ -1327,7 +1320,7 @@ public class SynchMethods {
     private void synchDownloadLastPayID() throws ParserConfigurationException, SAXException, IOException {
         SAXParserFactory spf = SAXParserFactory.newInstance();
         SaxLoginHandler handler = new SaxLoginHandler();
-        String xml = post.postData(6, context, "");
+        String xml = post.postData(6, "");
         InputSource inSource = new InputSource(new StringReader(xml));
         SAXParser sp = spf.newSAXParser();
         XMLReader xr = sp.getXMLReader();
@@ -1342,7 +1335,7 @@ public class SynchMethods {
     }
 
     private void synchDeviceDefaultValues() throws IOException, SAXException {
-        post.postData(7, context, "DeviceDefaultValues");
+        post.postData(7, "DeviceDefaultValues");
         SAXSynchHandler synchHandler = new SAXSynchHandler(context, Global.S_DEVICE_DEFAULT_VAL);
         File tempFile = new File(tempFilePath);
         sp.parse(tempFile, synchHandler);
@@ -1351,7 +1344,7 @@ public class SynchMethods {
     }
 
     private void synchVolumePrices() throws IOException, SAXException {
-        post.postData(7, context, "VolumePrices");
+        post.postData(7, "VolumePrices");
         SAXSynchHandler synchHandler = new SAXSynchHandler(context, Global.S_VOLUME_PRICES);
         File tempFile = new File(tempFilePath);
         sp.parse(tempFile, synchHandler);
@@ -1359,7 +1352,7 @@ public class SynchMethods {
     }
 
     private void synchLocations() throws IOException, SAXException {
-        post.postData(7, context, "GetLocations");
+        post.postData(7, "GetLocations");
         SAXSynchHandler synchHandler = new SAXSynchHandler(context, Global.S_LOCATIONS);
         File tempFile = new File(tempFilePath);
         sp.parse(tempFile, synchHandler);
@@ -1367,7 +1360,7 @@ public class SynchMethods {
     }
 
     private void synchLocationsInventory() throws IOException, SAXException {
-        post.postData(7, context, "GetLocationsInventory");
+        post.postData(7, "GetLocationsInventory");
         SAXSynchHandler synchHandler = new SAXSynchHandler(context, Global.S_LOCATIONS_INVENTORY);
         File tempFile = new File(tempFilePath);
         sp.parse(tempFile, synchHandler);
@@ -1567,23 +1560,11 @@ public class SynchMethods {
         protected void onPreExecute() {
             isSending = true;
             int orientation = context.getResources().getConfiguration().orientation;
-
             activity.setRequestedOrientation(Global.getScreenOrientation(context));
-
             if (isFromMainMenu) {
                 MainMenu_FA synchActivity = (MainMenu_FA) context;
                 synchTextView = synchActivity.getSynchTextView();
             }
-
-//            myProgressDialog = new ProgressDialog(context);
-//
-//            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-//            myProgressDialog.setCancelable(false);
-//            myProgressDialog.setMax(100);
-//            if(!(context instanceof MainMenu_FA)) {
-//                myProgressDialog.show();
-//            }
-
         }
 
         @Override
@@ -1606,7 +1587,7 @@ public class SynchMethods {
         @Override
         protected String doInBackground(String... params) {
 
-            updateProgress("Please Wait...");
+            updateProgress(context.getString(R.string.please_wait_message));
             if (NetworkUtils.isConnectedToInternet(context)) {
                 try {
 
@@ -2006,7 +1987,7 @@ public class SynchMethods {
                     err_msg = sendOrdersOnHold(this);
                     if (err_msg.isEmpty()) {
                         if (checkoutOnHold)
-                            post.postData(Global.S_CHECKOUT_ON_HOLD, context, Global.lastOrdID);
+                            post.postData(Global.S_CHECKOUT_ON_HOLD, Global.lastOrdID);
                     } else
                         isError = true;
                 } else {

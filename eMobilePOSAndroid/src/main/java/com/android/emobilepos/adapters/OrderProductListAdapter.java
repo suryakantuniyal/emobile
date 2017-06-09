@@ -21,6 +21,7 @@ import com.android.emobilepos.ordering.PickerAddon_FA;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -377,8 +378,11 @@ public class OrderProductListAdapter extends BaseAdapter {
         }
         String temp = Global.formatNumToLocale(product.getItemTotalCalculated().doubleValue());
         holder.itemAmount.setText(Global.getCurrencyFormat(temp));
-
-        holder.distQty.setText(product.getDisAmount());
+        if (!TextUtils.isEmpty(product.getDisAmount())) {
+            holder.distQty.setText(Global.getRoundBigDecimal(new BigDecimal(product.getDisAmount()), 0).toString());
+        } else {
+            holder.distQty.setText("0");
+        }
         temp = Global.formatNumToLocale(Double.parseDouble(product.getDisTotal()));
         holder.distAmount.setText(Global.getCurrencyFormat(temp));
         temp = Global.formatNumToLocale(product.getItemSubtotalCalculated().doubleValue());

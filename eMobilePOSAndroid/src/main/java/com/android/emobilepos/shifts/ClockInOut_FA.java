@@ -76,7 +76,7 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
         global = (Global) getApplication();
         Bundle extras = getIntent().getExtras();
         String mClerkName = extras.getString("clerk_name");
-        mClerkID = extras.getString("clerk_id");
+        mClerkID = String.valueOf(extras.getInt("clerk_id"));
         listTimeClock = new ArrayList<>();
         timeClockHandler = new TimeClockHandler(activity);
         TextView clockTodayDate = (TextView) findViewById(R.id.topDate);
@@ -176,11 +176,11 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
             receiveTimeClock = params[0];
             if (timeClockHandler.getNumUnsyncTimeClock() > 0 && NetworkUtils.isConnectedToInternet(activity)) {
                 publishProgress();
-                Post httpClient = new Post();
+                Post httpClient = new Post(activity);
                 SAXParserFactory spf = SAXParserFactory.newInstance();
                 handler = new SAXPostHandler();
                 try {
-                    String xml = httpClient.postData(Global.S_SUBMIT_TIME_CLOCK, activity, null);
+                    String xml = httpClient.postData(Global.S_SUBMIT_TIME_CLOCK,  null);
                     InputSource inSource = new InputSource(new StringReader(xml));
                     SAXParser sp = spf.newSAXParser();
                     XMLReader xr = sp.getXMLReader();
@@ -243,11 +243,11 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
             List<TimeClock> listTC = new ArrayList<>();
             dateOutIn = new Date[2];
             if (NetworkUtils.isConnectedToInternet(activity)) {
-                Post httpClient = new Post();
+                Post httpClient = new Post(activity);
                 SAXParserFactory spf = SAXParserFactory.newInstance();
                 handler = new SAXPostHandler();
                 try {
-                    String xml = httpClient.postData(Global.S_GET_TIME_CLOCK, activity, null);
+                    String xml = httpClient.postData(Global.S_GET_TIME_CLOCK, null);
                     switch (xml) {
                         case Global.TIME_OUT:
                             errorMsg = "TIME OUT, would you like to try again?";

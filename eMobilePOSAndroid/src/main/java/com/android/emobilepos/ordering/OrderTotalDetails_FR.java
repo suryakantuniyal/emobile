@@ -673,9 +673,9 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             global.order.setRetailTax(getActivity(), taxID);
         }
         OrderTotalDetails totalDetails = global.order.getOrderTotalDetails(discount, tax, assignEmployee.isVAT(), getActivity());
-        gran_total = new BigDecimal(Global.getRoundBigDecimal(totalDetails.getGranTotal(), 2));
+        gran_total = Global.getRoundBigDecimal(totalDetails.getGranTotal(), 2);
         sub_total = totalDetails.getSubtotal();
-        tax_amount = new BigDecimal(Global.getRoundBigDecimal(totalDetails.getTax(),2));
+        tax_amount = Global.getRoundBigDecimal(totalDetails.getTax(),2);
         discount_amount = totalDetails.getGlobalDiscount();
         subTotal.setText(Global.getCurrencyFrmt(String.valueOf(sub_total)));
         granTotal.setText(Global.getCurrencyFrmt(String.valueOf(gran_total)));

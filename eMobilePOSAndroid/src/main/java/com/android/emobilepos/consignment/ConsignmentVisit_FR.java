@@ -11,6 +11,7 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -248,7 +249,7 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
     }
 
     private void finishConsignment() {
-        if (!signatureMap.get("encoded_signature").isEmpty()) {
+        if (!TextUtils.isEmpty(signatureMap.get("encoded_signature"))) {
             ConsignmentSignaturesDBHandler signHandler = new ConsignmentSignaturesDBHandler(activity);
             signHandler.insert(signatureMap);
         }
@@ -290,7 +291,7 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
         BigDecimal _order_total = BigDecimal.valueOf(ordTotal);
 
         BigDecimal _tax_amount = new BigDecimal(0);
-        if (!myPref.getCustTaxCode().isEmpty()) {
+        if (!TextUtils.isEmpty(myPref.getCustTaxCode())) {
             String _tax_id = myPref.getCustTaxCode();
             BigDecimal _tax_rate = new BigDecimal(taxHandler.getTaxRate(_tax_id, "", 0)).
                     divide(BigDecimal.valueOf(100)).setScale(4, RoundingMode.HALF_UP);

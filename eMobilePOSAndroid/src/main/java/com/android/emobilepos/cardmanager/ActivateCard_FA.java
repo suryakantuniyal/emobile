@@ -317,14 +317,14 @@ public class ActivateCard_FA extends BaseFragmentActivityActionBar implements EM
         @Override
         protected String doInBackground(String... params) {
 
-            Post httpClient = new Post();
+            Post httpClient = new Post(activity);
 
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
             urlToPost = params[0];
 
             try {
-                String xml = httpClient.postData(13, activity, urlToPost);
+                String xml = httpClient.postData(13,  urlToPost);
 
                 switch (xml) {
                     case Global.TIME_OUT:

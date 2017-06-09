@@ -752,7 +752,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
     @Override
     public boolean isConnected() {
-        StarPrinterStatus status;
+        StarPrinterStatus status = null;
         try {
             if (port == null) {
                 return false;
@@ -767,7 +767,9 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 Thread.sleep(1000);
                 port = getStarIOPort();
                 Thread.sleep(1000);
-                status = port.retreiveStatus();
+                if (port != null) {
+                    status = port.retreiveStatus();
+                }
             } catch (InterruptedException e1) {
                 e1.printStackTrace();
                 return false;
@@ -779,7 +781,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 return false;
             }
         }
-        return !status.offline;
+        return status != null && !status.offline;
     }
 
     private void starIoExtManagerConnect() {

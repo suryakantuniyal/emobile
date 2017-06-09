@@ -22,7 +22,7 @@ import javax.xml.parsers.SAXParserFactory;
 public class OnHoldsManager {
 
     public static String checkOnHoldStatus(String orderId, Activity activity) {
-        return new Post().postData(Global.S_CHECK_STATUS_ON_HOLD, activity, orderId);
+        return new Post(activity).postData(Global.S_CHECK_STATUS_ON_HOLD, orderId);
     }
 
     public static boolean isOnHoldAdminClaimRequired(String orderId, Activity activity) {
@@ -30,7 +30,7 @@ public class OnHoldsManager {
         boolean timedOut = false;
         SAXParserFactory spf = SAXParserFactory.newInstance();
         SAXdownloadHandler handler = new SAXdownloadHandler(activity);
-        String xml = new Post().postData(Global.S_CHECK_STATUS_ON_HOLD, activity, orderId);
+        String xml = new Post(activity).postData(Global.S_CHECK_STATUS_ON_HOLD, orderId);
         switch (xml) {
             case Global.TIME_OUT:
                 timedOut = true;
@@ -67,7 +67,7 @@ public class OnHoldsManager {
     }
 
     public static String updateStatusOnHold(String orderId, Activity activity) {
-        return new Post().postData(Global.S_UPDATE_STATUS_ON_HOLD, activity, orderId);
+        return new Post(activity).postData(Global.S_UPDATE_STATUS_ON_HOLD, orderId);
     }
 
     public static void synchOrdersOnHoldDetails(Activity activity, String orderId) throws IOException, SAXException {

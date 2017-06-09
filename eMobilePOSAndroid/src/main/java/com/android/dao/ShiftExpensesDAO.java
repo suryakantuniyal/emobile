@@ -22,7 +22,7 @@ public class ShiftExpensesDAO {
             r.beginTransaction();
             Shift shift = r.where(Shift.class).equalTo("shiftId", expense.getShiftId()).findFirst();
             shift.setSync(false);
-            shift.setEndingPettyCash(String.valueOf(Global.getBigDecimalNum(shift.getEndingCash())
+            shift.setEndingPettyCash(String.valueOf(Global.getBigDecimalNum(shift.getTotal_ending_cash())
                     .subtract(Global.getBigDecimalNum(expense.getCashAmount()))));
             r.insertOrUpdate(expense);
         } finally {

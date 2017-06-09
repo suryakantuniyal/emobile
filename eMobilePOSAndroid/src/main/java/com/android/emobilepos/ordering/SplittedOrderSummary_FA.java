@@ -638,8 +638,8 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
 
         @Override
         protected Void doInBackground(String... params) {
-            Post httpClient = new Post();
-            httpClient.postData(Global.S_CHECKOUT_ON_HOLD, SplittedOrderSummary_FA.this, params[0]);
+            Post httpClient = new Post(SplittedOrderSummary_FA.this);
+            httpClient.postData(Global.S_CHECKOUT_ON_HOLD, params[0]);
             return null;
         }
 

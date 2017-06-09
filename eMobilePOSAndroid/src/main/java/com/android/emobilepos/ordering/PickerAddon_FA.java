@@ -222,7 +222,7 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
             temp = new BigDecimal("0");
 //        orderProduct.setOverwrite_price(temp);
 //        orderProduct.setItemSubtotal(Global.getRoundBigDecimal(temp));
-        orderProduct.setItemTotal(Global.getRoundBigDecimal(temp));
+        orderProduct.setItemTotal(String.valueOf(Global.getRoundBigDecimal(temp)));
         orderProduct.setOrdprod_desc(product.getProdDesc() + _ord_desc.toString());
         orderProduct.setProd_sku(product.getProd_sku());
         orderProduct.setProd_upc(product.getProd_upc());

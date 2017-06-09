@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.util.Xml;
 
 import com.android.dao.AssignEmployeeDAO;
+import com.android.dao.ShiftDAO;
 import com.android.database.CustomersHandler;
 import com.android.database.OrdersHandler;
 import com.android.emobilepos.models.orders.Order;
@@ -819,7 +820,7 @@ public class EMSPayGate_Default {
 
         value = myPref.getClerkID();
         if (value != null && !value.isEmpty()
-                && (!myPref.getShiftIsOpen() || myPref.isUseClerks())) {
+                && (!ShiftDAO.isShiftOpen() || myPref.isUseClerks())) {
             serializer.startTag(empstr, "clerkID");
             serializer.text(value);
             serializer.endTag(empstr, "clerkID");
@@ -860,7 +861,7 @@ public class EMSPayGate_Default {
         serializer.startTag(empstr, "CCAmt");
         String temp = NumberUtils.cleanCurrencyFormatedNumber(payment.getPay_amount());
         try {
-            temp = Global.getRoundBigDecimal(new BigDecimal(temp), 2);
+            temp = String.valueOf(Global.getRoundBigDecimal(new BigDecimal(temp), 2));
         } catch (Exception e) {
             temp = payment.getPay_amount();
         }

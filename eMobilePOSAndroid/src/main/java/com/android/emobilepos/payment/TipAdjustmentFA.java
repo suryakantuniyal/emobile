@@ -184,9 +184,9 @@ public class TipAdjustmentFA extends BaseFragmentActivityActionBar implements Vi
             paymentWithAction = payGate.paymentWithAction(EMSPayGate_Default.EAction.CreditCardAdjustTipAmountAction, false, null,
                     null);
 
-            Post httpClient = new Post();
+            Post httpClient = new Post(TipAdjustmentFA.this);
 
-            return httpClient.postData(Global.S_SUBMIT_TIP_ADJUSTMENT, TipAdjustmentFA.this, paymentWithAction);
+            return httpClient.postData(Global.S_SUBMIT_TIP_ADJUSTMENT,  paymentWithAction);
         }
 
         @Override
@@ -283,21 +283,21 @@ public class TipAdjustmentFA extends BaseFragmentActivityActionBar implements Vi
         protected Payment doInBackground(Payment... params) {
 
             if (NetworkUtils.isConnectedToInternet(TipAdjustmentFA.this)) {
-                Post httpClient = new Post();
+                Post httpClient = new Post(TipAdjustmentFA.this);
 
                 SAXParserFactory spf = SAXParserFactory.newInstance();
                 SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
                 String reverseXml = reverseXMLMap.get(PaymentsXML_DB.payment_xml);
                 String chargeXML = reverseXMLMap.get(PaymentsXML_DB.charge_xml);
                 try {
-                    String xml = httpClient.postData(Global.S_SUBMIT_TIP_ADJUSTMENT, TipAdjustmentFA.this, reverseXml);
+                    String xml = httpClient.postData(Global.S_SUBMIT_TIP_ADJUSTMENT,  reverseXml);
 
                     if (xml.equals(Global.TIME_OUT) || xml.equals(Global.NOT_VALID_URL) || xml.isEmpty()) {
                         errorMsg = getString(R.string.dlog_msg_established_connection_failed);
                         reverseWasProcessed = true;
                         String _verify_payment_xml = chargeXML.replaceAll("<action>.*?</action>", "<action>"
                                 + EMSPayGate_Default.getPaymentAction("CheckTransactionStatus") + "</action>");
-                        xml = httpClient.postData(Global.S_SUBMIT_TIP_ADJUSTMENT, TipAdjustmentFA.this, _verify_payment_xml);
+                        xml = httpClient.postData(Global.S_SUBMIT_TIP_ADJUSTMENT, _verify_payment_xml);
                         if (xml.equals(Global.TIME_OUT) || xml.equals(Global.NOT_VALID_URL)) {
                             errorMsg = getString(R.string.dlog_msg_established_connection_failed);
                         } else {
