@@ -199,7 +199,7 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
         @Override
         protected void onPreExecute() {
             myProgressDialog = new ProgressDialog(thisContext);
-            myProgressDialog.setMessage("Loading...");
+            myProgressDialog.setMessage(getString(R.string.loading));
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);
             myProgressDialog.show();

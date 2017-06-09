@@ -3,6 +3,7 @@ package com.android.support;
 import android.text.Selection;
 import android.widget.EditText;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
@@ -11,6 +12,7 @@ import java.util.Locale;
  * Created by tirizar on 12/3/2015.
  */
 public class NumberUtils {
+    static boolean formated = false;
 
     public static String cleanCurrencyFormatedNumber(String s) {
         return s.replaceAll("[^[+-]?\\d\\,\\.]", "").trim();
@@ -31,7 +33,8 @@ public class NumberUtils {
         sb.append("^\\").append(sym.getCurrencySymbol()).append("\\s(\\d{1,3}(\\").append(sym.getGroupingSeparator()).append("\\d{3})*|(\\d+))(");
         sb.append(sym.getDecimalSeparator()).append("\\d{2})?$");
 
-        if (!s.toString().matches(sb.toString())) {
+        if (!formated) {
+//        if (!s.toString().matches(sb.toString())) {
             String userInput = "" + s.toString().replaceAll("[^\\d]", "");
             StringBuilder cashAmountBuilder = new StringBuilder(userInput);
 
@@ -41,11 +44,11 @@ public class NumberUtils {
             while (cashAmountBuilder.length() < 3) {
                 cashAmountBuilder.insert(0, '0');
             }
-
-            cashAmountBuilder.insert(cashAmountBuilder.length() - 2, sym.getDecimalSeparator());
-            cashAmountBuilder.insert(0, sym.getCurrencySymbol() + " ");
-            editText.setText(cashAmountBuilder.toString());
+            String currency = Global.formatDoubleToCurrency(new BigDecimal(cashAmountBuilder.toString()).multiply(new BigDecimal(.01)).doubleValue());
+            formated = true;
+            editText.setText(currency);
         }
         Selection.setSelection(editText.getText(), editText.getText().length());
+        formated = false;
     }
 }

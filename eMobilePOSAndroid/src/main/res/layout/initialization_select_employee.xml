@@ -7,26 +7,26 @@
 
     <TextView
         android:id="@+id/HeaderTitle"
+        style="@style/text_shadow"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:background="@drawable/blue_gradient_header_horizontal"
         android:gravity="center"
         android:padding="10dp"
-        android:text="Select Employee"
-        android:textSize="@dimen/header_bar_text_size"
+        android:text="@string/select_employee"
         android:textAppearance="@style/white_text_appearance"
-        style="@style/text_shadow"/>
+        android:textSize="@dimen/header_bar_text_size" />
 
     <Button
-        style="@style/action_button_text_appearance"
         android:id="@+id/reloadButton"
+        style="@style/action_button_text_appearance"
         android:layout_width="@dimen/large_button_width"
-       	android:layout_height="@dimen/large_button_height"
+        android:layout_height="@dimen/large_button_height"
         android:layout_gravity="center"
-        android:text="Reload"
         android:background="@drawable/action_button_selector"
-                android:textSize="@dimen/large_button_text_size"/>
+        android:text="@string/reload"
+        android:textSize="@dimen/large_button_text_size" />
 
     <ListView
         android:id="@+id/employeeListView"

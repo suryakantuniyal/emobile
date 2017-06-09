@@ -1587,7 +1587,7 @@ public class SynchMethods {
         @Override
         protected String doInBackground(String... params) {
 
-            updateProgress("Please Wait...");
+            updateProgress(context.getString(R.string.please_wait_message));
             if (NetworkUtils.isConnectedToInternet(context)) {
                 try {
 

@@ -71,7 +71,7 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
         @Override
         protected void onPreExecute() {
             myProgressDialog = new ProgressDialog(thisContext);
-            myProgressDialog.setMessage("Loading...");
+            myProgressDialog.setMessage(getString(R.string.loading));
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);
             myProgressDialog.show();
@@ -137,7 +137,7 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
                 myListView.setAdapter(myAdapter);
             } else {
                 AlertDialog.Builder dialog = new AlertDialog.Builder(thisContext);
-                dialog.setTitle("Error");
+                dialog.setTitle(getString(R.string.dlog_title_error));
                 dialog.setMessage(errorMsg);
                 dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 
@@ -158,7 +158,7 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
         @Override
         protected void onPreExecute() {
             myProgressDialog = new ProgressDialog(thisContext);
-            myProgressDialog.setMessage("Loading...");
+            myProgressDialog.setMessage(getString(R.string.loading));
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);
             myProgressDialog.show();
