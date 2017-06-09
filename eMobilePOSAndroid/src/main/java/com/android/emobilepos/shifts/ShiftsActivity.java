@@ -329,7 +329,8 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
             BigDecimal totalEndingCash = new BigDecimal(shift.getTotal_ending_cash());
             switch (totalEndingCash.compareTo(BigDecimal.valueOf(total))) {
                 case -1:
-                    accrualStatusTextView.setText(getString(R.string.over));
+                    accrualStatusTextView.setText(
+                            String.format("%s (%s)", getString(R.string.over), Global.formatDoubleToCurrency(totalEndingCash.subtract(BigDecimal.valueOf(total)).doubleValue())));
                     totalAmountEditText.setTextColor(Color.RED);
                     accrualStatusTextView.setTextColor(Color.RED);
                     accrualStatusTextView.setVisibility(View.VISIBLE);
@@ -338,7 +339,8 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
                     totalAmountEditText.setTextColor(Color.BLUE);
                     accrualStatusTextView.setTextColor(Color.BLUE);
                     accrualStatusTextView.setVisibility(View.VISIBLE);
-                    accrualStatusTextView.setText(getString(R.string.under));
+                    accrualStatusTextView.setText(
+                            String.format("%s (%s)", getString(R.string.under), Global.formatDoubleToCurrency(totalEndingCash.subtract(BigDecimal.valueOf(total)).doubleValue())));
                     break;
                 case 0:
                     totalAmountEditText.setTextColor(Color.BLUE);
