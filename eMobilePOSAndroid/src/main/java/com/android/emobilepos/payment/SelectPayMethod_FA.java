@@ -174,7 +174,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                             xml = post.postData(13, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidGiftCardAction, false,
                                     listVoidPayments.get(i).getCard_type(), null));
                         } else {
-                            xml = post.postData(13,  payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidRewardCardAction, false,
+                            xml = post.postData(13, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidRewardCardAction, false,
                                     listVoidPayments.get(i).getCard_type(), null));
                         }
                         inSource = new InputSource(new StringReader(xml));
@@ -509,20 +509,20 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                         intent.putExtra("Tax1_amount", tempRate.toPlainString());
                         intent.putExtra("Tax1_name", groupTax.get(0).getTaxName());
 
-                        tempRate = new BigDecimal(subtotal * Double.parseDouble(groupTax.get(1).getTaxRate())).setScale(2,
+                        tempRate = groupTax.size() == 1 ? new BigDecimal(0) : new BigDecimal(subtotal * Double.parseDouble(groupTax.get(1).getTaxRate())).setScale(2,
                                 BigDecimal.ROUND_UP);
                         intent.putExtra("Tax2_amount", tempRate.toPlainString());
-                        intent.putExtra("Tax2_name", groupTax.get(1).getTaxName());
+                        intent.putExtra("Tax2_name", groupTax.size() == 1 ? "" : groupTax.get(1).getTaxName());
                     } else {
                         tempRate = new BigDecimal(subtotal * Double.parseDouble(groupTax.get(0).getTaxRate())).setScale(2,
                                 BigDecimal.ROUND_UP);
                         intent.putExtra("Tax2_amount", tempRate.toPlainString());
                         intent.putExtra("Tax2_name", groupTax.get(0).getTaxName());
 
-                        tempRate = new BigDecimal(subtotal * Double.parseDouble(groupTax.get(1).getTaxRate())).setScale(2,
+                        tempRate = groupTax.size() == 1 ? new BigDecimal(0) : new BigDecimal(subtotal * Double.parseDouble(groupTax.get(1).getTaxRate())).setScale(2,
                                 BigDecimal.ROUND_UP);
                         intent.putExtra("Tax1_amount", tempRate.toPlainString());
-                        intent.putExtra("Tax1_name", groupTax.get(1).getTaxName());
+                        intent.putExtra("Tax1_name", groupTax.size() == 1 ? "" : groupTax.get(1).getTaxName());
                     }
                 } else {
                     BigDecimal tempRate;

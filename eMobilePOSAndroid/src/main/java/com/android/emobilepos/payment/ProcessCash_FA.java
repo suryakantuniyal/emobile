@@ -592,14 +592,13 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         //if we have taxes then
         if (groupTaxRate.size() > 0) {
             tax1Rate = new BigDecimal(Double.parseDouble(groupTaxRate.get(0).getTaxRate()));
-            tax2Rate = new BigDecimal(Double.parseDouble(groupTaxRate.get(1).getTaxRate()));
+            if (groupTaxRate.size() > 1) {
+                tax2Rate = new BigDecimal(Double.parseDouble(groupTaxRate.get(1).getTaxRate()));
+            }
         }
 
         BigDecimal tax1Dbl = new BigDecimal(subtotalDbl).multiply(tax1Rate);
         BigDecimal tax2Dbl = new BigDecimal(subtotalDbl).multiply(tax2Rate);
-
-//        double tax1Dbl = subtotalDbl * tax1Rate;
-//        double tax2Dbl = subtotalDbl * tax2Rate;
 
         DecimalFormat df = new DecimalFormat("0.00");
         df.setRoundingMode(RoundingMode.HALF_UP);
