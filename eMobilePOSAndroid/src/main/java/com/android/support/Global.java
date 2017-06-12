@@ -627,19 +627,20 @@ public class Global extends MultiDexApplication {
         if (TextUtils.isEmpty(val)) {
             val = "0";
         }
-        double frmt = 0.0;
         try {
-            NumberFormat numFormater = NumberFormat.getNumberInstance(Locale.getDefault());
-            numFormater.setParseIntegerOnly(false);
-
-            // Number number =
-            // NumberFormat.getNumberInstance(Locale.getDefault()).setParseIntegerOnly(false).parse(val);
-            Number number = numFormater.parse(val);
-            frmt = number.doubleValue();
-        } catch (ParseException e) {
-            Crashlytics.logException(e);
+            return Double.parseDouble(val);
+        } catch (Exception ed) {
+            double frmt = 0.0;
+            try {
+                NumberFormat numFormater = NumberFormat.getNumberInstance(Locale.getDefault());
+                numFormater.setParseIntegerOnly(false);
+                Number number = numFormater.parse(val);
+                frmt = number.doubleValue();
+            } catch (ParseException e) {
+                Crashlytics.logException(e);
+            }
+            return frmt;
         }
-        return frmt;
     }
 
     public static double formatNumWithCurrFromLocale(String val) {
@@ -655,10 +656,10 @@ public class Global extends MultiDexApplication {
     }
 
     public static String formatNumToLocale(double val) {
-//        NumberFormat nf = NumberFormat.getNumberInstance(Locale.getDefault());
-//        nf.setParseIntegerOnly(false);
-//        DecimalFormat df = (DecimalFormat) nf;
-//        return df.format(val);
+        NumberFormat nf = NumberFormat.getNumberInstance(Locale.getDefault());
+        nf.setParseIntegerOnly(false);
+        DecimalFormat df = (DecimalFormat) nf;
+        String s = df.format(val);
         return String.format(Locale.getDefault(), "%.4f", val);
     }
 
@@ -1038,12 +1039,13 @@ public class Global extends MultiDexApplication {
             val = "0";
         try {
             double valDbl = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(val));
-            DecimalFormat df = (DecimalFormat) NumberFormat.getInstance(Locale.getDefault());
-            df.setParseBigDecimal(true);
-            df.setMaximumFractionDigits(4);
-            df.setMinimumFractionDigits(2);
-            return (BigDecimal) df.parseObject(String.valueOf(valDbl));
-        } catch (ParseException e) {
+            return new BigDecimal(valDbl).setScale(4, RoundingMode.HALF_UP);
+//            DecimalFormat df = (DecimalFormat) NumberFormat.getInstance(Locale.getDefault());
+//            df.setParseBigDecimal(true);
+//            df.setMaximumFractionDigits(4);
+//            df.setMinimumFractionDigits(2);
+//            return (BigDecimal) df.parseObject(String.valueOf(valDbl));
+        } catch (Exception e) {
             Crashlytics.logException(e);
             return new BigDecimal("0");
         }
