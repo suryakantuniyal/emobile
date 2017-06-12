@@ -201,7 +201,28 @@ android:orientation="vertical" >
                 android:text="TextView"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large" />
         </TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="8dp">
 
+            <TextView
+                android:id="@+id/textView27fa"
+                style="@style/black_text_appearance_unbold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/over_amount"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+            <TextView
+                android:id="@+id/shortOverAmounttextView"
+                style="@style/black_text_appearance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TextView"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+        </TableRow>
 
     </TableLayout>
 

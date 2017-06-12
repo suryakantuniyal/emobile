@@ -28,6 +28,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.dao.ClerkDAO;
 import com.android.database.CustomersHandler;
 import com.android.database.DBManager;
 import com.android.database.OrderProductsHandler;
@@ -37,6 +38,7 @@ import com.android.emobilepos.firebase.PollingNotificationService;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.models.firebase.NotificationEvent;
 import com.android.emobilepos.models.orders.Order;
+import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.support.DateUtils;
 import com.android.support.Global;
@@ -641,7 +643,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
     private void openPrintOnHold()        //type 0 = Change Password, type 1 = Configure Home Menu
     {
-
         final Dialog dlog = new Dialog(activity, R.style.Theme_TransparentTest);
         dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dlog.setCancelable(true);
@@ -669,7 +670,60 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             @Override
             public void onClick(View v) {
                 dlog.dismiss();
-                new checkHoldStatus().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                if (myPref.isUseClerks()) {
+                    Clerk associate = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()), true);
+                    long count = associate == null ? 0 : associate.getAssignedDinningTables().where().equalTo("number", myCursor.getString(myCursor.getColumnIndex("assignedTable"))).count();
+                    if (associate != null && count > 0) {
+                        validPassword = true;
+                        new checkHoldStatus().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    } else {
+                        final Dialog popDlog = new Dialog(OnHoldActivity.this, R.style.TransparentDialogFullScreen);
+                        popDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                        popDlog.setCancelable(true);
+                        popDlog.setCanceledOnTouchOutside(false);
+                        popDlog.setContentView(R.layout.dlog_field_single_layout);
+                        final EditText viewField = (EditText) popDlog.findViewById(R.id.dlogFieldSingle);
+                        viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                        TextView viewTitle = (TextView) popDlog.findViewById(R.id.dlogTitle);
+                        final TextView viewMsg = (TextView) popDlog.findViewById(R.id.dlogMessage);
+                        viewTitle.setText(R.string.dlog_title_enter_manager_password);
+                        if (!validPassword)
+                            viewMsg.setText(R.string.invalid_password);
+                        else
+                            viewMsg.setText(R.string.enter_password);
+                        Button btnOk = (Button) popDlog.findViewById(R.id.btnDlogSingle);
+                        Button btnCancel = (Button) popDlog.findViewById(R.id.btnCancelDlogSingle);
+
+                        btnOk.setText(R.string.button_ok);
+                        btnOk.setOnClickListener(new View.OnClickListener() {
+
+                            @Override
+                            public void onClick(View v) {
+                                String enteredPass = viewField.getText().toString().trim();
+                                enteredPass = TextUtils.isEmpty(enteredPass) ? "0" : enteredPass;
+                                if (myPref.loginManager(enteredPass)) // validate manager password
+                                {
+                                    popDlog.dismiss();
+                                    validPassword = true;
+                                    isUpdateOnHold = true;
+                                    new checkHoldStatus().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                                } else {
+                                    validPassword = false;
+                                    viewMsg.setText(R.string.invalid_password);
+                                }
+                            }
+                        });
+                        btnCancel.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                popDlog.dismiss();
+                            }
+                        });
+                        popDlog.show();
+                    }
+                } else {
+                    new checkHoldStatus().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                }
             }
         });
         btnPrint.setOnClickListener(new View.OnClickListener() {

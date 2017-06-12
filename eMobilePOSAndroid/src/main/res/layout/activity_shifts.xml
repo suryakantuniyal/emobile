@@ -894,11 +894,11 @@
                         android:textSize="@dimen/history_title_text_size" />
 
                     <TextView
-                        android:id="@+id/accrualStatustextView23"
+                        android:id="@+id/shortOverStatustextView23"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center_horizontal"
-                        android:text="@string/under" />
+                        android:text="@string/short_amount" />
                 </LinearLayout>
 
                 <Button

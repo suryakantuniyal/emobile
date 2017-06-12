@@ -71,7 +71,7 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
     private int fiftyDollars;
     private int hundredDollars;
     private TextView totalAmountEditText;
-    private TextView accrualStatusTextView;
+    private TextView shortOverStatusTextView;
 
     private Shift shift;
     private Button submitShiftbutton;
@@ -274,11 +274,11 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
 
     private void closeShift() {
         Date now = new Date();
-
         shift.setEnteredCloseAmount(NumberUtils.cleanCurrencyFormatedNumber(totalAmountEditText.getText().toString()));
         shift.setEndTime(now);
         shift.setEndTimeLocal(now);
         shift.setShiftStatus(Shift.ShiftStatus.CLOSED);
+        shift.setOver_short(NumberUtils.cleanCurrencyFormatedNumber(shortOverStatusTextView.getText().toString()));
         ShiftDAO.insertOrUpdate(shift);
         new SendShiftTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
@@ -329,21 +329,23 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
             BigDecimal totalEndingCash = new BigDecimal(shift.getTotal_ending_cash());
             switch (totalEndingCash.compareTo(BigDecimal.valueOf(total))) {
                 case -1:
-                    accrualStatusTextView.setText(getString(R.string.over));
+                    shortOverStatusTextView.setText(
+                            String.format("%s (%s)", getString(R.string.over_amount), Global.formatDoubleToCurrency(totalEndingCash.subtract(BigDecimal.valueOf(total)).doubleValue())));
                     totalAmountEditText.setTextColor(Color.RED);
-                    accrualStatusTextView.setTextColor(Color.RED);
-                    accrualStatusTextView.setVisibility(View.VISIBLE);
+                    shortOverStatusTextView.setTextColor(Color.RED);
+                    shortOverStatusTextView.setVisibility(View.VISIBLE);
                     break;
                 case 1:
                     totalAmountEditText.setTextColor(Color.BLUE);
-                    accrualStatusTextView.setTextColor(Color.BLUE);
-                    accrualStatusTextView.setVisibility(View.VISIBLE);
-                    accrualStatusTextView.setText(getString(R.string.under));
+                    shortOverStatusTextView.setTextColor(Color.BLUE);
+                    shortOverStatusTextView.setVisibility(View.VISIBLE);
+                    shortOverStatusTextView.setText(
+                            String.format("%s (%s)", getString(R.string.short_amount), Global.formatDoubleToCurrency(totalEndingCash.subtract(BigDecimal.valueOf(total)).doubleValue())));
                     break;
                 case 0:
                     totalAmountEditText.setTextColor(Color.BLUE);
-                    accrualStatusTextView.setTextColor(Color.BLACK);
-                    accrualStatusTextView.setVisibility(View.GONE);
+                    shortOverStatusTextView.setTextColor(Color.BLACK);
+                    shortOverStatusTextView.setVisibility(View.GONE);
                     break;
             }
         }
@@ -462,8 +464,8 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
         clerkName.setText(clerk == null ? "" : clerk.getEmpName());
         endingCashAmounteditText = (TextView) findViewById(R.id.endingCashAmounteditText);
         totalAmountEditText = (TextView) findViewById(R.id.totalAmounteditText);
-        accrualStatusTextView = (TextView) findViewById(R.id.accrualStatustextView23);
-        accrualStatusTextView.setVisibility(View.GONE);
+        shortOverStatusTextView = (TextView) findViewById(R.id.shortOverStatustextView23);
+        shortOverStatusTextView.setVisibility(View.GONE);
         openOnLbl = (TextView) findViewById(R.id.openOnLbltextView25);
         openOnDate = (TextView) findViewById(R.id.openOnDatetextView26);
         closeAmountLbl = (TextView) findViewById(R.id.closeAmountLbltextView21);

@@ -58,6 +58,7 @@ public class ShiftReportDetails_FA extends BaseFragmentActivityActionBar impleme
         ((TextView) findViewById(R.id.totalTransactionCashtextView26)).setText(Global.formatDoubleStrToCurrency(shift.getTotalTransactionsCash()));
         ((TextView) findViewById(R.id.totalEndingCashtextView26)).setText(Global.formatDoubleStrToCurrency(shift.getTotal_ending_cash()));
         ((TextView) findViewById(R.id.enteredCloseAmounttextView26)).setText(Global.formatDoubleStrToCurrency(shift.getEnteredCloseAmount()));
+        ((TextView) findViewById(R.id.shortOverAmounttextView)).setText(Global.formatDoubleStrToCurrency(shift.getOver_short()));
     }
 
     @Override
