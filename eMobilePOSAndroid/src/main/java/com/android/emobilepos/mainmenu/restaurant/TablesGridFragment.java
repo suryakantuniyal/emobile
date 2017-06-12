@@ -25,8 +25,9 @@ import com.android.emobilepos.models.realms.DinningTableOrder;
 import com.android.emobilepos.ordering.SplittedOrderSummary_FA;
 import com.android.support.Global;
 
+import java.util.List;
+
 import io.realm.Realm;
-import io.realm.RealmResults;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -52,8 +53,7 @@ public class TablesGridFragment extends Fragment implements AdapterView.OnItemLo
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        RealmResults<DinningTable> realmResults = DinningTableDAO.getAll();
-        realmResults.sort("number");
+        List<DinningTable> realmResults = DinningTableDAO.getAll("number");
         GridView gridView = (GridView) view.findViewById(R.id.tablesGridLayout);
         adapter = new DinningTablesAdapter(getActivity(), realmResults);
         if (!TextUtils.isEmpty(getDinningTablesActivity().associateId)) {

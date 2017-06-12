@@ -1,5 +1,7 @@
 package com.android.dao;
 
+import android.text.TextUtils;
+
 import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.DinningTable;
 import com.google.gson.Gson;
@@ -58,14 +60,28 @@ public class DinningTableDAO {
                     .findAll().deleteAllFromRealm();
         } finally {
             r.commitTransaction();
+            r.close();
         }
     }
 
-    public static RealmResults<DinningTable> getAll() {
-        String defaultLocation = AssignEmployeeDAO.getAssignEmployee(false).getDefaultLocation();
-        return Realm.getDefaultInstance().where(DinningTable.class)
-                .equalTo("locationId", defaultLocation)
-                .findAll();
+    public static List<DinningTable> getAll(String sortField) {
+        Realm realm = Realm.getDefaultInstance();
+        List<DinningTable> tables = null;
+        try {
+            String defaultLocation = AssignEmployeeDAO.getAssignEmployee(false).getDefaultLocation();
+            RealmResults<DinningTable> all = realm.where(DinningTable.class)
+                    .equalTo("locationId", defaultLocation)
+                    .findAll();
+            if (all != null) {
+                if (!TextUtils.isEmpty(sortField)) {
+                    tables = all.sort("number");
+                }
+                tables = realm.copyFromRealm(tables);
+            }
+        } finally {
+            realm.close();
+        }
+        return tables;
     }
 
     public static void truncate() {
@@ -75,6 +91,7 @@ public class DinningTableDAO {
             realm.delete(DinningTable.class);
         } finally {
             realm.commitTransaction();
+            realm.close();
         }
     }
 
@@ -102,7 +119,7 @@ public class DinningTableDAO {
     public static HashMap<String, List<Clerk>> getTableAssignedClerks() {
         HashMap<String, List<Clerk>> tableAssignedClerks = new HashMap<>();
         RealmResults<Clerk> clerks = ClerkDAO.getAll();
-        for (DinningTable table : getAll()) {
+        for (DinningTable table : getAll("number")) {
             tableAssignedClerks.put(table.getId(), new ArrayList<Clerk>());
         }
         for (Clerk c : clerks) {

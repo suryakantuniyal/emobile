@@ -59,7 +59,7 @@ public class TablesMapFragment extends Fragment implements View.OnClickListener,
         if (!TextUtils.isEmpty(getDinningTablesActivity().associateId)) {
             associate = ClerkDAO.getByEmpId(Integer.parseInt(getDinningTablesActivity().associateId), false);
         }
-        dinningTables = DinningTableDAO.getAll();//DinningTablesProxy.getDinningTables(getContext());
+        dinningTables = DinningTableDAO.getAll("number");//DinningTablesProxy.getDinningTables(getContext());
         tableAssignedClerks = DinningTableDAO.getTableAssignedClerks();
         return rootView;
     }
