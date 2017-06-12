@@ -52,12 +52,13 @@ public class ShiftReportDetails_FA extends BaseFragmentActivityActionBar impleme
 
     private void loadUIInfo() {
         ((TextView) findViewById(R.id.salesClerktextView26)).setText(shift.getAssigneeName());
-        ((TextView) findViewById(R.id.beginningPettyCashtextView26)).setText(shift.getBeginningPettyCash());
+        ((TextView) findViewById(R.id.beginningPettyCashtextView26)).setText(Global.formatDoubleStrToCurrency(shift.getBeginningPettyCash()));
         ((TextView) findViewById(R.id.totalExpensestextView26)).setText(Global.formatDoubleStrToCurrency(String.valueOf(totalExpenses)));
-        ((TextView) findViewById(R.id.endingPettyCashtextView26)).setText(shift.getEndingPettyCash());
-        ((TextView) findViewById(R.id.totalTransactionCashtextView26)).setText(shift.getTotalTransactionsCash());
-        ((TextView) findViewById(R.id.totalEndingCashtextView26)).setText(shift.getTotal_ending_cash());
-        ((TextView) findViewById(R.id.enteredCloseAmounttextView26)).setText(shift.getEnteredCloseAmount());
+        ((TextView) findViewById(R.id.endingPettyCashtextView26)).setText(Global.formatDoubleStrToCurrency(shift.getEndingPettyCash()));
+        ((TextView) findViewById(R.id.totalTransactionCashtextView26)).setText(Global.formatDoubleStrToCurrency(shift.getTotalTransactionsCash()));
+        ((TextView) findViewById(R.id.totalEndingCashtextView26)).setText(Global.formatDoubleStrToCurrency(shift.getTotal_ending_cash()));
+        ((TextView) findViewById(R.id.enteredCloseAmounttextView26)).setText(Global.formatDoubleStrToCurrency(shift.getEnteredCloseAmount()));
+        ((TextView) findViewById(R.id.shortOverAmounttextView)).setText(Global.formatDoubleStrToCurrency(shift.getOver_short()));
     }
 
     @Override

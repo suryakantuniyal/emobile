@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.android.emobilepos.R;
 import com.android.emobilepos.security.SecurityManager;
 import com.android.emobilepos.settings.SettingListActivity;
+import com.android.support.Global;
 import com.android.support.MyPreferences;
 
 public class SettingsTab_FR extends Fragment implements OnClickListener {
@@ -29,35 +30,45 @@ public class SettingsTab_FR extends Fragment implements OnClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.settings_layout, container, false);
-        boolean hasAdminPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.SYSTEM_SETTINGS);
-        boolean hasManagerPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.MANAGE_SHIFT);
+//        boolean hasAdminPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.SYSTEM_SETTINGS);
+//        boolean hasManagerPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.MANAGE_SHIFT);
         Button btnAdmin = (Button) view.findViewById(R.id.btnAdminSetting);
         Button btnManager = (Button) view.findViewById(R.id.btnManagerSetting);
         Button btnGeneral = (Button) view.findViewById(R.id.btnGeneralSetting);
         btnAdmin.setOnClickListener(this);
         btnManager.setOnClickListener(this);
         btnGeneral.setOnClickListener(this);
-        btnAdmin.setEnabled(hasAdminPermissions);
-        btnManager.setEnabled(hasManagerPermissions);
+//        btnAdmin.setEnabled(hasAdminPermissions);
+//        btnManager.setEnabled(hasManagerPermissions);
         preferences = new MyPreferences(getActivity());
         return view;
     }
 
     @Override
     public void onClick(View v) {
+        boolean hasAdminPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.SYSTEM_SETTINGS);
+        boolean hasManagerPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.MANAGE_SHIFT);
         switch (v.getId()) {
             case R.id.btnAdminSetting:
-                if (!preferences.isUseClerks()) {
-                    promptPassword(SettingsRoles.ADMIN);
+                if (preferences.isUseClerks()) {
+                    if (hasAdminPermissions) {
+                        openSettings(SettingsRoles.ADMIN);
+                    } else {
+                        Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
+                    }
                 } else {
-                    openSettings(SettingsRoles.ADMIN);
+                    promptPassword(SettingsRoles.ADMIN);
                 }
                 break;
             case R.id.btnManagerSetting:
-                if (!preferences.isUseClerks()) {
-                    promptPassword(SettingsRoles.MANAGER);
+                if (preferences.isUseClerks()) {
+                    if (hasManagerPermissions) {
+                        openSettings(SettingsRoles.MANAGER);
+                    } else {
+                        Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
+                    }
                 } else {
-                    openSettings(SettingsRoles.MANAGER);
+                    promptPassword(SettingsRoles.MANAGER);
                 }
                 break;
             case R.id.btnGeneralSetting:
