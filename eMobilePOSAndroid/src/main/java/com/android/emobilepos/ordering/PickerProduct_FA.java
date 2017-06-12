@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.PowerManager;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -220,10 +221,10 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
     public void onResume() {
 
         if (global.isApplicationSentToBackground(activity))
-            global.loggedIn = false;
+            Global.loggedIn = false;
         global.stopActivityTransitionTimer();
 
-        if (hasBeenCreated && !global.loggedIn) {
+        if (hasBeenCreated && !Global.loggedIn) {
             if (global.getGlobalDlog() != null)
                 global.getGlobalDlog().dismiss();
             global.promptForMandatoryLogin(activity);
@@ -237,7 +238,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         boolean isScreenOn = powerManager.isScreenOn();
         if (!isScreenOn)
-            global.loggedIn = false;
+            Global.loggedIn = false;
         global.startActivityTransitionTimer();
     }
 
@@ -481,8 +482,9 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         final String[] val = attributesMap.get(key).toArray(new String[attributesMap.get(key).size()]);
 
         listView.setAdapter(new ArrayAdapter<String>(activity, android.R.layout.simple_list_item_1, val) {
+            @NonNull
             @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
+            public View getView(int position, View convertView, @NonNull ViewGroup parent) {
                 View row = super.getView(position, convertView, parent);
                 // Here we get the textview and set the color
                 TextView tv = (TextView) row.findViewById(android.R.id.text1);
@@ -974,7 +976,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
     private void calculateTaxDiscount(BigDecimal total) {
         if (!isFixed) {
             BigDecimal val = total.multiply(Global.getBigDecimalNum(disAmount)).setScale(4, RoundingMode.HALF_UP);
-            val = val.divide(new BigDecimal("100")).setScale(2, RoundingMode.HALF_UP);
+            val = val.divide(new BigDecimal("100"), RoundingMode.HALF_UP).setScale(2, RoundingMode.HALF_UP);
             disTotal = val.toString();
         } else {
             disTotal = Double.toString(Global.formatNumFromLocale(disAmount));
@@ -987,20 +989,20 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             // is taxable or not
             {
                 if (discountIsTaxable) {
-                    BigDecimal temp = new BigDecimal(taxAmount).divide(new BigDecimal("100")).setScale(4, RoundingMode.HALF_UP);
+                    BigDecimal temp = new BigDecimal(taxAmount).divide(new BigDecimal("100"), RoundingMode.HALF_UP).setScale(4, RoundingMode.HALF_UP);
                     BigDecimal tax1 = total.subtract(new BigDecimal(disTotal)).multiply(temp).setScale(2, RoundingMode.HALF_UP);
                     tempTaxTotal = tax1;
                     taxTotal = tax1.toString();
 
                 } else {
-                    BigDecimal temp = new BigDecimal(taxAmount).divide(new BigDecimal("100")).setScale(4, RoundingMode.HALF_UP);
+                    BigDecimal temp = new BigDecimal(taxAmount).divide(new BigDecimal("100"), RoundingMode.HALF_UP).setScale(4, RoundingMode.HALF_UP);
                     BigDecimal tax1 = total.multiply(temp).setScale(2, RoundingMode.HALF_UP);
                     tempTaxTotal = tax1;
                     taxTotal = tax1.toString();
 
                 }
             } else {
-                BigDecimal temp = new BigDecimal(taxAmount).divide(new BigDecimal("100")).setScale(4, RoundingMode.HALF_UP);
+                BigDecimal temp = new BigDecimal(taxAmount).divide(new BigDecimal("100"), RoundingMode.HALF_UP).setScale(4, RoundingMode.HALF_UP);
                 BigDecimal tax1 = total.multiply(temp).setScale(2, RoundingMode.HALF_UP);
                 taxTotal = tax1.toString();
             }
@@ -1094,7 +1096,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         private int listType;
         private List<String[]> listData_LV;
 
-        public DialogLVAdapter(Activity activity, int pos, List<String[]> listData_lv) {
+        DialogLVAdapter(Activity activity, int pos, List<String[]> listData_lv) {
             listData_LV = listData_lv;
             myInflater = LayoutInflater.from(activity);
             listType = pos;
@@ -1133,7 +1135,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             return convertView;
         }
 
-        public void setValues(ViewHolder holder, int position, int type) {
+        void setValues(ViewHolder holder, int position, int type) {
             switch (type) {
                 case 0: {
                     if (listType == INDEX_PRICE_LEVEL + OFFSET) // Price Level
@@ -1168,7 +1170,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                             holder.rightText.setText(Global.formatDoubleStrToCurrency(listData_LV.get(position - 1)[2]));
 
                         } else {
-                            holder.rightText.setText(listData_LV.get(position - 1)[2] + "%");
+                            holder.rightText.setText(String.format("%s%%", listData_LV.get(position - 1)[2]));
                         }
 
                     } else if (listType == INDEX_UOM + OFFSET) {
@@ -1196,7 +1198,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             return 1;
         }
 
-        public class ViewHolder {
+        class ViewHolder {
             TextView leftText;
             TextView rightText;
         }
@@ -1204,12 +1206,12 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
     }
 
 
-    public class ListViewAdapter extends BaseAdapter implements Filterable {
+    private class ListViewAdapter extends BaseAdapter implements Filterable {
         private String itemName;
         private String itemConsignmentQty;
         private LayoutInflater myInflater;
 
-        public ListViewAdapter(Context context) {
+        ListViewAdapter(Context context) {
             myInflater = LayoutInflater.from(context);
             if (!isModify) {
                 itemName = orderProduct.getOrdprod_name();
@@ -1445,7 +1447,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             return null;
         }
 
-        public class ViewHolder {
+        class ViewHolder {
             TextView leftText;
             TextView leftSubtitle;
             TextView rightText;
@@ -1454,7 +1456,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         }
 
 
-        public void updateVolumePrice(BigDecimal qty) {
+        void updateVolumePrice(BigDecimal qty) {
             String[] temp;
 
             temp = volPriceHandler.getVolumePrice(String.valueOf(qty), prodID);
