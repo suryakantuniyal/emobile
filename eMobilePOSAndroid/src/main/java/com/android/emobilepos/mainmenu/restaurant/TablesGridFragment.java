@@ -27,8 +27,6 @@ import com.android.support.Global;
 
 import java.util.List;
 
-import io.realm.Realm;
-
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -71,9 +69,8 @@ public class TablesGridFragment extends Fragment implements AdapterView.OnItemLo
                 if (associate != null && associate.getAssignedDinningTables().contains(table)) {
                     DinningTableOrder tableOrder = DinningTableOrderDAO.getByNumber(table.getNumber());
                     if (tableOrder != null) {
-                        Realm realm = Realm.getDefaultInstance();
                         getDinningTablesActivity().new OpenOnHoldOrderTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR
-                                , realm.copyFromRealm(tableOrder), realm.copyFromRealm(table));
+                                , tableOrder, table);
                     } else {
                         Intent result = new Intent();
                         result.putExtra("tableId", table.getId());
