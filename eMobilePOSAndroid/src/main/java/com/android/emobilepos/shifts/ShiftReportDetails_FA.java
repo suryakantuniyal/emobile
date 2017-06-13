@@ -26,7 +26,6 @@ public class ShiftReportDetails_FA extends BaseFragmentActivityActionBar impleme
     private ProgressDialog myProgressDialog;
     private Activity activity;
     private boolean hasBeenCreated = false;
-    private Button btnPrint;
     private String shiftID;
     private Shift shift;
     private BigDecimal totalExpenses;
@@ -38,7 +37,7 @@ public class ShiftReportDetails_FA extends BaseFragmentActivityActionBar impleme
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.shift_details_layout);
         global = (Global) getApplication();
-        btnPrint = (Button) findViewById(R.id.btnPrint);
+        Button btnPrint = (Button) findViewById(R.id.btnPrint);
         btnPrint.setOnClickListener(this);
         Bundle extras = this.getIntent().getExtras();
         shiftID = extras.getString("shift_id");
