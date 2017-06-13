@@ -85,6 +85,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import util.json.JsonUtils;
 import util.json.UIUtils;
 
 public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements OnClickListener, OnItemClickListener {
@@ -673,7 +674,12 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             emvContainer = new Gson().fromJson(data.getStringExtra("emvcontainer"), EMVContainer.class);
 
         myAdapter.notifyDataSetChanged();
-        if (resultCode == -1) {
+        if (resultCode == ProcessGenius_FA.REOPEN_PROCESS_GENIUS_SCREEN) {
+            Intent intent = new Intent(this, ProcessGenius_FA.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            intent.putExtras(data);
+            startActivityForResult(intent, 0);
+        } else if (resultCode == -1) {
             if (requestCode == Global.FROM_OPEN_INVOICES)
                 setResult(Global.FROM_PAYMENT);
             else
