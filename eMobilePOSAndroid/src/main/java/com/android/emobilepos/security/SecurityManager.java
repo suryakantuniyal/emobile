@@ -29,10 +29,6 @@ public class SecurityManager {
 
     public static SecurityResponse validateClerkShift(Context context, Global.TransactionType transactionType) {
         MyPreferences preferences = new MyPreferences(context);
-//        if (preferences.isShiftOpenRequired() && !ShiftDAO.isShiftOpen()) {
-//            return SecurityResponse.CHECK_USER_CLERK_REQUIRED_SETTING;
-//        }
-//        if (preferences.isShiftOpenRequired() && preferences.isUseClerks()) {
         boolean shiftOpen = ShiftDAO.isShiftOpen();
         if ((!shiftOpen && (transactionType != Global.TransactionType.SHIFT_EXPENSES &&
                 transactionType != Global.TransactionType.SHIFTS && preferences.isShiftOpenRequired()))

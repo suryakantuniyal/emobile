@@ -795,7 +795,9 @@ public class SalesTab_FR extends Fragment {
                 }
                 break;
             case SHIFT_ALREADY_OPEN:
-                Global.showPrompt(getActivity(), R.string.dlog_title_error, getString(R.string.dlog_msg_error_shift_already_open));
+                Shift openShift = ShiftDAO.getOpenShift();
+                Global.showPrompt(getActivity(), R.string.dlog_title_error,
+                        String.format(getString(R.string.dlog_msg_error_shift_already_open), openShift != null ? openShift.getAssigneeName() : ""));
                 return false;
         }
         return true;

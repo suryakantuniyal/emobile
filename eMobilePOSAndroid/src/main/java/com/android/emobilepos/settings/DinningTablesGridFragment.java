@@ -16,6 +16,8 @@ import com.android.emobilepos.adapters.DinningTablesAdapter;
 import com.android.emobilepos.models.realms.DinningTable;
 import com.android.emobilepos.models.realms.Clerk;
 
+import java.util.List;
+
 import io.realm.RealmResults;
 
 /**
@@ -39,8 +41,7 @@ public class DinningTablesGridFragment extends Fragment implements AdapterView.O
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        RealmResults<DinningTable> realmResults = DinningTableDAO.getAll();
-        realmResults.sort("number");
+        List<DinningTable> realmResults = DinningTableDAO.getAll("number");
         gridView = (GridView) view.findViewById(R.id.tablesGridLayout);
         adapter = new DinningTablesAdapter(getActivity(), realmResults);
         gridView.setAdapter(adapter);

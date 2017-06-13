@@ -1276,7 +1276,7 @@
     <string name="clock_in">IN</string>
     <string name="Waiters">Waiters</string>
     <string name="useSystemPassword">Use System Password</string>
-    <string name="systemLoginInfo"><![CDATA[System password disable the use clerk. To re-enable the use of clerks go to Settings->Admin and select use clerks.]]></string>
+    <string name="systemLoginInfo"><![CDATA[Use of the System Password will disable the Clerks function. To re-enable the use of Clerks, go to Settings>>Admin Settings>>General Settings and select Use Clerks]]></string>
     <string name="button_send">Send</string>
     <string name="payment_return_saved_successfully">Refund saved successfully.</string>
     <string name="refresh_menu">Reload</string>
@@ -1284,9 +1284,9 @@
     <string name="config_holds_polling_service">Enable holds polling service</string>
     <string name="sync_inprogress">Synchronization in progress. Please wait.</string>
     <string name="use_clerk_check_required">Use clerk setting is required to complete this action.</string>
-    <string name="dlog_msg_error_shift_already_open">Shift already open.</string>
-    <string name="over">Over</string>
-    <string name="under">Under</string>
+    <string name="dlog_msg_error_shift_already_open">%s already has an open shift.</string>
+    <string name="over_amount">Over</string>
+    <string name="short_amount">Short</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="bixolon_title">Bixolon Configuration</string>

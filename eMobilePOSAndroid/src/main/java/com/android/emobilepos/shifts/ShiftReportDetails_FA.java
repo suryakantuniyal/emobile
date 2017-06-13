@@ -26,7 +26,6 @@ public class ShiftReportDetails_FA extends BaseFragmentActivityActionBar impleme
     private ProgressDialog myProgressDialog;
     private Activity activity;
     private boolean hasBeenCreated = false;
-    private Button btnPrint;
     private String shiftID;
     private Shift shift;
     private BigDecimal totalExpenses;
@@ -38,7 +37,7 @@ public class ShiftReportDetails_FA extends BaseFragmentActivityActionBar impleme
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.shift_details_layout);
         global = (Global) getApplication();
-        btnPrint = (Button) findViewById(R.id.btnPrint);
+        Button btnPrint = (Button) findViewById(R.id.btnPrint);
         btnPrint.setOnClickListener(this);
         Bundle extras = this.getIntent().getExtras();
         shiftID = extras.getString("shift_id");
@@ -52,12 +51,13 @@ public class ShiftReportDetails_FA extends BaseFragmentActivityActionBar impleme
 
     private void loadUIInfo() {
         ((TextView) findViewById(R.id.salesClerktextView26)).setText(shift.getAssigneeName());
-        ((TextView) findViewById(R.id.beginningPettyCashtextView26)).setText(shift.getBeginningPettyCash());
+        ((TextView) findViewById(R.id.beginningPettyCashtextView26)).setText(Global.formatDoubleStrToCurrency(shift.getBeginningPettyCash()));
         ((TextView) findViewById(R.id.totalExpensestextView26)).setText(Global.formatDoubleStrToCurrency(String.valueOf(totalExpenses)));
-        ((TextView) findViewById(R.id.endingPettyCashtextView26)).setText(shift.getEndingPettyCash());
-        ((TextView) findViewById(R.id.totalTransactionCashtextView26)).setText(shift.getTotalTransactionsCash());
-        ((TextView) findViewById(R.id.totalEndingCashtextView26)).setText(shift.getTotal_ending_cash());
-        ((TextView) findViewById(R.id.enteredCloseAmounttextView26)).setText(shift.getEnteredCloseAmount());
+        ((TextView) findViewById(R.id.endingPettyCashtextView26)).setText(Global.formatDoubleStrToCurrency(shift.getEndingPettyCash()));
+        ((TextView) findViewById(R.id.totalTransactionCashtextView26)).setText(Global.formatDoubleStrToCurrency(shift.getTotalTransactionsCash()));
+        ((TextView) findViewById(R.id.totalEndingCashtextView26)).setText(Global.formatDoubleStrToCurrency(shift.getTotal_ending_cash()));
+        ((TextView) findViewById(R.id.enteredCloseAmounttextView26)).setText(Global.formatDoubleStrToCurrency(shift.getEnteredCloseAmount()));
+        ((TextView) findViewById(R.id.shortOverAmounttextView)).setText(Global.formatDoubleStrToCurrency(shift.getOver_short()));
     }
 
     @Override

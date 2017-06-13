@@ -45,15 +45,24 @@ public class DinningTableOrderDAO {
             RealmResults<DinningTableOrder> results = where.equalTo("dinningTable.number", number).findAll();
             realm.beginTransaction();
             results.deleteAllFromRealm();
-        }finally {
+        } finally {
             realm.commitTransaction();
         }
     }
 
     public static DinningTableOrder getByNumber(String number) {
         Realm realm = Realm.getDefaultInstance();
-        RealmQuery<DinningTableOrder> where = realm.where(DinningTableOrder.class);
-        return where.equalTo("dinningTable.number", number).findFirst();
+        DinningTableOrder first;
+        try {
+            RealmQuery<DinningTableOrder> where = realm.where(DinningTableOrder.class);
+            first = where.equalTo("dinningTable.number", number).findFirst();
+            if (first != null) {
+                first = realm.copyFromRealm(first);
+            }
+        } finally {
+            realm.close();
+        }
+        return first;
     }
 
     public static void createDinningTableOrder(Order order) {
@@ -76,7 +85,7 @@ public class DinningTableOrderDAO {
             RealmResults<DinningTableOrder> results = where.equalTo("currentOrderId", ord_id).findAll();
             realm.beginTransaction();
             results.deleteAllFromRealm();
-        }finally {
+        } finally {
             realm.commitTransaction();
         }
     }

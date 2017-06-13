@@ -1448,7 +1448,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             Global.loyaltyCardInfo = cardInfoManager;
         else
             Global.rewardCardInfo = cardInfoManager;
-        swiperField.setText(cardManager.getCardNumUnencrypted());
+        if(swiperField!=null) {
+            swiperField.setText(cardManager.getCardNumUnencrypted());
+        }
         if (uniMagReader != null && uniMagReader.readerIsConnected()) {
             uniMagReader.startReading();
         } else if (magtekReader == null && Global.btSwiper == null && _msrUsbSams == null
