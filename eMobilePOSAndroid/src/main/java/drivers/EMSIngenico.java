@@ -16,6 +16,7 @@ import com.android.emobilepos.models.realms.Payment;
 import com.android.support.CardParser;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
+import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 
@@ -49,6 +50,28 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
     private boolean barcodeReaderLoaded = false;
     private boolean mIsDebit = false;
 
+    public enum EncryptionType {
+        NONE(0), VOLTAGE_TEP2(5), DUKPUT(11), EPS(3);
+
+        private int code;
+
+        EncryptionType(int code) {
+            this.code = code;
+        }
+
+        public static EncryptionType getByCode(int code) {
+            switch (code) {
+                case 5:
+                    return VOLTAGE_TEP2;
+                case 11:
+                    return DUKPUT;
+                case 3:
+                    return EPS;
+                default:
+                    return NONE;
+            }
+        }
+    }
 
     @Override
     public void connect(Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
@@ -466,11 +489,24 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
 
                         cardManager = new CreditCardInfo();
                         CardParser.parseCreditCard(activity, raw_data.toString(), cardManager);
-                        if (isDukpt()) {
-                            String[] split = track3.split(":");
-                            if (split.length == 4) {
-                                cardManager.setTrackDataKSN(split[0]);
-                                cardManager.setEncryptedBlock(split[3]);
+                        EncryptionType encryptionType = getEncryptionType();
+                        switch (encryptionType) {
+                            case DUKPUT: {
+                                String[] split = track3.split(":");
+                                if (split.length == 4) {
+                                    cardManager.setTrackDataKSN(split[0]);
+                                    cardManager.setEncryptedBlock(split[3]);
+                                }
+                                break;
+                            }
+                            case EPS: {
+                                Encrypt encrypt = new Encrypt(activity);
+                                String[] split = track2.split(":");
+                                CardParser.parseCreditCard(activity, ";4111111111111111=5012123467897987422?", cardManager);
+                                cardManager.setTrackDataKSN(split[1]);
+                                cardManager.setEncryptedBlock(split[0]);
+//                                cardManager.setEncryptedAESTrack2(encrypt.encryptWithAES(";4111111111111111=5012123467897987422?"));
+                                break;
                             }
                         }
                         if (mIsDebit) {
@@ -581,7 +617,7 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
         }
     }
 
-    private boolean isDukpt() {
+    private EncryptionType getEncryptionType() {
         RBA_API.SetParam(PARAMETER_ID.P61_REQ_GROUP_NUM, "91");
         RBA_API.SetParam(PARAMETER_ID.P61_REQ_INDEX_NUM, "1");
         if (RBA_API.ProcessMessage(MESSAGE_ID.M61_CONFIGURATION_READ) == ERROR_ID.RESULT_SUCCESS) {
@@ -589,13 +625,14 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
                 String result = RBA_API.GetParam(PARAMETER_ID.P61_RES_DATA_CONFIG_PARAMETER);
                 if (result != null) {
                     int encType = Integer.parseInt(result);
-                    if (encType == 11) {
-                        return true;
-                    }
+                    return EncryptionType.getByCode(encType);
+//                    if (encType == 11) {
+//                        return true;
+//                    }
                 }
             }
         }
-        return false;
+        return EncryptionType.NONE;
     }
 
     /*
