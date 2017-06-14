@@ -982,14 +982,14 @@ public class MyPreferences {
         return false;
     }
 
-    public boolean isKDC500() {
-        String device_kdc500 = "device_kdc500";
-        return prefs.getBoolean(device_kdc500, false);
+    public boolean isKDC425() {
+        String device_kdc425 = "device_kdc425";
+        return prefs.getBoolean(device_kdc425, false);
     }
 
-    public boolean setIsKDC500(boolean value) {
-        String device_kdc500 = "device_kdc500";
-        prefEditor.putBoolean(device_kdc500, value);
+    public boolean setIsKDC425(boolean value) {
+        String device_kdc425 = "device_kdc425";
+        prefEditor.putBoolean(device_kdc425, value);
         prefEditor.commit();
         return false;
     }

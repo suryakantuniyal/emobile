@@ -121,7 +121,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
         buildPayment();
 
         if (!isManual) {
-            if (myPreferences.getPrinterType() == Global.KDC500) {
+            if (myPreferences.getPrinterType() == Global.KDC425) {
                 if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
                     Global.mainPrinterManager.getCurrentDevice().loadScanner(this);
                 }
