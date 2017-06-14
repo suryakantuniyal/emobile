@@ -327,17 +327,17 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
         totalAmountEditText.setText(Global.getCurrencyFormat(total.toString()));
         if (shift != null && shift.getShiftStatus() == Shift.ShiftStatus.PENDING) {
             BigDecimal totalEndingCash = new BigDecimal(shift.getTotal_ending_cash());
-            switch (totalEndingCash.compareTo(BigDecimal.valueOf(total))) {
-                case -1:
+            switch (total.compareTo(totalEndingCash.doubleValue())) {
+                case 1:
                     shortOverStatusTextView.setText(
-                            String.format("%s (%s)", getString(R.string.over_amount), Global.formatDoubleToCurrency(totalEndingCash.subtract(BigDecimal.valueOf(total)).doubleValue())));
+                            String.format("%s %s", getString(R.string.over_amount), Global.formatDoubleToCurrency(totalEndingCash.subtract(BigDecimal.valueOf(total)).abs().doubleValue())));
                     totalAmountEditText.setTextColor(Color.RED);
                     shortOverStatusTextView.setTextColor(Color.RED);
                     shortOverStatusTextView.setVisibility(View.VISIBLE);
                     break;
-                case 1:
-                    totalAmountEditText.setTextColor(Color.BLUE);
-                    shortOverStatusTextView.setTextColor(Color.BLUE);
+                case -1:
+                    totalAmountEditText.setTextColor(Color.RED);
+                    shortOverStatusTextView.setTextColor(Color.RED);
                     shortOverStatusTextView.setVisibility(View.VISIBLE);
                     shortOverStatusTextView.setText(
                             String.format("%s (%s)", getString(R.string.short_amount), Global.formatDoubleToCurrency(totalEndingCash.subtract(BigDecimal.valueOf(total)).doubleValue())));
