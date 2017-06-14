@@ -294,7 +294,7 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
                 Global.mainPrinterManager.getCurrentDevice().loadCardReader(callBack, false);
                 checkBox.setChecked(true);
             }
-        } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310() || myPref.isKDC500() || myPref.isHandpoint()) {
+        } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310() || myPref.isKDC425() || myPref.isHandpoint()) {
             checkBox.setChecked(true);
         }
     }
