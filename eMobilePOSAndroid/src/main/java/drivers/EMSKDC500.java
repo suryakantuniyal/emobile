@@ -9,6 +9,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -495,9 +496,11 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
             }
 //            scannerCallBack.scannerWasRead(kdcData.GetData());
         } else {
-            cardInfo = new CreditCardInfo();
-            CardParser.parseCreditCard(activity, kdcData.GetData(), cardInfo);
-            handler.post(cardReadCallBack);
+            if (!TextUtils.isEmpty(kdcData.GetData())) {
+                cardInfo = new CreditCardInfo();
+                CardParser.parseCreditCard(activity, kdcData.GetData(), cardInfo);
+                handler.post(cardReadCallBack);
+            }
 //            String SAMPLE_AES128_KEY = "1AAEAF7E7ABE338A942844F7F189BD49";
 //            String data = "";
 //            data = kdcData.GetData();
@@ -539,7 +542,9 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     public void MSRDataReceived(KDCData kdcData) {
         cardInfo = new CreditCardInfo();
         CardParser.parseCreditCard(activity, kdcData.GetMSRData(), cardInfo);
-        handler.post(cardReadCallBack);
+        if (handler != null && cardReadCallBack != null) {
+            handler.post(cardReadCallBack);
+        }
     }
 
 

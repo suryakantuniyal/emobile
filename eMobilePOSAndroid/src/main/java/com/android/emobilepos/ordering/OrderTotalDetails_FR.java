@@ -536,7 +536,9 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                     taxSelected = pos;
                     setTaxValue(pos);
                 }
-                reCalculate(global.order.getOrderProducts());
+                if(global.order!=null && global.order.getOrderProducts()!=null) {
+                    reCalculate(global.order.getOrderProducts());
+                }
             }
 
             @Override
