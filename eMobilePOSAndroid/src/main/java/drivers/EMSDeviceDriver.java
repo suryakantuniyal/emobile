@@ -641,7 +641,7 @@ public class EMSDeviceDriver {
     protected void printReceipt(String ordID, int lineWidth, boolean fromOnHold, Global.OrderType type, boolean isFromHistory, EMVContainer emvContainer) {
         try {
             AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee(false);
-            Clerk clerk = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()), false);
+            Clerk clerk = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()));
             startReceipt();
             setPaperWidth(lineWidth);
             printPref = myPref.getPrintingPreferences();

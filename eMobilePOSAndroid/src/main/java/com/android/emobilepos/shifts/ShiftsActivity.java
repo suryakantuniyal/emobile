@@ -461,9 +461,9 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
             shift = ShiftDAO.getShiftByClerkId(Integer.parseInt(preferences.getClerkID()));
         }
         if (shift == null) {
-            clerk = ClerkDAO.getByEmpId(Integer.parseInt(preferences.getClerkID()), false);
+            clerk = ClerkDAO.getByEmpId(Integer.parseInt(preferences.getClerkID()));
         } else {
-            clerk = ClerkDAO.getByEmpId(shift.getClerkId(), false);
+            clerk = ClerkDAO.getByEmpId(shift.getClerkId());
         }
         TextView clerkName = (TextView) findViewById(R.id.clerkNameShifttextView);
         clerkName.setText(clerk == null ? "" : clerk.getEmpName());

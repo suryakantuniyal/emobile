@@ -225,7 +225,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
     public void setLogoutButtonClerkname() {
         if (myPref.isUseClerks()) {
-            Clerk clerk = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()), false);
+            Clerk clerk = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()));
             if (clerk != null) {
                 Menu menu = ((MainMenu_FA) activity).menu;
                 if (menu != null) {

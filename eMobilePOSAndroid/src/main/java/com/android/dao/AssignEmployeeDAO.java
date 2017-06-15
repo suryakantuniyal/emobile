@@ -71,6 +71,7 @@ public class AssignEmployeeDAO {
             r.insertOrUpdate(assignEmployee);
         } finally {
             r.commitTransaction();
+            r.close();
         }
     }
 
@@ -83,6 +84,7 @@ public class AssignEmployeeDAO {
             r.insertOrUpdate(assignEmployee);
         } finally {
             r.commitTransaction();
+            r.close();
         }
     }
 }
