@@ -1580,7 +1580,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     public static boolean isRequiredAttributeConmpleted(List<OrderProduct> products) {
         for (OrderProduct product : products) {
-            RealmResults<ProductAttribute> attributes = OrderProductAttributeDAO.getByProdId(product.getProd_id());
+            List<ProductAttribute> attributes = OrderProductAttributeDAO.getByProdId(product.getProd_id());
             for (ProductAttribute attribute : attributes) {
                 if (!product.getRequiredProductAttributes().contains(attribute)) {
                     return false;

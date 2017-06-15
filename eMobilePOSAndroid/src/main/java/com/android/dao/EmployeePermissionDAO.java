@@ -19,6 +19,7 @@ public class EmployeePermissionDAO {
             r.insertOrUpdate(persmissions);
         } finally {
             r.commitTransaction();
+            r.close();
         }
     }
 
@@ -30,19 +31,24 @@ public class EmployeePermissionDAO {
             r.where(EmployeePersmission.class).findAll().deleteAllFromRealm();
         } finally {
             r.commitTransaction();
+            r.close();
         }
     }
 
     public static List<EmployeePersmission> getEmployeePersmissions(int employeeId, int code) {
         Realm r = Realm.getDefaultInstance();
-        RealmResults<EmployeePersmission> persmissions = r.where(EmployeePersmission.class)
-                .equalTo("empId", employeeId)
-                .equalTo("pId", code)
-                .findAll();
-        if (persmissions != null) {
-            return r.copyFromRealm(persmissions);
-        } else {
-            return null;
+        try {
+            RealmResults<EmployeePersmission> persmissions = r.where(EmployeePersmission.class)
+                    .equalTo("empId", employeeId)
+                    .equalTo("pId", code)
+                    .findAll();
+            if (persmissions != null) {
+                return r.copyFromRealm(persmissions);
+            } else {
+                return null;
+            }
+        }finally {
+            r.close();
         }
     }
 }
