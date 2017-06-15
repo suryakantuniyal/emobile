@@ -47,6 +47,7 @@ public class DinningTableDAO {
         } finally {
             realm.commitTransaction();
             removeInvalidLocations();
+            realm.close();
         }
     }
 
@@ -112,8 +113,16 @@ public class DinningTableDAO {
 
     public static DinningTable getByNumber(String tableNumber) {
         Realm realm = Realm.getDefaultInstance();
-        RealmQuery<DinningTable> where = realm.where(DinningTable.class);
-        return where.equalTo("number", tableNumber).findFirst();
+        try {
+            RealmQuery<DinningTable> where = realm.where(DinningTable.class);
+            DinningTable first = where.equalTo("number", tableNumber).findFirst();
+            if (first != null) {
+                first = realm.copyFromRealm(first);
+            }
+            return first;
+        } finally {
+            realm.close();
+        }
     }
 
     public static HashMap<String, List<Clerk>> getTableAssignedClerks() {

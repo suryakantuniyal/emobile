@@ -152,7 +152,7 @@ public class OrderDetailsActivity extends BaseFragmentActivityActionBar {
             orderAttributesValues.addAll(list);
 
         } else {
-            List<OrderAttributes> orderAttributes = OrderAttributesDAO.getOrderAttributes(false);
+            List<OrderAttributes> orderAttributes = OrderAttributesDAO.getOrderAttributes();
             orderAttributesValues.addAll(orderAttributes);
         }
     }

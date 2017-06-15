@@ -21,6 +21,7 @@ public class PayMethodsDAO {
             }
         } finally {
             realm.commitTransaction();
+            realm.close();
         }
     }
 
@@ -36,17 +37,21 @@ public class PayMethodsDAO {
             }
         } finally {
             realm.commitTransaction();
+            realm.close();
         }
     }
 
     public static List<PaymentMethod> getAllSortByName(boolean returnManaged) {
         Realm realm = Realm.getDefaultInstance();
-        List<PaymentMethod> paymentMethods = realm.where(PaymentMethod.class).findAll().sort("paymethod_name", Sort.ASCENDING);
-        if (!returnManaged && paymentMethods != null) {
-            paymentMethods = realm.copyFromRealm(paymentMethods);
+        try {
+            List<PaymentMethod> paymentMethods = realm.where(PaymentMethod.class).findAll().sort("paymethod_name", Sort.ASCENDING);
+            if (!returnManaged && paymentMethods != null) {
+                paymentMethods = realm.copyFromRealm(paymentMethods);
+            }
+            return paymentMethods;
+        } finally {
+            realm.close();
         }
-
-        return paymentMethods;
     }
 
     public static void truncate() {
@@ -56,6 +61,7 @@ public class PayMethodsDAO {
             realm.delete(PaymentMethod.class);
         } finally {
             realm.commitTransaction();
+            realm.close();
         }
     }
 }
