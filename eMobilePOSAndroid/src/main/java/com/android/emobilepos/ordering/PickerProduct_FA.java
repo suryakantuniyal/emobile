@@ -693,7 +693,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         dlg.setContentView(view);
         ListView dlgListView = (ListView) dlg.findViewById(R.id.dlgListView);
         List<String[]> listData_LV = new ArrayList<>();
-        RealmResults<UOM> uoms;
+        List<UOM> uoms;
         switch (type) {
             case SEC_UOM://UoM
             {

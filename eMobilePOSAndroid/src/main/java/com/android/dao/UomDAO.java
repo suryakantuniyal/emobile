@@ -8,7 +8,6 @@ import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmQuery;
-import io.realm.RealmResults;
 import util.json.JsonUtils;
 
 /**
@@ -37,12 +36,21 @@ public class UomDAO {
             realm.copyToRealm(uoms);
         } finally {
             realm.commitTransaction();
+            realm.close();
         }
     }
 
-    public static RealmResults<UOM> getAll() {
-        RealmResults<UOM> uoms = Realm.getDefaultInstance().where(UOM.class).findAll();
-        return uoms;
+    public static List<UOM> getAll() {
+        Realm realm = Realm.getDefaultInstance();
+        try {
+            List<UOM> uoms = realm.where(UOM.class).findAll();
+            if (uoms != null) {
+                uoms = realm.copyFromRealm(uoms);
+            }
+            return uoms;
+        } finally {
+            realm.close();
+        }
     }
 
     public static void truncate() {
@@ -52,13 +60,21 @@ public class UomDAO {
             realm.delete(UOM.class);
         } finally {
             realm.commitTransaction();
+            realm.close();
         }
     }
 
-    public static RealmResults<UOM> getByProdId(String prodId) {
+    public static List<UOM> getByProdId(String prodId) {
         Realm realm = Realm.getDefaultInstance();
-        RealmQuery<UOM> where = realm.where(UOM.class);
-        RealmResults<UOM> uoms = where.equalTo("prodId", prodId).findAll();
-        return uoms;
+        try {
+            RealmQuery<UOM> where = realm.where(UOM.class);
+            List<UOM> uoms = where.equalTo("prodId", prodId).findAll();
+            if (uoms != null) {
+                uoms = realm.copyFromRealm(uoms);
+            }
+            return uoms;
+        } finally {
+            realm.close();
+        }
     }
 }
