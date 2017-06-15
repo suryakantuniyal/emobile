@@ -15,6 +15,7 @@ import com.android.dao.ShiftDAO;
 import com.android.dao.ShiftExpensesDAO;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.realms.Shift;
+import com.android.emobilepos.models.realms.ShiftExpense;
 import com.android.support.Global;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
@@ -28,7 +29,7 @@ public class ShiftReportDetails_FA extends BaseFragmentActivityActionBar impleme
     private boolean hasBeenCreated = false;
     private String shiftID;
     private Shift shift;
-    private BigDecimal totalExpenses;
+    private BigDecimal totalExpenses, safeDropTotal, cashDropTotal, cashInTotal, buyGoodsTotal, nonCashGratuityTotal;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,6 +44,11 @@ public class ShiftReportDetails_FA extends BaseFragmentActivityActionBar impleme
         shiftID = extras.getString("shift_id");
         shift = ShiftDAO.getShift(shiftID);
         totalExpenses = ShiftExpensesDAO.getShiftTotalExpenses(shiftID);
+        safeDropTotal = ShiftExpensesDAO.getShiftTotalExpenses(shiftID, ShiftExpense.ExpenseProductId.SAFE_DROP);
+        cashDropTotal = ShiftExpensesDAO.getShiftTotalExpenses(shiftID, ShiftExpense.ExpenseProductId.CASH_DROP);
+        cashInTotal = ShiftExpensesDAO.getShiftTotalExpenses(shiftID, ShiftExpense.ExpenseProductId.CASH_IN);
+        buyGoodsTotal = ShiftExpensesDAO.getShiftTotalExpenses(shiftID, ShiftExpense.ExpenseProductId.BUY_GOODS_SERVICES);
+        nonCashGratuityTotal = ShiftExpensesDAO.getShiftTotalExpenses(shiftID, ShiftExpense.ExpenseProductId.NON_CASH_GRATUITY);
         hasBeenCreated = true;
         if (shift != null) {
             loadUIInfo();
@@ -53,11 +59,17 @@ public class ShiftReportDetails_FA extends BaseFragmentActivityActionBar impleme
         ((TextView) findViewById(R.id.salesClerktextView26)).setText(shift.getAssigneeName());
         ((TextView) findViewById(R.id.beginningPettyCashtextView26)).setText(Global.formatDoubleStrToCurrency(shift.getBeginningPettyCash()));
         ((TextView) findViewById(R.id.totalExpensestextView26)).setText(Global.formatDoubleStrToCurrency(String.valueOf(totalExpenses)));
-        ((TextView) findViewById(R.id.endingPettyCashtextView26)).setText(Global.formatDoubleStrToCurrency(shift.getEndingPettyCash()));
+//        ((TextView) findViewById(R.id.endingPettyCashtextView26)).setText(Global.formatDoubleStrToCurrency(shift.getEndingPettyCash()));
         ((TextView) findViewById(R.id.totalTransactionCashtextView26)).setText(Global.formatDoubleStrToCurrency(shift.getTotalTransactionsCash()));
         ((TextView) findViewById(R.id.totalEndingCashtextView26)).setText(Global.formatDoubleStrToCurrency(shift.getTotal_ending_cash()));
         ((TextView) findViewById(R.id.enteredCloseAmounttextView26)).setText(Global.formatDoubleStrToCurrency(shift.getEnteredCloseAmount()));
         ((TextView) findViewById(R.id.shortOverAmounttextView)).setText(Global.formatDoubleStrToCurrency(shift.getOver_short()));
+        ((TextView) findViewById(R.id.safeDropExpensestextView)).setText(Global.formatDoubleStrToCurrency(String.valueOf(safeDropTotal)));
+        ((TextView) findViewById(R.id.cashDropExpensestextView2)).setText(Global.formatDoubleStrToCurrency(String.valueOf(cashDropTotal)));
+        ((TextView) findViewById(R.id.cashInExpensestextView4)).setText(Global.formatDoubleStrToCurrency(String.valueOf(cashInTotal)));
+        ((TextView) findViewById(R.id.buyGoodsServicesExpensestextView6)).setText(Global.formatDoubleStrToCurrency(String.valueOf(buyGoodsTotal)));
+        ((TextView) findViewById(R.id.nonCashGratuityExpensestextVie8)).setText(Global.formatDoubleStrToCurrency(String.valueOf(nonCashGratuityTotal)));
+
     }
 
     @Override

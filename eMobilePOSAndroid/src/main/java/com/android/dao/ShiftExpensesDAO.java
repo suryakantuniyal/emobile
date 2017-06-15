@@ -2,7 +2,6 @@ package com.android.dao;
 
 import com.android.emobilepos.models.realms.Shift;
 import com.android.emobilepos.models.realms.ShiftExpense;
-import com.android.support.Global;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -22,30 +21,57 @@ public class ShiftExpensesDAO {
             r.beginTransaction();
             Shift shift = r.where(Shift.class).equalTo("shiftId", expense.getShiftId()).findFirst();
             shift.setSync(false);
-            shift.setEndingPettyCash(String.valueOf(Global.getBigDecimalNum(shift.getTotal_ending_cash())
-                    .subtract(Global.getBigDecimalNum(expense.getCashAmount()))));
+//            shift.setEndingPettyCash(String.valueOf(Global.getBigDecimalNum(shift.getTotal_ending_cash())
+//                    .add(Global.getBigDecimalNum(expense.getCashAmount()))));
             r.insertOrUpdate(expense);
         } finally {
             r.commitTransaction();
+            r.close();
         }
     }
 
     public static List<ShiftExpense> getShiftExpenses(String shiftId) {
         Realm r = Realm.getDefaultInstance();
-        RealmResults<ShiftExpense> expenses = r.where(ShiftExpense.class).equalTo("shiftId", shiftId).findAll();
-        if (expenses != null)
-            return r.copyFromRealm(expenses);
-        else
-            return null;
+        try {
+            RealmResults<ShiftExpense> expenses = r.where(ShiftExpense.class).equalTo("shiftId", shiftId).findAll();
+            if (expenses != null)
+                return r.copyFromRealm(expenses);
+            else
+                return null;
+        } finally {
+            r.close();
+        }
     }
+
 
     public static BigDecimal getShiftTotalExpenses(String shiftID) {
         Realm r = Realm.getDefaultInstance();
-        RealmResults<ShiftExpense> expenses = r.where(ShiftExpense.class).equalTo("shiftId", shiftID).findAll();
-        BigDecimal total = new BigDecimal(0);
-        for (ShiftExpense expense : expenses) {
-            total = total.add(new BigDecimal(expense.getCashAmount() == null ? "0" : expense.getCashAmount()));
+        try {
+            RealmResults<ShiftExpense> expenses = r.where(ShiftExpense.class).equalTo("shiftId", shiftID).findAll();
+            BigDecimal total = new BigDecimal(0);
+            for (ShiftExpense expense : expenses) {
+                total = total.add(new BigDecimal(expense.getCashAmount() == null ? "0" : expense.getCashAmount()));
+            }
+            return total;
+        } finally {
+            r.close();
         }
-        return total;
+    }
+
+    public static BigDecimal getShiftTotalExpenses(String shiftID, ShiftExpense.ExpenseProductId productId) {
+        Realm r = Realm.getDefaultInstance();
+        try {
+            RealmResults<ShiftExpense> expenses = r.where(ShiftExpense.class)
+                    .equalTo("shiftId", shiftID)
+                    .equalTo("productId", productId.getCode())
+                    .findAll();
+            BigDecimal total = new BigDecimal(0);
+            for (ShiftExpense expense : expenses) {
+                total = total.add(new BigDecimal(expense.getCashAmount() == null ? "0" : expense.getCashAmount()));
+            }
+            return total;
+        } finally {
+            r.close();
+        }
     }
 }

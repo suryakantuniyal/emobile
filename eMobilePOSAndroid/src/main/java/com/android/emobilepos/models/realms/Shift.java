@@ -199,14 +199,6 @@ public class Shift extends RealmObject {
         this.endingPettyCash = endingPettyCash;
     }
 
-//    public String getEndingCash() {
-//        return endingCash;
-//    }
-//
-//    public void setEndingCash(String endingCash) {
-//        this.endingCash = endingCash;
-//    }
-
     public String getEnteredCloseAmount() {
         return enteredCloseAmount;
     }

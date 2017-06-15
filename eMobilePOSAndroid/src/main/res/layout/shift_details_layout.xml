@@ -1,230 +1,366 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:background="#FFFFFF"
-android:orientation="vertical" >
-
-<RelativeLayout
-    android:id="@+id/headerContainer"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@drawable/blue_gradient_header_horizontal"
-    android:orientation="horizontal" >
+    android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/headerTitle"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/shift_details"
-        android:gravity="center"
-        android:background="@drawable/blue_gradient_header_horizontal"
-        android:padding="10dp"
-        android:textSize="@dimen/header_bar_text_size"
-        android:textAppearance="@style/white_text_appearance"
-        style="@style/text_shadow"/>
+        android:layout_height="match_parent"
+        android:background="#FFFFFF"
+        android:orientation="vertical">
 
-    <Button
-        android:id="@+id/btnPrint"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:layout_margin="5dp"
-        android:background="@drawable/blue_btn_selector"
-        android:text="Print"
-        android:textAppearance="@style/black_text_appearance"
-        android:textSize="@dimen/ordering_checkout_btn_txt_size" />
-</RelativeLayout>
-
-    <TableLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <TableRow
+        <RelativeLayout
+            android:id="@+id/headerContainer"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="8dp">
+            android:layout_height="wrap_content"
+            android:background="@drawable/blue_gradient_header_horizontal"
+            android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/textView27"
-                style="@style/black_text_appearance_unbold"
-                android:layout_width="0dp"
+                android:id="@+id/headerTitle"
+                style="@style/text_shadow"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/sales_clerk"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+                android:background="@drawable/blue_gradient_header_horizontal"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="@string/shift_details"
+                android:textAppearance="@style/white_text_appearance"
+                android:textSize="@dimen/header_bar_text_size" />
 
-            <TextView
-                android:id="@+id/salesClerktextView26"
-                style="@style/black_text_appearance"
+            <Button
+                android:id="@+id/btnPrint"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="TextView"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
-        </TableRow>
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_margin="5dp"
+                android:background="@drawable/blue_btn_selector"
+                android:text="Print"
+                android:textAppearance="@style/black_text_appearance"
+                android:textSize="@dimen/ordering_checkout_btn_txt_size" />
+        </RelativeLayout>
 
-        <TableRow
+        <TableLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="8dp">
+            android:layout_height="match_parent">
 
-            <TextView
-                android:id="@+id/textView27a"
-                style="@style/black_text_appearance_unbold"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/begging_petty_cash"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="8dp">
 
-            <TextView
-                android:id="@+id/beginningPettyCashtextView26"
-                style="@style/black_text_appearance"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="TextView"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
-        </TableRow>
+                <TextView
+                    android:id="@+id/textView27"
+                    style="@style/black_text_appearance_unbold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/sales_clerk"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="8dp">
+                <TextView
+                    android:id="@+id/salesClerktextView26"
+                    style="@style/black_text_appearance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TextView"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+            </TableRow>
 
-            <TextView
-                android:id="@+id/textView27b"
-                style="@style/black_text_appearance_unbold"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/total_expenses"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="8dp">
 
-            <TextView
-                android:id="@+id/totalExpensestextView26"
-                style="@style/black_text_appearance"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="TextView"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
-        </TableRow>
+                <TextView
+                    android:id="@+id/textView27a"
+                    style="@style/black_text_appearance_unbold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/begging_petty_cash"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="8dp">
+                <TextView
+                    android:id="@+id/beginningPettyCashtextView26"
+                    style="@style/black_text_appearance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TextView"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+            </TableRow>
 
-            <TextView
-                android:id="@+id/textView27c"
-                style="@style/black_text_appearance_unbold"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/ending_petty_cash"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/gray_flat_headers"
+                android:gravity="center_horizontal">
 
-            <TextView
-                android:id="@+id/endingPettyCashtextView26"
-                style="@style/black_text_appearance"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="TextView"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
-        </TableRow>
+                <TextView
+                    android:id="@+id/textView23"
+                    style="@style/black_text_appearance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/config_expenses"
+                    android:textSize="@dimen/header_bar_text_size" />
+            </TableRow>
 
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="8dp">
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="8dp">
 
-            <TextView
-                android:id="@+id/textView27d"
-                style="@style/black_text_appearance_unbold"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/total_transactions_cash"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+                <TextView
+                    android:id="@+id/textView"
+                    style="@style/black_text_appearance_unbold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_weight="1"
+                    android:text="@string/safe_drop"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
-            <TextView
-                android:id="@+id/totalTransactionCashtextView26"
-                style="@style/black_text_appearance"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="TextView"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
-        </TableRow>
+                <TextView
+                    android:id="@+id/safeDropExpensestextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TextView"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+            </TableRow>
 
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="8dp">
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="8dp">
 
-            <TextView
-                android:id="@+id/textView27e"
-                style="@style/black_text_appearance_unbold"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/total_ending_cash"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+                <TextView
+                    android:id="@+id/textView1"
+                    style="@style/black_text_appearance_unbold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_weight="1"
+                    android:text="@string/cash_drop"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
-            <TextView
-                android:id="@+id/totalEndingCashtextView26"
-                style="@style/black_text_appearance"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="TextView"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
-        </TableRow>
+                <TextView
+                    android:id="@+id/cashDropExpensestextView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TextView"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+            </TableRow>
 
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="8dp">
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="8dp">
 
-            <TextView
-                android:id="@+id/textView27f"
-                style="@style/black_text_appearance_unbold"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/entered_close_amount"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+                <TextView
+                    android:id="@+id/textView3"
+                    style="@style/black_text_appearance_unbold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_weight="1"
+                    android:text="@string/cash_in"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
-            <TextView
-                android:id="@+id/enteredCloseAmounttextView26"
-                style="@style/black_text_appearance"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="TextView"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
-        </TableRow>
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="8dp">
+                <TextView
+                    android:id="@+id/cashInExpensestextView4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TextView"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+            </TableRow>
 
-            <TextView
-                android:id="@+id/textView27fa"
-                style="@style/black_text_appearance_unbold"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/over_amount"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="8dp">
 
-            <TextView
-                android:id="@+id/shortOverAmounttextView"
-                style="@style/black_text_appearance"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="TextView"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
-        </TableRow>
+                <TextView
+                    android:id="@+id/textView5"
+                    style="@style/black_text_appearance_unbold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_weight="1"
+                    android:text="@string/buy_goods_services"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
-    </TableLayout>
+                <TextView
+                    android:id="@+id/buyGoodsServicesExpensestextView6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TextView"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+            </TableRow>
 
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="8dp">
 
-</LinearLayout>
+                <TextView
+                    android:id="@+id/textView7"
+                    style="@style/black_text_appearance_unbold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_weight="1"
+                    android:text="@string/non_cash_gratuity"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+                <TextView
+                    android:id="@+id/nonCashGratuityExpensestextVie8"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TextView"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="8dp"
+                android:background="@color/gray_flat_headers">
+
+                <TextView
+                    android:id="@+id/textView27b"
+                    style="@style/black_text_appearance_unbold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/total_expenses"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+                <TextView
+                    android:id="@+id/totalExpensestextView26"
+                    style="@style/black_text_appearance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TextView"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+            </TableRow>
+
+            <!--<TableRow-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_margin="8dp">-->
+
+            <!--<TextView-->
+            <!--android:id="@+id/textView27c"-->
+            <!--style="@style/black_text_appearance_unbold"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="1"-->
+            <!--android:text="@string/ending_petty_cash"-->
+            <!--android:textAppearance="@style/TextAppearance.AppCompat.Large" />-->
+
+            <!--<TextView-->
+            <!--android:id="@+id/endingPettyCashtextView26"-->
+            <!--style="@style/black_text_appearance"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="TextView"-->
+            <!--android:textAppearance="@style/TextAppearance.AppCompat.Large" />-->
+            <!--</TableRow>-->
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="8dp">
+
+                <TextView
+                    android:id="@+id/textView27d"
+                    style="@style/black_text_appearance_unbold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/total_transactions_cash"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+                <TextView
+                    android:id="@+id/totalTransactionCashtextView26"
+                    style="@style/black_text_appearance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TextView"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="8dp">
+
+                <TextView
+                    android:id="@+id/textView27e"
+                    style="@style/black_text_appearance_unbold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/total_ending_cash"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+                <TextView
+                    android:id="@+id/totalEndingCashtextView26"
+                    style="@style/black_text_appearance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TextView"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="8dp">
+
+                <TextView
+                    android:id="@+id/textView27f"
+                    style="@style/black_text_appearance_unbold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/entered_close_amount"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+                <TextView
+                    android:id="@+id/enteredCloseAmounttextView26"
+                    style="@style/black_text_appearance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TextView"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="8dp">
+
+                <TextView
+                    android:id="@+id/shortageOverageAmountLbltextView27fa"
+                    style="@style/black_text_appearance_unbold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/shortage_overage_amount"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+                <TextView
+                    android:id="@+id/shortOverAmounttextView"
+                    style="@style/black_text_appearance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TextView"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+            </TableRow>
+
+        </TableLayout>
+
+    </LinearLayout>
+</ScrollView>

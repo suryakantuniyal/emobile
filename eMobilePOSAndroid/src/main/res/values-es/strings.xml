@@ -1294,6 +1294,11 @@
     <string name="application_password">Clave de la Aplicación</string>
     <string name="select_employee">Seleción del Empleado</string>
     <string name="password_configuration">Configuración de Contraseña</string>
+    <string name="even_amount">Cuadre</string>
+    <string name="shortage_overage_amount">Efectivo Excedente/Escasez</string>
+    <string name="endShiftReport">** Findel Informe de Turnos **</string>
+    <string name="from">De:</string>
+    <string name="to">Para:</string>
 
 
 </resources>

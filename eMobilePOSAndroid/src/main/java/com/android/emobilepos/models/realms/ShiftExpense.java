@@ -11,6 +11,20 @@ import io.realm.annotations.PrimaryKey;
  */
 
 public class ShiftExpense extends RealmObject {
+    public enum ExpenseProductId {
+        SAFE_DROP(1), CASH_DROP(2), CASH_IN(3), BUY_GOODS_SERVICES(4), NON_CASH_GRATUITY(5);
+
+        private int code;
+
+        ExpenseProductId(int code) {
+            this.code = code;
+        }
+
+        public int getCode() {
+            return code;
+        }
+    }
+
     @PrimaryKey
     private String expenseId;
     @Index
