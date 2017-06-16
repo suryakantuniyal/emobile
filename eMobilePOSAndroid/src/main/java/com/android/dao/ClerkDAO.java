@@ -57,12 +57,15 @@ public class ClerkDAO {
         }
     }
 
-    public static RealmResults<Clerk> getAll() {
-        RealmResults<Clerk> all;
+    public static List<Clerk> getAll() {
+        List<Clerk> all;
         Realm realm = Realm.getDefaultInstance();
         try {
             realm.beginTransaction();
             all = realm.where(Clerk.class).findAll();
+            if (all != null) {
+                all = realm.copyFromRealm(all);
+            }
         } finally {
             realm.commitTransaction();
             realm.close();
@@ -142,11 +145,12 @@ public class ClerkDAO {
         }
         for (String locId : locations) {
             List<Clerk> associates = new ArrayList<>();
-            for (Clerk associate : ClerkDAO.getAll()) {
+            RealmResults<Clerk> all = realm.where(Clerk.class).findAll();
+            for (Clerk associate : all) {
                 RealmResults<DinningTable> tbls = associate.getAssignedDinningTables()
                         .where().equalTo("locationId", locId).findAll();
                 RealmList<DinningTable> list = new RealmList<>();
-                list.addAll(tbls.subList(0, tbls.size()));
+                list.addAll(realm.copyFromRealm(tbls));
                 Clerk associateNoRelm = realm.copyFromRealm(associate);
                 associateNoRelm.setAssignedDinningTables(list);
                 associates.add(associateNoRelm);
