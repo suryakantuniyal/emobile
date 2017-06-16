@@ -64,7 +64,7 @@ public class DinningTablesGridFragment extends Fragment implements AdapterView.O
         } else {
             ClerkDAO.addAssignedTable(activity.getSelectedClerk(), table);
         }
-        activity.setSelectedClerk(ClerkDAO.getByEmpId(activity.getSelectedClerk().getEmpId(), false));
+        activity.setSelectedClerk(ClerkDAO.getByEmpId(activity.getSelectedClerk().getEmpId()));
         adapter.setSelectedDinningTables(activity.getSelectedClerk().getAssignedDinningTables());
         adapter.notifyDataSetChanged();
     }

@@ -35,6 +35,7 @@ public class DeviceTableDAO {
             realm.copyToRealm(devices);
         } finally {
             realm.commitTransaction();
+            realm.close();
         }
     }
 
@@ -61,12 +62,21 @@ public class DeviceTableDAO {
             }
         } finally {
             realm.commitTransaction();
+            realm.close();
         }
     }
 
     public static Device getByEmpId(int id) {
         Realm realm = Realm.getDefaultInstance();
-        RealmQuery<Device> where = realm.where(Device.class);
-        return where.equalTo("id", id).findFirst();
+        try {
+            RealmQuery<Device> where = realm.where(Device.class);
+            Device first = where.equalTo("id", id).findFirst();
+            if (first != null) {
+                first = realm.copyFromRealm(first);
+            }
+            return first;
+        } finally {
+            realm.close();
+        }
     }
 }

@@ -8,7 +8,6 @@ import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmQuery;
-import io.realm.RealmResults;
 import util.json.JsonUtils;
 
 /**
@@ -35,8 +34,9 @@ public class OrderProductAttributeDAO {
             realm.beginTransaction();
             realm.delete(ProductAttribute.class);
             realm.copyToRealm(attributes);
-        }finally {
+        } finally {
             realm.commitTransaction();
+            realm.close();
         }
     }
 
@@ -47,9 +47,17 @@ public class OrderProductAttributeDAO {
         }
     }
 
-    public static RealmResults<ProductAttribute> getAll() {
-        RealmResults<ProductAttribute> attributes = Realm.getDefaultInstance().where(ProductAttribute.class).findAll();
-        return attributes;
+    public static List<ProductAttribute> getAll() {
+        Realm realm = Realm.getDefaultInstance();
+        try {
+            List<ProductAttribute> attributes = realm.where(ProductAttribute.class).findAll();
+            if (attributes != null) {
+                attributes = realm.copyFromRealm(attributes);
+            }
+            return attributes;
+        } finally {
+            realm.close();
+        }
     }
 
     public static void truncate() {
@@ -57,30 +65,52 @@ public class OrderProductAttributeDAO {
         try {
             realm.beginTransaction();
             realm.delete(ProductAttribute.class);
-        }finally {
+        } finally {
             realm.commitTransaction();
+            realm.close();
         }
     }
 
-    public static RealmResults<ProductAttribute> getByProdId(String prodId) {
+    public static List<ProductAttribute> getByProdId(String prodId) {
         Realm realm = Realm.getDefaultInstance();
-        RealmQuery<ProductAttribute> where = realm.where(ProductAttribute.class);
-        RealmResults<ProductAttribute> attributes = where.equalTo("productId", prodId).findAll();
-        return attributes;
+        try {
+            RealmQuery<ProductAttribute> where = realm.where(ProductAttribute.class);
+            List<ProductAttribute> attributes = where.equalTo("productId", prodId).findAll();
+            if (attributes != null) {
+                attributes = realm.copyFromRealm(attributes);
+            }
+            return attributes;
+        } finally {
+            realm.close();
+        }
     }
 
-    public static RealmResults<ProductAttribute> getByProdId(String prodId, boolean required) {
+    public static List<ProductAttribute> getByProdId(String prodId, boolean required) {
         Realm realm = Realm.getDefaultInstance();
-        RealmQuery<ProductAttribute> where = realm.where(ProductAttribute.class);
-        RealmResults<ProductAttribute> attributes = where.equalTo("productId", prodId)
-                .equalTo("required", required).findAll();
-        return attributes;
+        try {
+            RealmQuery<ProductAttribute> where = realm.where(ProductAttribute.class);
+            List<ProductAttribute> attributes = where.equalTo("productId", prodId)
+                    .equalTo("required", required).findAll();
+            if (attributes != null) {
+                attributes = realm.copyFromRealm(attributes);
+            }
+            return attributes;
+        } finally {
+            realm.close();
+        }
     }
 
     public static ProductAttribute getById(int id) {
         Realm realm = Realm.getDefaultInstance();
-        RealmQuery<ProductAttribute> where = realm.where(ProductAttribute.class);
-        ProductAttribute attribute = where.equalTo("id", id).findFirst();
-        return attribute;
+        try {
+            RealmQuery<ProductAttribute> where = realm.where(ProductAttribute.class);
+            ProductAttribute attribute = where.equalTo("id", id).findFirst();
+            if (attribute != null) {
+                attribute = realm.copyFromRealm(attribute);
+            }
+            return attribute;
+        } finally {
+            realm.close();
+        }
     }
 }

@@ -47,7 +47,7 @@ public class SettingsTab_FR extends Fragment implements OnClickListener {
     @Override
     public void onClick(View v) {
         boolean hasAdminPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.SYSTEM_SETTINGS);
-        boolean hasManagerPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.MANAGE_SHIFT);
+        boolean hasManagerPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.MANAGER_SETTINGS);
         switch (v.getId()) {
             case R.id.btnAdminSetting:
                 if (preferences.isUseClerks()) {

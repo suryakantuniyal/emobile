@@ -671,9 +671,12 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             public void onClick(View v) {
                 dlog.dismiss();
                 if (myPref.isUseClerks()) {
-                    Clerk associate = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()), true);
-                    long count = associate == null ? 0 : associate.getAssignedDinningTables().where().equalTo("number", myCursor.getString(myCursor.getColumnIndex("assignedTable"))).count();
-                    if (associate != null && count > 0) {
+//                    Clerk associate = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()), true);
+                    boolean hasTable = ClerkDAO.hasAssignedDinningTable(Integer.parseInt(myPref.getClerkID()), myCursor.getString(myCursor.getColumnIndex("assignedTable")));
+//                    long count = associate == null ? 0 : associate.getAssignedDinningTables()
+//                            .where()
+//                            .equalTo("number", myCursor.getString(myCursor.getColumnIndex("assignedTable"))).count();
+                    if (hasTable) {
                         validPassword = true;
                         new checkHoldStatus().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                     } else {

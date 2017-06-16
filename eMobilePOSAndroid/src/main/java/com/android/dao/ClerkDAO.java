@@ -57,12 +57,15 @@ public class ClerkDAO {
         }
     }
 
-    public static RealmResults<Clerk> getAll() {
-        RealmResults<Clerk> all;
+    public static List<Clerk> getAll() {
+        List<Clerk> all;
         Realm realm = Realm.getDefaultInstance();
         try {
             realm.beginTransaction();
             all = realm.where(Clerk.class).findAll();
+            if (all != null) {
+                all = realm.copyFromRealm(all);
+            }
         } finally {
             realm.commitTransaction();
             realm.close();
@@ -81,19 +84,17 @@ public class ClerkDAO {
         }
     }
 
-    public static Clerk getByEmpId(int empId, boolean returnManaged) {
+    public static Clerk getByEmpId(int empId) {
         Realm realm = Realm.getDefaultInstance();
         Clerk clerk;
         try {
             RealmQuery<Clerk> where = realm.where(Clerk.class);
             clerk = where.equalTo("empId", empId).findFirst();
-            if (!returnManaged && clerk != null) {
+            if (clerk != null) {
                 clerk = realm.copyFromRealm(clerk);
             }
-//            if(clerk!=null)
-//                clerk=realm.copyFromRealm(clerk);
         } finally {
-//            realm.close();
+            realm.close();
         }
         return clerk;
     }
@@ -108,7 +109,7 @@ public class ClerkDAO {
     public static void addAssignedTable(Clerk selectedClerk, DinningTable table) {
         Realm realm = Realm.getDefaultInstance();
         try {
-            Clerk clerk = getByEmpId(selectedClerk.getEmpId(), false);
+            Clerk clerk = getByEmpId(selectedClerk.getEmpId());
             clerk.getAssignedDinningTables().remove(table);
             clerk.getAssignedDinningTables().add(table);
             insertOrUpdate(clerk);
@@ -121,7 +122,7 @@ public class ClerkDAO {
     public static void clearAllAssignedTable(Clerk associate) {
         Realm realm = Realm.getDefaultInstance();
         try {
-            Clerk clerk = getByEmpId(associate.getEmpId(), false);
+            Clerk clerk = getByEmpId(associate.getEmpId());
             clerk.getAssignedDinningTables().clear();
             insertOrUpdate(clerk);
         } finally {
@@ -144,11 +145,12 @@ public class ClerkDAO {
         }
         for (String locId : locations) {
             List<Clerk> associates = new ArrayList<>();
-            for (Clerk associate : ClerkDAO.getAll()) {
+            RealmResults<Clerk> all = realm.where(Clerk.class).findAll();
+            for (Clerk associate : all) {
                 RealmResults<DinningTable> tbls = associate.getAssignedDinningTables()
                         .where().equalTo("locationId", locId).findAll();
                 RealmList<DinningTable> list = new RealmList<>();
-                list.addAll(tbls.subList(0, tbls.size()));
+                list.addAll(realm.copyFromRealm(tbls));
                 Clerk associateNoRelm = realm.copyFromRealm(associate);
                 associateNoRelm.setAssignedDinningTables(list);
                 associates.add(associateNoRelm);
@@ -179,5 +181,19 @@ public class ClerkDAO {
             r.close();
         }
         return clerk;
+    }
+
+    public static boolean hasAssignedDinningTable(int clerkId, String tableNumber) {
+        Realm realm = Realm.getDefaultInstance();
+        try {
+            RealmQuery<Clerk> where = realm.where(Clerk.class);
+            Clerk clerk = where.equalTo("empId", clerkId).findFirst();
+            long count = clerk == null ? 0 : clerk.getAssignedDinningTables()
+                    .where()
+                    .equalTo("number", tableNumber).count();
+            return count > 0;
+        } finally {
+            realm.close();
+        }
     }
 }

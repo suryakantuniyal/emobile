@@ -825,8 +825,8 @@
     <string name="total_expenses">Total Expenses</string>
     <string name="ending_petty_cash">Ending Petty Cash</string>
     <string name="total_transactions_cash">Total Transactions Cash</string>
-    <string name="total_ending_cash">Total Ending Cash</string>
-    <string name="entered_close_amount">Entered Close Amount</string>
+    <string name="total_ending_cash">Expected Closeout Cash</string>
+    <string name="entered_close_amount">Actual Closeout Amount</string>
 
 
     <string name="consign_details_total_sold">Total Sold</string>
@@ -1285,8 +1285,8 @@
     <string name="sync_inprogress">Synchronization in progress. Please wait.</string>
     <string name="use_clerk_check_required">Use clerk setting is required to complete this action.</string>
     <string name="dlog_msg_error_shift_already_open">%s already has an open shift.</string>
-    <string name="over_amount">Over</string>
-    <string name="short_amount">Short</string>
+    <string name="over_amount">Overage</string>
+    <string name="short_amount">Shortage</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="bixolon_title">Bixolon Configuration</string>
@@ -1321,6 +1321,11 @@
     <string name="application_password">Application Password</string>
     <string name="select_employee">Select Employee</string>
     <string name="password_configuration">Password Setup</string>
+    <string name="even_amount">Even</string>
+    <string name="shortage_overage_amount">Cash Overage/Shortage</string>
+    <string name="from">From:</string>
+    <string name="to">To:</string>
+    <string name="endShiftReport">** End of shift report **</string>
 
 
 </resources>

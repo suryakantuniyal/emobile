@@ -12,13 +12,30 @@ import io.realm.Realm;
 
 public class PaymentMethodDAO {
     public static PaymentMethod getPaymentMethodByType(String paymentmethodType) {
-        return Realm.getDefaultInstance().where(PaymentMethod.class).equalTo("paymentmethod_type", paymentmethodType).findFirst();
+        Realm realm = Realm.getDefaultInstance();
+        try {
+            PaymentMethod type = realm.where(PaymentMethod.class).equalTo("paymentmethod_type", paymentmethodType).findFirst();
+            if (type != null) {
+                type = realm.copyFromRealm(type);
+            }
+            return type;
+        } finally {
+            realm.close();
+        }
     }
 
     public static PaymentMethod getPaymentMethodById(String paymethodId) {
-        return Realm.getDefaultInstance()
-                .where(PaymentMethod.class)
-                .equalTo("paymethod_id", paymethodId).findFirst();
+        Realm realm = Realm.getDefaultInstance();
+        try {
+            PaymentMethod method = realm.where(PaymentMethod.class)
+                    .equalTo("paymethod_id", paymethodId).findFirst();
+            if (method != null) {
+                method = realm.copyFromRealm(method);
+            }
+            return method;
+        } finally {
+            realm.close();
+        }
     }
 
     public static void incrementPriority(PaymentMethod paymentMethod) {
@@ -28,6 +45,7 @@ public class PaymentMethodDAO {
             paymentMethod.incrementPriority();
         } finally {
             realm.commitTransaction();
+            realm.close();
         }
     }
 
@@ -38,6 +56,7 @@ public class PaymentMethodDAO {
             realm.insert(paymentMethods);
         } finally {
             realm.commitTransaction();
+            realm.close();
         }
     }
 
@@ -48,6 +67,7 @@ public class PaymentMethodDAO {
             realm.delete(PaymentMethod.class);
         } finally {
             realm.commitTransaction();
+            realm.close();
         }
     }
 

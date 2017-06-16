@@ -55,7 +55,7 @@ public class TablesGridFragment extends Fragment implements AdapterView.OnItemLo
         GridView gridView = (GridView) view.findViewById(R.id.tablesGridLayout);
         adapter = new DinningTablesAdapter(getActivity(), realmResults);
         if (!TextUtils.isEmpty(getDinningTablesActivity().associateId)) {
-            associate = ClerkDAO.getByEmpId(Integer.parseInt(getDinningTablesActivity().associateId), false);
+            associate = ClerkDAO.getByEmpId(Integer.parseInt(getDinningTablesActivity().associateId));
         }
         if (associate != null) {
             adapter.setSelectedDinningTables(associate.getAssignedDinningTables());

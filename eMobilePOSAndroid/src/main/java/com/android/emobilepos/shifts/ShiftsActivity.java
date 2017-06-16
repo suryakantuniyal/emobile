@@ -273,12 +273,15 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
     }
 
     private void closeShift() {
+        Double total = (oneCent * .01) + (fiveCents * 5 * .01) + (tenCents * 10 * .01) + (quarterCents * 25 * .01) +
+                oneDollar + (fiveDollars * 5) + (tenDollars * 10) + (twentyDollars * 20) +
+                (fiftyDollars * 50) + (hundredDollars * 100);
         Date now = new Date();
         shift.setEnteredCloseAmount(NumberUtils.cleanCurrencyFormatedNumber(totalAmountEditText.getText().toString()));
         shift.setEndTime(now);
         shift.setEndTimeLocal(now);
         shift.setShiftStatus(Shift.ShiftStatus.CLOSED);
-        shift.setOver_short(NumberUtils.cleanCurrencyFormatedNumber(shortOverStatusTextView.getText().toString()));
+        shift.setOver_short(String.valueOf(Double.parseDouble(shift.getTotal_ending_cash()) - total));
         ShiftDAO.insertOrUpdate(shift);
         new SendShiftTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
@@ -327,25 +330,27 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
         totalAmountEditText.setText(Global.getCurrencyFormat(total.toString()));
         if (shift != null && shift.getShiftStatus() == Shift.ShiftStatus.PENDING) {
             BigDecimal totalEndingCash = new BigDecimal(shift.getTotal_ending_cash());
-            switch (totalEndingCash.compareTo(BigDecimal.valueOf(total))) {
-                case -1:
+            switch (total.compareTo(totalEndingCash.doubleValue())) {
+                case 1:
                     shortOverStatusTextView.setText(
-                            String.format("%s (%s)", getString(R.string.over_amount), Global.formatDoubleToCurrency(totalEndingCash.subtract(BigDecimal.valueOf(total)).doubleValue())));
+                            String.format("%s %s", getString(R.string.over_amount), Global.formatDoubleToCurrency(totalEndingCash.subtract(BigDecimal.valueOf(total)).abs().doubleValue())));
                     totalAmountEditText.setTextColor(Color.RED);
                     shortOverStatusTextView.setTextColor(Color.RED);
                     shortOverStatusTextView.setVisibility(View.VISIBLE);
                     break;
-                case 1:
-                    totalAmountEditText.setTextColor(Color.BLUE);
-                    shortOverStatusTextView.setTextColor(Color.BLUE);
+                case -1:
+                    totalAmountEditText.setTextColor(Color.RED);
+                    shortOverStatusTextView.setTextColor(Color.RED);
                     shortOverStatusTextView.setVisibility(View.VISIBLE);
                     shortOverStatusTextView.setText(
                             String.format("%s (%s)", getString(R.string.short_amount), Global.formatDoubleToCurrency(totalEndingCash.subtract(BigDecimal.valueOf(total)).doubleValue())));
                     break;
                 case 0:
                     totalAmountEditText.setTextColor(Color.BLUE);
-                    shortOverStatusTextView.setTextColor(Color.BLACK);
-                    shortOverStatusTextView.setVisibility(View.GONE);
+                    shortOverStatusTextView.setTextColor(Color.BLUE);
+                    shortOverStatusTextView.setVisibility(View.VISIBLE);
+                    shortOverStatusTextView.setText(
+                            String.format("%s %s", getString(R.string.even_amount), Global.formatDoubleToCurrency(totalEndingCash.subtract(BigDecimal.valueOf(total)).doubleValue())));
                     break;
             }
         }
@@ -456,9 +461,9 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
             shift = ShiftDAO.getShiftByClerkId(Integer.parseInt(preferences.getClerkID()));
         }
         if (shift == null) {
-            clerk = ClerkDAO.getByEmpId(Integer.parseInt(preferences.getClerkID()), false);
+            clerk = ClerkDAO.getByEmpId(Integer.parseInt(preferences.getClerkID()));
         } else {
-            clerk = ClerkDAO.getByEmpId(shift.getClerkId(), false);
+            clerk = ClerkDAO.getByEmpId(shift.getClerkId());
         }
         TextView clerkName = (TextView) findViewById(R.id.clerkNameShifttextView);
         clerkName.setText(clerk == null ? "" : clerk.getEmpName());
