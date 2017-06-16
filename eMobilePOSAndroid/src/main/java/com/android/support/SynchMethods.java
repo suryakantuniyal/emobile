@@ -2006,8 +2006,9 @@ public class SynchMethods {
 //                myProgressDialog.dismiss();
             if (!downloadHoldList) {
                 boolean closeActivity = true;
-                if (context instanceof OrderingMain_FA &&
-                        ((OrderingMain_FA) context).getRestaurantSaleType() == Global.RestaurantSaleType.EAT_IN) {
+                if ((context instanceof OrderingMain_FA &&
+                        ((OrderingMain_FA) context).getRestaurantSaleType() == Global.RestaurantSaleType.EAT_IN)
+                        || context instanceof OnHoldActivity) {
                     closeActivity = false;
                 }
                 if (!checkoutOnHold && closeActivity) {

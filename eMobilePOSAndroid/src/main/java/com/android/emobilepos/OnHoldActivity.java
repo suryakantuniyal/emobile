@@ -38,7 +38,6 @@ import com.android.emobilepos.firebase.PollingNotificationService;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.models.firebase.NotificationEvent;
 import com.android.emobilepos.models.orders.Order;
-import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.support.DateUtils;
 import com.android.support.Global;
@@ -54,6 +53,7 @@ import org.xml.sax.SAXException;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -79,6 +79,12 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         ListView listView = (ListView) findViewById(R.id.onHoldListView);
         OrdersHandler ordersHandler = new OrdersHandler(activity);
         myCursor = ordersHandler.getOrdersOnHoldCursor();
+        long unsyncOrdersOnHold = ordersHandler.getNumUnsyncOrdersOnHold();
+        if (unsyncOrdersOnHold > 0) {
+            DBManager dbManager = new DBManager(this);
+            SynchMethods sm = new SynchMethods(dbManager);
+            sm.synchSendOnHold(false, false, this);
+        }
         myAdapter = new HoldsCursorAdapter(activity, myCursor, CursorAdapter.NO_SELECTION);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -836,7 +842,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             String createdTime = cursor.getString(myHolder.i_timeCreated);
             String total = Global.getCurrencyFormat(cursor.getString(myHolder.i_orderTotal));
             Map<TimeUnit, Long> map = DateUtils.computeDiff(DateUtils.getDateStringAsDate(createdTime, DateUtils.DATE_yyyy_MM_ddTHH_mm_ss), new Date());
-            String timeOnSite = String.format("%02d:%02d", map.get(TimeUnit.HOURS), map.get(TimeUnit.MINUTES));
+            String timeOnSite = String.format(Locale.getDefault(), "%02d:%02d", map.get(TimeUnit.HOURS), map.get(TimeUnit.MINUTES));
             if (TextUtils.isEmpty(table)) {
                 myHolder.tableTextView.setVisibility(View.INVISIBLE);
                 myHolder.guestsNumber.setVisibility(View.INVISIBLE);
