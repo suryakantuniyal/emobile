@@ -15,8 +15,6 @@ import com.crashlytics.android.Crashlytics;
 
 import java.util.List;
 
-import io.realm.Realm;
-
 public class SalesAssociateConfigurationActivity extends BaseFragmentActivityActionBar {
 
     private Clerk selectedClerk;
@@ -97,10 +95,9 @@ public class SalesAssociateConfigurationActivity extends BaseFragmentActivityAct
 
         @Override
         protected Void doInBackground(Void... params) {
-            Realm realm = Realm.getDefaultInstance();
             List<Clerk> assosiates = ClerkDAO.getAll();// realm.where(Clerk.class).findAll();
             try {
-                SynchMethods.postSalesAssociatesConfiguration(SalesAssociateConfigurationActivity.this, realm.copyFromRealm(assosiates));
+                SynchMethods.postSalesAssociatesConfiguration(SalesAssociateConfigurationActivity.this, assosiates);
             } catch (Exception e) {
                 e.printStackTrace();
                 Crashlytics.logException(e);

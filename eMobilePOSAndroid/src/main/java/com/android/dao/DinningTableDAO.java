@@ -127,7 +127,7 @@ public class DinningTableDAO {
 
     public static HashMap<String, List<Clerk>> getTableAssignedClerks() {
         HashMap<String, List<Clerk>> tableAssignedClerks = new HashMap<>();
-        RealmResults<Clerk> clerks = ClerkDAO.getAll();
+        List<Clerk> clerks = ClerkDAO.getAll();
         for (DinningTable table : getAll("number")) {
             tableAssignedClerks.put(table.getId(), new ArrayList<Clerk>());
         }
