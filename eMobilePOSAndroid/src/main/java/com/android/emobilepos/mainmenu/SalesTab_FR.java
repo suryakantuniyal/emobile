@@ -740,7 +740,7 @@ public class SalesTab_FR extends Fragment {
         TextView infoSystemLogin = (TextView) dialog.findViewById(R.id.infotextView23);
         systemLoginButton.setVisibility(View.GONE);
         infoSystemLogin.setVisibility(View.GONE);
-        viewTitle.setText(R.string.dlog_title_enter_clerk_password);
+        viewTitle.setText(R.string.dlog_title_enter_clerk_manager_password);
         Button btnOk = (Button) dialog.findViewById(R.id.btnDlogSingle);
         Button btnCancel = (Button) dialog.findViewById(R.id.btnCancelDlogSingle);
         btnOk.setText(R.string.button_ok);
@@ -756,12 +756,14 @@ public class SalesTab_FR extends Fragment {
             public void onClick(View v) {
                 String enteredPass = viewField.getText().toString().trim();
                 Clerk clerk = ClerkDAO.login(enteredPass, myPref);
-                if (clerk == null) {
+                if (clerk == null && !myPref.loginManager(enteredPass)) {
                     viewMsg.setText(R.string.invalid_password);
                 } else {
                     dialog.dismiss();
-                    myPref.setClerkID(String.valueOf(clerk.getEmpId()));
-                    myPref.setClerkName(clerk.getEmpName());
+                    if (clerk != null) {
+                        myPref.setClerkID(String.valueOf(clerk.getEmpId()));
+                        myPref.setClerkName(clerk.getEmpName());
+                    }
                     if (validateClerkShift(transactionType)) {
                         switch (transactionType) {
                             case SHIFTS: {
@@ -796,8 +798,12 @@ public class SalesTab_FR extends Fragment {
                 break;
             case SHIFT_ALREADY_OPEN:
                 Shift openShift = ShiftDAO.getOpenShift();
+                Clerk clerk = null;
+                if (openShift != null) {
+                    clerk = ClerkDAO.getByEmpId(openShift.getClerkId());
+                }
                 Global.showPrompt(getActivity(), R.string.dlog_title_error,
-                        String.format(getString(R.string.dlog_msg_error_shift_already_open), openShift != null ? openShift.getAssigneeName() : ""));
+                        String.format(getString(R.string.dlog_msg_error_shift_already_open), clerk != null ? clerk.getEmpName() : ""));
                 return false;
         }
         return true;
