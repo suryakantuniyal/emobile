@@ -11,6 +11,8 @@ import com.android.dao.ClerkDAO;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.realms.Clerk;
 
+import java.util.List;
+
 import io.realm.RealmResults;
 
 /**
@@ -19,7 +21,7 @@ import io.realm.RealmResults;
 public class SalesAssociateListAdapter extends BaseAdapter {
     private LayoutInflater mInflater;
     public int selectedIdx = 0;
-    private final RealmResults<Clerk> clerks;
+    private final List<Clerk> clerks;
 
     public SalesAssociateListAdapter(Context context) {
         mInflater = LayoutInflater.from(context);

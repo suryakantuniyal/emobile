@@ -20,21 +20,21 @@ public class OrderAttributesDAO {
             r.insertOrUpdate(orderAttributes);
         } finally {
             r.commitTransaction();
+            r.close();
         }
     }
 
-    public static List<OrderAttributes> getOrderAttributes(boolean isManaged) {
+    public static List<OrderAttributes> getOrderAttributes() {
         Realm r = Realm.getDefaultInstance();
-        if (isManaged) {
-            return r.where(OrderAttributes.class).findAll();
-        } else {
+        try {
             return r.copyFromRealm(r.where(OrderAttributes.class).findAll());
+        } finally {
+            r.close();
         }
-
     }
 
     public static List<String> getOrderAttributeNames() {
-        List<OrderAttributes> orderAttributes = getOrderAttributes(false);
+        List<OrderAttributes> orderAttributes = getOrderAttributes();
         List<String> names = new ArrayList<>();
         for (OrderAttributes attributes : orderAttributes) {
             names.add(attributes.getOrdAttrName());

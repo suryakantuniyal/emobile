@@ -5,6 +5,8 @@ import com.android.emobilepos.models.realms.DinningTable;
 import com.android.emobilepos.models.realms.DinningTableOrder;
 import com.android.support.DateUtils;
 
+import java.util.List;
+
 import io.realm.Realm;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
@@ -21,11 +23,21 @@ public class DinningTableOrderDAO {
             realm.copyToRealmOrUpdate(dinningTableOrder);
         } finally {
             realm.commitTransaction();
+            realm.close();
         }
     }
 
-    public static RealmResults<DinningTableOrder> getAll() {
-        return Realm.getDefaultInstance().where(DinningTableOrder.class).findAll();
+    public static List<DinningTableOrder> getAll() {
+        Realm realm = Realm.getDefaultInstance();
+        try {
+            List<DinningTableOrder> all = Realm.getDefaultInstance().where(DinningTableOrder.class).findAll();
+            if (all != null) {
+                all = realm.copyFromRealm(all);
+            }
+            return all;
+        } finally {
+            realm.close();
+        }
     }
 
     public static void truncate() {
@@ -35,6 +47,7 @@ public class DinningTableOrderDAO {
             realm.delete(DinningTableOrder.class);
         } finally {
             realm.commitTransaction();
+            realm.close();
         }
     }
 
@@ -47,6 +60,7 @@ public class DinningTableOrderDAO {
             results.deleteAllFromRealm();
         } finally {
             realm.commitTransaction();
+            realm.close();
         }
     }
 
@@ -87,6 +101,7 @@ public class DinningTableOrderDAO {
             results.deleteAllFromRealm();
         } finally {
             realm.commitTransaction();
+            realm.close();
         }
     }
 }

@@ -1157,7 +1157,7 @@
     <string name="action_settings">"Ajustes"</string>
     <string name="config_salesassociate_config">"Configuración de la mesa"</string>
     <string name="sales_associates">"Asociados de ventas"</string>
-    <string name="config_mix_match">"&lt;![CDATA[Usar Mix &amp; Match"</string>
+    <string name="config_mix_match">"Usar Mix &amp; Match"</string>
     <string name="connecting_device">"Conectando dispositivo…"</string>
     <string name="wrong_password">"La contraseña no es aceptable, vuelve a intentarlo …"</string>
     <string name="reward_payment_succeed">"El pago con recompensa completado"</string>
@@ -1206,7 +1206,7 @@
     <string name="timeout_try_again">"TIME OUT, ¿quieres intentar de nuevo?"</string>
     <string name="can_not_proceed">"No se puede continuar …"</string>
     <string name="invalid_payment_type">"Tipo de pago no válido"</string>
-    <string name="invalid_storeforward_payment_type">"&lt;![CDATA [El tipo de pago seleccionado no es válido junto con almacenar y reenviar."</string>
+    <string name="invalid_storeforward_payment_type">"El tipo de pago seleccionado no es válido junto con almacenar y reenviar."</string>
     <string name="sync_fail">"La sincronización ha fallado."</string>
     <string name="void_confirmation_message1">"%s debe ser pagado en total."</string>
     <string name="void_confirmation_message2">"¿Anular el %s actual?"</string>
@@ -1249,7 +1249,7 @@
     <string name="clock_in">"ENTRAR"</string>
     <string name="Waiters">"Camareros"</string>
     <string name="useSystemPassword">"Usar contraseña del sistema"</string>
-    <string name="systemLoginInfo">"&lt;![CDATA [La contraseña del sistema deshabilita el uso de empleado. Para volver a habilitar el uso de los empleados, vaya a Ajustes-&gt; Admin y seleccione usar empleados."</string>
+    <string name="systemLoginInfo">"La contraseña del sistema deshabilita el uso de empleado. Para volver a habilitar el uso de los empleados, vaya a Ajustes-&gt; Admin y seleccione usar empleados."</string>
     <string name="button_send">"Enviar"</string>
     <string name="payment_return_saved_successfully">"Se ha guardado correctamente el reembolso."</string>
     <string name="refresh_menu">"Recargar"</string>
@@ -1261,7 +1261,6 @@
     <string name="over_amount">Over</string>
     <string name="short_amount">Short</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="bixolon_title">"Configuración de Bixolon"</string>
     <string name="time">"Hora"</string>
     <string name="config_bixolon_setup">"Configuración de Bixolon"</string>
