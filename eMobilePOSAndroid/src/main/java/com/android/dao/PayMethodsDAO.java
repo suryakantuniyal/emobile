@@ -41,11 +41,11 @@ public class PayMethodsDAO {
         }
     }
 
-    public static List<PaymentMethod> getAllSortByName(boolean returnManaged) {
+    public static List<PaymentMethod> getAllSortByName() {
         Realm realm = Realm.getDefaultInstance();
         try {
             List<PaymentMethod> paymentMethods = realm.where(PaymentMethod.class).findAll().sort("paymethod_name", Sort.ASCENDING);
-            if (!returnManaged && paymentMethods != null) {
+            if (paymentMethods != null) {
                 paymentMethods = realm.copyFromRealm(paymentMethods);
             }
             return paymentMethods;
