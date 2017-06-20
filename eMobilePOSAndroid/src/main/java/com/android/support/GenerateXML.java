@@ -1264,8 +1264,8 @@ public class GenerateXML {
             buildPayments(serializer);
             serializer.endTag(empstr, "Payments");
             serializer.endDocument();
-
-            return writer.toString();
+            String xml = writer.toString();
+            return xml;
 
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -1279,7 +1279,7 @@ public class GenerateXML {
         cursor.moveToFirst();
         int size = cursor.getCount();
         String payID;
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < size && i < 10; i++) {
             try {
                 serializer.startTag(empstr, "Payment");
 
