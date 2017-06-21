@@ -79,4 +79,18 @@ public class DeviceTableDAO {
             realm.close();
         }
     }
+
+    public static Device getByIp(String ip) {
+        Realm realm = Realm.getDefaultInstance();
+        try {
+            RealmQuery<Device> where = realm.where(Device.class);
+            Device first = where.equalTo("ipAddress", ip).findFirst();
+            if (first != null) {
+                first = realm.copyFromRealm(first);
+            }
+            return first;
+        } finally {
+            realm.close();
+        }
+    }
 }
