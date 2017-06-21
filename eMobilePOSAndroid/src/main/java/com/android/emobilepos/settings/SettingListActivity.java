@@ -562,7 +562,13 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     confirmTroubleshoot(R.string.config_force_upload);
                     break;
                 case R.string.config_check_updates:
-                    new HttpClient().downloadFileAsync(getString(R.string.check_update_url), Environment.getExternalStorageDirectory().getAbsolutePath() + "/emobilepos.apk", this, getActivity());
+                    if (Global.isIvuLoto) {
+                        new HttpClient().downloadFileAsync(getString(R.string.check_update_ivuurl),
+                                Environment.getExternalStorageDirectory().getAbsolutePath() + "/emobileivupos.apk", this, getActivity());
+                    } else {
+                        new HttpClient().downloadFileAsync(getString(R.string.check_update_emurl),
+                                Environment.getExternalStorageDirectory().getAbsolutePath() + "/emobilepos.apk", this, getActivity());
+                    }
                     break;
                 case R.string.config_backup_data:
                     confirmTroubleshoot(R.string.config_backup_data);
