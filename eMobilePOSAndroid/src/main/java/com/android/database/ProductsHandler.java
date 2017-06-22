@@ -1,6 +1,5 @@
 package com.android.database;
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -330,7 +329,7 @@ public class ProductsHandler {
                             "LEFT OUTER JOIN ProductChainXRef ch ON ch.prod_id = p.prod_id ");
 
             sb.append(sb2);
-        if (myPref.getPreferences(MyPreferences.pref_group_in_catalog_by_name)) {
+            if (myPref.getPreferences(MyPreferences.pref_group_in_catalog_by_name)) {
                 sb.append(" GROUP BY p.prod_name ORDER BY p.prod_name");
             } else {
                 sb.append(" GROUP BY p.prod_id ORDER BY p.prod_name");
@@ -806,7 +805,8 @@ public class ProductsHandler {
         }
 
         sb.append(
-                "SELECT  p.prod_id as '_id', p.prod_prices_group_id as 'prod_prices_group_id', p.prod_price as 'master_price'," +
+                "SELECT CASE WHEN  p.prod_name LIKE '" + search + "%' THEN '0' ELSE '1' END as weight, " +
+                        "p.prod_id as '_id', p.prod_prices_group_id as 'prod_prices_group_id', p.prod_price as 'master_price'," +
                         "vp.price as 'volume_price', ch.over_price_net as 'chain_price', p.prod_sku as prod_sku, p.prod_upc as prod_upc, ");
         sb.append(
                 "CASE WHEN pl.pricelevel_type = 'FixedPercentage' THEN (p.prod_price+(p.prod_price*(pl.pricelevel_fixedpct/100))) ");
@@ -871,9 +871,9 @@ public class ProductsHandler {
         subquery2.append(" LIKE ? ");
 
         if (myPref.getPreferences(MyPreferences.pref_group_in_catalog_by_name)) {
-            subquery2.append(" GROUP BY p.prod_name ORDER BY p.prod_name");
+            subquery2.append(" GROUP BY p.prod_name ORDER BY weight, p.prod_name");
         } else {
-            subquery2.append(" ORDER BY p.prod_name");
+            subquery2.append(" ORDER BY weight, p.prod_name");
         }
 
         sb.setLength(0);

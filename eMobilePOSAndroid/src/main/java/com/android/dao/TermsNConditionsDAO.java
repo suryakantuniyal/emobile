@@ -37,11 +37,15 @@ public class TermsNConditionsDAO {
 
     public static List<TermsNConditions> getTermsNConds() {
         Realm realm = Realm.getDefaultInstance();
-        List<TermsNConditions> all = realm.where(TermsNConditions.class).findAll();
-        if (all != null) {
-            all = realm.copyFromRealm(all);
-            return all;
+        try {
+            List<TermsNConditions> all = realm.where(TermsNConditions.class).findAll();
+            if (all != null) {
+                all = realm.copyFromRealm(all);
+                return all;
+            }
+            return new ArrayList<>();
+        }finally {
+            realm.close();
         }
-        return new ArrayList<>();
     }
 }

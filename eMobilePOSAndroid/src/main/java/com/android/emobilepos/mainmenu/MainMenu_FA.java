@@ -225,7 +225,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
     public void setLogoutButtonClerkname() {
         if (myPref.isUseClerks()) {
-            Clerk clerk = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()), false);
+            Clerk clerk = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()));
             if (clerk != null) {
                 Menu menu = ((MainMenu_FA) activity).menu;
                 if (menu != null) {
@@ -238,10 +238,13 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         }
     }
 
+    public void hideLogoutButton(){
+       invalidateOptionsMenu();
+    }
     @Override
     public void onResume() {
         if (myPref.isPollingHoldsEnable() && !PollingNotificationService.isServiceRunning(this)) {
-            PollingNotificationService.start(this);
+           startPollingService();
         }
         registerReceiver(messageReceiver, new IntentFilter(NOTIFICATION_RECEIVED));
         if (global.isApplicationSentToBackground(activity)) {
@@ -270,7 +273,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         else
             tvStoreForward.setVisibility(View.GONE);
 
-        new autoConnectPrinter().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        new AutoConnectPrinter().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         super.onResume();
     }
 
@@ -363,7 +366,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         return synchTextView;
     }
 
-    private class autoConnectPrinter extends AsyncTask<String, String, String> {
+    private class AutoConnectPrinter extends AsyncTask<String, String, String> {
         boolean isUSB = false;
         private boolean loadMultiPrinter;
 

@@ -22,6 +22,7 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.TextView;
 
 import com.android.dao.AssignEmployeeDAO;
+import com.android.dao.ShiftDAO;
 import com.android.database.CustomersHandler;
 import com.android.database.InvoicePaymentsHandler;
 import com.android.database.PaymentsHandler;
@@ -430,10 +431,12 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
         payment.setCustidkey(custidkey);
 
 
-        if (!myPref.getShiftIsOpen())
-            payment.setClerk_id(myPref.getShiftClerkID());
-        else if (myPref.isUseClerks())
+        if (myPref.isUseClerks()) {
             payment.setClerk_id(myPref.getClerkID());
+        } else if (ShiftDAO.isShiftOpen()) {
+            payment.setClerk_id(String.valueOf(ShiftDAO.getOpenShift().getClerkId()));
+        }
+
 
         payment.setRef_num(field[CHECK_REFERENCE].getText().toString());
         payment.setPaymethod_id(extras.getString("paymethod_id"));
@@ -626,10 +629,11 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
         payment.setCust_id(extras.getString("cust_id"));
         payment.setCustidkey(custidkey);
 
-        if (!myPref.getShiftIsOpen())
-            payment.setClerk_id(myPref.getShiftClerkID());
-        else if (myPref.isUseClerks())
+        if (myPref.isUseClerks()) {
             payment.setClerk_id(myPref.getClerkID());
+        } else if (ShiftDAO.isShiftOpen()) {
+            payment.setClerk_id(String.valueOf(ShiftDAO.getOpenShift().getClerkId()));
+        }
 
         payment.setRef_num(field[CHECK_REFERENCE].getText().toString());
         payment.setPaymethod_id(extras.getString("paymethod_id"));
@@ -766,12 +770,12 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
 
         @Override
         protected String doInBackground(String... params) {
-            Post httpClient = new Post();
+            Post httpClient = new Post(activity);
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SAXProcessCheckHandler handler = new SAXProcessCheckHandler();
             urlToPost = params[0];
             try {
-                String xml = httpClient.postData(13, activity, urlToPost);
+                String xml = httpClient.postData(13, urlToPost);
 
                 if (xml.equals(Global.TIME_OUT)) {
                     errorMsg = "Could not process the payment, would you like to try again?";

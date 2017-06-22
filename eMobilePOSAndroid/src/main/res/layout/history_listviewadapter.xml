@@ -13,6 +13,7 @@
         android:text="TextView"
         android:padding="25dp"
         android:gravity="center"
+        android:singleLine="true"
         style="@style/text_shadow"
         android:textSize="@dimen/sales_tab_lv_text_size"
         android:textAppearance="@style/tiles_text_appearance"/>

@@ -24,6 +24,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.android.dao.AssignEmployeeDAO;
+import com.android.dao.ShiftDAO;
 import com.android.database.DrawInfoHandler;
 import com.android.database.PaymentsHandler;
 import com.android.database.TaxesHandler;
@@ -330,7 +331,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
                 Global.mainPrinterManager.getCurrentDevice().loadCardReader(callBack, false);
                 cardSwipe.setChecked(true);
             }
-        } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310() || myPref.isKDC500()) {
+        } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310() || myPref.isKDC425()) {
             cardSwipe.setChecked(true);
         } else if (myPref.isPAT215() && Global.btSwiper == null) {
             if (Global.embededMSR != null && Global.embededMSR.getCurrentDevice() != null) {
@@ -400,10 +401,11 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
             payment.setInv_id("");
         }
 
-        if (!myPref.getShiftIsOpen())
-            payment.setClerk_id(myPref.getShiftClerkID());
-        else if (myPref.isUseClerks())
+        if (myPref.isUseClerks()) {
             payment.setClerk_id(myPref.getClerkID());
+        } else if (ShiftDAO.isShiftOpen()) {
+            payment.setClerk_id(String.valueOf(ShiftDAO.getOpenShift().getClerkId()));
+        }
 
         payment.setCust_id(extras.getString("cust_id"));
         payment.setCustidkey(custidkey);
@@ -514,14 +516,14 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         @Override
         protected String doInBackground(String... params) {
 
-            Post httpClient = new Post();
+            Post httpClient = new Post(activity);
 
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
             urlToPost = params[0];
 
             try {
-                String xml = httpClient.postData(13, activity, urlToPost);
+                String xml = httpClient.postData(13, urlToPost);
                 switch (xml) {
                     case Global.TIME_OUT:
                         errorMsg = getString(R.string.timeout_tryagain);

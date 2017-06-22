@@ -86,6 +86,8 @@ public class Clerk extends RealmObject {
     public RealmList<DinningTable> getAssignedDinningTables() {
         if (assignedDinningTables == null) {
             assignedDinningTables = new RealmList<>();
+        }else if(!assignedDinningTables.isValid()){
+
         }
         return assignedDinningTables;
     }

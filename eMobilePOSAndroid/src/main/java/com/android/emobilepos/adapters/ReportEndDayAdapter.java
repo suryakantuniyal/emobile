@@ -20,6 +20,7 @@ import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.Shift;
 import com.android.support.DateUtils;
 import com.android.support.Global;
+import com.android.support.MyPreferences;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
 
     private final String S_SUMMARY = "Summary", S_SHIFTS = "Total by shifts", S_ORD_TYPES = "Total by order types", S_ITEMS_SOLD = "Items Sold", S_ITEMS_RETURNED = "Items Returned",
             S_DEPT_SALES = "Department Sales", S_DEPT_RETURNS = "Department returns", S_PAYMENT = "Payments", S_VOID = "Void", S_REFUND = "Refund", S_AR_TRANS = "A/R Transactions";
+    private final MyPreferences preferences;
 
     private Activity activity;
     private OrdersHandler ordHandler;
@@ -58,7 +60,7 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
         this.activity = activity;
         inflater = LayoutInflater.from(activity);
         mDate = date;
-
+        preferences = new MyPreferences(activity);
         ordHandler = new OrdersHandler(activity);
 //        shiftHandler = new ShiftPeriodsDBHandler(activity);
         ordProdHandler = new OrderProductsHandler(activity);
@@ -286,7 +288,7 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
                 mHolder.tvTo = (TextView) convertView.findViewById(R.id.tvTo);
                 mHolder.tvBeginningPetty = (TextView) convertView.findViewById(R.id.tvBeginningPetty);
                 mHolder.tvExpenses = (TextView) convertView.findViewById(R.id.tvExpenses);
-                mHolder.tvEndingPetty = (TextView) convertView.findViewById(R.id.tvEndingPetty);
+//                mHolder.tvEndingPetty = (TextView) convertView.findViewById(R.id.tvEndingPetty);
                 mHolder.tvTotalTrans = (TextView) convertView.findViewById(R.id.tvTotalTrans);
                 mHolder.tvTotalEnding = (TextView) convertView.findViewById(R.id.tvTotalEnding);
                 mHolder.tvEnteredClose = (TextView) convertView.findViewById(R.id.tvEnteredClose);
@@ -334,13 +336,20 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
                 mHolder.tvRightColumn.setText(Global.formatDoubleStrToCurrency(listSummary.get(position).ord_total));
                 break;
             case TYPE_SHIFTS:
-                Clerk associate = ClerkDAO.getByEmpId(listShifts.get(position - i_summary).getAssigneeId(), true);
-                mHolder.tvClerk.setText(associate.getEmpName());
+                String name;
+                Clerk clerk = ClerkDAO.getByEmpId(listShifts.get(position - i_summary).getClerkId());
+                name = clerk == null ? activity.getString(R.string.unknown) : clerk.getEmpName();
+//                if (preferences.isUseClerks()) {
+//                    name = ClerkDAO.getByEmpId(listShifts.get(position - i_summary).getClerkId(), false).getEmpName();
+//                } else {
+//                    name = ClerkDAO.getByEmpId(listShifts.get(position - i_summary).getClerkId(), false).getEmpName();
+//                }
+                mHolder.tvClerk.setText(name);
                 mHolder.tvFrom.setText(DateUtils.getDateAsString(listShifts.get(position - i_summary).getStartTime(), DateUtils.DATE_yyyy_MM_dd));
                 mHolder.tvTo.setText(DateUtils.getDateAsString(listShifts.get(position - i_summary).getEndTime(), DateUtils.DATE_yyyy_MM_dd));
                 mHolder.tvBeginningPetty.setText(Global.formatDoubleStrToCurrency(listShifts.get(position - i_summary).getBeginningPettyCash()));
                 mHolder.tvExpenses.setText(Global.formatDoubleStrToCurrency(listShifts.get(position - i_summary).getTotalExpenses()));
-                mHolder.tvEndingPetty.setText(Global.formatDoubleStrToCurrency(listShifts.get(position - i_summary).getEndingPettyCash()));
+//                mHolder.tvEndingPetty.setText(Global.formatDoubleStrToCurrency(listShifts.get(position - i_summary).getEndingPettyCash()));
                 mHolder.tvTotalTrans.setText(Global.formatDoubleStrToCurrency(listShifts.get(position - i_summary).getTotalTransactionsCash()));
                 mHolder.tvTotalEnding.setText(Global.formatDoubleStrToCurrency(listShifts.get(position - i_summary).getTotal_ending_cash()));
                 mHolder.tvEnteredClose.setText(listShifts.get(position - i_summary).getEnteredCloseAmount());
@@ -499,7 +508,7 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
 
     private class ViewHolder {
         TextView tvLeftColumn, tvRightColumn;
-        TextView tvClerk, tvFrom, tvTo, tvBeginningPetty, tvExpenses, tvEndingPetty, tvTotalTrans, tvTotalEnding, tvEnteredClose;
+        TextView tvClerk, tvFrom, tvTo, tvBeginningPetty, tvExpenses, tvTotalTrans, tvTotalEnding, tvEnteredClose;
         TextView tvOrderType, tvOrdSubtTotal, tvOrdDiscount, tvOrdTax, tvOrdNetTotal;
         TextView tvProdName, tvProdID, tvProdQty, tvProdTotal;
         TextView tvPayType, tvPayAmount, tvPayTip;

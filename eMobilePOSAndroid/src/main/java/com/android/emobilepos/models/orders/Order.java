@@ -148,11 +148,6 @@ public class Order implements Cloneable {
         if (getOrderProducts() != null && !getOrderProducts().isEmpty()) {
             for (OrderProduct orderProduct : getOrderProducts()) {
                 setupProductTax(context, orderProduct);
-//                if (!isRetailTaxes()) {
-//                    orderProduct.setTaxAmount(tax != null ? tax.getTaxRate() : "0");
-//                    orderProduct.setProd_taxId(tax != null ? tax.getTaxId() : "");
-//                    orderProduct.setTax_type(tax != null ? tax.getTaxType() : "");
-//                }
                 if (isVAT) {
                     setVATTax(tax);
                 }
@@ -261,11 +256,11 @@ public class Order implements Cloneable {
                     } else {
                         disc = new BigDecimal(product.getDisAmount());
                     }
-                    product.setDiscount_value(Global.getRoundBigDecimal(disc));
-                    product.setDisTotal(Global.getRoundBigDecimal(disc));
+                    product.setDiscount_value(String.valueOf(Global.getRoundBigDecimal(disc)));
+                    product.setDisTotal(String.valueOf(Global.getRoundBigDecimal(disc)));
 
-                    product.setItemTotalVatExclusive(Global
-                            .getRoundBigDecimal(subTotal.subtract(disc)));
+                    product.setItemTotalVatExclusive(String.valueOf(Global
+                            .getRoundBigDecimal(subTotal.subtract(disc))));
                 }
                 BigDecimal qty = Global.getBigDecimalNum(product.getOrdprod_qty());
                 if (qty.compareTo(new BigDecimal("1")) == 1) {

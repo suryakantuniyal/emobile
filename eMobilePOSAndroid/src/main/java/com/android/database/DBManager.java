@@ -23,7 +23,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class DBManager {
-    public static final int VERSION = 50;
+    public static final int VERSION = 51;
     private static final String DB_NAME_OLD = "emobilepos.sqlite";
     private static final String CIPHER_DB_NAME = "emobilepos.sqlcipher";
 
@@ -110,17 +110,23 @@ public class DBManager {
         File dbPath = null;
         try {
             dbPath = context.getDatabasePath(DB_NAME_OLD);
-//            dbPath = new File(Environment.getExternalStorageDirectory() + "/emobilepos.sqlite");
-//            myPref.setEmpID("1");
-//            myPref.setDeviceID("355b9d6313e9f4cb");
-//            myPref.setAcctNumber("150622160307");
-//            myPref.setAcctPassword("1gsgny#");
-//            myPref.setActivKey("27068R1401227533586Y2994Q2");
+//            dbPath = new File(Environment.getExternalStorageDirectory() + "/emobileposRUM.db");
+//            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+//            assignEmployee.setEmpId(1);
+//            Realm realm = Realm.getDefaultInstance();
+//            realm.beginTransaction();
+//            realm.where(AssignEmployee.class).findAll().deleteAllFromRealm();
+//            realm.copyToRealm(assignEmployee);
+//            realm.commitTransaction();
+//            myPref.setDeviceID("21e2243f5be84a18");
+//            myPref.setAcctNumber("150872170602");
+//            myPref.setAcctPassword("rum123");
+//            myPref.setActivKey("31295R1401263065748Y79004A");
         } catch (Exception e1) {
             e1.printStackTrace();
         }
         File dbCipherPath = context.getDatabasePath(CIPHER_DB_NAME);
-        if (dbPath.exists() && !dbCipherPath.exists()) {
+        if (dbPath != null && dbPath.exists() && !dbCipherPath.exists()) {
             try {
                 encrypt(context, DB_NAME_OLD, getPassword());
             } catch (IOException e) {

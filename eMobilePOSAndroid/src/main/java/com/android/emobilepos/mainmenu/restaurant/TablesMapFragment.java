@@ -32,8 +32,6 @@ import com.android.support.MyPreferences;
 import java.util.HashMap;
 import java.util.List;
 
-import io.realm.Realm;
-
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -57,9 +55,9 @@ public class TablesMapFragment extends Fragment implements View.OnClickListener,
         View rootView = inflater.inflate(R.layout.dlog_ask_table_map_layout, container, false);
         preferences = new MyPreferences(getActivity());
         if (!TextUtils.isEmpty(getDinningTablesActivity().associateId)) {
-            associate = ClerkDAO.getByEmpId(Integer.parseInt(getDinningTablesActivity().associateId),true);
+            associate = ClerkDAO.getByEmpId(Integer.parseInt(getDinningTablesActivity().associateId));
         }
-        dinningTables = DinningTableDAO.getAll();//DinningTablesProxy.getDinningTables(getContext());
+        dinningTables = DinningTableDAO.getAll("number");//DinningTablesProxy.getDinningTables(getContext());
         tableAssignedClerks = DinningTableDAO.getTableAssignedClerks();
         return rootView;
     }
@@ -183,12 +181,11 @@ public class TablesMapFragment extends Fragment implements View.OnClickListener,
         switch (v.getId()) {
             case R.id.table_map_container: {
                 DinningTable table = (DinningTable) v.getTag();
-                if (!preferences.requiresWaiterLogin() || (associate != null && associate.getAssignedDinningTables().contains(table))) {
+                if ((associate != null && associate.getAssignedDinningTables().contains(table))) {
                     DinningTableOrder tableOrder = DinningTableOrderDAO.getByNumber(table.getNumber());
                     if (tableOrder != null) {
-                        Realm realm = Realm.getDefaultInstance();
                         getDinningTablesActivity().new OpenOnHoldOrderTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR
-                                , realm.copyFromRealm(tableOrder), realm.copyFromRealm(table));
+                                , tableOrder, table);
                     } else {
                         Intent result = new Intent();
                         result.putExtra("tableId", table.getId());
@@ -208,7 +205,7 @@ public class TablesMapFragment extends Fragment implements View.OnClickListener,
         switch (v.getId()) {
             case R.id.table_map_container: {
                 final DinningTable table = (DinningTable) v.getTag();
-                if (!preferences.requiresWaiterLogin() || associate.getAssignedDinningTables().contains(table)) {
+                if (associate.getAssignedDinningTables().contains(table)) {
                     PopupMenu popup = new PopupMenu(getActivity(), v);
                     popup.getMenuInflater().inflate(R.menu.dinning_table_map_menu, popup.getMenu());
                     popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {

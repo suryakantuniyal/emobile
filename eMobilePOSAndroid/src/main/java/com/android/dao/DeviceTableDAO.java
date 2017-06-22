@@ -8,7 +8,6 @@ import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmQuery;
-import io.realm.RealmResults;
 import util.json.JsonUtils;
 
 /**
@@ -36,11 +35,22 @@ public class DeviceTableDAO {
             realm.copyToRealm(devices);
         } finally {
             realm.commitTransaction();
+            realm.close();
         }
     }
 
-    public static RealmResults<Device> getAll() {
-        return Realm.getDefaultInstance().where(Device.class).findAll();
+    public static List<Device> getAll() {
+        Realm realm = Realm.getDefaultInstance();
+        List<Device> all;
+        try {
+            all = realm.where(Device.class).findAll();
+            if (all != null) {
+                all = realm.copyFromRealm(all);
+            }
+        } finally {
+            realm.close();
+        }
+        return all;
     }
 
     public static void truncate() {
@@ -52,12 +62,35 @@ public class DeviceTableDAO {
             }
         } finally {
             realm.commitTransaction();
+            realm.close();
         }
     }
 
     public static Device getByEmpId(int id) {
         Realm realm = Realm.getDefaultInstance();
-        RealmQuery<Device> where = realm.where(Device.class);
-        return where.equalTo("id", id).findFirst();
+        try {
+            RealmQuery<Device> where = realm.where(Device.class);
+            Device first = where.equalTo("id", id).findFirst();
+            if (first != null) {
+                first = realm.copyFromRealm(first);
+            }
+            return first;
+        } finally {
+            realm.close();
+        }
+    }
+
+    public static Device getByIp(String ip) {
+        Realm realm = Realm.getDefaultInstance();
+        try {
+            RealmQuery<Device> where = realm.where(Device.class);
+            Device first = where.equalTo("ipAddress", ip).findFirst();
+            if (first != null) {
+                first = realm.copyFromRealm(first);
+            }
+            return first;
+        } finally {
+            realm.close();
+        }
     }
 }

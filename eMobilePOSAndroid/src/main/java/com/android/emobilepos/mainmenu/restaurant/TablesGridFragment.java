@@ -25,8 +25,7 @@ import com.android.emobilepos.models.realms.DinningTableOrder;
 import com.android.emobilepos.ordering.SplittedOrderSummary_FA;
 import com.android.support.Global;
 
-import io.realm.Realm;
-import io.realm.RealmResults;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -52,12 +51,11 @@ public class TablesGridFragment extends Fragment implements AdapterView.OnItemLo
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        RealmResults<DinningTable> realmResults = DinningTableDAO.getAll();
-        realmResults.sort("number");
+        List<DinningTable> realmResults = DinningTableDAO.getAll("number");
         GridView gridView = (GridView) view.findViewById(R.id.tablesGridLayout);
         adapter = new DinningTablesAdapter(getActivity(), realmResults);
         if (!TextUtils.isEmpty(getDinningTablesActivity().associateId)) {
-            associate = ClerkDAO.getByEmpId(Integer.parseInt(getDinningTablesActivity().associateId), true);
+            associate = ClerkDAO.getByEmpId(Integer.parseInt(getDinningTablesActivity().associateId));
         }
         if (associate != null) {
             adapter.setSelectedDinningTables(associate.getAssignedDinningTables());
@@ -71,9 +69,8 @@ public class TablesGridFragment extends Fragment implements AdapterView.OnItemLo
                 if (associate != null && associate.getAssignedDinningTables().contains(table)) {
                     DinningTableOrder tableOrder = DinningTableOrderDAO.getByNumber(table.getNumber());
                     if (tableOrder != null) {
-                        Realm realm = Realm.getDefaultInstance();
                         getDinningTablesActivity().new OpenOnHoldOrderTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR
-                                , realm.copyFromRealm(tableOrder), realm.copyFromRealm(table));
+                                , tableOrder, table);
                     } else {
                         Intent result = new Intent();
                         result.putExtra("tableId", table.getId());

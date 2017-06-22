@@ -20,6 +20,7 @@ import com.crashlytics.android.Crashlytics;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
+import java.util.List;
 
 import io.realm.RealmResults;
 
@@ -29,7 +30,7 @@ import io.realm.RealmResults;
 public class SalesAssociateListFragment extends Fragment implements AdapterView.OnItemClickListener {
 
     private ListView list;
-    RealmResults<Clerk> associates = ClerkDAO.getAll();
+    List<Clerk> associates = ClerkDAO.getAll();
     private SalesAssociateListAdapter adapter;
 
     public SalesAssociateListFragment() {
@@ -75,7 +76,7 @@ public class SalesAssociateListFragment extends Fragment implements AdapterView.
     private void reloadGrid(int i) {
         adapter.selectedIdx = i;
         if (associates != null && !associates.isEmpty()) {
-            Clerk associate = ClerkDAO.getByEmpId(associates.get(i).getEmpId(),true);
+            Clerk associate = ClerkDAO.getByEmpId(associates.get(i).getEmpId());
             SalesAssociateConfigurationActivity activity = (SalesAssociateConfigurationActivity) getActivity();
             activity.setSelectedClerk(associate);
             activity.getDinningTablesGridFragment().refreshGrid();

@@ -1,7 +1,7 @@
 package com.android.dao;
 
-import com.android.emobilepos.models.realms.MixMatch;
 import com.android.emobilepos.models.MixMatchProductGroup;
+import com.android.emobilepos.models.realms.MixMatch;
 import com.google.gson.Gson;
 
 import java.lang.reflect.Type;
@@ -36,13 +36,23 @@ public class MixMatchDAO {
             realm.beginTransaction();
             realm.delete(MixMatch.class);
             realm.copyToRealm(mixMatches);
-        }finally {
+        } finally {
             realm.commitTransaction();
+            realm.close();
         }
     }
 
-    public static RealmResults<MixMatch> getAll() {
-        return Realm.getDefaultInstance().where(MixMatch.class).findAll();
+    public static List<MixMatch> getAll() {
+        Realm realm = Realm.getDefaultInstance();
+        try {
+            List<MixMatch> all = realm.where(MixMatch.class).findAll();
+            if (all != null) {
+                all = realm.copyFromRealm(all);
+            }
+            return all;
+        } finally {
+            realm.close();
+        }
     }
 
     public static void truncate() {
@@ -50,8 +60,9 @@ public class MixMatchDAO {
         try {
             realm.beginTransaction();
             realm.delete(MixMatch.class);
-        }finally {
+        } finally {
             realm.commitTransaction();
+            realm.close();
         }
     }
 

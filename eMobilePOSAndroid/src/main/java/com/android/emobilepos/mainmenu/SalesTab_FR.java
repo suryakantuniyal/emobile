@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -491,7 +492,7 @@ public class SalesTab_FR extends Fragment {
                     boolean hasPermissions = myPref.isUseClerks() && SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.NO_SALE);
                     if (hasPermissions) {
-                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
+                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen()) {
                             intent = new Intent(activity, ShiftExpensesList_FA.class);
                             startActivity(intent);
                         } else {
@@ -510,17 +511,18 @@ public class SalesTab_FR extends Fragment {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
-//                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
-                        if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
-                            Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_select_customer));
-                        } else {
-                            if (myPref.isRestaurantMode() &&
-                                    myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
-                                askEatInToGo();
+                        if (validateClerkShift(Global.TransactionType.getByCode(pos))) {
+                            if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
+                                Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_select_customer));
                             } else {
-                                intent = new Intent(activity, OrderingMain_FA.class);
-                                intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
-                                startActivityForResult(intent, 0);
+                                if (myPref.isRestaurantMode() &&
+                                        myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
+                                    askEatInToGo();
+                                } else {
+                                    intent = new Intent(activity, OrderingMain_FA.class);
+                                    intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
+                                    startActivityForResult(intent, 0);
+                                }
                             }
                         }
 //                        } else {
@@ -536,12 +538,14 @@ public class SalesTab_FR extends Fragment {
                             SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
-                        if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
-                            Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_select_customer));
-                        } else {
-                            intent = new Intent(activity, OrderingMain_FA.class);
-                            intent.putExtra("option_number", Global.TransactionType.RETURN);
-                            startActivityForResult(intent, 0);
+                        if (validateClerkShift(Global.TransactionType.getByCode(pos))) {
+                            if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
+                                Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_select_customer));
+                            } else {
+                                intent = new Intent(activity, OrderingMain_FA.class);
+                                intent.putExtra("option_number", Global.TransactionType.RETURN);
+                                startActivityForResult(intent, 0);
+                            }
                         }
 //                        } else {
 //                            Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
@@ -556,15 +560,17 @@ public class SalesTab_FR extends Fragment {
                             SecurityManager.SecurityAction.TAKE_PAYMENT);
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
-                        if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
-                            Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_select_customer));
-                        } else {
-                            intent = new Intent(activity, SelectPayMethod_FA.class);
-                            intent.putExtra("salespayment", true);
-                            intent.putExtra("amount", "0.00");
-                            intent.putExtra("paid", "0.00");
-                            intent.putExtra("isFromMainMenu", true);
-                            startActivity(intent);
+                        if (validateClerkShift(Global.TransactionType.getByCode(pos))) {
+                            if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
+                                Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_select_customer));
+                            } else {
+                                intent = new Intent(activity, SelectPayMethod_FA.class);
+                                intent.putExtra("salespayment", true);
+                                intent.putExtra("amount", "0.00");
+                                intent.putExtra("paid", "0.00");
+                                intent.putExtra("isFromMainMenu", true);
+                                startActivity(intent);
+                            }
                         }
 //                        } else {
 //                            Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
@@ -579,8 +585,10 @@ public class SalesTab_FR extends Fragment {
                             SecurityManager.SecurityAction.TAKE_PAYMENT);
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
-                        intent = new Intent(activity, GiftCard_FA.class);
-                        startActivity(intent);
+                        if (validateClerkShift(Global.TransactionType.getByCode(pos))) {
+                            intent = new Intent(activity, GiftCard_FA.class);
+                            startActivity(intent);
+                        }
                     } else {
                         Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
                     }
@@ -594,8 +602,10 @@ public class SalesTab_FR extends Fragment {
                             SecurityManager.SecurityAction.TAKE_PAYMENT);
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
-                        intent = new Intent(activity, LoyaltyCard_FA.class);
-                        startActivity(intent);
+                        if (validateClerkShift(Global.TransactionType.getByCode(pos))) {
+                            intent = new Intent(activity, LoyaltyCard_FA.class);
+                            startActivity(intent);
+                        }
                     } else {
                         Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
                     }
@@ -609,8 +619,10 @@ public class SalesTab_FR extends Fragment {
                             SecurityManager.SecurityAction.TAKE_PAYMENT);
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
-                        intent = new Intent(activity, RewardCard_FA.class);
-                        startActivity(intent);
+                        if (validateClerkShift(Global.TransactionType.getByCode(pos))) {
+                            intent = new Intent(activity, RewardCard_FA.class);
+                            startActivity(intent);
+                        }
                     } else {
                         Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
                     }
@@ -624,16 +636,19 @@ public class SalesTab_FR extends Fragment {
                             SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
-                        intent = new Intent(activity, SelectPayMethod_FA.class);
-                        intent.putExtra("salesrefund", true);
-                        intent.putExtra("amount", "0.00");
-                        intent.putExtra("paid", "0.00");
-                        intent.putExtra("isFromMainMenu", true);
-                        if (myPref.isCustSelected()) {
-                            intent.putExtra("cust_id", myPref.getCustID());
-                            intent.putExtra("custidkey", myPref.getCustIDKey());
+                        if (validateClerkShift(Global.TransactionType.getByCode(pos))) {
+
+                            intent = new Intent(activity, SelectPayMethod_FA.class);
+                            intent.putExtra("salesrefund", true);
+                            intent.putExtra("amount", "0.00");
+                            intent.putExtra("paid", "0.00");
+                            intent.putExtra("isFromMainMenu", true);
+                            if (myPref.isCustSelected()) {
+                                intent.putExtra("cust_id", myPref.getCustID());
+                                intent.putExtra("custidkey", myPref.getCustIDKey());
+                            }
+                            startActivity(intent);
                         }
-                        startActivity(intent);
 //                        } else {
 //                            Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
 //                        }
@@ -646,8 +661,10 @@ public class SalesTab_FR extends Fragment {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
-                        intent = new Intent(getActivity(), OnHoldActivity.class);
-                        getActivity().startActivity(intent);
+                        if (validateClerkShift(Global.TransactionType.getByCode(pos))) {
+                            intent = new Intent(getActivity(), OnHoldActivity.class);
+                            getActivity().startActivity(intent);
+                        }
 //                        } else {
 //                            Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
 //                        }
@@ -664,8 +681,10 @@ public class SalesTab_FR extends Fragment {
                             SecurityManager.SecurityAction.TIP_ADJUSTMENT);
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
-                        intent = new Intent(activity, TipAdjustmentFA.class);
-                        startActivity(intent);
+                        if (validateClerkShift(Global.TransactionType.getByCode(pos))) {
+                            intent = new Intent(activity, TipAdjustmentFA.class);
+                            startActivity(intent);
+                        }
                     } else {
                         Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
                     }
@@ -675,15 +694,14 @@ public class SalesTab_FR extends Fragment {
                     break;
                 }
                 case SHIFTS: {
-                    boolean hasPermissions = myPref.isUseClerks() && SecurityManager.hasPermissions(getActivity(),
+                    boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.SHIFT_CLERK);
                     if (hasPermissions) {
-                        if (myPref.isUseClerks()) {
-                            intent = new Intent(activity, ShiftsActivity.class);
+                        if (myPref.isUseClerks() && validateClerkShift(Global.TransactionType.getByCode(pos))) {
+                            intent = new Intent(getActivity(), ShiftsActivity.class);
                             startActivity(intent);
-                        } else {
-                            Global.showPrompt(getActivity(), R.string.admin_use_clerks,
-                                    getString(R.string.dlog_msg_error_shift_needs_use_clerk));
+                        } else if (!myPref.isUseClerks()) {
+                            promptClerkLogin(Global.TransactionType.getByCode(pos));
                         }
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
@@ -691,19 +709,14 @@ public class SalesTab_FR extends Fragment {
                     break;
                 }
                 case SHIFT_EXPENSES: {
-                    boolean hasPermissions = myPref.isUseClerks() && SecurityManager.hasPermissions(getActivity(),
+                    boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.NO_SALE);
                     if (hasPermissions) {
-                        if (myPref.isUseClerks()) {
-                            Shift openShift = ShiftDAO.getOpenShift(Integer.parseInt(myPref.getClerkID()));
-                            if (openShift != null) {
-                                intent = new Intent(activity, ShiftExpensesList_FA.class);
-                                startActivity(intent);
-                            } else {
-                                Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
-                            }
-                        } else {
-                            Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
+                        if (myPref.isUseClerks() && validateClerkShift(Global.TransactionType.getByCode(pos))) {
+                            intent = new Intent(activity, ShiftExpensesList_FA.class);
+                            startActivity(intent);
+                        } else if (!myPref.isUseClerks()) {
+                            promptClerkLogin(Global.TransactionType.getByCode(pos));
                         }
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
@@ -714,6 +727,87 @@ public class SalesTab_FR extends Fragment {
         }
     }
 
+    private void promptClerkLogin(final Global.TransactionType transactionType) {
+        final Dialog dialog = new Dialog(getActivity(), R.style.Theme_TransparentTest);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(true);
+        dialog.setContentView(R.layout.dlog_field_single_layout);
+        final EditText viewField = (EditText) dialog.findViewById(R.id.dlogFieldSingle);
+        viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        TextView viewTitle = (TextView) dialog.findViewById(R.id.dlogTitle);
+        final TextView viewMsg = (TextView) dialog.findViewById(R.id.dlogMessage);
+        Button systemLoginButton = (Button) dialog.findViewById(R.id.systemLoginbutton2);
+        TextView infoSystemLogin = (TextView) dialog.findViewById(R.id.infotextView23);
+        systemLoginButton.setVisibility(View.GONE);
+        infoSystemLogin.setVisibility(View.GONE);
+        viewTitle.setText(R.string.dlog_title_enter_clerk_manager_password);
+        Button btnOk = (Button) dialog.findViewById(R.id.btnDlogSingle);
+        Button btnCancel = (Button) dialog.findViewById(R.id.btnCancelDlogSingle);
+        btnOk.setText(R.string.button_ok);
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        btnOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String enteredPass = viewField.getText().toString().trim();
+                Clerk clerk = ClerkDAO.login(enteredPass, myPref);
+                if (clerk == null && !myPref.loginManager(enteredPass)) {
+                    viewMsg.setText(R.string.invalid_password);
+                } else {
+                    dialog.dismiss();
+                    if (clerk != null) {
+                        myPref.setClerkID(String.valueOf(clerk.getEmpId()));
+                        myPref.setClerkName(clerk.getEmpName());
+                    }
+                    if (validateClerkShift(transactionType)) {
+                        switch (transactionType) {
+                            case SHIFTS: {
+                                Intent intent = new Intent(getActivity(), ShiftsActivity.class);
+                                startActivity(intent);
+                                break;
+                            }
+                            case SHIFT_EXPENSES: {
+                                Intent intent = new Intent(activity, ShiftExpensesList_FA.class);
+                                startActivity(intent);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        dialog.show();
+    }
+
+    private boolean validateClerkShift(Global.TransactionType transactionType) {
+        SecurityManager.SecurityResponse response = SecurityManager.validateClerkShift(getActivity(), transactionType);
+        switch (response) {
+            case CHECK_USER_CLERK_REQUIRED_SETTING:
+                Global.showPrompt(getActivity(), R.string.dlog_title_error, getString(R.string.use_clerk_check_required));
+                return false;
+            case OPEN_SHIFT_REQUIRED:
+                if (transactionType != Global.TransactionType.SHIFTS) {
+                    Global.showPrompt(getActivity(), R.string.dlog_title_error, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
+                    return false;
+                }
+                break;
+            case SHIFT_ALREADY_OPEN:
+                Shift openShift = ShiftDAO.getOpenShift();
+                Clerk clerk = null;
+                if (openShift != null) {
+                    clerk = ClerkDAO.getByEmpId(openShift.getClerkId());
+                }
+                Global.showPrompt(getActivity(), R.string.dlog_title_error,
+                        String.format(getString(R.string.dlog_msg_error_shift_already_open), clerk != null ? clerk.getEmpName() : ""));
+                return false;
+        }
+        return true;
+    }
 
     private void askEatInToGo() {
         final Dialog popDlog = new Dialog(activity, R.style.TransparentDialog);
@@ -754,63 +848,63 @@ public class SalesTab_FR extends Fragment {
         popDlog.show();
     }
 
-    private void showWaiterSignin() {
-//        final Dialog popDlog = new Dialog(getActivity(), R.style.TransparentDialogFullScreen);
-//        popDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-//        popDlog.setCancelable(true);
-//        popDlog.setCanceledOnTouchOutside(false);
-//        popDlog.setContentView(R.layout.dlog_field_single_layout);
-//        final EditText viewField = (EditText) popDlog.findViewById(R.id.dlogFieldSingle);
-//        viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD | InputType.TYPE_CLASS_NUMBER);
-//        TextView viewTitle = (TextView) popDlog.findViewById(R.id.dlogTitle);
-//        TextView viewMsg = (TextView) popDlog.findViewById(R.id.dlogMessage);
-//        viewTitle.setText(R.string.dlog_title_waiter_signin);
-//        if (!validPassword)
-//            viewMsg.setText(R.string.invalid_password);
-//        else
-//            viewMsg.setText(R.string.enter_password);
-//        Button btnOk = (Button) popDlog.findViewById(R.id.btnDlogSingle);
-//        Button btnCancel = (Button) popDlog.findViewById(R.id.btnCancelDlogSingle);
-//
-//        btnOk.setText(R.string.button_ok);
-//        btnOk.setOnClickListener(new View.OnClickListener() {
-//
-//            @Override
-//            public void onClick(View v) {
-//                popDlog.dismiss();
-//                MyPreferences myPref = new MyPreferences(activity);
-//                String enteredPass = viewField.getText().toString().trim();
-//                enteredPass = TextUtils.isEmpty(enteredPass) ? "0" : enteredPass;
-        int empId = ShiftDAO.getOpenShift(Integer.parseInt(myPref.getClerkID())).getAssigneeId();
-        Clerk salesAssociates = ClerkDAO.getByEmpId(empId, true); //SalesAssociateHandler.getSalesAssociate(enteredPass);
-        if (salesAssociates != null) {
-//            validPassword = true;
-//            associateId = enteredPass;
-            if (myPref.getPreferences(MyPreferences.pref_enable_table_selection)) {
-                selectDinnerTable();
-            } else if (myPref.getPreferences(MyPreferences.pref_ask_seats)) {
-                selectedDinningTable = DinningTable.getDefaultDinningTable();
-                selectSeatAmount();
-            } else {
-                selectedDinningTable = DinningTable.getDefaultDinningTable();
-                startSaleRceipt(Global.RestaurantSaleType.EAT_IN, selectedDinningTable.getSeats(), selectedDinningTable.getNumber());
-            }
-        }
-//        else {
-//            validPassword = false;
-//            showWaiterSignin();
+//    private void showWaiterSignin() {
+////        final Dialog popDlog = new Dialog(getActivity(), R.style.TransparentDialogFullScreen);
+////        popDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+////        popDlog.setCancelable(true);
+////        popDlog.setCanceledOnTouchOutside(false);
+////        popDlog.setContentView(R.layout.dlog_field_single_layout);
+////        final EditText viewField = (EditText) popDlog.findViewById(R.id.dlogFieldSingle);
+////        viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD | InputType.TYPE_CLASS_NUMBER);
+////        TextView viewTitle = (TextView) popDlog.findViewById(R.id.dlogTitle);
+////        TextView viewMsg = (TextView) popDlog.findViewById(R.id.dlogMessage);
+////        viewTitle.setText(R.string.dlog_title_waiter_signin);
+////        if (!validPassword)
+////            viewMsg.setText(R.string.invalid_password);
+////        else
+////            viewMsg.setText(R.string.enter_password);
+////        Button btnOk = (Button) popDlog.findViewById(R.id.btnDlogSingle);
+////        Button btnCancel = (Button) popDlog.findViewById(R.id.btnCancelDlogSingle);
+////
+////        btnOk.setText(R.string.button_ok);
+////        btnOk.setOnClickListener(new View.OnClickListener() {
+////
+////            @Override
+////            public void onClick(View v) {
+////                popDlog.dismiss();
+////                MyPreferences myPref = new MyPreferences(activity);
+////                String enteredPass = viewField.getText().toString().trim();
+////                enteredPass = TextUtils.isEmpty(enteredPass) ? "0" : enteredPass;
+//        int empId = ShiftDAO.getOpenShift(AssignEmployeeDAO.getAssignEmployee(false).getEmpId()).getAssigneeId();
+//        Clerk salesAssociates = ClerkDAO.getByEmpId(empId, true); //SalesAssociateHandler.getSalesAssociate(enteredPass);
+//        if (salesAssociates != null) {
+////            validPassword = true;
+////            associateId = enteredPass;
+//            if (myPref.getPreferences(MyPreferences.pref_enable_table_selection)) {
+//                selectDinnerTable();
+//            } else if (myPref.getPreferences(MyPreferences.pref_ask_seats)) {
+//                selectedDinningTable = DinningTable.getDefaultDinningTable();
+//                selectSeatAmount();
+//            } else {
+//                selectedDinningTable = DinningTable.getDefaultDinningTable();
+//                startSaleRceipt(Global.RestaurantSaleType.EAT_IN, selectedDinningTable.getSeats(), selectedDinningTable.getNumber());
+//            }
 //        }
-//            }
-//        });
-//
-//        btnCancel.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                popDlog.dismiss();
-//            }
-//        });
-//        popDlog.show();
-    }
+////        else {
+////            validPassword = false;
+////            showWaiterSignin();
+////        }
+////            }
+////        });
+////
+////        btnCancel.setOnClickListener(new View.OnClickListener() {
+////            @Override
+////            public void onClick(View v) {
+////                popDlog.dismiss();
+////            }
+////        });
+////        popDlog.show();
+//    }
 
     private void selectSeatAmount() {
         final int[] seats = this.getResources().getIntArray(R.array.dinningTableSeatsArray);
@@ -839,9 +933,9 @@ public class SalesTab_FR extends Fragment {
         Intent intent = new Intent(getActivity(), DinningTablesActivity.class);
         int empId;
         if (myPref.isUseClerks()) {
-            Shift openShift = ShiftDAO.getOpenShift(Integer.parseInt(myPref.getClerkID()));
+            Shift openShift = ShiftDAO.getOpenShift();
             if (openShift != null) {
-                empId = openShift.getAssigneeId();
+                empId = openShift.getClerkId();
             } else {
                 empId = Integer.parseInt(myPref.getClerkID());
             }
@@ -985,7 +1079,7 @@ public class SalesTab_FR extends Fragment {
         intent.putExtra("RestaurantSaleType", restaurantSaleType);
 
         if (restaurantSaleType == Global.RestaurantSaleType.EAT_IN) {
-            Shift openShift = ShiftDAO.getOpenShift(Integer.parseInt(myPref.getClerkID()));
+            Shift openShift = ShiftDAO.getOpenShift();
             int empId;
             if (openShift != null) {
                 empId = openShift.getAssigneeId();

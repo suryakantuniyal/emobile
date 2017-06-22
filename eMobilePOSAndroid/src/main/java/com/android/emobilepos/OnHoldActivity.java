@@ -29,7 +29,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.dao.ClerkDAO;
-import com.android.dao.ShiftDAO;
 import com.android.database.CustomersHandler;
 import com.android.database.DBManager;
 import com.android.database.OrderProductsHandler;
@@ -39,8 +38,6 @@ import com.android.emobilepos.firebase.PollingNotificationService;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.models.firebase.NotificationEvent;
 import com.android.emobilepos.models.orders.Order;
-import com.android.emobilepos.models.realms.Clerk;
-import com.android.emobilepos.models.realms.Shift;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.support.DateUtils;
 import com.android.support.Global;
@@ -56,6 +53,7 @@ import org.xml.sax.SAXException;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -81,6 +79,12 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         ListView listView = (ListView) findViewById(R.id.onHoldListView);
         OrdersHandler ordersHandler = new OrdersHandler(activity);
         myCursor = ordersHandler.getOrdersOnHoldCursor();
+        long unsyncOrdersOnHold = ordersHandler.getNumUnsyncOrdersOnHold();
+        if (unsyncOrdersOnHold > 0) {
+            DBManager dbManager = new DBManager(this);
+            SynchMethods sm = new SynchMethods(dbManager);
+            sm.synchSendOnHold(false, false, this);
+        }
         myAdapter = new HoldsCursorAdapter(activity, myCursor, CursorAdapter.NO_SELECTION);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -104,7 +108,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         int id = item.getItemId();
         switch (id) {
             case R.id.refreshHolds: {
-                new RefreshHolds().execute();
+                new RefreshHolds().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 break;
             }
         }
@@ -181,126 +185,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             handler.post(runnable);
         }
     };
-
-    private void askWaiterSignin() {
-        if (myPref.isUseClerks()) {
-            Shift openShift = ShiftDAO.getOpenShift(Integer.parseInt(myPref.getClerkID()));
-            int empId;
-            if (openShift != null) {
-                empId = openShift.getAssigneeId();
-            } else {
-                empId = Integer.parseInt(myPref.getClerkID());
-            }
-            Clerk associate = ClerkDAO.getByEmpId(empId, true);
-            long count = associate == null ? 0 : associate.getAssignedDinningTables().where().equalTo("number", myCursor.getString(myCursor.getColumnIndex("assignedTable"))).count();
-            if (associate != null && count > 0) {
-                validPassword = true;
-                new checkHoldStatus().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            } else {
-                final Dialog popDlog = new Dialog(this, R.style.TransparentDialogFullScreen);
-                popDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                popDlog.setCancelable(true);
-                popDlog.setCanceledOnTouchOutside(false);
-                popDlog.setContentView(R.layout.dlog_field_single_layout);
-                final EditText viewField = (EditText) popDlog.findViewById(R.id.dlogFieldSingle);
-                viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-                TextView viewTitle = (TextView) popDlog.findViewById(R.id.dlogTitle);
-                TextView viewMsg = (TextView) popDlog.findViewById(R.id.dlogMessage);
-                viewTitle.setText(R.string.dlog_title_enter_manager_password);
-                if (!validPassword)
-                    viewMsg.setText(R.string.invalid_password);
-                else
-                    viewMsg.setText(R.string.enter_password);
-                Button btnOk = (Button) popDlog.findViewById(R.id.btnDlogSingle);
-                Button btnCancel = (Button) popDlog.findViewById(R.id.btnCancelDlogSingle);
-
-                btnOk.setText(R.string.button_ok);
-                btnOk.setOnClickListener(new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View v) {
-                        popDlog.dismiss();
-                        myCursor.moveToPosition(selectedPos);
-                        String enteredPass = viewField.getText().toString().trim();
-                        enteredPass = TextUtils.isEmpty(enteredPass) ? "0" : enteredPass;
-                        if (myPref.loginManager(enteredPass)) // validate manager password
-                        {
-                            validPassword = true;
-                            isUpdateOnHold = true;
-                            new checkHoldStatus().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                        } else {
-                            validPassword = false;
-                            askWaiterSignin();
-                        }
-                    }
-                });
-                btnCancel.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        popDlog.dismiss();
-                    }
-                });
-                popDlog.show();
-            }
-        } else {
-            final Dialog popDlog = new Dialog(this, R.style.TransparentDialogFullScreen);
-            popDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            popDlog.setCancelable(true);
-            popDlog.setCanceledOnTouchOutside(false);
-            popDlog.setContentView(R.layout.dlog_field_single_layout);
-            final EditText viewField = (EditText) popDlog.findViewById(R.id.dlogFieldSingle);
-            viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-            TextView viewTitle = (TextView) popDlog.findViewById(R.id.dlogTitle);
-            TextView viewMsg = (TextView) popDlog.findViewById(R.id.dlogMessage);
-            viewTitle.setText(R.string.dlog_title_waiter_manager_signin);
-            if (!validPassword)
-                viewMsg.setText(R.string.invalid_password);
-            else
-                viewMsg.setText(R.string.enter_password);
-            Button btnOk = (Button) popDlog.findViewById(R.id.btnDlogSingle);
-            Button btnCancel = (Button) popDlog.findViewById(R.id.btnCancelDlogSingle);
-
-            btnOk.setText(R.string.button_ok);
-            btnOk.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    popDlog.dismiss();
-                    myCursor.moveToPosition(selectedPos);
-                    String enteredPass = viewField.getText().toString().trim();
-                    enteredPass = TextUtils.isEmpty(enteredPass) ? "0" : enteredPass;
-                    boolean isDigits = org.apache.commons.lang3.math.NumberUtils.isDigits(enteredPass);
-                    Clerk salesAssociates = null;
-                    if (isDigits) {
-                        salesAssociates = ClerkDAO.getByEmpId(Integer.parseInt(enteredPass), true); //SalesAssociateHandler.getSalesAssociate(enteredPass);
-                    }
-                    long count = salesAssociates == null ? 0 : salesAssociates.getAssignedDinningTables().where().equalTo("number", myCursor.getString(myCursor.getColumnIndex("assignedTable"))).count();
-                    if (salesAssociates != null && count > 0) {
-                        validPassword = true;
-                        new checkHoldStatus().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                    } else {
-                        if (myPref.loginManager(enteredPass)) // validate manager password
-                        {
-                            validPassword = true;
-                            isUpdateOnHold = true;
-                            new checkHoldStatus().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                        } else {
-                            validPassword = false;
-                            askWaiterSignin();
-                        }
-                    }
-                }
-            });
-
-            btnCancel.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    popDlog.dismiss();
-                }
-            });
-            popDlog.show();
-        }
-    }
 
     @Override
     public void onDestroy() {
@@ -645,7 +529,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
     private void openPrintOnHold()        //type 0 = Change Password, type 1 = Configure Home Menu
     {
-
         final Dialog dlog = new Dialog(activity, R.style.Theme_TransparentTest);
         dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dlog.setCancelable(true);
@@ -673,8 +556,60 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             @Override
             public void onClick(View v) {
                 dlog.dismiss();
-                if (myAdapter.isRestaurantHold(selectedPos)) {
-                    askWaiterSignin();
+                if (myPref.isUseClerks()) {
+//                    Clerk associate = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()), true);
+                    boolean hasTable = ClerkDAO.hasAssignedDinningTable(Integer.parseInt(myPref.getClerkID()), myCursor.getString(myCursor.getColumnIndex("assignedTable")));
+//                    long count = associate == null ? 0 : associate.getAssignedDinningTables()
+//                            .where()
+//                            .equalTo("number", myCursor.getString(myCursor.getColumnIndex("assignedTable"))).count();
+                    if (hasTable) {
+                        validPassword = true;
+                        new checkHoldStatus().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    } else {
+                        final Dialog popDlog = new Dialog(OnHoldActivity.this, R.style.TransparentDialogFullScreen);
+                        popDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                        popDlog.setCancelable(true);
+                        popDlog.setCanceledOnTouchOutside(false);
+                        popDlog.setContentView(R.layout.dlog_field_single_layout);
+                        final EditText viewField = (EditText) popDlog.findViewById(R.id.dlogFieldSingle);
+                        viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                        TextView viewTitle = (TextView) popDlog.findViewById(R.id.dlogTitle);
+                        final TextView viewMsg = (TextView) popDlog.findViewById(R.id.dlogMessage);
+                        viewTitle.setText(R.string.dlog_title_enter_manager_password);
+                        if (!validPassword)
+                            viewMsg.setText(R.string.invalid_password);
+                        else
+                            viewMsg.setText(R.string.enter_password);
+                        Button btnOk = (Button) popDlog.findViewById(R.id.btnDlogSingle);
+                        Button btnCancel = (Button) popDlog.findViewById(R.id.btnCancelDlogSingle);
+
+                        btnOk.setText(R.string.button_ok);
+                        btnOk.setOnClickListener(new View.OnClickListener() {
+
+                            @Override
+                            public void onClick(View v) {
+                                String enteredPass = viewField.getText().toString().trim();
+                                enteredPass = TextUtils.isEmpty(enteredPass) ? "0" : enteredPass;
+                                if (myPref.loginManager(enteredPass)) // validate manager password
+                                {
+                                    popDlog.dismiss();
+                                    validPassword = true;
+                                    isUpdateOnHold = true;
+                                    new checkHoldStatus().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                                } else {
+                                    validPassword = false;
+                                    viewMsg.setText(R.string.invalid_password);
+                                }
+                            }
+                        });
+                        btnCancel.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                popDlog.dismiss();
+                            }
+                        });
+                        popDlog.show();
+                    }
                 } else {
                     new checkHoldStatus().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 }
@@ -787,7 +722,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             String createdTime = cursor.getString(myHolder.i_timeCreated);
             String total = Global.getCurrencyFormat(cursor.getString(myHolder.i_orderTotal));
             Map<TimeUnit, Long> map = DateUtils.computeDiff(DateUtils.getDateStringAsDate(createdTime, DateUtils.DATE_yyyy_MM_ddTHH_mm_ss), new Date());
-            String timeOnSite = String.format("%02d:%02d", map.get(TimeUnit.HOURS), map.get(TimeUnit.MINUTES));
+            String timeOnSite = String.format(Locale.getDefault(), "%02d:%02d", map.get(TimeUnit.HOURS), map.get(TimeUnit.MINUTES));
             if (TextUtils.isEmpty(table)) {
                 myHolder.tableTextView.setVisibility(View.INVISIBLE);
                 myHolder.guestsNumber.setVisibility(View.INVISIBLE);

@@ -481,18 +481,13 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     @Override
     public void onClick(View v) {
         if (UIUtils.singleOnClick(v)) {
-//        Receipt_FR.lastClickTime = SystemClock.elapsedRealtime();
             if (!buildOrderStarted) {
                 switch (v.getId()) {
                     case R.id.btnCheckOut:
-//                        disableCheckoutButton();
                         orderingAction = OrderingAction.CHECKOUT;
-//                btnCheckout.setEnabled(false);
                         if (leftFragment != null) {
                             leftFragment.checkoutOrder();
                         }
-//                        enableCheckoutButton();
-//                btnCheckout.setEnabled(true);
                         break;
                     case R.id.headerMenubutton:
                         showSeatHeaderPopMenu(v);
@@ -503,40 +498,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             }
         }
     }
-//
-//    private void enableCheckoutButton() {
-//        runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                btnCheckout.setEnabled(true);
-//                btnCheckout.setClickable(true);
-////                try {
-////                    Thread.sleep(3000);
-////                } catch (InterruptedException e) {
-////                    e.printStackTrace();
-////                }
-////                btnCheckout.setEnabled(true);
-////                btnCheckout.setClickable(true);
-//            }
-//        });
-//    }
-//
-//    private void disableCheckoutButton() {
-//        runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                btnCheckout.setEnabled(false);
-//                btnCheckout.setClickable(false);
-////                try {
-////                    Thread.sleep(3000);
-////                } catch (InterruptedException e) {
-////                    e.printStackTrace();
-////                }
-////                btnCheckout.setEnabled(true);
-////                btnCheckout.setClickable(true);
-//            }
-//        });
-//    }
 
     private void showSeatHeaderPopMenu(final View v) {
         final OrderSeatProduct orderSeatProduct = (OrderSeatProduct) v.getTag();
@@ -756,7 +717,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         boolean isScreenOn = powerManager.isScreenOn();
         if (!isScreenOn)
-            global.loggedIn = false;
+            Global.loggedIn = false;
 
         if (PickerAddon_FA.instance == null && PickerProduct_FA.instance == null)
             global.startActivityTransitionTimer();
@@ -1408,14 +1369,14 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
         @Override
         protected HashMap<String, String> doInBackground(String... params) {
-            Post httpClient = new Post();
+            Post httpClient = new Post(OrderingMain_FA.this);
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
             urlToPost = params[0];
             HashMap<String, String> parsedMap = new HashMap<>();
 
             try {
-                String xml = httpClient.postData(13, OrderingMain_FA.this, urlToPost);
+                String xml = httpClient.postData(13, urlToPost);
                 switch (xml) {
                     case Global.TIME_OUT:
                         errorMsg = getString(R.string.timeout_try_again);
@@ -1487,7 +1448,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             Global.loyaltyCardInfo = cardInfoManager;
         else
             Global.rewardCardInfo = cardInfoManager;
-        swiperField.setText(cardManager.getCardNumUnencrypted());
+        if(swiperField!=null) {
+            swiperField.setText(cardManager.getCardNumUnencrypted());
+        }
         if (uniMagReader != null && uniMagReader.readerIsConnected()) {
             uniMagReader.startReading();
         } else if (magtekReader == null && Global.btSwiper == null && _msrUsbSams == null
@@ -1549,18 +1512,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             return null;
         }
     }
-//
-//    private void deleteTransaction() {
-//        if (!Global.lastOrdID.isEmpty()) {
-//            OrdersHandler dbOrders = new OrdersHandler(this);
-//            OrderProductsHandler dbOrdProd = new OrderProductsHandler(this);
-//            OrderProductsAttr_DB dbOrdAttr = new OrderProductsAttr_DB(this);
-//            dbOrders.deleteOrder(Global.lastOrdID);
-//            dbOrdProd.deleteAllOrdProd(Global.lastOrdID);
-//            for (ProductAttribute val : global.ordProdAttr)
-//                dbOrdAttr.deleteOrderProduct(String.valueOf(val.getProductId()));
-//        }
-//    }
+
 
     @Override
     public void startSignature() {
@@ -1628,7 +1580,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     public static boolean isRequiredAttributeConmpleted(List<OrderProduct> products) {
         for (OrderProduct product : products) {
-            RealmResults<ProductAttribute> attributes = OrderProductAttributeDAO.getByProdId(product.getProd_id());
+            List<ProductAttribute> attributes = OrderProductAttributeDAO.getByProdId(product.getProd_id());
             for (ProductAttribute attribute : attributes) {
                 if (!product.getRequiredProductAttributes().contains(attribute)) {
                     return false;

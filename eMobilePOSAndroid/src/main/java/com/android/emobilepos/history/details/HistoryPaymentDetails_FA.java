@@ -122,7 +122,7 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
 
         payHandler = new PaymentsHandler(activity);
         PaymentDetails paymentDetails = payHandler.getPaymentDetails(pay_id, isDeclined);
-        voidButton.setEnabled(hasVoidPermissions&& !paymentDetails.isVoid() && TextUtils.isEmpty(paymentDetails.getJob_id()));
+        voidButton.setEnabled(hasVoidPermissions && !paymentDetails.isVoid() && TextUtils.isEmpty(paymentDetails.getJob_id()));
         if (extras.getBoolean("histpay")) {
             if (paymentDetails.getJob_id() != null && paymentDetails.getJob_id().isEmpty()) {
                 if (paymentDetails.getInv_id().isEmpty()) {
@@ -451,12 +451,12 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
 
         @Override
         protected String doInBackground(String... params) {
-            Post post = new Post();
+            Post post = new Post(activity);
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
 
             try {
-                String xml = post.postData(13, activity, params[0]);
+                String xml = post.postData(13, params[0]);
                 InputSource inSource = new InputSource(new StringReader(xml));
                 SAXParser sp = spf.newSAXParser();
                 XMLReader xr = sp.getXMLReader();

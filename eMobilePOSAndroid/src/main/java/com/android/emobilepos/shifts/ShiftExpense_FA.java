@@ -19,12 +19,10 @@ import android.widget.Toast;
 
 import com.android.dao.ShiftDAO;
 import com.android.dao.ShiftExpensesDAO;
-import com.android.database.ProductsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.realms.Shift;
 import com.android.emobilepos.models.realms.ShiftExpense;
 import com.android.support.Global;
-import com.android.support.MyPreferences;
 import com.android.support.NumberUtils;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
@@ -37,9 +35,6 @@ import java.util.UUID;
  */
 public class ShiftExpense_FA extends BaseFragmentActivityActionBar implements View.OnClickListener {
     private Activity activity;
-    private boolean hasBeenCreated = false;
-    private ProductsHandler productExpenses;
-    private String[] theSpinnerNames;
     private int expenseProductIDSelected = 1;
     private String expenseName = "";
     private EditText cashAmount, comments;
@@ -73,8 +68,7 @@ public class ShiftExpense_FA extends BaseFragmentActivityActionBar implements Vi
         btnCancel.setOnClickListener(this);
         Button btnSubmit = (Button) findViewById(R.id.buttonSubmit);
         btnSubmit.setOnClickListener(this);
-        productExpenses = new ProductsHandler(activity);
-        theSpinnerNames = getResources().getStringArray(R.array.expenseTypes);
+        String[] theSpinnerNames = getResources().getStringArray(R.array.expenseTypes);
         Spinner spinnerView = (Spinner) findViewById(R.id.expenseSpinner);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, theSpinnerNames);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -91,7 +85,6 @@ public class ShiftExpense_FA extends BaseFragmentActivityActionBar implements Vi
                 NumberUtils.parseInputedCurrency(s, cashAmount);
             }
         });
-        hasBeenCreated = true;
     }
 
     @Override
@@ -125,9 +118,7 @@ public class ShiftExpense_FA extends BaseFragmentActivityActionBar implements Vi
 
     private void addExpense() {
         Date now = new Date();
-        MyPreferences myPref;
-        myPref = new MyPreferences(this);
-        Shift openShift = ShiftDAO.getOpenShift(Integer.parseInt(myPref.getClerkID()));
+        Shift openShift = ShiftDAO.getOpenShift();
         double amount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(cashAmount));
         ShiftExpense expense = new ShiftExpense();
         expense.setProductId(expenseProductIDSelected);
@@ -140,17 +131,25 @@ public class ShiftExpense_FA extends BaseFragmentActivityActionBar implements Vi
         BigDecimal totalExpense = new BigDecimal(openShift != null ? openShift.getTotalExpenses() : "0");
         if (expenseProductIDSelected == 3) {
             expense.setCashAmount(String.valueOf(amount));
-            totalExpense.add(BigDecimal.valueOf(amount));
+            totalExpense = totalExpense.add(BigDecimal.valueOf(amount));
+//            BigDecimal endingPettyCash = new BigDecimal(openShift.getEndingPettyCash()).add(BigDecimal.valueOf(amount));
+//            openShift.setEndingPettyCash(String.valueOf(endingPettyCash));
         } else {
             expense.setCashAmount(String.valueOf(amount * -1));
-            totalExpense.subtract(BigDecimal.valueOf(amount));
+            totalExpense = totalExpense.subtract(BigDecimal.valueOf(amount));
         }
         ShiftExpensesDAO.insertOrUpdate(expense);
 
         if (openShift != null) {
             openShift.setTotalExpenses(String.valueOf(totalExpense));
+            BigDecimal beginningPettyCash = new BigDecimal(openShift.getBeginningPettyCash());
+            BigDecimal transactionsCash = new BigDecimal(openShift.getTotalTransactionsCash());
+            BigDecimal totalExpenses = ShiftExpensesDAO.getShiftTotalExpenses(openShift.getShiftId());
+            BigDecimal totalEndingCash = Global.getRoundBigDecimal(beginningPettyCash.add(transactionsCash).add(totalExpenses), 2);
+            openShift.setTotal_ending_cash(String.valueOf(totalEndingCash));
+            openShift.setTotalExpenses(String.valueOf(totalExpenses));
+            ShiftDAO.insertOrUpdate(openShift);
         }
-        ShiftDAO.insertOrUpdate(openShift);
         Toast.makeText(activity, "Expense Added", Toast.LENGTH_LONG).show();
         if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)
             Global.mainPrinterManager.getCurrentDevice().openCashDrawer();
@@ -161,10 +160,10 @@ public class ShiftExpense_FA extends BaseFragmentActivityActionBar implements Vi
     public void onResume() {
         super.onResume();
         if (global.isApplicationSentToBackground(this))
-            global.loggedIn = false;
+            Global.loggedIn = false;
         global.stopActivityTransitionTimer();
 
-        if (!global.loggedIn) {
+        if (!Global.loggedIn) {
             if (global.getGlobalDlog() != null)
                 global.getGlobalDlog().dismiss();
             global.promptForMandatoryLogin(this);
@@ -178,7 +177,7 @@ public class ShiftExpense_FA extends BaseFragmentActivityActionBar implements Vi
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         boolean isScreenOn = powerManager.isScreenOn();
         if (!isScreenOn)
-            global.loggedIn = false;
+            Global.loggedIn = false;
         global.startActivityTransitionTimer();
     }
 }

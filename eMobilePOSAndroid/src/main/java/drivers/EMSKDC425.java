@@ -9,6 +9,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -46,7 +47,7 @@ import main.EMSDeviceManager;
 /**
  * Created by Guarionex on 12/8/2015.
  */
-public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate,
+public class EMSKDC425 extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate,
         KDCDataReceivedListener, // required for KDC Barcode Solution models
         KDCBarcodeDataReceivedListener, // required for KDC Barcode Solution models
         KDCGPSDataReceivedListener, // required for KDC Barcode Solution models
@@ -59,8 +60,8 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
     private static EMSCallBack scannerCallBack;
     private EMSDeviceManager edm;
-    private EMSKDC500 thisInstance;
-    private static KDCReader kdcReader;
+    private EMSKDC425 thisInstance;
+    private static KDCReader kdc425Reader;
     String msg = "Failed to connect";
     private static final String AES_KEY = "ThisIsMyTestKeyForAESEncryption.";
 
@@ -82,7 +83,7 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         if (handler == null) {
             handler = new Handler();
         }
-        if (kdcReader == null || !kdcReader.IsConnected()) {
+        if (kdc425Reader == null || !kdc425Reader.IsConnected()) {
             new processConnectionAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         } else {
             showConnectionMessage();
@@ -99,7 +100,7 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         isAutoConect = true;
         thisInstance = this;
 
-        boolean connected = connectKDC500();
+        boolean connected = connectKDC425();
         if (connected) {
             this.edm.driverDidConnectToDevice(thisInstance, false);
         } else {
@@ -109,17 +110,17 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         return true;
     }
 
-    private boolean connectKDC500() {
-        if (kdcReader != null) {
-            kdcReader.Disconnect();
-            kdcReader.Dispose();
+    private boolean connectKDC425() {
+        if (kdc425Reader != null) {
+            kdc425Reader.Disconnect();
+            kdc425Reader.Dispose();
         }
-        kdcReader = new KDCReader(this, null, null, this, null, this, false);
-        if (!kdcReader.IsConnected() && KDCReader.GetAvailableDeviceList() != null && KDCReader.GetAvailableDeviceList().size() > 0) {
+        kdc425Reader = new KDCReader(this, null, null, this, null, this, false);
+        if (!kdc425Reader.IsConnected() && KDCReader.GetAvailableDeviceList() != null && KDCReader.GetAvailableDeviceList().size() > 0) {
             btDev = KDCReader.GetAvailableDeviceList().get(0);
-            kdcReader.Connect(btDev);
+            kdc425Reader.Connect(btDev);
         }
-        return kdcReader.IsConnected();
+        return kdc425Reader.IsConnected();
     }
 
     @Override
@@ -148,7 +149,7 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            return connectKDC500();
+            return connectKDC425();
         }
 
         @Override
@@ -254,10 +255,10 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     }
 
     public void unregisterPrinter() {
-        if (kdcReader != null && kdcReader.IsConnected()) {
-            kdcReader.DisableNFC_POS();
-            kdcReader.DisableMSR_POS();
-            kdcReader.DisableCardReader_POS((short) (KPOSConstants.CARD_TYPE_MAGNETIC | KPOSConstants.CARD_TYPE_EMV_CONTACT));
+        if (kdc425Reader != null && kdc425Reader.IsConnected()) {
+//            kdc425Reader.DisableNFC_POS();
+//            kdc425Reader.DisableMSR_POS();
+            kdc425Reader.DisableCardReader_POS((short) (KPOSConstants.CARD_TYPE_MAGNETIC | KPOSConstants.CARD_TYPE_EMV_CONTACT));
         }
         edm.setCurrentDevice(null);
     }
@@ -267,40 +268,40 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         if (handler == null) {
             handler = new Handler();
         }
-        if (kdcReader != null && kdcReader.IsConnected()) {
+        if (kdc425Reader != null && kdc425Reader.IsConnected()) {
             scannerCallBack = callBack;
-            kdcReader.EnableMSR_POS();
-            kdcReader.EnableNFC_POS();
+//            kdc425Reader.EnableMSR_POS();
+//            kdc425Reader.EnableNFC_POS();
 //            enableAES();
 //            String SAMPLE_AES128_KEY = "1AAEAF7E7ABE338A942844F7F189BD49";
-//            kdcReader.SetMSRDataEncryption(KDCConstants.MSRDataEncryption.AES);
-//            kdcReader.SetAESKeyLength(KDCConstants.AESBitLengths.AES_128_BITS);
-//            kdcReader.SetAESKey(SAMPLE_AES128_KEY);
+//            kdc425Reader.SetMSRDataEncryption(KDCConstants.MSRDataEncryption.AES);
+//            kdc425Reader.SetAESKeyLength(KDCConstants.AESBitLengths.AES_128_BITS);
+//            kdc425Reader.SetAESKey(SAMPLE_AES128_KEY);
 
 
-            kdcReader.EnableCardReader_POS((short) (KPOSConstants.CARD_TYPE_MAGNETIC | KPOSConstants.CARD_TYPE_EMV_CONTACT));
+            kdc425Reader.EnableCardReader_POS((short) (KPOSConstants.CARD_TYPE_MAGNETIC | KPOSConstants.CARD_TYPE_EMV_CONTACT));
         }
         handler.post(doUpdateDidConnect);
     }
 
     private void enableAES() {
-        if (kdcReader == null || !kdcReader.IsConnected()) {
+        if (kdc425Reader == null || !kdc425Reader.IsConnected()) {
             return;
         }
 
         // Change encryption key in KDC device - Optional
-        kdcReader.SetAESKey(AES_KEY);
-        kdcReader.SetAESKeyLength(KDCConstants.AESBitLengths.AES_128_BITS);
+        kdc425Reader.SetAESKey(AES_KEY);
+        kdc425Reader.SetAESKeyLength(KDCConstants.AESBitLengths.AES_128_BITS);
 
         // Enable KDC device to encrypt MSR data by AES algorithms. - Optional
-        kdcReader.SetMSRDataEncryption(KDCConstants.MSRDataEncryption.AES);
+        kdc425Reader.SetMSRDataEncryption(KDCConstants.MSRDataEncryption.AES);
 
         // Get AES Key and Length from connected kdc device
-        String key = kdcReader.GetAESKey();
-        KDCConstants.AESBitLengths length = kdcReader.GetAESKeyLength();
+        String key = kdc425Reader.GetAESKey();
+        KDCConstants.AESBitLengths length = kdc425Reader.GetAESKeyLength();
 
         // Enable KDCReader to decrypt MSR data using AES Key from KDC Device.
-        if (key != null && kdcReader.EnableDecryptMSRData(true, key, length)) {
+        if (key != null && kdc425Reader.EnableDecryptMSRData(true, key, length)) {
             activity.runOnUiThread(new Runnable() {
 
                 @Override
@@ -344,7 +345,7 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     };
 
     private void showConnectionMessage() {
-        if (kdcReader != null && kdcReader.IsConnected()) {
+        if (kdc425Reader != null && kdc425Reader.IsConnected()) {
             edm.driverDidConnectToDevice(thisInstance, !isAutoConect);
         } else {
             edm.driverDidNotConnectToDevice(thisInstance, msg, !isAutoConect);
@@ -354,9 +355,9 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     @Override
     public void loadScanner(EMSCallBack callBack) {
         scannerCallBack = callBack;
-        kdcReader.EnableMSR_POS();
-        kdcReader.EnableNFC_POS();
-        kdcReader.EnableCardReader_POS((short) (KPOSConstants.CARD_TYPE_MAGNETIC | KPOSConstants.CARD_TYPE_EMV_CONTACT));
+//        kdc425Reader.EnableMSR_POS();
+//        kdc425Reader.EnableNFC_POS();
+        kdc425Reader.EnableCardReader_POS((short) (KPOSConstants.CARD_TYPE_MAGNETIC | KPOSConstants.CARD_TYPE_EMV_CONTACT));
         if (handler == null)
             handler = new Handler();
 
@@ -495,9 +496,11 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
             }
 //            scannerCallBack.scannerWasRead(kdcData.GetData());
         } else {
-            cardInfo = new CreditCardInfo();
-            CardParser.parseCreditCard(activity, kdcData.GetData(), cardInfo);
-            handler.post(cardReadCallBack);
+            if (!TextUtils.isEmpty(kdcData.GetData())) {
+                cardInfo = new CreditCardInfo();
+                CardParser.parseCreditCard(activity, kdcData.GetData(), cardInfo);
+                handler.post(cardReadCallBack);
+            }
 //            String SAMPLE_AES128_KEY = "1AAEAF7E7ABE338A942844F7F189BD49";
 //            String data = "";
 //            data = kdcData.GetData();
@@ -539,7 +542,9 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     public void MSRDataReceived(KDCData kdcData) {
         cardInfo = new CreditCardInfo();
         CardParser.parseCreditCard(activity, kdcData.GetMSRData(), cardInfo);
-        handler.post(cardReadCallBack);
+        if (handler != null && cardReadCallBack != null) {
+            handler.post(cardReadCallBack);
+        }
     }
 
 
@@ -560,7 +565,7 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
                         }
                     });
                     break;
-                case KPOSConstants.EVT_CARD_SWIPED: // an user swiped a card, and EMSKDC500 read it successfully
+                case KPOSConstants.EVT_CARD_SWIPED: // an user swiped a card, and EMSKDC425 read it successfully
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -568,7 +573,7 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
                         }
                     });
                     break;
-                case KPOSConstants.EVT_CARD_SWIPED_ENCRYPTED: // an user swiped a card, and EMSKDC500 read it successfully and encrypt
+                case KPOSConstants.EVT_CARD_SWIPED_ENCRYPTED: // an user swiped a card, and EMSKDC425 read it successfully and encrypt
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -579,10 +584,10 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 //                case KPOSConstants.EVT_VALUE_ENTERED:
 //                    HandleValueEnteredEvent(pData);
 //                    break;
-//                case KPOSConstants.EVT_CARD_READ_FAILED: // an user swiped a card, but EMSKDC500 could not read it successfully
+//                case KPOSConstants.EVT_CARD_READ_FAILED: // an user swiped a card, but EMSKDC425 could not read it successfully
 //                    HandleCardReadFailedEvent();
 //                    break;
-//                case KPOSConstants.EVT_CANCELLED_CARD_READ: // an user pressed CANCEL button on EMSKDC500 during the card read mode
+//                case KPOSConstants.EVT_CANCELLED_CARD_READ: // an user pressed CANCEL button on EMSKDC425 during the card read mode
 //                    HandleCardReadCancelledEvent();
 //                    break;
 //                case KPOSConstants.EVT_TIMEOUT_CARD_READ: // an user did not swipe a card before time-out occurred
@@ -594,13 +599,13 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 //                case KPOSConstants.EVT_TIMEOUT:
 //                    HandleTimeoutEvent();
 //                    break;
-//                case KPOSConstants.EVT_PINBLOCK_GENERATED: // an user entered PIN, and EMSKDC500 generated PIN Block successfully
+//                case KPOSConstants.EVT_PINBLOCK_GENERATED: // an user entered PIN, and EMSKDC425 generated PIN Block successfully
 //                    HandlePinblockGeneratedEvent(pData);
 //                    break;
-//                case KPOSConstants.EVT_PINBLOCK_GENERATION_FAILED: // an user entered PIN, but EMSKDC500 could not generate PIN Block successfully
+//                case KPOSConstants.EVT_PINBLOCK_GENERATION_FAILED: // an user entered PIN, but EMSKDC425 could not generate PIN Block successfully
 //                    HandlePinblockGenerationFailedEvent();
 //                    break;
-//                case KPOSConstants.EVT_CANCELLED_PIN_ENTRY: // an user pressed CANCEL button on EMSKDC500 during the pin entry mode
+//                case KPOSConstants.EVT_CANCELLED_PIN_ENTRY: // an user pressed CANCEL button on EMSKDC425 during the pin entry mode
 //                    HandlePinEntryCancelledEvent();
 //                    break;
 //                case KPOSConstants.EVT_TIMEOUT_PIN_ENTRY: // an user did not enter PIN completely before time-out occurred

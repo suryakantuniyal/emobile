@@ -33,8 +33,8 @@ public class EMSUtils {
         EMSPayGate_Default payGate = new EMSPayGate_Default(activity, null);
         String request = payGate.paymentWithAction(EMSPayGate_Default.EAction.HandpointWorkingKey, false, null,
                 null);
-        Post httpClient = new Post();
-        String xml = httpClient.postData(Global.S_SUBMIT_WORKINGKEY_REQUEST, activity, request);
+        Post httpClient = new Post(activity);
+        String xml = httpClient.postData(Global.S_SUBMIT_WORKINGKEY_REQUEST,  request);
 
         SAXParserFactory spf = SAXParserFactory.newInstance();
         SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();

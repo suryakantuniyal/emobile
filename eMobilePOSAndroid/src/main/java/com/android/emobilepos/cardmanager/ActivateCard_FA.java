@@ -197,7 +197,7 @@ public class ActivateCard_FA extends BaseFragmentActivityActionBar implements EM
                 Global.mainPrinterManager.getCurrentDevice().loadCardReader(msrCallBack, false);
                 cardSwipe.setChecked(true);
             }
-        } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310() || myPref.isKDC500()) {
+        } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310() || myPref.isKDC425()) {
             cardSwipe.setChecked(true);
         } else if (myPref.isPAT215() && Global.btSwiper == null) {
             if (Global.embededMSR != null && Global.embededMSR.getCurrentDevice() != null) {
@@ -317,14 +317,14 @@ public class ActivateCard_FA extends BaseFragmentActivityActionBar implements EM
         @Override
         protected String doInBackground(String... params) {
 
-            Post httpClient = new Post();
+            Post httpClient = new Post(activity);
 
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
             urlToPost = params[0];
 
             try {
-                String xml = httpClient.postData(13, activity, urlToPost);
+                String xml = httpClient.postData(13,  urlToPost);
 
                 switch (xml) {
                     case Global.TIME_OUT:

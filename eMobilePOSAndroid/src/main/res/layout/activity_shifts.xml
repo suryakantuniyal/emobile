@@ -829,24 +829,51 @@
 
             <LinearLayout
                 android:id="@+id/closeAmountLynearLayout"
-                android:layout_width="395dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                app:layout_constraintTop_toBottomOf="@+id/beginningPettyCashtextView"
-                tools:layout_editor_absoluteX="8dp"
                 app:layout_constraintLeft_toLeftOf="@+id/pettyCashLbltextView27"
-                android:layout_marginTop="10dp"
-                app:layout_constraintRight_toRightOf="@+id/textView24">
+                app:layout_constraintRight_toRightOf="@+id/textView24"
+                app:layout_constraintTop_toBottomOf="@+id/beginningPettyCashtextView">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/endingCashAmountLbltextView21"
+                        style="@style/black_text_appearance"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal"
+                        android:text="@string/total_ending_cash" />
+
+                    <TextView
+                        android:id="@+id/endingCashAmounteditText"
+                        style="@style/black_text_appearance"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:gravity="center_vertical"
+                        android:text="@string/add_main_hint2"
+                        android:textSize="@dimen/history_title_text_size" />
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
-                    android:orientation="vertical"
                     android:layout_marginEnd="10dp"
                     android:layout_marginRight="10dp"
-                    android:layout_weight="1">
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/closeAmountLbltextView21"
@@ -858,21 +885,27 @@
 
                     <TextView
                         android:id="@+id/totalAmounteditText"
+                        style="@style/black_text_appearance"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
                         android:gravity="center_vertical|center_horizontal"
-                        style="@style/black_text_appearance"
                         android:text="@string/add_main_hint2"
-                        android:textSize="@dimen/history_title_text_size"
-                        android:layout_margin="10dp" />
+                        android:textSize="@dimen/history_title_text_size" />
+                    <TextView
+                        android:id="@+id/shortOverStatustextView23"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal"
+                        android:text="@string/short_amount" />
                 </LinearLayout>
 
                 <Button
                     android:id="@+id/submitShiftbutton"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:text="@string/shift_close_shift"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:text="@string/shift_close_shift" />
             </LinearLayout>
         </android.support.constraint.ConstraintLayout>
     </LinearLayout>

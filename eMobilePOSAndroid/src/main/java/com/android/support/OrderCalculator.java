@@ -87,11 +87,11 @@ public class OrderCalculator {
                         disc = new BigDecimal(product.getDisAmount());
                     }
 
-                    product.setDiscount_value(Global.getRoundBigDecimal(disc));
-                    product.setDisTotal(Global.getRoundBigDecimal(disc));
+                    product.setDiscount_value(String.valueOf(Global.getRoundBigDecimal(disc)));
+                    product.setDisTotal(String.valueOf(Global.getRoundBigDecimal(disc)));
 
-                    product.setItemTotalVatExclusive(Global
-                            .getRoundBigDecimal(subtotal.subtract(disc)));
+                    product.setItemTotalVatExclusive(String.valueOf(Global
+                            .getRoundBigDecimal(subtotal.subtract(disc))));
                 }
                 if (prodQty.compareTo(new BigDecimal("1")) == 1) {
                     subtotal = new BigDecimal(product.getPrice_vat_exclusive()).setScale(2,

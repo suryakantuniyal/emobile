@@ -592,14 +592,13 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         //if we have taxes then
         if (groupTaxRate.size() > 0) {
             tax1Rate = new BigDecimal(Double.parseDouble(groupTaxRate.get(0).getTaxRate()));
-            tax2Rate = new BigDecimal(Double.parseDouble(groupTaxRate.get(1).getTaxRate()));
+            if (groupTaxRate.size() > 1) {
+                tax2Rate = new BigDecimal(Double.parseDouble(groupTaxRate.get(1).getTaxRate()));
+            }
         }
 
         BigDecimal tax1Dbl = new BigDecimal(subtotalDbl).multiply(tax1Rate);
         BigDecimal tax2Dbl = new BigDecimal(subtotalDbl).multiply(tax2Rate);
-
-//        double tax1Dbl = subtotalDbl * tax1Rate;
-//        double tax2Dbl = subtotalDbl * tax2Rate;
 
         DecimalFormat df = new DecimalFormat("0.00");
         df.setRoundingMode(RoundingMode.HALF_UP);
@@ -616,7 +615,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         if (Global.isIvuLoto) {
             Global.subtotalAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(subtotal));
         }
-
+        String clerkId = null;
         String jobId = null;
         String invoiceId = null;
         if (!extras.getBoolean("histinvoices")) {
@@ -625,11 +624,11 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
             invoiceId = inv_id;
         }
 
-        String clerkId = null;
-        if (!myPref.getShiftIsOpen())
-            clerkId = myPref.getShiftClerkID();
-        else if (myPref.isUseClerks())
+        if (myPref.isUseClerks()) {
             clerkId = myPref.getClerkID();
+        } else if (ShiftDAO.isShiftOpen()) {
+            clerkId = String.valueOf(ShiftDAO.getOpenShift().getClerkId());
+        }
 
 
         if (showTipField) {
@@ -754,10 +753,11 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         double actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDue));
         double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
         String clerkId = null;
-        if (!myPref.getShiftIsOpen())
-            clerkId = myPref.getShiftClerkID();
-        else if (myPref.isUseClerks())
+        if (myPref.isUseClerks()) {
             clerkId = myPref.getClerkID();
+        } else if (ShiftDAO.isShiftOpen()) {
+            clerkId = String.valueOf(ShiftDAO.getOpenShift().getClerkId());
+        }
         String invoiceId = "";
 
         String paymentType = "0";
@@ -792,7 +792,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
 
 
     private void updateShiftAmount() {
-        if (!myPref.getShiftIsOpen()) {
+        if (ShiftDAO.isShiftOpen()) {
             double actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDue));
             double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
             double amountToApply;
@@ -804,24 +804,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
             } else {
                 amountToApply = actualAmount;
             }
-//            Shift openShift = ShiftDAO.getOpenShift(Integer.parseInt(myPref.getClerkID()));
-            ShiftDAO.updateShiftAmounts(Integer.parseInt(myPref.getClerkID()), amountToApply, isReturn);
-
-
-//            if (!isReturn) {
-//                openShift.setTotalTransactionsCash(String.valueOf(Global.getBigDecimalNum(openShift.getTotalTransactionsCash())
-//                        .add(BigDecimal.valueOf(amountToApply))));
-//            } else {
-//                openShift.setTotalTransactionsCash(String.valueOf(Global.getBigDecimalNum(openShift.getTotalTransactionsCash())
-//                        .subtract(BigDecimal.valueOf(amountToApply))));
-//            }
-//            ShiftDAO.insertOrUpdate(openShift);
-//
-//            if (amountToBePaid <= actualAmount) {
-//                handler.updateShiftAmounts(myPref.getShiftID(), amountToBePaid, isReturn);
-//            } else {
-//                handler.updateShiftAmounts(myPref.getShiftID(), actualAmount, isReturn);
-//            }
+            ShiftDAO.updateShiftAmounts(amountToApply, isReturn);
         }
 
     }

@@ -85,6 +85,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import util.json.JsonUtils;
 import util.json.UIUtils;
 
 public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements OnClickListener, OnItemClickListener {
@@ -119,7 +120,118 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
     private String order_email = "";
     private Global.OrderType orderType;
     private boolean isClicked;
+    private boolean skipLogin;
+    private Dialog dlog;
+    private Handler handler = new Handler();
+    private Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            if (dlog != null && dlog.isShowing())
+                dlog.dismiss();
+        }
+    };
 
+    public static void voidTransaction(Activity activity, String job_id, String orderType) {
+        OrdersHandler handler = new OrdersHandler(activity);
+        handler.updateIsVoid(job_id);
+        handler.updateIsProcessed(job_id, "9");
+
+        VoidTransactionsHandler voidHandler = new VoidTransactionsHandler();
+        Order order = new Order(activity);
+        order.ord_id = job_id;
+        order.ord_type = orderType;
+        voidHandler.insert(order);
+        // Check if Stored&Forward active and delete from record if any payment
+        // were made
+        MyPreferences myPref = new MyPreferences(activity);
+        if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
+            handler.updateOrderStoredFwd(job_id, "0");
+            StoredPaymentsDAO.deletePaymentFromJob(job_id);
+        }
+        HashMap<String, String> parsedMap;
+        PaymentsHandler payHandler = new PaymentsHandler(activity);
+        List<Payment> listVoidPayments = payHandler.getOrderPayments(job_id);
+        int size = listVoidPayments.size();
+        if (size > 0) {
+            EMSPayGate_Default payGate;
+
+            Post post = new Post(activity);
+            SAXParserFactory spf = SAXParserFactory.newInstance();
+            SAXProcessCardPayHandler processCardPayHandler = new SAXProcessCardPayHandler();
+            String xml;
+            InputSource inSource;
+            SAXParser sp;
+            XMLReader xr;
+
+            try {
+                sp = spf.newSAXParser();
+                xr = sp.getXMLReader();
+                String paymentType;
+                for (int i = 0; i < size; i++) {
+                    paymentType = listVoidPayments.get(i).getCard_type().toUpperCase(Locale.getDefault()).trim();
+                    if (paymentType.equals("GIFTCARD") || paymentType.equals("REWARD")) {
+                        payGate = new EMSPayGate_Default(activity, listVoidPayments.get(i));
+                        if (paymentType.equals("GIFTCARD")) {
+                            xml = post.postData(13, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidGiftCardAction, false,
+                                    listVoidPayments.get(i).getCard_type(), null));
+                        } else {
+                            xml = post.postData(13, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidRewardCardAction, false,
+                                    listVoidPayments.get(i).getCard_type(), null));
+                        }
+                        inSource = new InputSource(new StringReader(xml));
+
+                        xr.setContentHandler(processCardPayHandler);
+                        xr.parse(inSource);
+                        parsedMap = processCardPayHandler.getData();
+
+                        if (parsedMap != null && parsedMap.size() > 0
+                                && parsedMap.get("epayStatusCode").equals("APPROVED"))
+                            payHandler.createVoidPayment(listVoidPayments.get(i), true, parsedMap);
+
+                        if (parsedMap != null) {
+                            parsedMap.clear();
+                        }
+                    } else if (paymentType.equals("CASH")) {
+
+                        // payHandler.updateIsVoid(pay_id);
+                        payHandler.createVoidPayment(listVoidPayments.get(i), false, null);
+                    } else if (!paymentType.equals("CHECK") && !paymentType.equals("WALLET")) {
+                        payGate = new EMSPayGate_Default(activity, listVoidPayments.get(i));
+                        xml = post.postData(13, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidCreditCardAction, false,
+                                listVoidPayments.get(i).getCard_type(), null));
+                        inSource = new InputSource(new StringReader(xml));
+
+                        xr.setContentHandler(processCardPayHandler);
+                        xr.parse(inSource);
+                        parsedMap = processCardPayHandler.getData();
+
+                        if (parsedMap != null && parsedMap.size() > 0
+                                && parsedMap.get("epayStatusCode").equals("APPROVED"))
+                            payHandler.createVoidPayment(listVoidPayments.get(i), true, parsedMap);
+
+                        if (parsedMap != null) {
+                            parsedMap.clear();
+                        }
+                    }
+                }
+            } catch (SAXException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
+            } catch (ParserConfigurationException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
+            } catch (IOException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
+            }
+            activity.setResult(3);
+            activity.finish();
+//            new voidPaymentAsync().execute();
+        } else {
+            activity.setResult(3);
+            activity.finish();
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -205,7 +317,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         initHeaderSection();
     }
 
-
     private void initHeaderSection() {
         TextView totalView = (TextView) findViewById(R.id.totalValue);
         TextView paidView = (TextView) findViewById(R.id.paidValue);
@@ -219,8 +330,8 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
     @Override
     public void onResume() {
-
-        if (global.isApplicationSentToBackground(this))
+//        Toast.makeText(this, "Resume:"+String.valueOf(skipLogin), Toast.LENGTH_LONG).show();
+        if (global.isApplicationSentToBackground(this) && !skipLogin)
             Global.loggedIn = false;
         global.stopActivityTransitionTimer();
 
@@ -230,6 +341,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             }
             global.promptForMandatoryLogin(this);
         }
+        skipLogin = false;
         initHeaderSection();
         super.onResume();
     }
@@ -398,20 +510,20 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                         intent.putExtra("Tax1_amount", tempRate.toPlainString());
                         intent.putExtra("Tax1_name", groupTax.get(0).getTaxName());
 
-                        tempRate = new BigDecimal(subtotal * Double.parseDouble(groupTax.get(1).getTaxRate())).setScale(2,
+                        tempRate = groupTax.size() == 1 ? new BigDecimal(0) : new BigDecimal(subtotal * Double.parseDouble(groupTax.get(1).getTaxRate())).setScale(2,
                                 BigDecimal.ROUND_UP);
                         intent.putExtra("Tax2_amount", tempRate.toPlainString());
-                        intent.putExtra("Tax2_name", groupTax.get(1).getTaxName());
+                        intent.putExtra("Tax2_name", groupTax.size() == 1 ? "" : groupTax.get(1).getTaxName());
                     } else {
                         tempRate = new BigDecimal(subtotal * Double.parseDouble(groupTax.get(0).getTaxRate())).setScale(2,
                                 BigDecimal.ROUND_UP);
                         intent.putExtra("Tax2_amount", tempRate.toPlainString());
                         intent.putExtra("Tax2_name", groupTax.get(0).getTaxName());
 
-                        tempRate = new BigDecimal(subtotal * Double.parseDouble(groupTax.get(1).getTaxRate())).setScale(2,
+                        tempRate = groupTax.size() == 1 ? new BigDecimal(0) : new BigDecimal(subtotal * Double.parseDouble(groupTax.get(1).getTaxRate())).setScale(2,
                                 BigDecimal.ROUND_UP);
                         intent.putExtra("Tax1_amount", tempRate.toPlainString());
-                        intent.putExtra("Tax1_name", groupTax.get(1).getTaxName());
+                        intent.putExtra("Tax1_name", groupTax.size() == 1 ? "" : groupTax.get(1).getTaxName());
                     }
                 } else {
                     BigDecimal tempRate;
@@ -460,126 +572,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
     @Override
     public void onStop() {
         super.onStop();
-    }
-
-    private class CardsListAdapter extends BaseAdapter implements Filterable {
-        private Context context;
-        private LayoutInflater myInflater;
-
-        public CardsListAdapter(Activity activity) {
-            this.context = activity.getApplicationContext();
-            myInflater = LayoutInflater.from(context);
-
-            PayMethodsHandler handler = new PayMethodsHandler(activity);
-            payTypeList = PayMethodsDAO.getAllSortByName(true);
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-
-            ViewHolder holder;
-            int iconId;
-
-            if (convertView == null) {
-
-                holder = new ViewHolder();
-
-                convertView = myInflater.inflate(R.layout.card_listrow2_adapter, null);
-
-                holder.textLine2 = (TextView) convertView.findViewById(R.id.cardsListname);
-                holder.ivPayIcon = (ImageView) convertView.findViewById(R.id.ivCardIcon);
-                String key = payTypeList.get(position).getPaymentmethod_type();
-                String name = payTypeList.get(position).getPaymethod_name();
-                String img_url = payTypeList.get(position).getImage_url();
-
-
-                if (TextUtils.isEmpty(img_url)) {
-                    if (key == null) {
-                        iconId = R.drawable.debitcard;// context.getResources().getIdentifier("debitcard", "drawable", context.getString(R.string.pkg_name));
-                    } else {
-                        Log.d("Logo Name", key);
-                        iconId = context.getResources().getIdentifier(key.toLowerCase(), "drawable",
-                                context.getPackageName());
-                    }
-
-                    holder.ivPayIcon.setImageResource(iconId);
-                } else {
-                    Log.d("Logo Name", img_url);
-                    imageLoader.displayImage(img_url, holder.ivPayIcon, options);
-                }
-                holder.textLine2.setTag(name);
-                holder.textLine2.setText(name);
-
-                convertView.setTag(holder);
-
-            } else {
-                holder = (ViewHolder) convertView.getTag();
-                String key = payTypeList.get(position).getPaymentmethod_type();
-                String name = payTypeList.get(position).getPaymethod_name();
-                String img_url = payTypeList.get(position).getImage_url();
-
-                if (TextUtils.isEmpty(img_url)) {
-                    if (key == null) {
-                        iconId = R.drawable.debitcard;//context.getResources().getIdentifier("debitcard", "drawable",
-                    }
-//									context.getString(R.string.pkg_name));
-                    else {
-                        Log.d("Logo Name", key);
-                        iconId = context.getResources().getIdentifier(key.toLowerCase(), "drawable",
-                                context.getPackageName());
-                    }
-
-                    holder.ivPayIcon.setImageResource(iconId);
-                } else {
-                    imageLoader.displayImage(img_url, holder.ivPayIcon, options);
-                }
-                holder.textLine2.setTag(name);
-                holder.textLine2.setText(name);
-
-            }
-            return convertView;
-        }
-
-        private class ViewHolder {
-            TextView textLine2;
-            ImageView ivPayIcon;
-
-        }
-
-        @Override
-        public int getItemViewType(int position) {
-            if (position == 0) {
-                return 0;
-            }
-            return 1;
-
-        }
-
-        @Override
-        public int getViewTypeCount() {
-            return 2;
-        }
-
-        @Override
-        public int getCount() {
-            return payTypeList.size();
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return 0;
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return 0;
-        }
-
-        @Override
-        public Filter getFilter() {
-            return null;
-        }
-
     }
 
     private void showPrintDlg(final boolean isReprint, boolean isRetry, final EMVContainer emvContainer) {
@@ -631,54 +623,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         dlog.show();
     }
 
-    private class printAsync extends AsyncTask<Object, String, String> {
-        private boolean wasReprint = false;
-        private boolean printSuccessful = true;
-
-        @Override
-        protected void onPreExecute() {
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
-                Global.mainPrinterManager.getCurrentDevice().loadScanner(null);
-            }
-            myProgressDialog = new ProgressDialog(activity);
-            myProgressDialog.setMessage("Printing...");
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            myProgressDialog.show();
-
-        }
-
-        @Override
-        protected String doInBackground(Object... params) {
-            wasReprint = (Boolean) params[0];
-            EMVContainer emvContainer = params.length > 1 ? (EMVContainer) params[1] : null;
-
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
-                if (isFromMainMenu || extras.getBoolean("histinvoices") ||
-                        (emvContainer != null && emvContainer.getGeniusResponse() != null &&
-                                emvContainer.getGeniusResponse().getStatus().equalsIgnoreCase("DECLINED")))
-                    printSuccessful = Global.mainPrinterManager.getCurrentDevice().printPaymentDetails(PaymentsHandler.getLastPaymentInserted().getPay_id(), 1,
-                            wasReprint, emvContainer);
-                else
-                    printSuccessful = Global.mainPrinterManager.getCurrentDevice().printTransaction(job_id, orderType,
-                            wasReprint, false, emvContainer);
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String unused) {
-            if (printSuccessful) {
-                if (overAllRemainingBalance <= 0 || (typeOfProcedure == Global.FROM_JOB_INVOICE
-                        || typeOfProcedure == Integer.parseInt(Global.OrderType.INVOICE.getCodeString())))
-                    activity.finish();
-            } else {
-                showPrintDlg(wasReprint, true, null);
-            }
-            myProgressDialog.dismiss();
-        }
-    }
-
     private void promptManagerPassword() {
         final Dialog globalDlog = new Dialog(activity, R.style.Theme_TransparentTest);
         globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -717,121 +661,25 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         globalDlog.show();
     }
 
-
-    public static void voidTransaction(Activity activity, String job_id, String orderType) {
-        OrdersHandler handler = new OrdersHandler(activity);
-        handler.updateIsVoid(job_id);
-        handler.updateIsProcessed(job_id, "9");
-
-        VoidTransactionsHandler voidHandler = new VoidTransactionsHandler();
-        Order order = new Order(activity);
-        order.ord_id = job_id;
-        order.ord_type = orderType;
-        voidHandler.insert(order);
-        // Check if Stored&Forward active and delete from record if any payment
-        // were made
-        MyPreferences myPref = new MyPreferences(activity);
-        if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
-            handler.updateOrderStoredFwd(job_id, "0");
-            StoredPaymentsDAO.deletePaymentFromJob(job_id);
-        }
-        HashMap<String, String> parsedMap;
-        PaymentsHandler payHandler = new PaymentsHandler(activity);
-        List<Payment> listVoidPayments = payHandler.getOrderPayments(job_id);
-        int size = listVoidPayments.size();
-        if (size > 0) {
-            EMSPayGate_Default payGate;
-
-            Post post = new Post();
-            SAXParserFactory spf = SAXParserFactory.newInstance();
-            SAXProcessCardPayHandler processCardPayHandler = new SAXProcessCardPayHandler();
-            String xml;
-            InputSource inSource;
-            SAXParser sp;
-            XMLReader xr;
-
-            try {
-                sp = spf.newSAXParser();
-                xr = sp.getXMLReader();
-                String paymentType;
-                for (int i = 0; i < size; i++) {
-                    paymentType = listVoidPayments.get(i).getCard_type().toUpperCase(Locale.getDefault()).trim();
-                    if (paymentType.equals("GIFTCARD") || paymentType.equals("REWARD")) {
-                        payGate = new EMSPayGate_Default(activity, listVoidPayments.get(i));
-                        if (paymentType.equals("GIFTCARD")) {
-                            xml = post.postData(13, activity, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidGiftCardAction, false,
-                                    listVoidPayments.get(i).getCard_type(), null));
-                        } else {
-                            xml = post.postData(13, activity, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidRewardCardAction, false,
-                                    listVoidPayments.get(i).getCard_type(), null));
-                        }
-                        inSource = new InputSource(new StringReader(xml));
-
-                        xr.setContentHandler(processCardPayHandler);
-                        xr.parse(inSource);
-                        parsedMap = processCardPayHandler.getData();
-
-                        if (parsedMap != null && parsedMap.size() > 0
-                                && parsedMap.get("epayStatusCode").equals("APPROVED"))
-                            payHandler.createVoidPayment(listVoidPayments.get(i), true, parsedMap);
-
-                        if (parsedMap != null) {
-                            parsedMap.clear();
-                        }
-                    } else if (paymentType.equals("CASH")) {
-
-                        // payHandler.updateIsVoid(pay_id);
-                        payHandler.createVoidPayment(listVoidPayments.get(i), false, null);
-                    } else if (!paymentType.equals("CHECK") && !paymentType.equals("WALLET")) {
-                        payGate = new EMSPayGate_Default(activity, listVoidPayments.get(i));
-                        xml = post.postData(13, activity, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidCreditCardAction, false,
-                                listVoidPayments.get(i).getCard_type(), null));
-                        inSource = new InputSource(new StringReader(xml));
-
-                        xr.setContentHandler(processCardPayHandler);
-                        xr.parse(inSource);
-                        parsedMap = processCardPayHandler.getData();
-
-                        if (parsedMap != null && parsedMap.size() > 0
-                                && parsedMap.get("epayStatusCode").equals("APPROVED"))
-                            payHandler.createVoidPayment(listVoidPayments.get(i), true, parsedMap);
-
-                        if (parsedMap != null) {
-                            parsedMap.clear();
-                        }
-                    }
-                }
-            } catch (SAXException e) {
-                e.printStackTrace();
-                Crashlytics.logException(e);
-            } catch (ParserConfigurationException e) {
-                e.printStackTrace();
-                Crashlytics.logException(e);
-            } catch (IOException e) {
-                e.printStackTrace();
-                Crashlytics.logException(e);
-            }
-            activity.setResult(3);
-            activity.finish();
-//            new voidPaymentAsync().execute();
-        } else {
-            activity.setResult(3);
-            activity.finish();
-        }
-    }
-
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         myListview.setSelection(0);
         myListview.setSelected(false);
+        skipLogin = data != null && data.hasExtra("LocalGeniusResponse");
+//        Toast.makeText(this, "Activity Result:"+String.valueOf(skipLogin), Toast.LENGTH_LONG).show();
+
         EMVContainer emvContainer = null;
         if (data != null && data.hasExtra("emvcontainer"))
             emvContainer = new Gson().fromJson(data.getStringExtra("emvcontainer"), EMVContainer.class);
 
         myAdapter.notifyDataSetChanged();
-        if (resultCode == -1) {
+        if (resultCode == ProcessGenius_FA.REOPEN_PROCESS_GENIUS_SCREEN) {
+            Intent intent = new Intent(this, ProcessGenius_FA.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            intent.putExtras(data);
+            startActivityForResult(intent, 0);
+        } else if (resultCode == -1) {
             if (requestCode == Global.FROM_OPEN_INVOICES)
                 setResult(Global.FROM_PAYMENT);
             else
@@ -893,8 +741,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             }
         }
     }
-
-    private Dialog dlog;
 
     private void showBoloroDlog() {
         dlog = new Dialog(this, R.style.Theme_TransparentTest);
@@ -996,16 +842,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         }
     }
 
-
-    private Handler handler = new Handler();
-    private Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-            if (dlog != null && dlog.isShowing())
-                dlog.dismiss();
-        }
-    };
-
     private void processInquiry(boolean isLoyalty) {
         AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
 
@@ -1067,169 +903,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             reqChargeLoyaltyReward = payGate.paymentWithAction(EMSPayGate_Default.EAction.ChargeRewardAction, wasSwiped, cardType,
                     cardInfoManager);
             new processRewardAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        }
-
-    }
-
-    private class processLoyaltyAsync extends AsyncTask<Void, Void, Void> {
-
-        private HashMap<String, String> parsedMap = new HashMap<>();
-        private boolean wasProcessed = false;
-        private String errorMsg = "Loyalty could not be processed.";
-
-        @Override
-        protected void onPreExecute() {
-            myProgressDialog = new ProgressDialog(activity);
-            myProgressDialog.setMessage(getString(R.string.processing_loyalty_card));
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            myProgressDialog.show();
-
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            Post httpClient = new Post();
-
-            SAXParserFactory spf = SAXParserFactory.newInstance();
-            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
-
-            try {
-                String xml = httpClient.postData(13, activity, reqChargeLoyaltyReward);
-                switch (xml) {
-                    case Global.TIME_OUT:
-                        errorMsg = "TIME OUT, would you like to try again?";
-                        break;
-                    case Global.NOT_VALID_URL:
-                        errorMsg = "Loyalty could not be processed....";
-                        break;
-                    default:
-                        InputSource inSource = new InputSource(new StringReader(xml));
-
-                        SAXParser sp = spf.newSAXParser();
-                        XMLReader xr = sp.getXMLReader();
-                        xr.setContentHandler(handler);
-                        xr.parse(inSource);
-                        parsedMap = handler.getData();
-
-                        if (parsedMap != null && parsedMap.size() > 0
-                                && parsedMap.get("epayStatusCode").equals("APPROVED")) {
-                            wasProcessed = true;
-                        } else if (parsedMap != null && parsedMap.size() > 0) {
-                            errorMsg = "statusCode = " + parsedMap.get("statusCode") + "\n" + parsedMap.get("statusMessage");
-                        } else
-                            errorMsg = xml;
-                        break;
-                }
-
-            } catch (SAXException e) {
-                e.printStackTrace();
-                Crashlytics.logException(e);
-            } catch (ParserConfigurationException e) {
-                e.printStackTrace();
-                Crashlytics.logException(e);
-            } catch (IOException e) {
-                e.printStackTrace();
-                Crashlytics.logException(e);
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void unused) {
-            myProgressDialog.dismiss();
-
-            if (wasProcessed) // payment processing succeeded
-            {
-                loyaltyRewardPayment.setPay_issync("1");
-                paymentHandlerDB.insert(loyaltyRewardPayment);
-                showBalancePrompt("Card was processed");
-            } else // payment processing failed
-            {
-                showBalancePrompt(errorMsg);
-            }
-        }
-    }
-
-    private class processRewardAsync extends AsyncTask<Void, Void, HashMap<String, String>> {
-
-        private boolean wasProcessed = false;
-        private String errorMsg = "Reward could not be processed.";
-
-        @Override
-        protected void onPreExecute() {
-            myProgressDialog = new ProgressDialog(activity);
-            myProgressDialog.setMessage(getString(R.string.processing_reward));
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            myProgressDialog.show();
-
-        }
-
-        @Override
-        protected HashMap<String, String> doInBackground(Void... params) {
-            Post httpClient = new Post();
-
-            SAXParserFactory spf = SAXParserFactory.newInstance();
-            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
-            HashMap<String, String> parsedMap = new HashMap<>();
-            try {
-                String xml = httpClient.postData(13, activity, reqChargeLoyaltyReward);
-                Global.generateDebugFile(reqChargeLoyaltyReward);
-                switch (xml) {
-                    case Global.TIME_OUT:
-                        errorMsg = "TIME OUT, would you like to try again?";
-                        break;
-                    case Global.NOT_VALID_URL:
-                        errorMsg = "Loyalty could not be processed....";
-                        break;
-                    default:
-                        InputSource inSource = new InputSource(new StringReader(xml));
-
-                        SAXParser sp = spf.newSAXParser();
-                        XMLReader xr = sp.getXMLReader();
-                        xr.setContentHandler(handler);
-                        xr.parse(inSource);
-                        parsedMap = handler.getData();
-
-                        if (parsedMap != null && parsedMap.size() > 0
-                                && parsedMap.get("epayStatusCode").equals("APPROVED")) {
-                            wasProcessed = true;
-                        } else if (parsedMap != null && parsedMap.size() > 0) {
-                            errorMsg = "statusCode = " + parsedMap.get("statusCode") + "\n" + parsedMap.get("statusMessage");
-                        } else
-                            errorMsg = xml;
-                        break;
-                }
-
-            } catch (SAXException e) {
-                e.printStackTrace();
-                Crashlytics.logException(e);
-            } catch (ParserConfigurationException e) {
-                e.printStackTrace();
-                Crashlytics.logException(e);
-            } catch (IOException e) {
-                e.printStackTrace();
-                Crashlytics.logException(e);
-            }
-            return parsedMap;
-        }
-
-        @Override
-        protected void onPostExecute(HashMap<String, String> parsedMap) {
-            myProgressDialog.dismiss();
-
-            if (wasProcessed) // payment processing succeeded
-            {
-                String balance = (parsedMap.get("CardBalance") == null ? "0.0" : parsedMap.get("CardBalance"));
-                Global.rewardCardInfo.setOriginalTotalAmount(balance);
-                loyaltyRewardPayment.setPay_issync("1");
-                paymentHandlerDB.insert(loyaltyRewardPayment);
-                showBalancePrompt("Card was processed");
-            } else // payment processing failed
-            {
-                showBalancePrompt(errorMsg);
-            }
         }
 
     }
@@ -1350,5 +1023,336 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 initIntents(extras, intent);
             }
         }
+    }
+
+    private class CardsListAdapter extends BaseAdapter implements Filterable {
+        private Context context;
+        private LayoutInflater myInflater;
+
+        public CardsListAdapter(Activity activity) {
+            this.context = activity.getApplicationContext();
+            myInflater = LayoutInflater.from(context);
+
+            PayMethodsHandler handler = new PayMethodsHandler(activity);
+            payTypeList = PayMethodsDAO.getAllSortByName();
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+
+            ViewHolder holder;
+            int iconId;
+
+            if (convertView == null) {
+
+                holder = new ViewHolder();
+
+                convertView = myInflater.inflate(R.layout.card_listrow2_adapter, null);
+
+                holder.textLine2 = (TextView) convertView.findViewById(R.id.cardsListname);
+                holder.ivPayIcon = (ImageView) convertView.findViewById(R.id.ivCardIcon);
+                String key = payTypeList.get(position).getPaymentmethod_type();
+                String name = payTypeList.get(position).getPaymethod_name();
+                String img_url = payTypeList.get(position).getImage_url();
+
+
+                if (TextUtils.isEmpty(img_url)) {
+                    if (key == null) {
+                        iconId = R.drawable.debitcard;// context.getResources().getIdentifier("debitcard", "drawable", context.getString(R.string.pkg_name));
+                    } else {
+                        Log.d("Logo Name", key);
+                        iconId = context.getResources().getIdentifier(key.toLowerCase(), "drawable",
+                                context.getPackageName());
+                    }
+
+                    holder.ivPayIcon.setImageResource(iconId);
+                } else {
+                    Log.d("Logo Name", img_url);
+                    imageLoader.displayImage(img_url, holder.ivPayIcon, options);
+                }
+                holder.textLine2.setTag(name);
+                holder.textLine2.setText(name);
+
+                convertView.setTag(holder);
+
+            } else {
+                holder = (ViewHolder) convertView.getTag();
+                String key = payTypeList.get(position).getPaymentmethod_type();
+                String name = payTypeList.get(position).getPaymethod_name();
+                String img_url = payTypeList.get(position).getImage_url();
+
+                if (TextUtils.isEmpty(img_url)) {
+                    if (key == null) {
+                        iconId = R.drawable.debitcard;//context.getResources().getIdentifier("debitcard", "drawable",
+                    }
+//									context.getString(R.string.pkg_name));
+                    else {
+                        Log.d("Logo Name", key);
+                        iconId = context.getResources().getIdentifier(key.toLowerCase(), "drawable",
+                                context.getPackageName());
+                    }
+
+                    holder.ivPayIcon.setImageResource(iconId);
+                } else {
+                    imageLoader.displayImage(img_url, holder.ivPayIcon, options);
+                }
+                holder.textLine2.setTag(name);
+                holder.textLine2.setText(name);
+
+            }
+            return convertView;
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            if (position == 0) {
+                return 0;
+            }
+            return 1;
+
+        }
+
+        @Override
+        public int getViewTypeCount() {
+            return 2;
+        }
+
+        @Override
+        public int getCount() {
+            return payTypeList.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return 0;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        @Override
+        public Filter getFilter() {
+            return null;
+        }
+
+        private class ViewHolder {
+            TextView textLine2;
+            ImageView ivPayIcon;
+
+        }
+
+    }
+
+    private class printAsync extends AsyncTask<Object, String, String> {
+        private boolean wasReprint = false;
+        private boolean printSuccessful = true;
+
+        @Override
+        protected void onPreExecute() {
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                Global.mainPrinterManager.getCurrentDevice().loadScanner(null);
+            }
+            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog.setMessage("Printing...");
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setCancelable(false);
+            myProgressDialog.show();
+
+        }
+
+        @Override
+        protected String doInBackground(Object... params) {
+            wasReprint = (Boolean) params[0];
+            EMVContainer emvContainer = params.length > 1 ? (EMVContainer) params[1] : null;
+
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                if (isFromMainMenu || extras.getBoolean("histinvoices") ||
+                        (emvContainer != null && emvContainer.getGeniusResponse() != null &&
+                                emvContainer.getGeniusResponse().getStatus().equalsIgnoreCase("DECLINED")))
+                    printSuccessful = Global.mainPrinterManager.getCurrentDevice().printPaymentDetails(PaymentsHandler.getLastPaymentInserted().getPay_id(), 1,
+                            wasReprint, emvContainer);
+                else
+                    printSuccessful = Global.mainPrinterManager.getCurrentDevice().printTransaction(job_id, orderType,
+                            wasReprint, false, emvContainer);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String unused) {
+            if (printSuccessful) {
+                if (overAllRemainingBalance <= 0 || (typeOfProcedure == Global.FROM_JOB_INVOICE
+                        || typeOfProcedure == Integer.parseInt(Global.OrderType.INVOICE.getCodeString())))
+                    activity.finish();
+            } else {
+                showPrintDlg(wasReprint, true, null);
+            }
+            myProgressDialog.dismiss();
+        }
+    }
+
+    private class processLoyaltyAsync extends AsyncTask<Void, Void, Void> {
+
+        private HashMap<String, String> parsedMap = new HashMap<>();
+        private boolean wasProcessed = false;
+        private String errorMsg = "Loyalty could not be processed.";
+
+        @Override
+        protected void onPreExecute() {
+            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog.setMessage(getString(R.string.processing_loyalty_card));
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setCancelable(false);
+            myProgressDialog.show();
+
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            Post httpClient = new Post(activity);
+
+            SAXParserFactory spf = SAXParserFactory.newInstance();
+            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
+
+            try {
+                String xml = httpClient.postData(13, reqChargeLoyaltyReward);
+                switch (xml) {
+                    case Global.TIME_OUT:
+                        errorMsg = "TIME OUT, would you like to try again?";
+                        break;
+                    case Global.NOT_VALID_URL:
+                        errorMsg = "Loyalty could not be processed....";
+                        break;
+                    default:
+                        InputSource inSource = new InputSource(new StringReader(xml));
+
+                        SAXParser sp = spf.newSAXParser();
+                        XMLReader xr = sp.getXMLReader();
+                        xr.setContentHandler(handler);
+                        xr.parse(inSource);
+                        parsedMap = handler.getData();
+
+                        if (parsedMap != null && parsedMap.size() > 0
+                                && parsedMap.get("epayStatusCode").equals("APPROVED")) {
+                            wasProcessed = true;
+                        } else if (parsedMap != null && parsedMap.size() > 0) {
+                            errorMsg = "statusCode = " + parsedMap.get("statusCode") + "\n" + parsedMap.get("statusMessage");
+                        } else
+                            errorMsg = xml;
+                        break;
+                }
+
+            } catch (SAXException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
+            } catch (ParserConfigurationException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
+            } catch (IOException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void unused) {
+            myProgressDialog.dismiss();
+
+            if (wasProcessed) // payment processing succeeded
+            {
+                loyaltyRewardPayment.setPay_issync("1");
+                paymentHandlerDB.insert(loyaltyRewardPayment);
+                showBalancePrompt("Card was processed");
+            } else // payment processing failed
+            {
+                showBalancePrompt(errorMsg);
+            }
+        }
+    }
+
+    private class processRewardAsync extends AsyncTask<Void, Void, HashMap<String, String>> {
+
+        private boolean wasProcessed = false;
+        private String errorMsg = "Reward could not be processed.";
+
+        @Override
+        protected void onPreExecute() {
+            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog.setMessage(getString(R.string.processing_reward));
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setCancelable(false);
+            myProgressDialog.show();
+
+        }
+
+        @Override
+        protected HashMap<String, String> doInBackground(Void... params) {
+            Post httpClient = new Post(activity);
+
+            SAXParserFactory spf = SAXParserFactory.newInstance();
+            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
+            HashMap<String, String> parsedMap = new HashMap<>();
+            try {
+                String xml = httpClient.postData(13, reqChargeLoyaltyReward);
+                Global.generateDebugFile(reqChargeLoyaltyReward);
+                switch (xml) {
+                    case Global.TIME_OUT:
+                        errorMsg = "TIME OUT, would you like to try again?";
+                        break;
+                    case Global.NOT_VALID_URL:
+                        errorMsg = "Loyalty could not be processed....";
+                        break;
+                    default:
+                        InputSource inSource = new InputSource(new StringReader(xml));
+
+                        SAXParser sp = spf.newSAXParser();
+                        XMLReader xr = sp.getXMLReader();
+                        xr.setContentHandler(handler);
+                        xr.parse(inSource);
+                        parsedMap = handler.getData();
+
+                        if (parsedMap != null && parsedMap.size() > 0
+                                && parsedMap.get("epayStatusCode").equals("APPROVED")) {
+                            wasProcessed = true;
+                        } else if (parsedMap != null && parsedMap.size() > 0) {
+                            errorMsg = "statusCode = " + parsedMap.get("statusCode") + "\n" + parsedMap.get("statusMessage");
+                        } else
+                            errorMsg = xml;
+                        break;
+                }
+
+            } catch (SAXException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
+            } catch (ParserConfigurationException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
+            } catch (IOException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
+            }
+            return parsedMap;
+        }
+
+        @Override
+        protected void onPostExecute(HashMap<String, String> parsedMap) {
+            myProgressDialog.dismiss();
+
+            if (wasProcessed) // payment processing succeeded
+            {
+                String balance = (parsedMap.get("CardBalance") == null ? "0.0" : parsedMap.get("CardBalance"));
+                Global.rewardCardInfo.setOriginalTotalAmount(balance);
+                loyaltyRewardPayment.setPay_issync("1");
+                paymentHandlerDB.insert(loyaltyRewardPayment);
+                showBalancePrompt("Card was processed");
+            } else // payment processing failed
+            {
+                showBalancePrompt(errorMsg);
+            }
+        }
+
     }
 }

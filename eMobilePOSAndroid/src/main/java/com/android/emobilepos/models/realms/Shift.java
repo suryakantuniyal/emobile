@@ -55,9 +55,9 @@ public class Shift extends RealmObject {
     @SerializedName("ending_petty_cash")
     @Expose
     private String endingPettyCash = "0";
-    @SerializedName("ending_cash")
-    @Expose
-    private String endingCash;
+    //    @SerializedName("ending_cash")
+//    @Expose
+//    private String endingCash;
     @SerializedName("entered_close_amount")
     @Expose
     private String enteredCloseAmount = "0";
@@ -66,19 +66,19 @@ public class Shift extends RealmObject {
     private String totalTransactionsCash = "0";
     @SerializedName("emp_id")
     @Expose
-    private int empId;
+    private int clerkId;
     @SerializedName("Shift_status")
     @Expose
     @Index
     private int shiftStatusCode;
-    @Expose(deserialize = false, serialize = false)
-
-
+    @SerializedName("ending_cash")
+    @Expose
     private String total_ending_cash = "0";
     private String over_short = "0";
     private boolean sync;
     @Ignore
     private ShiftStatus shiftStatus;
+
     public Shift() {
         setShiftId(UUID.randomUUID().toString());
         setShiftStatus(ShiftStatus.CLOSED);
@@ -199,14 +199,6 @@ public class Shift extends RealmObject {
         this.endingPettyCash = endingPettyCash;
     }
 
-    public String getEndingCash() {
-        return endingCash;
-    }
-
-    public void setEndingCash(String endingCash) {
-        this.endingCash = endingCash;
-    }
-
     public String getEnteredCloseAmount() {
         return enteredCloseAmount;
     }
@@ -221,14 +213,6 @@ public class Shift extends RealmObject {
 
     public void setTotalTransactionsCash(String totalTransactionsCash) {
         this.totalTransactionsCash = totalTransactionsCash;
-    }
-
-    public int getEmpId() {
-        return empId;
-    }
-
-    public void setEmpId(int empId) {
-        this.empId = empId;
     }
 
     public String getTotal_ending_cash() {
@@ -253,6 +237,14 @@ public class Shift extends RealmObject {
 
     public void setSync(boolean sync) {
         this.sync = sync;
+    }
+
+    public int getClerkId() {
+        return clerkId;
+    }
+
+    public void setClerkId(int clerkId) {
+        this.clerkId = clerkId;
     }
 
     public enum ShiftStatus {

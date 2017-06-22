@@ -1,33 +1,89 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string-array name="settingsSectionsAdminArray">
+        <item name="generalSettings">"Configuración general"</item>
+        <item name="restaurantSettings">"Configuración de restaurante"</item>
+        <item name="giftcardSettings">"Configuración de la tarjeta de regalo"</item>
+        <item name="paymentsMethodsSettings">"Métodos de pago"</item>
+        <item name="paymentProcessingSettings">"Proceso de pagos"</item>
+        <item name="printingSettings">"Configuración de impresión"</item>
+        <item name="productsSettings">"Configuración de productos"</item>
+        <item name="accountSettings">"Configuraciones de la cuenta"</item>
+        <item name="cashDrawerSettings">"Cajón de dinero"</item>
+        <item name="kioskSettings">"Configuración del quiosco"</item>
+        <item name="shippingCalculationSettings">"Calculo de Envios"</item>
+        <item name="transactionSettings">"Ajustes de Transacción"</item>
+        <item name="handpointSettings">"Herramientas Handpoint"</item>
+        <item name="supportSettings">"Solución de problemas"</item>
+        <item name="othersSettings">"Otros ajustes"</item>
+    </string-array>
+
+    <string-array name="settingsSectionsManagerArray">
+        <item name="printingSettings">"Configuración de impresión"</item>
+        <item name="cashDrawerSettings">"Cajón de dinero"</item>
+        <item name="othersSettings">"Otros ajustes"</item>
+    </string-array>
+
+    <string-array name="settingsSectionsGeneralArray">
+        <item name="paymentProcessingSettings">"Proceso de pagos"</item>
+        <item name="othersSettings">"Otros ajustes"</item>
+        <item name="printingSettings">"Configuración de impresión"</item>
+    </string-array>
 
     <string-array name="mainMenuArray">
-        <item name="menu_sales_receipt">Start Check</item>
-        <item name="menu_order">Order</item>
-        <item name="menu_return">Return</item>
-        <item name="menu_invoice">Invoice</item>
-        <item name="menu_estimate">Estimate</item>
-        <item name="menu_payment">Payment</item>
-        <item name="menu_giftcard">Gift Card</item>
-        <item name="menu_loyaltycard">Loyalty Card</item>
-        <item name="menu_rewardcard">Reward Card</item>
-        <item name="menu_refund">Refund</item>
-        <item name="menu_route">Route</item>
-        <item name="menu_on_hold">Recall Check</item>
-        <item name="menu_consignment">Consignment</item>
-        <item name="menu_transfer_inventory">Inventory Transfer</item>
-        <item name="menu_tip_adjustment">Tip Adjustment</item>
-        <item name="menu_clerk_shifts">Shifts</item>
-        <item name="menu_shift_expense">Shift Noi Sale</item>
-
+        <item name="menu_sales_receipt">"Recibo de compra"</item>
+        <item name="menu_order">"Orden"</item>
+        <item name="menu_return">"Devolución"</item>
+        <item name="menu_invoice">"Factura"</item>
+        <item name="menu_estimate">"Estimado"</item>
+        <item name="menu_payment">"Pago"</item>
+        <item name="menu_giftcard">"Tarjeta de regalo"</item>
+        <item name="menu_loyaltycard">"Tarjeta de lealtad"</item>
+        <item name="menu_rewardcard">"Tarjeta de recompensa"</item>
+        <item name="menu_refund">"Reembolso"</item>
+        <item name="menu_route">"Ruta"</item>
+        <item name="menu_on_hold">"Mantener"</item>
+        <item name="menu_consignment">"Consignación"</item>
+        <item name="menu_transfer_inventory">"Transferencia Inventario"</item>
+        <item name="menu_tip_adjustment">"Ajuste de la propina"</item>
+        <item name="menu_clerk_shifts">"Turnos"</item>
+        <item name="menu_shift_expense">"No-Venta"</item>
     </string-array>
+
+    <string-array name="mainMenuRestaurantArray">
+        <item name="menu_sales_receipt">"Abrir Cuenta"</item>
+        <item name="menu_order">"Orden"</item>
+        <item name="menu_return">"Devolución"</item>
+        <item name="menu_invoice">"Factura"</item>
+        <item name="menu_estimate">"Estimado"</item>
+        <item name="menu_payment">"Pago"</item>
+        <item name="menu_giftcard">"Tarjeta de regalo"</item>
+        <item name="menu_loyaltycard">"Tarjeta de lealtad"</item>
+        <item name="menu_rewardcard">"Tarjeta de recompensa"</item>
+        <item name="menu_refund">"Reembolso"</item>
+        <item name="menu_route">"Ruta"</item>
+        <item name="menu_on_hold">"Registro Cheque"</item>
+        <item name="menu_consignment">"Consignación"</item>
+        <item name="menu_transfer_inventory">"Transferencia Inventario"</item>
+        <item name="menu_tip_adjustment">"Ajuste de la propina"</item>
+        <item name="menu_clerk_shifts">"Turnos"</item>
+        <item name="menu_shift_expense">"No-Venta"</item>
+    </string-array>
+
 
     <string-array name="salesReceiptSplitTypes">
-        <item name="split_by_Seats">@string/split_by_seats</item>
-        <item name="split_equally">@string/split_equally</item>
-        <item name="split_single">@string/split_single</item>
+        <item name="split_by_Seats">"@string/split_by_seats"</item>
+        <item name="split_equally">"@string/split_equally"</item>
+        <item name="split_single">"@string/split_single"</item>
     </string-array>
 
+    <string-array name="expenseTypes">
+        <item name="safe_drop">"@string/safe_drop"</item>
+        <item name="cash_drop">"@string/cash_drop"</item>
+        <item name="cash_in">"@string/cash_in"</item>
+        <item name="buy_goods_services">"@string/buy_goods_services"</item>
+        <item name="non_cash_gratuity">"@string/non_cash_gratuity"</item>
+
+    </string-array>
 
     <integer-array name="dinningTableSeatsArray">
         <item name="1">1</item>
@@ -63,186 +119,139 @@
     <!-- </string-array> -->
 
     <string-array name="mainMenuDefaultKey">
-        <item name="menu_sales_receipt">0</item>
-        <item name="menu_order">1</item>
-        <item name="menu_return">2</item>
-        <item name="menu_invoice">3</item>
-        <item name="menu_estimate">4</item>
-        <item name="menu_payment">5</item>
-        <item name="menu_giftcard">6</item>
-        <item name="menu_loyaltycard">7</item>
-        <item name="menu_rewardcard">8</item>
-        <item name="menu_refund">9</item>
-        <item name="menu_route">10</item>
-        <item name="menu_on_hold">11</item>
-        <item name="menu_consignment">12</item>
-        <item name="menu_transfer_inventory">13</item>
-        <item name="menu_tip_adjustment">14</item>
-        <item name="menu_clerk_shifts">15</item>
-        <item name="menu_shift_expense">16</item>
+        <item name="menu_sales_receipt">"0"</item>
+        <item name="menu_order">"1"</item>
+        <item name="menu_return">"2"</item>
+        <item name="menu_invoice">"3"</item>
+        <item name="menu_estimate">"4"</item>
+        <item name="menu_payment">"5"</item>
+        <item name="menu_giftcard">"6"</item>
+        <item name="menu_loyaltycard">"7"</item>
+        <item name="menu_rewardcard">"8"</item>
+        <item name="menu_refund">"9"</item>
+        <item name="menu_route">"10"</item>
+        <item name="menu_on_hold">"11"</item>
+        <item name="menu_consignment">"12"</item>
+        <item name="menu_transfer_inventory">"13"</item>
+        <item name="menu_tip_adjustment">"14"</item>
+        <item name="menu_clerk_shifts">"15"</item>
+        <item name="menu_shift_expense">"16"</item>
     </string-array>
 
     <string-array name="mainMenuKey">
-        <item name="menu_sales_receipt">0</item>
-        <item name="menu_order">1</item>
-        <item name="menu_return">2</item>
-        <item name="menu_invoice">3</item>
-        <item name="menu_estimate">4</item>
-        <item name="menu_payment">5</item>
-        <item name="menu_giftcard">6</item>
-        <item name="menu_loyaltycard">7</item>
-        <item name="menu_rewardcard">8</item>
-        <item name="menu_refund">9</item>
-        <item name="menu_route">10</item>
-        <item name="menu_on_hold">11</item>
-        <item name="menu_consignment">12</item>
-        <item name="menu_transfer_inventory">13</item>
-        <item name="menu_tip_adjustment">14</item>
-        <item name="menu_clerk_shifts">15</item>
-        <item name="menu_shift_expense">16</item>
+        <item name="menu_sales_receipt">"0"</item>
+        <item name="menu_order">"1"</item>
+        <item name="menu_return">"2"</item>
+        <item name="menu_invoice">"3"</item>
+        <item name="menu_estimate">"4"</item>
+        <item name="menu_payment">"5"</item>
+        <item name="menu_giftcard">"6"</item>
+        <item name="menu_loyaltycard">"7"</item>
+        <item name="menu_rewardcard">"8"</item>
+        <item name="menu_refund">"9"</item>
+        <item name="menu_route">"10"</item>
+        <item name="menu_on_hold">"11"</item>
+        <item name="menu_consignment">"12"</item>
+        <item name="menu_transfer_inventory">"13"</item>
+        <item name="menu_tip_adjustment">"14"</item>
+        <item name="menu_clerk_shifts">"15"</item>
+        <item name="menu_shift_expense">"16"</item>
     </string-array>
 
     <string-array name="printPrefArray">
-        <item name="print_header">Header</item>
-        <item name="print_shiptoinfo">Ship To Info</item>
-        <item name="print_terms">Terms</item>
-        <item name="print_customer_id">Customer Account Number</item>
-        <item name="print_order_comments">Order Comments</item>
-        <item name="print_addons">Addons</item>
-        <item name="print_tax_details">Product Tax Details</item>
-        <item name="print_discount_details">Products Discount Details</item>
-        <item name="print_descriptions">Product Descriptions</item>
-        <item name="print_prod_comments">Product Comments</item>
-        <item name="print_sale_attributes">Sale Attributes</item>
-        <item name="print_payment_comments">Payment Comments</item>
-        <item name="print_ivuloto_qr">Print Ivu Loto QR Code</item>
-        <item name="print_footer">Footer</item>
-        <item name="print_terms_conditions">Terms And Conditions</item>
-        <item name="print_emobilepos_website">eMobilePOS Website Footer</item>
+        <item name="print_header">"Encabezamiento"</item>
+        <item name="print_shiptoinfo">"Enviar a la información"</item>
+        <item name="print_terms">"Términos"</item>
+        <item name="print_customer_id">"Número de cuenta del cliente"</item>
+        <item name="print_order_comments">"Comentarios de la orden"</item>
+        <item name="print_addons">"Complementos"</item>
+        <item name="print_tax_details">"Detalles del impuesto sobre el producto"</item>
+        <item name="print_discount_details">"Detalles de Descuento al Productos"</item>
+        <item name="print_descriptions">"Descripción del producto"</item>
+        <item name="print_prod_comments">"Comentarios del producto"</item>
+        <item name="print_sale_attributes">"Atributos de venta"</item>
+        <item name="print_payment_comments">"Comentarios de Pago"</item>
+        <item name="print_ivuloto_qr">"Imprimir Ivu Loto QR Code"</item>
+        <item name="print_footer">"Pie de página"</item>
+        <item name="print_terms_conditions">"Términos y Condiciones"</item>
+        <item name="print_emobilepos_website">"eMobilePOS Website Footer"</item>
     </string-array>
     <string-array name="printPrefValues">
-        <item name="print_header">print_header</item>
-        <item name="print_shiptoinfo">print_shiptoinfo</item>
-        <item name="print_terms">print_terms</item>
-        <item name="print_customer_id">print_customer_id</item>
-        <item name="print_order_comments">print_order_comments</item>
-        <item name="print_addons">print_addons</item>
-        <item name="print_tax_details">print_tax_details</item>
-        <item name="print_discount_details">print_discount_details</item>
-        <item name="print_descriptions">print_descriptions</item>
-        <item name="print_prod_comments">print_prod_comments</item>
-        <item name="print_sale_attributes">print_sale_atributes</item>
-        <item name="print_payment_comments">print_payment_comments</item>
-        <item name="print_ivu_loto_qr">print_ivuloto_qr</item>
-        <item name="print_footer">print_footer</item>
-        <item name="print_terms_conditions">print_terms_conditions</item>
-        <item name="print_emobilepos_website">print_emobilepos_website</item>
+        <item name="print_header">"print_header"</item>
+        <item name="print_shiptoinfo">"print_shiptoinfo"</item>
+        <item name="print_terms">"print_terms"</item>
+        <item name="print_customer_id">"print_customer_id"</item>
+        <item name="print_order_comments">"print_order_comments"</item>
+        <item name="print_addons">"print_addons"</item>
+        <item name="print_tax_details">"print_tax_details"</item>
+        <item name="print_discount_details">"print_discount_details"</item>
+        <item name="print_descriptions">"print_descriptions"</item>
+        <item name="print_prod_comments">"print_prod_comments"</item>
+        <item name="print_sale_attributes">"print_sale_atributes"</item>
+        <item name="print_payment_comments">"print_payment_comments"</item>
+        <item name="print_ivu_loto_qr">"print_ivuloto_qr"</item>
+        <item name="print_footer">"print_footer"</item>
+        <item name="print_terms_conditions">"print_terms_conditions"</item>
+        <item name="print_emobilepos_website">"print_emobilepos_website"</item>
     </string-array>
     <string-array name="attributeToDisplayArray">
-        <item name="prod_name">Product Name</item>
-        <item name="prod_desc">Product Description</item>
-        <item name="prod_extradesc">Product Extra Description</item>
+        <item name="prod_name">"Nombre del producto"</item>
+        <item name="prod_desc">"Descripción del producto "</item>
+        <item name="prod_extradesc">"Descripción Extra del Producto"</item>
     </string-array>
     <string-array name="attributeToDisplayValues">
-        <item name="prod_name">prod_name</item>
-        <item name="prod_desc">prod_desc</item>
-        <item name="prod_extradesc">prod_extradesc</item>
+        <item name="prod_name">"prod_name"</item>
+        <item name="prod_desc">"prod_desc"</item>
+        <item name="prod_extradesc">"prod_extradesc"</item>
+    </string-array>
+    <string-array name="printerWidths">
+        <item name="SMALL">"Small"</item>
+        <item name="MEDIUM">"Medium"</item>
+        <item name="LARGE">"Large"</item>
+    </string-array>
+    <string-array name="printerWidthsValues">
+        <item name="SMALL">"SMALL"</item>
+        <item name="MEDIUM">"MEDIUM"</item>
+        <item name="LARGE">"LARGE"</item>
     </string-array>
     <string-array name="defaultTransEntries">
-        <item name="default_trans_none">None</item>
-        <item name="default_trans_sales_receipt">Start Check</item>
-        <item name="default_trans_return">Return</item>
+        <item name="default_trans_none">"Ninguna"</item>
+        <item name="default_trans_sales_receipt">"Abrir Cuenta"</item>
+        <item name="default_trans_return">"Devolución"</item>
     </string-array>
     <string-array name="defaultTransKey">
-        <item name="default_trans_none">-1</item>
-        <item name="default_trans_sales_receipt">0</item>
-        <item name="default_trans_return">2</item>
+        <item name="default_trans_none">"-1"</item>
+        <item name="default_trans_sales_receipt">"0"</item>
+        <item name="default_trans_return">"2"</item>
     </string-array>
     <string-array name="audioCardReaderEntries">
-        <item name="reader_none">None</item>
-        <item name="reader_unimag">Unimag</item>
-        <item name="reader_magtek">Magtek</item>
-        <item name="reader_rover">Rover</item>
-        <item name="reader_walker">Walker</item>
+        <item name="reader_none">"Ninguna"</item>
+        <item name="reader_unimag">"Unimag"</item>
+        <item name="reader_magtek">"Magtek"</item>
+        <item name="reader_rover">"Rover"</item>
+        <item name="reader_walker">"Walker"</item>
     </string-array>
     <string-array name="audioCardReaderValues">
-        <item name="reader_none">-1</item>
-        <item name="reader_unimag">0</item>
-        <item name="reader_magtek">1</item>
-        <item name="reader_rover">2</item>
-        <item name="reader_walker">3</item>
+        <item name="reader_none">"-1"</item>
+        <item name="reader_unimag">"0"</item>
+        <item name="reader_magtek">"1"</item>
+        <item name="reader_rover">"2"</item>
+        <item name="reader_walker">"3"</item>
     </string-array>
 
     <string-array name="cardTypes">
-        <item name="amex">American Express</item>
-        <item name="visa">Visa</item>
-        <item name="discover">Discover</item>
-        <item name="mastercard">Master Card</item>
-        <item name="cup">CUP</item>
-        <item name="jcb">JCB</item>
-        <item name="dinersclub">Diners Club</item>
+        <item name="amex">"American Express"</item>
+        <item name="visa">"Visa"</item>
+        <item name="discover">"Discover"</item>
+        <item name="mastercard">"Master Card"</item>
+        <item name="cup">"CUP"</item>
+        <item name="jcb">"JCB"</item>
+        <item name="dinersclub">"Diners Club"</item>
     </string-array>
 
     <string-array name="navigationbarByModels">
-        <item name="paypoint">paypoint</item>
-        <item name="msm8960">msm8960</item>
-    </string-array>
-
-    <string-array name="settingsSectionsAdminArray">
-        <item name="generalSettings">General Settings</item>
-        <item name="restaurantSettings">Restaurant Settings</item>
-        <item name="giftcardSettings">Gift Card Settings</item>
-        <item name="paymentsMethodsSettings">Payments Methods</item>
-        <item name="paymentProcessingSettings">Payment Processing</item>
-        <item name="printingSettings">Printing Settings</item>
-        <item name="productsSettings">Products Settings</item>
-        <item name="accountSettings">Account Settings</item>
-        <item name="cashDrawerSettings">Cash Drawer</item>
-        <item name="kioskSettings">Kiosk Configuration</item>
-        <item name="shippingCalculationSettings">Shipping Calculation</item>
-        <item name="transactionSettings">Transaction Settings</item>
-        <item name="handpointSettings">Handpoint Tools</item>
-        <item name="supportSettings">Support Troubleshooting</item>
-        <item name="othersSettings">Other Settings</item>
-    </string-array>
-    <string-array name="settingsSectionsManagerArray">
-        <item name="printingSettings">Printing Settings</item>
-        <item name="cashDrawerSettings">Cash Drawer</item>
-        <item name="othersSettings">Other Settings</item>
-    </string-array>
-    <string-array name="settingsSectionsGeneralArray">
-        <item name="paymentProcessingSettings">Payment Processing</item>
-        <item name="othersSettings">Other Settings</item>
-        <item name="printingSettings">Printing Settings</item>
-    </string-array>
-    <string-array name="printerWidths">
-        <item name="SMALL">Small</item>
-        <item name="MEDIUM">Medium</item>
-        <item name="LARGE">Large</item>
-    </string-array>
-    <string-array name="printerWidthsValues">
-        <item name="SMALL">SMALL</item>
-        <item name="MEDIUM">MEDIUM</item>
-        <item name="LARGE">LARGE</item>
-    </string-array>
-    <string-array name="mainMenuRestaurantArray">
-        <item name="menu_sales_receipt">Start Check</item>
-        <item name="menu_order">Order</item>
-        <item name="menu_return">Return</item>
-        <item name="menu_invoice">Invoice</item>
-        <item name="menu_estimate">Estimate</item>
-        <item name="menu_payment">Payment</item>
-        <item name="menu_giftcard">Gift Card</item>
-        <item name="menu_loyaltycard">Loyalty Card</item>
-        <item name="menu_rewardcard">Reward Card</item>
-        <item name="menu_refund">Refund</item>
-        <item name="menu_route">Route</item>
-        <item name="menu_on_hold">Recall Check</item>
-        <item name="menu_consignment">Consignment</item>
-        <item name="menu_transfer_inventory">Inventory Transfer</item>
-        <item name="menu_tip_adjustment">Tip Adjustment</item>
-        <item name="menu_clerk_shifts">Shifts</item>
-        <item name="menu_shift_expense">No Sale</item>
+        <item name="paypoint">"paypoint"</item>
+        <item name="msm8960">"msm8960"</item>
     </string-array>
 
 </resources>

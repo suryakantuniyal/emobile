@@ -12,10 +12,14 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.android.dao.ShiftDAO;
+import com.android.dao.ShiftExpensesDAO;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.realms.Shift;
+import com.android.emobilepos.models.realms.ShiftExpense;
 import com.android.support.Global;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+
+import java.math.BigDecimal;
 
 public class ShiftReportDetails_FA extends BaseFragmentActivityActionBar implements View.OnClickListener {
 
@@ -23,9 +27,9 @@ public class ShiftReportDetails_FA extends BaseFragmentActivityActionBar impleme
     private ProgressDialog myProgressDialog;
     private Activity activity;
     private boolean hasBeenCreated = false;
-    private Button btnPrint;
     private String shiftID;
     private Shift shift;
+    private BigDecimal totalExpenses, safeDropTotal, cashDropTotal, cashInTotal, buyGoodsTotal, nonCashGratuityTotal;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -34,11 +38,17 @@ public class ShiftReportDetails_FA extends BaseFragmentActivityActionBar impleme
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.shift_details_layout);
         global = (Global) getApplication();
-        btnPrint = (Button) findViewById(R.id.btnPrint);
+        Button btnPrint = (Button) findViewById(R.id.btnPrint);
         btnPrint.setOnClickListener(this);
         Bundle extras = this.getIntent().getExtras();
         shiftID = extras.getString("shift_id");
         shift = ShiftDAO.getShift(shiftID);
+        totalExpenses = ShiftExpensesDAO.getShiftTotalExpenses(shiftID);
+        safeDropTotal = ShiftExpensesDAO.getShiftTotalExpenses(shiftID, ShiftExpense.ExpenseProductId.SAFE_DROP);
+        cashDropTotal = ShiftExpensesDAO.getShiftTotalExpenses(shiftID, ShiftExpense.ExpenseProductId.CASH_DROP);
+        cashInTotal = ShiftExpensesDAO.getShiftTotalExpenses(shiftID, ShiftExpense.ExpenseProductId.CASH_IN);
+        buyGoodsTotal = ShiftExpensesDAO.getShiftTotalExpenses(shiftID, ShiftExpense.ExpenseProductId.BUY_GOODS_SERVICES);
+        nonCashGratuityTotal = ShiftExpensesDAO.getShiftTotalExpenses(shiftID, ShiftExpense.ExpenseProductId.NON_CASH_GRATUITY);
         hasBeenCreated = true;
         if (shift != null) {
             loadUIInfo();
@@ -47,22 +57,29 @@ public class ShiftReportDetails_FA extends BaseFragmentActivityActionBar impleme
 
     private void loadUIInfo() {
         ((TextView) findViewById(R.id.salesClerktextView26)).setText(shift.getAssigneeName());
-        ((TextView) findViewById(R.id.beginningPettyCashtextView26)).setText(shift.getBeginningPettyCash());
-        ((TextView) findViewById(R.id.totalExpensestextView26)).setText(shift.getTotalExpenses());
-        ((TextView) findViewById(R.id.endingPettyCashtextView26)).setText(shift.getEndingPettyCash());
-        ((TextView) findViewById(R.id.totalTransactionCashtextView26)).setText(shift.getTotalTransactionsCash());
-        ((TextView) findViewById(R.id.totalEndingCashtextView26)).setText(shift.getTotal_ending_cash());
-        ((TextView) findViewById(R.id.enteredCloseAmounttextView26)).setText(shift.getEnteredCloseAmount());
+        ((TextView) findViewById(R.id.beginningPettyCashtextView26)).setText(Global.formatDoubleStrToCurrency(shift.getBeginningPettyCash()));
+        ((TextView) findViewById(R.id.totalExpensestextView26)).setText(Global.formatDoubleStrToCurrency(String.valueOf(totalExpenses)));
+//        ((TextView) findViewById(R.id.endingPettyCashtextView26)).setText(Global.formatDoubleStrToCurrency(shift.getEndingPettyCash()));
+        ((TextView) findViewById(R.id.totalTransactionCashtextView26)).setText(Global.formatDoubleStrToCurrency(shift.getTotalTransactionsCash()));
+        ((TextView) findViewById(R.id.totalEndingCashtextView26)).setText(Global.formatDoubleStrToCurrency(shift.getTotal_ending_cash()));
+        ((TextView) findViewById(R.id.enteredCloseAmounttextView26)).setText(Global.formatDoubleStrToCurrency(shift.getEnteredCloseAmount()));
+        ((TextView) findViewById(R.id.shortOverAmounttextView)).setText(Global.formatDoubleStrToCurrency(shift.getOver_short()));
+        ((TextView) findViewById(R.id.safeDropExpensestextView)).setText(Global.formatDoubleStrToCurrency(String.valueOf(safeDropTotal)));
+        ((TextView) findViewById(R.id.cashDropExpensestextView2)).setText(Global.formatDoubleStrToCurrency(String.valueOf(cashDropTotal)));
+        ((TextView) findViewById(R.id.cashInExpensestextView4)).setText(Global.formatDoubleStrToCurrency(String.valueOf(cashInTotal)));
+        ((TextView) findViewById(R.id.buyGoodsServicesExpensestextView6)).setText(Global.formatDoubleStrToCurrency(String.valueOf(buyGoodsTotal)));
+        ((TextView) findViewById(R.id.nonCashGratuityExpensestextVie8)).setText(Global.formatDoubleStrToCurrency(String.valueOf(nonCashGratuityTotal)));
+
     }
 
     @Override
     public void onResume() {
 
         if (global.isApplicationSentToBackground(this))
-            global.loggedIn = false;
+            Global.loggedIn = false;
         global.stopActivityTransitionTimer();
 
-        if (hasBeenCreated && !global.loggedIn) {
+        if (hasBeenCreated && !Global.loggedIn) {
             if (global.getGlobalDlog() != null)
                 global.getGlobalDlog().dismiss();
             global.promptForMandatoryLogin(this);
@@ -76,7 +93,7 @@ public class ShiftReportDetails_FA extends BaseFragmentActivityActionBar impleme
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         boolean isScreenOn = powerManager.isScreenOn();
         if (!isScreenOn)
-            global.loggedIn = false;
+            Global.loggedIn = false;
         global.startActivityTransitionTimer();
     }
 

@@ -641,7 +641,7 @@ public class EMSDeviceDriver {
     protected void printReceipt(String ordID, int lineWidth, boolean fromOnHold, Global.OrderType type, boolean isFromHistory, EMVContainer emvContainer) {
         try {
             AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee(false);
-            Clerk clerk = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()), false);
+            Clerk clerk = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()));
             startReceipt();
             setPaperWidth(lineWidth);
             printPref = myPref.getPrintingPreferences();
@@ -695,7 +695,7 @@ public class EMSDeviceDriver {
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
                     Global.formatToDisplayDate(anOrder.ord_timecreated, 3), lineWidth, 0));
 
-            if (!myPref.getShiftIsOpen() || myPref.isUseClerks()) {
+            if (ShiftDAO.isShiftOpen() && myPref.isUseClerks()) {
                 String clerk_id = anOrder.clerk_id;
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_clerk),
                         clerk.getEmpName() + "(" + clerk_id + ")", lineWidth, 0));
@@ -1534,7 +1534,6 @@ public class EMSDeviceDriver {
             sb.append("\n");
             print(sb.toString(), FORMAT);
             sb.setLength(0);
-            printTermsNConds();
             printEnablerWebSite(lineWidth);
             cutPaper();
         } catch (StarIOPortException ignored) {
@@ -1890,7 +1889,6 @@ public class EMSDeviceDriver {
             sb.append(textHandler.centeredString(getString(R.string.receipt_thankyou), lineWidth));
             print(sb.toString(), FORMAT);
             print(textHandler.newLines(1), FORMAT);
-            printTermsNConds();
             printEnablerWebSite(lineWidth);
             cutPaper();
         } catch (StarIOPortException e) {
@@ -1993,7 +1991,6 @@ public class EMSDeviceDriver {
             } catch (JAException e) {
                 e.printStackTrace();
             }
-            printTermsNConds();
             printEnablerWebSite(lineWidth);
             print(textHandler.newLines(1), FORMAT);
             cutPaper();
@@ -2100,7 +2097,6 @@ public class EMSDeviceDriver {
                 printFooter(lineWidth);
             printImage(1);
             print(textHandler.newLines(3), FORMAT);
-            printTermsNConds();
             printEnablerWebSite(lineWidth);
             cutPaper();
         } catch (StarIOPortException ignored) {
@@ -2163,7 +2159,6 @@ public class EMSDeviceDriver {
                 print(sb.toString(), FORMAT);
                 print(textHandler.newLines(3), FORMAT);
             }
-            printTermsNConds();
             printEnablerWebSite(lineWidth);
             cutPaper();
         } catch (StarIOPortException ignored) {
@@ -2406,22 +2401,26 @@ public class EMSDeviceDriver {
         startReceipt();
         StringBuilder sb = new StringBuilder();
         EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
-        sb.append(textHandler.centeredString("Shift Details", lineWidth));
+        sb.append(textHandler.centeredString(activity.getString(R.string.shift_details), lineWidth));
         Shift shift = ShiftDAO.getShift(shiftID);
         sb.append(textHandler.newLines(2));
-        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Sales Clerk:", shift.getAssigneeName(), lineWidth, 0));
-        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Employee: ", employee.getEmpName(), lineWidth, 0));
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText(activity.getString(R.string.sales_clerk), shift.getAssigneeName(), lineWidth, 0));
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText(activity.getString(R.string.receipt_employee), employee.getEmpName(), lineWidth, 0));
         sb.append(textHandler.newLines(2));
-        sb.append("From: ").append(DateUtils.getDateAsString(shift.getStartTime()));
+//        sb.append(activity.getString(R.string.from)).append(DateUtils.getDateAsString(shift.getStartTime()));
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText(activity.getString(R.string.from), DateUtils.getDateAsString(shift.getStartTime()), lineWidth, 0));
+
         sb.append(textHandler.newLines(1));
         if (shift.getShiftStatus() == Shift.ShiftStatus.OPEN) {
-            sb.append("To: ").append(Shift.ShiftStatus.OPEN.name());
+//            sb.append(activity.getString(R.string.to)).append(Shift.ShiftStatus.OPEN.name());
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(activity.getString(R.string.to), Shift.ShiftStatus.OPEN.name(), lineWidth, 0));
         } else {
-            sb.append("To: ").append(DateUtils.getDateAsString(shift.getEndTime()));
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(activity.getString(R.string.to), DateUtils.getDateAsString(shift.getEndTime()), lineWidth, 0));
+//            sb.append(activity.getString(R.string.to)).append(DateUtils.getDateAsString(shift.getEndTime()));
         }
         sb.append(textHandler.newLines(2));
-        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Beginning Petty Cash", shift.getBeginningPettyCash(), lineWidth, 0));
-        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total Expenses", "(" + shift.getTotalExpenses() + ")", lineWidth, 0));
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText(activity.getString(R.string.begging_petty_cash), Global.formatDoubleStrToCurrency(shift.getBeginningPettyCash()), lineWidth, 0));
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText(activity.getString(R.string.total_expenses), Global.formatDoubleStrToCurrency(shift.getTotalExpenses()), lineWidth, 0));
         List<ShiftExpense> shiftExpenses = ShiftExpensesDAO.getShiftExpenses(shiftID);
         if (shiftExpenses != null) {
             for (ShiftExpense expense : shiftExpenses) {
@@ -2429,12 +2428,12 @@ public class EMSDeviceDriver {
                         Global.formatDoubleStrToCurrency(expense.getCashAmount()), lineWidth, 3));
             }
         }
-        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Ending Petty Cash", shift.getEndingPettyCash(), lineWidth, 0));
-        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total Transactions Cash", shift.getTotalTransactionsCash(), lineWidth, 0));
-        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total Ending Cash", shift.getEndingCash(), lineWidth, 0));
-        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Entered Close Amount", shift.getEnteredCloseAmount(), lineWidth, 0));
+//        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Ending Petty Cash", Global.formatDoubleStrToCurrency(shift.getEndingPettyCash()), lineWidth, 0));
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText(activity.getString(R.string.total_transactions_cash), Global.formatDoubleStrToCurrency(shift.getTotalTransactionsCash()), lineWidth, 0));
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText(activity.getString(R.string.total_ending_cash), Global.formatDoubleStrToCurrency(shift.getTotal_ending_cash()), lineWidth, 0));
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText(activity.getString(R.string.entered_close_amount), Global.formatDoubleStrToCurrency(shift.getEnteredCloseAmount()), lineWidth, 0));
         sb.append(textHandler.newLines(2));
-        sb.append(textHandler.centeredString("** End of shift report **", lineWidth));
+        sb.append(textHandler.centeredString(activity.getString(R.string.endShiftReport), lineWidth));
         sb.append(textHandler.newLines(4));
         print(sb.toString(), FORMAT);
         cutPaper();

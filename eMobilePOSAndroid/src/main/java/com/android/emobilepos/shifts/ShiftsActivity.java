@@ -1,7 +1,7 @@
 package com.android.emobilepos.shifts;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
@@ -14,10 +14,12 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.ClerkDAO;
 import com.android.dao.ShiftDAO;
 import com.android.database.DBManager;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.Shift;
 import com.android.support.DateUtils;
@@ -29,8 +31,10 @@ import com.android.support.SynchMethods;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.crashlytics.android.Crashlytics;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
+
 
 public class ShiftsActivity extends BaseFragmentActivityActionBar implements View.OnClickListener, TextWatcher {
 
@@ -67,6 +71,8 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
     private int fiftyDollars;
     private int hundredDollars;
     private TextView totalAmountEditText;
+    private TextView shortOverStatusTextView;
+
     private Shift shift;
     private Button submitShiftbutton;
     private TextView openOnLbl;
@@ -76,13 +82,16 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
     private TextView pettyCash;
     private MyPreferences preferences;
     Global global;
+    private TextView endingCashAmounteditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         preferences = new MyPreferences(this);
         global = (Global) this.getApplication();
-        new GetShiftTask().execute();
+//        if (preferences.isUseClerks()) {
+        new GetShiftTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+//        }
     }
 
     private void setShiftUI() {
@@ -114,6 +123,7 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
             closeAmountLbl.setText(getString(R.string.entered_close_amount));
             openOnDate.setText(DateUtils.getDateAsString(shift.getCreationDate(), DateUtils.DATE_MMM_dd_yyyy_h_mm_a));
             pettyCash.setText(Global.formatDoubleStrToCurrency(shift.getBeginningPettyCash()));
+            endingCashAmounteditText.setText(Global.formatDoubleStrToCurrency(shift.getTotal_ending_cash()));
         }
 
     }
@@ -263,36 +273,42 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
     }
 
     private void closeShift() {
+        Double total = (oneCent * .01) + (fiveCents * 5 * .01) + (tenCents * 10 * .01) + (quarterCents * 25 * .01) +
+                oneDollar + (fiveDollars * 5) + (tenDollars * 10) + (twentyDollars * 20) +
+                (fiftyDollars * 50) + (hundredDollars * 100);
         Date now = new Date();
         shift.setEnteredCloseAmount(NumberUtils.cleanCurrencyFormatedNumber(totalAmountEditText.getText().toString()));
         shift.setEndTime(now);
         shift.setEndTimeLocal(now);
         shift.setShiftStatus(Shift.ShiftStatus.CLOSED);
+        shift.setOver_short(String.valueOf(Double.parseDouble(shift.getTotal_ending_cash()) - total));
         ShiftDAO.insertOrUpdate(shift);
-        new SendShiftTask().execute();
+        new SendShiftTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     private void startCountDownShift() {
         shift.setShiftStatus(Shift.ShiftStatus.PENDING);
         ShiftDAO.insertOrUpdate(shift);
         setShiftUI();
-        new SendShiftTask().execute();
+        new SendShiftTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     private void openShift() {
         Date now = new Date();
         shift = new Shift();
+        AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee(false);
         shift.setShiftStatus(Shift.ShiftStatus.OPEN);
-        shift.setAssigneeId(Integer.parseInt(preferences.getClerkID()));
-        shift.setAssigneeName(preferences.getClerkName());
+        shift.setAssigneeId(employee.getEmpId());
+        shift.setAssigneeName(employee.getEmpName());
+        shift.setClerkId(Integer.parseInt(preferences.getClerkID()));
         shift.setBeginningPettyCash(NumberUtils.cleanCurrencyFormatedNumber(totalAmountEditText.getText().toString()));
+        shift.setTotal_ending_cash(shift.getBeginningPettyCash());
         shift.setCreationDate(now);
         shift.setStartTime(now);
         shift.setStartTimeLocal(now);
 
         //set the ending petty cash equal to the beginning petty cash, decrease the ending petty cash every time there is an expense
         shift.setEndingPettyCash(NumberUtils.cleanCurrencyFormatedNumber(totalAmountEditText.getText().toString()));
-        shift.setTotal_ending_cash("0");
         ShiftDAO.insertOrUpdate(shift);
         finish();
     }
@@ -312,15 +328,41 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
         fiftyDollarTextView.setText(Global.getCurrencyFormat(String.valueOf(fiftyDollars * 50)));
         hundredDollarTextView.setText(Global.getCurrencyFormat(String.valueOf(hundredDollars * 100)));
         totalAmountEditText.setText(Global.getCurrencyFormat(total.toString()));
+        if (shift != null && shift.getShiftStatus() == Shift.ShiftStatus.PENDING) {
+            BigDecimal totalEndingCash = new BigDecimal(shift.getTotal_ending_cash());
+            switch (total.compareTo(totalEndingCash.doubleValue())) {
+                case 1:
+                    shortOverStatusTextView.setText(
+                            String.format("%s %s", getString(R.string.over_amount), Global.formatDoubleToCurrency(totalEndingCash.subtract(BigDecimal.valueOf(total)).abs().doubleValue())));
+                    totalAmountEditText.setTextColor(Color.RED);
+                    shortOverStatusTextView.setTextColor(Color.RED);
+                    shortOverStatusTextView.setVisibility(View.VISIBLE);
+                    break;
+                case -1:
+                    totalAmountEditText.setTextColor(Color.RED);
+                    shortOverStatusTextView.setTextColor(Color.RED);
+                    shortOverStatusTextView.setVisibility(View.VISIBLE);
+                    shortOverStatusTextView.setText(
+                            String.format("%s (%s)", getString(R.string.short_amount), Global.formatDoubleToCurrency(totalEndingCash.subtract(BigDecimal.valueOf(total)).doubleValue())));
+                    break;
+                case 0:
+                    totalAmountEditText.setTextColor(Color.BLUE);
+                    shortOverStatusTextView.setTextColor(Color.BLUE);
+                    shortOverStatusTextView.setVisibility(View.VISIBLE);
+                    shortOverStatusTextView.setText(
+                            String.format("%s %s", getString(R.string.even_amount), Global.formatDoubleToCurrency(totalEndingCash.subtract(BigDecimal.valueOf(total)).doubleValue())));
+                    break;
+            }
+        }
     }
 
     @Override
     public void onResume() {
         if (global.isApplicationSentToBackground(this))
-            global.loggedIn = false;
+            Global.loggedIn = false;
         global.stopActivityTransitionTimer();
 
-        if (!global.loggedIn) {
+        if (!Global.loggedIn) {
             if (global.getGlobalDlog() != null)
                 global.getGlobalDlog().dismiss();
             global.promptForMandatoryLogin(this);
@@ -334,7 +376,7 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         boolean isScreenOn = powerManager.isScreenOn();
         if (!isScreenOn)
-            global.loggedIn = false;
+            Global.loggedIn = false;
         global.startActivityTransitionTimer();
     }
 
@@ -398,7 +440,8 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
                     sm.synchShifts();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Crashlytics.logException(e);                }
+                    Crashlytics.logException(e);
+                }
             }
             return null;
         }
@@ -412,11 +455,22 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
 
     private void openUI() {
         setContentView(R.layout.activity_shifts);
-        Clerk clerk = ClerkDAO.getByEmpId(Integer.parseInt(preferences.getClerkID()), true);
+        shift = ShiftDAO.getShiftByClerkId(Integer.parseInt(preferences.getClerkID()));
+        Clerk clerk;
+        if (shift == null) {
+            shift = ShiftDAO.getShiftByClerkId(Integer.parseInt(preferences.getClerkID()));
+        }
+        if (shift == null) {
+            clerk = ClerkDAO.getByEmpId(Integer.parseInt(preferences.getClerkID()));
+        } else {
+            clerk = ClerkDAO.getByEmpId(shift.getClerkId());
+        }
         TextView clerkName = (TextView) findViewById(R.id.clerkNameShifttextView);
-        clerkName.setText(clerk.getEmpName());
-        shift = ShiftDAO.getCurrentShift(Integer.parseInt(preferences.getClerkID()));
+        clerkName.setText(clerk == null ? "" : clerk.getEmpName());
+        endingCashAmounteditText = (TextView) findViewById(R.id.endingCashAmounteditText);
         totalAmountEditText = (TextView) findViewById(R.id.totalAmounteditText);
+        shortOverStatusTextView = (TextView) findViewById(R.id.shortOverStatustextView23);
+        shortOverStatusTextView.setVisibility(View.GONE);
         openOnLbl = (TextView) findViewById(R.id.openOnLbltextView25);
         openOnDate = (TextView) findViewById(R.id.openOnDatetextView26);
         closeAmountLbl = (TextView) findViewById(R.id.closeAmountLbltextView21);
@@ -523,6 +577,8 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
                     Crashlytics.logException(e);
                     return false;
                 }
+            } else {
+                return false;
             }
             return true;
         }
@@ -531,7 +587,9 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
         protected void onPostExecute(Boolean result) {
             dialog.dismiss();
             if (result) {
-                finish();
+                if (shift.getShiftStatus() == Shift.ShiftStatus.CLOSED) {
+                    finish();
+                }
             } else {
                 Global.showPrompt(ShiftsActivity.this, R.string.dlog_title_error, getString(R.string.error_sync_closed_shift));
             }

@@ -203,10 +203,10 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
                 new_subtotal = overwriteAmount.multiply(
                         prod_qty).subtract(rate);
 
-                setDisTotal(Global
-                        .getRoundBigDecimal(rate));
-                setDiscount_value(Global
-                        .getRoundBigDecimal(rate));
+                setDisTotal(String.valueOf(Global
+                        .getRoundBigDecimal(rate)));
+                setDiscount_value(String.valueOf(Global
+                        .getRoundBigDecimal(rate)));
 
             }
         } else
@@ -214,11 +214,11 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
                     .multiply(prod_qty);
 
         setOverwrite_price(overwriteAmount);
-        setProd_price(Global.getRoundBigDecimal(overwriteAmount));
+        setProd_price(String.valueOf(Global.getRoundBigDecimal(overwriteAmount)));
 //        setItemSubtotal(Global
 //                .getRoundBigDecimal(new_subtotal));
-        setItemTotal(Global
-                .getRoundBigDecimal(new_subtotal));
+        setItemTotal(String.valueOf(Global
+                .getRoundBigDecimal(new_subtotal)));
         setPricelevel_id("");
         setProd_price_updated("0");
     }

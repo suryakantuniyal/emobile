@@ -114,11 +114,11 @@ public class TaxesCalculator {
                         disc = new BigDecimal(orderProduct.getDisAmount());
                     }
 
-                    orderProduct.setDiscount_value(Global.getRoundBigDecimal(disc));
-                    orderProduct.setDisTotal(Global.getRoundBigDecimal(disc));
+                    orderProduct.setDiscount_value(String.valueOf(Global.getRoundBigDecimal(disc)));
+                    orderProduct.setDisTotal(String.valueOf(Global.getRoundBigDecimal(disc)));
 
-                    orderProduct.setItemTotalVatExclusive(Global
-                            .getRoundBigDecimal(tempSubTotal.subtract(disc)));
+                    orderProduct.setItemTotalVatExclusive(String.valueOf(Global
+                            .getRoundBigDecimal(tempSubTotal.subtract(disc))));
                 }
 
                 if (prodQty.compareTo(new BigDecimal("1")) == 1) {
@@ -565,11 +565,11 @@ public class TaxesCalculator {
             gran_total = new BigDecimal(0);
             OrderLoyalty_FR.recalculatePoints("0", "0", "0", gran_total.toString());
         }
-        order.gran_total = Global.getRoundBigDecimal(gran_total);
-        order.ord_discount = Global.getRoundBigDecimal(discountable_sub_total);
-        order.ord_subtotal = Global.getRoundBigDecimal(sub_total);
+        order.gran_total = String.valueOf(Global.getRoundBigDecimal(gran_total));
+        order.ord_discount = String.valueOf(Global.getRoundBigDecimal(discountable_sub_total));
+        order.ord_subtotal = String.valueOf(Global.getRoundBigDecimal(sub_total));
         order.ord_discount_id = discountID;
-        order.ord_taxamount = Global.getRoundBigDecimal(taxes.taxableAmount);
+        order.ord_taxamount = String.valueOf(Global.getRoundBigDecimal(taxes.taxableAmount));
     }
 
     public static OrderProduct getTaxableOrderProduct(Order order, OrderProduct orderProduct, Tax tax) {

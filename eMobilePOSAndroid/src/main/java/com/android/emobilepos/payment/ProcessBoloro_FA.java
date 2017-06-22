@@ -32,6 +32,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.android.dao.AssignEmployeeDAO;
+import com.android.dao.ShiftDAO;
 import com.android.database.PaymentsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.realms.AssignEmployee;
@@ -120,7 +121,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
         buildPayment();
 
         if (!isManual) {
-            if (myPreferences.getPrinterType() == Global.KDC500) {
+            if (myPreferences.getPrinterType() == Global.KDC425) {
                 if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
                     Global.mainPrinterManager.getCurrentDevice().loadScanner(this);
                 }
@@ -212,10 +213,11 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
         }
 
 
-        if (!myPref.getShiftIsOpen())
-            payment.setClerk_id(myPref.getShiftClerkID());
-        else if (myPref.isUseClerks())
+        if (myPref.isUseClerks()) {
             payment.setClerk_id(myPref.getClerkID());
+        } else if (ShiftDAO.isShiftOpen()) {
+            payment.setClerk_id(String.valueOf(ShiftDAO.getOpenShift().getClerkId()));
+        }
 
         payment.setCust_id(extras.getString("cust_id"));
         payment.setCustidkey(extras.getString("custidkey", ""));
@@ -371,8 +373,8 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
                 String generatedURL;
                 generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.GetMarketTelcos, false, null, null);
 
-                Post httpClient = new Post();
-                String xml = httpClient.postData(13, activity, generatedURL);
+                Post httpClient = new Post(activity);
+                String xml = httpClient.postData(13, generatedURL);
 
                 InputSource inSource = new InputSource(new StringReader(xml));
 
@@ -434,8 +436,8 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
                 String generatedURL;
                 generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ProcessBoloroCheckout, false, null, null);
 
-                Post httpClient = new Post();
-                String xml = httpClient.postData(13, activity, generatedURL);
+                Post httpClient = new Post(activity);
+                String xml = httpClient.postData(13,  generatedURL);
                 InputSource inSource = new InputSource(new StringReader(xml));
                 SAXParser sp = spf.newSAXParser();
                 XMLReader xr = sp.getXMLReader();
@@ -506,8 +508,8 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
                     realm.commitTransaction();
                     return true;
                 } else {
-                    Post httpClient = new Post();
-                    String xml = httpClient.postData(13, activity, generatedURL);
+                    Post httpClient = new Post(activity);
+                    String xml = httpClient.postData(13,  generatedURL);
 
                     InputSource inSource = new InputSource(new StringReader(xml));
 
@@ -544,7 +546,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
                     Global.showPrompt(activity, R.string.dlog_title_error, response.get("error_message"));
                 } else if (response.containsKey("epayStatusCode")) {
                     Global.showPrompt(activity, R.string.dlog_title_error, "Code:" + response.get("statusCode") + "\n" + "Msg:" + response.get("statusMessage"));
-                }else{
+                } else {
                     Global.showPrompt(activity, R.string.dlog_title_error, getString(R.string.error_processing_payment));
                 }
             } else {
@@ -610,10 +612,10 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
                 InputSource inSource;
                 SAXParser sp = spf.newSAXParser();
                 XMLReader xr = sp.getXMLReader();
-                Post httpClient = new Post();
+                Post httpClient = new Post(activity);
                 String xml;
                 do {
-                    xml = httpClient.postData(13, activity, generatedURL);
+                    xml = httpClient.postData(13,  generatedURL);
                     inSource = new InputSource(new StringReader(xml));
                     xr.setContentHandler(myParser);
                     xr.parse(inSource);

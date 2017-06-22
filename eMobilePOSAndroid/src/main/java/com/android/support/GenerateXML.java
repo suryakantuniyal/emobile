@@ -50,17 +50,16 @@ public class GenerateXML {
 
     public static final String UTF_8 = "utf-8";
     private static String empstr = "";
-    private final AssignEmployee assignEmployee;
+    private AssignEmployee assignEmployee;
     private MyPreferences info;
     private StringBuilder ending = new StringBuilder();
     private Context thisActivity;
     private MyPreferences myPref;
-
     public GenerateXML(Context activity) {
         info = new MyPreferences(activity);
         myPref = new MyPreferences(activity);
-        AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee(false);
-        if (employee == null && !TextUtils.isEmpty(myPref.getEmpIdFromPreferences())) {
+        this.assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+        if (this.assignEmployee == null && !TextUtils.isEmpty(myPref.getEmpIdFromPreferences())) {
             this.assignEmployee = new AssignEmployee();
             this.assignEmployee.setEmpId(Integer.parseInt(myPref.getEmpIdFromPreferences()));
 
@@ -71,16 +70,13 @@ public class GenerateXML {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        } else {
-            assignEmployee = employee;
         }
 
         thisActivity = activity;
-
         if (thisActivity instanceof ClockInOut_FA) {
             try {
                 ending.append("&EmpID=")
-                        .append(URLEncoder.encode(((ClockInOut_FA) (thisActivity)).getClerkID(), UTF_8));
+                        .append(URLEncoder.encode(info.getClerkID(), UTF_8));
                 ending.append("&ActivationKey=").append(URLEncoder.encode(info.getActivKey(), UTF_8));
                 ending.append("&DeviceID=").append(URLEncoder.encode(info.getDeviceID(), UTF_8));
                 ending.append("&BundleVersion=").append(URLEncoder.encode(info.getBundleVersion(), UTF_8));
@@ -333,14 +329,11 @@ public class GenerateXML {
     public String downloadAll(String key) {
         String value = Global.xmlActions.get(key);
         StringBuilder sb = new StringBuilder();
-        if (myPref.isUseClerks()) {
-
-        }
         try {
             sb.append(value).append("?RegID=").append(URLEncoder.encode(info.getAcctNumber(), UTF_8));
             sb.append("&MSemployeeID=").append(URLEncoder.encode(String.valueOf(assignEmployee.getEmpId()), UTF_8));
             sb.append("&MSZoneID=").append(URLEncoder.encode(StringUtil.nullStringToEmpty(assignEmployee.getZoneId()), UTF_8));
-            if (myPref.isUseClerks() && !TextUtils.isEmpty(myPref.getClerkID())) {
+            if (key.equalsIgnoreCase("Shifts") && !TextUtils.isEmpty(myPref.getClerkID())) {
                 sb.append("&clerkid=").append(myPref.getClerkID());
             }
             sb.append(ending.toString());
@@ -1044,7 +1037,7 @@ public class GenerateXML {
             serializer.startTag(empstr, "OrderAttributes");
             List<OrderAttributes> subList = order.orderAttributes.subList(6, order.orderAttributes.size());
             for (OrderAttributes attributes : subList) {
-                if(!TextUtils.isEmpty(attributes.getInputValue())) {
+                if (!TextUtils.isEmpty(attributes.getInputValue())) {
                     serializer.startTag(empstr, "OrderAttribute");
 
                     serializer.startTag(empstr, "ord_attr_id");
@@ -1194,7 +1187,7 @@ public class GenerateXML {
                     serializer.startTag(empstr, "totalLineValue");
                     serializer.text(cursor.getString(cursor.getColumnIndex("totalLineValue")));
                     serializer.endTag(empstr, "totalLineValue");
-                    String prod_taxValue = Global.getRoundBigDecimal(product.getProd_taxValue(),2);
+                    String prod_taxValue = String.valueOf(Global.getRoundBigDecimal(product.getProd_taxValue(), 2));
 
                     serializer.startTag(empstr, "prod_taxValue");
                     serializer.text(prod_taxValue);
@@ -1271,8 +1264,8 @@ public class GenerateXML {
             buildPayments(serializer);
             serializer.endTag(empstr, "Payments");
             serializer.endDocument();
-
-            return writer.toString();
+            String xml = writer.toString();
+            return xml;
 
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -1286,7 +1279,7 @@ public class GenerateXML {
         cursor.moveToFirst();
         int size = cursor.getCount();
         String payID;
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < size && i < 10; i++) {
             try {
                 serializer.startTag(empstr, "Payment");
 
@@ -2021,6 +2014,9 @@ public class GenerateXML {
                 serializer.startTag(empstr, "assignee_id");
                 serializer.text(String.valueOf(s.getAssigneeId()));//c.getString(c.getColumnIndex("assignee_id")));
                 serializer.endTag(empstr, "assignee_id");
+                serializer.startTag(empstr, "clerk_id");
+                serializer.text(String.valueOf(s.getClerkId()));//c.getString(c.getColumnIndex("assignee_id")));
+                serializer.endTag(empstr, "clerk_id");
                 serializer.startTag(empstr, "assignee_name");
                 serializer.text(s.getAssigneeName());//c.getString(c.getColumnIndex("assignee_name")));
                 serializer.endTag(empstr, "assignee_name");
@@ -2042,7 +2038,7 @@ public class GenerateXML {
                 serializer.text(s.getTotalExpenses());
                 serializer.endTag(empstr, "total_expenses");
                 serializer.startTag(empstr, "ending_petty_cash");
-                serializer.text(String.valueOf(s.getEndingCash()));//c.getString(c.getColumnIndex("ending_petty_cash")));
+                serializer.text(String.valueOf(s.getEndingPettyCash()));//c.getString(c.getColumnIndex("ending_petty_cash")));
                 serializer.endTag(empstr, "ending_petty_cash");
                 serializer.startTag(empstr, "ending_cash");
                 serializer.text(s.getTotal_ending_cash());//c.getString(c.getColumnIndex("total_ending_cash")));
@@ -2051,7 +2047,7 @@ public class GenerateXML {
                 serializer.text(String.valueOf(s.getEnteredCloseAmount()));//c.getString(c.getColumnIndex("entered_close_amount")));
                 serializer.endTag(empstr, "entered_close_amount");
                 serializer.startTag(empstr, "total_transactions_cash");
-                serializer.text(s.getTotal_ending_cash());//c.getString(c.getColumnIndex("total_transaction_cash")));
+                serializer.text(s.getTotalTransactionsCash());//c.getString(c.getColumnIndex("total_transaction_cash")));
                 serializer.endTag(empstr, "total_transactions_cash");
                 serializer.startTag(empstr, "Expenses");
                 for (ShiftExpense expense : shiftExpenses) {
@@ -2701,7 +2697,7 @@ public class GenerateXML {
                 serializer.startTag(empstr, "prod_taxId");
                 serializer.text(c.getString(c.getColumnIndex("prod_taxId")));
                 serializer.endTag(empstr, "prod_taxId");
-                String prod_taxValue = Global.getRoundBigDecimal(new BigDecimal(c.getDouble(c.getColumnIndex("prod_taxValue"))));
+                String prod_taxValue = String.valueOf(Global.getRoundBigDecimal(new BigDecimal(c.getDouble(c.getColumnIndex("prod_taxValue")))));
 
                 serializer.startTag(empstr, "prod_taxValue");
                 serializer.text(prod_taxValue);

@@ -231,7 +231,12 @@
             android:name=".payment.ProcessGenius_FA"
             android:configChanges="orientation|screenSize"
             android:exported="false"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+            android:windowSoftInputMode="stateAlwaysHidden" >
+            <intent-filter>
+                <action android:name="com.emobilepos.app.VIEW_RESPONSE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            </activity>
         <activity
             android:name=".payment.TupyxCamera_FA"
             android:configChanges="orientation|screenSize"

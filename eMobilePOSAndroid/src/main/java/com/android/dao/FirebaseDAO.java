@@ -11,7 +11,15 @@ import io.realm.Realm;
 public class FirebaseDAO {
     public static NotificationSettings getNotificationSettings() {
         Realm r = Realm.getDefaultInstance();
-        return r.where(NotificationSettings.class).findFirst();
+        try {
+            NotificationSettings first = r.where(NotificationSettings.class).findFirst();
+            if (first != null) {
+                first = r.copyFromRealm(first);
+            }
+            return first;
+        } finally {
+            r.close();
+        }
     }
 
     public static void saveFirebaseSettings(NotificationSettings settings) {
@@ -21,6 +29,7 @@ public class FirebaseDAO {
             r.insertOrUpdate(settings);
         } finally {
             r.commitTransaction();
+            r.close();
         }
     }
 
@@ -34,6 +43,7 @@ public class FirebaseDAO {
             r.insertOrUpdate(settings);
         } finally {
             r.commitTransaction();
+            r.close();
         }
     }
 
@@ -46,6 +56,7 @@ public class FirebaseDAO {
             r.insertOrUpdate(settings);
         } finally {
             r.commitTransaction();
+            r.close();
         }
     }
 }

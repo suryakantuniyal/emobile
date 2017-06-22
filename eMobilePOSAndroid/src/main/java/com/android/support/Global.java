@@ -37,8 +37,8 @@ import com.android.crashreport.ExceptionHandler;
 import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.ClerkDAO;
 import com.android.dao.RealmModule;
-import com.android.dao.StoredPaymentsDAO;
 import com.android.database.VolumePricesHandler;
+import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.R;
 import com.android.emobilepos.holders.Locations_Holder;
 import com.android.emobilepos.holders.TransferInventory_Holder;
@@ -54,6 +54,7 @@ import com.android.emobilepos.models.realms.ProductAttribute;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
 import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.core.CrashlyticsCore;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.zxing.BarcodeFormat;
@@ -87,6 +88,7 @@ import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import io.fabric.sdk.android.Fabric;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmList;
@@ -99,7 +101,7 @@ public class Global extends MultiDexApplication {
     private Timer mActivityTransitionTimer;
     private TimerTask mActivityTransitionTimerTask;
     private boolean wasInBackground;
-    private final long MAX_ACTIVITY_TRANSITION_TIME_MS = 3000;
+    private final long MAX_ACTIVITY_TRANSITION_TIME_MS = 5000;
 
     public static final int MAGTEK = 0;
     //Load JNI from the library project. Refer MainActivity.java from library project elotouchCashDrawer.
@@ -123,7 +125,7 @@ public class Global extends MultiDexApplication {
     public static final int EM70 = 11;
     public static final int OT310 = 12;
     public static final int ELOPAYPOINT = 13;
-    public static final int KDC500 = 14;
+    public static final int KDC425 = 14;
     public static final int HANDPOINT = 15;
     public static final int ICMPEVO = 16;
     public static final int NOMAD = 17;
@@ -320,34 +322,38 @@ public class Global extends MultiDexApplication {
     private String selectedDeliveryDate;
     private String selectedComments;
     private String selectedPO;
+
     public enum HandlerMessages {
         UPDATE_PAYMENT_SIGNATURE(0);
 
         private int code;
+
         HandlerMessages(int code) {
             this.code = code;
         }
-        public int getCode(){
+
+        public int getCode() {
             return this.code;
         }
     }
 
     private Dialog globalDlog;
-    public static Handler handler = new Handler(Looper.getMainLooper()){
+    public static Handler handler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
-            switch (msg.what){
-                case 0:{
+            switch (msg.what) {
+                case 0: {
                     Realm realm = Realm.getDefaultInstance();
                     realm.beginTransaction();
                     Payment payment = (Payment) msg.obj;
                     realm.insertOrUpdate(payment);
                     realm.commitTransaction();
-                break;
+                    break;
                 }
             }
         }
     };
+
     public static String getPeripheralName(int type) {
         String _name = "Unknown";
         switch (type) {
@@ -399,8 +405,8 @@ public class Global extends MultiDexApplication {
             case EM70:
                 _name = "EM70";
                 break;
-            case KDC500:
-                _name = "KDC500";
+            case KDC425:
+                _name = "KDC425";
                 break;
             case BIXOLON:
                 _name = "BIXOLON";
@@ -617,19 +623,20 @@ public class Global extends MultiDexApplication {
         if (TextUtils.isEmpty(val)) {
             val = "0";
         }
-        double frmt = 0.0;
         try {
-            NumberFormat numFormater = NumberFormat.getNumberInstance(Locale.getDefault());
-            numFormater.setParseIntegerOnly(false);
-
-            // Number number =
-            // NumberFormat.getNumberInstance(Locale.getDefault()).setParseIntegerOnly(false).parse(val);
-            Number number = numFormater.parse(val);
-            frmt = number.doubleValue();
-        } catch (ParseException e) {
-            Crashlytics.logException(e);
+            return Double.parseDouble(val);
+        } catch (Exception ed) {
+            double frmt = 0.0;
+            try {
+                NumberFormat numFormater = NumberFormat.getNumberInstance(Locale.getDefault());
+                numFormater.setParseIntegerOnly(false);
+                Number number = numFormater.parse(val);
+                frmt = number.doubleValue();
+            } catch (ParseException e) {
+                Crashlytics.logException(e);
+            }
+            return frmt;
         }
-        return frmt;
     }
 
     public static double formatNumWithCurrFromLocale(String val) {
@@ -645,10 +652,10 @@ public class Global extends MultiDexApplication {
     }
 
     public static String formatNumToLocale(double val) {
-//        NumberFormat nf = NumberFormat.getNumberInstance(Locale.getDefault());
-//        nf.setParseIntegerOnly(false);
-//        DecimalFormat df = (DecimalFormat) nf;
-//        return df.format(val);
+        NumberFormat nf = NumberFormat.getNumberInstance(Locale.getDefault());
+        nf.setParseIntegerOnly(false);
+        DecimalFormat df = (DecimalFormat) nf;
+        String s = df.format(val);
         return String.format(Locale.getDefault(), "%.4f", val);
     }
 
@@ -1028,23 +1035,24 @@ public class Global extends MultiDexApplication {
             val = "0";
         try {
             double valDbl = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(val));
-            DecimalFormat df = (DecimalFormat) NumberFormat.getInstance(Locale.getDefault());
-            df.setParseBigDecimal(true);
-            df.setMaximumFractionDigits(4);
-            df.setMinimumFractionDigits(2);
-            return (BigDecimal) df.parseObject(String.valueOf(valDbl));
-        } catch (ParseException e) {
+            return new BigDecimal(valDbl).setScale(4, RoundingMode.HALF_UP);
+//            DecimalFormat df = (DecimalFormat) NumberFormat.getInstance(Locale.getDefault());
+//            df.setParseBigDecimal(true);
+//            df.setMaximumFractionDigits(4);
+//            df.setMinimumFractionDigits(2);
+//            return (BigDecimal) df.parseObject(String.valueOf(valDbl));
+        } catch (Exception e) {
             Crashlytics.logException(e);
             return new BigDecimal("0");
         }
     }
 
-    public static String getRoundBigDecimal(BigDecimal val) {
-        return val.setScale(4, RoundingMode.HALF_UP).toString();
+    public static BigDecimal getRoundBigDecimal(BigDecimal val) {
+        return val.setScale(4, RoundingMode.HALF_UP);
     }
 
-    public static String getRoundBigDecimal(BigDecimal val, int scale) {
-        return val.setScale(scale, RoundingMode.HALF_UP).toString();
+    public static BigDecimal getRoundBigDecimal(BigDecimal val, int scale) {
+        return val.setScale(scale, RoundingMode.HALF_UP);
     }
 
     public static String getCurrencyFrmt(String value) {
@@ -1137,7 +1145,7 @@ public class Global extends MultiDexApplication {
     public static boolean deviceHasMSR(int _printer_type) {
         return (_printer_type == Global.ISMP || _printer_type == Global.STAR || _printer_type == Global.BAMBOO
                 || _printer_type == Global.ZEBRA || _printer_type == Global.ASURA || _printer_type == Global.EM100
-                || _printer_type == Global.KDC500 || _printer_type == Global.ICMPEVO ||
+                || _printer_type == Global.KDC425 || _printer_type == Global.ICMPEVO ||
                 _printer_type == Global.HANDPOINT || _printer_type == Global.EM70 ||
                 _printer_type == Global.OT310 || _printer_type == Global.ELOPAYPOINT || _printer_type == Global.PAT215);
     }
@@ -1145,7 +1153,7 @@ public class Global extends MultiDexApplication {
     public static boolean deviceHasBarcodeScanner(int _device_type) {
         return (_device_type == Global.ISMP || _device_type == Global.POWA || _device_type == Global.ASURA
                 || _device_type == Global.STAR || _device_type == Global.EM100 || _device_type == Global.EM70
-                || _device_type == Global.KDC500 || _device_type == Global.OT310 || _device_type == Global.ELOPAYPOINT);
+                || _device_type == Global.KDC425 || _device_type == Global.OT310 || _device_type == Global.ELOPAYPOINT);
     }
 
 
@@ -1300,6 +1308,11 @@ public class Global extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
         Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
+        Crashlytics crashlyticsKit = new Crashlytics.Builder()
+                .core(new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build())
+                .build();
+        Fabric.with(this, crashlyticsKit);
+        setCrashliticAditionalInfo();
         Realm.init(this);
         isIvuLoto = getPackageName().contains(getString(R.string.ivupos_packageid));
         RealmConfiguration config = new RealmConfiguration.Builder()
@@ -1323,6 +1336,13 @@ public class Global extends MultiDexApplication {
                 }
             }
         }
+    }
+
+    private void setCrashliticAditionalInfo() {
+        MyPreferences preferences = new MyPreferences(this);
+        Crashlytics.setUserIdentifier(preferences.getAcctNumber());
+        //        Crashlytics.setUserEmail("user@fabric.io");
+//        Crashlytics.setUserName("Test User");
     }
 
     public void resetOrderDetailsValues() {
@@ -1502,6 +1522,8 @@ public class Global extends MultiDexApplication {
                             validPassword[0] = false;
                             promptForMandatoryLogin(activity);
                         } else {
+                            myPref.setClerkID(String.valueOf(clerk.getEmpId()));
+                            myPref.setClerkName(clerk.getEmpName());
                             if (activity instanceof MainMenu_FA) {
                                 ((MainMenu_FA) activity).setLogoutButtonClerkname();
                             }
@@ -1511,6 +1533,9 @@ public class Global extends MultiDexApplication {
                     } else if (enteredPass.equals(myPref.getApplicationPassword())) {
                         loggedIn = true;
                         validPassword[0] = true;
+                        if (activity instanceof MainMenu_FA) {
+                            ((MainMenu_FA) activity).hideLogoutButton();
+                        }
                     } else {
                         validPassword[0] = false;
                         promptForMandatoryLogin(activity);
