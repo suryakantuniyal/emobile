@@ -176,6 +176,7 @@
             android:name=".payment.SelectPayMethod_FA"
             android:configChanges="orientation|screenSize"
             android:exported="false"
+            android:theme="@style/AppTheme"
             android:launchMode="singleTop" />
         <activity
             android:name=".payment.ProcessCreditCard_FA"
@@ -320,6 +321,7 @@
         <activity
             android:name=".ordering.OrderingMain_FA"
             android:launchMode="singleTop"
+            android:theme="@style/AppTheme"
             android:windowSoftInputMode="stateAlwaysHidden">
             <intent-filter>
                 <action android:name="com.android.emobilepos.RECVR" />
