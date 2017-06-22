@@ -60,6 +60,8 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
@@ -598,8 +600,9 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             }
             Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_required_attributes) + "\n\n" + ordProdAttr);
         } else {
-            assert product != null;
-            product.setAttributesCompleted(true);
+            if (product != null) {
+                product.setAttributesCompleted(true);
+            }
             double onHandQty = 0;
             if (!headerOnHand.getText().toString().isEmpty())
                 onHandQty = Double.parseDouble(headerOnHand.getText().toString());
@@ -947,14 +950,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         for (ProductAttribute attribute : orderProduct.getRequiredProductAttributes()) {
             attribute.setProductId(orderProduct.getOrdprod_id());
         }
-//        orderProduct.requiredProductAttributes = new ArrayList<>();
-//        int size = global.ordProdAttr.size();
-//        for (int i = 0; i < size; i++) {
-//            if (global.ordProdAttr.get(i).getProductId() == null || global.ordProdAttr.get(i).getProductId().isEmpty()) {
-//                global.ordProdAttr.get(i).setProductId(randomUUIDString);
-//                orderProduct.requiredProductAttributes.add(global.ordProdAttr.get(i));
-//            }
-//        }
+        orderProduct.setAttributesCompleted(OrderingMain_FA.isRequiredAttributeCompleted(Collections.singletonList(orderProduct)));
         if (isFromAddon) {
             Global.addonTotalAmount = 0;
             StringBuilder sb = new StringBuilder();

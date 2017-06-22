@@ -215,10 +215,13 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
     public static void updateLocalInventory(Activity activity, List<OrderProduct> orderProducts, boolean isIncrement) {
         EmpInvHandler eiHandler = new EmpInvHandler(activity);
-        int size = orderProducts.size();
-        for (int i = 0; i < size; i++) {
-            eiHandler.updateOnHand(orderProducts.get(i).getProd_id(), orderProducts.get(i).getOrdprod_qty(), isIncrement);
-        }
+//        int size = orderProducts.size();
+//        for (OrderProduct product : orderProducts) {
+            eiHandler.updateOnHand(orderProducts);
+//        }
+//        for (int i = 0; i < size; i++) {
+//            eiHandler.updateOnHand(orderProducts.get(i).getProd_id(), orderProducts.get(i).getOrdprod_qty(), isIncrement);
+//        }
     }
 
     @Override
@@ -1029,10 +1032,10 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     typeOfProcedure = Global.TransactionType.PAYMENT;
                     if (OrderTotalDetails_FR.gran_total
                             .compareTo(new BigDecimal(0)) == -1) {
-                        updateLocalInventory(getActivity(), global.order.getOrderProducts(), true);
+//                        updateLocalInventory(getActivity(), global.order.getOrderProducts(), true);
                         proceedToRefund();
                     } else {
-                        updateLocalInventory(getActivity(), global.order.getOrderProducts(), false);
+//                        updateLocalInventory(getActivity(), global.order.getOrderProducts(), false);
                         isSalesReceipt();
                     }
                     break;
