@@ -87,6 +87,7 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -99,7 +100,6 @@ import drivers.EMSMagtekAudioCardReader;
 import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
 import interfaces.EMSCallBack;
-import io.realm.RealmResults;
 import util.json.JsonUtils;
 import util.json.UIUtils;
 
@@ -1448,7 +1448,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             Global.loyaltyCardInfo = cardInfoManager;
         else
             Global.rewardCardInfo = cardInfoManager;
-        if(swiperField!=null) {
+        if (swiperField != null) {
             swiperField.setText(cardManager.getCardNumUnencrypted());
         }
         if (uniMagReader != null && uniMagReader.readerIsConnected()) {
@@ -1533,6 +1533,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         if (isFromAddon) {
             total = total.add(Global.getBigDecimalNum(Global.formatNumToLocale(Global.addonTotalAmount)));
         }
+        List<OrderProduct> list = Collections.singletonList(orderProduct);
+        boolean attributeConmpleted = OrderingMain_FA.isRequiredAttributeCompleted(list);
+        orderProduct.setAttributesCompleted(attributeConmpleted);
         total = total.multiply(OrderingMain_FA.returnItem && OrderingMain_FA.mTransType != Global.TransactionType.RETURN ? new BigDecimal(-1) : new BigDecimal(1));
         DecimalFormat frmt = new DecimalFormat("0.00");
         orderProduct.setItemTotal(total.toString());
@@ -1578,7 +1581,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         this.associateId = associateId;
     }
 
-    public static boolean isRequiredAttributeConmpleted(List<OrderProduct> products) {
+    public static boolean isRequiredAttributeCompleted(List<OrderProduct> products) {
         for (OrderProduct product : products) {
             List<ProductAttribute> attributes = OrderProductAttributeDAO.getByProdId(product.getProd_id());
             for (ProductAttribute attribute : attributes) {

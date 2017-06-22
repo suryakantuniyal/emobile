@@ -299,4 +299,13 @@ public class Order implements Cloneable {
     public void setBixolonTransactionId(String bixolonTransactionId) {
         this.bixolonTransactionId = bixolonTransactionId;
     }
+
+    public boolean isAllProductsRequiredAttrsCompleted() {
+        for (OrderProduct product : orderProducts) {
+            if (!product.isAttributesCompleted()) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

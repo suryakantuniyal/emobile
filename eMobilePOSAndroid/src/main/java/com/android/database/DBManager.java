@@ -270,6 +270,9 @@ public class DBManager {
         if (!exist) {
             getDatabase().execSQL("ALTER TABLE [Orders] ADD COLUMN [bixolonTransactionId] [varchar](50) NULL");
         }
+        for (String sql : CREATE_INDEX) {
+            getDatabase().execSQL(sql);
+        }
     }
 
     private class DatabaseHelper extends net.sqlcipher.database.SQLiteOpenHelper {
@@ -344,25 +347,41 @@ public class DBManager {
 //    }
 
     private final String[] CREATE_INDEX = {
-            "CREATE INDEX prod_id_index ON EmpInv (prod_id)",
-            "CREATE INDEX VolumePrices_prod_id_index ON VolumePrices (prod_id)",
-            "CREATE INDEX minQty_index ON VolumePrices (minQty)",
-            "CREATE INDEX maxQty_index ON VolumePrices (maxQty)",
-            "CREATE INDEX pricelevel_id_index ON VolumePrices (pricelevel_id)",
-            "CREATE INDEX Products_Images_prod_id_index ON Products_Images (prod_id)",
-            "CREATE INDEX type_index ON Products_Images (type)",
-            "CREATE INDEX prod_sku_index ON Products (prod_sku)",
-            "CREATE INDEX prod_upc_index ON Products (prod_upc)",
-            "CREATE INDEX prod_name_index ON Products (prod_name)",
-            "CREATE INDEX prod_type_index ON Products (prod_type)",
-            "CREATE INDEX prod_taxcode_index ON Products (prod_taxcode)",
-            "CREATE INDEX productchainxref_prod_id_index ON ProductChainXRef (prod_id)",
-            "CREATE INDEX cust_chain_index ON ProductChainXRef (cust_chain)",
-            "CREATE INDEX productaliases_alias_index ON ProductAliases (prod_alias)",
-            "CREATE INDEX productaliases_prod_id_index ON ProductAliases (prod_id)",
-            "CREATE INDEX pricelevelitems_prod_id_index ON PriceLevelItems (pricelevel_prod_id)",
-            "CREATE INDEX pricepevel_pricelevel_id_index ON PriceLevel (pricelevel_id)",
-            "CREATE INDEX salestaxcodes_taxcode_id_index ON SalesTaxCodes (taxcode_id)"
+            "CREATE INDEX IF NOT EXISTS prod_id_index ON EmpInv (prod_id)",
+            "CREATE INDEX IF NOT EXISTS locationsinventory_prod_id_index ON LocationsInventory (prod_id)",
+            "CREATE INDEX IF NOT EXISTS orderproduct_prod_id_index ON OrderProduct (prod_id)",
+            "CREATE INDEX IF NOT EXISTS orderproduct_prod_id_index ON OrderProduct (cat_id)",
+            "CREATE INDEX IF NOT EXISTS orderproduct_isAdded_index ON OrderProduct (isAdded)",
+            "CREATE INDEX IF NOT EXISTS orderproduct_prod_taxId_index ON OrderProduct (prod_taxId)",
+            "CREATE INDEX IF NOT EXISTS orderproduct_prod_sku_index ON OrderProduct (prod_sku)",
+            "CREATE INDEX IF NOT EXISTS orderproduct_prod_upc_index ON OrderProduct (prod_upc)",
+            "CREATE INDEX IF NOT EXISTS OrderProductsAttr_ordprod_id_index ON OrderProduct (ordprod_id)",
+            "CREATE INDEX IF NOT EXISTS Payments_paymethod_id_index ON Payments (paymethod_id)",
+            "CREATE INDEX IF NOT EXISTS Product_addons_prod_id_index ON Product_addons (prod_id)",
+            "CREATE INDEX IF NOT EXISTS Taxes_tax_id_index ON Taxes (tax_id)",
+            "CREATE INDEX IF NOT EXISTS Taxes_tax_code_id_index ON Taxes (tax_code_id)",
+            "CREATE INDEX IF NOT EXISTS Taxes_Group_taxGroupId_index ON Taxes_Group (taxGroupId)",
+            "CREATE INDEX IF NOT EXISTS Taxes_Group_taxId_index ON Taxes_Group (taxId)",
+            "CREATE INDEX IF NOT EXISTS Taxes_Group_taxcode_id_index ON Taxes_Group (taxcode_id)",
+
+            "CREATE INDEX IF NOT EXISTS VolumePrices_prod_id_index ON VolumePrices (prod_id)",
+            "CREATE INDEX IF NOT EXISTS minQty_index ON VolumePrices (minQty)",
+            "CREATE INDEX IF NOT EXISTS maxQty_index ON VolumePrices (maxQty)",
+            "CREATE INDEX IF NOT EXISTS pricelevel_id_index ON VolumePrices (pricelevel_id)",
+            "CREATE INDEX IF NOT EXISTS Products_Images_prod_id_index ON Products_Images (prod_id)",
+            "CREATE INDEX IF NOT EXISTS type_index ON Products_Images (type)",
+            "CREATE INDEX IF NOT EXISTS prod_sku_index ON Products (prod_sku)",
+            "CREATE INDEX IF NOT EXISTS prod_upc_index ON Products (prod_upc)",
+            "CREATE INDEX IF NOT EXISTS prod_name_index ON Products (prod_name)",
+            "CREATE INDEX IF NOT EXISTS prod_type_index ON Products (prod_type)",
+            "CREATE INDEX IF NOT EXISTS prod_taxcode_index ON Products (prod_taxcode)",
+            "CREATE INDEX IF NOT EXISTS productchainxref_prod_id_index ON ProductChainXRef (prod_id)",
+            "CREATE INDEX IF NOT EXISTS cust_chain_index ON ProductChainXRef (cust_chain)",
+            "CREATE INDEX IF NOT EXISTS productaliases_alias_index ON ProductAliases (prod_alias)",
+            "CREATE INDEX IF NOT EXISTS productaliases_prod_id_index ON ProductAliases (prod_id)",
+            "CREATE INDEX IF NOT EXISTS pricelevelitems_prod_id_index ON PriceLevelItems (pricelevel_prod_id)",
+            "CREATE INDEX IF NOT EXISTS pricepevel_pricelevel_id_index ON PriceLevel (pricelevel_id)",
+            "CREATE INDEX IF NOT EXISTS salestaxcodes_taxcode_id_index ON SalesTaxCodes (taxcode_id)"
     };
 
     private final String CREATE_ADDRESS = "CREATE TABLE [Address] ([addr_id] varchar NOT NULL ,[cust_id]varchar NOT NULL ,[addr_b_str1]varchar,"
