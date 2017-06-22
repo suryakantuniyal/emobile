@@ -422,7 +422,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 mlp.setMargins(mlp.leftMargin, 0, mlp.rightMargin,
                         slidingDrawer.getHeight());
                 receiptListView.invalidateViews();
-                reCalculate();
+//                reCalculate();
             }
         });
         slidingDrawer.setOnDrawerOpenListener(this);

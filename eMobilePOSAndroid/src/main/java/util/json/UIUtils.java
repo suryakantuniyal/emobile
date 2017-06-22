@@ -36,7 +36,7 @@ public class UIUtils {
                 public void run() {
                     isClicked = false;
                 }
-            }, 1000);
+            }, 300);
         }
         return allowClick;
     }

@@ -10,10 +10,12 @@ import android.os.Build;
 import android.os.Handler;
 
 import com.StarMicronics.jasura.JAException;
+import com.android.dao.DeviceTableDAO;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.CardParser;
 import com.android.support.ConsignmentTransaction;
@@ -55,6 +57,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     private String portNumber = "";
     private EMSDeviceManager edm;
     private CreditCardInfo cardManager;
+    boolean isNetworkPrinter = false;
 
     @Override
     public void connect(Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
@@ -89,7 +92,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     public boolean autoConnect(Activity activity, EMSDeviceManager edm, int paperSize, boolean isPOSPrinter,
                                String _portName, String _portNumber) {
         boolean didConnect = false;
-        boolean isNetworkPrinter = false;
+
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
         cardManager = new CreditCardInfo();
@@ -421,7 +424,14 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     @Override
     public void registerPrinter() {
         edm.setCurrentDevice(this);
-        Global.mainPrinterManager = edm;
+        String ip = "";
+        if (portName.contains("TCP:")) {
+            ip = portName.substring(portName.indexOf(':') + 1);
+        }
+        Device kitchenPrinter = DeviceTableDAO.getByIp(ip);
+        if (kitchenPrinter == null) {
+            Global.mainPrinterManager = edm;
+        }
     }
 
     @Override
