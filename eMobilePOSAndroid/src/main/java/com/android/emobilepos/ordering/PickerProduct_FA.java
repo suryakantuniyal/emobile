@@ -64,7 +64,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
 
-import io.realm.RealmResults;
 import util.json.JsonUtils;
 
 public class PickerProduct_FA extends FragmentActivity implements OnClickListener, OnItemClickListener {
@@ -593,9 +592,14 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         if (product != null) {
             products.add(product);
         }
-        if (!OrderingMain_FA.isRequiredAttributeConmpleted(products)) {
+        if (!OrderingMain_FA.isRequiredAttributeCompleted(products)) {
+            if (product != null) {
+                product.setAttributesCompleted(false);
+            }
             Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_required_attributes) + "\n\n" + ordProdAttr);
         } else {
+            assert product != null;
+            product.setAttributesCompleted(true);
             double onHandQty = 0;
             if (!headerOnHand.getText().toString().isEmpty())
                 onHandQty = Double.parseDouble(headerOnHand.getText().toString());

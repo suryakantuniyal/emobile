@@ -290,4 +290,13 @@ public class Order implements Cloneable {
         }
         return super.equals(obj);
     }
+
+    public boolean isAllProductsRequiredAttrsCompleted() {
+        for (OrderProduct product : orderProducts) {
+            if (!product.isAttributesCompleted()) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

@@ -710,7 +710,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     }
 
     public void checkoutOrder() {
-        if (!OrderingMain_FA.isRequiredAttributeConmpleted(global.order.getOrderProducts())) {
+        if (!global.order.isAllProductsRequiredAttrsCompleted()) {
             Global.showPrompt(getActivity(), R.string.dlog_title_error, getActivity().getString(R.string.dlog_msg_required_attributes));
         } else if (receiptListView.getCount() == 0 &&
                 (caseSelected != Global.TransactionType.CONSIGNMENT ||

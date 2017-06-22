@@ -98,6 +98,7 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     private String addon_ordprod_id;
     private String prod_extradesc;
     private String consignment_qty;
+    private boolean attributesCompleted;
 
     public OrderProduct(Product product) {
         this.setAssignedSeat(product.getAssignedSeat());
@@ -892,5 +893,13 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
 
     public boolean isVAT() {
         return !TextUtils.isEmpty(getPrice_vat_exclusive()) && !getPrice_vat_exclusive().equals("0");
+    }
+
+    public void setAttributesCompleted(boolean attributesCompleted) {
+        this.attributesCompleted = attributesCompleted;
+    }
+
+    public boolean isAttributesCompleted() {
+        return attributesCompleted;
     }
 }
