@@ -58,7 +58,7 @@ public class ReportsMenuAdapter extends BaseAdapter implements Filterable {
         HashMap<String, String[]> result = new HashMap<>();
         String[] labelLegend = new String[]{resource.getString(R.string.report_payments), resource.getString(R.string.report_refunds), "Total"};
         PayMethodsHandler methodsHandler = new PayMethodsHandler(activity);
-        paymentMethods = PayMethodsDAO.getAllSortByName(false);
+        paymentMethods = PayMethodsDAO.getAllSortByName();
         int size = paymentMethods.size();
         result.put("Method", labelLegend);
         String[][] amounts = new String[size][3];

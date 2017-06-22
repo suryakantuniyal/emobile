@@ -1298,6 +1298,7 @@
     <string name="endShiftReport">** Findel Informe de Turnos **</string>
     <string name="from">De:</string>
     <string name="to">Para:</string>
+    <string name="dlog_title_enter_clerk_manager_password">Introduzca la contraseña del empleado/gerente</string>
 
 
 </resources>

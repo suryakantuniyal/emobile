@@ -63,7 +63,6 @@ import com.android.emobilepos.models.realms.MixMatch;
 import com.android.emobilepos.models.realms.OrderAttributes;
 import com.android.emobilepos.models.realms.PaymentMethod;
 import com.android.emobilepos.models.realms.Shift;
-import com.android.emobilepos.models.realms.TermsNConditions;
 import com.android.emobilepos.models.response.ClerkEmployeePermissionResponse;
 import com.android.emobilepos.models.salesassociates.DinningLocationConfiguration;
 import com.android.emobilepos.ordering.OrderingMain_FA;
@@ -293,7 +292,7 @@ public class SynchMethods {
                 ClerkDAO.clearAllAssignedTable(associate);
                 for (DinningTable table : associate.getAssignedDinningTables()) {
                     DinningTable dinningTable = DinningTableDAO.getById(table.getId());
-                    if (dinningTable != null ) {
+                    if (dinningTable != null) {
                         ClerkDAO.addAssignedTable(associate, dinningTable);
                     }
                 }
@@ -429,9 +428,11 @@ public class SynchMethods {
     private void sendPayments(Object task) throws IOException, SAXException, ParserConfigurationException {
         SAXSyncPayPostHandler handler2 = new SAXSyncPayPostHandler();
         PaymentsHandler payHandler = new PaymentsHandler(context);
-        if (payHandler.getNumUnsyncPayments() > 0) {
+        long totlaPaments = payHandler.getNumUnsyncPayments();
+        while (payHandler.getNumUnsyncPayments() > 0) {
             if (Global.isForceUpload)
-                ((ForceSendAsync) task).updateProgress(context.getString(R.string.sync_sending_payment));
+                ((ForceSendAsync) task).updateProgress(String.format(Locale.getDefault(),
+                        "%s %d/%d", context.getString(R.string.sync_sending_payment), payHandler.getNumUnsyncPayments(), totlaPaments));
             else
                 ((SendAsync) task).updateProgress(context.getString(R.string.sync_sending_payment));
             xml = post.postData(Global.S_SUBMIT_PAYMENTS, "");
@@ -470,12 +471,16 @@ public class SynchMethods {
     private void sendOrders(Object task) throws IOException, SAXException, ParserConfigurationException {
         SAXSynchOrdPostHandler handler = new SAXSynchOrdPostHandler();
         OrdersHandler ordersHandler = new OrdersHandler(context);
+        long totalOrders = ordersHandler.getNumUnsyncOrders();
         while ((Global.isForceUpload && ordersHandler.getNumUnsyncOrders() > 0) ||
                 (!Global.isForceUpload && ordersHandler.getNumUnsyncProcessedOrders() > ordersHandler.getNumUnsyncOrdersStoredFwd())) {
-            if (Global.isForceUpload)
-                ((ForceSendAsync) task).updateProgress(context.getString(R.string.sync_sending_orders));
-            else
-                ((SendAsync) task).updateProgress(context.getString(R.string.sync_sending_orders));
+            if (Global.isForceUpload) {
+                ((ForceSendAsync) task).updateProgress(String.format(Locale.getDefault(),
+                        "%s %d/%d", context.getString(R.string.sync_sending_orders), ordersHandler.getNumUnsyncOrders(), totalOrders));
+            } else {
+                ((SendAsync) task).updateProgress(String.format(Locale.getDefault(),
+                        "%s %d/%d", context.getString(R.string.sync_sending_orders), ordersHandler.getNumUnsyncOrders(), totalOrders));
+            }
             xml = post.postData(Global.S_GET_XML_ORDERS, "");
             inSource = new InputSource(new StringReader(xml));
             xr.setContentHandler(handler);
@@ -2006,8 +2011,9 @@ public class SynchMethods {
 //                myProgressDialog.dismiss();
             if (!downloadHoldList) {
                 boolean closeActivity = true;
-                if (context instanceof OrderingMain_FA &&
-                        ((OrderingMain_FA) context).getRestaurantSaleType() == Global.RestaurantSaleType.EAT_IN) {
+                if ((context instanceof OrderingMain_FA &&
+                        ((OrderingMain_FA) context).getRestaurantSaleType() == Global.RestaurantSaleType.EAT_IN)
+                        || context instanceof OnHoldActivity) {
                     closeActivity = false;
                 }
                 if (!checkoutOnHold && closeActivity) {

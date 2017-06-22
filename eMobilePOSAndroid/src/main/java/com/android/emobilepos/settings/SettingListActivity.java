@@ -45,10 +45,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.dao.PayMethodsDAO;
-import com.android.dao.ShiftDAO;
 import com.android.database.CategoriesHandler;
 import com.android.database.DBManager;
-import com.android.database.PayMethodsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.country.CountryPicker;
 import com.android.emobilepos.country.CountryPickerListener;
@@ -81,7 +79,6 @@ import main.EMSDeviceManager;
  */
 public class SettingListActivity extends BaseFragmentActivityActionBar {
 
-    public final static int CASE_ADMIN = 0, CASE_MANAGER = 1, CASE_GENERAL = 2;
     private static SettingsTab_FR.SettingsRoles settingsType;
 //    private FragmentManager supportFragmentManager;
     /**
@@ -224,7 +221,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
         private MyPreferences myPref;
         private List<String> macAddressList = new ArrayList<>();
         private CheckBoxPreference storeForwardFlag;
-        private Preference openShiftPref, defaultCountry, storeForwardTransactions;
+        private Preference defaultCountry, storeForwardTransactions;
 
         private int getLayoutId(SettingListActivity.SettingSection settingSection) {
             switch (settingSection) {
@@ -565,7 +562,13 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     confirmTroubleshoot(R.string.config_force_upload);
                     break;
                 case R.string.config_check_updates:
-                    new HttpClient().downloadFileAsync(getString(R.string.check_update_url), Environment.getExternalStorageDirectory().getAbsolutePath() + "/emobilepos.apk", this, getActivity());
+                    if (Global.isIvuLoto) {
+                        new HttpClient().downloadFileAsync(getString(R.string.check_update_ivuurl),
+                                Environment.getExternalStorageDirectory().getAbsolutePath() + "/emobileivupos.apk", this, getActivity());
+                    } else {
+                        new HttpClient().downloadFileAsync(getString(R.string.check_update_emurl),
+                                Environment.getExternalStorageDirectory().getAbsolutePath() + "/emobilepos.apk", this, getActivity());
+                    }
                     break;
                 case R.string.config_backup_data:
                     confirmTroubleshoot(R.string.config_backup_data);
@@ -703,8 +706,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
         private void configureDefaultPaymentMethod() {
             ListPreference lp = (ListPreference) getPreferenceManager()
                     .findPreference(MyPreferences.pref_default_payment_method);
-            PayMethodsHandler handler = new PayMethodsHandler(getActivity());
-            List<PaymentMethod> list = PayMethodsDAO.getAllSortByName(true);
+            List<PaymentMethod> list = PayMethodsDAO.getAllSortByName();
             int size = list.size();
             CharSequence[] entries = new String[size + 1];
             CharSequence[] entriesValues = new String[size + 1];
@@ -1279,40 +1281,40 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
         @Override
         public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-            if (resultCode == 1) {
-                if (!ShiftDAO.isShiftOpen()) {
-                    CharSequence c = "\t\t" + getString(R.string.admin_close_shift) + " <" + myPref.getShiftClerkName() + ">";
-                    openShiftPref.setSummary(c);
-                }
-            }
+//            if (resultCode == 1) {
+//                if (!ShiftDAO.isShiftOpen()) {
+//                    CharSequence c = "\t\t" + getString(R.string.admin_close_shift) + " <" + myPref.getShiftClerkName() + ">";
+//                    openShiftPref.setSummary(c);
+//                }
+//            }
         }
 
 
-        private class autoConnectPrinter extends AsyncTask<Void, Void, String> {
-            private ProgressDialog progressDlog;
-
-            @Override
-            protected void onPreExecute() {
-                progressDlog = new ProgressDialog(getActivity());
-                progressDlog.setMessage("Connecting...");
-                progressDlog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                progressDlog.setCancelable(false);
-                progressDlog.show();
-            }
-
-            @Override
-            protected String doInBackground(Void... params) {
-                return DeviceUtils.autoConnect(getActivity(), true);
-
-            }
-
-            @Override
-            protected void onPostExecute(String result) {
-                progressDlog.dismiss();
-                if (result.length() > 0)
-                    Global.showPrompt(getActivity(), R.string.dlog_title_confirm, result);
-            }
-        }
+//        private class autoConnectPrinter extends AsyncTask<Void, Void, String> {
+//            private ProgressDialog progressDlog;
+//
+//            @Override
+//            protected void onPreExecute() {
+//                progressDlog = new ProgressDialog(getActivity());
+//                progressDlog.setMessage("Connecting...");
+//                progressDlog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+//                progressDlog.setCancelable(false);
+//                progressDlog.show();
+//            }
+//
+//            @Override
+//            protected String doInBackground(Void... params) {
+//                return DeviceUtils.autoConnect(getActivity(), true);
+//
+//            }
+//
+//            @Override
+//            protected void onPostExecute(String result) {
+//                progressDlog.dismiss();
+//                if (result.length() > 0)
+//                    Global.showPrompt(getActivity(), R.string.dlog_title_confirm, result);
+//            }
+//        }
 
     }
 
@@ -1365,9 +1367,9 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
         }
 
         public class ViewHolder extends RecyclerView.ViewHolder {
-            public final View mView;
-            public final TextView mIdView;
-            public String mItem;
+            final View mView;
+            final TextView mIdView;
+            String mItem;
 
             public ViewHolder(View view) {
                 super(view);
@@ -1382,11 +1384,11 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
         }
     }
 
-    public static class Redetect extends AsyncTask<Void, Void, String> {
+    private static class Redetect extends AsyncTask<Void, Void, String> {
         ProgressDialog dialog;
         private Activity activity;
 
-        public Redetect(Activity activity) {
+        Redetect(Activity activity) {
 
             this.activity = activity;
         }
