@@ -722,6 +722,8 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             granTotal.setText(Global.getCurrencyFrmt(String.valueOf(gran_total)));
             globalTax.setText(Global.getCurrencyFrmt(String.valueOf(tax_amount)));
             globalDiscount.setText(Global.getCurrencyFrmt(String.valueOf(discount_amount)));
+            OrderingMain_FA mainFa = (OrderingMain_FA) getActivity();
+            mainFa.enableCheckoutButton();
         }
     }
 

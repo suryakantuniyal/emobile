@@ -175,6 +175,12 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         outState.putBoolean("rewardsWasRead", rewardsWasRead);
     }
 
+    public void disableCheckoutButton() {
+        btnCheckout.setEnabled(false);
+    }
+    public void enableCheckoutButton() {
+        btnCheckout.setEnabled(true);
+    }
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
