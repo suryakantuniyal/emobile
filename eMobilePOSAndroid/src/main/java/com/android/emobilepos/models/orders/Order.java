@@ -217,7 +217,8 @@ public class Order implements Cloneable {
 
     public void setRetailTax(Context context, String taxID) {
         TaxesHandler taxesHandler = new TaxesHandler(context);
-        for (OrderProduct product : getOrderProducts()) {
+        final List<OrderProduct> orderProducts = new ArrayList<>(getOrderProducts());
+        for (OrderProduct product : orderProducts) {
             Tax tax;
             if (taxID != null) {
                 tax = taxesHandler.getTax(taxID, product.getTax_type(),

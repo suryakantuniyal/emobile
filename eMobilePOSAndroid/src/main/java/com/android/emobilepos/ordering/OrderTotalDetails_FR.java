@@ -689,34 +689,11 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
     }
 
     private class ReCalculate extends AsyncTask<List<OrderProduct>, Void, Void> {
-        final String syncFlag = "";
-        boolean isRunning = false;
-        boolean isWaiting = false;
         private List<OrderProduct> orderProducts;
-        int concurrencyCount = 0;
 
         @Override
         protected synchronized Void doInBackground(List<OrderProduct>... params) {
             orderProducts = params[0];
-            concurrencyCount++;
-            Log.d("Concurrency Count:", String.valueOf(concurrencyCount));
-            synchronized (orderProducts) {
-                if (isRunning) {
-                    try {
-                        isWaiting = true;
-                        orderProducts.wait();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-                Order clone = null;
-                try {
-                    clone = (Order) global.order.clone();
-                } catch (CloneNotSupportedException e) {
-                    e.printStackTrace();
-                }
-                isWaiting = false;
-                isRunning = true;
                 List<OrderProduct> orderProducts = params[0];
                 if (myPref.isMixAnMatch() && orderProducts != null && !orderProducts.isEmpty()) {
                     boolean isGroupBySKU = myPref.isGroupReceiptBySku(isToGo);//myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku) && isToGo;
@@ -730,31 +707,21 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                 if (myPref.isRetailTaxes()) {
                     global.order.setRetailTax(getActivity(), taxID);
                 }
-
-                OrderTotalDetails totalDetails = clone.getOrderTotalDetails(discount, tax, assignEmployee.isVAT(), getActivity());
+                OrderTotalDetails totalDetails = global.order.getOrderTotalDetails(discount, tax, assignEmployee.isVAT(), getActivity());
                 gran_total = Global.getRoundBigDecimal(totalDetails.getGranTotal(), 2);
                 sub_total = totalDetails.getSubtotal();
                 tax_amount = Global.getRoundBigDecimal(totalDetails.getTax(), 2);
                 discount_amount = totalDetails.getGlobalDiscount();
                 return null;
-            }
         }
 
         @Override
         protected synchronized void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            if (isWaiting) {
-                synchronized (orderProducts) {
-                    orderProducts.notify();
-                }
-            }
             subTotal.setText(Global.getCurrencyFrmt(String.valueOf(sub_total)));
             granTotal.setText(Global.getCurrencyFrmt(String.valueOf(gran_total)));
             globalTax.setText(Global.getCurrencyFrmt(String.valueOf(tax_amount)));
             globalDiscount.setText(Global.getCurrencyFrmt(String.valueOf(discount_amount)));
-            concurrencyCount--;
-            OrderingMain_FA orderingMainFa = (OrderingMain_FA) getActivity();
-            orderingMainFa.getLeftFragment().mainLVAdapter.notifyDataSetChanged();
         }
     }
 
