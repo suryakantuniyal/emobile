@@ -1,9 +1,11 @@
 package com.android.emobilepos.ordering;
 
 import android.app.Activity;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +31,7 @@ import com.android.emobilepos.models.MixAndMatchDiscount;
 import com.android.emobilepos.models.MixMatchProductGroup;
 import com.android.emobilepos.models.MixMatchXYZProduct;
 import com.android.emobilepos.models.Tax;
+import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.orders.OrderTotalDetails;
 import com.android.emobilepos.models.realms.AssignEmployee;
@@ -536,7 +539,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                     taxSelected = pos;
                     setTaxValue(pos);
                 }
-                if(global.order!=null && global.order.getOrderProducts()!=null) {
+                if (global.order != null && global.order.getOrderProducts() != null) {
                     reCalculate(global.order.getOrderProducts());
                 }
             }
@@ -655,34 +658,104 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         }
     }
 
-    public void reCalculate(List<OrderProduct> orderProducts) {
+    public synchronized void reCalculate(List<OrderProduct> orderProducts) {
         //TODO Temporary fix. Need verify why SDK 5.0 calls with null global and why sdk 4.3 not
 
         if (global == null) {
             return;
         }
+        new ReCalculate().execute(orderProducts);
+//        if (myPref.isMixAnMatch() && orderProducts != null && !orderProducts.isEmpty()) {
+//            boolean isGroupBySKU = myPref.isGroupReceiptBySku(isToGo);//myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku) && isToGo;
+//            calculateMixAndMatch(orderProducts, isGroupBySKU);
+//        }
+//        Discount discount = discountSelected > 0 ? discountList.get(discountSelected - 1) : null;
+//        global.order.setRetailTaxes(myPref.isRetailTaxes());
+//        global.order.ord_globalDiscount = String.valueOf(discount_amount);
+//        global.order.setListOrderTaxes(getOrderingMainFa().getListOrderTaxes());
+//        Tax tax = taxSelected > 0 ? taxList.get(taxSelected - 1) : null;
+//        if (myPref.isRetailTaxes()) {
+//            global.order.setRetailTax(getActivity(), taxID);
+//        }
+//        OrderTotalDetails totalDetails = global.order.getOrderTotalDetails(discount, tax, assignEmployee.isVAT(), getActivity());
+//        gran_total = Global.getRoundBigDecimal(totalDetails.getGranTotal(), 2);
+//        sub_total = totalDetails.getSubtotal();
+//        tax_amount = Global.getRoundBigDecimal(totalDetails.getTax(), 2);
+//        discount_amount = totalDetails.getGlobalDiscount();
+//        subTotal.setText(Global.getCurrencyFrmt(String.valueOf(sub_total)));
+//        granTotal.setText(Global.getCurrencyFrmt(String.valueOf(gran_total)));
+//        globalTax.setText(Global.getCurrencyFrmt(String.valueOf(tax_amount)));
+//        globalDiscount.setText(Global.getCurrencyFrmt(String.valueOf(discount_amount)));
+    }
 
-        if (myPref.isMixAnMatch() && orderProducts != null && !orderProducts.isEmpty()) {
-            boolean isGroupBySKU = myPref.isGroupReceiptBySku(isToGo);//myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku) && isToGo;
-            calculateMixAndMatch(orderProducts, isGroupBySKU);
+    private class ReCalculate extends AsyncTask<List<OrderProduct>, Void, Void> {
+        final String syncFlag = "";
+        boolean isRunning = false;
+        boolean isWaiting = false;
+        private List<OrderProduct> orderProducts;
+        int concurrencyCount = 0;
+
+        @Override
+        protected synchronized Void doInBackground(List<OrderProduct>... params) {
+            orderProducts = params[0];
+            concurrencyCount++;
+            Log.d("Concurrency Count:", String.valueOf(concurrencyCount));
+            synchronized (orderProducts) {
+                if (isRunning) {
+                    try {
+                        isWaiting = true;
+                        orderProducts.wait();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                Order clone = null;
+                try {
+                    clone = (Order) global.order.clone();
+                } catch (CloneNotSupportedException e) {
+                    e.printStackTrace();
+                }
+                isWaiting = false;
+                isRunning = true;
+                List<OrderProduct> orderProducts = params[0];
+                if (myPref.isMixAnMatch() && orderProducts != null && !orderProducts.isEmpty()) {
+                    boolean isGroupBySKU = myPref.isGroupReceiptBySku(isToGo);//myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku) && isToGo;
+                    calculateMixAndMatch(orderProducts, isGroupBySKU);
+                }
+                Discount discount = discountSelected > 0 ? discountList.get(discountSelected - 1) : null;
+                global.order.setRetailTaxes(myPref.isRetailTaxes());
+                global.order.ord_globalDiscount = String.valueOf(discount_amount);
+                global.order.setListOrderTaxes(getOrderingMainFa().getListOrderTaxes());
+                Tax tax = taxSelected > 0 ? taxList.get(taxSelected - 1) : null;
+                if (myPref.isRetailTaxes()) {
+                    global.order.setRetailTax(getActivity(), taxID);
+                }
+
+                OrderTotalDetails totalDetails = clone.getOrderTotalDetails(discount, tax, assignEmployee.isVAT(), getActivity());
+                gran_total = Global.getRoundBigDecimal(totalDetails.getGranTotal(), 2);
+                sub_total = totalDetails.getSubtotal();
+                tax_amount = Global.getRoundBigDecimal(totalDetails.getTax(), 2);
+                discount_amount = totalDetails.getGlobalDiscount();
+                return null;
+            }
         }
-        Discount discount = discountSelected > 0 ? discountList.get(discountSelected - 1) : null;
-        global.order.setRetailTaxes(myPref.isRetailTaxes());
-        global.order.ord_globalDiscount = String.valueOf(discount_amount);
-        global.order.setListOrderTaxes(getOrderingMainFa().getListOrderTaxes());
-        Tax tax = taxSelected > 0 ? taxList.get(taxSelected - 1) : null;
-        if (myPref.isRetailTaxes()) {
-            global.order.setRetailTax(getActivity(), taxID);
+
+        @Override
+        protected synchronized void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            if (isWaiting) {
+                synchronized (orderProducts) {
+                    orderProducts.notify();
+                }
+            }
+            subTotal.setText(Global.getCurrencyFrmt(String.valueOf(sub_total)));
+            granTotal.setText(Global.getCurrencyFrmt(String.valueOf(gran_total)));
+            globalTax.setText(Global.getCurrencyFrmt(String.valueOf(tax_amount)));
+            globalDiscount.setText(Global.getCurrencyFrmt(String.valueOf(discount_amount)));
+            concurrencyCount--;
+            OrderingMain_FA orderingMainFa = (OrderingMain_FA) getActivity();
+            orderingMainFa.getLeftFragment().mainLVAdapter.notifyDataSetChanged();
         }
-        OrderTotalDetails totalDetails = global.order.getOrderTotalDetails(discount, tax, assignEmployee.isVAT(), getActivity());
-        gran_total = Global.getRoundBigDecimal(totalDetails.getGranTotal(), 2);
-        sub_total = totalDetails.getSubtotal();
-        tax_amount = Global.getRoundBigDecimal(totalDetails.getTax(),2);
-        discount_amount = totalDetails.getGlobalDiscount();
-        subTotal.setText(Global.getCurrencyFrmt(String.valueOf(sub_total)));
-        granTotal.setText(Global.getCurrencyFrmt(String.valueOf(gran_total)));
-        globalTax.setText(Global.getCurrencyFrmt(String.valueOf(tax_amount)));
-        globalDiscount.setText(Global.getCurrencyFrmt(String.valueOf(discount_amount)));
     }
 
     @Override

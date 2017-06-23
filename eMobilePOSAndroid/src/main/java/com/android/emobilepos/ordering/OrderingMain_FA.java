@@ -154,7 +154,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     private List<OrderAttributes> orderAttributes;
     private ArrayList<DataTaxes> listOrderTaxes;
     public boolean buildOrderStarted = false;
-
+//    public Handler receiptListHandler;
 
     public enum OrderingAction {
         HOLD, CHECKOUT, NONE, BACK_PRESSED
@@ -186,6 +186,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
         instance = this;
         callBackMSR = this;
+//        setReceiptListHandler();
         handler = new ProductsHandler(this);
         receiptContainer = (LinearLayout) findViewById(R.id.order_receipt_frag_container);
         catalogContainer = (LinearLayout) findViewById(R.id.order_catalog_frag_container);
@@ -254,6 +255,25 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         hasBeenCreated = true;
 
     }
+
+//    private void setReceiptListHandler() {
+//        receiptListHandler = new Handler(new Handler.Callback() {
+//            @Override
+//            public boolean handleMessage(Message msg) {
+//                switch (msg.what) {
+//                    case 0:
+//                        global.order.getOrderProducts().add((OrderProduct) msg.obj);
+//                        leftFragment.mainLVAdapter.notifyDataSetChanged();
+//                        break;
+//                    case 1:
+//                        OrderTotalDetails_FR.getFrag().recalculateTotal();
+//                        break;
+//                }
+//
+//                return true;
+//            }
+//        });
+//    }
 
 
     private Handler ScanResultHandler = new Handler() {
@@ -1570,6 +1590,11 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         String row1 = orderProduct.getOrdprod_name();
         String row2 = Global.formatDoubleStrToCurrency(orderProduct.getFinalPrice());
         TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
+//        OrderingMain_FA orderingMainFa = (OrderingMain_FA) activity;
+//        Message msg = orderingMainFa.receiptListHandler.obtainMessage();
+//        msg.what = 0;
+//        msg.obj = orderProduct;
+//        ((OrderingMain_FA) activity).receiptListHandler.sendMessage(msg);
         global.order.getOrderProducts().add(orderProduct);
     }
 

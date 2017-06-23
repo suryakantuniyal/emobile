@@ -145,8 +145,9 @@ public class Order implements Cloneable {
 
     public OrderTotalDetails getOrderTotalDetails(Discount discount, Tax tax, boolean isVAT, Context context) {
         OrderTotalDetails totalDetails = new OrderTotalDetails();
-        if (getOrderProducts() != null && !getOrderProducts().isEmpty()) {
-            for (OrderProduct orderProduct : getOrderProducts()) {
+        final List<OrderProduct> orderProducts = new ArrayList<>(getOrderProducts());
+        if (!orderProducts.isEmpty()) {
+            for (OrderProduct orderProduct : orderProducts) {
                 setupProductTax(context, orderProduct);
                 if (isVAT) {
                     setVATTax(tax);
@@ -170,15 +171,15 @@ public class Order implements Cloneable {
                             .subtract(disAmout).setScale(6, RoundingMode.HALF_UP));
                 }
             }
-            setOrderGlobalDataTaxes();
+            setOrderGlobalDataTaxes(orderProducts);
         }
         return totalDetails;
     }
 
-    private void setOrderGlobalDataTaxes() {
+    private void setOrderGlobalDataTaxes(List<OrderProduct> orderProducts) {
         BigDecimal taxableAmount = new BigDecimal(0);
         if (getListOrderTaxes() != null) {
-            for (OrderProduct product : getOrderProducts()) {
+            for (OrderProduct product : orderProducts) {
                 if (product.isTaxable()) {
                     taxableAmount = taxableAmount.add(product.getItemSubtotalCalculated());
                 }

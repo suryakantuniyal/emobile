@@ -217,7 +217,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         EmpInvHandler eiHandler = new EmpInvHandler(activity);
 //        int size = orderProducts.size();
 //        for (OrderProduct product : orderProducts) {
-            eiHandler.updateOnHand(orderProducts);
+        eiHandler.updateOnHand(orderProducts);
 //        }
 //        for (int i = 0; i < size; i++) {
 //            eiHandler.updateOnHand(orderProducts.get(i).getProd_id(), orderProducts.get(i).getOrdprod_qty(), isIncrement);
@@ -1830,6 +1830,9 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     public void reCalculate() {
         pagerAdapter.getItem(0);
         if (callBackRecalculate != null) {
+//            Message msg=((OrderingMain_FA) getActivity()).receiptListHandler.obtainMessage();
+//            msg.what=1;
+//            ((OrderingMain_FA) getActivity()).receiptListHandler.sendMessage(msg);
             callBackRecalculate.recalculateTotal();
             pagerAdapter.notifyDataSetChanged();
         }
@@ -1944,15 +1947,23 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     }
 
     public void refreshView() {
+//        receiptListView.post(new Runnable() {
+//            @Override
+//            public void run() {
         reCalculate();
         if (((OrderingMain_FA) getActivity()).isToGo && !mainLVAdapter.isEmpty()) {
             mainLVAdapter.selectedPosition = mainLVAdapter.getCount();
         }
         if (mainLVAdapter != null) {
             mainLVAdapter.notifyDataSetChanged();
-            receiptListView.smoothScrollToPosition(mainLVAdapter.selectedPosition);
+            receiptListView.setSelection(mainLVAdapter.selectedPosition);
+//            receiptListView.smoothScrollToPosition(mainLVAdapter.selectedPosition);
         }
+
+//            }
+//        });
     }
+
 
     private void reloadDefaultTransaction() {
         String type = myPref
