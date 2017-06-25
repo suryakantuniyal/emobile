@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3EB6B5</color>
+    <color name="colorPrimaryDark">#3EB6B5</color>
+    <color name="colorAccent">#CC3EB6B5</color>
+    <color name="primaryColor">#3EB6B5</color>
+    <color name="white">#FFFFFF</color>
+    <color name="PrimaryColor">#d54e4e</color>
+    <color name="secondaryColor">#3EB6B5</color>
+    <color name="transparent">#00000000</color>
+    <color name="primaryPressed">#b6b6b6</color>
+    <color name="primaryFocused">#b6b6b6</color>
+    <color name="black">#000000</color>
+    <color name="headerbackground">#CCE8E8E8</color>
+    <color name="green">#009900</color>
+    <color name="red">#cc0000</color>
+    <color name="half_black">#808080</color>
+    <color name="light_black">#40000000</color>
+    <color name="blacktransparency">#A0000000</color>
+    <color name="fab">#CC3EB6B5</color>
+    <color name="fab_pressed">#3EB6B5</color>
+    <color name="half_primary">#80384248</color>
+    <color name="theFillColorInCheckedState">#FFFFFF</color>
+    <color name="theBackgroundColorWhenFocusingTheCheckBox">#FFFFFF</color>
+</resources>

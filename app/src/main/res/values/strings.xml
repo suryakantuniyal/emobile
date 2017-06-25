@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">Traccar</string>
+    <string name="email">Email</string>
+    <string name="name">Name</string>
+    <string name="password">Password</string>
+    <string name="verifyotp">Verify OTP</string>
+    <string name="sign_up">SIGN UP</string>
+    <string name="noNetwork">No Network Connection</string>
+    <string name="mobil">Mobile Number</string>
+    <string name="forgot"><u>Forgot Password</u></string>
+    <string name="show_pwd">Show Password</string>
+    <string name="login">LOG IN</string>
+    <string name="wrongPwOrUserName">Wrong Username Or Password</string>
+    <string name="invalidPassword">Invalid Password</string>
+    <string name="invalidUsername">Invalid Username</string>
+    <string name="LoginRequest">Login Request</string>
+    <string name="phone">Phone Number</string>
+    <string name="numberVerification">Verifying Number</string>
+    <string name="chage_password">Change Password</string>
+    <string name="newpassword">New Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="verify">PROCEED</string>
+</resources>

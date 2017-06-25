@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "56430313575",
+    "firebase_url": "https://traccar-440d2.firebaseio.com",
+    "project_id": "traccar-440d2",
+    "storage_bucket": "traccar-440d2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:56430313575:android:ddfd572332cea794",
+        "android_client_info": {
+          "package_name": "org.traccar.manager"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "56430313575-1eqpaursielk5g5necdp09cn4ok7ml57.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.traccar.manager",
+            "certificate_hash": "26dfc2bbf4fc220dc8fc456b1e436d17ecb0b641"
+          }
+        },
+        {
+          "client_id": "56430313575-e91n5c8l1vl2sg423h4unh9j8i84nkge.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCw_igqHzJLc-zGSnIJ0UK3pQQ_aiHqKJ0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "56430313575-e91n5c8l1vl2sg423h4unh9j8i84nkge.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
