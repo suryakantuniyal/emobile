@@ -178,9 +178,11 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     public void disableCheckoutButton() {
         btnCheckout.setEnabled(false);
     }
+
     public void enableCheckoutButton() {
         btnCheckout.setEnabled(true);
     }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -216,6 +218,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             onHoldOrder = gson.fromJson(onHoldOrderJson, Order.class);
             OrdersHandler ordersHandler = new OrdersHandler(this);
             onHoldOrder = ordersHandler.getOrder(onHoldOrder.ord_id);
+            onHoldOrder.setProductRequiredAttributeCompleted();
             Global.lastOrdID = onHoldOrder.ord_id;// myCursor.getString(myCursor.getColumnIndex("ord_id"));
             Global.taxID = onHoldOrder.tax_id;//myCursor.getString(myCursor.getColumnIndex("tax_id"));
         }

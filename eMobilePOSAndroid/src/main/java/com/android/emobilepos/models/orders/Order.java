@@ -3,12 +3,14 @@ package com.android.emobilepos.models.orders;
 import android.content.Context;
 
 import com.android.dao.AssignEmployeeDAO;
+import com.android.dao.OrderProductAttributeDAO;
 import com.android.database.TaxesHandler;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.Discount;
 import com.android.emobilepos.models.Tax;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.OrderAttributes;
+import com.android.emobilepos.models.realms.ProductAttribute;
 import com.android.support.Customer;
 import com.android.support.DateUtils;
 import com.android.support.Global;
@@ -300,5 +302,15 @@ public class Order implements Cloneable {
             }
         }
         return true;
+    }
+
+    public void setProductRequiredAttributeCompleted() {
+        for (OrderProduct product : orderProducts) {
+            product.setAttributesCompleted(true);
+            List<ProductAttribute> attributes = OrderProductAttributeDAO.getByProdId(product.getProd_id());
+            for (ProductAttribute attribute : attributes) {
+                product.setAttributesCompleted(product.getRequiredProductAttributes().contains(attribute));
+            }
+        }
     }
 }
