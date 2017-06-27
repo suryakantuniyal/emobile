@@ -53,7 +53,6 @@ public class EMSKDC425 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         KDCGPSDataReceivedListener, // required for KDC Barcode Solution models
         KDCMSRDataReceivedListener, // required for KDC Barcode Solution models
         KDCNFCDataReceivedListener, // required for KDC Barcode Solution models
-        KPOSDataReceivedListener, // required for KDC Payment Solution models
         KDCConnectionListener // required for all
 
 {
@@ -258,7 +257,7 @@ public class EMSKDC425 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         if (kdc425Reader != null && kdc425Reader.IsConnected()) {
 //            kdc425Reader.DisableNFC_POS();
 //            kdc425Reader.DisableMSR_POS();
-            kdc425Reader.DisableCardReader_POS((short) (KPOSConstants.CARD_TYPE_MAGNETIC | KPOSConstants.CARD_TYPE_EMV_CONTACT));
+//            kdc425Reader.DisableCardReader_POS((short) (KPOSConstants.CARD_TYPE_MAGNETIC | KPOSConstants.CARD_TYPE_EMV_CONTACT));
         }
         edm.setCurrentDevice(null);
     }
@@ -277,9 +276,7 @@ public class EMSKDC425 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 //            kdc425Reader.SetMSRDataEncryption(KDCConstants.MSRDataEncryption.AES);
 //            kdc425Reader.SetAESKeyLength(KDCConstants.AESBitLengths.AES_128_BITS);
 //            kdc425Reader.SetAESKey(SAMPLE_AES128_KEY);
-
-
-            kdc425Reader.EnableCardReader_POS((short) (KPOSConstants.CARD_TYPE_MAGNETIC | KPOSConstants.CARD_TYPE_EMV_CONTACT));
+//            kdc425Reader.EnableCardReader_POS((short) (KPOSConstants.CARD_TYPE_MAGNETIC | KPOSConstants.CARD_TYPE_EMV_CONTACT));
         }
         handler.post(doUpdateDidConnect);
     }
@@ -357,7 +354,8 @@ public class EMSKDC425 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         scannerCallBack = callBack;
 //        kdc425Reader.EnableMSR_POS();
 //        kdc425Reader.EnableNFC_POS();
-        kdc425Reader.EnableCardReader_POS((short) (KPOSConstants.CARD_TYPE_MAGNETIC | KPOSConstants.CARD_TYPE_EMV_CONTACT));
+//        kdc425Reader.EnableCardReader_POS((short) (KPOSConstants.CARD_TYPE_MAGNETIC | KPOSConstants.CARD_TYPE_EMV_CONTACT));
+        if (handler == null)
         if (handler == null)
             handler = new Handler();
 
@@ -548,105 +546,105 @@ public class EMSKDC425 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     }
 
 
-    @Override
-    public void POSDataReceived(final KPOSData pData) {
-        if (pData != null) {
-            switch (pData.GetEventCode()) {
-                case KPOSConstants.EVT_NFC_CARD_TAPPED:
-                    Looper.prepare();
-                    HandleNFCCardReadEvent(pData);
-                    Looper.loop();
-                    break;
-                case KPOSConstants.EVT_BARCODE_SCANNED:
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            HandleBarcodeScannedEvent(pData);
-                        }
-                    });
-                    break;
-                case KPOSConstants.EVT_CARD_SWIPED: // an user swiped a card, and EMSKDC425 read it successfully
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            HandleCardSwipedEvent(pData);
-                        }
-                    });
-                    break;
-                case KPOSConstants.EVT_CARD_SWIPED_ENCRYPTED: // an user swiped a card, and EMSKDC425 read it successfully and encrypt
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            HandleCardSwipedEncryptedEvent(pData);
-                        }
-                    });
-                    break;
-//                case KPOSConstants.EVT_VALUE_ENTERED:
-//                    HandleValueEnteredEvent(pData);
+//    @Override
+//    public void POSDataReceived(final KPOSData pData) {
+//        if (pData != null) {
+//            switch (pData.GetEventCode()) {
+//                case KPOSConstants.EVT_NFC_CARD_TAPPED:
+//                    Looper.prepare();
+//                    HandleNFCCardReadEvent(pData);
+//                    Looper.loop();
 //                    break;
-//                case KPOSConstants.EVT_CARD_READ_FAILED: // an user swiped a card, but EMSKDC425 could not read it successfully
-//                    HandleCardReadFailedEvent();
+//                case KPOSConstants.EVT_BARCODE_SCANNED:
+//                    activity.runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            HandleBarcodeScannedEvent(pData);
+//                        }
+//                    });
 //                    break;
-//                case KPOSConstants.EVT_CANCELLED_CARD_READ: // an user pressed CANCEL button on EMSKDC425 during the card read mode
-//                    HandleCardReadCancelledEvent();
+//                case KPOSConstants.EVT_CARD_SWIPED: // an user swiped a card, and EMSKDC425 read it successfully
+//                    activity.runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            HandleCardSwipedEvent(pData);
+//                        }
+//                    });
 //                    break;
-//                case KPOSConstants.EVT_TIMEOUT_CARD_READ: // an user did not swipe a card before time-out occurred
-//                    HandleCardReadTimeoutEvent();
+//                case KPOSConstants.EVT_CARD_SWIPED_ENCRYPTED: // an user swiped a card, and EMSKDC425 read it successfully and encrypt
+//                    activity.runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            HandleCardSwipedEncryptedEvent(pData);
+//                        }
+//                    });
 //                    break;
-//                case KPOSConstants.EVT_CANCELLED:
-//                    HandleCancelledEvent();
-//                    break;
-//                case KPOSConstants.EVT_TIMEOUT:
-//                    HandleTimeoutEvent();
-//                    break;
-//                case KPOSConstants.EVT_PINBLOCK_GENERATED: // an user entered PIN, and EMSKDC425 generated PIN Block successfully
-//                    HandlePinblockGeneratedEvent(pData);
-//                    break;
-//                case KPOSConstants.EVT_PINBLOCK_GENERATION_FAILED: // an user entered PIN, but EMSKDC425 could not generate PIN Block successfully
-//                    HandlePinblockGenerationFailedEvent();
-//                    break;
-//                case KPOSConstants.EVT_CANCELLED_PIN_ENTRY: // an user pressed CANCEL button on EMSKDC425 during the pin entry mode
-//                    HandlePinEntryCancelledEvent();
-//                    break;
-//                case KPOSConstants.EVT_TIMEOUT_PIN_ENTRY: // an user did not enter PIN completely before time-out occurred
-//                    HandlePinEntryTimeoutEvent();
-//                    break;
+////                case KPOSConstants.EVT_VALUE_ENTERED:
+////                    HandleValueEnteredEvent(pData);
+////                    break;
+////                case KPOSConstants.EVT_CARD_READ_FAILED: // an user swiped a card, but EMSKDC425 could not read it successfully
+////                    HandleCardReadFailedEvent();
+////                    break;
+////                case KPOSConstants.EVT_CANCELLED_CARD_READ: // an user pressed CANCEL button on EMSKDC425 during the card read mode
+////                    HandleCardReadCancelledEvent();
+////                    break;
+////                case KPOSConstants.EVT_TIMEOUT_CARD_READ: // an user did not swipe a card before time-out occurred
+////                    HandleCardReadTimeoutEvent();
+////                    break;
+////                case KPOSConstants.EVT_CANCELLED:
+////                    HandleCancelledEvent();
+////                    break;
+////                case KPOSConstants.EVT_TIMEOUT:
+////                    HandleTimeoutEvent();
+////                    break;
+////                case KPOSConstants.EVT_PINBLOCK_GENERATED: // an user entered PIN, and EMSKDC425 generated PIN Block successfully
+////                    HandlePinblockGeneratedEvent(pData);
+////                    break;
+////                case KPOSConstants.EVT_PINBLOCK_GENERATION_FAILED: // an user entered PIN, but EMSKDC425 could not generate PIN Block successfully
+////                    HandlePinblockGenerationFailedEvent();
+////                    break;
+////                case KPOSConstants.EVT_CANCELLED_PIN_ENTRY: // an user pressed CANCEL button on EMSKDC425 during the pin entry mode
+////                    HandlePinEntryCancelledEvent();
+////                    break;
+////                case KPOSConstants.EVT_TIMEOUT_PIN_ENTRY: // an user did not enter PIN completely before time-out occurred
+////                    HandlePinEntryTimeoutEvent();
+////                    break;
+////
+////                case KPOSConstants.EVT_TRANSACTION_STATE_ENTERED:
+////                case KPOSConstants.EVT_TRANSACTION_STATE_EXITED:
+////                    HandleTransactionStateChangeEvent(pData);
+////                    break;
+////
+////                case KPOSConstants.EVT_EMV_CARD_INSERTED:
+////                    HandleCardInsertedEvent(pData);
+////                    break;
+////                case KPOSConstants.EVT_EMV_TRANSACTION_REQUESTED:
+////                    HandleEMVTransactionRequestedEvent(pData);
+////                    break;
+////                case KPOSConstants.EVT_EMV_TRANSACTION_REVERSED:
+////                    HandleEMVTransactionReversedEvent(pData);
+////                    break;
+////                case KPOSConstants.EVT_EMV_TRANSACTION_CONFIRMED:
+////                    HandleEMVTransactionConfirmedEvent(pData);
+////                    break;
+////                case KPOSConstants.EVT_EMV_TRANSACTION_ENDED:
+////                    HandleEMVTransactionEndedEvent(pData);
+////                    break;
 //
-//                case KPOSConstants.EVT_TRANSACTION_STATE_ENTERED:
-//                case KPOSConstants.EVT_TRANSACTION_STATE_EXITED:
-//                    HandleTransactionStateChangeEvent(pData);
+//                default:
 //                    break;
-//
-//                case KPOSConstants.EVT_EMV_CARD_INSERTED:
-//                    HandleCardInsertedEvent(pData);
-//                    break;
-//                case KPOSConstants.EVT_EMV_TRANSACTION_REQUESTED:
-//                    HandleEMVTransactionRequestedEvent(pData);
-//                    break;
-//                case KPOSConstants.EVT_EMV_TRANSACTION_REVERSED:
-//                    HandleEMVTransactionReversedEvent(pData);
-//                    break;
-//                case KPOSConstants.EVT_EMV_TRANSACTION_CONFIRMED:
-//                    HandleEMVTransactionConfirmedEvent(pData);
-//                    break;
-//                case KPOSConstants.EVT_EMV_TRANSACTION_ENDED:
-//                    HandleEMVTransactionEndedEvent(pData);
-//                    break;
+//            }
+//        }
+//    }
 
-                default:
-                    break;
-            }
-        }
-    }
-
-    private void HandleBarcodeScannedEvent(KPOSData pData) {
-        try {
-            scannedData = new String(pData.GetBarcodeBytes());
-            scannerCallBack.scannerWasRead(scannedData);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+//    private void HandleBarcodeScannedEvent(KPOSData pData) {
+//        try {
+//            scannedData = new String(pData.GetBarcodeBytes());
+//            scannerCallBack.scannerWasRead(scannedData);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     private Runnable runnableScannedData = new Runnable() {
         public void run() {
@@ -671,48 +669,48 @@ public class EMSKDC425 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         return c;
     }
 
-    private void HandleCardSwipedEvent(KPOSData pData) {
+//    private void HandleCardSwipedEvent(KPOSData pData) {
+//
+//        String track1 = cleanTrack(pData.GetTrack1());
+//
+//        String track2 = cleanTrack(pData.GetTrack2());
+//        String track3 = cleanTrack(pData.GetTrack3());
+//        Log.d("TRK1:", "[" + track1 + "]");
+//        Log.d("TRK2:", "[" + track2 + "]");
+//
+//        CreditCardInfo creditCardInfo = new CreditCardInfo();
+//        boolean parsed = CardParser.parseCreditCard(activity, track1 + track2 + track3, creditCardInfo);
+//        scannerCallBack.cardWasReadSuccessfully(parsed, creditCardInfo);
+//    }
 
-        String track1 = cleanTrack(pData.GetTrack1());
-
-        String track2 = cleanTrack(pData.GetTrack2());
-        String track3 = cleanTrack(pData.GetTrack3());
-        Log.d("TRK1:", "[" + track1 + "]");
-        Log.d("TRK2:", "[" + track2 + "]");
-
-        CreditCardInfo creditCardInfo = new CreditCardInfo();
-        boolean parsed = CardParser.parseCreditCard(activity, track1 + track2 + track3, creditCardInfo);
-        scannerCallBack.cardWasReadSuccessfully(parsed, creditCardInfo);
-    }
-
-    private void HandleCardSwipedEncryptedEvent(KPOSData pData) {
-        short encryptionType = pData.GetEncryptionType();
-        String deviceSerialNumber = pData.GetDeviceSerialNumber();
-
-        String ksn = pData.GetCardDataKSN();
-
-        short unencryptedTrack1Length = pData.GetUnencryptedTrack1Length();
-        short unencryptedTrack2Length = pData.GetUnencryptedTrack2Length();
-        short unencryptedTrack3Length = pData.GetUnencryptedTrack3Length();
-
-        short encryptedTrack1Length = pData.GetEncryptedTrack1Length();
-        short encryptedTrack2Length = pData.GetEncryptedTrack2Length();
-        short encryptedTrack3Length = pData.GetEncryptedTrack3Length();
-
-        short track1DigestLength = pData.GetTrack1DigestLength();
-        short track2DigestLength = pData.GetTrack2DigestLength();
-        short track3DigestLength = pData.GetTrack3DigestLength();
-
-        byte[] encryptedTrack1Data = pData.GetEncryptedTrack1Bytes();
-        byte[] encryptedTrack2Data = pData.GetEncryptedTrack2Bytes();
-        byte[] encryptedTrack3Data = pData.GetEncryptedTrack3Bytes();
-
-        short digestType = pData.GetDigestType();
-
-        byte[] track1Digest = pData.GetTrack1DigestBytes();
-        byte[] track2Digest = pData.GetTrack2DigestBytes();
-        byte[] track3Digest = pData.GetTrack3DigestBytes();
-
-
-    }
+//    private void HandleCardSwipedEncryptedEvent(KPOSData pData) {
+//        short encryptionType = pData.GetEncryptionType();
+//        String deviceSerialNumber = pData.GetDeviceSerialNumber();
+//
+//        String ksn = pData.GetCardDataKSN();
+//
+//        short unencryptedTrack1Length = pData.GetUnencryptedTrack1Length();
+//        short unencryptedTrack2Length = pData.GetUnencryptedTrack2Length();
+//        short unencryptedTrack3Length = pData.GetUnencryptedTrack3Length();
+//
+//        short encryptedTrack1Length = pData.GetEncryptedTrack1Length();
+//        short encryptedTrack2Length = pData.GetEncryptedTrack2Length();
+//        short encryptedTrack3Length = pData.GetEncryptedTrack3Length();
+//
+//        short track1DigestLength = pData.GetTrack1DigestLength();
+//        short track2DigestLength = pData.GetTrack2DigestLength();
+//        short track3DigestLength = pData.GetTrack3DigestLength();
+//
+//        byte[] encryptedTrack1Data = pData.GetEncryptedTrack1Bytes();
+//        byte[] encryptedTrack2Data = pData.GetEncryptedTrack2Bytes();
+//        byte[] encryptedTrack3Data = pData.GetEncryptedTrack3Bytes();
+//
+//        short digestType = pData.GetDigestType();
+//
+//        byte[] track1Digest = pData.GetTrack1DigestBytes();
+//        byte[] track2Digest = pData.GetTrack2DigestBytes();
+//        byte[] track3Digest = pData.GetTrack3DigestBytes();
+//
+//
+//    }
 }
