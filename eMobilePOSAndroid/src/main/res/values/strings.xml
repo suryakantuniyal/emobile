@@ -1327,6 +1327,7 @@
     <string name="to">To:</string>
     <string name="endShiftReport">** End of shift report **</string>
     <string name="dlog_title_enter_clerk_manager_password">Enter Clerk/Manager Password</string>
+    <string name="processing_preview">Processing receipt preview.</string>
 
 
 </resources>
