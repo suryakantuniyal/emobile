@@ -1563,12 +1563,10 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             total = total.add(Global.getBigDecimalNum(Global.formatNumToLocale(Global.addonTotalAmount)));
         }
         List<OrderProduct> list = Collections.singletonList(orderProduct);
-        boolean attributeConmpleted = OrderingMain_FA.isRequiredAttributeCompleted(list);
-        orderProduct.setAttributesCompleted(attributeConmpleted);
+        boolean attributeCompleted = OrderingMain_FA.isRequiredAttributeCompleted(list);
+        orderProduct.setAttributesCompleted(attributeCompleted);
         total = total.multiply(OrderingMain_FA.returnItem && OrderingMain_FA.mTransType != Global.TransactionType.RETURN ? new BigDecimal(-1) : new BigDecimal(1));
-        DecimalFormat frmt = new DecimalFormat("0.00");
         orderProduct.setItemTotal(total.toString());
-//        orderProduct.setItemSubtotal(total.toString());
         GenerateNewID generator = new GenerateNewID(activity);
         MyPreferences myPref = new MyPreferences(activity);
         if (!Global.isFromOnHold && Global.lastOrdID.isEmpty()) {
@@ -1594,16 +1592,10 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     sb.append("[").append(orderProduct.addonsProducts.get(i).getOrdprod_name()).append("]");
             }
             orderProduct.setOrdprod_desc(sb.toString());
-//            global.orderProductAddons = new ArrayList<>();
         }
         String row1 = orderProduct.getOrdprod_name();
         String row2 = Global.formatDoubleStrToCurrency(orderProduct.getFinalPrice());
         TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
-//        OrderingMain_FA orderingMainFa = (OrderingMain_FA) activity;
-//        Message msg = orderingMainFa.receiptListHandler.obtainMessage();
-//        msg.what = 0;
-//        msg.obj = orderProduct;
-//        ((OrderingMain_FA) activity).receiptListHandler.sendMessage(msg);
         global.order.getOrderProducts().add(orderProduct);
     }
 
