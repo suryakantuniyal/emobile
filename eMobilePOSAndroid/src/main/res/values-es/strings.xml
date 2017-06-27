@@ -1299,6 +1299,7 @@
     <string name="from">De:</string>
     <string name="to">Para:</string>
     <string name="dlog_title_enter_clerk_manager_password">Introduzca la contraseña del empleado/gerente</string>
+    <string name="processing_preview">Generando los recibos.</string>
 
 
 </resources>
