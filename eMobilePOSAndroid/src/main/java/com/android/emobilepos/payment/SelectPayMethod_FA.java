@@ -331,7 +331,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
     @Override
     public void onResume() {
 //        Toast.makeText(this, "Resume:"+String.valueOf(skipLogin), Toast.LENGTH_LONG).show();
-        if (global.isApplicationSentToBackground(this) && !skipLogin)
+        if (global.isApplicationSentToBackground() && !skipLogin)
             Global.loggedIn = false;
         global.stopActivityTransitionTimer();
 

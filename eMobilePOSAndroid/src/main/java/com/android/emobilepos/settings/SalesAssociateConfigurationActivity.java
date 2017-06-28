@@ -46,7 +46,7 @@ public class SalesAssociateConfigurationActivity extends BaseFragmentActivityAct
     @Override
     public void onResume() {
         Global global = (Global) getApplication();
-        if (global.isApplicationSentToBackground(this))
+        if (global.isApplicationSentToBackground())
             Global.loggedIn = false;
 
         global.stopActivityTransitionTimer();

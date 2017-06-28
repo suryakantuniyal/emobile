@@ -76,7 +76,7 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
             menu.findItem(R.id.logoutMenuItem).setVisible(false);
             menu.findItem(R.id.menu_back).setVisible(false);
         }
-        if (this instanceof MainMenu_FA && myPref.isUseClerks()) {
+        if (this instanceof MainMenu_FA && myPref.getIsPersistClerk()) {
             menu.findItem(R.id.logoutMenuItem).setVisible(true);
         } else if (showNavigationbar)
             menu.findItem(R.id.menu_back).setVisible(true);
@@ -88,6 +88,8 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
         MenuItem menuItem = menu.findItem(R.id.logoutMenuItem);
         if (myPref.isUseClerks() && clerk == null) {
             clerk = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()));
+        } else {
+            clerk = null;
         }
         if (menuItem != null && clerk != null) {
             menuItem.setTitle(String.format("%s (%s)", getString(R.string.logout_menu), clerk.getEmpName()));
@@ -105,6 +107,7 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
                 break;
             }
             case R.id.logoutMenuItem: {
+                myPref.setIsUseClerks(true);
                 Global global = (Global) this.getApplication();
                 Global.loggedIn = false;
                 global.promptForMandatoryLogin(this);

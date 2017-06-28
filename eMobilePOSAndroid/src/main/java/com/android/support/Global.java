@@ -953,7 +953,6 @@ public class Global extends MultiDexApplication {
         frmt.setMinimumFractionDigits(2);
         frmt.setMaximumFractionDigits(2);
         return frmt.format(Double.parseDouble(value));
-        // System.out.println( usdCostFormat.format(displayVal.doubleValue()) );
     }
 
     public static boolean isPortrait(Context context) {
@@ -1238,13 +1237,7 @@ public class Global extends MultiDexApplication {
             Crashlytics.logException(e);
         }
 
-        double itemTotal = total.doubleValue();
-
-        if (itemTotal < 0)
-            itemTotal = 0.00;
-
-//        orderedProducts.setItemSubtotal(Double.toString(itemTotal));
-        double discountRate = 0;
+        double discountRate;
         if (orderedProducts.getDiscount_is_fixed().equals("1")) {
             discountRate = Double.parseDouble(orderedProducts.getDiscount_value());
         } else {
@@ -1485,6 +1478,8 @@ public class Global extends MultiDexApplication {
                     globalDlog.dismiss();
                     loggedIn = false;
                     myPref.setPreferences("pref_use_clerks", false);
+                    myPref.setClerkID("0");
+                    myPref.setClerkName("");
                     promptForMandatoryLogin(activity);
                 }
             });
@@ -1529,20 +1524,6 @@ public class Global extends MultiDexApplication {
         return wasInBackground;
     }
 
-
-    public enum HandlerMessages {
-        UPDATE_PAYMENT_SIGNATURE(0);
-
-        private int code;
-
-        HandlerMessages(int code) {
-            this.code = code;
-        }
-
-        public int getCode() {
-            return this.code;
-        }
-    }
 
     public enum BuildModel {
         ET1, MC40N0, M2MX60P, M2MX6OP, JE971, Asura, Dolphin_Black_70e, PAT215, PAT100, EM100, EM70, OT_310, PayPoint_ESY13P1;

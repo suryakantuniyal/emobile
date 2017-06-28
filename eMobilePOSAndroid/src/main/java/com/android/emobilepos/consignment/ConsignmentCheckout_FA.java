@@ -37,11 +37,11 @@ public class ConsignmentCheckout_FA extends BaseFragmentActivityActionBar {
     @Override
     public void onResume() {
 
-        if (global.isApplicationSentToBackground(this))
-            global.loggedIn = false;
+        if (global.isApplicationSentToBackground())
+            Global.loggedIn = false;
         global.stopActivityTransitionTimer();
 
-        if (hasBeenCreated && !global.loggedIn) {
+        if (hasBeenCreated && !Global.loggedIn) {
             if (global.getGlobalDlog() != null)
                 global.getGlobalDlog().dismiss();
             global.promptForMandatoryLogin(this);
@@ -55,7 +55,7 @@ public class ConsignmentCheckout_FA extends BaseFragmentActivityActionBar {
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         boolean isScreenOn = powerManager.isScreenOn();
         if (!isScreenOn)
-            global.loggedIn = false;
+            Global.loggedIn = false;
         global.startActivityTransitionTimer();
     }
 
@@ -102,17 +102,17 @@ public class ConsignmentCheckout_FA extends BaseFragmentActivityActionBar {
             @Override
             public void onClick(View v) {
                 dlog.dismiss();
-                if (global.consignment_order != null && !global.consignment_order.ord_id.isEmpty()) {
-                    OrdersHandler.deleteTransaction(ConsignmentCheckout_FA.this, global.consignment_order.ord_id);
+                if (Global.consignment_order != null && !Global.consignment_order.ord_id.isEmpty()) {
+                    OrdersHandler.deleteTransaction(ConsignmentCheckout_FA.this, Global.consignment_order.ord_id);
                 }
-                if (global.cons_return_order != null && !global.cons_return_order.ord_id.isEmpty()) {
-                    OrdersHandler.deleteTransaction(ConsignmentCheckout_FA.this, global.cons_return_order.ord_id);
+                if (Global.cons_return_order != null && !Global.cons_return_order.ord_id.isEmpty()) {
+                    OrdersHandler.deleteTransaction(ConsignmentCheckout_FA.this, Global.cons_return_order.ord_id);
                 }
-                if (global.cons_fillup_order != null && !global.cons_fillup_order.ord_id.isEmpty()) {
-                    OrdersHandler.deleteTransaction(ConsignmentCheckout_FA.this, global.cons_fillup_order.ord_id);
+                if (Global.cons_fillup_order != null && !Global.cons_fillup_order.ord_id.isEmpty()) {
+                    OrdersHandler.deleteTransaction(ConsignmentCheckout_FA.this, Global.cons_fillup_order.ord_id);
                 }
-                if (global.consignment_order != null && !global.consignment_order.ord_id.isEmpty()) {
-                    OrdersHandler.deleteTransaction(ConsignmentCheckout_FA.this, global.consignment_order.ord_id);
+                if (Global.consignment_order != null && !Global.consignment_order.ord_id.isEmpty()) {
+                    OrdersHandler.deleteTransaction(ConsignmentCheckout_FA.this, Global.consignment_order.ord_id);
                 }
                 finish();
             }

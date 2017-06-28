@@ -154,11 +154,11 @@ public class HistoryConsignment_FA extends BaseFragmentActivityActionBar impleme
 	@Override
 	public void onResume() {
 
-		if(global.isApplicationSentToBackground(activity))
-			global.loggedIn = false;
+		if(global.isApplicationSentToBackground())
+			Global.loggedIn = false;
 		global.stopActivityTransitionTimer();
 		
-		if(hasBeenCreated&&!global.loggedIn)
+		if(hasBeenCreated&&!Global.loggedIn)
 		{
 			if(global.getGlobalDlog()!=null)
 				global.getGlobalDlog().dismiss();
@@ -174,7 +174,7 @@ public class HistoryConsignment_FA extends BaseFragmentActivityActionBar impleme
 		PowerManager powerManager = (PowerManager)getSystemService(POWER_SERVICE);
 		boolean isScreenOn = powerManager.isScreenOn();
 		if(!isScreenOn)
-			global.loggedIn = false;
+			Global.loggedIn = false;
 		global.startActivityTransitionTimer();
 	}
 	
