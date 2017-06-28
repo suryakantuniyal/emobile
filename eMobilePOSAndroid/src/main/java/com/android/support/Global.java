@@ -1473,10 +1473,10 @@ public class Global extends MultiDexApplication {
 
     public void promptForMandatoryLogin(final Activity activity) {
         if (!loggedIn) {
-            globalDlog = new Dialog(activity, R.style.Theme_TransparentTest);
+            globalDlog = new Dialog(activity, R.style.FullscreenTheme);
             globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             globalDlog.setCancelable(false);
-            globalDlog.setContentView(R.layout.dlog_field_single_layout);
+            globalDlog.setContentView(R.layout.dlog_login_layout);
             final MyPreferences myPref = new MyPreferences(activity);
             final EditText viewField = (EditText) globalDlog.findViewById(R.id.dlogFieldSingle);
             viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
