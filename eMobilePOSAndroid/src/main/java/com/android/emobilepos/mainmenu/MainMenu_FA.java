@@ -247,7 +247,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
            startPollingService();
         }
         registerReceiver(messageReceiver, new IntentFilter(NOTIFICATION_RECEIVED));
-        if (global.isApplicationSentToBackground(activity)) {
+        if (global.isApplicationSentToBackground()) {
             Global.loggedIn = false;
         }
         setLogoutButtonClerkname();

@@ -671,7 +671,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     @Override
     public void onResume() {
         buildOrderStarted = false;
-        if (global.isApplicationSentToBackground(this))
+        if (global.isApplicationSentToBackground())
             Global.loggedIn = false;
         global.stopActivityTransitionTimer();
         if (hasBeenCreated && !Global.loggedIn) {

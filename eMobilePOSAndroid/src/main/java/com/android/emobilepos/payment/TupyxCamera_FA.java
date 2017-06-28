@@ -69,11 +69,11 @@ public class TupyxCamera_FA extends BaseFragmentActivityActionBar {
     protected void onResume() {
     	super.onResume();
     	
-        if(global.isApplicationSentToBackground(this))
-			global.loggedIn = false;
+        if(global.isApplicationSentToBackground())
+			Global.loggedIn = false;
 		global.stopActivityTransitionTimer();
 		
-		if(hasBeenCreated&&!global.loggedIn)
+		if(hasBeenCreated&&!Global.loggedIn)
 		{
 			if(global.getGlobalDlog()!=null)
 				global.getGlobalDlog().dismiss();
@@ -92,7 +92,7 @@ public class TupyxCamera_FA extends BaseFragmentActivityActionBar {
         PowerManager powerManager = (PowerManager)getSystemService(POWER_SERVICE);
 		boolean isScreenOn = powerManager.isScreenOn();
 		if(!isScreenOn)
-			global.loggedIn = false;
+			Global.loggedIn = false;
         global.startActivityTransitionTimer();
         if(mCamera!=null&&isScreenOn)
         	releaseCamera();

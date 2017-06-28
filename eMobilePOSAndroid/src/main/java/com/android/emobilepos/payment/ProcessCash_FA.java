@@ -974,11 +974,11 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
     @Override
     public void onResume() {
 
-        if (global.isApplicationSentToBackground(this))
-            global.loggedIn = false;
+        if (global.isApplicationSentToBackground())
+            Global.loggedIn = false;
         global.stopActivityTransitionTimer();
 
-        if (hasBeenCreated && !global.loggedIn) {
+        if (hasBeenCreated && !Global.loggedIn) {
             if (global.getGlobalDlog() != null)
                 global.getGlobalDlog().dismiss();
             global.promptForMandatoryLogin(this);
@@ -992,10 +992,9 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         boolean isScreenOn = powerManager.isScreenOn();
         if (!isScreenOn)
-            global.loggedIn = false;
+            Global.loggedIn = false;
         global.startActivityTransitionTimer();
     }
-
 
     @Override
     protected void onDestroy() {

@@ -1300,6 +1300,11 @@
     <string name="to">Para:</string>
     <string name="dlog_title_enter_clerk_manager_password">Introduzca la contraseña del empleado/gerente</string>
     <string name="processing_preview">Generando los recibos.</string>
+    <string name="login_form">Inicio de Sesión</string>
+    <string name="account_number">Número de Cuenta</string>
+    <string name="login_instructions">Inicie la sesión con su número de cuenta y contraseña de eMobilePOS.</string>
+    <string name="login_clerk_instructions">Inicie la sesión con su contraseña de empleado.</string>
+    <string name="login_system_instructions">Inicie la sesión la contraseña de Systema.</string>
 
 
 </resources>

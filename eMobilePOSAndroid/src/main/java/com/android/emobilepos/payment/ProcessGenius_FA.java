@@ -179,11 +179,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
     protected void onResume() {
         super.onResume();
         boolean skipLogin = extras.containsKey("LocalGeniusResponse");
-        if (global.isApplicationSentToBackground(this) && !skipLogin)
-            Global.loggedIn = false;
-        else {
-            Global.loggedIn = true;
-        }
+        Global.loggedIn = !(global.isApplicationSentToBackground() && !skipLogin);
         global.stopActivityTransitionTimer();
         if (hasBeenCreated && !Global.loggedIn) {
             if (global.getGlobalDlog() != null)

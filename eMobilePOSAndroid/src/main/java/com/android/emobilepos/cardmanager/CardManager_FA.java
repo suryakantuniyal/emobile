@@ -318,7 +318,7 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
     @Override
     public void onResume() {
 
-        if (global.isApplicationSentToBackground(this))
+        if (global.isApplicationSentToBackground())
             Global.loggedIn = false;
         global.stopActivityTransitionTimer();
 

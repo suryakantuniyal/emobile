@@ -89,7 +89,7 @@ public class ViewReport_FA extends BaseFragmentActivityActionBar {
     @Override
     public void onResume() {
 
-        if (global.isApplicationSentToBackground(this))
+        if (global.isApplicationSentToBackground())
             Global.loggedIn = false;
         global.stopActivityTransitionTimer();
 

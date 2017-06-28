@@ -358,7 +358,7 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
 
     @Override
     public void onResume() {
-        if (global.isApplicationSentToBackground(this))
+        if (global.isApplicationSentToBackground())
             Global.loggedIn = false;
         global.stopActivityTransitionTimer();
 

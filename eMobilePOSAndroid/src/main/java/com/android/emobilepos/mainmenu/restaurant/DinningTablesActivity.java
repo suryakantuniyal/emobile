@@ -120,7 +120,7 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
     @Override
     public void onResume() {
         Global global = (Global) getApplication();
-        if (global.isApplicationSentToBackground(this))
+        if (global.isApplicationSentToBackground())
             Global.loggedIn = false;
         global.stopActivityTransitionTimer();
 
@@ -139,7 +139,7 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         boolean isScreenOn = powerManager.isScreenOn();
         if (!isScreenOn)
-            global.loggedIn = false;
+            Global.loggedIn = false;
         global.startActivityTransitionTimer();
     }
 //
