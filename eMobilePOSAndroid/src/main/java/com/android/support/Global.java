@@ -1466,14 +1466,17 @@ public class Global extends MultiDexApplication {
             final EditText viewField = (EditText) globalDlog.findViewById(R.id.dlogFieldSingle);
             viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
             final TextView viewMsg = (TextView) globalDlog.findViewById(R.id.dlogMessage);
+            final TextView loginInstructionTextView = (TextView) globalDlog.findViewById(R.id.loginInstructionstextView28);
             Button systemLoginButton = (Button) globalDlog.findViewById(R.id.systemLoginbutton2);
             TextView infoSystemLogin = (TextView) globalDlog.findViewById(R.id.infotextView23);
             if (myPref.isUseClerks()) {
                 systemLoginButton.setVisibility(View.VISIBLE);
                 infoSystemLogin.setVisibility(View.VISIBLE);
+                loginInstructionTextView.setText(getString(R.string.login_clerk_instructions));
             } else {
                 systemLoginButton.setVisibility(View.GONE);
                 infoSystemLogin.setVisibility(View.GONE);
+                loginInstructionTextView.setText(getString(R.string.login_system_instructions));
             }
             viewMsg.setText(R.string.password);
             systemLoginButton.setOnClickListener(new View.OnClickListener() {
@@ -1495,6 +1498,7 @@ public class Global extends MultiDexApplication {
                     if (myPref.isUseClerks()) {
                         Clerk clerk = ClerkDAO.login(enteredPass, myPref);
                         if (clerk == null) {
+                            viewField.setText("");
                             viewMsg.setText(R.string.invalid_password);
                         } else {
                             myPref.setClerkID(String.valueOf(clerk.getEmpId()));
@@ -1512,6 +1516,7 @@ public class Global extends MultiDexApplication {
                             ((MainMenu_FA) activity).hideLogoutButton();
                         }
                     } else {
+                        viewField.setText("");
                         viewMsg.setText(R.string.invalid_password);
                     }
                 }
@@ -1520,8 +1525,7 @@ public class Global extends MultiDexApplication {
         }
     }
 
-    public boolean isApplicationSentToBackground(final Context context) {
-
+    public boolean isApplicationSentToBackground() {
         return wasInBackground;
     }
 

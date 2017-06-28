@@ -1330,6 +1330,7 @@
     <string name="login_form">Login Form</string>
     <string name="account_number">Account Number</string>
     <string name="login_instructions">Login with your registered eMobilePOS account number and password.</string>
-    <string name="login_clerk_instructions">Login with your Clerk or Manager password.</string>
+    <string name="login_clerk_instructions">Login with your Clerk password.</string>
+    <string name="login_system_instructions">Login with your System password.</string>
 
 </resources>

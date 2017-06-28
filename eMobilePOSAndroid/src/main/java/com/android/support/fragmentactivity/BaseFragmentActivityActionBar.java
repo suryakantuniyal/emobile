@@ -7,31 +7,25 @@ import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
-import android.widget.TextView;
 
 import com.android.dao.ClerkDAO;
-import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.OnHoldActivity;
 import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.models.realms.Clerk;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
-import com.crashlytics.android.Crashlytics;
-import com.crashlytics.android.core.CrashlyticsCore;
-
-import io.fabric.sdk.android.Fabric;
 
 /**
  * Created by Guarionex on 12/9/2015.
  */
 public class BaseFragmentActivityActionBar extends FragmentActivity {
-    protected ActionBar myBar;
+    static Clerk clerk;
     private static MyPreferences myPref;
-    private boolean showNavigationbar = false;
     private static String[] navigationbarByModels;
     public Menu menu;
-    static Clerk clerk;
+    protected ActionBar myBar;
+    private boolean showNavigationbar = false;
 
     protected void setActionBar() {
         showNavigationbar = myPref.getPreferences(MyPreferences.pref_use_navigationbar) || isNavigationBarModel() || (this instanceof MainMenu_FA && myPref.isUseClerks());
@@ -67,7 +61,6 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
             myPref = new MyPreferences(this);
         }
         clerk = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()));
-
         setActionBar();
     }
 
@@ -93,6 +86,9 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem menuItem = menu.findItem(R.id.logoutMenuItem);
+        if (myPref.isUseClerks() && clerk == null) {
+            clerk = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()));
+        }
         if (menuItem != null && clerk != null) {
             menuItem.setTitle(String.format("%s (%s)", getString(R.string.logout_menu), clerk.getEmpName()));
         }
