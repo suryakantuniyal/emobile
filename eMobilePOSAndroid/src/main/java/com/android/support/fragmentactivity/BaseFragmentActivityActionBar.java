@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
+import android.widget.TextView;
 
 import com.android.dao.ClerkDAO;
 import com.android.emobilepos.BuildConfig;

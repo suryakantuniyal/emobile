@@ -96,13 +96,6 @@ import main.EMSDeviceManager;
 
 public class Global extends MultiDexApplication {
     public static final String EVOSNAP_PACKAGE_NAME = "com.emobilepos.icmpevo.app";
-    private static com.android.support.LocationServices locationServices;
-    // Handle application transition for background
-    private Timer mActivityTransitionTimer;
-    private TimerTask mActivityTransitionTimerTask;
-    private boolean wasInBackground;
-    private final long MAX_ACTIVITY_TRANSITION_TIME_MS = 5000;
-
     public static final int MAGTEK = 0;
     //Load JNI from the library project. Refer MainActivity.java from library project elotouchCashDrawer.
     // In constructor we are loading .so file for Cash Drawer.
@@ -218,7 +211,6 @@ public class Global extends MultiDexApplication {
     public final static int BLUEBAMBOO = 0;
     public final static int BLUESTAR = 1;
     public final static String TIME_OUT = "1";
-
     // public final static int S_LOCATIONS_INVENTORY = 59;
     public final static String NOT_VALID_URL = "2";
     public static final Map<String, String> xmlActions = createMap();
@@ -295,49 +287,7 @@ public class Global extends MultiDexApplication {
     public static double addonTotalAmount = 0;
     public static boolean isFromOnHold = false;
     public static Map<String, String> paymentIconsMap = paymentIconMap();
-    private static Dialog popDlog;
-    public String encodedImage = "";
-    public int orientation;
-    // For new addon views
-//    public List<DataTaxes> listOrderTaxes = new ArrayList<>();
-    public List<ProductAttribute> ordProdAttrPending;
-    public RealmList<ProductAttribute> ordProdAttr = new RealmList<>();
-    //    public List<OrderProduct> orderProducts = new ArrayList<>();
-    //    public List<OrderProduct> orderProductAddons = new ArrayList<OrderProduct>();
-    // public static HashMap<String,List<OrderProduct>>orderProductsAddonsMap;
-    public Order order;
-    // public static final Map<String, String> transactionType =
-    // createTransactionsMap();
-    public String lastInvID = "";
-    public int lastProdOrdID = 0;
     public static boolean loggedIn = false;
-    public List<HashMap<String, Integer>> dictionary;
-    // ---------- Used to store order details selected info -----//
-    private int selectedShippingMethod;
-    private String selectedShippingMethodString;
-    private int selectedTermsMethod;
-    private String selectedTermsMethodString;
-    private int selectedAddressMethod;
-    private String selectedAddressMethodString;
-    private String selectedDeliveryDate;
-    private String selectedComments;
-    private String selectedPO;
-
-    public enum HandlerMessages {
-        UPDATE_PAYMENT_SIGNATURE(0);
-
-        private int code;
-
-        HandlerMessages(int code) {
-            this.code = code;
-        }
-
-        public int getCode() {
-            return this.code;
-        }
-    }
-
-    private Dialog globalDlog;
     public static Handler handler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
@@ -353,6 +303,39 @@ public class Global extends MultiDexApplication {
             }
         }
     };
+    private static com.android.support.LocationServices locationServices;
+    private static Dialog popDlog;
+    private final long MAX_ACTIVITY_TRANSITION_TIME_MS = 5000;
+    public String encodedImage = "";
+    public int orientation;
+    // For new addon views
+//    public List<DataTaxes> listOrderTaxes = new ArrayList<>();
+    public List<ProductAttribute> ordProdAttrPending;
+    public RealmList<ProductAttribute> ordProdAttr = new RealmList<>();
+    //    public List<OrderProduct> orderProducts = new ArrayList<>();
+    //    public List<OrderProduct> orderProductAddons = new ArrayList<OrderProduct>();
+    // public static HashMap<String,List<OrderProduct>>orderProductsAddonsMap;
+    public Order order;
+    // public static final Map<String, String> transactionType =
+    // createTransactionsMap();
+    public String lastInvID = "";
+    public int lastProdOrdID = 0;
+    public List<HashMap<String, Integer>> dictionary;
+    // Handle application transition for background
+    private Timer mActivityTransitionTimer;
+    private TimerTask mActivityTransitionTimerTask;
+    private boolean wasInBackground;
+    // ---------- Used to store order details selected info -----//
+    private int selectedShippingMethod;
+    private String selectedShippingMethodString;
+    private int selectedTermsMethod;
+    private String selectedTermsMethodString;
+    private int selectedAddressMethod;
+    private String selectedAddressMethodString;
+    private String selectedDeliveryDate;
+    private String selectedComments;
+    private String selectedPO;
+    private Dialog globalDlog;
 
     public static String getPeripheralName(int type) {
         String _name = "Unknown";
@@ -774,98 +757,6 @@ public class Global extends MultiDexApplication {
         return returnedVal;
     }
 
-    public int checkIfGroupBySKU(Activity activity, String prodID, String pickedQty) {
-        int orderIndex = -1;
-        MyPreferences myPref = new MyPreferences(activity);
-        int size = order.getOrderProducts().size();
-        boolean found = false;
-
-        for (int i = size - 1; i >= 0; i--) {
-            if (order.getOrderProducts().get(i).getProd_id().equals(prodID) && !order.getOrderProducts().get(i).isReturned()) {
-                orderIndex = i;
-                found = true;
-                break;
-            }
-        }
-
-        if (found && !OrderingMain_FA.returnItem) {
-            String value = OrderProductUtils.getOrderProductQty(order.getOrderProducts(), prodID);//this.qtyCounter.get(prodID);
-            double previousQty = 0.0;
-            if (value != null && !value.isEmpty())
-                previousQty = Double.parseDouble(value);
-            double sum = Double.parseDouble(pickedQty) + previousQty;
-            sum = OrderingMain_FA.returnItem ? sum * -1 : sum;
-
-            if (myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities)) {
-                value = Global.formatNumber(true, sum);
-                order.getOrderProducts().get(orderIndex).setOrdprod_qty(value);
-                // this.cur_orders.get(0).setQty(value);
-//                this.qtyCounter.put(prodID, Double.toString(sum));
-            } else {
-                value = Global.formatNumber(false, sum);
-                order.getOrderProducts().get(orderIndex).setOrdprod_qty(value);
-                // this.cur_orders.get(0).setQty(value);
-//                this.qtyCounter.put(prodID, Integer.toString((int) sum));
-            }
-        }
-        return orderIndex;
-    }
-
-    public void refreshParticularOrder(Activity activity, int position, Product product) {
-        OrderProduct orderedProducts = order.getOrderProducts().get(position);
-        MyPreferences myPref = new MyPreferences(activity);
-        String newPickedOrders = orderedProducts.getOrdprod_qty();
-        double sum;
-
-        if (myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities))
-            sum = Double.parseDouble(newPickedOrders);
-        else
-            sum = Integer.parseInt(newPickedOrders);
-        VolumePricesHandler volPriceHandler = new VolumePricesHandler(activity);
-        String[] volumePrice = volPriceHandler.getVolumePrice(String.valueOf(newPickedOrders), product.getId());
-
-        String prLevTotal;
-        if (volumePrice[1] != null && !volumePrice[1].isEmpty()) {
-            prLevTotal = Global.formatNumToLocale(Double.parseDouble(volumePrice[1]));
-        } else {
-            prLevTotal = product.getProdPrice();
-        }
-        BigDecimal priceLevel = new BigDecimal(prLevTotal).setScale(2, RoundingMode.HALF_UP);
-
-        BigDecimal total = new BigDecimal(0);// = sum*Double.parseDouble(prLevTotal);
-
-        try {
-
-            total = priceLevel.multiply(new BigDecimal(sum));
-        } catch (NumberFormatException e) {
-            Crashlytics.logException(e);
-        }
-
-        double itemTotal = total.doubleValue();
-
-        if (itemTotal < 0)
-            itemTotal = 0.00;
-
-//        orderedProducts.setItemSubtotal(Double.toString(itemTotal));
-        double discountRate = 0;
-        if (orderedProducts.getDiscount_is_fixed().equals("1")) {
-            discountRate = Double.parseDouble(orderedProducts.getDiscount_value());
-        } else {
-            double val = total.multiply(new BigDecimal(Global.formatNumFromLocale(orderedProducts.getDiscount_value()))).doubleValue();
-            discountRate = (val / 100);
-        }
-
-        orderedProducts.setItemTotal(Double.toString(total.doubleValue() - discountRate));
-        orderedProducts.setProd_price_updated("0");
-
-
-        StringBuilder sb = new StringBuilder();
-        String row1 = product.getProdName();
-        String row2 = sb.append(Global.formatDoubleStrToCurrency(product.getProdPrice())).toString();
-        TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
-
-    }
-
     public static CreditCardInfo parseSimpleMSR(Context activity, String data) {
         CreditCardInfo cardManager = new CreditCardInfo();
         Encrypt encrypt = new Encrypt(activity);
@@ -1156,30 +1047,6 @@ public class Global extends MultiDexApplication {
                 || _device_type == Global.KDC425 || _device_type == Global.OT310 || _device_type == Global.ELOPAYPOINT);
     }
 
-
-    public void startActivityTransitionTimer() {
-        this.mActivityTransitionTimer = new Timer();
-        this.mActivityTransitionTimerTask = new TimerTask() {
-            public void run() {
-                wasInBackground = true;
-            }
-        };
-
-        mActivityTransitionTimer.schedule(mActivityTransitionTimerTask, MAX_ACTIVITY_TRANSITION_TIME_MS);
-    }
-
-    public void stopActivityTransitionTimer() {
-        if (this.mActivityTransitionTimerTask != null) {
-            this.mActivityTransitionTimerTask.cancel();
-        }
-
-        if (this.mActivityTransitionTimer != null) {
-            this.mActivityTransitionTimer.cancel();
-        }
-
-        this.wasInBackground = false;
-    }
-
     public static boolean isIpAvailable(final String ip, final int port) {
         final boolean[] exists = {false};
         final Socket[] sock = new Socket[1];
@@ -1302,6 +1169,121 @@ public class Global extends MultiDexApplication {
         return (context.getResources().getConfiguration().screenLayout
                 & Configuration.SCREENLAYOUT_SIZE_MASK)
                 >= Configuration.SCREENLAYOUT_SIZE_LARGE;
+    }
+
+    public int checkIfGroupBySKU(Activity activity, String prodID, String pickedQty) {
+        int orderIndex = -1;
+        MyPreferences myPref = new MyPreferences(activity);
+        int size = order.getOrderProducts().size();
+        boolean found = false;
+
+        for (int i = size - 1; i >= 0; i--) {
+            if (order.getOrderProducts().get(i).getProd_id().equals(prodID) && !order.getOrderProducts().get(i).isReturned()) {
+                orderIndex = i;
+                found = true;
+                break;
+            }
+        }
+
+        if (found && !OrderingMain_FA.returnItem) {
+            String value = OrderProductUtils.getOrderProductQty(order.getOrderProducts(), prodID);//this.qtyCounter.get(prodID);
+            double previousQty = 0.0;
+            if (value != null && !value.isEmpty())
+                previousQty = Double.parseDouble(value);
+            double sum = Double.parseDouble(pickedQty) + previousQty;
+            sum = OrderingMain_FA.returnItem ? sum * -1 : sum;
+
+            if (myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities)) {
+                value = Global.formatNumber(true, sum);
+                order.getOrderProducts().get(orderIndex).setOrdprod_qty(value);
+                // this.cur_orders.get(0).setQty(value);
+//                this.qtyCounter.put(prodID, Double.toString(sum));
+            } else {
+                value = Global.formatNumber(false, sum);
+                order.getOrderProducts().get(orderIndex).setOrdprod_qty(value);
+                // this.cur_orders.get(0).setQty(value);
+//                this.qtyCounter.put(prodID, Integer.toString((int) sum));
+            }
+        }
+        return orderIndex;
+    }
+
+    public void refreshParticularOrder(Activity activity, int position, Product product) {
+        OrderProduct orderedProducts = order.getOrderProducts().get(position);
+        MyPreferences myPref = new MyPreferences(activity);
+        String newPickedOrders = orderedProducts.getOrdprod_qty();
+        double sum;
+
+        if (myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities))
+            sum = Double.parseDouble(newPickedOrders);
+        else
+            sum = Integer.parseInt(newPickedOrders);
+        VolumePricesHandler volPriceHandler = new VolumePricesHandler(activity);
+        String[] volumePrice = volPriceHandler.getVolumePrice(String.valueOf(newPickedOrders), product.getId());
+
+        String prLevTotal;
+        if (volumePrice[1] != null && !volumePrice[1].isEmpty()) {
+            prLevTotal = Global.formatNumToLocale(Double.parseDouble(volumePrice[1]));
+        } else {
+            prLevTotal = product.getProdPrice();
+        }
+        BigDecimal priceLevel = new BigDecimal(prLevTotal).setScale(2, RoundingMode.HALF_UP);
+
+        BigDecimal total = new BigDecimal(0);// = sum*Double.parseDouble(prLevTotal);
+
+        try {
+
+            total = priceLevel.multiply(new BigDecimal(sum));
+        } catch (NumberFormatException e) {
+            Crashlytics.logException(e);
+        }
+
+        double itemTotal = total.doubleValue();
+
+        if (itemTotal < 0)
+            itemTotal = 0.00;
+
+//        orderedProducts.setItemSubtotal(Double.toString(itemTotal));
+        double discountRate = 0;
+        if (orderedProducts.getDiscount_is_fixed().equals("1")) {
+            discountRate = Double.parseDouble(orderedProducts.getDiscount_value());
+        } else {
+            double val = total.multiply(new BigDecimal(Global.formatNumFromLocale(orderedProducts.getDiscount_value()))).doubleValue();
+            discountRate = (val / 100);
+        }
+
+        orderedProducts.setItemTotal(Double.toString(total.doubleValue() - discountRate));
+        orderedProducts.setProd_price_updated("0");
+
+
+        StringBuilder sb = new StringBuilder();
+        String row1 = product.getProdName();
+        String row2 = sb.append(Global.formatDoubleStrToCurrency(product.getProdPrice())).toString();
+        TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
+
+    }
+
+    public void startActivityTransitionTimer() {
+        this.mActivityTransitionTimer = new Timer();
+        this.mActivityTransitionTimerTask = new TimerTask() {
+            public void run() {
+                wasInBackground = true;
+            }
+        };
+
+        mActivityTransitionTimer.schedule(mActivityTransitionTimerTask, MAX_ACTIVITY_TRANSITION_TIME_MS);
+    }
+
+    public void stopActivityTransitionTimer() {
+        if (this.mActivityTransitionTimerTask != null) {
+            this.mActivityTransitionTimerTask.cancel();
+        }
+
+        if (this.mActivityTransitionTimer != null) {
+            this.mActivityTransitionTimer.cancel();
+        }
+
+        this.wasInBackground = false;
     }
 
     @Override
@@ -1477,32 +1459,27 @@ public class Global extends MultiDexApplication {
             globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             globalDlog.setCancelable(false);
             globalDlog.setContentView(R.layout.dlog_login_layout);
+            if (globalDlog.findViewById(R.id.versionNumbertextView) != null) {
+                ((TextView) globalDlog.findViewById(R.id.versionNumbertextView)).setText(BuildConfig.VERSION_NAME);
+            }
             final MyPreferences myPref = new MyPreferences(activity);
             final EditText viewField = (EditText) globalDlog.findViewById(R.id.dlogFieldSingle);
             viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-            TextView viewTitle = (TextView) globalDlog.findViewById(R.id.dlogTitle);
-            TextView viewMsg = (TextView) globalDlog.findViewById(R.id.dlogMessage);
+            final TextView viewMsg = (TextView) globalDlog.findViewById(R.id.dlogMessage);
             Button systemLoginButton = (Button) globalDlog.findViewById(R.id.systemLoginbutton2);
             TextView infoSystemLogin = (TextView) globalDlog.findViewById(R.id.infotextView23);
             if (myPref.isUseClerks()) {
                 systemLoginButton.setVisibility(View.VISIBLE);
                 infoSystemLogin.setVisibility(View.VISIBLE);
-                viewTitle.setText(R.string.dlog_title_enter_clerk_password);
             } else {
                 systemLoginButton.setVisibility(View.GONE);
                 infoSystemLogin.setVisibility(View.GONE);
-                viewTitle.setText(R.string.dlog_title_confirm);
             }
-            final boolean[] validPassword = {true};
-            if (!validPassword[0])
-                viewMsg.setText(R.string.invalid_password);
-            else
-                viewMsg.setText(R.string.enter_password);
+            viewMsg.setText(R.string.password);
             systemLoginButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     globalDlog.dismiss();
-                    validPassword[0] = false;
                     loggedIn = false;
                     myPref.setPreferences("pref_use_clerks", false);
                     promptForMandatoryLogin(activity);
@@ -1514,31 +1491,28 @@ public class Global extends MultiDexApplication {
 
                 @Override
                 public void onClick(View v) {
-                    globalDlog.dismiss();
                     String enteredPass = viewField.getText().toString().trim();
                     if (myPref.isUseClerks()) {
                         Clerk clerk = ClerkDAO.login(enteredPass, myPref);
                         if (clerk == null) {
-                            validPassword[0] = false;
-                            promptForMandatoryLogin(activity);
+                            viewMsg.setText(R.string.invalid_password);
                         } else {
                             myPref.setClerkID(String.valueOf(clerk.getEmpId()));
                             myPref.setClerkName(clerk.getEmpName());
                             if (activity instanceof MainMenu_FA) {
                                 ((MainMenu_FA) activity).setLogoutButtonClerkname();
                             }
+                            globalDlog.dismiss();
                             loggedIn = true;
-                            validPassword[0] = true;
                         }
                     } else if (enteredPass.equals(myPref.getApplicationPassword())) {
+                        globalDlog.dismiss();
                         loggedIn = true;
-                        validPassword[0] = true;
                         if (activity instanceof MainMenu_FA) {
                             ((MainMenu_FA) activity).hideLogoutButton();
                         }
                     } else {
-                        validPassword[0] = false;
-                        promptForMandatoryLogin(activity);
+                        viewMsg.setText(R.string.invalid_password);
                     }
                 }
             });
@@ -1546,10 +1520,24 @@ public class Global extends MultiDexApplication {
         }
     }
 
-
     public boolean isApplicationSentToBackground(final Context context) {
 
         return wasInBackground;
+    }
+
+
+    public enum HandlerMessages {
+        UPDATE_PAYMENT_SIGNATURE(0);
+
+        private int code;
+
+        HandlerMessages(int code) {
+            this.code = code;
+        }
+
+        public int getCode() {
+            return this.code;
+        }
     }
 
     public enum BuildModel {
