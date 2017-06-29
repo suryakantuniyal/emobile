@@ -5,7 +5,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,7 +30,6 @@ import com.android.emobilepos.models.MixAndMatchDiscount;
 import com.android.emobilepos.models.MixMatchProductGroup;
 import com.android.emobilepos.models.MixMatchXYZProduct;
 import com.android.emobilepos.models.Tax;
-import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.orders.OrderTotalDetails;
 import com.android.emobilepos.models.realms.AssignEmployee;
@@ -688,31 +686,34 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
 //        globalDiscount.setText(Global.getCurrencyFrmt(String.valueOf(discount_amount)));
     }
 
+    @Override
+    public void recalculateTotal() {
+        reCalculate(global.order.getOrderProducts());
+    }
+
     private class ReCalculate extends AsyncTask<List<OrderProduct>, Void, Void> {
-        private List<OrderProduct> orderProducts;
 
         @Override
-        protected synchronized Void doInBackground(List<OrderProduct>... params) {
-            orderProducts = params[0];
-                List<OrderProduct> orderProducts = params[0];
-                if (myPref.isMixAnMatch() && orderProducts != null && !orderProducts.isEmpty()) {
-                    boolean isGroupBySKU = myPref.isGroupReceiptBySku(isToGo);//myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku) && isToGo;
-                    calculateMixAndMatch(orderProducts, isGroupBySKU);
-                }
-                Discount discount = discountSelected > 0 ? discountList.get(discountSelected - 1) : null;
-                global.order.setRetailTaxes(myPref.isRetailTaxes());
-                global.order.ord_globalDiscount = String.valueOf(discount_amount);
-                global.order.setListOrderTaxes(getOrderingMainFa().getListOrderTaxes());
-                Tax tax = taxSelected > 0 ? taxList.get(taxSelected - 1) : null;
-                if (myPref.isRetailTaxes()) {
-                    global.order.setRetailTax(getActivity(), taxID);
-                }
-                OrderTotalDetails totalDetails = global.order.getOrderTotalDetails(discount, tax, assignEmployee.isVAT(), getActivity());
-                gran_total = Global.getRoundBigDecimal(totalDetails.getGranTotal(), 2);
-                sub_total = totalDetails.getSubtotal();
-                tax_amount = Global.getRoundBigDecimal(totalDetails.getTax(), 2);
-                discount_amount = totalDetails.getGlobalDiscount();
-                return null;
+        protected Void doInBackground(List<OrderProduct>... params) {
+            List<OrderProduct> orderProducts = params[0];
+            if (myPref.isMixAnMatch() && orderProducts != null && !orderProducts.isEmpty()) {
+                boolean isGroupBySKU = myPref.isGroupReceiptBySku(isToGo);//myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku) && isToGo;
+                calculateMixAndMatch(orderProducts, isGroupBySKU);
+            }
+            Discount discount = discountSelected > 0 ? discountList.get(discountSelected - 1) : null;
+            global.order.setRetailTaxes(myPref.isRetailTaxes());
+            global.order.ord_globalDiscount = String.valueOf(discount_amount);
+            global.order.setListOrderTaxes(getOrderingMainFa().getListOrderTaxes());
+            Tax tax = taxSelected > 0 ? taxList.get(taxSelected - 1) : null;
+            if (myPref.isRetailTaxes()) {
+                global.order.setRetailTax(getActivity(), taxID);
+            }
+            OrderTotalDetails totalDetails = global.order.getOrderTotalDetails(discount, tax, assignEmployee.isVAT(), getActivity());
+            gran_total = Global.getRoundBigDecimal(totalDetails.getGranTotal(), 2);
+            sub_total = totalDetails.getSubtotal();
+            tax_amount = Global.getRoundBigDecimal(totalDetails.getTax(), 2);
+            discount_amount = totalDetails.getGlobalDiscount();
+            return null;
         }
 
         @Override
@@ -725,11 +726,6 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             OrderingMain_FA mainFa = (OrderingMain_FA) getActivity();
             mainFa.enableCheckoutButton();
         }
-    }
-
-    @Override
-    public void recalculateTotal() {
-        reCalculate(global.order.getOrderProducts());
     }
 
     private class MySpinnerAdapter extends ArrayAdapter<String> {
