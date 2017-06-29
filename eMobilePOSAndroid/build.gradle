@@ -8,7 +8,7 @@ android {
         config {
             keyAlias 'emobilepos'
             keyPassword '1Enabler1'
-            storeFile file('/home/guarionex/Develop/AndroidAPKCerts')
+            storeFile file('/home/guarionex/Develop/AndroidAPKCerts/eMobileKeystore')
             storePassword '1Enabler1'
             v2SigningEnabled false
         }
