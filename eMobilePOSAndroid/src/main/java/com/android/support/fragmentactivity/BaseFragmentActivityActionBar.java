@@ -20,11 +20,11 @@ import com.android.support.MyPreferences;
  * Created by Guarionex on 12/9/2015.
  */
 public class BaseFragmentActivityActionBar extends FragmentActivity {
-    static Clerk clerk;
     private static MyPreferences myPref;
     private static String[] navigationbarByModels;
     public Menu menu;
     protected ActionBar myBar;
+    Clerk clerk;
     private boolean showNavigationbar = false;
 
     protected void setActionBar() {
@@ -86,7 +86,7 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem menuItem = menu.findItem(R.id.logoutMenuItem);
-        if (myPref.isUseClerks() && clerk == null) {
+        if (myPref.isUseClerks()) {
             clerk = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()));
         } else {
             if (!myPref.isUseClerks()) {
