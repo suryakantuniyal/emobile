@@ -75,7 +75,7 @@ public class ShiftReportDetails_FA extends BaseFragmentActivityActionBar impleme
     @Override
     public void onResume() {
 
-        if (global.isApplicationSentToBackground(this))
+        if (global.isApplicationSentToBackground())
             Global.loggedIn = false;
         global.stopActivityTransitionTimer();
 

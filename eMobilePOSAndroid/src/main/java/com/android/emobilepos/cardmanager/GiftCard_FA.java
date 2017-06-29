@@ -48,7 +48,7 @@ public class GiftCard_FA extends BaseFragmentActivityActionBar implements OnItem
     @Override
     public void onResume() {
 
-        if (global.isApplicationSentToBackground(this))
+        if (global.isApplicationSentToBackground())
             Global.loggedIn = false;
         global.stopActivityTransitionTimer();
 

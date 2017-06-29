@@ -96,7 +96,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
     public void onResume() {
 //        supportFragmentManager = getSupportFragmentManager();
         Global global = (Global) getApplication();
-        if (global.isApplicationSentToBackground(this))
+        if (global.isApplicationSentToBackground())
             Global.loggedIn = false;
         global.stopActivityTransitionTimer();
 
@@ -460,6 +460,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     break;
                 case R.string.config_use_clerks:
                     Global.loggedIn = false;
+                    myPref.setIsPersistClerk(myPref.isUseClerks());
                 case R.string.config_use_navigationbar:
                     getActivity().finish();
                     getActivity().startActivity(getActivity().getIntent());

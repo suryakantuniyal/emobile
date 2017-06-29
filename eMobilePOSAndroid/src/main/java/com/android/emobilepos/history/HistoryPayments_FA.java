@@ -33,9 +33,8 @@ import com.crashlytics.android.Crashlytics;
 
 public class HistoryPayments_FA extends BaseFragmentActivityActionBar implements OnTabChangeListener {
     private static final String[] TABS = new String[]{"cash", "check", "card", "other"};
-    private static String[] TABS_TAG;
     private static final int[] TABS_ID = new int[]{R.id.cash_tab, R.id.check_tab, R.id.card_tab, R.id.other_tab};
-
+    private static String[] TABS_TAG;
     private TabHost tabHost;
     private Activity activity;
     private String paymethod_name = "Cash";
@@ -155,12 +154,12 @@ public class HistoryPayments_FA extends BaseFragmentActivityActionBar implements
     @Override
     public void onResume() {
         getCursorData(currSelectedTab);
-        if (global.isApplicationSentToBackground(activity)) {
-            global.loggedIn = false;
+        if (global.isApplicationSentToBackground()) {
+            Global.loggedIn = false;
         }
         global.stopActivityTransitionTimer();
 
-        if (hasBeenCreated && !global.loggedIn) {
+        if (hasBeenCreated && !Global.loggedIn) {
             if (global.getGlobalDlog() != null)
                 global.getGlobalDlog().dismiss();
             global.promptForMandatoryLogin(activity);
@@ -174,7 +173,7 @@ public class HistoryPayments_FA extends BaseFragmentActivityActionBar implements
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         boolean isScreenOn = powerManager.isScreenOn();
         if (!isScreenOn)
-            global.loggedIn = false;
+            Global.loggedIn = false;
         global.startActivityTransitionTimer();
     }
 
@@ -245,22 +244,6 @@ public class HistoryPayments_FA extends BaseFragmentActivityActionBar implements
         getCursorData(currSelectedTab);
     }
 
-
-    public enum Limiters {
-        cash, check, card, other;
-
-        public static Limiters toLimit(String str) {
-            try {
-                return valueOf(str);
-            } catch (Exception e) {
-                e.printStackTrace();
-                Crashlytics.logException(e);
-                return null;
-            }
-        }
-    }
-
-
     @Override
     public void onTabChanged(String tabID) {
 
@@ -282,7 +265,6 @@ public class HistoryPayments_FA extends BaseFragmentActivityActionBar implements
                 break;
         }
     }
-
 
     public void performSearch(String text) {
         if (myCursor != null)
@@ -326,6 +308,20 @@ public class HistoryPayments_FA extends BaseFragmentActivityActionBar implements
         super.onDestroy();
         if (myCursor != null && !myCursor.isClosed()) {
             myCursor.close();
+        }
+    }
+
+    public enum Limiters {
+        cash, check, card, other;
+
+        public static Limiters toLimit(String str) {
+            try {
+                return valueOf(str);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
+                return null;
+            }
         }
     }
 

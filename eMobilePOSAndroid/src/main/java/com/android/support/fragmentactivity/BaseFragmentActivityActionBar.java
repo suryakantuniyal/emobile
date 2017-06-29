@@ -9,28 +9,23 @@ import android.view.MenuItem;
 import android.view.Window;
 
 import com.android.dao.ClerkDAO;
-import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.OnHoldActivity;
 import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.models.realms.Clerk;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
-import com.crashlytics.android.Crashlytics;
-import com.crashlytics.android.core.CrashlyticsCore;
-
-import io.fabric.sdk.android.Fabric;
 
 /**
  * Created by Guarionex on 12/9/2015.
  */
 public class BaseFragmentActivityActionBar extends FragmentActivity {
-    protected ActionBar myBar;
+    static Clerk clerk;
     private static MyPreferences myPref;
-    private boolean showNavigationbar = false;
     private static String[] navigationbarByModels;
     public Menu menu;
-    static Clerk clerk;
+    protected ActionBar myBar;
+    private boolean showNavigationbar = false;
 
     protected void setActionBar() {
         showNavigationbar = myPref.getPreferences(MyPreferences.pref_use_navigationbar) || isNavigationBarModel() || (this instanceof MainMenu_FA && myPref.isUseClerks());
@@ -66,7 +61,6 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
             myPref = new MyPreferences(this);
         }
         clerk = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()));
-
         setActionBar();
     }
 
@@ -82,7 +76,7 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
             menu.findItem(R.id.logoutMenuItem).setVisible(false);
             menu.findItem(R.id.menu_back).setVisible(false);
         }
-        if (this instanceof MainMenu_FA && myPref.isUseClerks()) {
+        if (this instanceof MainMenu_FA && myPref.getIsPersistClerk()) {
             menu.findItem(R.id.logoutMenuItem).setVisible(true);
         } else if (showNavigationbar)
             menu.findItem(R.id.menu_back).setVisible(true);
@@ -92,6 +86,11 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem menuItem = menu.findItem(R.id.logoutMenuItem);
+        if (myPref.isUseClerks() && clerk == null) {
+            clerk = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()));
+        } else {
+            clerk = null;
+        }
         if (menuItem != null && clerk != null) {
             menuItem.setTitle(String.format("%s (%s)", getString(R.string.logout_menu), clerk.getEmpName()));
         }
@@ -108,6 +107,7 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
                 break;
             }
             case R.id.logoutMenuItem: {
+                myPref.setIsUseClerks(true);
                 Global global = (Global) this.getApplication();
                 Global.loggedIn = false;
                 global.promptForMandatoryLogin(this);

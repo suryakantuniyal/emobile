@@ -53,11 +53,11 @@ public class ShiftExpensesList_FA extends BaseFragmentActivityActionBar implemen
         expenses.clear();
         expenses.addAll(ShiftExpensesDAO.getShiftExpenses(openShift.getShiftId()));
         adapter.notifyDataSetChanged();
-        if (global.isApplicationSentToBackground(this))
-            global.loggedIn = false;
+        if (global.isApplicationSentToBackground())
+            Global.loggedIn = false;
         global.stopActivityTransitionTimer();
 
-        if (!global.loggedIn) {
+        if (!Global.loggedIn) {
             if (global.getGlobalDlog() != null)
                 global.getGlobalDlog().dismiss();
             global.promptForMandatoryLogin(this);
@@ -71,7 +71,7 @@ public class ShiftExpensesList_FA extends BaseFragmentActivityActionBar implemen
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         boolean isScreenOn = powerManager.isScreenOn();
         if (!isScreenOn)
-            global.loggedIn = false;
+            Global.loggedIn = false;
         global.startActivityTransitionTimer();
     }
 

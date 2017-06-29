@@ -62,8 +62,8 @@ public class ViewEndOfDayReport_FA extends BaseFragmentActivityActionBar impleme
 
     @Override
     public void onResume() {
-        if (global.isApplicationSentToBackground(this))
-            global.loggedIn = false;
+        if (global.isApplicationSentToBackground())
+            Global.loggedIn = false;
         global.stopActivityTransitionTimer();
         super.onResume();
     }
@@ -74,7 +74,7 @@ public class ViewEndOfDayReport_FA extends BaseFragmentActivityActionBar impleme
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         boolean isScreenOn = powerManager.isScreenOn();
         if (!isScreenOn)
-            global.loggedIn = false;
+            Global.loggedIn = false;
         global.startActivityTransitionTimer();
     }
 

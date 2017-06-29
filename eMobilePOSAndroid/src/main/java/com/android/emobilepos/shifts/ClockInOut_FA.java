@@ -96,7 +96,7 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
     @Override
     public void onResume() {
 
-        if (global.isApplicationSentToBackground(activity))
+        if (global.isApplicationSentToBackground())
             Global.loggedIn = false;
         global.stopActivityTransitionTimer();
 
@@ -132,7 +132,6 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
                 break;
             case R.id.clockOut:
                 if (clockOutOn && hourDifference <= 12) {
-                    ;
                     switchButton(true);
                     listTimeClock.add(createTimeClock(true, DateUtils.getDateAsString(new Date())));
                     timeClockHandler.insert(listTimeClock, false);

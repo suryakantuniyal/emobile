@@ -195,7 +195,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
     @Override
     public void onResume() {
-        if (global.isApplicationSentToBackground(activity))
+        if (global.isApplicationSentToBackground())
             Global.loggedIn = false;
         global.stopActivityTransitionTimer();
         if (hasBeenCreated && !Global.loggedIn) {
