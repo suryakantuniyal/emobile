@@ -1,11 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="org.traccar.manager.activity.NavigationDrawerActivity"
+    tools:context="org.traccar.manager.activity.MainActivity"
     tools:showIn="@layout/app_bar_navigation_drawer">
+
+    <FrameLayout
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:layout_width="match_parent"
+        android:layout_height="495dp"
+        android:background="#f4f4f4"
+        android:orientation="vertical"
+        tools:layout_editor_absoluteY="8dp"
+        tools:layout_editor_absoluteX="8dp">
+        <LinearLayout
+            android:id="@+id/project_list_ll"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical"
+            android:visibility="visible">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/vehicle_rv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="0dp" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/no_vehicle_rl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/no_internet_img"
+                android:layout_width="120dp"
+                android:layout_height="70dp"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/conn_retry" />
+
+            <TextView
+                android:id="@+id/txt_no_internet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/no_internet_img"
+                android:gravity="center"
+                android:text="Sorry No Projects"
+                android:textColor="#7a7a7a"
+                android:textSize="18sp" />
+
+            <Button
+                android:id="@+id/retry_project"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:layout_below="@+id/txt_no_internet"
+                android:layout_centerHorizontal="true"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/rounded_button_beer"
+                android:src="@android:drawable/ic_menu_revert"
+                android:text="Retry"
+                android:textColor="#ffffff" />
+        </RelativeLayout>
+
+
+        <LinearLayout
+            android:id="@+id/linlaHeaderProgress"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <ProgressBar
+                android:id="@+id/pbHeaderProgress"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"></ProgressBar>
+        </LinearLayout>
+    </FrameLayout>
 
 </android.support.constraint.ConstraintLayout>

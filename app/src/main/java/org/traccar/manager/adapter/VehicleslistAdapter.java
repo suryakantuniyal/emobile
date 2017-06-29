@@ -24,21 +24,56 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by silence12 on 13/6/17.
+ * Created by silence12 on 28/6/17.
  */
 
-public class VehiclesAdapter extends RecyclerView.Adapter<VehiclesAdapter.MyViewHolder> implements Filterable {
+public class VehicleslistAdapter extends RecyclerView.Adapter<VehicleslistAdapter.MyViewHolder> implements Filterable {
 
 
     private Context mContext;
     private List<VehicleList> vehicleLists = new ArrayList<>();
     private List<VehicleList> mFilteredList;
+    OnItemClickListener mOnItemClickListener;
+    private OnItemClickListener cnoteClick;
 
 
-    public VehiclesAdapter(Context mContext, ArrayList<VehicleList> mVehicleList) {
+    public VehicleslistAdapter(Context mContext, ArrayList<VehicleList> mVehicleList,OnItemClickListener cnoteClick ) {
         this.mContext = mContext;
         this.vehicleLists = mVehicleList;
         mFilteredList = mVehicleList;
+        this.cnoteClick = cnoteClick;
+    }
+
+
+
+    @Override
+    public VehicleslistAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.vehicle_listview, parent, false);
+        VehicleslistAdapter.MyViewHolder vh = new VehicleslistAdapter.MyViewHolder(v);
+        return vh;
+
+    }
+
+    @Override
+    public void onBindViewHolder(VehicleslistAdapter.MyViewHolder holder, int position) {
+
+        VehicleList vehicle = mFilteredList.get(position);
+        holder.name_tv.setText(vehicle.getName());
+        holder.lastupdated_tv.setText(vehicle.getLastUpdates());
+        Log.d("adapter",vehicle.address);
+        if(vehicle.address.equals("null")){
+            holder.positionId_tv.setText("Loading...");
+        }else {
+            holder.positionId_tv.setText(vehicle.address);
+        }
+        if(vehicle.status.equals("online")){
+            Glide.with(mContext).load(R.drawable.online_icon).asBitmap()
+                    .centerCrop().placeholder(R.drawable.placeholderxx4).into(holder.status_iv);
+        }else {
+            Glide.with(mContext).load(R.drawable.offline_icon).asBitmap()
+                    .centerCrop().placeholder(R.drawable.placeholderxx4).into(holder.status_iv);
+        }
+
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder  implements View.OnClickListener  {
@@ -60,61 +95,44 @@ public class VehiclesAdapter extends RecyclerView.Adapter<VehiclesAdapter.MyView
             track_ll.setOnClickListener(this);
             detail_ll.setOnClickListener(this);
 
+            track_ll.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    cnoteClick.OnItemClick(view, getAdapterPosition());
+                }
+            });
+
+            detail_ll.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    cnoteClick.OnItemClick(view, getAdapterPosition());
+                }
+            });
+
+            itemView.setOnClickListener(this);
+
         }
 
         @Override
         public void onClick(View view) {
-            Context context = itemView.getContext();
-            switch (view.getId()){
-                case  R.id.viewDetail_ll :
-                  Intent intent = new Intent(context, VehicleDetailActivity.class);
-                  intent.putExtra("id",mFilteredList.get(getPosition()).getId());
-                  intent.putExtra("name",mFilteredList.get(getPosition()).getName());
-                  intent.putExtra("pid",mFilteredList.get(getPosition()).getPositionId());
-                  intent.putExtra("uid",mFilteredList.get(getPosition()).getUniqueId());
-                  intent.putExtra("status",mFilteredList.get(getPosition()).getStatus());
-                  intent.putExtra("category",mFilteredList.get(getPosition()).getCategory());
-                  intent.putExtra("lastupdate",mFilteredList.get(getPosition()).getLastUpdates());
-                  context.startActivity(intent);
-                    break;
-                case R.id.track_ll :
-                    Intent trackIntent = new Intent(context, TrackingDevicesActivity.class);
-                    trackIntent.putExtra("device_id",mFilteredList.get(getPosition()).getPositionId());
-                    trackIntent.putExtra("tname",mFilteredList.get(getPosition()).getName());
-                    trackIntent.putExtra("tupdate",mFilteredList.get(getPosition()).getLastUpdates());
-                    trackIntent.putExtra("ttimer",mFilteredList.get(getPosition()).getTime());
-                    context.startActivity(trackIntent);
-                    break;
+            if (mOnItemClickListener != null){
+                mOnItemClickListener.OnItemClick(v,getAdapterPosition());
+
+            } else {
+                Log.d("itemclick", "OnItemClickListener is null");
             }
         }
     }
 
-    @Override
-    public VehiclesAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.vehicle_listview, parent, false);
-        MyViewHolder vh = new MyViewHolder(v);
-        return vh;
-
+    public void setOnItemClickListener(final OnItemClickListener mOnItemClickListener){
+        this.mOnItemClickListener = mOnItemClickListener;
     }
 
-    @Override
-    public void onBindViewHolder(VehiclesAdapter.MyViewHolder holder, int position) {
 
-        VehicleList vehicle = mFilteredList.get(position);
-        holder.name_tv.setText(vehicle.getName());
-        holder.lastupdated_tv.setText(vehicle.getLastUpdates());
-        if(vehicle.address == null){
-            holder.positionId_tv.setText("Loading...");
-        }else {
-            holder.positionId_tv.setText(vehicle.getAddress());
-        }
-        if(vehicle.status.equals("online")){
-            Glide.with(mContext).load(R.drawable.online_icon).asBitmap()
-                    .centerCrop().placeholder(R.drawable.placeholderxx4).into(holder.status_iv);
-        }else {
-            Glide.with(mContext).load(R.drawable.offline_icon).asBitmap()
-                    .centerCrop().placeholder(R.drawable.placeholderxx4).into(holder.status_iv);
-        }
+    public interface OnItemClickListener{
+        public void OnItemClick(View view, int position);
 
     }
 
@@ -153,5 +171,6 @@ public class VehiclesAdapter extends RecyclerView.Adapter<VehiclesAdapter.MyView
             }
         };
     }
+
 
 }

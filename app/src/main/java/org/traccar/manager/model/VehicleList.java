@@ -12,19 +12,20 @@ public class VehicleList {
     public String status;
     public String lastUpdates;
     public String category;
-    public String positionId;
+    public int positionId;
     public String timezone;
     public Double latitute;
     public Double longitute;
     public String address;
     public Double speed;
     public Double distance_travelled;
+    public String time;
 
     public VehicleList(){
 
     }
 
-    public VehicleList(int id, String name, String uniqueId, String status, String lastUpdates, String category,String positionId) {
+    public VehicleList(int id, String name, String uniqueId, String status, String lastUpdates, String category,int positionId,String address,String time) {
         this.id = id;
         this.name = name;
         this.uniqueId = uniqueId;
@@ -32,6 +33,8 @@ public class VehicleList {
         this.lastUpdates = lastUpdates;
         this.category = category;
         this.positionId = positionId;
+        this.address = address;
+        this.time = time;
 
 
     }
@@ -84,11 +87,11 @@ public class VehicleList {
         this.category = category;
     }
 
-    public String getPositionId() {
+    public int getPositionId() {
         return positionId;
     }
 
-    public void setPositionId(String positionId) {
+    public void setPositionId(int positionId) {
         this.positionId = positionId;
     }
 
@@ -139,5 +142,13 @@ public class VehicleList {
 
     public void setDistance_travelled(Double distance_travelled) {
         this.distance_travelled = distance_travelled;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
     }
 }

@@ -40,7 +40,7 @@ public class TrackingDevicesActivity extends AppCompatActivity {
     private MarkerOptions markerOptions;
     private CameraPosition cameraPosition;
     private TextView address_tv, speed_tv, vehicleName_tv, lastupdate_tv, travelled_tv;
-    private ImageView imageView;
+    private ImageView imageView,currentLocation;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -58,12 +58,16 @@ public class TrackingDevicesActivity extends AppCompatActivity {
         speed_tv = (TextView) findViewById(R.id.vehiclespeed_tv);
         lastupdate_tv = (TextView) findViewById(R.id.update_tv);
         travelled_tv = (TextView) findViewById(R.id.travelled_tv);
+        currentLocation = (ImageView)findViewById(R.id.location);
         Intent getIntent = getIntent();
         int id = getIntent.getIntExtra("device_id", -1);
         String update = getIntent.getStringExtra("tupdate");
         String name = getIntent.getStringExtra("tname");
+        String time = getIntent.getStringExtra("ttimer");
         vehicleName_tv.setText(name);
         lastupdate_tv.setText(update);
+//        Log.e("Timmer",time);
+        travelled_tv.setText(time);
         Log.e("idTrack", String.valueOf(id));
         trackOnMap();
         callDetailRequest(id);
@@ -71,8 +75,11 @@ public class TrackingDevicesActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(TrackingDevicesActivity.this, MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 startActivity(intent);
+                overridePendingTransition(R.anim.slide_out_left,R.anim.slide_in_right);
                 finish();
+
             }
         });
     }
@@ -90,9 +97,6 @@ public class TrackingDevicesActivity extends AppCompatActivity {
                 // for ActivityCompat#requestPermissions for more details.
                 return;
             }
-            googleMap.setMyLocationEnabled(true);
-            googleMap.getUiSettings().setMyLocationButtonEnabled(true);
-
 
             if(googleMap == null){
                 Toast.makeText(getApplicationContext(),"Unable to create Map",Toast.LENGTH_SHORT).show();
@@ -103,18 +107,21 @@ public class TrackingDevicesActivity extends AppCompatActivity {
     public void callDetailRequest(int id) {
         APIServices.GetVehicleDetailById(TrackingDevicesActivity.this, id, new DetailResponseCallback() {
             @Override
-            public void OnResponse(VehicleList Response) {
-                address_tv.setText(Response.address);
-                String distance = String.valueOf(Response.distance_travelled);
+            public void OnResponse(final VehicleList Response) {
+                if(Response.address.equals("null")){
+                    address_tv.setText("Loading...");
+                }else {
+                    address_tv.setText(Response.address);
+                }
                 String speed = String.valueOf(Response.speed);
                 speed_tv.setText(speed);
-                travelled_tv.setText(distance);
-                Log.d("Latitute", String.valueOf(Response.distance_travelled));
-                markerOptions = new MarkerOptions().position(new LatLng(Response.latitute,Response.longitute)).title("Current Position");
-                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.truck_map_ic));
-                googleMap.addMarker(markerOptions);
-                cameraPosition = new CameraPosition.Builder().target(new LatLng(Response.latitute,Response.longitute)).zoom(14).build();
-                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                cameraPosition(Response);
+                currentLocation.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                      cameraPosition(Response);
+                    }
+                });
             }
         });
     }
@@ -123,5 +130,13 @@ public class TrackingDevicesActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         trackOnMap();
+    }
+
+    public void cameraPosition(VehicleList Response){
+        markerOptions = new MarkerOptions().position(new LatLng(Response.latitute,Response.longitute)).title("Current Position");
+        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_truck_med));
+        googleMap.addMarker(markerOptions);
+        cameraPosition = new CameraPosition.Builder().target(new LatLng(Response.latitute,Response.longitute)).zoom(14).build();
+        googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 }

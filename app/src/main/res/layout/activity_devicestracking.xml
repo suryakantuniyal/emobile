@@ -20,7 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:orientation="horizontal"
-        android:background="#CC4d4dff"
+        android:background="#CC016096"
         android:padding="0dp" >
 
         <ImageView
@@ -32,6 +32,13 @@
             android:clickable="true"
              />
     </RadioGroup>
+    <ImageView
+        android:id="@+id/location"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/current_ic"
+        android:layout_gravity="center_vertical"
+        android:clickable="true"/>
 
     <android.support.v7.widget.CardView
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -56,7 +63,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
                     card_view:cardCornerRadius="4dp"
-                    card_view:cardBackgroundColor="#4000ff">
+                    card_view:cardBackgroundColor="@color/colorPrimary">
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="40dp">
@@ -66,7 +73,8 @@
                             android:layout_height="16dp"
                             android:layout_centerVertical="true"
                             android:layout_marginLeft="8dp"
-                            android:src="@drawable/ic_date" />
+                            android:backgroundTint="@color/white"
+                            android:src="@drawable/calender_whit" />
 
                         <TextView
                             android:id="@+id/update_tv"
@@ -81,17 +89,22 @@
                             android:textColor="@color/white"
                             android:textSize="13dp" />
 
-
-                        <TextView
-                            android:id="@+id/time_iv"
-                            android:layout_width="wrap_content"
-                            android:layout_height="20dp"
-                            android:layout_centerVertical="true"
-                            android:layout_marginLeft="8dp"
-                            android:text="Distance Travelled:"
-                            android:textColor="@color/white"
-                            android:textSize="13dp"
-                            android:layout_toLeftOf="@+id/travelled_tv" />
+                        <ImageView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:src="@drawable/time_icon"
+                            android:layout_toLeftOf="@+id/travelled_tv"
+                            />
+                        <!--<TextView-->
+                            <!--android:id="@+id/time_iv"-->
+                            <!--android:layout_width="wrap_content"-->
+                            <!--android:layout_height="20dp"-->
+                            <!--android:layout_centerVertical="true"-->
+                            <!--android:layout_marginLeft="8dp"-->
+                            <!--android:text="Time :"-->
+                            <!--android:textColor="@color/white"-->
+                            <!--android:textSize="13dp"-->
+                            <!--android:layout_toLeftOf="@+id/travelled_tv" />-->
 
                         <TextView
                             android:id="@+id/travelled_tv"
@@ -113,7 +126,7 @@
                     android:background="#EFF5F1"/>
                 <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="40dp">
+                    android:layout_height="wrap_content">
 
                     <LinearLayout
                         android:layout_width="40dp"
@@ -143,8 +156,8 @@
                             android:id="@+id/vehicle_location"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="dfsfdsf"
-                            android:textColor="@color/black"
+                            android:text="Loading..."
+                            android:textColor="@color/colorPrimary"
                             android:textSize="15dp" />
 
                     </RelativeLayout>
@@ -188,7 +201,7 @@
                                 android:gravity="left"
                                 android:id="@+id/vehiclename_tv"
                                 android:layout_marginLeft="10dp"
-                                android:text="dfsfdsf"
+                                android:text=""
                                 android:textColor="@color/red"
                                 android:textSize="15dp" />
 
@@ -228,7 +241,7 @@
                                 android:gravity="left"
                                 android:id="@+id/vehiclespeed_tv"
                                 android:layout_marginLeft="10dp"
-                                android:text="dfsfdsf "
+                                android:text=""
                                 android:textColor="@color/red"
                                 android:textSize="15dp" />
 

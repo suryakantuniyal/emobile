@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Traccar</string>
+    <string name="app_name">GoGeoTrack</string>
     <string name="email">Email</string>
     <string name="name">Name</string>
     <string name="password">Password</string>
@@ -20,4 +20,36 @@
     <string name="newpassword">New Password</string>
     <string name="confirm_password">Confirm Password</string>
     <string name="verify">PROCEED</string>
+    <string name="placeholder_lorem_ipsum" />
+
+
+    <string name="navdrawer_item_home">Home</string>
+    <string name="navdrawer_item_addition">Add Fleet</string>
+    <string name="navdrawer_item_update">Update</string>
+    <string name="navdrawer_item_about">About</string>
+    <string name="navdrawer_item_Notifications">My Orders</string>
+    <string name="navdrawer_item_logout">Logout</string>
+    <string name="navdrawer_item_neworders">New Orders</string>
+
+    <string name="navdrawer_status_attending_remotely">Attending I/O remotely</string>
+
+    <!-- String used to wrap navigation item descriptions for a11y users to indicate the user
+         interface element is a menu item. -->
+    <string name="navdrawer_menu_item_a11y_wrapper">%1$s  menu item</string>
+
+    <!-- String used to wrap navigation item descriptions for a11y users to indicate the user
+         interface element is a menu item. This string indicates a selected menu item -->
+    <string name="navdrawer_selected_menu_item_a11y_wrapper">%1$s selected menu item</string>
+
+    <string name="navdrawer_description_a11y">Navigation Drawer used to switch between major
+        features of the application</string>
+    <string name="live_available">Live</string>
+    <string name="unknown_room">Unknown</string>
+    <string name="title_activity_navigation_drawer">NavigationDrawerActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+
 </resources>

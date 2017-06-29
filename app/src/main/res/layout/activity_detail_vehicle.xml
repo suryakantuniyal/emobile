@@ -20,7 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
-            app:contentScrim="@color/primaryFocused"
+            app:contentScrim="@color/colorPrimary"
             app:expandedTitleGravity="left|bottom"
             app:expandedTitleMarginBottom="10dp"
             app:expandedTitleMarginEnd="20dp"
@@ -272,37 +272,7 @@
                             android:textColor="#545454"
                             android:textSize="12dp" />
                     </LinearLayout>
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:layout_centerVertical="true"
-                        android:layout_gravity="center"
-                        android:layout_marginRight="12dp"
-                        android:background="#ffffff"
-                        android:orientation="horizontal">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="20dp"
-                            android:layout_gravity="center_vertical"
-                            android:layout_marginRight="10dp"
-                            android:text="Sttus :"
-                            android:textSize="12sp"
-                            android:textColor="#545454"/>
-
-                        <TextView
-                            android:id="@+id/status_tv"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:background="#ffffff"
-                            android:layout_marginRight="10dp"
-                            android:gravity="center"
-                            android:text=""
-                            android:textColor="#545454"
-                            android:textSize="12sp" />
-                    </LinearLayout>
                 </RelativeLayout>
 
             <View
@@ -361,14 +331,22 @@
                         android:background="#ffffff"
                         android:orientation="horizontal">
                         <TextView
-                            android:id="@+id/contact_tv"
+                            android:layout_width="50dp"
+                            android:layout_height="20dp"
+                            android:text="Status: "
+                            android:textColor="@color/red"
+                            android:textSize="15dp"
+                            />
+                        <TextView
+                            android:id="@+id/status_tv"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:background="#ffffff"
                             android:gravity="left"
                             android:text=""
-                            android:textColor="#545454"
-                            android:textSize="12dp" />
+                            android:layout_marginLeft="10dp"
+                            android:textColor="@color/red"
+                            />
 
                     </LinearLayout>
 
@@ -399,7 +377,7 @@
                         android:gravity="left"
                         android:id="@+id/speed_tv"
                         android:layout_marginLeft="10dp"
-                        android:text="dfsfdsf "
+                        android:text=""
                         android:textColor="@color/red"
                         android:textSize="15dp" />
 
@@ -419,19 +397,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="2dp" />
 
-            <Button
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentLeft="true"
-                android:id="@+id/gohome_btn"
-                android:layout_width="match_parent"
-                android:layout_height="55dp"
-                android:layout_gravity="bottom"
-                android:text="Go Home"
-                android:background="@color/colorPrimary"
-                android:textColor="#FFFFFF"
-                android:textSize="22dp"
-                />
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
-
+    <Button
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:id="@+id/gohome_btn"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_gravity="bottom"
+        android:text="Go Home"
+        android:background="@color/colorPrimary"
+        android:textColor="#FFFFFF"
+        android:textSize="22dp"
+        />
 </android.support.design.widget.CoordinatorLayout>

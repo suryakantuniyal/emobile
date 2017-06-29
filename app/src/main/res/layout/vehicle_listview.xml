@@ -22,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="40dp"
             card_view:cardCornerRadius="4dp"
-            card_view:cardBackgroundColor="#4000ff">
+            card_view:cardBackgroundColor="@color/colorPrimary">
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="40dp">
@@ -32,7 +32,7 @@
                 android:layout_height="16dp"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="8dp"
-                android:src="@drawable/ic_date" />
+                android:src="@drawable/calender_whit" />
 
             <TextView
                 android:id="@+id/lastupdate_tv"
@@ -55,7 +55,6 @@
                 android:layout_centerVertical="true"
                 android:layout_marginRight="15dp"
                 android:drawablePadding="0dp"
-                android:src="@drawable/online_icon"
                 android:gravity="center_vertical" />
 
         </RelativeLayout>
@@ -97,7 +96,52 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
-                    android:text="dfsfdsf"
+                    android:text=""
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="15dp" />
+
+            </RelativeLayout>
+        </FrameLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_height="2dp"
+            android:background="#E0E0E0"/>
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_gravity="center_vertical">
+                <TextView
+                    android:id="@+id/address"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorPrimary"
+                    android:text="Address : "
+                    android:textSize="15dp"
+                    android:padding="5dp"/>
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingBottom="4dp"
+                android:layout_marginLeft="85dp"
+                android:layout_marginRight="10dp"
+                android:paddingLeft="1dp"
+                android:paddingRight="6dp"
+                android:paddingTop="6dp">
+
+                <TextView
+                    android:id="@+id/address_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Loading..."
                     android:textColor="@color/colorPrimary"
                     android:textSize="15dp" />
 
@@ -138,7 +182,7 @@
                 <ImageView
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:src="@drawable/ic_map_marker"/>
+                    android:src="@drawable/navigation"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

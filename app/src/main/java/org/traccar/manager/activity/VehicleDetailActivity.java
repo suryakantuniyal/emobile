@@ -3,6 +3,7 @@ package org.traccar.manager.activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -38,7 +39,7 @@ public class VehicleDetailActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private String nameString,positionIdString,uniqueIdString,lastUpdatetString,categoryString,statusString,contactString;
     private static String address;
-    private int id;
+    private int id,positionId;
     private static Double speed;
     private Button homeButton;
     @Override
@@ -48,15 +49,15 @@ public class VehicleDetailActivity extends AppCompatActivity {
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        initViews();
         getIntentFileds();
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         collapsingToolbarLayout.setTitle(nameString);
-        collapsingToolbarLayout.setCollapsedTitleTextColor(Color.parseColor("#3c3c3c"));
+        collapsingToolbarLayout.setCollapsedTitleTextColor(Color.WHITE);
         collapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.ExpandedAppBar);
         progressDialog = new ProgressDialog(this);
         progressDialog.setCancelable(false);
-        progressDialog.setTitle("Loading...");
-        progressDialog.setMessage("Hold on for a moment.");
+        progressDialog.setMessage("Wait a moment...");
         progressDialog.show();
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.back_white);
         final AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
@@ -64,15 +65,34 @@ public class VehicleDetailActivity extends AppCompatActivity {
             @Override
             public void onStateChanged(AppBarLayout appBarLayout, State state) {
                 if (state.name().equals(State.COLLAPSED.name())) {
-                    getSupportActionBar().setHomeAsUpIndicator(R.drawable.back_grey);
+                    getSupportActionBar().setHomeAsUpIndicator(R.drawable.back_white);
                 } else if (state.name().equals(State.IDLE.name())) {
                     getSupportActionBar().setHomeAsUpIndicator(R.drawable.back_white);
                 }
             }
         });
-        initViews();
         setProgressBarIndeterminateVisibility(true);
-        callDetailRequest(id);
+        new Async().execute();
+    }
+
+
+    public class Async extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            callDetailRequest(positionId);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+        }
     }
 
     private void getIntentFileds()
@@ -81,6 +101,7 @@ public class VehicleDetailActivity extends AppCompatActivity {
         id = getIntent.getIntExtra("id",-1);
         nameString = getIntent.getStringExtra("name");
         uniqueIdString = getIntent.getStringExtra("uid");
+        positionId = getIntent.getIntExtra("pid",-1);
         lastUpdatetString = getIntent.getStringExtra("lastupdate");
         statusString = getIntent.getStringExtra("status");
         categoryString = getIntent.getStringExtra("category");
@@ -99,7 +120,6 @@ public class VehicleDetailActivity extends AppCompatActivity {
                 lastUpdate_tv.setText(lastUpdatetString);
                 status_tv.setText(statusString);
                 category_tv.setText(categoryString);
-                contact_tv.setText(contactString);
                 speed_tv.setText(speed);
                 distance_tv.setText(distance);
             }
@@ -113,16 +133,13 @@ public class VehicleDetailActivity extends AppCompatActivity {
         lastUpdate_tv = (TextView) findViewById(R.id.date_tv);
         status_tv = (TextView) findViewById(R.id.status_tv);
         category_tv = (TextView) findViewById(R.id.category_tv);
-        contact_tv = (TextView) findViewById(R.id.contact_tv);
         speed_tv = (TextView) findViewById(R.id.speed_tv);
         distance_tv = (TextView) findViewById(R.id.distancecover_tv);
         homeButton = (Button) findViewById(R.id.gohome_btn);
         homeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent  = new Intent(VehicleDetailActivity.this,MainActivity.class);
-                startActivity(intent);
-                finish();
+               onBackPressed();
             }
         });
         Glide.with(this).load(R.drawable.ic_truck).asBitmap()
@@ -178,8 +195,10 @@ public class VehicleDetailActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Intent intent = new Intent(VehicleDetailActivity.this,MainActivity.class);
+        initViews(); Intent intent = new Intent(VehicleDetailActivity.this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         startActivity(intent);
+        overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
         finish();
     }
 }

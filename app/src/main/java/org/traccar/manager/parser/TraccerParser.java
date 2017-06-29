@@ -25,13 +25,15 @@ public final class TraccerParser {
                 VehicleList vehicles = new VehicleList();
                 JSONObject jsonObject = jsonVehicles.getJSONObject(i);
                 String date = jsonObject.getString("lastUpdate");
+                Log.d("Date",date);
                 vehicles.id = Integer.parseInt(jsonObject.get("id").toString());
                 vehicles.name = jsonObject.getString("name");
                 vehicles.category = jsonObject.getString("category");
                 vehicles.uniqueId = jsonObject.getString("uniqueId");
                 vehicles.lastUpdates = date(date);
+                vehicles.time = datetime(date);
                 vehicles.status = jsonObject.getString("status");
-                vehicles.positionId = jsonObject.getString("positionId");
+                vehicles.positionId = jsonObject.getInt("positionId");
                 mVehiclesList.add(vehicles);
             }
         } catch (JSONException e) {
@@ -55,8 +57,23 @@ public final class TraccerParser {
     }
 
     public static String date(String str){
+        String st = str;
         String[] datesplit = str.split("T");
         String date = datesplit[0];
         return date;
+    }
+
+    public static String datetime(String str) {
+        String[] datesplit = str.split("\\.");
+        String date = datesplit[0];
+        String[] tim = date.split("T",2);
+        String result;
+        if(tim.length>1)
+        {
+            result = tim[1];
+
+        } else
+            result = tim[0];
+        return result;
     }
 }
