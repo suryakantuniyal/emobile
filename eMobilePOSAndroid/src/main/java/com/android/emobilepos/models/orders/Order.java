@@ -3,12 +3,14 @@ package com.android.emobilepos.models.orders;
 import android.content.Context;
 
 import com.android.dao.AssignEmployeeDAO;
+import com.android.dao.OrderProductAttributeDAO;
 import com.android.database.TaxesHandler;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.Discount;
 import com.android.emobilepos.models.Tax;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.OrderAttributes;
+import com.android.emobilepos.models.realms.ProductAttribute;
 import com.android.support.Customer;
 import com.android.support.DateUtils;
 import com.android.support.Global;
@@ -145,8 +147,9 @@ public class Order implements Cloneable {
 
     public OrderTotalDetails getOrderTotalDetails(Discount discount, Tax tax, boolean isVAT, Context context) {
         OrderTotalDetails totalDetails = new OrderTotalDetails();
-        if (getOrderProducts() != null && !getOrderProducts().isEmpty()) {
-            for (OrderProduct orderProduct : getOrderProducts()) {
+        final List<OrderProduct> orderProducts = new ArrayList<>(getOrderProducts());
+        if (!orderProducts.isEmpty()) {
+            for (OrderProduct orderProduct : orderProducts) {
                 setupProductTax(context, orderProduct);
                 if (isVAT) {
                     setVATTax(tax);
@@ -170,15 +173,15 @@ public class Order implements Cloneable {
                             .subtract(disAmout).setScale(6, RoundingMode.HALF_UP));
                 }
             }
-            setOrderGlobalDataTaxes();
+            setOrderGlobalDataTaxes(orderProducts);
         }
         return totalDetails;
     }
 
-    private void setOrderGlobalDataTaxes() {
+    private void setOrderGlobalDataTaxes(List<OrderProduct> orderProducts) {
         BigDecimal taxableAmount = new BigDecimal(0);
         if (getListOrderTaxes() != null) {
-            for (OrderProduct product : getOrderProducts()) {
+            for (OrderProduct product : orderProducts) {
                 if (product.isTaxable()) {
                     taxableAmount = taxableAmount.add(product.getItemSubtotalCalculated());
                 }
@@ -216,7 +219,8 @@ public class Order implements Cloneable {
 
     public void setRetailTax(Context context, String taxID) {
         TaxesHandler taxesHandler = new TaxesHandler(context);
-        for (OrderProduct product : getOrderProducts()) {
+        final List<OrderProduct> orderProducts = new ArrayList<>(getOrderProducts());
+        for (OrderProduct product : orderProducts) {
             Tax tax;
             if (taxID != null) {
                 tax = taxesHandler.getTax(taxID, product.getTax_type(),
@@ -289,5 +293,24 @@ public class Order implements Cloneable {
             return order.ord_id.equalsIgnoreCase(this.ord_id);
         }
         return super.equals(obj);
+    }
+
+    public boolean isAllProductsRequiredAttrsCompleted() {
+        for (OrderProduct product : orderProducts) {
+            if (!product.isAttributesCompleted()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void setProductRequiredAttributeCompleted() {
+        for (OrderProduct product : orderProducts) {
+            product.setAttributesCompleted(true);
+            List<ProductAttribute> attributes = OrderProductAttributeDAO.getByProdId(product.getProd_id());
+            for (ProductAttribute attribute : attributes) {
+                product.setAttributesCompleted(product.getRequiredProductAttributes().contains(attribute));
+            }
+        }
     }
 }

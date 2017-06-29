@@ -215,10 +215,13 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
     public static void updateLocalInventory(Activity activity, List<OrderProduct> orderProducts, boolean isIncrement) {
         EmpInvHandler eiHandler = new EmpInvHandler(activity);
-        int size = orderProducts.size();
-        for (int i = 0; i < size; i++) {
-            eiHandler.updateOnHand(orderProducts.get(i).getProd_id(), orderProducts.get(i).getOrdprod_qty(), isIncrement);
-        }
+//        int size = orderProducts.size();
+//        for (OrderProduct product : orderProducts) {
+        eiHandler.updateOnHand(orderProducts);
+//        }
+//        for (int i = 0; i < size; i++) {
+//            eiHandler.updateOnHand(orderProducts.get(i).getProd_id(), orderProducts.get(i).getOrdprod_qty(), isIncrement);
+//        }
     }
 
     @Override
@@ -710,7 +713,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     }
 
     public void checkoutOrder() {
-        if (!OrderingMain_FA.isRequiredAttributeConmpleted(global.order.getOrderProducts())) {
+        if (!global.order.isAllProductsRequiredAttrsCompleted()) {
             Global.showPrompt(getActivity(), R.string.dlog_title_error, getActivity().getString(R.string.dlog_msg_required_attributes));
         } else if (receiptListView.getCount() == 0 &&
                 (caseSelected != Global.TransactionType.CONSIGNMENT ||
@@ -1029,10 +1032,10 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     typeOfProcedure = Global.TransactionType.PAYMENT;
                     if (OrderTotalDetails_FR.gran_total
                             .compareTo(new BigDecimal(0)) == -1) {
-                        updateLocalInventory(getActivity(), global.order.getOrderProducts(), true);
+//                        updateLocalInventory(getActivity(), global.order.getOrderProducts(), true);
                         proceedToRefund();
                     } else {
-                        updateLocalInventory(getActivity(), global.order.getOrderProducts(), false);
+//                        updateLocalInventory(getActivity(), global.order.getOrderProducts(), false);
                         isSalesReceipt();
                     }
                     break;
@@ -1827,6 +1830,9 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     public void reCalculate() {
         pagerAdapter.getItem(0);
         if (callBackRecalculate != null) {
+//            Message msg=((OrderingMain_FA) getActivity()).receiptListHandler.obtainMessage();
+//            msg.what=1;
+//            ((OrderingMain_FA) getActivity()).receiptListHandler.sendMessage(msg);
             callBackRecalculate.recalculateTotal();
             pagerAdapter.notifyDataSetChanged();
         }
@@ -1941,15 +1947,23 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     }
 
     public void refreshView() {
+//        receiptListView.post(new Runnable() {
+//            @Override
+//            public void run() {
         reCalculate();
         if (((OrderingMain_FA) getActivity()).isToGo && !mainLVAdapter.isEmpty()) {
             mainLVAdapter.selectedPosition = mainLVAdapter.getCount();
         }
         if (mainLVAdapter != null) {
             mainLVAdapter.notifyDataSetChanged();
-            receiptListView.smoothScrollToPosition(mainLVAdapter.selectedPosition);
+            receiptListView.setSelection(mainLVAdapter.selectedPosition);
+//            receiptListView.smoothScrollToPosition(mainLVAdapter.selectedPosition);
         }
+
+//            }
+//        });
     }
+
 
     private void reloadDefaultTransaction() {
         String type = myPref

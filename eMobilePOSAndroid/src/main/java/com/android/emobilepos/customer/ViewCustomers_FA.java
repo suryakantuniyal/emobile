@@ -31,6 +31,7 @@ import com.android.database.DBManager;
 import com.android.database.SalesTaxCodesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.history.HistoryTransactions_FA;
+import com.android.emobilepos.security.SecurityManager;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
@@ -76,7 +77,6 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
 
 
         Button addNewCust = (Button) findViewById(R.id.addCustButton);
-
         if (myPref.getPreferences(MyPreferences.pref_allow_customer_creation))
             addNewCust.setOnClickListener(this);
         else
@@ -208,6 +208,75 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
 
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == -1) {
+            finish();
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.addCustButton:
+                boolean hasPermissions = SecurityManager.hasPermissions(this, SecurityManager.SecurityAction.CREATE_CUSTOMERS);
+                if (hasPermissions) {
+                    Intent intent2 = new Intent(thisContext, CreateCustomer_FA.class);
+                    startActivityForResult(intent2, 0);
+                } else {
+                    Global.showPrompt(this, R.string.security_alert, getString(R.string.permission_denied));
+                }
+                break;
+            case R.id.btnDlogOne:
+                dlog.dismiss();
+                selectCustomer(selectedCustPosition);
+                break;
+            case R.id.btnDlogFour:
+                dlog.dismiss();
+                Intent intent = new Intent(activity, HistoryTransactions_FA.class);
+                intent.putExtra("is_from_customers", true);
+
+                myCursor.moveToPosition(selectedCustPosition);
+                String id = myCursor.getString(myCursor.getColumnIndex("_id"));    //getting cust_id as _id
+                intent.putExtra("cust_id", id);
+
+                startActivity(intent);
+                break;
+        }
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        if (myPref.getPreferences(MyPreferences.pref_direct_customer_selection)) {
+            selectCustomer(position);
+        } else {
+            selectedCustPosition = position;
+            dlog = new Dialog(activity, R.style.Theme_TransparentTest);
+            dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dlog.setCancelable(true);
+            dlog.setCanceledOnTouchOutside(true);
+            dlog.setContentView(R.layout.dlog_cust_select);
+
+            TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
+            TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+            viewTitle.setText(R.string.dlog_title_choose_action);
+            viewMsg.setVisibility(View.GONE);
+            Button btnSelectCust = (Button) dlog.findViewById(R.id.btnDlogOne);
+            Button btnDialPhone = (Button) dlog.findViewById(R.id.btnDlogTwo);
+            Button btnMapView = (Button) dlog.findViewById(R.id.btnDlogThree);
+            Button btnTrans = (Button) dlog.findViewById(R.id.btnDlogFour);
+            btnSelectCust.setText(R.string.cust_dlog_select_cust);
+            btnDialPhone.setText(R.string.cust_dlog_dial);
+            btnMapView.setText(R.string.cust_dlog_map);
+            btnTrans.setText(R.string.cust_dlog_view_trans);
+
+            btnSelectCust.setOnClickListener(_thisActivity);
+            btnTrans.setOnClickListener(_thisActivity);
+            dlog.show();
+        }
+    }
+
     public class CustomCursorAdapter extends CursorAdapter {
         private LayoutInflater inflater;
         private boolean displayCustAccountNum = false;
@@ -289,72 +358,5 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
             int i_cust_id, i_account_number, i_cust_name, i_CompanyName, i_cust_phone, i_pricelevel_name;
         }
 
-    }
-
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == -1) {
-            finish();
-        }
-    }
-
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.addCustButton:
-                Intent intent2 = new Intent(thisContext, CreateCustomer_FA.class);
-                startActivityForResult(intent2, 0);
-                break;
-            case R.id.btnDlogOne:
-                dlog.dismiss();
-                selectCustomer(selectedCustPosition);
-                break;
-            case R.id.btnDlogFour:
-                dlog.dismiss();
-                Intent intent = new Intent(activity, HistoryTransactions_FA.class);
-                intent.putExtra("is_from_customers", true);
-
-                myCursor.moveToPosition(selectedCustPosition);
-                String id = myCursor.getString(myCursor.getColumnIndex("_id"));    //getting cust_id as _id
-                intent.putExtra("cust_id", id);
-
-                startActivity(intent);
-                break;
-        }
-    }
-
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        if (myPref.getPreferences(MyPreferences.pref_direct_customer_selection)) {
-            selectCustomer(position);
-        } else {
-            selectedCustPosition = position;
-            dlog = new Dialog(activity, R.style.Theme_TransparentTest);
-            dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            dlog.setCancelable(true);
-            dlog.setCanceledOnTouchOutside(true);
-            dlog.setContentView(R.layout.dlog_cust_select);
-
-            TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
-            TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
-            viewTitle.setText(R.string.dlog_title_choose_action);
-            viewMsg.setVisibility(View.GONE);
-            Button btnSelectCust = (Button) dlog.findViewById(R.id.btnDlogOne);
-            Button btnDialPhone = (Button) dlog.findViewById(R.id.btnDlogTwo);
-            Button btnMapView = (Button) dlog.findViewById(R.id.btnDlogThree);
-            Button btnTrans = (Button) dlog.findViewById(R.id.btnDlogFour);
-            btnSelectCust.setText(R.string.cust_dlog_select_cust);
-            btnDialPhone.setText(R.string.cust_dlog_dial);
-            btnMapView.setText(R.string.cust_dlog_map);
-            btnTrans.setText(R.string.cust_dlog_view_trans);
-
-            btnSelectCust.setOnClickListener(_thisActivity);
-            btnTrans.setOnClickListener(_thisActivity);
-            dlog.show();
-        }
     }
 }

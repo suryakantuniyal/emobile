@@ -730,6 +730,8 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
     // Called in landscape
     private void itemClicked() {
+        OrderingMain_FA mainFa = (OrderingMain_FA) getActivity();
+        mainFa.disableCheckoutButton();
         if (!onRestaurantMode) {
             performClickEvent();
         } else {

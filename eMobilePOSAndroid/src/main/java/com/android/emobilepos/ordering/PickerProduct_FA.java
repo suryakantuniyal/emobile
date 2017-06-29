@@ -60,11 +60,12 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
 
-import io.realm.RealmResults;
 import util.json.JsonUtils;
 
 public class PickerProduct_FA extends FragmentActivity implements OnClickListener, OnItemClickListener {
@@ -593,9 +594,15 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         if (product != null) {
             products.add(product);
         }
-        if (!OrderingMain_FA.isRequiredAttributeConmpleted(products)) {
+        if (!OrderingMain_FA.isRequiredAttributeCompleted(products)) {
+            if (product != null) {
+                product.setAttributesCompleted(false);
+            }
             Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_required_attributes) + "\n\n" + ordProdAttr);
         } else {
+            if (product != null) {
+                product.setAttributesCompleted(true);
+            }
             double onHandQty = 0;
             if (!headerOnHand.getText().toString().isEmpty())
                 onHandQty = Double.parseDouble(headerOnHand.getText().toString());
@@ -943,14 +950,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         for (ProductAttribute attribute : orderProduct.getRequiredProductAttributes()) {
             attribute.setProductId(orderProduct.getOrdprod_id());
         }
-//        orderProduct.requiredProductAttributes = new ArrayList<>();
-//        int size = global.ordProdAttr.size();
-//        for (int i = 0; i < size; i++) {
-//            if (global.ordProdAttr.get(i).getProductId() == null || global.ordProdAttr.get(i).getProductId().isEmpty()) {
-//                global.ordProdAttr.get(i).setProductId(randomUUIDString);
-//                orderProduct.requiredProductAttributes.add(global.ordProdAttr.get(i));
-//            }
-//        }
+        orderProduct.setAttributesCompleted(OrderingMain_FA.isRequiredAttributeCompleted(Collections.singletonList(orderProduct)));
         if (isFromAddon) {
             Global.addonTotalAmount = 0;
             StringBuilder sb = new StringBuilder();
