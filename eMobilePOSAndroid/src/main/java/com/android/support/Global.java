@@ -1461,14 +1461,11 @@ public class Global extends MultiDexApplication {
             final TextView viewMsg = (TextView) globalDlog.findViewById(R.id.dlogMessage);
             final TextView loginInstructionTextView = (TextView) globalDlog.findViewById(R.id.loginInstructionstextView28);
             Button systemLoginButton = (Button) globalDlog.findViewById(R.id.systemLoginbutton2);
-            TextView infoSystemLogin = (TextView) globalDlog.findViewById(R.id.infotextView23);
             if (myPref.isUseClerks()) {
                 systemLoginButton.setVisibility(View.VISIBLE);
-                infoSystemLogin.setVisibility(View.VISIBLE);
                 loginInstructionTextView.setText(getString(R.string.login_clerk_instructions));
             } else {
                 systemLoginButton.setVisibility(View.GONE);
-                infoSystemLogin.setVisibility(View.GONE);
                 loginInstructionTextView.setText(getString(R.string.login_system_instructions));
             }
             viewMsg.setText(R.string.password);
