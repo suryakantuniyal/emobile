@@ -89,7 +89,9 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
         if (myPref.isUseClerks() && clerk == null) {
             clerk = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()));
         } else {
-            clerk = null;
+            if (!myPref.isUseClerks()) {
+                clerk = null;
+            }
         }
         if (menuItem != null && clerk != null) {
             menuItem.setTitle(String.format("%s (%s)", getString(R.string.logout_menu), clerk.getEmpName()));
