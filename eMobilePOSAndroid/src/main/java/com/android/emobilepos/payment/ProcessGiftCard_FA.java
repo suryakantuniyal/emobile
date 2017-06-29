@@ -166,7 +166,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
     @Override
     public void onResume() {
 
-        if (global.isApplicationSentToBackground(this))
+        if (global.isApplicationSentToBackground())
             Global.loggedIn = false;
         global.stopActivityTransitionTimer();
 
@@ -229,7 +229,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                numberUtils.parseInputedCurrency(s, editText);
+                NumberUtils.parseInputedCurrency(s, editText);
                 //parseInputedCurrency(s, type_id);
             }
         };

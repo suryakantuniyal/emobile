@@ -176,11 +176,11 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
     @Override
     public void onResume() {
 
-        if (global.isApplicationSentToBackground(activity))
-            global.loggedIn = false;
+        if (global.isApplicationSentToBackground())
+            Global.loggedIn = false;
         global.stopActivityTransitionTimer();
 
-        if (hasBeenCreated && !global.loggedIn) {
+        if (hasBeenCreated && !Global.loggedIn) {
             if (global.getGlobalDlog() != null)
                 global.getGlobalDlog().dismiss();
             global.promptForMandatoryLogin(activity);
@@ -194,7 +194,7 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         boolean isScreenOn = powerManager.isScreenOn();
         if (!isScreenOn)
-            global.loggedIn = false;
+            Global.loggedIn = false;
         global.startActivityTransitionTimer();
     }
 
