@@ -755,7 +755,7 @@ public class SalesTab_FR extends Fragment {
             @Override
             public void onClick(View v) {
                 String enteredPass = viewField.getText().toString().trim();
-                Clerk clerk = ClerkDAO.login(enteredPass, myPref);
+                Clerk clerk = ClerkDAO.login(enteredPass, myPref, false);
                 if (clerk == null && !myPref.loginManager(enteredPass)) {
                     viewMsg.setText(R.string.invalid_password);
                 } else {
