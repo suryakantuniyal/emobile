@@ -1334,5 +1334,7 @@
     <string name="login_instructions">Login with your registered eMobilePOS account number and password.</string>
     <string name="login_clerk_instructions">Login with your Clerk password.</string>
     <string name="login_system_instructions">Login with your System password.</string>
+    <string name="ivupos_apk_name" translatable="false">/emobileivupos.apk</string>
+    <string name="emobile_apk_name" translatable="false">/emobilepos.apk</string>
 
 </resources>
