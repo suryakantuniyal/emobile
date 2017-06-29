@@ -162,7 +162,7 @@ public class ClerkDAO {
         return locationHashMap;
     }
 
-    public static Clerk login(String password, MyPreferences preferences) {
+    public static Clerk login(String password, MyPreferences preferences, boolean isSystemLogin) {
         Clerk clerk = null;
         Realm r = Realm.getDefaultInstance();
         try {
@@ -173,8 +173,10 @@ public class ClerkDAO {
                     .findFirst();
 
             if (associate != null) {
-                preferences.setClerkID(String.valueOf(associate.getEmpId()));
-                preferences.setClerkName(associate.getEmpName());
+                if (isSystemLogin) {
+                    preferences.setClerkID(String.valueOf(associate.getEmpId()));
+                    preferences.setClerkName(associate.getEmpName());
+                }
                 clerk = r.copyFromRealm(associate);
             }
         } finally {

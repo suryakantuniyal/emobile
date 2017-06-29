@@ -1491,7 +1491,7 @@ public class Global extends MultiDexApplication {
                 public void onClick(View v) {
                     String enteredPass = viewField.getText().toString().trim();
                     if (myPref.isUseClerks()) {
-                        Clerk clerk = ClerkDAO.login(enteredPass, myPref);
+                        Clerk clerk = ClerkDAO.login(enteredPass, myPref, true);
                         if (clerk == null) {
                             viewField.setText("");
                             viewMsg.setText(R.string.invalid_password);
