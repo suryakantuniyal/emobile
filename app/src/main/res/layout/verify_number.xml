@@ -14,8 +14,8 @@
         android:id="@+id/username"
         android:textColor="#fff"
         android:textColorHint="#FFFFFF"
-        android:inputType="number"
         android:singleLine="true"
+        android:inputType="number"
         android:background="@drawable/edittext_modified_states"
         android:drawableLeft="@drawable/ic_phone"
         android:drawablePadding="10dip"
@@ -36,10 +36,13 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="300dp"
         android:id="@+id/relativeLayout">
+
+
+
         <Button
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="GET OTP"
+            android:text="@string/verify"
             android:gravity="center"
             android:textSize="20sp"
             android:textStyle="bold"
@@ -47,10 +50,11 @@
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:paddingBottom="12dp"
+            android:background="@drawable/custome_ripple"
             android:clickable="true"
             android:textColor="#fff"
             android:id="@+id/login"
-            android:background="@drawable/custome_ripple"
+
             />
     </RelativeLayout>
 </RelativeLayout>

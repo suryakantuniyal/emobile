@@ -87,6 +87,8 @@ public class TrackingDevicesActivity extends AppCompatActivity {
     private void trackOnMap() {
         if (googleMap == null) {
             googleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
+            CameraUpdate point = CameraUpdateFactory.newLatLng(new LatLng(20.5937, 78.9629));
+            googleMap.moveCamera(point);
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 // TODO: Consider calling
                 //    ActivityCompat#requestPermissions
@@ -133,7 +135,13 @@ public class TrackingDevicesActivity extends AppCompatActivity {
     }
 
     public void cameraPosition(VehicleList Response){
-        markerOptions = new MarkerOptions().position(new LatLng(Response.latitute,Response.longitute)).title("Current Position");
+        String address;
+        if(Response.address.equals("null")){
+            address = "Loading...";
+        }else {
+            address = Response.address;
+        }
+        markerOptions = new MarkerOptions().position(new LatLng(Response.latitute,Response.longitute)).title(address);
         markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_truck_med));
         googleMap.addMarker(markerOptions);
         cameraPosition = new CameraPosition.Builder().target(new LatLng(Response.latitute,Response.longitute)).zoom(14).build();

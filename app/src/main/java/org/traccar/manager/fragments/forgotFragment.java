@@ -84,17 +84,6 @@ public class forgotFragment extends Fragment {
                 if (Response != null){
                     Fragment fragment = null;
                     try{
-                        if(Response.getInt("success") == 1){
-                            login.setText("PROCEED");
-                            if (!login.getText().toString().equals("GET OTP")){
-                                fragment = new SignUpFragment();
-                                fragment.setArguments(args);
-                                Toast.makeText(getActivity().getApplicationContext(),"Mobile number not registered. Please sign up Here", Toast.LENGTH_LONG).show();
-                            }
-                        }else{
-                            fragment = new ChangePassword();
-                            fragment.setArguments(args);
-                        }
                         progressDialog.dismiss();
                         if (SignUpAccount.isDestroy){
                             getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame,fragment).addToBackStack(null).commitAllowingStateLoss();

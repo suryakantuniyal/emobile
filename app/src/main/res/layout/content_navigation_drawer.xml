@@ -12,11 +12,16 @@
     <FrameLayout
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_width="match_parent"
-        android:layout_height="495dp"
+        android:layout_height="wrap_content"
         android:background="#f4f4f4"
         android:orientation="vertical"
         tools:layout_editor_absoluteY="8dp"
         tools:layout_editor_absoluteX="8dp">
+        <android.support.v4.widget.SwipeRefreshLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/swiperefresh"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
         <LinearLayout
             android:id="@+id/project_list_ll"
             android:layout_width="fill_parent"
@@ -30,7 +35,7 @@
                 android:layout_height="match_parent"
                 android:layout_margin="0dp" />
         </LinearLayout>
-
+        </android.support.v4.widget.SwipeRefreshLayout>
         <RelativeLayout
             android:id="@+id/no_vehicle_rl"
             android:layout_width="wrap_content"

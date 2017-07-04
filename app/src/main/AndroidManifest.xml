@@ -42,22 +42,45 @@
         android:icon="@mipmap/luncher_icon"
         android:label="@string/app_name"
         android:supportsRtl="true"
+        android:largeHeap="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.SplashActivity">
+        <activity
+            android:name=".activity.SplashActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.MainActivity"
+        <activity
+            android:name=".activity.MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait">
 
         </activity>
-        <activity android:name=".activity.SignUpAccount"></activity>
-        <activity android:name=".activity.VehicleDetailActivity"></activity>
-        <activity android:name=".activity.TrackingDevicesActivity" />
+        <activity
+            android:name=".activity.SignUpAccount"
+            android:screenOrientation="portrait">
+        </activity>
+
+        <activity
+            android:name=".activity.VehicleDetailActivity"
+            android:screenOrientation="portrait">
+
+        </activity>
+        <activity
+            android:name=".activity.TrackingDevicesActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity android:name=".activity.WelcomeMessageActivity"
+            android:screenOrientation="portrait">
+        </activity>
+
+        <activity android:name=".activity.ReportsActivity"
+            android:screenOrientation="portrait">
+        </activity>
 
         <service android:name=".FCM.MessagingHandler">
             <intent-filter>

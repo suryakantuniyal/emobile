@@ -2,11 +2,13 @@ package org.traccar.manager.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
@@ -60,6 +62,7 @@ public class VehicleslistAdapter extends RecyclerView.Adapter<VehicleslistAdapte
         VehicleList vehicle = mFilteredList.get(position);
         holder.name_tv.setText(vehicle.getName());
         holder.lastupdated_tv.setText(vehicle.getLastUpdates());
+        holder.timediff_tv.setText(vehicle.getTimeDiff());
         Log.d("adapter",vehicle.address);
         if(vehicle.address.equals("null")){
             holder.positionId_tv.setText("Loading...");
@@ -67,9 +70,12 @@ public class VehicleslistAdapter extends RecyclerView.Adapter<VehicleslistAdapte
             holder.positionId_tv.setText(vehicle.address);
         }
         if(vehicle.status.equals("online")){
+
+            holder.online_tv.setText("Online");
             Glide.with(mContext).load(R.drawable.online_icon).asBitmap()
                     .centerCrop().placeholder(R.drawable.placeholderxx4).into(holder.status_iv);
         }else {
+            holder.online_tv.setText("Offline");
             Glide.with(mContext).load(R.drawable.offline_icon).asBitmap()
                     .centerCrop().placeholder(R.drawable.placeholderxx4).into(holder.status_iv);
         }
@@ -78,24 +84,26 @@ public class VehicleslistAdapter extends RecyclerView.Adapter<VehicleslistAdapte
 
     public class MyViewHolder extends RecyclerView.ViewHolder  implements View.OnClickListener  {
 
-        private TextView name_tv,positionId_tv,lastupdated_tv,uniqueId_tv;
+        private TextView name_tv,positionId_tv,lastupdated_tv,timediff_tv,online_tv;
         private LinearLayout track_ll,detail_ll;
         private ImageView vehivle_iv,status_iv;
+        private Button detail,track;
         private View v;
         public MyViewHolder(View itemView) {
             super(itemView);
             v = itemView;
-            track_ll = (LinearLayout) itemView.findViewById(R.id.track_ll);
-            detail_ll = (LinearLayout) itemView.findViewById(R.id.viewDetail_ll);
+            track = (Button) itemView.findViewById(R.id.track_tv);
+            detail = (Button) itemView.findViewById(R.id.detail_btn);
             name_tv = (TextView) itemView.findViewById(R.id.vehicle_name);
             lastupdated_tv = (TextView) itemView.findViewById(R.id.lastupdate_tv);
-            vehivle_iv = (ImageView) itemView.findViewById(R.id.vehicle_image);
             status_iv = (ImageView) itemView.findViewById(R.id.status_iv);
             positionId_tv = (TextView)itemView.findViewById(R.id.address_tv);
-            track_ll.setOnClickListener(this);
-            detail_ll.setOnClickListener(this);
+            timediff_tv = (TextView)itemView.findViewById(R.id.timediff_tv);
+            online_tv = (TextView)itemView.findViewById(R.id.onlinet_tv);
+            track.setOnClickListener(this);
+            detail.setOnClickListener(this);
 
-            track_ll.setOnClickListener(new View.OnClickListener() {
+            track.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
 
@@ -103,10 +111,9 @@ public class VehicleslistAdapter extends RecyclerView.Adapter<VehicleslistAdapte
                 }
             });
 
-            detail_ll.setOnClickListener(new View.OnClickListener() {
+            detail.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
                     cnoteClick.OnItemClick(view, getAdapterPosition());
                 }
             });
@@ -153,7 +160,7 @@ public class VehicleslistAdapter extends RecyclerView.Adapter<VehicleslistAdapte
                 }else {
                     List<VehicleList> filteredList = new ArrayList<>();
                     for(VehicleList projectsModel : vehicleLists){
-                        if (projectsModel.getName().contains(charString)) {
+                        if (projectsModel.getName().contains(charString) || projectsModel.getStatus().contains(charString)) {
                             filteredList.add(projectsModel);
                         }
                     }

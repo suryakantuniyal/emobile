@@ -35,7 +35,7 @@ import org.traccar.manager.utils.URLContstant;
 public class LoginFragment extends Fragment {
 
     String Message;
-    TextView login,newSignUp;
+    TextView login;
     EditText username,password;
     TextView forgotpassword;
     CheckBox mCbShowPwd;
@@ -46,7 +46,6 @@ public class LoginFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.login_fragment,container,false);
         login=(TextView) rootView.findViewById(R.id.login);
-        newSignUp=(TextView)rootView.findViewById(R.id.newsignup);
         username=(EditText) rootView.findViewById(R.id.username);
         password=(EditText) rootView.findViewById(R.id.loginpassword);
         forgotpassword=(TextView)rootView.findViewById(R.id.forgotpassword);
@@ -66,12 +65,10 @@ public class LoginFragment extends Fragment {
                     Toast.makeText(getActivity(),"Wrong password or password is empty", Toast.LENGTH_SHORT).show();
                 } else {
 
-                    String user = username.getText().toString();
+                    final String user = username.getText().toString();
                     String pass = password.getText().toString();
 
-                    String callUrl= "http://35.189.74.0:8082/api/session/?"+"email=yash.bhat94%40gmail.com&password=admin";
-                    String newUrl = "http://35.189.74.0:8082/api/session/?"+"email="+user+"&password="+pass;
-                    Log.e("CallUrl",callUrl);
+                    String newUrl = URLContstant.SESSION_URL+"?"+"email="+user+"&password="+pass;
 
                     APIServices.getInstance().PostProblem(getActivity(), newUrl, new ResponseStringCallback() {
                         @Override
@@ -83,10 +80,7 @@ public class LoginFragment extends Fragment {
                                     JSONObject jsonObject = new JSONObject(Response);
                                     mSharedPreferences = getActivity().getSharedPreferences(URLContstant.PREFERENCE_NAME, Context.MODE_PRIVATE);
                                     mEditor = mSharedPreferences.edit();
-
-                                    mEditor.putString(URLContstant.KEY_USERNAME,jsonObject.getString("email"));
-                                    mEditor.putString(URLContstant.KEY_USER_EMAIL,jsonObject.getString("email"));
-                                    mEditor.putString(URLContstant.KEY_USER_PHONE,jsonObject.getString("phone"));
+                                    mEditor.putString(URLContstant.KEY_USERNAME,user);
                                     mEditor.putBoolean(URLContstant.KEY_LOGGED_IN,true);
                                     mEditor.putString(URLContstant.FCM_TOKEN,jsonObject.getString("token"));
                                     mEditor.apply();
@@ -106,12 +100,6 @@ public class LoginFragment extends Fragment {
                         }
                     });
                 }
-            }
-        });
-        newSignUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame,new verifyFragment()).addToBackStack(null).commit();
             }
         });
 

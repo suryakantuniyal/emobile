@@ -20,12 +20,13 @@ public class VehicleList {
     public Double speed;
     public Double distance_travelled;
     public String time;
+    public String timeDiff;
 
     public VehicleList(){
 
     }
 
-    public VehicleList(int id, String name, String uniqueId, String status, String lastUpdates, String category,int positionId,String address,String time) {
+    public VehicleList(int id, String name, String uniqueId, String status, String lastUpdates, String category,int positionId,String address,String time,String timeDiff) {
         this.id = id;
         this.name = name;
         this.uniqueId = uniqueId;
@@ -35,6 +36,7 @@ public class VehicleList {
         this.positionId = positionId;
         this.address = address;
         this.time = time;
+        this.timeDiff = timeDiff;
 
 
     }
@@ -150,5 +152,13 @@ public class VehicleList {
 
     public void setTime(String time) {
         this.time = time;
+    }
+
+    public String getTimeDiff() {
+        return timeDiff;
+    }
+
+    public void setTimeDiff(String timeDiff) {
+        this.timeDiff = timeDiff;
     }
 }

@@ -26,6 +26,7 @@ import org.traccar.manager.network.ResponseCallback;
 import org.traccar.manager.network.ResponseCallbackEvents;
 import org.traccar.manager.utils.URLContstant;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -227,7 +228,7 @@ public  final class APIServices {
                             mvehicles = TraccerParser.getVehicleDetailById(jsonObject);
                             mvehicles.latitute = jsonObject.getDouble("latitude");
                             mvehicles.longitute = jsonObject.getDouble("longitude");
-                            mvehicles.speed = jsonObject.getDouble("speed");
+                            mvehicles.speed =  doubleToDecimalConverter(jsonObject.getDouble("speed"));
                             mvehicles.distance_travelled = jsonObject.getJSONObject("attributes").getDouble("distance");
                             ResponseCallback.OnResponse(mvehicles);
                         } catch (JSONException e) {
@@ -256,6 +257,13 @@ public  final class APIServices {
                 MAX_RETRIES,
                 BACKOFF_MULT));
         RestapiCall.getInstance(context).addToRequestQueue(jsObjRequest);
+
+    }
+    public static Double doubleToDecimalConverter(Double dob){
+        double speed = dob;
+        DecimalFormat df = new DecimalFormat("#.##");
+        speed = Double.valueOf(df.format(speed));
+        return  speed;
     }
 
 }

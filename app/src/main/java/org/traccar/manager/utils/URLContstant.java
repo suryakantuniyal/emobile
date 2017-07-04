@@ -8,6 +8,7 @@ public class URLContstant {
 
     public static  final String PRODUCTION_URL ="https://www.traccar.org";
     public static  final String LOCAL_ULR = "http://35.189.74.0:8082";
+    public static  final String SESSION_URL = "http://35.189.74.0:8082/api/session/";
     public static  final String BASE_URL = LOCAL_ULR  ;
     public static  final String ALL_VEHICLES = "api/devices";
     public static  final String API_KEY = "";

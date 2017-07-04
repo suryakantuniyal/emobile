@@ -31,6 +31,13 @@
             android:src="@drawable/back_white"
             android:clickable="true"
              />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="@string/app_name"
+            android:textColor="@color/white"
+            android:textSize="20dp"/>
     </RadioGroup>
     <ImageView
         android:id="@+id/location"
@@ -92,19 +99,9 @@
                         <ImageView
                             android:layout_width="40dp"
                             android:layout_height="40dp"
-                            android:src="@drawable/time_icon"
+                            android:src="@drawable/ic_time"
                             android:layout_toLeftOf="@+id/travelled_tv"
                             />
-                        <!--<TextView-->
-                            <!--android:id="@+id/time_iv"-->
-                            <!--android:layout_width="wrap_content"-->
-                            <!--android:layout_height="20dp"-->
-                            <!--android:layout_centerVertical="true"-->
-                            <!--android:layout_marginLeft="8dp"-->
-                            <!--android:text="Time :"-->
-                            <!--android:textColor="@color/white"-->
-                            <!--android:textSize="13dp"-->
-                            <!--android:layout_toLeftOf="@+id/travelled_tv" />-->
 
                         <TextView
                             android:id="@+id/travelled_tv"
@@ -129,16 +126,16 @@
                     android:layout_height="wrap_content">
 
                     <LinearLayout
-                        android:layout_width="40dp"
+                        android:layout_width="match_parent"
                         android:layout_height="40dp"
-                        android:layout_marginLeft="10dp"
-                        android:layout_gravity="center_vertical"
-                        android:background="@drawable/circle">
-                        <ImageView
+                        android:layout_marginLeft="5dp"
+                        android:layout_gravity="center_vertical">
+                        <TextView
                             android:id="@+id/vehicle_image"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:src="@drawable/truckicon2"
+                            android:text="Address: "
+                            android:textSize="15dp"
                             android:padding="5dp"/>
                     </LinearLayout>
 
@@ -158,6 +155,8 @@
                             android:layout_height="wrap_content"
                             android:text="Loading..."
                             android:textColor="@color/colorPrimary"
+                            android:singleLine="true"
+                            android:ellipsize="end"
                             android:textSize="15dp" />
 
                     </RelativeLayout>
@@ -183,10 +182,21 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:gravity="center"
                         android:background="@drawable/full_rounded_white"
                         >
 
+                        <LinearLayout
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_marginLeft="1dp"
+                            android:layout_gravity="center_vertical"
+                            android:background="@drawable/circle">
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/truckicon2"
+                                android:padding="5dp"/>
+                        </LinearLayout>
                         <LinearLayout
                             android:id="@+id/track_ll"
                             android:layout_width="wrap_content"
@@ -203,7 +213,7 @@
                                 android:layout_marginLeft="10dp"
                                 android:text=""
                                 android:textColor="@color/red"
-                                android:textSize="15dp" />
+                                android:textSize="13dp" />
 
                         </LinearLayout>
 

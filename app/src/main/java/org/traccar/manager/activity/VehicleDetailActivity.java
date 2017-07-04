@@ -33,11 +33,13 @@ import java.util.ArrayList;
 public class VehicleDetailActivity extends AppCompatActivity {
 
     private static final String TAG = VehicleDetailActivity.class.getSimpleName();
-    private TextView name_tv,positionId_tv,uniqueId_tv,status_tv,lastUpdate_tv,category_tv,contact_tv,speed_tv,distance_tv;
+    private TextView name_tv,positionId_tv,uniqueId_tv,status_tv,lastUpdate_tv,category_tv,contact_tv,
+            speed_tv,distance_tv,timedated;
     private ImageView projImageView;
     private CollapsingToolbarLayout collapsingToolbarLayout;
     private ProgressDialog progressDialog;
-    private String nameString,positionIdString,uniqueIdString,lastUpdatetString,categoryString,statusString,contactString;
+    private String nameString,positionIdString,uniqueIdString,lastUpdatetString,categoryString,statusString,
+            contactString,diffString;
     private static String address;
     private int id,positionId;
     private static Double speed;
@@ -59,19 +61,17 @@ public class VehicleDetailActivity extends AppCompatActivity {
         progressDialog.setCancelable(false);
         progressDialog.setMessage("Wait a moment...");
         progressDialog.show();
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.back_white);
         final AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
         appBarLayout.addOnOffsetChangedListener(new AppBarStateChangeListener() {
             @Override
             public void onStateChanged(AppBarLayout appBarLayout, State state) {
                 if (state.name().equals(State.COLLAPSED.name())) {
-                    getSupportActionBar().setHomeAsUpIndicator(R.drawable.back_white);
+                    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                 } else if (state.name().equals(State.IDLE.name())) {
-                    getSupportActionBar().setHomeAsUpIndicator(R.drawable.back_white);
+                    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                 }
             }
         });
-        setProgressBarIndeterminateVisibility(true);
         new Async().execute();
     }
 
@@ -106,6 +106,8 @@ public class VehicleDetailActivity extends AppCompatActivity {
         statusString = getIntent.getStringExtra("status");
         categoryString = getIntent.getStringExtra("category");
         contactString = getIntent.getStringExtra("contact");
+        diffString = getIntent.getStringExtra("diff");
+        Log.d("Diff",diffString);
     }
     public void callDetailRequest(int id) {
         APIServices.GetVehicleDetailById(VehicleDetailActivity.this, id, new DetailResponseCallback() {
@@ -115,12 +117,17 @@ public class VehicleDetailActivity extends AppCompatActivity {
                 name_tv.setText(nameString);
                 String speed = String.valueOf(Response.speed);
                 String distance = String.valueOf(Response.distance_travelled);
-                positionId_tv.setText(Response.address);
+                if(Response.address.equals("null")){
+                    positionId_tv.setText("Loading...");
+                }else {
+                    positionId_tv.setText(Response.address);
+                }
                 uniqueId_tv.setText(uniqueIdString);
                 lastUpdate_tv.setText(lastUpdatetString);
                 status_tv.setText(statusString);
                 category_tv.setText(categoryString);
                 speed_tv.setText(speed);
+                timedated.setText(diffString);
                 distance_tv.setText(distance);
             }
         });
@@ -135,6 +142,7 @@ public class VehicleDetailActivity extends AppCompatActivity {
         category_tv = (TextView) findViewById(R.id.category_tv);
         speed_tv = (TextView) findViewById(R.id.speed_tv);
         distance_tv = (TextView) findViewById(R.id.distancecover_tv);
+        timedated = (TextView) findViewById(R.id.diff_tv);
         homeButton = (Button) findViewById(R.id.gohome_btn);
         homeButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -195,10 +203,17 @@ public class VehicleDetailActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        initViews(); Intent intent = new Intent(VehicleDetailActivity.this, MainActivity.class);
+        Intent intent = new Intent(VehicleDetailActivity.this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         startActivity(intent);
-        overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
+        overridePendingTransition(R.anim.slide_out_right,R.anim.slide_in_left);
         finish();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        new Async().execute();
+
     }
 }

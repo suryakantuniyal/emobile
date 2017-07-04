@@ -16,10 +16,8 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
-
 import org.traccar.manager.R;
 import org.traccar.manager.fragments.LoginFragment;
-import org.traccar.manager.fragments.NewLoginFragment;
 import org.traccar.manager.utils.UtilFunctions;
 
 /**
@@ -124,9 +122,9 @@ public class SignUpAccount extends AppCompatActivity {
             unregisterReceiver(broadcastReceiver);
         } catch (IllegalArgumentException e) {
             if (e.getMessage().contains("Receiver not registered")) {
-                // Ignore this exception. This is exactly what is desired
+
             } else {
-                // unexpected, re-throw
+
                 throw e;
             }
         }
