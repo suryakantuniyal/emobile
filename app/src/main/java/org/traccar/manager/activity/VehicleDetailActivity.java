@@ -203,11 +203,6 @@ public class VehicleDetailActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Intent intent = new Intent(VehicleDetailActivity.this, MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-        startActivity(intent);
-        overridePendingTransition(R.anim.slide_out_right,R.anim.slide_in_left);
-        finish();
     }
 
     @Override

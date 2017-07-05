@@ -24,7 +24,7 @@
                 android:layout_gravity="center"
                 android:textStyle="bold"
                 android:textColor="@color/colorPrimary"
-                android:text="Events &amp; Wedding"/>
+                android:text="Track Goe Fences"/>
 
             <ImageView
                 android:layout_width="100dp"

@@ -52,4 +52,32 @@
 
     <string name="action_settings">Settings</string>
 
+
+    <!-- card Strings   -->
+
+    <string name="cars_active">ACTIVE</string>
+    <string name="cars_inactive">INACTIVE</string>
+    <string name="total_rides">TOTAL BOOKINGS</string>
+    <string name="payments_due">VIEW PAYMENT DUE</string>
+    <string name="roboto_medium">sans-serif</string>
+    <string name="view_current_balance">View Current Balance</string>
+    <string name="rides">BOOKINGS</string>
+    <string name="incentive_booking">Bookings counted for incentive</string>
+    <string name="total_earnings_txt">Total Earnings</string>
+    <string name="cash_collected">CASH COLLECTED</string>
+    <string name="cash_deposited">CASH DEPOSITED</string>
+    <string name="total_devices">Total Devices</string>
+    <string name="payments_made">PAYMENTS MADE</string>
+    <string name="view_incentives">VIEW INCENTIVES</string>
+    <string name="driver_performance_label">DRIVER PERFORMANCE</string>
+    <string name="book_type_reversal_of_recomplete">REVERSAL OF RECOMPLETED BOOKING</string>
+
+    <string name="Bilty_Brief_Details">CNote Brief Details</string>
+
+    <string name="advance">ADVANCE PAYMENT(\u20B9)</string>
+    <string name="vehicleRate">VEHICLE RATE(\u20B9)</string>
+
+    <string name="no_data_available">YOU HAVE NOT ANY OPEN ENTRY!!</string>
+    <string name="title_activity_main2">Main2Activity</string>
+
 </resources>

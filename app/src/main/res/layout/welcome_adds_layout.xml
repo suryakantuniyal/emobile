@@ -24,10 +24,10 @@
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
     <LinearLayout
+        android:id="@+id/mail_ll"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_below="@id/appbar"
-        android:background="@color/more_button_background"
         android:orientation="vertical">
         <android.support.v4.view.ViewPager
             android:id="@+id/pager"
@@ -68,7 +68,7 @@
                 android:layout_marginLeft="30dp"
                 android:layout_marginRight="5dp"
                 android:layout_gravity="center"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/black"
                 android:layout_marginBottom="4dp"
                 android:text="Welcome to GoGeoTrack"
                 android:textSize="20dp"/>
@@ -85,110 +85,209 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/black"
                 android:layout_marginLeft="10dp"
                 android:text="All Devices Information"
                 android:textSize="20dp"/>
             <android.support.v7.widget.CardView
-                android:layout_width="match_parent"
+                android:id="@+id/card_view2"
+                android:background="@color/white"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:elevation="4dp">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-                    <RelativeLayout
-                        android:layout_width="match_parent"
+                android:layout_marginLeft="8.0dip"
+                android:layout_marginTop="10.0dip"
+                android:layout_marginRight="8.0dip"
+                card_view:cardCornerRadius="2.0dip"
+                android:elevation="2dp"
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:card_view="http://schemas.android.com/apk/res-auto">
+                <RelativeLayout
+                    android:id="@+id/rl_secondary_layout"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content">
+                    <View
+                        android:id="@+id/vw_h_separator_1"
+                        android:background="@color/grey_background"
+                        android:layout_width="fill_parent"
+                        android:layout_height="0.5dip"
+                        />
+                    <LinearLayout
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:id="@+id/ll_total_summary_cnt"
+                        android:paddingTop="5dp"
+                        android:paddingBottom="5dp"
+                        android:clickable="true"
+                        android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="10dp">
-                        <TextView
-                            android:id="@+id/all"
+                        android:weightSum="1.0"
+                        android:layout_below="@+id/vw_h_separator_1">
+                        <ImageView
+                            android:background="@drawable/ic_map_truck_med"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="10dp"
-                            android:text="Total no. of devices : "
-                            android:textAlignment="center"
-                            android:textColor="@color/colorPrimary"
-                            android:textSize="20dp" />
-
+                            android:layout_marginLeft="8.0dip"
+                            android:layout_marginRight="12.0dip"
+                            android:scaleType="centerInside"
+                            android:contentDescription="@string/total_rides" />
                         <TextView
+                            android:textSize="15dp"
+                            android:textColor="@color/black"
+                            android:gravity="center_vertical"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="5dp"
+                            android:text="@string/total_devices"
+                            android:maxLines="1"
+                            android:textAllCaps="false"
+                            android:fontFamily="@string/roboto_medium" />
+                        <TextView
+                            android:textSize="15dp"
+                            android:textColor="@color/black"
+                            android:gravity="end"
                             android:id="@+id/alldevices_tv"
+                            android:layout_width="0.0dip"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1.0" />
+
+                        <ImageView
+                            android:id="@+id/all_img_summary"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_alignParentRight="true"
-                            android:layout_toRightOf="@+id/all"
-                            android:layout_marginTop="10dp"
-                            android:text="Total"
-                            android:textAlignment="center"
-                            android:textColor="@color/colorPrimary"
-                            android:textSize="20dp" />
-                    </RelativeLayout>
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="#969C9E"/>
+                            android:layout_marginLeft="6.0dip"
+                            android:layout_marginRight="2.0dip"
+                            android:clickable="true"
+                            android:src="@drawable/ic_navigate_next" />
 
-                    <RelativeLayout
-                        android:layout_width="match_parent"
+                    </LinearLayout>
+                    <LinearLayout
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:id="@+id/ll_total_bookings_cnt"
+                        android:paddingTop="5dp"
+                        android:paddingBottom="5dp"
+                        android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="10dp">
+                        android:weightSum="1.0"
+                        android:layout_below="@+id/ll_total_summary_cnt">
+                        <ImageView
+                            android:background="@drawable/greentruck"
+                            android:layout_width="35dp"
+                            android:layout_height="30dp"
+                            android:layout_marginLeft="8.0dip"
+                            android:layout_marginRight="12.0dip"
+                            android:scaleType="centerInside"
+                            android:contentDescription="@string/total_rides" />
                         <TextView
-                            android:id="@+id/online"
+                            android:textSize="15dp"
+                            android:textColor="@color/black"
+                            android:gravity="center_vertical"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="10dp"
-                            android:text="Total no. of Online : "
-                            android:textAlignment="center"
-                            android:textColor="@color/colorPrimary"
-                            android:textSize="20dp" />
-
+                            android:layout_marginRight="5dp"
+                            android:text="Online Devices"
+                            android:maxLines="1"
+                            android:textAllCaps="false"
+                            android:fontFamily="@string/roboto_medium" />
                         <TextView
+                            android:textSize="15dp"
+                            android:textColor="@color/black"
+                            android:gravity="end"
                             android:id="@+id/allonline_tv"
+                            android:layout_width="0.0dip"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1.0" />
+
+                        <ImageView
+                            android:id="@+id/online_img"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_alignParentRight="true"
-                            android:layout_toRightOf="@+id/online"
-                            android:layout_marginTop="10dp"
-                            android:text="Total"
-                            android:textAlignment="center"
-                            android:textColor="@color/colorPrimary"
-                            android:textSize="20dp" />
-                    </RelativeLayout>
+                            android:layout_marginLeft="6.0dip"
+                            android:layout_marginRight="2.0dip"
+                            android:clickable="true"
+                            android:src="@drawable/ic_navigate_next" />
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="#969C9E"/>
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
+                    </LinearLayout>
+                    <LinearLayout
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:id="@+id/ll_total_bookings_incentives_cnt"
+                        android:paddingTop="5dp"
+                        android:paddingBottom="5dp"
+                        android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="10dp">
+                        android:weightSum="2.0"
+                        android:layout_below="@+id/ll_total_bookings_cnt">
+                        <ImageView
+                            android:background="@drawable/redtruck"
+                            android:layout_width="35dp"
+                            android:layout_height="30dp"
+                            android:layout_marginLeft="8.0dip"
+                            android:layout_marginRight="12.0dip"
+                            android:scaleType="centerInside"
+                            android:contentDescription="@string/total_rides" />
                         <TextView
-                            android:id="@+id/offline"
+                            android:textSize="15dp"
+                            android:textColor="@color/black"
+                            android:gravity="center_vertical"
+                            android:id="@+id/tv_total_summary_label"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="10dp"
-                            android:text="Total no. of Offline : "
-                            android:textAlignment="center"
-                            android:textColor="@color/colorPrimary"
-                            android:textSize="20dp" />
+                            android:layout_marginRight="5dp"
+                            android:text="Offline Devices"
+                            android:maxLines="1"
+                            android:textAllCaps="false"
+                            android:fontFamily="@string/roboto_medium" />
+
                         <TextView
+                            android:textSize="15dp"
+                            android:textColor="@color/black"
+                            android:gravity="end"
                             android:id="@+id/alloffline_tv"
+                            android:layout_width="160dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1.0" />
+                        <ImageView
+                            android:id="@+id/offline_img"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_alignParentRight="true"
-                            android:layout_toRightOf="@+id/offline"
-                            android:layout_marginTop="10dp"
-                            android:text="Total"
-                            android:textAlignment="center"
-                            android:textColor="@color/colorPrimary"
-                            android:textSize="20dp" />
-                    </RelativeLayout>
-                </LinearLayout>
+                            android:layout_marginLeft="6.0dip"
+                            android:layout_marginRight="2.0dip"
+                            android:clickable="true"
+                            android:src="@drawable/ic_navigate_next" />
+                    </LinearLayout>
+                </RelativeLayout>
             </android.support.v7.widget.CardView>
         </LinearLayout>
     </LinearLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_below="@+id/mail_ll">
+        <Button
+            android:id="@+id/listview_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_gravity="bottom"
+            android:background="@color/colorPrimaryDark"
+            android:paddingLeft="30dp"
+            android:paddingRight="30dp"
+            android:text="List View "
+            android:textColor="#fff" />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_gravity="bottom"
+            android:background="@color/colorPrimaryDark"
+            android:paddingLeft="30dp"
+            android:paddingRight="30dp"
+            android:text="Map View "
+            android:textColor="#fff" />
+    </RelativeLayout>
 </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>

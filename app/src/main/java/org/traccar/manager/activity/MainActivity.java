@@ -47,7 +47,7 @@ import org.traccar.manager.utils.URLContstant;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, VehicleslistAdapter.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
+        implements VehicleslistAdapter.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
 
     private VehicleslistAdapter vehiclesAdapter;
     private RecyclerView recyclerView;
@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setIcon(R.mipmap.luncher_icon);
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Wait a moment...");
@@ -88,18 +89,6 @@ public class MainActivity extends AppCompatActivity
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(vehiclesAdapter);
         vehiclesAdapter.setOnItemClickListener(this);
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-//                username = (TextView) findViewById(R.id.profile_name_text);
-//        username.setText(mSharedPreferences.getString(URLContstant.KEY_USERNAME,""));
-
 
     }
 
@@ -168,12 +157,6 @@ public class MainActivity extends AppCompatActivity
                 for (int i = 0; i < result.size(); i++) {
                     int id = result.get(i).positionId;
                     final int finalI = i;
-                    if(result.get(finalI).status.equals("online")){
-                           onLineList.add(result.get(i));
-                    }
-                    if(result.get(finalI).status.equals("offline")){
-                        offlineList.add(result.get(i));
-                    }
                     APIServices.GetVehicleDetailById(MainActivity.this, id, new DetailResponseCallback() {
                         @Override
                         public void OnResponse(VehicleList Response) {
@@ -181,7 +164,14 @@ public class MainActivity extends AppCompatActivity
                                     , result.get(finalI).status, result.get(finalI).lastUpdates, result.get(finalI).category, result.get(finalI).positionId, Response.address,
                                     result.get(finalI).time, result.get(finalI).timeDiff);
                             listArrayList.add(vehicles);
+                            if(result.get(finalI).status.equals("online")){
+                                onLineList.add(vehicles);
+                            }
+                            if(result.get(finalI).status.equals("offline")){
+                                offlineList.add(vehicles);
+                            }
                             vehiclesAdapter.notifyDataSetChanged();
+
 
                         }
                     });
@@ -232,74 +222,18 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
         }
-
-        return super.onOptionsItemSelected(item);
+        return false;
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        if (id == R.id.nav_home) {
-            Intent intent = new Intent(MainActivity.this,WelcomeMessageActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-            startActivity(intent);
-            overridePendingTransition(R.anim.slide_out_right, R.anim.slide_in_left);
-
-        } else if (id == R.id.nav_trac) {
-
-        } else if (id == R.id.nav_detail) {
-//            Intent intent = new Intent(MainActivity.this, MainActivity.class);
-//            startActivity(intent);
-        } else if (id == R.id.nav_report) {
-            Intent intent = new Intent(MainActivity.this,ReportsActivity.class);
-                startActivity(intent);
-        } else if (id == R.id.nav_contact) {
-            Intent callIntent = new Intent(Intent.ACTION_CALL);
-            callIntent.setData(Uri.parse("tel:09999095036"));
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-//                return TODO;
-            }
-            startActivity(callIntent);
-
-        } else if (id == R.id.nav_online) {
-
-        }else if (id == R.id.nav_offline) {
-
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 
     @Override

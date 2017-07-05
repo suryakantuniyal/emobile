@@ -5,4 +5,8 @@
         <item name="android:background">?colorPrimary</item>
         <item name="android:elevation">@dimen/headerbar_elevation</item>
     </style>
+    <style name="MyButton" parent="Theme.AppCompat.Light">
+        <item name="colorControlHighlight">#F5F5F5</item>
+        <item name="colorButtonNormal">@color/white</item>
+    </style>
 </resources>

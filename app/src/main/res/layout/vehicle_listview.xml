@@ -164,7 +164,7 @@
                     android:layout_margin="10dp"
                     android:text=""
                     android:textColor="@color/colorPrimary"
-                    android:textSize="15dp" />
+                    android:textSize="13dp" />
 
             </RelativeLayout>
             </LinearLayout>
@@ -288,8 +288,8 @@
 
             <LinearLayout
                 android:id="@+id/track_ll"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:background="#ffffff"
                 android:orientation="horizontal">
@@ -300,18 +300,16 @@
                     android:src="@drawable/navigation"/>
                 <Button
 
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:background="#ffffff"
-                    android:gravity="left"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="5dp"
+                    android:gravity="left|center_vertical"
                     android:id="@+id/track_tv"
-                    android:layout_marginLeft="10dp"
                     android:textAllCaps="false"
                     android:text="Track"
-                    android:elevation="2dp"
-                    android:fadingEdge="horizontal"
                     android:textColor="@color/red"
+                    android:theme="@style/MyButton"
                     android:textSize="15dp" />
 
             </LinearLayout>
@@ -332,8 +330,8 @@
             >
         <LinearLayout
             android:id="@+id/viewDetail_ll"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_gravity="center"
             android:background="#ffffff"
             android:orientation="horizontal"
@@ -347,15 +345,14 @@
                 />
             <Button
                 android:id="@+id/detail_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_gravity="center"
-                android:background="#ffffff"
                 android:layout_marginLeft="5dp"
-                android:gravity="left|center_vertical"
+                android:gravity="center"
                 android:text="Detail"
                 android:textAllCaps="false"
-                android:elevation="2dp"
+                android:theme="@style/MyButton"
                 android:textColor="@color/red"
                 android:textSize="15dp"
                 />

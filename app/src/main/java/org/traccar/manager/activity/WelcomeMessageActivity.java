@@ -9,6 +9,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -22,7 +24,7 @@ import java.util.TimerTask;
  * Created by silence12 on 4/7/17.
  */
 
-public class WelcomeMessageActivity extends AppCompatActivity {
+public class WelcomeMessageActivity extends AppCompatActivity implements View.OnClickListener {
    private RelativeLayout message_rl;
     private LinearLayout linearLayout;
     public View rootView;
@@ -30,14 +32,17 @@ public class WelcomeMessageActivity extends AppCompatActivity {
     private ViewPager circleviewPager;
     private ViewPagerAdapter viewPagerAdapter;
     TextView totalDevices,onlineDevices,offlineDevices;
+    private Button mapView_button,listView_button;
+    private ImageView alldevice_iv,online_iv,offline_iv;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.welcome_adds_layout);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        getSupportActionBar().setIcon(R.mipmap.luncher_icon);
+        setTitle("Home");
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         init();
 
     }
@@ -48,11 +53,19 @@ public class WelcomeMessageActivity extends AppCompatActivity {
         totalDevices = (TextView)findViewById(R.id.alldevices_tv);
         onlineDevices = (TextView)findViewById(R.id.allonline_tv);
         offlineDevices = (TextView)findViewById(R.id.alloffline_tv);
+        listView_button = (Button)findViewById(R.id.listview_button) ;
+        alldevice_iv = (ImageView)findViewById(R.id.all_img_summary);
+        online_iv = (ImageView)findViewById(R.id.online_img);
+        offline_iv = (ImageView)findViewById(R.id.offline_img);
         totalDevices.setText(String.valueOf(MainActivity.AllSize));
         onlineDevices.setText(String.valueOf(MainActivity.onlinesize));
         offlineDevices.setText(String.valueOf(MainActivity.offlinesize));
+        listView_button.setOnClickListener(this);
         circleviewPager.setAdapter(viewPagerAdapter);
         circleviewPager.setCurrentItem(0);
+        alldevice_iv.setOnClickListener(this);
+        online_iv.setOnClickListener(this);
+        offline_iv.setOnClickListener(this);
         CirclePageIndicator indicator = (CirclePageIndicator) findViewById(R.id.dotindicator);
         indicator.setViewPager(circleviewPager);
         final float density = getResources().getDisplayMetrics().density;
@@ -110,15 +123,28 @@ public class WelcomeMessageActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Intent intent = new Intent(WelcomeMessageActivity.this, MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-        startActivity(intent);
-        overridePendingTransition(R.anim.slide_out_right,R.anim.slide_in_left);
-        finish();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+    }
+
+    @Override
+    public void onClick(View view) {
+        if(view.getId() == R.id.listview_button || view.getId()==R.id.all_img_summary) {
+            Intent intent = new Intent(WelcomeMessageActivity.this,MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            startActivity(intent);
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+        }else if(view.getId() == R.id.online_img){
+            Intent intent = new Intent(WelcomeMessageActivity.this,OnLineOffLineActivity.class);
+            intent.putExtra("onoff","online");
+            startActivity(intent);
+        }else if(view.getId() == R.id.offline_img){
+            Intent intent = new Intent(WelcomeMessageActivity.this,OnLineOffLineActivity.class);
+            intent.putExtra("onoff","offline");
+            startActivity(intent);
+        }
     }
 }

@@ -108,7 +108,7 @@ public class SplashActivity extends AppCompatActivity {
         activityOpened = false;
         Log.d("function","chooseBetweenLoginMainActivity called");
         if (mSharedPreferences.getBoolean(URLContstant.KEY_LOGGED_IN,false)){
-            Intent mainactivityintent = new Intent(this, MainActivity.class);
+            Intent mainactivityintent = new Intent(this, WelcomeMessageActivity.class);
             mainactivityintent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(mainactivityintent);
             finish();

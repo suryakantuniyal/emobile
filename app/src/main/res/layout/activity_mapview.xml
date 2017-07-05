@@ -5,8 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="org.traccar.manager.activity.OnLineOffLineActivity">
-<RelativeLayout
+    tools:context="org.traccar.manager.activity.MapViewActivity">
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <android.support.design.widget.AppBarLayout
@@ -23,14 +23,14 @@
 
             </android.support.v7.widget.Toolbar>
         </android.support.design.widget.AppBarLayout>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:textAlignment="center"
-        android:gravity="center"
-        android:text="Comming Soon !"
-        android:textColor="@color/colorPrimary"
-        android:textSize="25dp"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:text="Comming Soon !"
+            android:textColor="@color/colorPrimary"
+            android:textSize="25dp"/>
     </RelativeLayout>
 
 </android.support.constraint.ConstraintLayout>

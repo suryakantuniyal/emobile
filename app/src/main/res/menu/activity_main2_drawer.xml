@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/nav_mapview"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="MapView" />
+        <item
+            android:id="@+id/nav_listview"
+            android:icon="@drawable/ic_menu_slideshow"
+            android:title="ListView" />
+        <item
+            android:id="@+id/nav_reports"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="Reports" />
+        <item
+            android:id="@+id/nav_contact"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="Contact Us" />
+    </group>
+
+    <item android:title="Filter By">
+        <menu>
+            <item
+                android:id="@+id/nav_online"
+                android:icon="@drawable/ic_map_truck_med"
+                android:title="Online" />
+            <item
+                android:id="@+id/nav_offline"
+                android:icon="@drawable/ic_map_truck_med"
+                android:title="Offline" />
+        </menu>
+    </item>
+
+</menu>
