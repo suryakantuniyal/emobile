@@ -1,6 +1,7 @@
 package com.android.emobilepos.adapters;
 
 import android.app.Activity;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,24 +37,21 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
     private final String S_SUMMARY = "Summary", S_SHIFTS = "Total by shifts", S_ORD_TYPES = "Total by order types", S_ITEMS_SOLD = "Items Sold", S_ITEMS_RETURNED = "Items Returned",
             S_DEPT_SALES = "Department Sales", S_DEPT_RETURNS = "Department returns", S_PAYMENT = "Payments", S_VOID = "Void", S_REFUND = "Refund", S_AR_TRANS = "A/R Transactions";
     private final MyPreferences preferences;
-
+    ViewHolder mHolder;
+    HeaderViewHolder mHeaderHolder;
     private Activity activity;
     private OrdersHandler ordHandler;
     //    private ShiftPeriodsDBHandler shiftHandler;
     private OrderProductsHandler ordProdHandler;
     private PaymentsHandler paymentHandler;
     private String mDate = null, clerk_id = null;
-
     private List<Order> listSummary, listOrdTypes, listARTrans;
     private List<OrderProduct> listSold, listReturned, listDeptSales, listDeptReturns;
     private List<Payment> listPayment, listVoid, listRefund;
     private List<Shift> listShifts;
     private LayoutInflater inflater;
-
-
     private int i_summary = 0, i_shifts = 0, i_ord_types = 0, i_item_sold, i_item_returned = 0, i_dept_sales = 0, i_dept_returns = 0, i_payment = 0,
             i_void = 0, i_refund = 0, i_ar_trans = 0;
-
     private int listSize = 0;
 
     public ReportEndDayAdapter(Activity activity, String date, String clerk_id) {
@@ -100,7 +98,8 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
         BigDecimal invoiceAmount = new BigDecimal("0");
 
         for (Order ord : listOrdTypes) {
-            switch (Global.OrderType.getByCode(Integer.parseInt(ord.ord_type))) {
+            switch (Global.OrderType.getByCode(TextUtils.isEmpty(ord.ord_type) ? Global.OrderType.ORDER.getCode()
+                    : Integer.parseInt(ord.ord_type))) {
                 case RETURN:
                     ord.ord_type_name = activity.getString(R.string.eod_report_return);
                     returnAmount = new BigDecimal(ord.ord_total);
@@ -422,7 +421,6 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
 
     }
 
-
     @Override
     public View getHeaderView(int position, View convertView, ViewGroup parent) {
 
@@ -501,10 +499,6 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
         else
             return 0;
     }
-
-
-    ViewHolder mHolder;
-    HeaderViewHolder mHeaderHolder;
 
     private class ViewHolder {
         TextView tvLeftColumn, tvRightColumn;
