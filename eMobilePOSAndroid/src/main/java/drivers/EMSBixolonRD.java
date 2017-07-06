@@ -50,8 +50,8 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
     private static final int HEADER_LENGTH = 8;
     private static final int TAX_LENGTH = 3;
     private static final int LINE_WIDTH = 48;
-    private EMSDeviceManager edm;
     String msg = "Failed to connect";
+    private EMSDeviceManager edm;
 
     @Override
     public void connect(final Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
@@ -180,7 +180,8 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
 
     @Override
     public boolean printPaymentDetails(String payID, int isFromMainMenu, boolean isReprint, EMVContainer emvContainer) {
-        return false;
+        super.printPaymentDetailsReceipt(payID, isFromMainMenu, isReprint, LINE_WIDTH, emvContainer);
+        return true;
     }
 
     @Override

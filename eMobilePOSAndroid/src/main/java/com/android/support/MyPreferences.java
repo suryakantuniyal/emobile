@@ -833,7 +833,7 @@ public class MyPreferences {
         setIsESY13P1(false);
         setIsHandpoint(false);
         setIsICMPEVO(false);
-        setIsKDC500(false);
+        setIsKDC425(false);
         setIsOT310(false);
         setIsPAT100(false);
         setPrinterName(""); //clean the printer name
