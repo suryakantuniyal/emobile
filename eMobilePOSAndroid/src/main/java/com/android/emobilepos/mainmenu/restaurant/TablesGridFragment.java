@@ -5,7 +5,6 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,12 +13,9 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.PopupMenu;
 
-import com.android.dao.ClerkDAO;
-import com.android.dao.DinningTableDAO;
 import com.android.dao.DinningTableOrderDAO;
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.DinningTablesAdapter;
-import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.DinningTable;
 import com.android.emobilepos.models.realms.DinningTableOrder;
 import com.android.emobilepos.ordering.SplittedOrderSummary_FA;
@@ -33,7 +29,6 @@ import java.util.List;
 public class TablesGridFragment extends Fragment implements AdapterView.OnItemLongClickListener {
 
     private DinningTablesAdapter adapter;
-    private Clerk associate;
 
     public TablesGridFragment() {
     }
@@ -51,14 +46,12 @@ public class TablesGridFragment extends Fragment implements AdapterView.OnItemLo
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        List<DinningTable> realmResults = DinningTableDAO.getAll("number");
         GridView gridView = (GridView) view.findViewById(R.id.tablesGridLayout);
-        adapter = new DinningTablesAdapter(getActivity(), realmResults);
-        if (!TextUtils.isEmpty(getDinningTablesActivity().associateId)) {
-            associate = ClerkDAO.getByEmpId(Integer.parseInt(getDinningTablesActivity().associateId));
-        }
-        if (associate != null) {
-            adapter.setSelectedDinningTables(associate.getAssignedDinningTables());
+        List<DinningTable> dinningTables = getDinningTablesActivity().dinningTables;
+        adapter = new DinningTablesAdapter(getActivity(), dinningTables);
+
+        if (getDinningTablesActivity().associate != null) {
+            adapter.setSelectedDinningTables(getDinningTablesActivity().associate.getAssignedDinningTables());
         }
         gridView.setAdapter(adapter);
 
@@ -66,7 +59,7 @@ public class TablesGridFragment extends Fragment implements AdapterView.OnItemLo
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 DinningTable table = (DinningTable) parent.getItemAtPosition(position);
-                if (associate != null && associate.getAssignedDinningTables().contains(table)) {
+                if (getDinningTablesActivity().associate != null && getDinningTablesActivity().associate.getAssignedDinningTables().contains(table)) {
                     DinningTableOrder tableOrder = DinningTableOrderDAO.getByNumber(table.getNumber());
                     if (tableOrder != null) {
                         getDinningTablesActivity().new OpenOnHoldOrderTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR

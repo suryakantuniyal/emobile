@@ -86,7 +86,7 @@
         android:verticalSpacing="5dp"
         android:paddingLeft="5dp"
         android:paddingRight="5dp"
-        tools:listitem="@layout/main_menu_listviewadapter"></GridView>
+        tools:listitem="@layout/main_menu_listviewadapter" />
 
 
 

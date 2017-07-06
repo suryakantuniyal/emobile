@@ -116,7 +116,7 @@ public class ManualAddBalance_FA extends BaseFragmentActivityActionBar implement
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                numberUtils.parseInputedCurrency(s, editText);
+                NumberUtils.parseInputedCurrency(s, editText);
             }
         };
     }
@@ -124,11 +124,11 @@ public class ManualAddBalance_FA extends BaseFragmentActivityActionBar implement
     @Override
     public void onResume() {
 
-        if (global.isApplicationSentToBackground(this))
-            global.loggedIn = false;
+        if (global.isApplicationSentToBackground())
+            Global.loggedIn = false;
         global.stopActivityTransitionTimer();
 
-        if (hasBeenCreated && !global.loggedIn) {
+        if (hasBeenCreated && !Global.loggedIn) {
             if (global.getGlobalDlog() != null)
                 global.getGlobalDlog().dismiss();
             global.promptForMandatoryLogin(this);
@@ -142,7 +142,7 @@ public class ManualAddBalance_FA extends BaseFragmentActivityActionBar implement
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         boolean isScreenOn = powerManager.isScreenOn();
         if (!isScreenOn)
-            global.loggedIn = false;
+            Global.loggedIn = false;
         global.startActivityTransitionTimer();
     }
 

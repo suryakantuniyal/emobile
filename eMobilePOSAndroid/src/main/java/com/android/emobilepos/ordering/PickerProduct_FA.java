@@ -221,7 +221,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
     @Override
     public void onResume() {
 
-        if (global.isApplicationSentToBackground(activity))
+        if (global.isApplicationSentToBackground())
             Global.loggedIn = false;
         global.stopActivityTransitionTimer();
 

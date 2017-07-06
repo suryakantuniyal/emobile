@@ -159,7 +159,7 @@ public class ShiftExpense_FA extends BaseFragmentActivityActionBar implements Vi
     @Override
     public void onResume() {
         super.onResume();
-        if (global.isApplicationSentToBackground(this))
+        if (global.isApplicationSentToBackground())
             Global.loggedIn = false;
         global.stopActivityTransitionTimer();
 

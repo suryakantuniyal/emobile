@@ -38,7 +38,7 @@ public class ClockTab_FR extends Fragment implements OnClickListener {
     @Override
     public void onClick(View v) {
         String enteredPass = fieldPassword.getText().toString().trim();
-        Clerk clerk = ClerkDAO.login(enteredPass, new MyPreferences(getActivity()));
+        Clerk clerk = ClerkDAO.login(enteredPass, new MyPreferences(getActivity()), false);
         fieldPassword.setText("");
         if (clerk != null) {
             Intent intent = new Intent(activity, ClockInOut_FA.class);

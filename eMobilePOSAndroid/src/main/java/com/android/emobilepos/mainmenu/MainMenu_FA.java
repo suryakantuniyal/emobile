@@ -35,6 +35,7 @@ import com.android.emobilepos.firebase.NotificationSettings;
 import com.android.emobilepos.firebase.PollingNotificationService;
 import com.android.emobilepos.firebase.RegistrationIntentService;
 import com.android.emobilepos.models.realms.Clerk;
+import com.android.emobilepos.security.SecurityManager;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -241,13 +242,14 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
     public void hideLogoutButton() {
         invalidateOptionsMenu();
     }
+
     @Override
     public void onResume() {
         if (myPref.isPollingHoldsEnable() && !PollingNotificationService.isServiceRunning(this)) {
-           startPollingService();
+            startPollingService();
         }
         registerReceiver(messageReceiver, new IntentFilter(NOTIFICATION_RECEIVED));
-        if (global.isApplicationSentToBackground(activity)) {
+        if (global.isApplicationSentToBackground()) {
             Global.loggedIn = false;
         }
         setLogoutButtonClerkname();
@@ -469,7 +471,8 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
                     myViewPager.setCurrentItem(i);
                 }
             }
-            if (myTabs.get(0) == tag && hasBeenCreated) {
+
+            if (myTabs.get(0) == tag && hasBeenCreated && SecurityManager.hasPermissions(myContext, SecurityManager.SecurityAction.OPEN_ORDER)) {
                 SalesTab_FR.startDefault(activity, myPref.getPreferencesValue(MyPreferences.pref_default_transaction));
             }
         }

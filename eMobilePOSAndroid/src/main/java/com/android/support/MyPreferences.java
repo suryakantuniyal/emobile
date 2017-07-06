@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 import android.util.Base64;
 
 import com.android.dao.AssignEmployeeDAO;
@@ -23,9 +24,8 @@ import util.AESCipher;
 import util.json.UIUtils;
 
 public class MyPreferences {
-    private static final String pref_restaurant_mode = "pref_restaurant_mode";
     public static final String pref_enable_togo_eatin = "pref_enable_togo_eatin";
-//    public static final String pref_require_waiter_signin = "pref_require_waiter_signin";
+    //    public static final String pref_require_waiter_signin = "pref_require_waiter_signin";
     //    private Global global;
     public static final String pref_enable_table_selection = "pref_enable_table_selection";
     public static final String pref_ask_seats = "pref_ask_seats";
@@ -40,7 +40,6 @@ public class MyPreferences {
     //    private final String zone_id = "zone_id";
 //    private final String VAT = "VAT";
     public static final String pref_show_only_group_taxes = "pref_show_only_group_taxes";
-    private static final String pref_retail_taxes = "pref_retail_taxes";
     public static final String pref_mix_match = "pref_mix_match";
     public static final String pref_holds_polling_service = "pref_holds_polling_service";
     public static final String pref_require_customer = "pref_require_customer";
@@ -114,6 +113,8 @@ public class MyPreferences {
     public static final String print_terms_conditions = "print_terms_conditions";
     public static final String print_emobilepos_website = "print_emobilepos_website";
     public static final String print_ivuloto_qr = "print_ivuloto_qr";
+    private static final String pref_restaurant_mode = "pref_restaurant_mode";
+    private static final String pref_retail_taxes = "pref_retail_taxes";
     private static final String pref_use_clerks = "pref_use_clerks";
     private final String MY_SHARED_PREF = "MY_SHARED_PREF";
     private final String db_path = "db_path";
@@ -1168,15 +1169,6 @@ public class MyPreferences {
         return prefs.getString(posManagerPassword, "");
     }
 
-    public boolean loginManager(String password) {
-        try {
-            return getPosManagerPass().equals(AESCipher.getSha256Hash(password));
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
     public void setPosManagerPass(String value) {
         String posManagerPassword = "posManagerPassword";
         try {
@@ -1185,6 +1177,15 @@ public class MyPreferences {
             e.printStackTrace();
         }
         prefEditor.commit();
+    }
+
+    public boolean loginManager(String password) {
+        try {
+            return getPosManagerPass().equals(AESCipher.getSha256Hash(password));
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     public boolean isPrefUseStoreForward() {
@@ -1208,6 +1209,10 @@ public class MyPreferences {
 
     public boolean isUseClerks() {
         return getPreferences(MyPreferences.pref_use_clerks);
+    }
+
+    public void setIsUseClerks(boolean value) {
+        setPreferences(MyPreferences.pref_use_clerks, value);
     }
 
     public String getGeniusIP() {
@@ -1265,7 +1270,11 @@ public class MyPreferences {
     }
 
     public String getClerkID() {
-        return (prefs.getString("clerk_id", "0"));
+        String id = prefs.getString("clerk_id", "0");
+        if (TextUtils.isEmpty(id)) {
+            id = "0";
+        }
+        return id;
     }
 
     public void setClerkID(String value) {
@@ -1381,6 +1390,16 @@ public class MyPreferences {
     public boolean isPollingHoldsEnable() {
         return getPreferences(pref_holds_polling_service);
     }
+
+    public boolean getIsPersistClerk() {
+        return (prefs.getBoolean("persistClerk", false));
+    }
+
+    public void setIsPersistClerk(boolean persistClerk) {
+        prefEditor.putBoolean("persistClerk", persistClerk);
+        prefEditor.commit();
+    }
+
 
     public enum PrinterPreviewWidth {SMALL, MEDIUM, LARGE}
 

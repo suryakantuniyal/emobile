@@ -54,6 +54,7 @@ import com.android.emobilepos.country.CountryPicker;
 import com.android.emobilepos.country.CountryPickerListener;
 import com.android.emobilepos.mainmenu.SettingsTab_FR;
 import com.android.emobilepos.models.realms.PaymentMethod;
+import com.android.emobilepos.security.SecurityManager;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.HttpClient;
@@ -98,7 +99,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
     public void onResume() {
 //        supportFragmentManager = getSupportFragmentManager();
         Global global = (Global) getApplication();
-        if (global.isApplicationSentToBackground(this))
+        if (global.isApplicationSentToBackground())
             Global.loggedIn = false;
         global.stopActivityTransitionTimer();
 
@@ -463,6 +464,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     break;
                 case R.string.config_use_clerks:
                     Global.loggedIn = false;
+                    myPref.setIsPersistClerk(myPref.isUseClerks());
                 case R.string.config_use_navigationbar:
                     getActivity().finish();
                     getActivity().startActivity(getActivity().getIntent());
@@ -570,10 +572,10 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                 case R.string.config_check_updates:
                     if (Global.isIvuLoto) {
                         new HttpClient().downloadFileAsync(getString(R.string.check_update_ivuurl),
-                                Environment.getExternalStorageDirectory().getAbsolutePath() + "/emobileivupos.apk", this, getActivity());
+                                Environment.getExternalStorageDirectory().getAbsolutePath() + getActivity().getString(R.string.ivupos_apk_name), this, getActivity());
                     } else {
                         new HttpClient().downloadFileAsync(getString(R.string.check_update_emurl),
-                                Environment.getExternalStorageDirectory().getAbsolutePath() + "/emobilepos.apk", this, getActivity());
+                                Environment.getExternalStorageDirectory().getAbsolutePath() + getActivity().getString(R.string.emobile_apk_name), this, getActivity());
                     }
                     break;
                 case R.string.config_backup_data:
@@ -590,8 +592,13 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     }
                     break;
                 case R.string.config_salesassociate_config:
-                    intent = new Intent(getActivity(), SalesAssociateConfigurationActivity.class);
-                    startActivity(intent);
+                    boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.ASSIGN_TABLES_WAITERS);
+                    if (hasPermissions) {
+                        intent = new Intent(getActivity(), SalesAssociateConfigurationActivity.class);
+                        startActivity(intent);
+                    } else {
+                        Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
+                    }
                     break;
             }
             return false;
@@ -1348,6 +1355,37 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
 
     }
 
+    private static class Redetect extends AsyncTask<Void, Void, String> {
+        ProgressDialog dialog;
+        private Activity activity;
+
+        Redetect(Activity activity) {
+
+            this.activity = activity;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            activity.setRequestedOrientation(Global.getScreenOrientation(activity));
+            dialog = new ProgressDialog(activity);
+            dialog.setIndeterminate(true);
+            dialog.setMessage(activity.getString(R.string.connecting_devices));
+            dialog.show();
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            return DeviceUtils.autoConnect(activity, true);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            Toast.makeText(activity, s, Toast.LENGTH_LONG).show();
+            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+            dialog.dismiss();
+        }
+    }
+
     public class SimpleItemRecyclerViewAdapter
             extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
@@ -1411,37 +1449,6 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
             public String toString() {
                 return super.toString();
             }
-        }
-    }
-
-    private static class Redetect extends AsyncTask<Void, Void, String> {
-        ProgressDialog dialog;
-        private Activity activity;
-
-        Redetect(Activity activity) {
-
-            this.activity = activity;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            activity.setRequestedOrientation(Global.getScreenOrientation(activity));
-            dialog = new ProgressDialog(activity);
-            dialog.setIndeterminate(true);
-            dialog.setMessage(activity.getString(R.string.connecting_devices));
-            dialog.show();
-        }
-
-        @Override
-        protected String doInBackground(Void... params) {
-            return DeviceUtils.autoConnect(activity, true);
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            Toast.makeText(activity, s, Toast.LENGTH_LONG).show();
-            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-            dialog.dismiss();
         }
     }
 }

@@ -112,7 +112,7 @@
             android:paddingBottom="5dp"
             android:stackFromBottom="false"
             android:transcriptMode="normal"
-            tools:listitem="@layout/product_receipt_adapter"></ListView>
+            tools:listitem="@layout/product_receipt_adapter" />
 
         <com.android.support.SemiClosedSlidingDrawer xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:custom="http://schemas.android.com/apk/res-auto"
@@ -132,7 +132,7 @@
                 android:id="@+id/slideButton"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
-                android:padding="20dp"></Button>
+                android:padding="20dp" />
 
             <RelativeLayout
                 android:id="@+id/contentLayout"
@@ -267,7 +267,7 @@
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
             android:src="@drawable/ic_action_previous_white"
-            android:visibility="gone"></ImageButton>
+            android:visibility="gone" />
 
         <ImageButton
             android:id="@+id/btnScrollRight"
@@ -277,7 +277,7 @@
             android:background="@drawable/image_button_selector"
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
-            android:src="@drawable/ic_action_next_white"></ImageButton>
+            android:src="@drawable/ic_action_next_white" />
     </LinearLayout>
 
 </LinearLayout>
