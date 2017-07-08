@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -29,6 +30,8 @@ private TextView no_loads_available;
 static int page_pos = 1;
 private CardView addTruckCardView;
 private Button addtruckBuution;
+        ImageView imageView;
+
 
 public AddFragment() {
         }
@@ -53,9 +56,15 @@ public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle sa
         if (rootView == null) {
         rootView = inflater.inflate(R.layout.fragment_add, container, false);
         addTruckCardView = (CardView) rootView.findViewById(R.id.addload_cardView);
+        imageView = (ImageView)rootView.findViewById(R.id.addload_iv);
         addTruckCardView.setOnClickListener(this);
         Bundle b =  getArguments();
         page_pos = b.getInt("pos");
+                if(page_pos==1){
+                        imageView.setImageResource(R.drawable.add2);
+                }else if(page_pos == 2){
+                        imageView.setImageResource(R.drawable.add3);
+                }
 
         } else {
 
