@@ -47,6 +47,7 @@ public class VehiclesAdapter extends RecyclerView.Adapter<VehiclesAdapter.MyView
         private LinearLayout track_ll,detail_ll;
         private ImageView vehivle_iv,status_iv;
         private View v;
+
         public MyViewHolder(View itemView) {
             super(itemView);
             v = itemView;

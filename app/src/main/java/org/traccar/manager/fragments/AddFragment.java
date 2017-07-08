@@ -61,9 +61,9 @@ public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle sa
         Bundle b =  getArguments();
         page_pos = b.getInt("pos");
                 if(page_pos==1){
-                        imageView.setImageResource(R.drawable.add2);
+                        imageView.setImageResource(R.drawable.scr1);
                 }else if(page_pos == 2){
-                        imageView.setImageResource(R.drawable.add3);
+                        imageView.setImageResource(R.drawable.scr1);
                 }
 
         } else {

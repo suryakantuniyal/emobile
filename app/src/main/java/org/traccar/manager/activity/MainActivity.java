@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity
     private ArrayList<VehicleList> listArrayList;
     public static ArrayList<VehicleList> onLineList;
     public static ArrayList<VehicleList>offlineList;
+    public static ArrayList<VehicleList>latlongList;
     public static MenuItem searchMenuItem;
     private static ProgressDialog progressDialog;
     private TextView username;
@@ -77,24 +78,27 @@ public class MainActivity extends AppCompatActivity
         mSharedPreferences = getSharedPreferences(URLContstant.PREFERENCE_NAME, Context.MODE_PRIVATE);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
         swipeRefreshLayout.setRefreshing(false);
+        swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
         swipeRefreshLayout.setOnRefreshListener(this);
         new Async().execute();
         recyclerView = (RecyclerView) findViewById(R.id.vehicle_rv);
         listArrayList = new ArrayList<VehicleList>();
         onLineList = new ArrayList<VehicleList>();
         offlineList = new ArrayList<VehicleList>();
+        latlongList = new ArrayList<VehicleList>();
         vehiclesAdapter = new VehicleslistAdapter(getBaseContext(), listArrayList, this);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(vehiclesAdapter);
         vehiclesAdapter.setOnItemClickListener(this);
-
     }
 
     @Override
     public void OnItemClick(View view, int position) {
-        if (view.getId() == R.id.detail_btn) {
+
+        if (view.getId() == R.id.detail_ll) {
+            
             Intent intent = new Intent(MainActivity.this, VehicleDetailActivity.class);
             intent.putExtra("id", listArrayList.get(position).getId());
             intent.putExtra("name", listArrayList.get(position).getName());
@@ -108,10 +112,11 @@ public class MainActivity extends AppCompatActivity
             startActivity(intent);
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 
-        } else  if (view.getId() == R.id.track_tv) {
+        } else  if (view.getId() == R.id.track_ll) {
             Intent trackIntent = new Intent(MainActivity.this, TrackingDevicesActivity.class);
             trackIntent.putExtra("device_id", listArrayList.get(position).getPositionId());
             trackIntent.putExtra("tname", listArrayList.get(position).getName());
+            trackIntent.putExtra("status",listArrayList.get(position).getStatus());
             trackIntent.putExtra("tupdate", listArrayList.get(position).getLastUpdates());
             trackIntent.putExtra("ttimer", listArrayList.get(position).getTime());
             trackIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
@@ -148,40 +153,56 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void parseView() {
-        APIServices.GetAllVehicleList(MainActivity.this, new ResponseCallbackEvents() {
-            @Override
-            public void onSuccess(final ArrayList<VehicleList> result) {
-                progressDialog.dismiss();
-                AllSize = result.size();
-                swipeRefreshLayout.setRefreshing(false);
-                for (int i = 0; i < result.size(); i++) {
-                    int id = result.get(i).positionId;
-                    final int finalI = i;
-                    APIServices.GetVehicleDetailById(MainActivity.this, id, new DetailResponseCallback() {
-                        @Override
-                        public void OnResponse(VehicleList Response) {
-                            VehicleList vehicles = new VehicleList(result.get(finalI).id, result.get(finalI).name, result.get(finalI).uniqueId
-                                    , result.get(finalI).status, result.get(finalI).lastUpdates, result.get(finalI).category, result.get(finalI).positionId, Response.address,
-                                    result.get(finalI).time, result.get(finalI).timeDiff);
-                            listArrayList.add(vehicles);
-                            if(result.get(finalI).status.equals("online")){
-                                onLineList.add(vehicles);
-                            }
-                            if(result.get(finalI).status.equals("offline")){
-                                offlineList.add(vehicles);
-                            }
-                            vehiclesAdapter.notifyDataSetChanged();
+        ArrayList<VehicleList> result = Main2Activity.listArrayList;
+        progressDialog.dismiss();
+        swipeRefreshLayout.setRefreshing(false);
+        for (int i = 0; i < result.size(); i++) {
+            final int finalI = i;
+            VehicleList vehicles = new VehicleList(result.get(finalI).id, result.get(finalI).name, result.get(finalI).uniqueId
+                    , result.get(finalI).status, result.get(finalI).lastUpdates, result.get(finalI).category, result.get(finalI).positionId, result.get(finalI).address,
+                    result.get(finalI).time, result.get(finalI).timeDiff);
+            listArrayList.add(vehicles);
+        }
 
-
-                        }
-                    });
-                }
-                offlinesize = offlineList.size();
-                onlinesize = onLineList.size();
-
-            }
-        });
     }
+
+//    private void parseView() {
+//        APIServices.GetAllVehicleList(MainActivity.this, new ResponseCallbackEvents() {
+//            @Override
+//            public void onSuccess(final ArrayList<VehicleList> result) {
+//                progressDialog.dismiss();
+//                AllSize = result.size();
+//                swipeRefreshLayout.setRefreshing(false);
+//                for (int i = 0; i < result.size(); i++) {
+//                    int id = result.get(i).positionId;
+//                    final int finalI = i;
+//                    APIServices.GetVehicleDetailById(MainActivity.this, id, new DetailResponseCallback() {
+//                        @Override
+//                        public void OnResponse(VehicleList Response) {
+//                            VehicleList vehicles = new VehicleList(result.get(finalI).id, result.get(finalI).name, result.get(finalI).uniqueId
+//                                    , result.get(finalI).status, result.get(finalI).lastUpdates, result.get(finalI).category, result.get(finalI).positionId, Response.address,
+//                                    result.get(finalI).time, result.get(finalI).timeDiff);
+//                            listArrayList.add(vehicles);
+//                            if(result.get(finalI).status.equals("online")){
+//                                onLineList.add(vehicles);
+//                            }
+//                            if(result.get(finalI).status.equals("offline")){
+//                                offlineList.add(vehicles);
+//                            }
+//
+//                            VehicleList latlong = new VehicleList(result.get(finalI).id,result.get(finalI).status,Response.latitute,Response.longitute);
+//                            latlongList.add(latlong);
+//                            vehiclesAdapter.notifyDataSetChanged();
+//
+//                        }
+//                    });
+//                }
+//                offlinesize = offlineList.size();
+//                onlinesize = onLineList.size();
+//
+//            }
+//        });
+//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

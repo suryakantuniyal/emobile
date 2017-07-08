@@ -17,6 +17,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.traccar.manager.R;
 import org.traccar.manager.api.APIServices;
@@ -44,6 +52,10 @@ public class VehicleDetailActivity extends AppCompatActivity {
     private int id,positionId;
     private static Double speed;
     private Button homeButton;
+    private MarkerOptions markerOptions;
+    private CameraPosition cameraPosition;
+    GoogleMap googleMap;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -122,6 +134,20 @@ public class VehicleDetailActivity extends AppCompatActivity {
                 }else {
                     positionId_tv.setText(Response.address);
                 }
+                googleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map2)).getMap();
+                CameraUpdate point = CameraUpdateFactory.newLatLng(new LatLng(20.5937, 78.9629));
+                googleMap.moveCamera(point);
+                markerOptions = new MarkerOptions().position(new LatLng(Response.latitute,Response.longitute)).title(Response.address);
+                cameraPosition = new CameraPosition.Builder().target(new LatLng(Response.latitute,Response.longitute)).zoom(14).build();
+                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                if(statusString.equals("online")) {
+                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.greentruck));
+                }else if(statusString.equals("offline")){
+                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.redtruck));
+                }else {
+                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_truck_med));
+                }
+                googleMap.addMarker(markerOptions);
                 uniqueId_tv.setText(uniqueIdString);
                 lastUpdate_tv.setText(lastUpdatetString);
                 status_tv.setText(statusString);
@@ -133,7 +159,7 @@ public class VehicleDetailActivity extends AppCompatActivity {
         });
     }
     private void initViews() {
-        projImageView = (ImageView) findViewById(R.id.category_image_iv);
+//        projImageView = (ImageView) findViewById(R.id.category_image_iv);
         name_tv = (TextView) findViewById(R.id.project_name_tv);
         positionId_tv = (TextView) findViewById(R.id.positionId_tv);
         uniqueId_tv = (TextView) findViewById(R.id.uniqueid_tv);
@@ -150,8 +176,9 @@ public class VehicleDetailActivity extends AppCompatActivity {
                onBackPressed();
             }
         });
-        Glide.with(this).load(R.drawable.ic_truck).asBitmap()
-                .centerCrop().placeholder(R.drawable.placeholderxx4).into(projImageView);
+
+//        Glide.with(this).load(R.drawable.ic_truck).asBitmap()
+//                .centerCrop().placeholder(R.drawable.placeholderxx4).into(projImageView);
 
 
     }

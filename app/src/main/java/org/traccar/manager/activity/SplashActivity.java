@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
@@ -21,8 +22,13 @@ import android.widget.RelativeLayout;
 import com.google.android.gms.common.GoogleApiAvailability;
 
 import org.traccar.manager.R;
+import org.traccar.manager.api.APIServices;
+import org.traccar.manager.model.VehicleList;
+import org.traccar.manager.network.DetailResponseCallback;
+import org.traccar.manager.network.ResponseCallbackEvents;
 import org.traccar.manager.utils.URLContstant;
 
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -38,15 +44,11 @@ public class SplashActivity extends AppCompatActivity {
     boolean Activenetwork = true;
     boolean GPS = false, networkedchecked = true;
     SharedPreferences mSharedPreferences;
-    GoogleApiAvailability mGoogleApiAvailability;
-    ImageView Logo;
-    Timer timer;
-    TimerTask timerTask;
-    ProgressBar progressBar;
     Boolean flag = false ;
     boolean activityOpened = true, isShown = false, firstTime = false;
     Snackbar Alertbar,Tryingbar;
     RelativeLayout coordinatorLayout;
+
 
 
     @Override
@@ -70,7 +72,6 @@ public class SplashActivity extends AppCompatActivity {
                 chooseBetweenLoginAndMainActivity();
             }
         }, SPLASH_TIME_OUT);
-
 
     }
 
@@ -108,7 +109,7 @@ public class SplashActivity extends AppCompatActivity {
         activityOpened = false;
         Log.d("function","chooseBetweenLoginMainActivity called");
         if (mSharedPreferences.getBoolean(URLContstant.KEY_LOGGED_IN,false)){
-            Intent mainactivityintent = new Intent(this, WelcomeMessageActivity.class);
+            Intent mainactivityintent = new Intent(this, Main2Activity.class);
             mainactivityintent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(mainactivityintent);
             finish();

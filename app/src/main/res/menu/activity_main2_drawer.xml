@@ -25,11 +25,11 @@
         <menu>
             <item
                 android:id="@+id/nav_online"
-                android:icon="@drawable/ic_map_truck_med"
+                android:icon="@drawable/greentruck"
                 android:title="Online" />
             <item
                 android:id="@+id/nav_offline"
-                android:icon="@drawable/ic_map_truck_med"
+                android:icon="@drawable/redtruck"
                 android:title="Offline" />
         </menu>
     </item>

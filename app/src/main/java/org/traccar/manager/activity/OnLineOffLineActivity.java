@@ -44,6 +44,7 @@ public class OnLineOffLineActivity extends AppCompatActivity implements SwipeRef
         setContentView(R.layout.activity_onlineoffline);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setIcon(R.mipmap.luncher_icon);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 //        getSupportActionBar().setIcon(R.mipmap.luncher_icon);
         progressDialog = new ProgressDialog(this);
@@ -59,6 +60,7 @@ public class OnLineOffLineActivity extends AppCompatActivity implements SwipeRef
         }
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh_online);
         swipeRefreshLayout.setRefreshing(false);
+        swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
         swipeRefreshLayout.setOnRefreshListener(this);
         new Async().execute();
         recyclerView = (RecyclerView) findViewById(R.id.onlineoffline_rv);
@@ -96,9 +98,9 @@ public class OnLineOffLineActivity extends AppCompatActivity implements SwipeRef
     private void parseView() {
         ArrayList<VehicleList> result = null;
         if(onnOff.equals("online")){
-            result = MainActivity.onLineList;
+            result = Main2Activity.onLineList;
         }else if(onnOff.equals("offline")){
-           result = MainActivity.offlineList;
+           result = Main2Activity.offlineList;
         }
                 progressDialog.dismiss();
                 swipeRefreshLayout.setRefreshing(false);
@@ -121,7 +123,7 @@ public class OnLineOffLineActivity extends AppCompatActivity implements SwipeRef
 
     @Override
     public void OnItemClick(View view, int position) {
-        if (view.getId() == R.id.detail_btn) {
+        if (view.getId() == R.id.detail_ll) {
             Intent intent = new Intent(OnLineOffLineActivity.this, VehicleDetailActivity.class);
             intent.putExtra("id", listArrayList.get(position).getId());
             intent.putExtra("name", listArrayList.get(position).getName());
@@ -135,11 +137,12 @@ public class OnLineOffLineActivity extends AppCompatActivity implements SwipeRef
             startActivity(intent);
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 
-        } else  if (view.getId() == R.id.track_tv) {
+        } else  if (view.getId() == R.id.track_ll) {
             Intent trackIntent = new Intent(OnLineOffLineActivity.this, TrackingDevicesActivity.class);
             trackIntent.putExtra("device_id", listArrayList.get(position).getPositionId());
             trackIntent.putExtra("tname", listArrayList.get(position).getName());
             trackIntent.putExtra("tupdate", listArrayList.get(position).getLastUpdates());
+            trackIntent.putExtra("status",listArrayList.get(position).getStatus());
             trackIntent.putExtra("ttimer", listArrayList.get(position).getTime());
             trackIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(trackIntent);

@@ -1,15 +1,20 @@
 package org.traccar.manager.activity;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.CardView;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -21,13 +26,20 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.viewpagerindicator.CirclePageIndicator;
 
 import org.traccar.manager.R;
 import org.traccar.manager.adapter.ViewPagerAdapter;
+import org.traccar.manager.api.APIServices;
+import org.traccar.manager.model.VehicleList;
+import org.traccar.manager.network.DetailResponseCallback;
+import org.traccar.manager.network.ResponseCallbackEvents;
+import org.traccar.manager.utils.URLContstant;
 
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -35,11 +47,19 @@ public class Main2Activity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,View.OnClickListener {
 
     private  int currentPage ;
+    private Button mapview_bb,listview_bb;
     private ViewPager circleviewPager;
     private ViewPagerAdapter viewPagerAdapter;
     TextView totalDevices,onlineDevices,offlineDevices;
-    private Button mapView_button,listView_button;
-    private ImageView alldevice_iv,online_iv,offline_iv;
+    private CardView mapView_button,listView_button;
+    private TextView alldevice_iv,online_iv,offline_iv;
+    SharedPreferences mSharedPreferences;
+    public static ArrayList<VehicleList> listArrayList;
+    public static ArrayList<VehicleList> onLineList;
+    public static ArrayList<VehicleList>offlineList;
+    public static ArrayList<VehicleList>latlongList;
+    public static int AllSize,onlinesize,offlinesize ;
+    private static ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,39 +67,55 @@ public class Main2Activity extends AppCompatActivity
         setContentView(R.layout.activity_main2);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setIcon(R.mipmap.luncher_icon);
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Wait a moment...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+        mSharedPreferences = getSharedPreferences(URLContstant.PREFERENCE_NAME,MODE_PRIVATE);
+        setSupportActionBar(toolbar);
         init();
-
-
+        new Async().execute();
+        listArrayList = new ArrayList<VehicleList>();
+        onLineList = new ArrayList<VehicleList>();
+        offlineList = new ArrayList<VehicleList>();
+        latlongList = new ArrayList<VehicleList>();
+        Bundle b = getIntent().getExtras();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
-
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        View header=navigationView.getHeaderView(0);
+        TextView username = (TextView)header.findViewById(R.id.username_tv);
+        String userName = mSharedPreferences.getString(URLContstant.KEY_USERNAME,"");
+        username.setText(userName);
     }
-
 
     private void init(){
         viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(),Main2Activity.this);
         circleviewPager = (ViewPager)findViewById(R.id.pager);
-        totalDevices = (TextView)findViewById(R.id.alldevices_tv);
-        onlineDevices = (TextView)findViewById(R.id.allonline_tv);
-        offlineDevices = (TextView)findViewById(R.id.alloffline_tv);
-        listView_button = (Button)findViewById(R.id.listview_button) ;
-        alldevice_iv = (ImageView)findViewById(R.id.all_img_summary);
-        online_iv = (ImageView)findViewById(R.id.online_img);
-        offline_iv = (ImageView)findViewById(R.id.offline_img);
-        totalDevices.setText(String.valueOf(MainActivity.AllSize));
-        onlineDevices.setText(String.valueOf(MainActivity.onlinesize));
-        offlineDevices.setText(String.valueOf(MainActivity.offlinesize));
+        totalDevices = (TextView)findViewById(R.id.all_count);
+        onlineDevices = (TextView)findViewById(R.id.online_count);
+        offlineDevices = (TextView)findViewById(R.id.offline_count);
+        listView_button = (CardView) findViewById(R.id.listview_cv) ;
+        mapView_button = (CardView) findViewById(R.id.mapview_cv);
+        alldevice_iv = (TextView) findViewById(R.id.alldevices_view);
+        online_iv = (TextView) findViewById(R.id.online_img);
+        offline_iv = (TextView) findViewById(R.id.offline_img);
+        mapview_bb = (Button)findViewById(R.id.mapview_bb);
+        listview_bb = (Button)findViewById(R.id.listview_bb);
         listView_button.setOnClickListener(this);
         circleviewPager.setAdapter(viewPagerAdapter);
         circleviewPager.setCurrentItem(0);
         alldevice_iv.setOnClickListener(this);
         online_iv.setOnClickListener(this);
         offline_iv.setOnClickListener(this);
+        mapView_button.setOnClickListener(this);
+        mapview_bb.setOnClickListener(this);
+        listview_bb.setOnClickListener(this);
         CirclePageIndicator indicator = (CirclePageIndicator) findViewById(R.id.dotindicator);
         indicator.setViewPager(circleviewPager);
         final float density = getResources().getDisplayMetrics().density;
@@ -124,6 +160,65 @@ public class Main2Activity extends AppCompatActivity
         });
     }
 
+
+    public class Async extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            parseView();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+        }
+    }
+
+    private void parseView() {
+        APIServices.GetAllVehicleList(Main2Activity.this, new ResponseCallbackEvents() {
+            @Override
+            public void onSuccess(final ArrayList<VehicleList> result) {
+                progressDialog.dismiss();
+                AllSize = result.size();
+                for (int i = 0; i < result.size(); i++) {
+                    int id = result.get(i).positionId;
+                    final int finalI = i;
+                    APIServices.GetVehicleDetailById(Main2Activity.this, id, new DetailResponseCallback() {
+                        @Override
+                        public void OnResponse(VehicleList Response) {
+                            VehicleList vehicles = new VehicleList(result.get(finalI).id, result.get(finalI).name, result.get(finalI).uniqueId
+                                    , result.get(finalI).status, result.get(finalI).lastUpdates, result.get(finalI).category, result.get(finalI).positionId, Response.address,
+                                    result.get(finalI).time, result.get(finalI).timeDiff);
+                            listArrayList.add(vehicles);
+                            if(result.get(finalI).status.equals("online")){
+                                onLineList.add(vehicles);
+                            }
+                            if(result.get(finalI).status.equals("offline")){
+                                offlineList.add(vehicles);
+                            }
+
+                            VehicleList latlong = new VehicleList(result.get(finalI).id,result.get(finalI).status,Response.latitute,Response.longitute);
+                            latlongList.add(latlong);
+                        }
+                    });
+                }
+                offlinesize = offlineList.size();
+                onlinesize = onLineList.size();
+                totalDevices.setText(String.valueOf(AllSize));
+                onlineDevices.setText(String.valueOf(onlinesize));
+                offlineDevices.setText(String.valueOf(offlinesize));
+                Log.d("Check", String.valueOf(AllSize));
+
+            }
+        });
+    }
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -137,7 +232,7 @@ public class Main2Activity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main2, menu);
+//        getMenuInflater().inflate(R.menu.main2, menu);
         return true;
     }
 
@@ -145,11 +240,6 @@ public class Main2Activity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
 
         int id = item.getItemId();
-
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -216,7 +306,7 @@ public class Main2Activity extends AppCompatActivity
 
     @Override
     public void onClick(View view) {
-        if(view.getId() == R.id.listview_button || view.getId()==R.id.all_img_summary) {
+        if(view.getId() == R.id.listview_bb || view.getId()==R.id.alldevices_view) {
             Intent intent = new Intent(Main2Activity.this,MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(intent);
@@ -228,6 +318,9 @@ public class Main2Activity extends AppCompatActivity
         }else if(view.getId() == R.id.offline_img){
             Intent intent = new Intent(Main2Activity.this,OnLineOffLineActivity.class);
             intent.putExtra("onoff","offline");
+            startActivity(intent);
+        }else if(view.getId() == R.id.mapview_bb){
+            Intent intent = new Intent(Main2Activity.this,MapViewActivity.class);
             startActivity(intent);
         }
     }

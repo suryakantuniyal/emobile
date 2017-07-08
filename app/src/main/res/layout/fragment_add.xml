@@ -27,6 +27,7 @@
                 android:text="Track Goe Fences"/>
 
             <ImageView
+                android:id="@+id/addload_iv"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_gravity="center"

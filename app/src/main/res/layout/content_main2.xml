@@ -9,8 +9,8 @@
     tools:showIn="@layout/app_bar_main2">
 
     <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_width="368dp"
+        android:layout_height="495dp">
         <LinearLayout
             android:id="@+id/mail_ll"
             android:layout_width="match_parent"
@@ -102,7 +102,7 @@
                         <LinearLayout
                             android:gravity="center_vertical"
                             android:orientation="horizontal"
-                            android:id="@+id/ll_total_summary_cnt"
+                            android:id="@+id/alldevices_ll"
                             android:paddingTop="5dp"
                             android:paddingBottom="5dp"
                             android:clickable="true"
@@ -151,13 +151,14 @@
                         <LinearLayout
                             android:gravity="center_vertical"
                             android:orientation="horizontal"
-                            android:id="@+id/ll_total_bookings_cnt"
+                            android:id="@+id/online_ll"
                             android:paddingTop="5dp"
                             android:paddingBottom="5dp"
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
                             android:weightSum="1.0"
-                            android:layout_below="@+id/ll_total_summary_cnt">
+                            android:clickable="true"
+                            android:layout_below="@+id/alldevices_ll">
                             <ImageView
                                 android:background="@drawable/greentruck"
                                 android:layout_width="35dp"
@@ -199,13 +200,14 @@
                         <LinearLayout
                             android:gravity="center_vertical"
                             android:orientation="horizontal"
-                            android:id="@+id/ll_total_bookings_incentives_cnt"
+                            android:id="@+id/offline_ll"
                             android:paddingTop="5dp"
                             android:paddingBottom="5dp"
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
                             android:weightSum="2.0"
-                            android:layout_below="@+id/ll_total_bookings_cnt">
+                            android:clickable="true"
+                            android:layout_below="@+id/online_ll">
                             <ImageView
                                 android:background="@drawable/redtruck"
                                 android:layout_width="35dp"
@@ -232,7 +234,7 @@
                                 android:textColor="@color/black"
                                 android:gravity="end"
                                 android:id="@+id/alloffline_tv"
-                                android:layout_width="160dp"
+                                android:layout_width="150dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1.0" />
                             <ImageView
@@ -266,6 +268,7 @@
                 android:text="List View "
                 android:textColor="#fff" />
             <Button
+                android:id="@+id/mapview_bb"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"

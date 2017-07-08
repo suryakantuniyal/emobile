@@ -26,6 +26,15 @@ public class VehicleList {
 
     }
 
+    public VehicleList(int id,String status,Double latitute,Double longitute){
+        this.id = id ;
+        this.status = status;
+        this.latitute = latitute;
+        this.longitute = longitute;
+
+    }
+
+
     public VehicleList(int id, String name, String uniqueId, String status, String lastUpdates, String category,int positionId,String address,String time,String timeDiff) {
         this.id = id;
         this.name = name;

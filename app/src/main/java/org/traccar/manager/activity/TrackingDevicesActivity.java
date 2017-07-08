@@ -1,6 +1,8 @@
 package org.traccar.manager.activity;
 
 import android.Manifest;
+import android.app.ProgressDialog;
+import android.app.Service;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -8,7 +10,9 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.test.mock.MockPackageManager;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -27,6 +31,7 @@ import org.traccar.manager.R;
 import org.traccar.manager.api.APIServices;
 import org.traccar.manager.model.VehicleList;
 import org.traccar.manager.network.DetailResponseCallback;
+import org.traccar.manager.services.GPSTracker;
 
 import java.util.Map;
 
@@ -41,19 +46,61 @@ public class TrackingDevicesActivity extends AppCompatActivity {
     private CameraPosition cameraPosition;
     private TextView address_tv, speed_tv, vehicleName_tv, lastupdate_tv, travelled_tv;
     private ImageView imageView,currentLocation;
+    private static final int REQUEST_CODE_PERMISSION = 2;
+    String mPermission = Manifest.permission.ACCESS_FINE_LOCATION;
+    GPSTracker gps;
+    String statsString;
+    private static ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_devicestracking);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setIcon(R.mipmap.luncher_icon);
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Wait a moment...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
         initView();
+        try {
+            if (ActivityCompat.checkSelfPermission(this, mPermission)
+                    != MockPackageManager.PERMISSION_GRANTED) {
+
+                ActivityCompat.requestPermissions(this, new String[]{mPermission},
+                        REQUEST_CODE_PERMISSION);
+                gps = new GPSTracker(TrackingDevicesActivity.this);
+
+                // check if GPS enabled
+                if(gps.canGetLocation()){
+
+                    double latitude = gps.getLatitude();
+                    double longitude = gps.getLongitude();
+
+                    // \n is for new line
+                    Toast.makeText(getApplicationContext(), "Your Location is - \nLat: "
+                            + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
+                }else{
+                    // can't get location
+                    // GPS or Network is not enabled
+                    // Ask user to enable GPS/network in settings
+                    gps.showSettingsAlert();
+                }
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
 
     private void initView() {
 
         address_tv = (TextView) findViewById(R.id.vehicle_location);
-        imageView = (ImageView) findViewById(R.id.back_button);
+//        imageView = (ImageView) findViewById(R.id.back_button);
         vehicleName_tv = (TextView) findViewById(R.id.vehiclename_tv);
         speed_tv = (TextView) findViewById(R.id.vehiclespeed_tv);
         lastupdate_tv = (TextView) findViewById(R.id.update_tv);
@@ -64,6 +111,7 @@ public class TrackingDevicesActivity extends AppCompatActivity {
         String update = getIntent.getStringExtra("tupdate");
         String name = getIntent.getStringExtra("tname");
         String time = getIntent.getStringExtra("ttimer");
+        statsString = getIntent.getStringExtra("status");
         vehicleName_tv.setText(name);
         lastupdate_tv.setText(update);
 //        Log.e("Timmer",time);
@@ -71,17 +119,17 @@ public class TrackingDevicesActivity extends AppCompatActivity {
         Log.e("idTrack", String.valueOf(id));
         trackOnMap();
         callDetailRequest(id);
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(TrackingDevicesActivity.this, MainActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                startActivity(intent);
-                overridePendingTransition(R.anim.slide_out_left,R.anim.slide_in_right);
-                finish();
-
-            }
-        });
+//        imageView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent intent = new Intent(TrackingDevicesActivity.this, MainActivity.class);
+//                intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+//                startActivity(intent);
+//                overridePendingTransition(R.anim.slide_out_left,R.anim.slide_in_right);
+//                finish();
+//
+//            }
+//        });
     }
 
     private void trackOnMap() {
@@ -110,6 +158,7 @@ public class TrackingDevicesActivity extends AppCompatActivity {
         APIServices.GetVehicleDetailById(TrackingDevicesActivity.this, id, new DetailResponseCallback() {
             @Override
             public void OnResponse(final VehicleList Response) {
+                progressDialog.dismiss();
                 if(Response.address.equals("null")){
                     address_tv.setText("Loading...");
                 }else {
@@ -142,9 +191,32 @@ public class TrackingDevicesActivity extends AppCompatActivity {
             address = Response.address;
         }
         markerOptions = new MarkerOptions().position(new LatLng(Response.latitute,Response.longitute)).title(address);
-        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_truck_med));
+        if(statsString.equals("online")) {
+            markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.greentruck));
+        }else if(statsString.equals("offline")){
+            markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.redtruck));
+        }else {
+            markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_truck_med));
+        }
         googleMap.addMarker(markerOptions);
         cameraPosition = new CameraPosition.Builder().target(new LatLng(Response.latitute,Response.longitute)).zoom(14).build();
         googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return false;
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
+
 }

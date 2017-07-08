@@ -29,28 +29,40 @@
 
             app:title="">
 
-            <FrameLayout
+            <!--<FrameLayout-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent"-->
+                <!--android:fitsSystemWindows="true"-->
+                <!--app:layout_collapseMode="parallax"-->
+                <!--app:layout_scrollFlags="scroll|exitUntilCollapsed">-->
+
+                <!--<ImageView-->
+                    <!--android:id="@+id/category_image_iv"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="match_parent"-->
+                    <!--android:scaleType="centerCrop"-->
+                    <!--android:src="@drawable/placeholderxx4" />-->
+
+                <!--<View-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="110dp"-->
+                    <!--android:layout_gravity="center_horizontal|bottom"-->
+                    <!--android:background="@drawable/imageview_gradient" />-->
+
+
+            <!--</FrameLayout>-->
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:fitsSystemWindows="true"
-                app:layout_collapseMode="parallax"
-                app:layout_scrollFlags="scroll|exitUntilCollapsed">
-
-                <ImageView
-                    android:id="@+id/category_image_iv"
+                android:layout_height="match_parent">
+                <fragment
+                    android:id="@+id/map2"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/placeholderxx4" />
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:scrollbars="vertical"
+                    android:name="com.google.android.gms.maps.MapFragment"/>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="110dp"
-                    android:layout_gravity="center_horizontal|bottom"
-                    android:background="@drawable/imageview_gradient" />
-
-
-            </FrameLayout>
+            </RelativeLayout>
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"

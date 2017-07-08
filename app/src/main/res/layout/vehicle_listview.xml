@@ -279,41 +279,40 @@
         >
 
         <LinearLayout
+            android:id="@+id/track_ll"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:clickable="true"
+            android:background="@drawable/bg_tab_pressed"
             android:gravity="center"
-            android:background="@drawable/full_rounded_white"
             >
-
             <LinearLayout
-                android:id="@+id/track_ll"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:background="#ffffff"
-                android:orientation="horizontal">
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_marginTop="10dp"
-                    android:src="@drawable/navigation"/>
-                <Button
-
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
-                    android:layout_marginLeft="5dp"
-                    android:gravity="left|center_vertical"
-                    android:id="@+id/track_tv"
-                    android:textAllCaps="false"
-                    android:text="Track"
-                    android:textColor="@color/red"
-                    android:theme="@style/MyButton"
-                    android:textSize="15dp" />
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginTop="10dp"
+                        android:src="@drawable/navigation" />
+
+                    <TextView
+                        android:id="@+id/track_tv"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="5dp"
+                        android:gravity="left|center_vertical"
+                        android:textAlignment="center"
+                        android:text="Track"
+                        android:textAllCaps="false"
+                        android:textColor="@color/red"
+                        android:textSize="15dp" />
 
             </LinearLayout>
-
         </LinearLayout>
 
         <View
@@ -322,41 +321,42 @@
             android:background="#EFF5F1"/>
 
         <LinearLayout
+            android:id="@+id/detail_ll"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:background="@drawable/full_rounded_white"
+            android:clickable="true"
+            android:background="@drawable/bg_tab_pressed"
             >
-        <LinearLayout
-            android:id="@+id/viewDetail_ll"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:background="#ffffff"
-            android:orientation="horizontal"
-            >
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginTop="10dp"
-                android:src="@drawable/time_icon"
-                />
-            <Button
-                android:id="@+id/detail_btn"
-                android:layout_width="match_parent"
+            <LinearLayout
+                android:id="@+id/viewDetail_ll"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
-                android:layout_marginLeft="5dp"
-                android:gravity="center"
-                android:text="Detail"
-                android:textAllCaps="false"
-                android:theme="@style/MyButton"
-                android:textColor="@color/red"
-                android:textSize="15dp"
-                />
-            </LinearLayout>
+                android:orientation="horizontal"
+                >
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="10dp"
+                    android:src="@drawable/time_icon"
+                    />
+                <TextView
+                    android:id="@+id/detail_btn"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="5dp"
+                    android:gravity="center"
+                    android:text="Details"
+                    android:textAlignment="center"
+                    android:textAllCaps="false"
+                    android:textColor="@color/red"
+                    android:textSize="15dp"
+                    />
+                </LinearLayout>
         </LinearLayout>
         </LinearLayout>
     </LinearLayout>

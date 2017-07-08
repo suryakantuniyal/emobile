@@ -3,9 +3,11 @@ package org.traccar.manager.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -82,18 +84,18 @@ public class VehicleslistAdapter extends RecyclerView.Adapter<VehicleslistAdapte
 
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder  implements View.OnClickListener  {
+    public class MyViewHolder extends RecyclerView.ViewHolder  implements View.OnClickListener,View.OnFocusChangeListener  {
 
         private TextView name_tv,positionId_tv,lastupdated_tv,timediff_tv,online_tv;
         private LinearLayout track_ll,detail_ll;
         private ImageView vehivle_iv,status_iv;
-        private Button detail,track;
+        private LinearLayout detail,track;
         private View v;
         public MyViewHolder(View itemView) {
             super(itemView);
             v = itemView;
-            track = (Button) itemView.findViewById(R.id.track_tv);
-            detail = (Button) itemView.findViewById(R.id.detail_btn);
+            track = (LinearLayout) itemView.findViewById(R.id.track_ll);
+            detail = (LinearLayout) itemView.findViewById(R.id.detail_ll);
             name_tv = (TextView) itemView.findViewById(R.id.vehicle_name);
             lastupdated_tv = (TextView) itemView.findViewById(R.id.lastupdate_tv);
             status_iv = (ImageView) itemView.findViewById(R.id.status_iv);
@@ -110,6 +112,7 @@ public class VehicleslistAdapter extends RecyclerView.Adapter<VehicleslistAdapte
                     cnoteClick.OnItemClick(view, getAdapterPosition());
                 }
             });
+
 
             detail.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -130,6 +133,11 @@ public class VehicleslistAdapter extends RecyclerView.Adapter<VehicleslistAdapte
             } else {
                 Log.d("itemclick", "OnItemClickListener is null");
             }
+        }
+
+        @Override
+        public void onFocusChange(View view, boolean b) {
+            detail.requestFocus();
         }
     }
 

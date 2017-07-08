@@ -21,6 +21,7 @@ public class ReportsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_reports);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setIcon(R.mipmap.luncher_icon);
         setTitle("Reports");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
