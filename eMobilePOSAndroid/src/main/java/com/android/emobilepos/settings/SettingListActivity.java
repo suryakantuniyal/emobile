@@ -125,7 +125,12 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting_list);
         Bundle extras = this.getIntent().getExtras();
-        settingsType = (SettingsTab_FR.SettingsRoles) extras.get("settings_type");
+        if (extras.containsKey("settings_type")) {
+            settingsType = (SettingsTab_FR.SettingsRoles) extras.get("settings_type");
+        } else {
+            settingsType = SettingsTab_FR.SettingsRoles.GENERAL;
+        }
+
         View recyclerView = findViewById(R.id.setting_list);
         assert recyclerView != null;
         setupRecyclerView((RecyclerView) recyclerView);

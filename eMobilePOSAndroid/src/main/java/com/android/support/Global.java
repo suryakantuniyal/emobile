@@ -11,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PorterDuff.Mode;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -535,7 +536,7 @@ public class Global extends MultiDexApplication {
     }
 
     public static String formatToDisplayDate(String date, int type) {
-        if (date == null) {
+        if (TextUtils.isEmpty(date)) {
             return "";
         }
         Calendar cal = Calendar.getInstance();
@@ -1168,6 +1169,18 @@ public class Global extends MultiDexApplication {
         return (context.getResources().getConfiguration().screenLayout
                 & Configuration.SCREENLAYOUT_SIZE_MASK)
                 >= Configuration.SCREENLAYOUT_SIZE_LARGE;
+    }
+
+    public static void dismissDialog(Activity activity, Dialog dialog) {
+        boolean isDestroyed = false;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            if (activity.isDestroyed()) {
+                isDestroyed = true;
+            }
+        }
+        if (dialog != null && !activity.isFinishing() && !isDestroyed && dialog.isShowing()) {
+            dialog.dismiss();
+        }
     }
 
     public int checkIfGroupBySKU(Activity activity, String prodID, String pickedQty) {

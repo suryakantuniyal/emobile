@@ -257,9 +257,10 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         if (hasBeenCreated && !Global.loggedIn
                 && (myPref.getPrinterType() != Global.POWA || (myPref.getPrinterType() == Global.POWA
                 && (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)))) {
-            if (global.getGlobalDlog() != null && global.getGlobalDlog().isShowing()) {
-                global.getGlobalDlog().dismiss();
-            }
+            Global.dismissDialog(this, global.getGlobalDlog());
+            //            if (global.getGlobalDlog() != null && global.getGlobalDlog().isShowing()) {
+//                global.getGlobalDlog().dismiss();
+//            }
             global.promptForMandatoryLogin(activity);
         }
 
