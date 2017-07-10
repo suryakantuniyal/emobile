@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.ClerkDAO;
+import com.android.dao.CustomerCustomFieldsDAO;
 import com.android.dao.DeviceTableDAO;
 import com.android.dao.DinningTableDAO;
 import com.android.dao.EmployeePermissionDAO;
@@ -58,6 +59,7 @@ import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Clerk;
+import com.android.emobilepos.models.realms.CustomerCustomField;
 import com.android.emobilepos.models.realms.DinningTable;
 import com.android.emobilepos.models.realms.MixMatch;
 import com.android.emobilepos.models.realms.OrderAttributes;
@@ -213,6 +215,7 @@ public class SynchMethods {
             synchInvoices();
             synchPaymentMethods();
             synchPriceLevel();
+            synchCustomerCustomFields();
             synchItemsPriceLevel();
             synchPrinters();
             synchProdCatXref();
@@ -898,6 +901,32 @@ public class SynchMethods {
         reader.endArray();
         reader.close();
     }
+
+    private void synchCustomerCustomFields() throws IOException, SAXException {
+        Gson gson = JsonUtils.getInstance();
+        GenerateXML xml = new GenerateXML(context);
+        InputStream inputStream = client.httpInputStreamRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                xml.downloadAll("CustomerCustomFields"));
+        JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
+        List<CustomerCustomField> customFields = new ArrayList<>();
+        CustomerCustomFieldsDAO.emptyTable();
+        reader.beginArray();
+        int i = 0;
+        while (reader.hasNext()) {
+            CustomerCustomField customField = gson.fromJson(reader, CustomerCustomField.class);
+            customFields.add(customField);
+            i++;
+            if (i == 1000) {
+                CustomerCustomFieldsDAO.insert(customFields);
+                customFields.clear();
+                i = 0;
+            }
+        }
+        CustomerCustomFieldsDAO.insert(customFields);
+        reader.endArray();
+        reader.close();
+    }
+
 
     private void synchItemsPriceLevel() throws IOException, SAXException {
         Gson gson = JsonUtils.getInstance();
