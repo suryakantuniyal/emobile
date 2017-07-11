@@ -28,7 +28,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.dao.ClerkDAO;
-import com.android.database.DBManager;
 import com.android.emobilepos.R;
 import com.android.emobilepos.firebase.NotificationHandler;
 import com.android.emobilepos.firebase.NotificationSettings;
@@ -39,8 +38,6 @@ import com.android.emobilepos.security.SecurityManager;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
-import com.android.support.NetworkUtils;
-import com.android.support.SynchMethods;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.common.ConnectionResult;
@@ -218,7 +215,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
             Intent intent = new Intent(this, RegistrationIntentService.class);
             startService(intent);
         } else {
-            if (myPref.isPollingHoldsEnable()) {
+            if ((myPref.isPollingHoldsEnable() || myPref.isAutoSyncEnable()) && !PollingNotificationService.isServiceRunning(this)) {
                 startPollingService();
             }
         }
@@ -245,7 +242,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
     @Override
     public void onResume() {
-        if (myPref.isPollingHoldsEnable() && !PollingNotificationService.isServiceRunning(this)) {
+        if ((myPref.isPollingHoldsEnable() || myPref.isAutoSyncEnable()) && !PollingNotificationService.isServiceRunning(this)) {
             startPollingService();
         }
         registerReceiver(messageReceiver, new IntentFilter(NOTIFICATION_RECEIVED));
@@ -264,12 +261,12 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
             global.promptForMandatoryLogin(activity);
         }
 
-        if (myPref.getPreferences(MyPreferences.pref_automatic_sync) && hasBeenCreated && NetworkUtils.isConnectedToInternet(activity)) {
-            DBManager dbManager = new DBManager(activity, Global.FROM_SYNCH_ACTIVITY);
-//            dbManager.synchSend(false, true, activity);
-            SynchMethods sm = new SynchMethods(dbManager);
-            sm.synchSend(Global.FROM_SYNCH_ACTIVITY, true, activity);
-        }
+//        if (myPref.getPreferences(MyPreferences.pref_automatic_sync) && hasBeenCreated && NetworkUtils.isConnectedToInternet(activity)) {
+
+//            DBManager dbManager = new DBManager(activity, Global.FROM_SYNCH_ACTIVITY);
+//            SynchMethods sm = new SynchMethods(dbManager);
+//            sm.synchSend(Global.FROM_SYNCH_ACTIVITY, true, activity);
+//        }
 
         if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward))
             tvStoreForward.setVisibility(View.VISIBLE);
@@ -287,7 +284,14 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
     }
 
     private void startPollingService() {
-        PollingNotificationService.start(this);
+        int flags = 0;
+        if (myPref.isPollingHoldsEnable()) {
+            flags = PollingNotificationService.PollingServicesFlag.ONHOLDS.getCode() | PollingNotificationService.PollingServicesFlag.DINING_TABLES.getCode();
+        }
+        if (myPref.isAutoSyncEnable()) {
+            flags = flags | PollingNotificationService.PollingServicesFlag.AUTO_SYNC.getCode();
+        }
+        PollingNotificationService.start(this, flags);
     }
 
     private void stopPollingService() {

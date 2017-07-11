@@ -9,10 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.text.TextUtils;
-import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.dao.AssignEmployeeDAO;
@@ -47,7 +44,6 @@ import com.android.database.VoidTransactionsHandler;
 import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.OnHoldActivity;
 import com.android.emobilepos.R;
-import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.mainmenu.SyncTab_FR;
 import com.android.emobilepos.models.ItemPriceLevel;
 import com.android.emobilepos.models.PriceLevel;
@@ -325,7 +321,7 @@ public class SynchMethods {
         new AsyncGetLocationsInventory(activity).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    public void synchSend(int type, boolean isFromMainMenu, Activity activity) {
+    public void synchSend(int type, boolean isFromMainMenu, Context activity) {
         Global.isForceUpload = false;
         this.type = type;
         this.isFromMainMenu = isFromMainMenu;
@@ -1554,10 +1550,10 @@ public class SynchMethods {
         boolean proceed = false;
         MyPreferences myPref = new MyPreferences(context);
         String synchStage = "";
-        TextView synchTextView;
-        private Activity activity;
+        //        TextView synchTextView;
+        private Context activity;
 
-        private SendAsync(Activity activity) {
+        private SendAsync(Context activity) {
             this.activity = activity;
         }
 
@@ -1565,11 +1561,11 @@ public class SynchMethods {
         protected void onPreExecute() {
             isSending = true;
             int orientation = context.getResources().getConfiguration().orientation;
-            activity.setRequestedOrientation(Global.getScreenOrientation(context));
-            if (isFromMainMenu) {
-                MainMenu_FA synchActivity = (MainMenu_FA) context;
-                synchTextView = synchActivity.getSynchTextView();
-            }
+//            activity.setRequestedOrientation(Global.getScreenOrientation(context));
+//            if (isFromMainMenu) {
+//                MainMenu_FA synchActivity = (MainMenu_FA) context;
+//                synchTextView = synchActivity.getSynchTextView();
+//            }
         }
 
         @Override
@@ -1579,9 +1575,9 @@ public class SynchMethods {
 //                    myProgressDialog.show();
 //                myProgressDialog.setMessage(params[0]);
             } else {
-                if (!synchTextView.isShown())
-                    synchTextView.setVisibility(View.VISIBLE);
-                synchTextView.setText(params[0]);
+//                if (!synchTextView.isShown())
+//                    synchTextView.setVisibility(View.VISIBLE);
+//                synchTextView.setText(params[0]);
             }
         }
 
@@ -1687,9 +1683,9 @@ public class SynchMethods {
 //            }
 
             if (type == Global.FROM_SYNCH_ACTIVITY) {
-                if (isFromMainMenu) {
-                    synchTextView.setVisibility(View.GONE);
-                }
+//                if (isFromMainMenu) {
+//                    synchTextView.setVisibility(View.GONE);
+//                }
                 if (SyncTab_FR.syncTabHandler != null) {
                     SyncTab_FR.syncTabHandler.sendEmptyMessage(0);
                 }
@@ -1703,16 +1699,16 @@ public class SynchMethods {
                 if (TextUtils.isEmpty(xml)) {
                     xml = context.getString(R.string.sync_fail);
                 }
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                    if (!activity.isFinishing() && !activity.isDestroyed()) {
-                        Global.showPrompt(activity, R.string.dlog_title_error, xml);
-                    }
-                } else if (!activity.isFinishing()) {
-                    Global.showPrompt(activity, R.string.dlog_title_error, xml);
-                }
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+//                    if (!activity.isFinishing() && !activity.isDestroyed()) {
+//                        Global.showPrompt(activity, R.string.dlog_title_error, xml);
+//                    }
+//                } else if (!activity.isFinishing()) {
+//                    Global.showPrompt(activity, R.string.dlog_title_error, xml);
+//                }
             }
 
-            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+//            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         }
     }
 
@@ -1729,7 +1725,7 @@ public class SynchMethods {
             isSending = true;
             int orientation = context.getResources().getConfiguration().orientation;
 
-            activity.setRequestedOrientation(Global.getScreenOrientation(context));
+//            activity.setRequestedOrientation(Global.getScreenOrientation(context));
 
 //            myProgressDialog = new ProgressDialog(context);
 //
@@ -1843,7 +1839,7 @@ public class SynchMethods {
         protected void onPreExecute() {
 
             int orientation = context.getResources().getConfiguration().orientation;
-            activity.setRequestedOrientation(Global.getScreenOrientation(context));
+//            activity.setRequestedOrientation(Global.getScreenOrientation(context));
 
 //            myProgressDialog = new ProgressDialog(context);
 //            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -1897,7 +1893,7 @@ public class SynchMethods {
         protected void onPreExecute() {
 
             int orientation = context.getResources().getConfiguration().orientation;
-            activity.setRequestedOrientation(Global.getScreenOrientation(context));
+//            activity.setRequestedOrientation(Global.getScreenOrientation(context));
 //            myProgressDialog = new ProgressDialog(context);
 //            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 //            myProgressDialog.setCancelable(false);
@@ -1963,7 +1959,7 @@ public class SynchMethods {
         @Override
         protected void onPreExecute() {
             int orientation = context.getResources().getConfiguration().orientation;
-            activity.setRequestedOrientation(Global.getScreenOrientation(context));
+//            activity.setRequestedOrientation(Global.getScreenOrientation(context));
 //            if (myProgressDialog != null && myProgressDialog.isShowing())
 //                myProgressDialog.dismiss();
 //            myProgressDialog = new ProgressDialog(context);
@@ -2041,7 +2037,7 @@ public class SynchMethods {
         protected void onPreExecute() {
 
             int orientation = context.getResources().getConfiguration().orientation;
-            activity.setRequestedOrientation(Global.getScreenOrientation(context));
+//            activity.setRequestedOrientation(Global.getScreenOrientation(context));
 //            myProgressDialog = new ProgressDialog(context);
 //            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 //            myProgressDialog.setCancelable(false);
