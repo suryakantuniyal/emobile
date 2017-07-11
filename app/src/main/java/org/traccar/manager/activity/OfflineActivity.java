@@ -1,7 +1,6 @@
 package org.traccar.manager.activity;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -26,49 +25,44 @@ import com.google.gson.reflect.TypeToken;
 
 import org.traccar.manager.R;
 import org.traccar.manager.adapter.VehicleslistAdapter;
-import org.traccar.manager.api.APIServices;
 import org.traccar.manager.model.VehicleList;
-import org.traccar.manager.network.ResponseOnlineVehicle;
-import org.traccar.manager.utils.URLContstant;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 /**
- * Created by silence12 on 5/7/17.
+ * Created by silence12 on 11/7/17.
  */
 
-public class OnLineOffLineActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, VehicleslistAdapter.OnItemClickListener {
+public class OfflineActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, VehicleslistAdapter.OnItemClickListener {
     private static ProgressDialog progressDialog;
     private SwipeRefreshLayout swipeRefreshLayout;
     public static MenuItem searchMenuItem;
     private VehicleslistAdapter vehiclesAdapter;
     private RecyclerView recyclerView;
     private ArrayList<VehicleList> listArrayList;
-    private    String onnOff ;
     SharedPreferences sharedPrefs;
     ArrayList<VehicleList> arrayList;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_onlineoffline);
+        setContentView(R.layout.activity_offline);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setIcon(R.mipmap.luncher_icon);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        setTitle("Offline Devices");
 //        getSupportActionBar().setIcon(R.mipmap.luncher_icon);
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Wait a moment...");
         progressDialog.setCancelable(false);
         progressDialog.show();
-        setTitle("Online Devices");
-        sharedPrefs = getSharedPreferences("ArrayList",MODE_PRIVATE);
+        sharedPrefs = getSharedPreferences("OfflineList",MODE_PRIVATE);
         Gson gson = new Gson();
-        String json = sharedPrefs.getString("onlist", null);
+        String json1 = sharedPrefs.getString("off", null);
         Type type = new TypeToken<ArrayList<VehicleList>>() {}.getType();
-         arrayList = gson.fromJson(json, type);
-
+        arrayList = gson.fromJson(json1, type);
         Log.d("TransferData", String.valueOf(arrayList.size()));
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh_online);
         swipeRefreshLayout.setRefreshing(false);
@@ -84,7 +78,6 @@ public class OnLineOffLineActivity extends AppCompatActivity implements SwipeRef
         recyclerView.setAdapter(vehiclesAdapter);
         vehiclesAdapter.setOnItemClickListener(this);
     }
-
 
     public class Async extends AsyncTask<Void, Void, Void> {
 
@@ -106,31 +99,33 @@ public class OnLineOffLineActivity extends AppCompatActivity implements SwipeRef
         }
     }
 
+
+
     private void parseView() {
         ArrayList<VehicleList> result = arrayList;
         progressDialog.dismiss();
         swipeRefreshLayout.setRefreshing(false);
-                for (int i = 0; i < result.size(); i++) {
-                    final int finalI = i;
-                    VehicleList vehicles = new VehicleList(result.get(finalI).id, result.get(finalI).name, result.get(finalI).uniqueId
-                                    , result.get(finalI).status, result.get(finalI).lastUpdates, result.get(finalI).category, result.get(finalI).positionId, result.get(finalI).address,
-                                    result.get(finalI).time, result.get(finalI).timeDiff);
-                            listArrayList.add(vehicles);
-//                    vehiclesAdapter.notifyDataSetChanged();
-                }
+        Log.d("Offsize", String.valueOf(result.size()));
+        for (int i = 0; i < result.size(); i++) {
+            final int finalI = i;
+            VehicleList vehicles = new VehicleList(result.get(finalI).id, result.get(finalI).name, result.get(finalI).uniqueId
+                    , result.get(finalI).status, result.get(finalI).lastUpdates, result.get(finalI).category, result.get(finalI).positionId, result.get(finalI).address,
+                    result.get(finalI).time, result.get(finalI).timeDiff);
+            listArrayList.add(vehicles);
+//            vehiclesAdapter.notifyDataSetChanged();
+        }
 
     }
     @Override
     public void onRefresh() {
         parseView();
-
     }
 
 
     @Override
     public void OnItemClick(View view, int position) {
         if (view.getId() == R.id.detail_ll) {
-            Intent intent = new Intent(OnLineOffLineActivity.this, VehicleDetailActivity.class);
+            Intent intent = new Intent(OfflineActivity.this, VehicleDetailActivity.class);
             intent.putExtra("id", listArrayList.get(position).getId());
             intent.putExtra("name", listArrayList.get(position).getName());
             intent.putExtra("pid", listArrayList.get(position).getPositionId());
@@ -144,7 +139,7 @@ public class OnLineOffLineActivity extends AppCompatActivity implements SwipeRef
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 
         } else  if (view.getId() == R.id.track_ll) {
-            Intent trackIntent = new Intent(OnLineOffLineActivity.this, TrackingDevicesActivity.class);
+            Intent trackIntent = new Intent(OfflineActivity.this, TrackingDevicesActivity.class);
             trackIntent.putExtra("device_id", listArrayList.get(position).getPositionId());
             trackIntent.putExtra("tname", listArrayList.get(position).getName());
             trackIntent.putExtra("tupdate", listArrayList.get(position).getLastUpdates());
@@ -153,10 +148,7 @@ public class OnLineOffLineActivity extends AppCompatActivity implements SwipeRef
             trackIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(trackIntent);
             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
-
         }
-
-
     }
 
     @Override

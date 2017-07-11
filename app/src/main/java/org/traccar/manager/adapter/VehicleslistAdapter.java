@@ -65,7 +65,6 @@ public class VehicleslistAdapter extends RecyclerView.Adapter<VehicleslistAdapte
         holder.name_tv.setText(vehicle.getName());
         holder.lastupdated_tv.setText(vehicle.getLastUpdates());
         holder.timediff_tv.setText(vehicle.getTimeDiff());
-        Log.d("adapter",vehicle.address);
         if(vehicle.address.equals("null")){
             holder.positionId_tv.setText("Loading...");
         }else {

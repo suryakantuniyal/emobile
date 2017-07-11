@@ -65,7 +65,7 @@ public class MapViewActivity extends AppCompatActivity {
         getSupportActionBar().setIcon(R.mipmap.luncher_icon);
         setTitle("MapView");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        result = Main2Activity.latlongList;
+        result = SplashActivity.latlongList;
         int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getBaseContext());
 
         // Showing status

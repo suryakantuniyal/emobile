@@ -1,10 +1,10 @@
 package org.traccar.manager.model;
 
 /**
- * Created by silence12 on 15/6/17.
+ * Created by silence12 on 10/7/17.
  */
 
-public class VehicleList {
+public class LatLongModel {
 
     public int id;
     public String name;
@@ -22,11 +22,11 @@ public class VehicleList {
     public String time;
     public String timeDiff;
 
-    public VehicleList(){
+    public LatLongModel(){
 
     }
 
-    public VehicleList(int id,String name,String status,Double latitute,Double longitute){
+    public LatLongModel(int id,String name,String status,Double latitute,Double longitute){
         this.id = id ;
         this.status = status;
         this.latitute = latitute;
@@ -36,7 +36,7 @@ public class VehicleList {
     }
 
 
-    public VehicleList(int id, String name, String uniqueId, String status, String lastUpdates, String category,int positionId,String address,String time,String timeDiff) {
+    public LatLongModel(int id, String name, String uniqueId, String status, String lastUpdates, String category,int positionId,String address,String time,String timeDiff) {
         this.id = id;
         this.name = name;
         this.uniqueId = uniqueId;

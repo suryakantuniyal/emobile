@@ -49,6 +49,64 @@ public final class TraccerParser {
 
     }
 
+    public static ArrayList<VehicleList> parseGeOnlinetVehiclesRequest (JSONArray jsonVehicles){
+        ArrayList<VehicleList> mVehiclesList = new ArrayList<VehicleList>();
+        try {
+            for (int i = 0; i < jsonVehicles.length(); i++) {
+                VehicleList vehicles = new VehicleList();
+                JSONObject jsonObject = jsonVehicles.getJSONObject(i);
+                if(jsonObject.getString("status").equals("online")) {
+                    String date = jsonObject.getString("lastUpdate");
+                    Log.d("Date", date);
+                    vehicles.id = Integer.parseInt(jsonObject.get("id").toString());
+                    vehicles.name = jsonObject.getString("name");
+                    vehicles.category = jsonObject.getString("category");
+                    vehicles.uniqueId = jsonObject.getString("uniqueId");
+                    vehicles.lastUpdates = date(date);
+                    vehicles.time = datetime(date);
+                    vehicles.timeDiff = numDays(date);
+                    vehicles.status = jsonObject.getString("status");
+                    vehicles.positionId = jsonObject.getInt("positionId");
+                    mVehiclesList.add(vehicles);
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return mVehiclesList;
+
+    }
+
+
+    public static ArrayList<VehicleList> parseGeOfflinetVehiclesRequest (JSONArray jsonVehicles){
+        ArrayList<VehicleList> mVehiclesList = new ArrayList<VehicleList>();
+        try {
+            for (int i = 0; i < jsonVehicles.length(); i++) {
+                VehicleList vehicles = new VehicleList();
+                JSONObject jsonObject = jsonVehicles.getJSONObject(i);
+                if(jsonObject.getString("status").equals("offline")) {
+                    String date = jsonObject.getString("lastUpdate");
+                    Log.d("Date", date);
+                    vehicles.id = Integer.parseInt(jsonObject.get("id").toString());
+                    vehicles.name = jsonObject.getString("name");
+                    vehicles.category = jsonObject.getString("category");
+                    vehicles.uniqueId = jsonObject.getString("uniqueId");
+                    vehicles.lastUpdates = date(date);
+                    vehicles.time = datetime(date);
+                    vehicles.timeDiff = numDays(date);
+                    vehicles.status = jsonObject.getString("status");
+                    vehicles.positionId = jsonObject.getInt("positionId");
+                    mVehiclesList.add(vehicles);
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return mVehiclesList;
+
+    }
+
+
     public static VehicleList getVehicleDetailById(JSONObject jsonObject){
 
         VehicleList vehicleList = new VehicleList();

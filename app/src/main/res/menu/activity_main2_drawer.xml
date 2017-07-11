@@ -5,20 +5,25 @@
 
         <item
             android:id="@+id/nav_mapview"
-            android:icon="@drawable/ic_menu_gallery"
+            android:icon="@drawable/ic_mapview"
             android:title="MapView" />
         <item
             android:id="@+id/nav_listview"
-            android:icon="@drawable/ic_menu_slideshow"
+            android:icon="@drawable/ic_listview"
             android:title="ListView" />
         <item
             android:id="@+id/nav_reports"
-            android:icon="@drawable/ic_menu_manage"
+            android:icon="@drawable/ic_report"
             android:title="Reports" />
         <item
             android:id="@+id/nav_contact"
-            android:icon="@drawable/ic_menu_manage"
+            android:icon="@drawable/ic_phone1"
             android:title="Contact Us" />
+
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/logout"
+            android:title="Log Out" />
     </group>
 
     <item android:title="Filter By">

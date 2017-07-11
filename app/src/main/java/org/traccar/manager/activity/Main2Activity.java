@@ -2,6 +2,7 @@ package org.traccar.manager.activity;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -37,6 +38,7 @@ import org.traccar.manager.api.APIServices;
 import org.traccar.manager.model.VehicleList;
 import org.traccar.manager.network.DetailResponseCallback;
 import org.traccar.manager.network.ResponseCallbackEvents;
+import org.traccar.manager.network.ResponseOnlineVehicle;
 import org.traccar.manager.utils.URLContstant;
 
 import java.util.ArrayList;
@@ -44,7 +46,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class Main2Activity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener,View.OnClickListener {
+        implements NavigationView.OnNavigationItemSelectedListener,View.OnClickListener,ResponseOnlineVehicle{
 
     private  int currentPage ;
     private Button mapview_bb,listview_bb;
@@ -54,12 +56,12 @@ public class Main2Activity extends AppCompatActivity
     private CardView mapView_button,listView_button;
     private TextView alldevice_iv,online_iv,offline_iv;
     SharedPreferences mSharedPreferences;
+    SharedPreferences.Editor mEditor;
     public static ArrayList<VehicleList> listArrayList;
-    public static ArrayList<VehicleList> onLineList;
-    public static ArrayList<VehicleList>offlineList;
-    public static ArrayList<VehicleList>latlongList;
     public static int AllSize,onlinesize,offlinesize ;
     private static ProgressDialog progressDialog;
+    SharedPreferences sharedPrefs;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,13 +75,12 @@ public class Main2Activity extends AppCompatActivity
         progressDialog.setCancelable(false);
         progressDialog.show();
         mSharedPreferences = getSharedPreferences(URLContstant.PREFERENCE_NAME,MODE_PRIVATE);
+        sharedPrefs = getSharedPreferences("ArrayList",MODE_PRIVATE);
+        mEditor = mSharedPreferences.edit();
         setSupportActionBar(toolbar);
         init();
-        new Async().execute();
         listArrayList = new ArrayList<VehicleList>();
-        onLineList = new ArrayList<VehicleList>();
-        offlineList = new ArrayList<VehicleList>();
-        latlongList = new ArrayList<VehicleList>();
+        parseView();
         Bundle b = getIntent().getExtras();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -160,63 +161,21 @@ public class Main2Activity extends AppCompatActivity
         });
     }
 
-
-    public class Async extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            parseView();
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-        }
+    @Override
+    public void onSuccessOnline(ArrayList<VehicleList> result) {
+        Log.d("Response size", String.valueOf(result.size()));
     }
 
     private void parseView() {
-        APIServices.GetAllVehicleList(Main2Activity.this, new ResponseCallbackEvents() {
-            @Override
-            public void onSuccess(final ArrayList<VehicleList> result) {
-                progressDialog.dismiss();
-                AllSize = result.size();
-                for (int i = 0; i < result.size(); i++) {
-                    int id = result.get(i).positionId;
-                    final int finalI = i;
-                    APIServices.GetVehicleDetailById(Main2Activity.this, id, new DetailResponseCallback() {
-                        @Override
-                        public void OnResponse(VehicleList Response) {
-                            VehicleList vehicles = new VehicleList(result.get(finalI).id, result.get(finalI).name, result.get(finalI).uniqueId
-                                    , result.get(finalI).status, result.get(finalI).lastUpdates, result.get(finalI).category, result.get(finalI).positionId, Response.address,
-                                    result.get(finalI).time, result.get(finalI).timeDiff);
-                            listArrayList.add(vehicles);
-                            if(result.get(finalI).status.equals("online")){
-                                onLineList.add(vehicles);
-                            }
-                            if(result.get(finalI).status.equals("offline")){
-                                offlineList.add(vehicles);
-                            }
+        Log.d("MainSize", String.valueOf(SplashActivity.onlinesize));
+        progressDialog.dismiss();
+        listArrayList = SplashActivity.listArrayList;
+        String json = sharedPrefs.getString("size", null);
+        String ss = sharedPrefs.getString("size1", null);
+        totalDevices.setText(String.valueOf(SplashActivity.AllSize));
+                onlineDevices.setText(json);
+                offlineDevices.setText(ss);
 
-                            VehicleList latlong = new VehicleList(result.get(finalI).id,result.get(finalI).status,Response.latitute,Response.longitute);
-                            latlongList.add(latlong);
-                        }
-                    });
-                }
-                offlinesize = offlineList.size();
-                onlinesize = onLineList.size();
-                totalDevices.setText(String.valueOf(AllSize));
-                onlineDevices.setText(String.valueOf(onlinesize));
-                offlineDevices.setText(String.valueOf(offlinesize));
-                Log.d("Check", String.valueOf(AllSize));
-
-            }
-        });
     }
 
     @Override
@@ -292,12 +251,17 @@ public class Main2Activity extends AppCompatActivity
 
 
         }else if(id == R.id.nav_offline){
-            Intent intent = new Intent(Main2Activity.this,OnLineOffLineActivity.class);
+            Intent intent = new Intent(Main2Activity.this,OfflineActivity.class);
             intent.putExtra("onoff","offline");
             intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(intent);
             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
 
+        }else if(id == R.id.nav_logout){
+            Intent intent = new Intent(Main2Activity.this,SignUpAccount.class);
+            mEditor.putBoolean(URLContstant.KEY_LOGGED_IN,false);
+            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            startActivity(intent);
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -316,7 +280,7 @@ public class Main2Activity extends AppCompatActivity
             intent.putExtra("onoff","online");
             startActivity(intent);
         }else if(view.getId() == R.id.offline_img){
-            Intent intent = new Intent(Main2Activity.this,OnLineOffLineActivity.class);
+            Intent intent = new Intent(Main2Activity.this,OfflineActivity.class);
             intent.putExtra("onoff","offline");
             startActivity(intent);
         }else if(view.getId() == R.id.mapview_bb){

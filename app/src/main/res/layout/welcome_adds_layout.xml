@@ -85,7 +85,7 @@
                             android:layout_below="@+id/vw_h_separator_1">
                             <ImageView
                                 android:id="@+id/alldevices_iv"
-                                android:background="@drawable/ic_map_marker"
+                                android:background="@drawable/onlinelist"
                                 android:layout_width="20dp"
                                 android:layout_height="20dp"
                                 android:layout_marginTop="5dp"
@@ -141,7 +141,7 @@
                                 android:text="View"
                                 android:clickable="true"
                                 android:textColor="@color/white"
-                                android:background="@drawable/roundedcorner_button"
+                                android:background="@drawable/button_tab"
                                 android:layout_height="30dp">
                             </TextView>
 
@@ -158,7 +158,7 @@
                             android:layout_below="@+id/alldevices_ll">
                             <ImageView
                                 android:id="@+id/online_iv"
-                                android:background="@drawable/ic_map_marker"
+                                android:background="@drawable/onlinelist"
                                 android:layout_width="20dp"
                                 android:layout_height="20dp"
                                 android:layout_marginLeft="8.0dip"
@@ -214,7 +214,7 @@
                                 android:textAlignment="center"
                                 android:gravity="center"
                                 android:clickable="true"
-                                android:background="@drawable/roundedcorner_button"
+                                android:background="@drawable/button_tab"
                                 android:textColor="@color/white"
                                 android:layout_height="30dp" />
 
@@ -231,7 +231,7 @@
                             android:layout_below="@+id/online_ll">
                             <ImageView
                                 android:id="@+id/offline_iv"
-                                android:background="@drawable/ic_map_marker"
+                                android:background="@drawable/onlinelist"
                                 android:layout_width="20dp"
                                 android:layout_height="20dp"
                                 android:layout_marginLeft="8.0dip"
@@ -288,7 +288,7 @@
                                 android:text="View"
                                 android:gravity="center"
                                 android:clickable="true"
-                                android:background="@drawable/roundedcorner_button"
+                                android:background="@drawable/button_tab"
                                 android:textColor="@color/white"
                                 android:layout_height="30dp" />
 
@@ -300,14 +300,13 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:layout_below="@+id/mail_ll">
+            android:layout_below="@id/mail_ll">
 
             <android.support.v7.widget.CardView
                 android:id="@+id/mapview_cv"
                 android:layout_width="160dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
+                android:layout_height="220dp"
+                android:layout_margin="10dp"
                 android:elevation="6dp"
                 app:cardCornerRadius="4dp"
                 android:clickable="true">
@@ -322,13 +321,19 @@
                         android:layout_height="80dp"
                         android:layout_gravity="center"
                         android:src="@drawable/mapview1"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/colorPrimary"
+                        android:text="Find the map views of all vehicles !"
+                        android:layout_margin="5dp"/>
                     <Button
                         android:id="@+id/mapview_bb"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="5dp"
                         android:background="@drawable/roundedcorner_button"
-                        android:text="Track Map View"
+                        android:text="Map view"
                         android:textAllCaps="false"
                         android:textColor="@color/white"/>
                 </LinearLayout>
@@ -337,8 +342,11 @@
             <android.support.v7.widget.CardView
                 android:id="@+id/listview_cv"
                 android:layout_width="160dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
+                android:layout_height="220dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="10dp"
                 android:elevation="6dp"
                 app:cardCornerRadius="4dp"
                 android:clickable="true">
@@ -353,18 +361,27 @@
                         android:layout_height="80dp"
                         android:src="@drawable/listview"/>
 
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/colorPrimary"
+                        android:text="See the list of all your vehicles !"
+                        android:layout_margin="5dp"/>
+
                     <Button
                         android:id="@+id/listview_bb"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="5dp"
-                        android:background="@drawable/roundedcorner_button"
-                        android:text="List View"
+                        android:background="@drawable/button_tab"
+                        android:text="List Views"
                         android:textAllCaps="false"
                         android:textColor="@color/white"/>
                 </LinearLayout>
             </android.support.v7.widget.CardView>
         </LinearLayout>
+
+
     </RelativeLayout>
     </ScrollView>
 </android.support.constraint.ConstraintLayout>

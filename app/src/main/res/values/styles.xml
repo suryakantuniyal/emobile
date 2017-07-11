@@ -60,8 +60,8 @@
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="MyButton" parent="Theme.AppCompat.Light">
-        <item name="colorControlHighlight">#F5F5F5</item>
-        <item name="colorButtonNormal">@color/white</item>
+        <item name="colorControlHighlight">#96cc0000</item>
+        <item name="colorButtonNormal">@drawable/roundedcorner_button</item>
     </style>
 
     <style name="MyAlertDialogStyle" parent="Theme.AppCompat.Light.Dialog.Alert">

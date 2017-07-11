@@ -19,13 +19,17 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
+import com.android.volley.Response;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.gson.Gson;
 
 import org.traccar.manager.R;
 import org.traccar.manager.api.APIServices;
 import org.traccar.manager.model.VehicleList;
 import org.traccar.manager.network.DetailResponseCallback;
 import org.traccar.manager.network.ResponseCallbackEvents;
+import org.traccar.manager.network.ResponseOfflineVehicle;
+import org.traccar.manager.network.ResponseOnlineVehicle;
 import org.traccar.manager.utils.URLContstant;
 
 import java.util.ArrayList;
@@ -36,7 +40,7 @@ import java.util.TimerTask;
  * Created by silence12 on 26/6/17.
  */
 
-public class SplashActivity extends AppCompatActivity {
+public  class SplashActivity extends AppCompatActivity {
     LinearLayout alert;
     private static int SPLASH_TIME_OUT = 2000;
     Boolean isActive = false ;
@@ -48,32 +52,151 @@ public class SplashActivity extends AppCompatActivity {
     boolean activityOpened = true, isShown = false, firstTime = false;
     Snackbar Alertbar,Tryingbar;
     RelativeLayout coordinatorLayout;
-
+    public static ArrayList<VehicleList> listArrayList;
+    public static ArrayList<VehicleList>latlongList;
+    public static ArrayList<VehicleList> onLineList;
+    public static ArrayList<VehicleList>offlineList;
+    public static int AllSize,onlinesize,offlinesize ;
+    SharedPreferences sharedPrefs,sharedPreferences;
+    SharedPreferences.Editor arrayEditor,editor;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-        ImageView img_animation = (ImageView) findViewById(R.id.imagespash);
+//        ImageView img_animation = (ImageView) findViewById(R.id.imagespash);
         mSharedPreferences = getSharedPreferences(URLContstant.PREFERENCE_NAME,MODE_PRIVATE);
-        TranslateAnimation animation = new TranslateAnimation(0.0f, 400.0f,
-                0.0f, 0.0f);          //  new TranslateAnimation(xFrom,xTo, yFrom,yTo)
-        animation.setDuration(3000);  // animation duration
+        sharedPrefs = getSharedPreferences("ArrayList", Context.MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences("OfflineList", Context.MODE_PRIVATE);
+        listArrayList = new ArrayList<VehicleList>();
+        onLineList= new ArrayList<VehicleList>();
+        offlineList = new ArrayList<VehicleList>();
+        latlongList = new ArrayList<VehicleList>();
+//        new Async().execute();
+        parseView();
+        allOnlineVehicle();
+        allOfflineVehicle();
+//        TranslateAnimation animation = new TranslateAnimation(0.0f, 400.0f,
+//                0.0f, 0.0f);          //  new TranslateAnimation(xFrom,xTo, yFrom,yTo)
+//        animation.setDuration(3000);  // animation duration
 //        animation.setRepeatCount(5);  // animation repeat count
 //        animation.setRepeatMode(2);   // repeat animation (left to right, right to left )
         //animation.setFillAfter(true);
 
-        img_animation.startAnimation(animation);
-        new Handler().postDelayed(new Runnable() {
-
-            @Override
-            public void run() {
-                chooseBetweenLoginAndMainActivity();
-            }
-        }, SPLASH_TIME_OUT);
+//        img_animation.startAnimation(animation);
+//        new Handler().postDelayed(new Runnable() {
+//
+//            @Override
+//            public void run() {
+//                chooseBetweenLoginAndMainActivity();
+//            }
+//        }, SPLASH_TIME_OUT);
 
     }
+
+    private void parseView() {
+        APIServices.GetAllVehicleList(SplashActivity.this, new ResponseCallbackEvents() {
+            @Override
+            public void onSuccess(final ArrayList<VehicleList> result) {
+                for (int i = 0; i < result.size(); i++) {
+
+                    AllSize = result.size();
+                    int id = result.get(i).positionId;
+                    final int finalI = i;
+                    APIServices.GetVehicleDetailById(SplashActivity.this, id, new DetailResponseCallback() {
+                        @Override
+                        public void OnResponse(VehicleList Response) {
+                            VehicleList vehicles = new VehicleList(result.get(finalI).id, result.get(finalI).name, result.get(finalI).uniqueId
+                                    , result.get(finalI).status, result.get(finalI).lastUpdates, result.get(finalI).category, result.get(finalI).positionId, Response.address,
+                                    result.get(finalI).time, result.get(finalI).timeDiff);
+                            listArrayList.add(vehicles);
+//                            if(result.get(finalI).status.equals("online")){
+//                                onLineList.add(vehicles);
+//                            }
+//                            if(result.get(finalI).status.equals("offline")){
+//                                offlineList.add(vehicles);
+//                            }
+                            VehicleList latlong = new VehicleList(result.get(finalI).id,result.get(finalI).name,result.get(finalI).status,Response.latitute,Response.longitute);
+                            latlongList.add(latlong);
+                        }
+                    });
+                }
+
+//                Log.d("Onsize", String.valueOf(onLineList.size()));
+                chooseBetweenLoginAndMainActivity();
+            }
+        }
+
+        );
+    }
+
+
+    public  void allOnlineVehicle(){
+        APIServices.GetAllOnlineVehicleList(SplashActivity.this, new ResponseOnlineVehicle() {
+            @Override
+            public void onSuccessOnline(final ArrayList<VehicleList> result) {
+                final ArrayList<VehicleList> arrayList = new ArrayList<VehicleList>();
+                for (int i = 0; i < result.size(); i++) {
+                    onlinesize = result.size();
+                    Log.d("onlineSize", String.valueOf(onlinesize));
+                    int id = result.get(i).positionId;
+                    final int finalI = i;
+                    APIServices.GetVehicleDetailById(SplashActivity.this, id, new DetailResponseCallback() {
+                        @Override
+                        public void OnResponse(VehicleList Response) {
+                            VehicleList vehicles = new VehicleList(result.get(finalI).id, result.get(finalI).name, result.get(finalI).uniqueId
+                                    , result.get(finalI).status, result.get(finalI).lastUpdates, result.get(finalI).category, result.get(finalI).positionId, Response.address,
+                                    result.get(finalI).time, result.get(finalI).timeDiff);
+                            arrayList.add(vehicles);
+                            arrayEditor = sharedPrefs.edit();
+                            arrayEditor.clear();
+                            Gson gson = new Gson();
+                            String json = gson.toJson(arrayList);
+                            arrayEditor.putString("onlist", json);
+                            arrayEditor.putString("size",String.valueOf(onlinesize));
+                            arrayEditor.commit();
+                        }
+                    });
+                }
+            }
+
+        });
+    }
+
+    public  void allOfflineVehicle(){
+        APIServices.GetAllOfflineVehicleList(SplashActivity.this, new ResponseOfflineVehicle() {
+
+            @Override
+            public void onSuccessOffline(final ArrayList<VehicleList> result) {
+                final ArrayList<VehicleList> arrayLi = new ArrayList<VehicleList>();
+                for (int i = 0; i < result.size(); i++) {
+                    offlinesize = result.size();
+                    int id = result.get(i).positionId;
+                    final int finalI = i;
+                    APIServices.GetVehicleDetailById(SplashActivity.this, id, new DetailResponseCallback() {
+                        @Override
+                        public void OnResponse(VehicleList Response) {
+                            VehicleList vehicles = new VehicleList(result.get(finalI).id, result.get(finalI).name, result.get(finalI).uniqueId
+                                    , result.get(finalI).status, result.get(finalI).lastUpdates, result.get(finalI).category, result.get(finalI).positionId, Response.address,
+                                    result.get(finalI).time, result.get(finalI).timeDiff);
+                            arrayLi.add(vehicles);
+                            editor = sharedPreferences.edit();
+                            editor.clear();
+                            Gson gson = new Gson();
+                            String json = gson.toJson(arrayLi);
+                            editor.putString("off", json);
+                            arrayEditor.putString("size1",String.valueOf(offlinesize));
+                            editor.commit();
+                        }
+                    });
+                }
+
+            }
+        });
+    }
+
+
 
     public void Continousservercheck(){
         final Handler handler = new Handler();

@@ -6,27 +6,18 @@
     >
 
 
-    <ImageView
+    <!--<ImageView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:scaleType="centerCrop"-->
+        <!--android:src="@drawable/splash_back"-->
+
+        <!--/>-->
+
+    <pl.droidsonroids.gif.GifTextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="centerCrop"
-        android:src="@drawable/splash_back"
-
+        android:background="@drawable/g"
         />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="180dp"
-        android:layout_alignParentBottom="true"
-        android:orientation="vertical">
-
-        <ImageView
-            android:id="@+id/imagespash"
-            android:layout_width="92dp"
-            android:layout_height="80dp"
-            android:layout_marginTop="8dp"
-            android:src="@drawable/truck_icon" />
-
-
-    </LinearLayout>
 </RelativeLayout>

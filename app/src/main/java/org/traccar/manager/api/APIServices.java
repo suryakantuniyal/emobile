@@ -20,6 +20,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.traccar.manager.model.VehicleList;
 import org.traccar.manager.network.DetailResponseCallback;
+import org.traccar.manager.network.ResponseOfflineVehicle;
+import org.traccar.manager.network.ResponseOnlineVehicle;
 import org.traccar.manager.network.ResponseStringCallback;
 import org.traccar.manager.parser.TraccerParser;
 import org.traccar.manager.network.ResponseCallback;
@@ -51,7 +53,9 @@ public  final class APIServices {
     private static int MAX_RETRIES = 2;
     private static int BACKOFF_MULT = 1;
     public static ArrayList<VehicleList> vehicleLists;
-    public static ArrayList<VehicleList> detailList;
+    public static ArrayList<VehicleList> onlineList;
+
+    public static ArrayList<VehicleList> offlineList;
     public static VehicleList mvehicles;
 
     private APIServices() {
@@ -69,6 +73,83 @@ public  final class APIServices {
                             Log.d("Restful response", response.toString());
                         vehicleLists = TraccerParser.parseGetVehiclesRequest(response);
                         ResponseCallback.onSuccess(vehicleLists);
+
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("Error", ":: Volley Error :: " + error);
+                        Toast.makeText(context, "Unable to reach our servers. Please check your internet connection.", Toast.LENGTH_SHORT).show();
+
+                    }
+                })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<>();
+                headers.put("Authorization", "Basic eWFzaC5iaGF0OTRAZ21haWwuY29tOmFkbWlu");
+                return headers;
+            }
+        };
+        jsObjRequest.setRetryPolicy(new DefaultRetryPolicy(
+                TIMEOUT_IN_SECONDS,
+                MAX_RETRIES,
+                BACKOFF_MULT));
+        RestapiCall.getInstance(context).addToRequestQueue(jsObjRequest);
+    }
+
+    public static void GetAllOnlineVehicleList(final Context context, final ResponseOnlineVehicle ResponseCallback) {
+        final String requestedUrl = URLContstant.BASE_URL + "/" + URLContstant.ALL_VEHICLES +"/?"+"email=yash.bhat94%40gmail.com&password=admin";
+        Log.d("API", ":: request url :: " + requestedUrl);
+        JsonArrayRequest jsObjRequest = new JsonArrayRequest
+                (requestedUrl, new Response.Listener<JSONArray>() {
+
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        if (response != null)
+                            Log.d("Restful response", response.toString());
+                        onlineList = TraccerParser.parseGeOnlinetVehiclesRequest(response);
+                        ResponseCallback.onSuccessOnline(onlineList);
+
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("Error", ":: Volley Error :: " + error);
+                        Toast.makeText(context, "Unable to reach our servers. Please check your internet connection.", Toast.LENGTH_SHORT).show();
+
+                    }
+                })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<>();
+                headers.put("Authorization", "Basic eWFzaC5iaGF0OTRAZ21haWwuY29tOmFkbWlu");
+                return headers;
+            }
+        };
+        jsObjRequest.setRetryPolicy(new DefaultRetryPolicy(
+                TIMEOUT_IN_SECONDS,
+                MAX_RETRIES,
+                BACKOFF_MULT));
+        RestapiCall.getInstance(context).addToRequestQueue(jsObjRequest);
+    }
+
+
+    public static void GetAllOfflineVehicleList(final Context context, final ResponseOfflineVehicle ResponseCallback) {
+        final String requestedUrl = URLContstant.BASE_URL + "/" + URLContstant.ALL_VEHICLES +"/?"+"email=yash.bhat94%40gmail.com&password=admin";
+        Log.d("API", ":: request url :: " + requestedUrl);
+        JsonArrayRequest jsObjRequest = new JsonArrayRequest
+                (requestedUrl, new Response.Listener<JSONArray>() {
+
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        if (response != null)
+                            Log.d("Restful response", response.toString());
+                        offlineList = TraccerParser.parseGeOfflinetVehiclesRequest(response);
+                        ResponseCallback.onSuccessOffline(offlineList);
 
                     }
                 }, new Response.ErrorListener() {
