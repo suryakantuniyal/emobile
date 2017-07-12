@@ -81,7 +81,6 @@ public class OrderLoyalty_FR extends Fragment implements OnClickListener {
 
     @Override
     public void onClick(View v) {
-        // TODO Auto-generated method stub
         switch (v.getId()) {
             case R.id.btnTapLoyalty:
                 callBackLoyaltySwiper.startLoyaltySwiper();

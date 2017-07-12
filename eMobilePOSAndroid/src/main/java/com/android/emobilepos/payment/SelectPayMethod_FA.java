@@ -1000,7 +1000,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             }
         } else if (payTypeList.get(position).getPaymentmethod_type().toUpperCase(Locale.getDefault()).contains("GIFT") ||
                 payTypeList.get(position).getPaymentmethod_type().toUpperCase(Locale.getDefault()).contains("REWARD") ||
-                payTypeList.get(position).getPaymentmethod_type().toUpperCase(Locale.getDefault()).contains("STADIS")) {
+                payTypeList.get(position).getPaymentmethod_type().toUpperCase(Locale.getDefault()).contains("LOYALTYCARD")) {
             Intent intent = new Intent(activity, ProcessGiftCard_FA.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());

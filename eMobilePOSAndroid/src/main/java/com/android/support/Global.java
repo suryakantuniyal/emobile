@@ -662,7 +662,7 @@ public class Global extends MultiDexApplication {
 
     private static Map<String, String> createMap() {
         HashMap<String, String> result = new HashMap<String, String>();
-
+        result.put("CustomerCustomFields", "getXMLCustomersCustomFields.ashx");
         result.put("Address", "getXMLAddress.aspx");
         result.put("Categories", "getXMLCategories.aspx");
         result.put("Customers", "getXMLCustomers.aspx");

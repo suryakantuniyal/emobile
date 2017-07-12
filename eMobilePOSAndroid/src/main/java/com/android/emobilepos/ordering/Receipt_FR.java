@@ -133,7 +133,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     private Button btnReturn;
     private ImageButton btnScrollRight;
     private ImageButton btnScrollLeft;
-    private MyPagerAdapter pagerAdapter;
+    private ReceiptPagerAdapter pagerAdapter;
     private RecalculateCallback callBackRecalculate;
     private UpdateHeaderTitleCallback callBackUpdateHeaderTitle;
     private String order_email = "";
@@ -258,7 +258,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 .findViewById(R.id.slideDrawer);
 
         ViewPager viewPager = (ViewPager) view.findViewById(R.id.orderViewPager);
-        pagerAdapter = new MyPagerAdapter(getFragmentManager());
+        pagerAdapter = new ReceiptPagerAdapter(getFragmentManager());
         viewPager.setAdapter(pagerAdapter);
         CirclePageIndicator pagerIndicator = (CirclePageIndicator) view
                 .findViewById(R.id.indicator);
@@ -2048,8 +2048,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         void updateHeaderTitle(String val);
     }
 
-    private class MyPagerAdapter extends FragmentPagerAdapter {
-        public MyPagerAdapter(FragmentManager fragmentManager) {
+    private class ReceiptPagerAdapter extends FragmentPagerAdapter {
+        public ReceiptPagerAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);
         }
 
@@ -2062,16 +2062,16 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         public Fragment getItem(int position) {
             Fragment frag;
             switch (position) {
-                case 0: // Fragment # 0 - This will show image
+                case 0:
                     if (OrderTotalDetails_FR.getFrag() == null) {
                         frag = OrderTotalDetails_FR.init(position);
                     } else
                         frag = OrderTotalDetails_FR.getFrag();
                     callBackRecalculate = (RecalculateCallback) frag;
                     return frag;
-                case 1: // Fragment # 1 - This will show image
+                case 1:
                     return OrderLoyalty_FR.init(position);
-                default:// Fragment # 2-9 - Will show list
+                default:
                     return OrderRewards_FR.init(position);
 
             }

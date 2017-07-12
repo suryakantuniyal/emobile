@@ -24,6 +24,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.android.dao.AssignEmployeeDAO;
+import com.android.dao.CustomerCustomFieldsDAO;
 import com.android.dao.ShiftDAO;
 import com.android.database.DrawInfoHandler;
 import com.android.database.PaymentsHandler;
@@ -32,6 +33,7 @@ import com.android.emobilepos.DrawReceiptActivity;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.GroupTax;
 import com.android.emobilepos.models.realms.AssignEmployee;
+import com.android.emobilepos.models.realms.CustomerCustomField;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.ivu.MersenneTwisterFast;
 import com.android.payments.EMSPayGate_Default;
@@ -144,6 +146,14 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
 
         }
 
+        if (myPref.isCustSelected()) {
+            if (!TextUtils.isEmpty(myPref.getCustID())) {
+                CustomerCustomField customField = CustomerCustomFieldsDAO.findEMWSCardIdByCustomerId(myPref.getCustID());
+                if (customField != null) {
+                    fieldCardNum.setText(customField.getCustValue());
+                }
+            }
+        }
 
         subtotal.setText(
                 Global.formatDoubleToCurrency(0.00));
