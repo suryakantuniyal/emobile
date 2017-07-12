@@ -1,6 +1,5 @@
 package com.android.database;
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -51,17 +50,15 @@ public class CustomersHandler {
     private static final String AccountNumnber = "AccountNumnber";
 
     private static final String table_name = "Customers";
-
-    private StringBuilder sb1, sb2;
-    private HashMap<String, Integer> attrHash;
-    private List<String[]> custData;
-    private List<HashMap<String, Integer>> dictionaryListMap;
-
     private final List<String> attr = Arrays.asList(cust_id, cust_id_ref, qb_sync, zone_id, CompanyName,
             Salutation, cust_name, cust_chain, cust_balance, cust_limit, cust_contact, cust_firstName, cust_middleName,
             cust_lastName, cust_phone, cust_email, cust_fax, cust_update, isactive, cust_ordertype, cust_taxable,
             cust_salestaxcode, pricelevel_id, cust_terms, cust_pwd, cust_securityquestion, cust_securityanswer,
             cust_points, custidkey, cust_id_numeric, cust_dob, AccountNumnber);
+    private StringBuilder sb1, sb2;
+    private HashMap<String, Integer> attrHash;
+    private List<String[]> custData;
+    private List<HashMap<String, Integer>> dictionaryListMap;
 
     public CustomersHandler(Context activity) {
         attrHash = new HashMap<String, Integer>();
@@ -376,23 +373,18 @@ public class CustomersHandler {
     public List<String> getCustDetails(String custID) {
         List<String> list = new ArrayList<String>();
 
-        String subquery1 = "SELECT c.cust_name,c.cust_contact,c.cust_phone,c.cust_email,c.CompanyName,c.cust_balance,c.cust_limit,c.cust_taxable,c.cust_salestaxcode,"
-                + "a.addr_b_str1,a.addr_b_str2,a.addr_b_str3,a.addr_b_city,a.addr_b_state,a.addr_b_country, a.addr_b_zipcode, a.addr_s_str1,"
-                + "a.addr_s_str2,a.addr_s_str3,a.addr_s_city,a.addr_s_state,a.addr_s_country, a.addr_s_zipcode FROM Customers c LEFT OUTER JOIN Address "
+        String subquery1 = "SELECT c.cust_name,c.cust_contact,c.cust_phone,c.cust_email,c.CompanyName,c.cust_balance," +
+                "c.cust_limit,c.cust_taxable,c.cust_salestaxcode,"
+                + "a.addr_b_str1,a.addr_b_str2,a.addr_b_str3,a.addr_b_city,a.addr_b_state,a.addr_b_country, " +
+                "a.addr_b_zipcode, a.addr_s_str1,"
+                + "a.addr_s_str2,a.addr_s_str3,a.addr_s_city,a.addr_s_state,a.addr_s_country, a.addr_s_zipcode " +
+                "FROM Customers c LEFT OUTER JOIN Address "
                 + "a ON c.cust_id = a.cust_id WHERE c.cust_id = ?";
-        // StringBuilder sb = new
-        // StringBuilder().append(subquery1).append(custID).append("'");
+
         StringBuilder custAddress = new StringBuilder();
         String[] billingAddress = new String[7];
         String[] shippingAddress = new String[7];
 
-		/*
-         * String[] fields = new String[] { cust_name, cust_contact, cust_phone,
-		 * cust_email, CompanyName, cust_balance, cust_limit, cust_taxable };
-		 * String[] arguments = new String[] { custID }; Cursor cursor =
-		 * db.query(true, table_name, fields, "cust_id=?", arguments, null,
-		 * null, null, null);
-		 */
 
         Cursor cursor = DBManager.getDatabase().rawQuery(subquery1, new String[]{custID});
 
