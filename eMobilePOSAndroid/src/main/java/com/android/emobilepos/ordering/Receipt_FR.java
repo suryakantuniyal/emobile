@@ -280,7 +280,10 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             addSeatButton.setVisibility(View.GONE);
         }
         ImageView plusBut = (ImageView) view.findViewById(R.id.plusButton);
-        plusBut.setOnClickListener(this);
+//        plusBut.setOnClickListener(this);
+
+        LinearLayout customerLinearLayout = (LinearLayout) view.findViewById(R.id.customerLinearLayout);
+        customerLinearLayout.setOnClickListener(this);
 
         btnTemplate = (Button) view.findViewById(R.id.templateButton);
         btnTemplate.setOnClickListener(this);
@@ -360,6 +363,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 case CONSIGNMENT: {
                     custName.setText(myPref.getCustName());
                     plusBut.setVisibility(View.INVISIBLE);
+                    customerLinearLayout.setOnClickListener(null);
                     btnTemplate
                             .setBackgroundResource(R.drawable.disabled_gloss_button_selector);
                     btnTemplate.setOnClickListener(null);
@@ -521,7 +525,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     mainLVAdapter.notifyDataSetChanged();
                 }
                 break;
-            case R.id.plusButton:
+            case R.id.customerLinearLayout:
                 intent = new Intent(getActivity(), ViewCustomers_FA.class);
                 startActivityForResult(intent, 0);
                 break;
