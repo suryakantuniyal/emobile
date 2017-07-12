@@ -56,6 +56,7 @@ import com.android.support.ConsignmentTransaction;
 import com.android.support.DateUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.crashlytics.android.Crashlytics;
 import com.miurasystems.miuralibrary.api.executor.MiuraManager;
 import com.miurasystems.miuralibrary.api.listener.MiuraDefaultListener;
 import com.mpowa.android.sdk.powapos.PowaPOS;
@@ -1173,15 +1174,19 @@ public class EMSDeviceDriver {
                     int w = bmp.getWidth();
                     int h = bmp.getHeight();
                     int pixel;
-                    for (int x = 0; x < w; x++) {
-                        for (int y = 0; y < h; y++) {
-                            pixel = bmp.getPixel(x, y);
-                            if (pixel == Color.TRANSPARENT)
-                                bmp.setPixel(x, y, Color.WHITE);
+                    try {
+                        for (int x = 0; x < w; x++) {
+                            for (int y = 0; y < h; y++) {
+                                pixel = bmp.getPixel(x, y);
+                                if (pixel == Color.TRANSPARENT)
+                                    bmp.setPixel(x, y, Color.WHITE);
+                            }
                         }
+                        MiniPrinterFunctions.PrintBitmapImage(activity, port.getPortName(), port.getPortSettings(),
+                                bmp, PAPER_WIDTH, false, false);
+                    } catch (Exception e) {
+                        Crashlytics.logException(e);
                     }
-                    MiniPrinterFunctions.PrintBitmapImage(activity, port.getPortName(), port.getPortSettings(),
-                            bmp, PAPER_WIDTH, false, false);
                 }
             } else if (this instanceof EMSPAT100) {
                 printerApi.printImage(myBitmap, 0);

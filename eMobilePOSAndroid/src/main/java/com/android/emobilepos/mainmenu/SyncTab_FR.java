@@ -44,6 +44,7 @@ import drivers.EMSBixolonRD;
 
 public class SyncTab_FR extends Fragment implements View.OnClickListener {
     public static Handler syncTabHandler;
+    ProgressDialog dialog;
     private MyPreferences preferences;
 
     @Override
@@ -92,7 +93,21 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
         syncTabHandler = new Handler(new Handler.Callback() {
             @Override
             public boolean handleMessage(Message msg) {
-                setViewData(getView());
+
+                switch (msg.what) {
+//                    case 1:
+//                        dialog = new ProgressDialog(getActivity());
+//                        dialog.setIndeterminate(true);
+//                        dialog.setMessage(getString(R.string.sync_inprogress));
+//                        dialog.show();
+//                        break;
+                    case 0:
+                        MainMenu_FA mainMenuFa = (MainMenu_FA) getActivity();
+                        mainMenuFa.getSynchTextView().setVisibility(View.GONE);
+                        Global.dismissDialog(getActivity(), dialog);
+                    default:
+                        setViewData(getView());
+                }
                 return false;
             }
         });
@@ -186,6 +201,10 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
                 startActivity(intent);
                 break;
             case R.id.syncSendButton:
+                dialog = new ProgressDialog(getActivity());
+                dialog.setIndeterminate(true);
+                dialog.setMessage(getString(R.string.sync_inprogress));
+                dialog.show();
                 DBManager dbManager = new DBManager(getActivity(), Global.FROM_SYNCH_ACTIVITY);
                 SynchMethods sm = new SynchMethods(dbManager);
                 if (NetworkUtils.isConnectedToInternet(getActivity())) {

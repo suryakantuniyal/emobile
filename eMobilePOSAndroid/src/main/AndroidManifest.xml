@@ -176,8 +176,8 @@
             android:name=".payment.SelectPayMethod_FA"
             android:configChanges="orientation|screenSize"
             android:exported="false"
-            android:theme="@style/AppTheme"
-            android:launchMode="singleTop" />
+            android:launchMode="singleTop"
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".payment.ProcessCreditCard_FA"
             android:configChanges="orientation|screenSize"

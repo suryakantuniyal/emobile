@@ -149,7 +149,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 if (!isNetworkPrinter && port != null) {
                     status = port.retreiveStatus();
                 }
-            } catch (StarIOPortException e) {
+            } catch (Exception e) {
                 try {
                     StarIOPort.releasePort(port);
                     port = getStarIOPort();
@@ -159,7 +159,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                     port = getStarIOPort();
                     Thread.sleep(1000);
                     status = port.retreiveStatus();
-                } catch (InterruptedException e1) {
+                } catch (Exception e1) {
                     e1.printStackTrace();
                 }
             }
@@ -167,7 +167,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 didConnect = true;
             }
 
-        } catch (StarIOPortException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         if (didConnect) {
@@ -231,7 +231,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                     StarPrinterStatus status = null;
                     try {
                         status = port.retreiveStatus();
-                    } catch (StarIOPortException e) {
+                    } catch (Exception e) {
                         try {
                             StarIOPort.releasePort(port);
                             port = getStarIOPort();
@@ -241,8 +241,8 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                             port = getStarIOPort();
                             Thread.sleep(1000);
                             status = port.retreiveStatus();
-                        } catch (InterruptedException e1) {
-                            e1.printStackTrace();
+                        } catch (Exception e1) {
+                           Crashlytics.logException(e1);
                         }
                     }
                     if (!status.offline) {

@@ -184,31 +184,11 @@ public class DBManager {
             + "[loc_id] [varchar](50) NOT NULL, [cat_id] [varchar](50) NOT NULL, [printer_id] [int] NOT NULL)";
     private final String CREATE_PRODCATXREF = "CREATE TABLE [ProdCatXref]( [idKey] [int] PRIMARY KEY NOT NULL, [prod_id] [varchar](50) NOT NULL, "
             + "[cat_id] [varchar](50) NOT NULL, [_update] [datetime] NULL, [isactive] [bit] NOT NULL)";
-
-//    public void synchReceive(Activity activity) {
-//        SynchMethods sm = new SynchMethods(managerInstance);
-//        sm.synchReceive(type, activity);
-//    }
-
-//    public void synchSend(boolean sendAndReceive, boolean isFromMainMenu, Activity activity) {
-//        this.sendAndReceive = sendAndReceive;
-//        SynchMethods sm = new SynchMethods(managerInstance);
-//        sm.synchSend(type, isFromMainMenu, activity);
-//    }
     private final String CREATE_PRODUCTCHAINXREF = "CREATE TABLE [ProductChainXRef]( [chainKey] [uniqueidentifier] PRIMARY KEY NOT NULL, "
             + "[cust_chain] [varchar](50) NOT NULL, [prod_id] [varchar](50) NOT NULL, [over_price_gross] [money] NULL, [over_price_net] [money] NOT NULL, "
             + "[isactive] [tinyint] NOT NULL, [productchain_update] [datetime] NULL, [customer_item] [varchar](20) NULL)";
     private final String CREATE_PRODUCT_ADDONS = "CREATE TABLE [Product_addons]( [rest_addons] [int] PRIMARY KEY NOT NULL, [prod_id] [varchar](50) NULL, "
             + "[cat_id] [varchar](50) NULL, [isactive] [bit] NULL, [_update] [datetime] NULL)";
-
-//    public void synchSendOrdersOnHold(boolean downloadHoldList, boolean checkOutOnHold) {
-//        SynchMethods sm = new SynchMethods(managerInstance);
-//        sm.synchSendOnHold(downloadHoldList, checkOutOnHold);
-//    }
-
-//    public boolean isSendAndReceive() {
-//        return this.sendAndReceive;
-//    }
     private final String CREATE_PRODUCTS = "CREATE TABLE [Products]( [prod_id] [varchar](50) PRIMARY KEY NOT NULL, [prod_type] [varchar](50) NULL, "
             + "[prod_disc_type] [varchar](50) NULL, [cat_id] [varchar](50) NULL, [prod_sku] [varchar](255) NULL, [prod_upc] [varchar](50) NULL, "
             + "[prod_name] [varchar](255) NULL, [prod_desc] [varchar](4000) NULL, [prod_extradesc] [varchar](255) NULL, [prod_onhand] [real] NULL, "
@@ -570,10 +550,11 @@ public class DBManager {
         if (!exist) {
             getDatabase().execSQL("ALTER TABLE [Orders] ADD COLUMN [ord_timeStarted] [datetime] NULL");
         }
-        exist = cursor.getColumnIndex("bixolonTransactionId") > -1;
+        exist = cursor.getColumnIndex("prod_prices_group_id") > -1;
         if (!exist) {
-            getDatabase().execSQL("ALTER TABLE [Orders] ADD COLUMN [bixolonTransactionId] [varchar](50) NULL");
+            getDatabase().execSQL("ALTER TABLE [Orders] ADD COLUMN [prod_prices_group_id] [varchar](50) NULL");
         }
+
         for (String sql : CREATE_INDEX) {
             getDatabase().execSQL(sql);
         }

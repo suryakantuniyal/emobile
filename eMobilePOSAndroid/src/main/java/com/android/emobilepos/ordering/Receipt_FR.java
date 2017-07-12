@@ -133,7 +133,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     private Button btnReturn;
     private ImageButton btnScrollRight;
     private ImageButton btnScrollLeft;
-    private MyPagerAdapter pagerAdapter;
+    private ReceiptPagerAdapter pagerAdapter;
     private RecalculateCallback callBackRecalculate;
     private UpdateHeaderTitleCallback callBackUpdateHeaderTitle;
     private String order_email = "";
@@ -258,7 +258,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 .findViewById(R.id.slideDrawer);
 
         ViewPager viewPager = (ViewPager) view.findViewById(R.id.orderViewPager);
-        pagerAdapter = new MyPagerAdapter(getFragmentManager());
+        pagerAdapter = new ReceiptPagerAdapter(getFragmentManager());
         viewPager.setAdapter(pagerAdapter);
         CirclePageIndicator pagerIndicator = (CirclePageIndicator) view
                 .findViewById(R.id.indicator);
@@ -280,7 +280,10 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             addSeatButton.setVisibility(View.GONE);
         }
         ImageView plusBut = (ImageView) view.findViewById(R.id.plusButton);
-        plusBut.setOnClickListener(this);
+//        plusBut.setOnClickListener(this);
+
+        LinearLayout customerLinearLayout = (LinearLayout) view.findViewById(R.id.customerLinearLayout);
+        customerLinearLayout.setOnClickListener(this);
 
         btnTemplate = (Button) view.findViewById(R.id.templateButton);
         btnTemplate.setOnClickListener(this);
@@ -360,6 +363,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 case CONSIGNMENT: {
                     custName.setText(myPref.getCustName());
                     plusBut.setVisibility(View.INVISIBLE);
+                    customerLinearLayout.setOnClickListener(null);
                     btnTemplate
                             .setBackgroundResource(R.drawable.disabled_gloss_button_selector);
                     btnTemplate.setOnClickListener(null);
@@ -521,7 +525,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     mainLVAdapter.notifyDataSetChanged();
                 }
                 break;
-            case R.id.plusButton:
+            case R.id.customerLinearLayout:
                 intent = new Intent(getActivity(), ViewCustomers_FA.class);
                 startActivityForResult(intent, 0);
                 break;
@@ -2048,8 +2052,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         void updateHeaderTitle(String val);
     }
 
-    private class MyPagerAdapter extends FragmentPagerAdapter {
-        public MyPagerAdapter(FragmentManager fragmentManager) {
+    private class ReceiptPagerAdapter extends FragmentPagerAdapter {
+        public ReceiptPagerAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);
         }
 
@@ -2062,16 +2066,16 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         public Fragment getItem(int position) {
             Fragment frag;
             switch (position) {
-                case 0: // Fragment # 0 - This will show image
+                case 0:
                     if (OrderTotalDetails_FR.getFrag() == null) {
                         frag = OrderTotalDetails_FR.init(position);
                     } else
                         frag = OrderTotalDetails_FR.getFrag();
                     callBackRecalculate = (RecalculateCallback) frag;
                     return frag;
-                case 1: // Fragment # 1 - This will show image
+                case 1:
                     return OrderLoyalty_FR.init(position);
-                default:// Fragment # 2-9 - Will show list
+                default:
                     return OrderRewards_FR.init(position);
 
             }

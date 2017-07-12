@@ -39,7 +39,6 @@ import com.android.emobilepos.security.SecurityManager;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
-import com.android.support.NetworkUtils;
 import com.android.support.SynchMethods;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.crashlytics.android.Crashlytics;
@@ -218,7 +217,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
             Intent intent = new Intent(this, RegistrationIntentService.class);
             startService(intent);
         } else {
-            if (myPref.isPollingHoldsEnable()) {
+            if ((myPref.isPollingHoldsEnable() || myPref.isAutoSyncEnable()) && !PollingNotificationService.isServiceRunning(this)) {
                 startPollingService();
             }
         }
@@ -245,7 +244,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
     @Override
     public void onResume() {
-        if (myPref.isPollingHoldsEnable() && !PollingNotificationService.isServiceRunning(this)) {
+        if ((myPref.isPollingHoldsEnable() || myPref.isAutoSyncEnable()) && !PollingNotificationService.isServiceRunning(this)) {
             startPollingService();
         }
         registerReceiver(messageReceiver, new IntentFilter(NOTIFICATION_RECEIVED));
@@ -257,18 +256,19 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         if (hasBeenCreated && !Global.loggedIn
                 && (myPref.getPrinterType() != Global.POWA || (myPref.getPrinterType() == Global.POWA
                 && (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)))) {
-            if (global.getGlobalDlog() != null && global.getGlobalDlog().isShowing()) {
-                global.getGlobalDlog().dismiss();
-            }
+            Global.dismissDialog(this, global.getGlobalDlog());
+            //            if (global.getGlobalDlog() != null && global.getGlobalDlog().isShowing()) {
+//                global.getGlobalDlog().dismiss();
+//            }
             global.promptForMandatoryLogin(activity);
         }
 
-        if (myPref.getPreferences(MyPreferences.pref_automatic_sync) && hasBeenCreated && NetworkUtils.isConnectedToInternet(activity)) {
+        if (myPref.isAutoSyncEnable() && hasBeenCreated) {
             DBManager dbManager = new DBManager(activity, Global.FROM_SYNCH_ACTIVITY);
-//            dbManager.synchSend(false, true, activity);
             SynchMethods sm = new SynchMethods(dbManager);
             sm.synchSend(Global.FROM_SYNCH_ACTIVITY, true, activity);
-        }
+            getSynchTextView().setText(getString(R.string.sync_inprogress));
+            getSynchTextView().setVisibility(View.VISIBLE);        }
 
         if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward))
             tvStoreForward.setVisibility(View.VISIBLE);
@@ -286,7 +286,14 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
     }
 
     private void startPollingService() {
-        PollingNotificationService.start(this);
+        int flags = 0;
+        if (myPref.isPollingHoldsEnable()) {
+            flags = PollingNotificationService.PollingServicesFlag.ONHOLDS.getCode() | PollingNotificationService.PollingServicesFlag.DINING_TABLES.getCode();
+        }
+        if (myPref.isAutoSyncEnable()) {
+            flags = flags | PollingNotificationService.PollingServicesFlag.AUTO_SYNC.getCode();
+        }
+        PollingNotificationService.start(this, flags);
     }
 
     private void stopPollingService() {
