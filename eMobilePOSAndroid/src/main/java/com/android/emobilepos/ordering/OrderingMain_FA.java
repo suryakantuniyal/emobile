@@ -38,7 +38,6 @@ import com.android.dao.CustomerCustomFieldsDAO;
 import com.android.dao.OrderProductAttributeDAO;
 import com.android.database.AddressHandler;
 import com.android.database.CustomerInventoryHandler;
-import com.android.database.DBManager;
 import com.android.database.OrderProductsAttr_DB;
 import com.android.database.OrderProductsHandler;
 import com.android.database.OrdersHandler;
@@ -66,10 +65,8 @@ import com.android.support.Encrypt;
 import com.android.support.GenerateNewID;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
-import com.android.support.NetworkUtils;
 import com.android.support.OrderProductUtils;
 import com.android.support.Post;
-import com.android.support.SynchMethods;
 import com.android.support.TerminalDisplay;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.crashlytics.android.Crashlytics;
@@ -724,12 +721,11 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         if (myPref.getPreferencesValue(MyPreferences.pref_default_transaction).equals("-1"))
             finish();
         else {
-            DBManager dbManager = new DBManager(MainMenu_FA.activity, Global.FROM_SYNCH_ACTIVITY);
-            if (myPref.getPreferences(MyPreferences.pref_automatic_sync) && NetworkUtils.isConnectedToInternet(this)) {
-//                dbManager.synchSend(false, true, this);
-                SynchMethods sm = new SynchMethods(dbManager);
-                sm.synchSend(Global.FROM_SYNCH_ACTIVITY, true, this);
-            }
+//            DBManager dbManager = new DBManager(MainMenu_FA.activity, Global.FROM_SYNCH_ACTIVITY);
+//            if (myPref.getPreferences(MyPreferences.pref_automatic_sync) && NetworkUtils.isConnectedToInternet(this)) {
+//                SynchMethods sm = new SynchMethods(dbManager);
+//                sm.synchSend(Global.FROM_SYNCH_ACTIVITY, true, this);
+//            }
 
             OrderTotalDetails_FR.resetView();
             finish();

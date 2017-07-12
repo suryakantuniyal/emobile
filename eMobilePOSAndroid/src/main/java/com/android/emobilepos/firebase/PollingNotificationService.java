@@ -2,7 +2,6 @@ package com.android.emobilepos.firebase;
 
 import android.app.ActivityManager;
 import android.app.Notification;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -13,13 +12,16 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.android.database.DBManager;
 import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.support.DateUtils;
+import com.android.support.Global;
 import com.android.support.HttpClient;
 import com.android.support.MyPreferences;
 import com.android.support.NetworkUtils;
+import com.android.support.SynchMethods;
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
@@ -41,21 +43,44 @@ import util.json.JsonUtils;
 
 public class PollingNotificationService extends Service {
 
-    public static int FOREGROUND_SERVICE = 101;
     public static final String MAIN_ACTION = "pollingNotificationService.action.main";
     public static final String START_ACTION = "pollingNotificationService.action.startforeground";
     public static final String STOP_ACTION = "pollingNotificationService.action.stopforeground";
-
     public static final String ONHOLD_BROADCAST_ACTION = "3";
     public static final String MESAS_CONFIG_BROADCAST_ACTION = "6";
     public static final String NONE_BROADCAST_ACTION = "99";
-
     private static final String TAG = "PollingService";
-    private Timer timer;
     private static final int delay = 5000; // delay for 3 sec before first start
+    public static int FOREGROUND_SERVICE = 101;
+    Timer autoSyncTimer;
+    private Timer timer;
     private Date lastPolled;
     private String accountNumber;
 
+    public static boolean isServiceRunning(Context context) {
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (PollingNotificationService.class.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static void start(Context context, int flags) {
+        Intent startIntent = new Intent(context, PollingNotificationService.class);
+        startIntent.setAction(PollingNotificationService.START_ACTION);
+        startIntent.setFlags(flags);
+        context.startService(startIntent);
+        Log.d("Polling service started", new Date().toString());
+    }
+
+    public static void stop(Context context) {
+        Intent stopIntent = new Intent(context, PollingNotificationService.class);
+        stopIntent.setAction(PollingNotificationService.STOP_ACTION);
+        context.startService(stopIntent);
+        Log.d("Polling service stoped", new Date().toString());
+    }
 
     @Override
     public void onCreate() {
@@ -71,7 +96,7 @@ public class PollingNotificationService extends Service {
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public int onStartCommand(final Intent intent, int flags, int startId) {
         if (intent != null) {
             if (intent.getAction().equals(START_ACTION)) {
                 Log.i(TAG, "Received Start Foreground Intent");
@@ -80,8 +105,6 @@ public class PollingNotificationService extends Service {
                 notificationIntent.setAction(MAIN_ACTION);
                 notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                         | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
-                        notificationIntent, 0);
 
                 if (timer == null) {
                     timer = new Timer();
@@ -89,12 +112,27 @@ public class PollingNotificationService extends Service {
                         @Override
                         public void run() {
                             Log.i(TAG, "Timer");
-                            pollNotificationEvents(PollingNotificationService.this);
-//                        updateMainActivity("3");
+                            if (((intent.getFlags() & PollingServicesFlag.ONHOLDS.getCode()) == PollingServicesFlag.ONHOLDS.getCode()) ||
+                                    ((intent.getFlags() & PollingServicesFlag.DINING_TABLES.getCode()) == PollingServicesFlag.DINING_TABLES.getCode())) {
+                                pollNotificationEvents(PollingNotificationService.this);
+                            }
                         }
                     }, delay, BuildConfig.POLLING_PERIOD);
                 }
-
+                if (autoSyncTimer == null) {
+                    autoSyncTimer = new Timer();
+                    autoSyncTimer.schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            Log.i(TAG, "autoSyncTimer");
+                            if ((intent.getFlags() & PollingServicesFlag.AUTO_SYNC.getCode()) == PollingServicesFlag.AUTO_SYNC.getCode()) {
+                                DBManager dbManager = new DBManager(PollingNotificationService.this, Global.FROM_SYNCH_ACTIVITY);
+                                SynchMethods sm = new SynchMethods(dbManager);
+                                sm.synchSend(Global.FROM_SYNCH_ACTIVITY, true, PollingNotificationService.this);
+                            }
+                        }
+                    }, delay, BuildConfig.AUTOSYNC_PERIOD);
+                }
                 Bitmap icon = BitmapFactory.decodeResource(getResources(),
                         R.drawable.emobile_icon);
 
@@ -174,31 +212,22 @@ public class PollingNotificationService extends Service {
         }
     }
 
-    public static boolean isServiceRunning(Context context) {
-        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (PollingNotificationService.class.getName().equals(service.service.getClassName())) {
-                return true;
-            }
+    public enum PollingServicesFlag {
+        ONHOLDS(2), DINING_TABLES(4), AUTO_SYNC(8);
+
+        private int code;
+
+        PollingServicesFlag(int code) {
+
+            this.code = code;
         }
-        return false;
+
+        public final int getCode() {
+            return this.code;
+        }
     }
 
-    public static void start(Context context) {
-        Intent startIntent = new Intent(context, PollingNotificationService.class);
-        startIntent.setAction(PollingNotificationService.START_ACTION);
-        context.startService(startIntent);
-        Log.d("Polling service started", new Date().toString());
-    }
-
-    public static void stop(Context context) {
-        Intent stopIntent = new Intent(context, PollingNotificationService.class);
-        stopIntent.setAction(PollingNotificationService.STOP_ACTION);
-        context.startService(stopIntent);
-        Log.d("Polling service stoped", new Date().toString());
-    }
-
-    class PollNotification {
+    private class PollNotification {
         private String notificationtype;
         private boolean isAvailable;
 
