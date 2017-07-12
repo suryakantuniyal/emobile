@@ -108,32 +108,68 @@ import util.StringUtil;
 
 public class EMSDeviceDriver {
     private static final boolean PRINT_TO_LOG = BuildConfig.PRINT_TO_LOG;
+    static PrinterApiContext printerApi;
+    static TfhkaAndroid printerTFHKA;
+    private static int PAPER_WIDTH;
+    protected final String FORMAT = "windows-1252";
+    private final int ALIGN_LEFT = 0, ALIGN_CENTER = 1;
     protected EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
-    private double saveAmount;
     protected List<String> printPref;
     protected MyPreferences myPref;
     protected Activity activity;
     protected StarIOPort port;
-    protected final String FORMAT = "windows-1252";
     protected String encodedSignature;
-    byte[] enableCenter, disableCenter;
     protected boolean isPOSPrinter = false;
     protected String encodedQRCode = "";
-    static PrinterApiContext printerApi;
     protected Connection_Bluetooth device;
+    byte[] enableCenter, disableCenter;
     PowaPOS powaPOS;
     MePOS mePOS;
     POSSDK pos_sdk = null;
     PrinterAPI eloPrinterApi;
     POSPrinter bixolonPrinter;
     MePOSReceipt mePOSReceipt;
-    static TfhkaAndroid printerTFHKA;
-
-    private final int ALIGN_LEFT = 0, ALIGN_CENTER = 1;
-
     InputStream inputStream;
     OutputStream outputStream;
-    private static int PAPER_WIDTH;
+    private double saveAmount;
+
+    private static byte[] convertFromListbyteArrayTobyteArray(List<byte[]> ByteArray) {
+        int dataLength = 0;
+        for (int i = 0; i < ByteArray.size(); i++) {
+            dataLength += ByteArray.get(i).length;
+        }
+
+        int distPosition = 0;
+        byte[] byteArray = new byte[dataLength];
+        for (int i = 0; i < ByteArray.size(); i++) {
+            System.arraycopy(ByteArray.get(i), 0, byteArray, distPosition, ByteArray.get(i).length);
+            distPosition += ByteArray.get(i).length;
+        }
+
+        return byteArray;
+    }
+
+    public static Bitmap loadBitmapFromView(View v) {
+        Bitmap b = Bitmap.createBitmap(v.getWidth(), v.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas c = new Canvas(b);
+        v.layout(v.getLeft(), v.getTop(), v.getRight(), v.getBottom());
+        v.draw(c);
+        int margins = Double.valueOf(PAPER_WIDTH * .10).intValue();
+        float ratio = Integer.valueOf(PAPER_WIDTH - margins).floatValue() / Integer.valueOf(b.getWidth()).floatValue();
+        int width = Math.round(ratio * b.getWidth());
+        int height = Math.round(ratio * b.getHeight());
+        b = Bitmap.createScaledBitmap(b, width, height, true);
+        return b;
+    }
+
+    public static Bitmap scaleDown(Bitmap realImage, float maxImageSize, boolean filter) {
+        float ratio = Math.min(maxImageSize / realImage.getWidth(),
+                maxImageSize / realImage.getHeight());
+        int width = Math.round(ratio * realImage.getWidth());
+        int height = Math.round(ratio * realImage.getHeight());
+
+        return Bitmap.createScaledBitmap(realImage, width, height, filter);
+    }
 
     public void connect(Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
     }
@@ -1093,22 +1129,6 @@ public class EMSDeviceDriver {
         }
     }
 
-    private static byte[] convertFromListbyteArrayTobyteArray(List<byte[]> ByteArray) {
-        int dataLength = 0;
-        for (int i = 0; i < ByteArray.size(); i++) {
-            dataLength += ByteArray.get(i).length;
-        }
-
-        int distPosition = 0;
-        byte[] byteArray = new byte[dataLength];
-        for (int i = 0; i < ByteArray.size(); i++) {
-            System.arraycopy(ByteArray.get(i), 0, byteArray, distPosition, ByteArray.get(i).length);
-            distPosition += ByteArray.get(i).length;
-        }
-
-        return byteArray;
-    }
-
     protected void printImage(int type) throws StarIOPortException, JAException {
         if (PRINT_TO_LOG) {
             Log.d("Print", "*******Image Print***********");
@@ -1307,19 +1327,6 @@ public class EMSDeviceDriver {
 
     }
 
-    public static Bitmap loadBitmapFromView(View v) {
-        Bitmap b = Bitmap.createBitmap(v.getWidth(), v.getHeight(), Bitmap.Config.ARGB_8888);
-        Canvas c = new Canvas(b);
-        v.layout(v.getLeft(), v.getTop(), v.getRight(), v.getBottom());
-        v.draw(c);
-        int margins = Double.valueOf(PAPER_WIDTH * .10).intValue();
-        float ratio = Integer.valueOf(PAPER_WIDTH - margins).floatValue() / Integer.valueOf(b.getWidth()).floatValue();
-        int width = Math.round(ratio * b.getWidth());
-        int height = Math.round(ratio * b.getHeight());
-        b = Bitmap.createScaledBitmap(b, width, height, true);
-        return b;
-    }
-
     protected void printImage(Bitmap bitmap) throws StarIOPortException, JAException {
         if (PRINT_TO_LOG) {
             Log.d("Print", "*******Image Print***********");
@@ -1429,15 +1436,6 @@ public class EMSDeviceDriver {
         matrix.postRotate(90);
         matrix.preScale(1.0f, -1.0f);
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-    }
-
-    public static Bitmap scaleDown(Bitmap realImage, float maxImageSize, boolean filter) {
-        float ratio = Math.min(maxImageSize / realImage.getWidth(),
-                maxImageSize / realImage.getHeight());
-        int width = Math.round(ratio * realImage.getWidth());
-        int height = Math.round(ratio * realImage.getHeight());
-
-        return Bitmap.createScaledBitmap(realImage, width, height, filter);
     }
 
     public void printHeader(int lineWidth) {
