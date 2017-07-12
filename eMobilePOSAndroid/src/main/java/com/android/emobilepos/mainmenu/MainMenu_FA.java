@@ -28,6 +28,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.dao.ClerkDAO;
+import com.android.database.DBManager;
 import com.android.emobilepos.R;
 import com.android.emobilepos.firebase.NotificationHandler;
 import com.android.emobilepos.firebase.NotificationSettings;
@@ -38,6 +39,7 @@ import com.android.emobilepos.security.SecurityManager;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.SynchMethods;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.common.ConnectionResult;
@@ -261,12 +263,12 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
             global.promptForMandatoryLogin(activity);
         }
 
-//        if (myPref.getPreferences(MyPreferences.pref_automatic_sync) && hasBeenCreated && NetworkUtils.isConnectedToInternet(activity)) {
-
-//            DBManager dbManager = new DBManager(activity, Global.FROM_SYNCH_ACTIVITY);
-//            SynchMethods sm = new SynchMethods(dbManager);
-//            sm.synchSend(Global.FROM_SYNCH_ACTIVITY, true, activity);
-//        }
+        if (myPref.isAutoSyncEnable() && hasBeenCreated) {
+            DBManager dbManager = new DBManager(activity, Global.FROM_SYNCH_ACTIVITY);
+            SynchMethods sm = new SynchMethods(dbManager);
+            sm.synchSend(Global.FROM_SYNCH_ACTIVITY, true, activity);
+            getSynchTextView().setText(getString(R.string.sync_inprogress));
+            getSynchTextView().setVisibility(View.VISIBLE);        }
 
         if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward))
             tvStoreForward.setVisibility(View.VISIBLE);
