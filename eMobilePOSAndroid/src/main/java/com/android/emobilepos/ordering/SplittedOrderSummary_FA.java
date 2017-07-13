@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.DinningTableOrderDAO;
+import com.android.database.DBManager;
 import com.android.database.OrderProductsAttr_DB;
 import com.android.database.OrderProductsHandler;
 import com.android.database.OrderTaxes_DB;
@@ -44,6 +45,7 @@ import com.android.support.GenerateNewID;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
+import com.android.support.SynchMethods;
 import com.android.support.TaxesCalculator;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.crashlytics.android.Crashlytics;
@@ -654,6 +656,11 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
             setResult(0);
             finish();
         }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
     }
 
     public void promptVoidTransaction(final boolean voidPayments) {
