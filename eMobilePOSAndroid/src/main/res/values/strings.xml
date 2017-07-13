@@ -1336,5 +1336,6 @@
     <string name="login_system_instructions">Login with your System password.</string>
     <string name="ivupos_apk_name" translatable="false">/emobileivupos.apk</string>
     <string name="emobile_apk_name" translatable="false">/emobilepos.apk</string>
+    <string name="fingerprints">Finger Prints</string>
 
 </resources>
