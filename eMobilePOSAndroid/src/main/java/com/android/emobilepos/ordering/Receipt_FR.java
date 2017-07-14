@@ -951,9 +951,10 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     if (myPref.isRestaurantMode()) {
                         new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
                     }
-                    DBManager dbManager = new DBManager(getActivity());
-                    SynchMethods sm = new SynchMethods(dbManager);
-                    sm.synchSendOnHold(false, false, getActivity());
+                    new SyncOnHolds().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+//                    DBManager dbManager = new DBManager(getActivity());
+//                    SynchMethods sm = new SynchMethods(dbManager);
+//                    sm.synchSendOnHold(false, false, getActivity(), null);
                 } else {
                     if (global.order.ord_HoldName == null || global.order.ord_HoldName.isEmpty()) {
                         showOnHoldPromptName(ordersHandler, orderProductsHandler);
@@ -978,9 +979,10 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                 global.order.ord_id);
                     if (myPref.isRestaurantMode())
                         new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
-                    DBManager dbManager = new DBManager(getActivity());
-                    SynchMethods sm = new SynchMethods(dbManager);
-                    sm.synchSendOnHold(false, true, getActivity());
+//                    DBManager dbManager = new DBManager(getActivity());
+//                    SynchMethods sm = new SynchMethods(dbManager);
+//                    sm.synchSendOnHold(false, true, getActivity(), global.order.ord_id);
+                    new SyncOnHolds().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 } else {
                     ordersHandler.updateFinishOnHold(Global.lastOrdID);
                     global.order.isVoid = "1";
@@ -1603,17 +1605,18 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             global.order.setOrderProducts(new ArrayList<OrderProduct>());
             global.resetOrderDetailsValues();
         }
-        DBManager dbManager = new DBManager(getActivity());
-        SynchMethods sm = new SynchMethods(dbManager);
-        sm.synchSendOnHold(false, false, getActivity());
-
-        if (!isToGo && ((OrderingMain_FA) getActivity()).orderingAction != OrderingMain_FA.OrderingAction.HOLD
-                && (((OrderingMain_FA) getActivity()).orderingAction == OrderingMain_FA.OrderingAction.CHECKOUT ||
-                ((OrderingMain_FA) getActivity()).orderingAction != OrderingMain_FA.OrderingAction.BACK_PRESSED)) {
-            showSplitedOrderPreview();
-        } else {
-            getActivity().finish();
-        }
+        new SyncOnHolds().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+//        DBManager dbManager = new DBManager(getActivity());
+//        SynchMethods sm = new SynchMethods(dbManager);
+//        sm.synchSendOnHold(false, false, getActivity(), null);
+//
+//        if (!isToGo && ((OrderingMain_FA) getActivity()).orderingAction != OrderingMain_FA.OrderingAction.HOLD
+//                && (((OrderingMain_FA) getActivity()).orderingAction == OrderingMain_FA.OrderingAction.CHECKOUT ||
+//                ((OrderingMain_FA) getActivity()).orderingAction != OrderingMain_FA.OrderingAction.BACK_PRESSED)) {
+//            showSplitedOrderPreview();
+//        } else {
+//            getActivity().finish();
+//        }
     }
 
     public void voidCancelOnHold(int type) {
@@ -2221,4 +2224,45 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             }
         }
     }
+
+    class SyncOnHolds extends AsyncTask<Void, Void, Boolean> {
+        ProgressDialog dialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            Global.lockOrientation(getActivity());
+            dialog = new ProgressDialog(getActivity());
+            dialog.setIndeterminate(true);
+            dialog.setCancelable(false);
+            dialog.setMessage(getString(R.string.sync_sending_orders));
+            dialog.show();
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            DBManager dbManager = new DBManager(getActivity());
+            SynchMethods sm = new SynchMethods(dbManager);
+            boolean result = sm.synchSendOnHold(false, false, getActivity(), null);
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            super.onPostExecute(result);
+            Global.dismissDialog(getActivity(), dialog);
+            if(getActivity() != null) {
+                if (!isToGo && ((OrderingMain_FA) getActivity()).orderingAction != OrderingMain_FA.OrderingAction.HOLD
+                        && (((OrderingMain_FA) getActivity()).orderingAction == OrderingMain_FA.OrderingAction.CHECKOUT ||
+                        ((OrderingMain_FA) getActivity()).orderingAction != OrderingMain_FA.OrderingAction.BACK_PRESSED)) {
+                    showSplitedOrderPreview();
+                } else {
+                    getActivity().finish();
+                }
+            }
+            Global.releaseOrientation(getActivity());
+        }
+    }
+
+
 }
