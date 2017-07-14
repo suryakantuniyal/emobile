@@ -37,7 +37,9 @@ import android.widget.TextView;
 import com.android.crashreport.ExceptionHandler;
 import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.ClerkDAO;
+import com.android.dao.EmobilePOSRealmMigration;
 import com.android.dao.RealmModule;
+import com.android.database.DBManager;
 import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.R;
@@ -350,7 +352,6 @@ public class Global extends MultiDexApplication {
             activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         }
     }
-
 
     public static String getPeripheralName(int type) {
         String _name = "Unknown";
@@ -1197,6 +1198,11 @@ public class Global extends MultiDexApplication {
         }
     }
 
+    @Override
+    public void onTerminate() {
+        super.onTerminate();
+    }
+
     public int checkIfGroupBySKU(Activity activity, String prodID, String pickedQty) {
         int orderIndex = -1;
         MyPreferences myPref = new MyPreferences(activity);
@@ -1318,8 +1324,9 @@ public class Global extends MultiDexApplication {
         Realm.init(this);
         isIvuLoto = getPackageName().contains(getString(R.string.ivupos_packageid));
         RealmConfiguration config = new RealmConfiguration.Builder()
-                .deleteRealmIfMigrationNeeded()
+                .migration(new EmobilePOSRealmMigration())
                 .modules(Realm.getDefaultModule(), new RealmModule())
+                .schemaVersion(3)
                 .build();
         Realm.setDefaultConfiguration(config);
         Realm.compactRealm(config);
