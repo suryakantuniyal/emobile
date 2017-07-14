@@ -2225,12 +2225,13 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         }
     }
 
-     class SyncOnHolds extends AsyncTask<Void, Void, Boolean> {
+    class SyncOnHolds extends AsyncTask<Void, Void, Boolean> {
         ProgressDialog dialog;
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            Global.lockOrientation(getActivity());
             dialog = new ProgressDialog(getActivity());
             dialog.setIndeterminate(true);
             dialog.setCancelable(false);
@@ -2250,14 +2251,16 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
             Global.dismissDialog(getActivity(), dialog);
-            if (!isToGo && ((OrderingMain_FA) getActivity()).orderingAction != OrderingMain_FA.OrderingAction.HOLD
-                    && (((OrderingMain_FA) getActivity()).orderingAction == OrderingMain_FA.OrderingAction.CHECKOUT ||
-                    ((OrderingMain_FA) getActivity()).orderingAction != OrderingMain_FA.OrderingAction.BACK_PRESSED)) {
-                showSplitedOrderPreview();
-            } else {
-                getActivity().finish();
+            if(getActivity() != null) {
+                if (!isToGo && ((OrderingMain_FA) getActivity()).orderingAction != OrderingMain_FA.OrderingAction.HOLD
+                        && (((OrderingMain_FA) getActivity()).orderingAction == OrderingMain_FA.OrderingAction.CHECKOUT ||
+                        ((OrderingMain_FA) getActivity()).orderingAction != OrderingMain_FA.OrderingAction.BACK_PRESSED)) {
+                    showSplitedOrderPreview();
+                } else {
+                    getActivity().finish();
+                }
             }
-
+            Global.releaseOrientation(getActivity());
         }
     }
 
