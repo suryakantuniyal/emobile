@@ -771,7 +771,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         }
     }
 
-    class SyncOnHolds extends AsyncTask<Void, Void, Boolean> {
+    private class SyncOnHolds extends AsyncTask<Void, Void, Boolean> {
         ProgressDialog dialog;
 
         @Override
@@ -788,8 +788,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         protected Boolean doInBackground(Void... params) {
             DBManager dbManager = new DBManager(OnHoldActivity.this);
             SynchMethods sm = new SynchMethods(dbManager);
-            boolean result = sm.synchSendOnHold(false, false, OnHoldActivity.this, null);
-            return result;
+            return sm.synchSendOnHold(false, false, OnHoldActivity.this, null);
         }
 
         @Override

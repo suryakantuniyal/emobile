@@ -532,7 +532,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
     }
 
 
-    class SyncOnHolds extends AsyncTask<Void, Void, Boolean> {
+    private class SyncOnHolds extends AsyncTask<Void, Void, Boolean> {
         ProgressDialog dialog;
 
         @Override
@@ -549,8 +549,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         protected Boolean doInBackground(Void... params) {
             DBManager dbManager = new DBManager(getActivity());
             SynchMethods sm = new SynchMethods(dbManager);
-            boolean result = sm.synchSendOnHold(false, false, getActivity(), null);
-            return result;
+            return sm.synchSendOnHold(false, false, getActivity(), null);
         }
 
         @Override
