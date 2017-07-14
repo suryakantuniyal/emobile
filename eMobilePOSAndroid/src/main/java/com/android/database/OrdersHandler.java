@@ -32,6 +32,7 @@ import java.util.List;
 import util.json.JsonUtils;
 
 public class OrdersHandler {
+    public static final String table_name = "Orders";
     private final static String ord_id = "ord_id";
     private final static String qbord_id = "qbord_id";
     private final static String emp_id = "emp_id";
@@ -90,16 +91,9 @@ public class OrdersHandler {
     private static CustomersHandler custHandler;
     private static OrderTaxes_DB taxes_db;
     private static OrderProductsHandler orderProductsHandler;
-
     private StringBuilder sb1, sb2;
     private HashMap<String, Integer> attrHash;
-
-    public static final String table_name = "Orders";
     private Context activity;
-
-    public static OrdersHandler getInstance(Context activity) {
-        return new OrdersHandler(activity);
-    }
 
     public OrdersHandler(Context activity) {
         attrHash = new HashMap<>();
@@ -108,6 +102,104 @@ public class OrdersHandler {
         new DBManager(activity);
         sb2 = new StringBuilder();
         initDictionary();
+    }
+
+    public static OrdersHandler getInstance(Context activity) {
+        return new OrdersHandler(activity);
+    }
+
+    public static void deleteTransaction(Activity activity, String orderId) {
+        if (!orderId.isEmpty()) {
+            Global global = (Global) activity.getApplication();
+            OrdersHandler dbOrders = new OrdersHandler(activity);
+            OrderProductsHandler dbOrdProd = new OrderProductsHandler(activity);
+            OrderProductsAttr_DB dbOrdAttr = new OrderProductsAttr_DB(activity);
+            dbOrders.deleteOrder(orderId);
+            dbOrdProd.deleteAllOrdProd(orderId);
+            for (ProductAttribute val : global.ordProdAttr)
+                dbOrdAttr.deleteOrderProduct(String.valueOf(val.getId()));
+            DinningTableOrderDAO.deleteByOrderId(orderId);
+        }
+    }
+
+    public static Order getOrder(Cursor cursor, Context activity) {
+        Order order = new Order(activity);
+        order.numberOfSeats = cursor.getInt(cursor.getColumnIndex(numberOfSeats));
+        order.assignedTable = cursor.getString(cursor.getColumnIndex(assignedTable));
+        order.associateID = cursor.getString(cursor.getColumnIndex(associateID));
+        order.ord_id = cursor.getString(cursor.getColumnIndex(ord_id));
+        order.qbord_id = cursor.getString(cursor.getColumnIndex(qbord_id));
+        order.emp_id = cursor.getString(cursor.getColumnIndex(emp_id));
+        order.cust_id = cursor.getString(cursor.getColumnIndex(cust_id));
+        order.clerk_id = cursor.getString(cursor.getColumnIndex(clerk_id));
+        order.c_email = cursor.getString(cursor.getColumnIndex(c_email));
+        order.ord_signature = cursor.getString(cursor.getColumnIndex(ord_signature));
+        order.ord_po = cursor.getString(cursor.getColumnIndex(ord_po));
+        order.total_lines = cursor.getString(cursor.getColumnIndex(total_lines));
+        order.total_lines_pay = cursor.getString(cursor.getColumnIndex(total_lines_pay));
+        order.ord_total = cursor.getString(cursor.getColumnIndex(ord_total));
+        order.ord_comment = cursor.getString(cursor.getColumnIndex(ord_comment));
+        order.ord_delivery = cursor.getString(cursor.getColumnIndex(ord_delivery));
+        order.ord_timecreated = cursor.getString(cursor.getColumnIndex(ord_timecreated));
+        order.ord_timesync = cursor.getString(cursor.getColumnIndex(ord_timesync));
+        order.qb_synctime = cursor.getString(cursor.getColumnIndex(qb_synctime));
+        order.emailed = cursor.getString(cursor.getColumnIndex(emailed));
+        order.processed = cursor.getString(cursor.getColumnIndex(processed));
+        order.ord_type = cursor.getString(cursor.getColumnIndex(ord_type));
+        order.ord_claimnumber = cursor.getString(cursor.getColumnIndex(ord_claimnumber));
+        order.ord_rganumber = cursor.getString(cursor.getColumnIndex(ord_rganumber));
+        order.ord_returns_pu = cursor.getString(cursor.getColumnIndex(ord_returns_pu));
+        order.ord_inventory = cursor.getString(cursor.getColumnIndex(ord_inventory));
+        order.ord_issync = cursor.getString(cursor.getColumnIndex(ord_issync));
+        order.tax_id = cursor.getString(cursor.getColumnIndex(tax_id));
+        order.ord_shipvia = cursor.getString(cursor.getColumnIndex(ord_shipvia));
+        order.ord_shipto = cursor.getString(cursor.getColumnIndex(ord_shipto));
+        order.ord_terms = cursor.getString(cursor.getColumnIndex(ord_terms));
+        order.ord_custmsg = cursor.getString(cursor.getColumnIndex(ord_custmsg));
+        order.ord_class = cursor.getString(cursor.getColumnIndex(ord_class));
+        order.ord_subtotal = cursor.getString(cursor.getColumnIndex(ord_subtotal));
+        order.ord_taxamount = cursor.getString(cursor.getColumnIndex(ord_taxamount));
+        order.ord_discount = cursor.getString(cursor.getColumnIndex(ord_discount));
+        order.ord_discount_id = cursor.getString(cursor.getColumnIndex(ord_discount_id));
+        order.ord_latitude = cursor.getString(cursor.getColumnIndex(ord_latitude));
+        order.ord_longitude = cursor.getString(cursor.getColumnIndex(ord_longitude));
+        order.tipAmount = cursor.getString(cursor.getColumnIndex(tipAmount));
+        order.isVoid = cursor.getString(cursor.getColumnIndex(isVoid));
+        order.VAT = Boolean.toString(cursor.getString(cursor.getColumnIndex("VAT")).equals("1"));
+        order.custidkey = cursor.getString(cursor.getColumnIndex(custidkey));
+        order.isOnHold = cursor.getString(cursor.getColumnIndex(isOnHold));
+        order.ord_HoldName = cursor.getString(cursor.getColumnIndex(ord_HoldName));
+        order.is_stored_fwd = cursor.getString(cursor.getColumnIndex(is_stored_fwd));
+        order.custidkey = cursor.getString(cursor.getColumnIndex(custidkey));
+        custHandler = new CustomersHandler(activity);
+        order.customer = custHandler.getCustomer(order.cust_id);
+        String attributes = cursor.getString(cursor.getColumnIndex(orderAttributes));
+        if (!TextUtils.isEmpty(attributes)) {
+            Gson gson = JsonUtils.getInstance();
+            Type listType = new com.google.gson.reflect.TypeToken<List<OrderAttributes>>() {
+            }.getType();
+            order.orderAttributes = gson.fromJson(attributes, listType);
+        }
+        taxes_db = getOrderTaxes_DB();
+        List<DataTaxes> orderTaxes = taxes_db.getOrderTaxes(order.ord_id);
+        order.setListOrderTaxes(orderTaxes);
+        orderProductsHandler = getOrderProductsHandler(activity);
+        order.setOrderProducts(orderProductsHandler.getOrderProducts(order.ord_id));
+        return order;
+    }
+
+    private static OrderTaxes_DB getOrderTaxes_DB() {
+        if (taxes_db == null) {
+            taxes_db = new OrderTaxes_DB();
+        }
+        return taxes_db;
+    }
+
+    private static OrderProductsHandler getOrderProductsHandler(Context context) {
+        if (orderProductsHandler == null) {
+            orderProductsHandler = new OrderProductsHandler(context);
+        }
+        return orderProductsHandler;
     }
 
     public void initDictionary() {
@@ -211,20 +303,6 @@ public class OrdersHandler {
         }
     }
 
-    public static void deleteTransaction(Activity activity, String orderId) {
-        if (!orderId.isEmpty()) {
-            Global global = (Global) activity.getApplication();
-            OrdersHandler dbOrders = new OrdersHandler(activity);
-            OrderProductsHandler dbOrdProd = new OrderProductsHandler(activity);
-            OrderProductsAttr_DB dbOrdAttr = new OrderProductsAttr_DB(activity);
-            dbOrders.deleteOrder(orderId);
-            dbOrdProd.deleteAllOrdProd(orderId);
-            for (ProductAttribute val : global.ordProdAttr)
-                dbOrdAttr.deleteOrderProduct(String.valueOf(val.getId()));
-            DinningTableOrderDAO.deleteByOrderId(orderId);
-        }
-    }
-
     public int deleteOrder(String ord_id) {
         int delete = DBManager.getDatabase().delete(table_name, "ord_id = ?", new String[]{ord_id});
         Log.d("Delete order:", ord_id);
@@ -248,86 +326,6 @@ public class OrdersHandler {
         boolean exists = (c.getCount() > 0);
         c.close();
         return exists;
-    }
-
-    public static Order getOrder(Cursor cursor, Context activity) {
-        Order order = new Order(activity);
-        order.numberOfSeats = cursor.getInt(cursor.getColumnIndex(numberOfSeats));
-        order.assignedTable = cursor.getString(cursor.getColumnIndex(assignedTable));
-        order.associateID = cursor.getString(cursor.getColumnIndex(associateID));
-        order.ord_id = cursor.getString(cursor.getColumnIndex(ord_id));
-        order.qbord_id = cursor.getString(cursor.getColumnIndex(qbord_id));
-        order.emp_id = cursor.getString(cursor.getColumnIndex(emp_id));
-        order.cust_id = cursor.getString(cursor.getColumnIndex(cust_id));
-        order.clerk_id = cursor.getString(cursor.getColumnIndex(clerk_id));
-        order.c_email = cursor.getString(cursor.getColumnIndex(c_email));
-        order.ord_signature = cursor.getString(cursor.getColumnIndex(ord_signature));
-        order.ord_po = cursor.getString(cursor.getColumnIndex(ord_po));
-        order.total_lines = cursor.getString(cursor.getColumnIndex(total_lines));
-        order.total_lines_pay = cursor.getString(cursor.getColumnIndex(total_lines_pay));
-        order.ord_total = cursor.getString(cursor.getColumnIndex(ord_total));
-        order.ord_comment = cursor.getString(cursor.getColumnIndex(ord_comment));
-        order.ord_delivery = cursor.getString(cursor.getColumnIndex(ord_delivery));
-        order.ord_timecreated = cursor.getString(cursor.getColumnIndex(ord_timecreated));
-        order.ord_timesync = cursor.getString(cursor.getColumnIndex(ord_timesync));
-        order.qb_synctime = cursor.getString(cursor.getColumnIndex(qb_synctime));
-        order.emailed = cursor.getString(cursor.getColumnIndex(emailed));
-        order.processed = cursor.getString(cursor.getColumnIndex(processed));
-        order.ord_type = cursor.getString(cursor.getColumnIndex(ord_type));
-        order.ord_claimnumber = cursor.getString(cursor.getColumnIndex(ord_claimnumber));
-        order.ord_rganumber = cursor.getString(cursor.getColumnIndex(ord_rganumber));
-        order.ord_returns_pu = cursor.getString(cursor.getColumnIndex(ord_returns_pu));
-        order.ord_inventory = cursor.getString(cursor.getColumnIndex(ord_inventory));
-        order.ord_issync = cursor.getString(cursor.getColumnIndex(ord_issync));
-        order.tax_id = cursor.getString(cursor.getColumnIndex(tax_id));
-        order.ord_shipvia = cursor.getString(cursor.getColumnIndex(ord_shipvia));
-        order.ord_shipto = cursor.getString(cursor.getColumnIndex(ord_shipto));
-        order.ord_terms = cursor.getString(cursor.getColumnIndex(ord_terms));
-        order.ord_custmsg = cursor.getString(cursor.getColumnIndex(ord_custmsg));
-        order.ord_class = cursor.getString(cursor.getColumnIndex(ord_class));
-        order.ord_subtotal = cursor.getString(cursor.getColumnIndex(ord_subtotal));
-        order.ord_taxamount = cursor.getString(cursor.getColumnIndex(ord_taxamount));
-        order.ord_discount = cursor.getString(cursor.getColumnIndex(ord_discount));
-        order.ord_discount_id = cursor.getString(cursor.getColumnIndex(ord_discount_id));
-        order.ord_latitude = cursor.getString(cursor.getColumnIndex(ord_latitude));
-        order.ord_longitude = cursor.getString(cursor.getColumnIndex(ord_longitude));
-        order.tipAmount = cursor.getString(cursor.getColumnIndex(tipAmount));
-        order.isVoid = cursor.getString(cursor.getColumnIndex(isVoid));
-        order.VAT = Boolean.toString(cursor.getString(cursor.getColumnIndex("VAT")).equals("1"));
-        order.custidkey = cursor.getString(cursor.getColumnIndex(custidkey));
-        order.isOnHold = cursor.getString(cursor.getColumnIndex(isOnHold));
-        order.ord_HoldName = cursor.getString(cursor.getColumnIndex(ord_HoldName));
-        order.is_stored_fwd = cursor.getString(cursor.getColumnIndex(is_stored_fwd));
-        order.custidkey = cursor.getString(cursor.getColumnIndex(custidkey));
-        custHandler = new CustomersHandler(activity);
-        order.customer = custHandler.getCustomer(order.cust_id);
-        String attributes = cursor.getString(cursor.getColumnIndex(orderAttributes));
-        if (!TextUtils.isEmpty(attributes)) {
-            Gson gson = JsonUtils.getInstance();
-            Type listType = new com.google.gson.reflect.TypeToken<List<OrderAttributes>>() {
-            }.getType();
-            order.orderAttributes = gson.fromJson(attributes, listType);
-        }
-        taxes_db = getOrderTaxes_DB();
-        List<DataTaxes> orderTaxes = taxes_db.getOrderTaxes(order.ord_id);
-        order.setListOrderTaxes(orderTaxes);
-        orderProductsHandler = getOrderProductsHandler(activity);
-        order.setOrderProducts(orderProductsHandler.getOrderProducts(order.ord_id));
-        return order;
-    }
-
-    private static OrderTaxes_DB getOrderTaxes_DB() {
-        if (taxes_db == null) {
-            taxes_db = new OrderTaxes_DB();
-        }
-        return taxes_db;
-    }
-
-    private static OrderProductsHandler getOrderProductsHandler(Context context) {
-        if (orderProductsHandler == null) {
-            orderProductsHandler = new OrderProductsHandler(context);
-        }
-        return orderProductsHandler;
     }
 
     public Order getOrder(String orderId) {

@@ -278,12 +278,12 @@ public class Order implements Cloneable {
         }
     }
 
-    public void setRetailTaxes(boolean retailTaxes) {
-        this.retailTaxes = retailTaxes;
-    }
-
     public boolean isRetailTaxes() {
         return retailTaxes;
+    }
+
+    public void setRetailTaxes(boolean retailTaxes) {
+        this.retailTaxes = retailTaxes;
     }
 
     @Override
@@ -312,5 +312,10 @@ public class Order implements Cloneable {
                 product.setAttributesCompleted(product.getRequiredProductAttributes().contains(attribute));
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        return String.format("id:%s - total:%s - hold:%b - status:%s", this.ord_id, ord_total, isOnHold(), processed);
     }
 }
