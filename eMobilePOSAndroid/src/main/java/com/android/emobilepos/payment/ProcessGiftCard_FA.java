@@ -75,28 +75,25 @@ import util.json.UIUtils;
 
 public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener {
 
+    private static final String DATA_STRING_TAG = "com.motorolasolutions.emdk.datawedge.data_string";
+    private static CheckBox cardSwipe, redeemAll;
+    private static boolean cardReaderConnected = false;
+    private static String ourIntentAction = "";
     private EditText fieldAmountDue, fieldAmountTendered, fieldCardNum, fieldHidden;
     private Global global;
     private MyPreferences myPref;
     private CreditCardInfo cardInfoManager;
-    private static CheckBox cardSwipe, redeemAll;
     private boolean isFromMainMenu = false;
     private boolean isRefund = false;
-
     private Activity activity;
-
-    private static boolean cardReaderConnected = false;
     private EMSUniMagDriver uniMagReader;
     private EMSMagtekAudioCardReader magtekReader;
     private EditText subtotal, tax1, tax2;
     private List<GroupTax> groupTaxRate;
-
     private ProgressDialog myProgressDialog;
     private String inv_id, custidkey;
     private Payment payment;
     private PaymentsHandler payHandler;
-    private static String ourIntentAction = "";
-    private static final String DATA_STRING_TAG = "com.motorolasolutions.emdk.datawedge.data_string";
     private boolean hasBeenCreated = false;
     private EMSCallBack callBack;
     private EMSIDTechUSB _msrUsbSams;
@@ -112,6 +109,8 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         activity = this;
         callBack = this;
         assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+        Bundle extras = getIntent().getExtras();
+        boolean isFromSalesReceipt = extras.getBoolean("isFromSalesReceipt");
 
         Global.isEncryptSwipe = true;
         myPref = new MyPreferences(activity);
@@ -133,7 +132,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         TextView tax1Lbl = (TextView) findViewById(R.id.tax1GiftCardLbl);
         TextView tax2Lbl = (TextView) findViewById(R.id.tax2GiftCardLbl);
         msrTextWatcher = new GiftCardTextWatcher(activity, fieldHidden, fieldCardNum, cardInfoManager, Global.isEncryptSwipe);
-        if (!Global.isIvuLoto) {
+        if (!Global.isIvuLoto || isFromSalesReceipt) {
             findViewById(R.id.row1Gift).setVisibility(View.GONE);
             findViewById(R.id.row2Gift).setVisibility(View.GONE);
             findViewById(R.id.row3Gift).setVisibility(View.GONE);
@@ -503,104 +502,6 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         new processLivePaymentAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, generatedURL);
     }
 
-    private class processLivePaymentAsync extends AsyncTask<String, String, String> {
-
-        private HashMap<String, String> parsedMap = new HashMap<String, String>();
-        private String urlToPost;
-        private boolean wasProcessed = false;
-        private String errorMsg = getString(R.string.coundnot_proceess_payment);
-
-        @Override
-        protected void onPreExecute() {
-            myProgressDialog = new ProgressDialog(activity);
-            myProgressDialog.setMessage(getString(R.string.processing_payment_msg));
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            myProgressDialog.show();
-            if (_msrUsbSams != null && _msrUsbSams.isDeviceOpen()) {
-                _msrUsbSams.CloseTheDevice();
-            }
-
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-
-            Post httpClient = new Post(activity);
-
-            SAXParserFactory spf = SAXParserFactory.newInstance();
-            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
-            urlToPost = params[0];
-
-            try {
-                String xml = httpClient.postData(13, urlToPost);
-                switch (xml) {
-                    case Global.TIME_OUT:
-                        errorMsg = getString(R.string.timeout_tryagain);
-                        break;
-                    case Global.NOT_VALID_URL:
-                        errorMsg = getString(R.string.cannot_proceed);
-                        break;
-                    default:
-                        InputSource inSource = new InputSource(new StringReader(xml));
-
-                        SAXParser sp = spf.newSAXParser();
-                        XMLReader xr = sp.getXMLReader();
-                        xr.setContentHandler(handler);
-                        xr.parse(inSource);
-                        parsedMap = handler.getData();
-                        payment.setPay_amount(parsedMap.get("AuthorizedAmount"));
-                        double due = Double.parseDouble(payment.getOriginalTotalAmount() == null ? "0" : payment.getOriginalTotalAmount())
-                                - Double.parseDouble(payment.getPay_amount() == null ? "0" : payment.getPay_amount());
-                        payment.setPay_dueamount(String.valueOf(due));
-                        Global.amountPaid = payment.getPay_amount();
-                        if (parsedMap != null && parsedMap.size() > 0 && parsedMap.get("epayStatusCode").equals("APPROVED"))
-                            wasProcessed = true;
-                        else if (parsedMap != null && parsedMap.size() > 0) {
-                            errorMsg = "statusCode = " + parsedMap.get("statusCode") + "\n" + parsedMap.get("statusMessage");
-                        } else
-                            errorMsg = xml;
-                        break;
-                }
-
-            } catch (SAXException e) {
-                e.printStackTrace();
-                Crashlytics.logException(e);
-            } catch (ParserConfigurationException e) {
-                e.printStackTrace();
-                Crashlytics.logException(e);
-            } catch (IOException e) {
-                e.printStackTrace();
-                Crashlytics.logException(e);
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String unused) {
-            myProgressDialog.dismiss();
-
-            if (wasProcessed) // payment processing succeeded
-            {
-                payment.setPay_resultcode(parsedMap.get("pay_resultcode"));
-                payment.setPay_resultmessage(parsedMap.get("pay_resultmessage"));
-                payment.setPay_transid(parsedMap.get("CreditCardTransID"));
-                payment.setAuthcode(parsedMap.get("AuthorizationCode"));
-                payment.setProcessed("9");
-                Intent intent = new Intent(activity, DrawReceiptActivity.class);
-                intent.putExtra("isFromPayment", true);
-
-                payHandler.insert(payment);
-
-                showBalancePrompt("Status: " + parsedMap.get("epayStatusCode") + "\n" + "Auth. Amount: " + (parsedMap.get("AuthorizedAmount") == null ? "0.00" : parsedMap.get("AuthorizedAmount")) + "\n" + "Card Balance: " + Global.getCurrencyFrmt(parsedMap.get("CardBalance")) + "\n");
-            } else // payment processing failed
-            {
-                Global.showPrompt(activity, R.string.dlog_title_error, errorMsg);
-            }
-        }
-    }
-
     public void showBalancePrompt(String msg) {
         final Dialog dlog = new Dialog(this, R.style.Theme_TransparentTest);
         dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -650,7 +551,6 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         fieldCardNum.setText(cardInfoManager.getCardNumAESEncrypted());
         cardInfoManager.setWasSwiped(true);
     }
-
 
     @Override
     public void cardWasReadSuccessfully(boolean read, CreditCardInfo cardManager) {
@@ -766,5 +666,103 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
     @Override
     public void nfcWasRead(String nfcUID) {
 
+    }
+
+    private class processLivePaymentAsync extends AsyncTask<String, String, String> {
+
+        private HashMap<String, String> parsedMap = new HashMap<String, String>();
+        private String urlToPost;
+        private boolean wasProcessed = false;
+        private String errorMsg = getString(R.string.coundnot_proceess_payment);
+
+        @Override
+        protected void onPreExecute() {
+            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog.setMessage(getString(R.string.processing_payment_msg));
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setCancelable(false);
+            myProgressDialog.show();
+            if (_msrUsbSams != null && _msrUsbSams.isDeviceOpen()) {
+                _msrUsbSams.CloseTheDevice();
+            }
+
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            Post httpClient = new Post(activity);
+
+            SAXParserFactory spf = SAXParserFactory.newInstance();
+            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
+            urlToPost = params[0];
+
+            try {
+                String xml = httpClient.postData(13, urlToPost);
+                switch (xml) {
+                    case Global.TIME_OUT:
+                        errorMsg = getString(R.string.timeout_tryagain);
+                        break;
+                    case Global.NOT_VALID_URL:
+                        errorMsg = getString(R.string.cannot_proceed);
+                        break;
+                    default:
+                        InputSource inSource = new InputSource(new StringReader(xml));
+
+                        SAXParser sp = spf.newSAXParser();
+                        XMLReader xr = sp.getXMLReader();
+                        xr.setContentHandler(handler);
+                        xr.parse(inSource);
+                        parsedMap = handler.getData();
+                        payment.setPay_amount(parsedMap.get("AuthorizedAmount"));
+                        double due = Double.parseDouble(payment.getOriginalTotalAmount() == null ? "0" : payment.getOriginalTotalAmount())
+                                - Double.parseDouble(payment.getPay_amount() == null ? "0" : payment.getPay_amount());
+                        payment.setPay_dueamount(String.valueOf(due));
+                        Global.amountPaid = payment.getPay_amount();
+                        if (parsedMap != null && parsedMap.size() > 0 && parsedMap.get("epayStatusCode").equals("APPROVED"))
+                            wasProcessed = true;
+                        else if (parsedMap != null && parsedMap.size() > 0) {
+                            errorMsg = "statusCode = " + parsedMap.get("statusCode") + "\n" + parsedMap.get("statusMessage");
+                        } else
+                            errorMsg = xml;
+                        break;
+                }
+
+            } catch (SAXException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
+            } catch (ParserConfigurationException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
+            } catch (IOException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String unused) {
+            myProgressDialog.dismiss();
+
+            if (wasProcessed) // payment processing succeeded
+            {
+                payment.setPay_resultcode(parsedMap.get("pay_resultcode"));
+                payment.setPay_resultmessage(parsedMap.get("pay_resultmessage"));
+                payment.setPay_transid(parsedMap.get("CreditCardTransID"));
+                payment.setAuthcode(parsedMap.get("AuthorizationCode"));
+                payment.setProcessed("9");
+                Intent intent = new Intent(activity, DrawReceiptActivity.class);
+                intent.putExtra("isFromPayment", true);
+
+                payHandler.insert(payment);
+
+                showBalancePrompt("Status: " + parsedMap.get("epayStatusCode") + "\n" + "Auth. Amount: " + (parsedMap.get("AuthorizedAmount") == null ? "0.00" : parsedMap.get("AuthorizedAmount")) + "\n" + "Card Balance: " + Global.getCurrencyFrmt(parsedMap.get("CardBalance")) + "\n");
+            } else // payment processing failed
+            {
+                Global.showPrompt(activity, R.string.dlog_title_error, errorMsg);
+            }
+        }
     }
 }
