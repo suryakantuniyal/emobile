@@ -1326,7 +1326,7 @@ public class Global extends MultiDexApplication {
         RealmConfiguration config = new RealmConfiguration.Builder()
                 .migration(new EmobilePOSRealmMigration())
                 .modules(Realm.getDefaultModule(), new RealmModule())
-                .schemaVersion(3)
+                .schemaVersion(4)
                 .build();
         Realm.setDefaultConfiguration(config);
         Realm.compactRealm(config);

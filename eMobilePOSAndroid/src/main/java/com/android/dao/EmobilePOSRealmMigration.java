@@ -1,8 +1,9 @@
 package com.android.dao;
 
-import com.android.emobilepos.models.realms.Clerk;
+import com.android.emobilepos.models.realms.CustomerCustomField;
 
 import io.realm.DynamicRealm;
+import io.realm.FieldAttribute;
 import io.realm.RealmSchema;
 
 /**
@@ -14,9 +15,12 @@ public class EmobilePOSRealmMigration implements io.realm.RealmMigration {
     public void migrate(DynamicRealm realm, long oldVersion, long newVersion) {
         if (oldVersion != newVersion) {
             RealmSchema schema = realm.getSchema();
-            if (oldVersion == 2) {
-                schema.get(Clerk.class.getSimpleName()).
-                        addField("tempid", int.class);
+            if (oldVersion < 4) {
+                schema.create(CustomerCustomField.class.getSimpleName()).
+                        addField("custId", String.class, FieldAttribute.INDEXED)
+                        .addField("custFieldId", String.class, FieldAttribute.INDEXED)
+                        .addField("custFieldName", String.class)
+                        .addField("custValue", String.class);
                 oldVersion++;
             }
         }
