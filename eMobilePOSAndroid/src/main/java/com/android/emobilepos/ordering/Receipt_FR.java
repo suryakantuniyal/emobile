@@ -668,6 +668,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                     if (OrderLoyalty_FR.isValidPointClaim(price)) {
                                         orderSeatProduct.orderProduct.setOverwrite_price(null);
                                         orderSeatProduct.orderProduct.setItemTotal("0.00");
+                                        orderSeatProduct.orderProduct.setProd_price("0.00");
 //                                        orderSeatProduct.orderProduct.setItemSubtotal("0.00");
                                         orderSeatProduct.orderProduct.setPayWithPoints("true");
                                         refreshView();
