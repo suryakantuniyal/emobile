@@ -691,10 +691,10 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         reCalculate(global.order.getOrderProducts());
     }
 
-    private class ReCalculate extends AsyncTask<List<OrderProduct>, Void, Void> {
+    private class ReCalculate extends AsyncTask<List<OrderProduct>, Void, OrderTotalDetails> {
 
         @Override
-        protected Void doInBackground(List<OrderProduct>... params) {
+        protected OrderTotalDetails doInBackground(List<OrderProduct>... params) {
             List<OrderProduct> orderProducts = params[0];
             if (myPref.isMixAnMatch() && orderProducts != null && !orderProducts.isEmpty()) {
                 boolean isGroupBySKU = myPref.isGroupReceiptBySku(isToGo);//myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku) && isToGo;
@@ -713,16 +713,21 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             sub_total = totalDetails.getSubtotal();
             tax_amount = Global.getRoundBigDecimal(totalDetails.getTax(), 2);
             discount_amount = totalDetails.getGlobalDiscount();
-            return null;
+            return totalDetails;
         }
 
         @Override
-        protected synchronized void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
+        protected synchronized void onPostExecute(OrderTotalDetails totalDetails) {
+            super.onPostExecute(totalDetails);
             subTotal.setText(Global.getCurrencyFrmt(String.valueOf(sub_total)));
             granTotal.setText(Global.getCurrencyFrmt(String.valueOf(gran_total)));
             globalTax.setText(Global.getCurrencyFrmt(String.valueOf(tax_amount)));
             globalDiscount.setText(Global.getCurrencyFrmt(String.valueOf(discount_amount)));
+            OrderLoyalty_FR.recalculatePoints(String.valueOf(totalDetails.getPointsSubTotal()), String.valueOf(totalDetails.getPointsInUse()),
+                    String.valueOf(totalDetails.getPointsAcumulable()), gran_total.toString());
+            BigDecimal discountableAmount = totalDetails.getSubtotal();
+            discountableAmount.subtract(Global.rewardChargeAmount);
+            OrderRewards_FR.setRewardSubTotal(discountable_sub_total.toString());
             OrderingMain_FA mainFa = (OrderingMain_FA) getActivity();
             mainFa.enableCheckoutButton();
         }

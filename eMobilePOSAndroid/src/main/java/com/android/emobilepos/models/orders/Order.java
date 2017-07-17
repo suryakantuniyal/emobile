@@ -155,6 +155,13 @@ public class Order implements Cloneable {
                 if (isVAT) {
                     setVATTax(tax);
                 }
+                totalDetails.setPointsSubTotal(totalDetails.getPointsSubTotal()
+                        .add(Global.getBigDecimalNum(orderProduct.getProd_price_points())));
+                totalDetails.setPointsAcumulable(totalDetails.getPointsAcumulable()
+                        .add(Global.getBigDecimalNum(orderProduct.getProd_value_points())));
+                if (Boolean.parseBoolean(orderProduct.getPayWithPoints())) {
+                    totalDetails.setPointsInUse(totalDetails.getPointsInUse().add(new BigDecimal(orderProduct.getProd_price_points())));
+                }
                 totalDetails.setSubtotal(totalDetails.getSubtotal()
                         .add(orderProduct.getItemSubtotalCalculated()).setScale(6, RoundingMode.HALF_UP));
                 totalDetails.setTax(totalDetails.getTax()

@@ -490,9 +490,8 @@ public class TaxesCalculator {
 
     private TaxesCalculator calculateTaxes(OrderProduct orderProduct) {
 
-        TaxesCalculator taxesCalculator = new TaxesCalculator(activity, orderProduct, Global.taxID,
+        return new TaxesCalculator(activity, orderProduct, Global.taxID,
                 taxSelected, discountSelected, discountable_sub_total, itemsDiscountTotal);
-        return taxesCalculator;
 
     }
 

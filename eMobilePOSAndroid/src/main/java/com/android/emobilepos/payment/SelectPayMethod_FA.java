@@ -85,7 +85,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import util.json.JsonUtils;
 import util.json.UIUtils;
 
 public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements OnClickListener, OnItemClickListener {
@@ -826,19 +825,19 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             }
         });
 
-        if (withPrintRequest && myPref.getPreferences(MyPreferences.pref_enable_printing)
-                && myPref.getPreferences(MyPreferences.pref_automatic_printing)) {
-            if (Global.loyaltyCardInfo != null && !Global.loyaltyCardInfo.getCardNumUnencrypted().isEmpty()) {
-                processInquiry(true);
-            } else if (Global.rewardCardInfo != null && !Global.rewardCardInfo.getCardNumUnencrypted().isEmpty()) {
-                processInquiry(false);
-            } else {
-                if ((emvContainer != null && emvContainer.getGeniusResponse() != null &&
-                        emvContainer.getGeniusResponse().getStatus().equalsIgnoreCase("APPROVED")) ||
-                        emvContainer == null || emvContainer.getGeniusResponse() == null) {
-                    new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
-                }
+//        if (withPrintRequest && myPref.getPreferences(MyPreferences.pref_enable_printing)
+//                && myPref.getPreferences(MyPreferences.pref_automatic_printing)) {
+        if (Global.loyaltyCardInfo != null && !Global.loyaltyCardInfo.getCardNumUnencrypted().isEmpty()) {
+            processInquiry(true);
+        } else if (Global.rewardCardInfo != null && !Global.rewardCardInfo.getCardNumUnencrypted().isEmpty()) {
+            processInquiry(false);
+        } else {
+            if ((emvContainer != null && emvContainer.getGeniusResponse() != null &&
+                    emvContainer.getGeniusResponse().getStatus().equalsIgnoreCase("APPROVED")) ||
+                    emvContainer == null || emvContainer.getGeniusResponse() == null) {
+                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
             }
+//            }
         }
     }
 
