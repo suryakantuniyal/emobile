@@ -10,6 +10,7 @@ import io.realm.RealmSchema;
  * Created by Guarionex on 4/13/2016.
  */
 public class EmobilePOSRealmMigration implements io.realm.RealmMigration {
+    public static int REALM_SCHEMA_VERSION = 4;
 
     @Override
     public void migrate(DynamicRealm realm, long oldVersion, long newVersion) {
