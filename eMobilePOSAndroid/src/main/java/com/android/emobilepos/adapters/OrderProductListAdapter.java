@@ -27,38 +27,28 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import interfaces.PayWithLoyalty;
+
 /**
  * Created by Guarionex on 1/20/2016.
  */
 public class OrderProductListAdapter extends BaseAdapter {
 
-    private OrderingMain_FA orderingMainFa;
-    Global global;
-
-    public enum RowType {
-        TYPE_HEADER(0), TYPE_ITEM(1);
-        int code;
-
-        RowType(int code) {
-            this.code = code;
-        }
-
-        public int getCode() {
-            return code;
-        }
-    }
-
-    private LayoutInflater mInflater;
-    List<OrderProduct> orderProducts;
     public List<OrderSeatProduct> orderSeatProductList;
     public List<OrderSeatProduct> orderSeatProductFullList;
-    private MyPreferences myPref;
     public int selectedPosition;
+    Global global;
+    List<OrderProduct> orderProducts;
     Activity activity;
+    private OrderingMain_FA orderingMainFa;
+    private LayoutInflater mInflater;
+    private MyPreferences myPref;
+    PayWithLoyalty payWithLoyalty;
 
     public OrderProductListAdapter(Activity activity, List<OrderProduct> orderProducts,
                                    OrderingMain_FA orderingMainFa) {
         this.orderingMainFa = orderingMainFa;
+        payWithLoyalty = orderingMainFa.getLeftFragment();
         mInflater = (LayoutInflater) activity
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         myPref = new MyPreferences(activity);
@@ -298,6 +288,7 @@ public class OrderProductListAdapter extends BaseAdapter {
                 holder.granTotal = (TextView) convertView.findViewById(R.id.granTotal);
                 holder.addonsTextView = (TextView) convertView.findViewById(R.id.addonsTextView);
                 holder.addonButton = (Button) convertView.findViewById(R.id.addonButton);
+                holder.loyaltyPayButton = (ImageButton) convertView.findViewById(R.id.loyaltyPayimageButton);
                 if (holder.addonButton != null)
                     holder.addonButton.setFocusable(false);
                 if (orderSeatProductList.get(position).rowType == RowType.TYPE_ITEM) {
@@ -315,6 +306,17 @@ public class OrderProductListAdapter extends BaseAdapter {
         final int orderProductIdx = orderSeatProductList.get(pos).rowType == OrderProductListAdapter.RowType.TYPE_ITEM ? global.order.getOrderProducts().indexOf(orderSeatProductList.get(pos).orderProduct) : 0;
         final String tempId = product.getOrdprod_id();
 
+        if (product.isPayWithPoints()) {
+            holder.loyaltyPayButton.setVisibility(View.VISIBLE);
+            holder.loyaltyPayButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    payWithLoyalty.processPayWithLoyalty(orderSeatProductList.get(pos));
+                }
+            });
+        } else {
+            holder.loyaltyPayButton.setVisibility(View.GONE);
+        }
         if (!myPref.isRestaurantMode()
                 || (myPref.isRestaurantMode()
                 && !product.getHasAddons())) {
@@ -390,6 +392,19 @@ public class OrderProductListAdapter extends BaseAdapter {
 
     }
 
+    public enum RowType {
+        TYPE_HEADER(0), TYPE_ITEM(1);
+        int code;
+
+        RowType(int code) {
+            this.code = code;
+        }
+
+        public int getCode() {
+            return code;
+        }
+    }
+
     public class ViewHolder {
         TextView itemQty;
         TextView itemName;
@@ -398,6 +413,7 @@ public class OrderProductListAdapter extends BaseAdapter {
         TextView distAmount;
         TextView granTotal;
         Button addonButton;
+        ImageButton loyaltyPayButton;
         TextView addonsTextView;
     }
 
