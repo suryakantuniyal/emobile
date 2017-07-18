@@ -22,6 +22,11 @@ import java.util.Locale;
 import util.json.JsonUtils;
 
 public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
+    public String priceLevelName = "";
+    public List<ProductAttribute> requiredProductAttributes = new ArrayList<ProductAttribute>();
+    public List<OrderProduct> addonsProducts = new ArrayList<OrderProduct>();
+    public String addon_section_name = "";
+    public String addon_position = "";
     private boolean addon;
     private boolean isAdded;
     private boolean isPrinted;
@@ -56,7 +61,6 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     private String prod_value_points = "0";
     private String payWithPoints = "false";
     private String pricesXGroupid;
-
     private String itemTotalVatExclusive = "0";
     private String itemTotal = "0";
     //    private String itemSubtotal = "0";
@@ -66,25 +70,17 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     private String taxTotal = "0";
     private String onHand = "0";
     private String imgURL = "";
-
     private String tax_position = "";
     private String discount_position = "";
     private String pricelevel_position = "";
     private String uom_position = "";
+    //    private String prod_taxtype;
     private String prod_price = "";
     private String prod_type = "";
     private String tax_type = "";
     private String discount_is_taxable = "0";
     private String discount_is_fixed = "0";
-//    private String prod_taxtype;
-
-    public String priceLevelName = "";
-    public List<ProductAttribute> requiredProductAttributes = new ArrayList<ProductAttribute>();
-    public List<OrderProduct> addonsProducts = new ArrayList<OrderProduct>();
     private Boolean hasAddons; //0 no addons, 1 it has addons
-    public String addon_section_name = "";
-    public String addon_position = "";
-
     private String prod_price_updated = "0";
 
     private boolean isReturned = false;
@@ -133,6 +129,12 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
 
     }
 
+    public static OrderProduct getInstance(String ordprod_id) {
+        OrderProduct product = new OrderProduct();
+        product.setOrdprod_id(ordprod_id);
+        return product;
+    }
+
     @Override
     public Object clone() throws CloneNotSupportedException {
         Object clone = super.clone();
@@ -163,10 +165,6 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     @Override
     public int compareTo(OrderProduct another) {
         return this.getOrdprod_id().compareTo(another.getOrdprod_id());
-    }
-
-    public void setPricesXGroupid(String pricesXGroupid) {
-        this.pricesXGroupid = pricesXGroupid;
     }
 
     public void setOverwritePrice(BigDecimal overwriteAmount, Activity activity) {
@@ -228,10 +226,8 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         return pricesXGroupid;
     }
 
-    public static OrderProduct getInstance(String ordprod_id) {
-        OrderProduct product = new OrderProduct();
-        product.setOrdprod_id(ordprod_id);
-        return product;
+    public void setPricesXGroupid(String pricesXGroupid) {
+        this.pricesXGroupid = pricesXGroupid;
     }
 
     public String getFinalPrice() {
@@ -487,10 +483,6 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         return payWithPoints;
     }
 
-    public void setPayWithPoints(String payWithPoints) {
-        this.payWithPoints = payWithPoints;
-    }
-
     public String getItemTotalVatExclusive() {
         return itemTotalVatExclusive;
     }
@@ -507,6 +499,10 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         this.itemTotal = itemTotal;
     }
 
+    public String getDisAmount() {
+        return disAmount;
+    }
+
 //    public String getItemSubtotal() {
 //        return itemSubtotal;
 //    }
@@ -514,10 +510,6 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
 //    public void setItemSubtotal(String itemSubtotal) {
 //        this.itemSubtotal = itemSubtotal;
 //    }
-
-    public String getDisAmount() {
-        return disAmount;
-    }
 
     public void setDisAmount(String disAmount) {
         this.disAmount = disAmount;
@@ -638,6 +630,10 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         this.discount_is_fixed = discount_is_fixed;
     }
 
+    public String getPriceLevelName() {
+        return priceLevelName;
+    }
+
 //    public String getProd_taxtype() {
 //        return prod_taxtype;
 //    }
@@ -645,10 +641,6 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
 //    public void setProd_taxtype(String prod_taxtype) {
 //        this.prod_taxtype = prod_taxtype;
 //    }
-
-    public String getPriceLevelName() {
-        return priceLevelName;
-    }
 
     public void setPriceLevelName(String priceLevelName) {
         this.priceLevelName = priceLevelName;
@@ -826,7 +818,6 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         return taxAmount;
     }
 
-
     public BigDecimal getItemSubtotalCalculated() {
         BigDecimal subtotal;
         BigDecimal addonsTotalPrice = getAddonsTotalPrice();
@@ -895,11 +886,19 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         return !TextUtils.isEmpty(getPrice_vat_exclusive()) && !getPrice_vat_exclusive().equals("0");
     }
 
+    public boolean isAttributesCompleted() {
+        return attributesCompleted;
+    }
+
     public void setAttributesCompleted(boolean attributesCompleted) {
         this.attributesCompleted = attributesCompleted;
     }
 
-    public boolean isAttributesCompleted() {
-        return attributesCompleted;
+    public boolean isPayWithPoints() {
+        return !TextUtils.isEmpty(getProd_price_points()) && Double.parseDouble(getProd_price_points()) > 0;
+    }
+
+    public void setPayWithPoints(String payWithPoints) {
+        this.payWithPoints = payWithPoints;
     }
 }

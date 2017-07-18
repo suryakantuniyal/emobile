@@ -98,10 +98,11 @@ import java.util.HashMap;
 import java.util.List;
 
 import drivers.EMSBluetoothStarPrinter;
+import interfaces.PayWithLoyalty;
 import util.json.JsonUtils;
 
 public class Receipt_FR extends Fragment implements OnClickListener,
-        OnItemClickListener, OnDrawerOpenListener, OnDrawerCloseListener {
+        OnItemClickListener, OnDrawerOpenListener, OnDrawerCloseListener, PayWithLoyalty {
 
     public static ListView receiptListView;
     public static Receipt_FR fragInstance;
@@ -663,23 +664,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                             case R.id.viewVariations:
                                 break;
                             case R.id.payWithLoyalty:
-                                if (!Boolean.parseBoolean(global.order.getOrderProducts().get(orderProductIdx).getPayWithPoints())) {
-                                    String price = orderSeatProduct.orderProduct.getProd_price_points();
-                                    if (OrderLoyalty_FR.isValidPointClaim(price)) {
-                                        orderSeatProduct.orderProduct.setOverwrite_price(null);
-                                        orderSeatProduct.orderProduct.setItemTotal("0.00");
-                                        orderSeatProduct.orderProduct.setProd_price("0.00");
-//                                        orderSeatProduct.orderProduct.setItemSubtotal("0.00");
-                                        orderSeatProduct.orderProduct.setPayWithPoints("true");
-                                        refreshView();
-                                    } else
-                                        Global.showPrompt(getActivity(),
-                                                R.string.dlog_title_error,
-                                                "Not enough points available");
-                                } else {
-                                    Global.showPrompt(getActivity(), R.string.dlog_title_error,
-                                            "Points claimed");
-                                }
+                                processPayWithLoyalty(orderSeatProduct);
                                 break;
                             case R.id.overridePrice:
                                 if (hasOverwritePermission) {
@@ -715,6 +700,28 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         }
         receiptListView.smoothScrollToPosition(position);
 
+    }
+
+
+    @Override
+    public void processPayWithLoyalty(OrderSeatProduct orderSeatProduct) {
+        if (!Boolean.parseBoolean(orderSeatProduct.orderProduct.getPayWithPoints())) {
+            String price = orderSeatProduct.orderProduct.getProd_price_points();
+            if (OrderLoyalty_FR.isValidPointClaim(price)) {
+                orderSeatProduct.orderProduct.setOverwrite_price(null);
+                orderSeatProduct.orderProduct.setItemTotal("0.00");
+                orderSeatProduct.orderProduct.setProd_price("0.00");
+//                                        orderSeatProduct.orderProduct.setItemSubtotal("0.00");
+                orderSeatProduct.orderProduct.setPayWithPoints("true");
+                refreshView();
+            } else
+                Global.showPrompt(getActivity(),
+                        R.string.dlog_title_error,
+                        "Not enough points available");
+        } else {
+            Global.showPrompt(getActivity(), R.string.dlog_title_error,
+                    "Points claimed");
+        }
     }
 
     public void checkoutOrder() {
@@ -2252,7 +2259,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
             Global.dismissDialog(getActivity(), dialog);
-            if(getActivity() != null) {
+            if (getActivity() != null) {
                 if (!isToGo && ((OrderingMain_FA) getActivity()).orderingAction != OrderingMain_FA.OrderingAction.HOLD
                         && (((OrderingMain_FA) getActivity()).orderingAction == OrderingMain_FA.OrderingAction.CHECKOUT ||
                         ((OrderingMain_FA) getActivity()).orderingAction != OrderingMain_FA.OrderingAction.BACK_PRESSED)) {
