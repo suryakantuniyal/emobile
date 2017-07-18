@@ -508,10 +508,6 @@
         <!-- </service> -->
         <activity android:name=".shifts.ShiftsActivity" />
 
-        <service
-            android:name="com.emobilepos.app.AutoSyncService"
-            android:enabled="true"
-            android:exported="true"></service>
     </application>
 
 </manifest>

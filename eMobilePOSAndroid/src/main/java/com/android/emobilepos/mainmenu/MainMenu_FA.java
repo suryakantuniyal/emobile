@@ -248,6 +248,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
             startPollingService();
         }
         registerReceiver(messageReceiver, new IntentFilter(NOTIFICATION_RECEIVED));
+        DeviceUtils.registerFingerPrintReader(this);
         if (global.isApplicationSentToBackground()) {
             Global.loggedIn = false;
         }
@@ -268,7 +269,8 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
             SynchMethods sm = new SynchMethods(dbManager);
             sm.synchSend(Global.FROM_SYNCH_ACTIVITY, true, activity);
             getSynchTextView().setText(getString(R.string.sync_inprogress));
-            getSynchTextView().setVisibility(View.VISIBLE);        }
+            getSynchTextView().setVisibility(View.VISIBLE);
+        }
 
         if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward))
             tvStoreForward.setVisibility(View.VISIBLE);
@@ -340,6 +342,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
     public void onPause() {
         super.onPause();
         unregisterReceiver(messageReceiver);
+        DeviceUtils.unregisterFingerPrintReader(this);
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         boolean isScreenOn = powerManager.isScreenOn();
         if (!isScreenOn)
