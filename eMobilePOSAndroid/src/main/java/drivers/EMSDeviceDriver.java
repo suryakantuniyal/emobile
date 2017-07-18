@@ -42,6 +42,7 @@ import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.PaymentDetails;
 import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.TimeClock;
 import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
@@ -107,31 +108,67 @@ import util.StringUtil;
 
 public class EMSDeviceDriver {
     private static final boolean PRINT_TO_LOG = BuildConfig.PRINT_TO_LOG;
+    static PrinterApiContext printerApi;
+    private static int PAPER_WIDTH;
+    protected final String FORMAT = "windows-1252";
+    private final int ALIGN_LEFT = 0, ALIGN_CENTER = 1;
     protected EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
-    private double saveAmount;
     protected List<String> printPref;
     protected MyPreferences myPref;
     protected Activity activity;
     protected StarIOPort port;
-    protected final String FORMAT = "windows-1252";
     protected String encodedSignature;
-    byte[] enableCenter, disableCenter;
     protected boolean isPOSPrinter = false;
     protected String encodedQRCode = "";
-    static PrinterApiContext printerApi;
     protected Connection_Bluetooth device;
+    byte[] enableCenter, disableCenter;
     PowaPOS powaPOS;
     MePOS mePOS;
     POSSDK pos_sdk = null;
     PrinterAPI eloPrinterApi;
     POSPrinter bixolonPrinter;
     MePOSReceipt mePOSReceipt;
-
-    private final int ALIGN_LEFT = 0, ALIGN_CENTER = 1;
-
     InputStream inputStream;
     OutputStream outputStream;
-    private static int PAPER_WIDTH;
+    private double saveAmount;
+
+    private static byte[] convertFromListbyteArrayTobyteArray(List<byte[]> ByteArray) {
+        int dataLength = 0;
+        for (int i = 0; i < ByteArray.size(); i++) {
+            dataLength += ByteArray.get(i).length;
+        }
+
+        int distPosition = 0;
+        byte[] byteArray = new byte[dataLength];
+        for (int i = 0; i < ByteArray.size(); i++) {
+            System.arraycopy(ByteArray.get(i), 0, byteArray, distPosition, ByteArray.get(i).length);
+            distPosition += ByteArray.get(i).length;
+        }
+
+        return byteArray;
+    }
+
+    public static Bitmap loadBitmapFromView(View v) {
+        Bitmap b = Bitmap.createBitmap(v.getWidth(), v.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas c = new Canvas(b);
+        v.layout(v.getLeft(), v.getTop(), v.getRight(), v.getBottom());
+        v.draw(c);
+        int margins = Double.valueOf(PAPER_WIDTH * .10).intValue();
+        float ratio = Integer.valueOf(PAPER_WIDTH - margins).floatValue() / Integer.valueOf(b.getWidth()).floatValue();
+        int width = Math.round(ratio * b.getWidth());
+        int height = Math.round(ratio * b.getHeight());
+        b = Bitmap.createScaledBitmap(b, width, height, true);
+        return b;
+    }
+
+    public static Bitmap scaleDown(Bitmap realImage, float maxImageSize, boolean filter) {
+        float ratio = Math.min(maxImageSize / realImage.getWidth(),
+                maxImageSize / realImage.getHeight());
+        int width = Math.round(ratio * realImage.getWidth());
+        int height = Math.round(ratio * realImage.getHeight());
+
+        return Bitmap.createScaledBitmap(realImage, width, height, filter);
+    }
 
     public void connect(Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
     }
@@ -1064,22 +1101,6 @@ public class EMSDeviceDriver {
         }
     }
 
-    private static byte[] convertFromListbyteArrayTobyteArray(List<byte[]> ByteArray) {
-        int dataLength = 0;
-        for (int i = 0; i < ByteArray.size(); i++) {
-            dataLength += ByteArray.get(i).length;
-        }
-
-        int distPosition = 0;
-        byte[] byteArray = new byte[dataLength];
-        for (int i = 0; i < ByteArray.size(); i++) {
-            System.arraycopy(ByteArray.get(i), 0, byteArray, distPosition, ByteArray.get(i).length);
-            distPosition += ByteArray.get(i).length;
-        }
-
-        return byteArray;
-    }
-
     protected void printImage(int type) throws StarIOPortException, JAException {
         if (PRINT_TO_LOG) {
             Log.d("Print", "*******Image Print***********");
@@ -1278,19 +1299,6 @@ public class EMSDeviceDriver {
 
     }
 
-    public static Bitmap loadBitmapFromView(View v) {
-        Bitmap b = Bitmap.createBitmap(v.getWidth(), v.getHeight(), Bitmap.Config.ARGB_8888);
-        Canvas c = new Canvas(b);
-        v.layout(v.getLeft(), v.getTop(), v.getRight(), v.getBottom());
-        v.draw(c);
-        int margins = Double.valueOf(PAPER_WIDTH * .10).intValue();
-        float ratio = Integer.valueOf(PAPER_WIDTH - margins).floatValue() / Integer.valueOf(b.getWidth()).floatValue();
-        int width = Math.round(ratio * b.getWidth());
-        int height = Math.round(ratio * b.getHeight());
-        b = Bitmap.createScaledBitmap(b, width, height, true);
-        return b;
-    }
-
     protected void printImage(Bitmap bitmap) throws StarIOPortException, JAException {
         if (PRINT_TO_LOG) {
             Log.d("Print", "*******Image Print***********");
@@ -1402,15 +1410,6 @@ public class EMSDeviceDriver {
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
     }
 
-    public static Bitmap scaleDown(Bitmap realImage, float maxImageSize, boolean filter) {
-        float ratio = Math.min(maxImageSize / realImage.getWidth(),
-                maxImageSize / realImage.getHeight());
-        int width = Math.round(ratio * realImage.getWidth());
-        int height = Math.round(ratio * realImage.getHeight());
-
-        return Bitmap.createScaledBitmap(realImage, width, height, filter);
-    }
-
     public void printHeader(int lineWidth) {
 
         EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
@@ -1461,6 +1460,33 @@ public class EMSDeviceDriver {
                 print("\n");
             }
         }
+    }
+
+    public void printClockInOut(List<TimeClock> timeClocks, int lineWidth, String clerkID) {
+        EMSPlainTextHelper textHelper = new EMSPlainTextHelper();
+        Clerk clerk = ClerkDAO.getByEmpId(Integer.parseInt(clerkID));
+        StringBuilder str = new StringBuilder();
+        str.append(textHelper.centeredString(activity.getString(R.string.clockReceipt), lineWidth));
+        str.append(textHelper.newLines(1));
+        str.append(textHelper.twoColumnLineWithLeftAlignedText(DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_dd_h_mm_a),
+                String.format("%s%s", activity.getString(R.string.receipt_employee), clerk.getEmpName()), lineWidth, 0));
+        str.append(textHelper.newDivider('-', lineWidth));
+//        str.append(textHelper.newLines(1));
+        str.append(textHelper.fourColumnLineWithLeftAlignedText(activity.getString(R.string.receipt_date),
+                activity.getString(R.string.clock_in), activity.getString(R.string.clock_out), activity.getString(R.string.hours),
+                lineWidth, 0));
+        for (TimeClock clock : timeClocks) {
+            Date updated = DateUtils.getDateStringAsDate(clock.updated, DateUtils.DATE_PATTERN);
+            Date punchtime = DateUtils.getDateStringAsDate(clock.punchtime, DateUtils.DATE_PATTERN);
+            str.append(textHelper.fourColumnLineWithLeftAlignedText(DateUtils.getDateAsString(punchtime,DateUtils.DATE_MM_DD),
+                    DateUtils.getDateAsString(punchtime,DateUtils.DATE_h_mm_a),
+                    DateUtils.getDateAsString(punchtime,DateUtils.DATE_h_mm_a), "6.5",
+                    lineWidth, 0));
+        }
+        str.append(textHelper.newLines(1));
+        str.append(textHelper.centeredString(String.format("%s6.5", activity.getString(R.string.total_hours_worked)), lineWidth));
+        str.append(textHelper.newLines(3));
+        print(str.toString());
     }
 
     public void printFooter(int lineWidth) {

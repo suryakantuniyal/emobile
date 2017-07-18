@@ -12,6 +12,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.TimeClock;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.internal.misccomm.MsrApiContext;
 import com.android.internal.misccomm.MsrManager;
@@ -437,6 +438,11 @@ public class EMSPAT215 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     @Override
     public boolean isConnected() {
         return true;
+    }
+
+    @Override
+    public void printClockInOut(List<TimeClock> timeClocks, String clerkID) {
+
     }
 
     @Override

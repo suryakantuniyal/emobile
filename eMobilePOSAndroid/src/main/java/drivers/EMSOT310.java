@@ -14,6 +14,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.TimeClock;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.internal.misccomm.misccommManager;
 import com.android.support.ConsignmentTransaction;
@@ -329,6 +330,11 @@ public class EMSOT310 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     @Override
     public boolean isConnected() {
         return true;
+    }
+
+    @Override
+    public void printClockInOut(List<TimeClock> timeClocks, String clerkID) {
+
     }
 
     private class MtHandlerCallback implements Handler.Callback {

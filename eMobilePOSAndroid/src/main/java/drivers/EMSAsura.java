@@ -37,6 +37,7 @@ import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.PaymentDetails;
 import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.TimeClock;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
@@ -1360,6 +1361,11 @@ public class EMSAsura extends EMSDeviceDriver
     @Override
     public boolean isConnected() {
         return true;
+    }
+
+    @Override
+    public void printClockInOut(List<TimeClock> timeClocks, String clerkID) {
+
     }
 
     @Override

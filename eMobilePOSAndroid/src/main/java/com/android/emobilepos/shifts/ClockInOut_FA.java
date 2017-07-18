@@ -376,11 +376,14 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
                     clockDateTime.setText(Global.formatToDisplayDate(inStringDate, 3));
                     switchButton(false);
                 }
+                List<TimeClock> timeClocks = timeClockHandler.getEmployeeTimeClock(mClerkID);
+                if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                    Global.mainPrinterManager.getCurrentDevice().printClockInOut(timeClocks, getClerkID());
+                }
             } else {
                 switchButton(true);
             }
             myProgressDialog.dismiss();
-
         }
 
     }

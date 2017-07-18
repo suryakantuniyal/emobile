@@ -1332,5 +1332,8 @@
     <string name="login_instructions">Login with your registered eMobilePOS account number and password.</string>
     <string name="login_clerk_instructions">Login with your Clerk password.</string>
     <string name="login_system_instructions">Login with your System password.</string>
+    <string name="clockReceipt">Clock IN/OUT</string>
+    <string name="hours">Hours</string>
+    <string name="total_hours_worked">Total Hours</string>
 
 </resources>
