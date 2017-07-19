@@ -1,6 +1,7 @@
 package com.android.emobilepos.models.orders;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.OrderProductAttributeDAO;
@@ -208,15 +209,15 @@ public class Order implements Cloneable {
         Tax tax;
         if (preferences.isRetailTaxes()) {
             if (!Global.taxID.isEmpty()) {
-                tax = taxHandler.getTax(Global.taxID, orderProduct.getProd_taxId(), Double.parseDouble(orderProduct.getProd_price() == null ? "0" : orderProduct.getProd_price()));
+                tax = taxHandler.getTax(Global.taxID, orderProduct.getProd_taxId(), Double.parseDouble(TextUtils.isEmpty(orderProduct.getProd_price()) ? "0" : orderProduct.getProd_price()));
             } else {
-                tax = taxHandler.getTax(orderProduct.getProd_taxcode(), orderProduct.getProd_taxId(), Double.parseDouble(orderProduct.getProd_price() == null ? "0" : orderProduct.getProd_price()));
+                tax = taxHandler.getTax(orderProduct.getProd_taxcode(), orderProduct.getProd_taxId(), Double.parseDouble(TextUtils.isEmpty(orderProduct.getProd_price()) ? "0" : orderProduct.getProd_price()));
             }
         } else {
             if (!Global.taxID.isEmpty()) {
-                tax = taxHandler.getTax(Global.taxID, "", Double.parseDouble(orderProduct.getProd_price() == null ? "0" : orderProduct.getProd_price()));
+                tax = taxHandler.getTax(Global.taxID, "", Double.parseDouble(TextUtils.isEmpty(orderProduct.getProd_price()) ? "0" : orderProduct.getProd_price()));
             } else {
-                tax = taxHandler.getTax(orderProduct.getProd_taxcode(), "", Double.parseDouble(orderProduct.getProd_price() == null ? "0" : orderProduct.getProd_price()));
+                tax = taxHandler.getTax(orderProduct.getProd_taxcode(), "", Double.parseDouble(TextUtils.isEmpty(orderProduct.getProd_price()) ? "0" : orderProduct.getProd_price()));
             }
         }
         orderProduct.setTaxAmount(tax != null ? tax.getTaxRate() : "0");
