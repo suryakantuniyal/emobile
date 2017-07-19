@@ -12,9 +12,11 @@ import android.widget.Toast;
 
 import com.StarMicronics.jasura.JAException;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.TimeClock;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
 import com.android.support.ConsignmentTransaction;
@@ -600,6 +602,11 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     @Override
     public boolean isConnected() {
         return true;
+    }
+
+    @Override
+    public void printClockInOut(List<ClockInOut> timeClocks, String clerkID) {
+        super.printClockInOut(timeClocks, LINE_WIDTH, clerkID);
     }
 
     private Runnable runnableScannedData = new Runnable() {

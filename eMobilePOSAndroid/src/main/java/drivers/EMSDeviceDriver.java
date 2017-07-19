@@ -37,6 +37,7 @@ import com.android.database.PaymentsHandler;
 import com.android.database.ProductsHandler;
 import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
@@ -1464,6 +1465,44 @@ public class EMSDeviceDriver {
                 print("\n");
             }
         }
+    }
+
+    public void printClockInOut(List<ClockInOut> timeClocks, int lineWidth, String clerkID) {
+        EMSPlainTextHelper textHelper = new EMSPlainTextHelper();
+        Clerk clerk = ClerkDAO.getByEmpId(Integer.parseInt(clerkID));
+        StringBuilder str = new StringBuilder();
+        str.append(textHelper.centeredString(activity.getString(R.string.clockReceipt), lineWidth));
+        str.append(textHelper.newLines(1));
+        str.append(textHelper.twoColumnLineWithLeftAlignedText(DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_dd_h_mm_a),
+                String.format("%s%s", activity.getString(R.string.receipt_employee), clerk.getEmpName()), lineWidth, 0));
+        str.append(textHelper.newDivider('-', lineWidth));
+        str.append(textHelper.fourColumnLineWithLeftAlignedTextPercentWidth(activity.getString(R.string.date), 25,
+                activity.getString(R.string.clock_in), 25, activity.getString(R.string.clock_out), 25, activity.getString(R.string.hours), 25,
+                lineWidth, 0));
+        int minsTotal = 0;
+        for (ClockInOut clock : timeClocks) {
+            Date in = DateUtils.getDateStringAsDate(clock.getClockIn(), DateUtils.DATE_PATTERN);
+            Date out = null;
+            int hours = 0;
+            int mins = 0;
+            if (clock.getClockOut() != null) {
+                out = DateUtils.getDateStringAsDate(clock.getClockOut(), DateUtils.DATE_PATTERN);
+                hours = clock.getMinutesPeriod() / 60;
+                mins = clock.getMinutesPeriod() - (hours * 60);
+            }
+            str.append(textHelper.fourColumnLineWithLeftAlignedTextPercentWidth(DateUtils.getDateAsString(in, DateUtils.DATE_MM_DD), 25,
+                    DateUtils.getDateAsString(in, DateUtils.DATE_h_mm_a), 25,
+                    DateUtils.getDateAsString(out, DateUtils.DATE_h_mm_a), 25, String.format(Locale.getDefault(), "%d.%d", hours, mins), 25,
+                    lineWidth, 0));
+            minsTotal += clock.getMinutesPeriod();
+        }
+        str.append(textHelper.newLines(1));
+        int hours = minsTotal / 60;
+        int mins = minsTotal - (hours * 60);
+        str.append(textHelper.centeredString(String.format(Locale.getDefault(), "%s  %d.%d",
+                activity.getString(R.string.total_hours_worked), hours, mins), lineWidth));
+        str.append(textHelper.newLines(4));
+        print(str.toString());
     }
 
     public void printFooter(int lineWidth) {

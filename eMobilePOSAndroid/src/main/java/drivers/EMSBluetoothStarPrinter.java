@@ -12,9 +12,11 @@ import android.os.Handler;
 import com.StarMicronics.jasura.JAException;
 import com.android.dao.DeviceTableDAO;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.TimeClock;
 import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.CardParser;
@@ -792,6 +794,11 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
             }
         }
         return status != null && !status.offline;
+    }
+
+    @Override
+    public void printClockInOut(List<ClockInOut> timeClocks, String clerkID) {
+        super.printClockInOut(timeClocks, LINE_WIDTH, clerkID);
     }
 
     private void starIoExtManagerConnect() {
