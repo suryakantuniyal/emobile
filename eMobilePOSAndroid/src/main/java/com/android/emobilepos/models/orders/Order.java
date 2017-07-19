@@ -208,15 +208,15 @@ public class Order implements Cloneable {
         Tax tax;
         if (preferences.isRetailTaxes()) {
             if (!Global.taxID.isEmpty()) {
-                tax = taxHandler.getTax(Global.taxID, orderProduct.getTax_type(), Double.parseDouble(orderProduct.getProd_price()));
+                tax = taxHandler.getTax(Global.taxID, orderProduct.getTax_type(), Double.parseDouble(orderProduct.getProd_price() == null ? "0" : orderProduct.getProd_price()));
             } else {
-                tax = taxHandler.getTax(orderProduct.getProd_taxcode(), orderProduct.getTax_type(), Double.parseDouble(orderProduct.getProd_price()));
+                tax = taxHandler.getTax(orderProduct.getProd_taxcode(), orderProduct.getTax_type(), Double.parseDouble(orderProduct.getProd_price() == null ? "0" : orderProduct.getProd_price()));
             }
         } else {
             if (!Global.taxID.isEmpty()) {
-                tax = taxHandler.getTax(Global.taxID, "", Double.parseDouble(orderProduct.getProd_price()));
+                tax = taxHandler.getTax(Global.taxID, "", Double.parseDouble(orderProduct.getProd_price() == null ? "0" : orderProduct.getProd_price()));
             } else {
-                tax = taxHandler.getTax(orderProduct.getProd_taxcode(), "", Double.parseDouble(orderProduct.getProd_price()));
+                tax = taxHandler.getTax(orderProduct.getProd_taxcode(), "", Double.parseDouble(orderProduct.getProd_price() == null ? "0" : orderProduct.getProd_price()));
             }
         }
         orderProduct.setTaxAmount(tax != null ? tax.getTaxRate() : "0");
