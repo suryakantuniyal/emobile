@@ -37,12 +37,12 @@ import com.android.database.PaymentsHandler;
 import com.android.database.ProductsHandler;
 import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.PaymentDetails;
 import com.android.emobilepos.models.SplitedOrder;
-import com.android.emobilepos.models.TimeClock;
 import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
@@ -1462,7 +1462,7 @@ public class EMSDeviceDriver {
         }
     }
 
-    public void printClockInOut(List<TimeClock> timeClocks, int lineWidth, String clerkID) {
+    public void printClockInOut(List<ClockInOut> timeClocks, int lineWidth, String clerkID) {
         EMSPlainTextHelper textHelper = new EMSPlainTextHelper();
         Clerk clerk = ClerkDAO.getByEmpId(Integer.parseInt(clerkID));
         StringBuilder str = new StringBuilder();
@@ -1471,21 +1471,32 @@ public class EMSDeviceDriver {
         str.append(textHelper.twoColumnLineWithLeftAlignedText(DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_dd_h_mm_a),
                 String.format("%s%s", activity.getString(R.string.receipt_employee), clerk.getEmpName()), lineWidth, 0));
         str.append(textHelper.newDivider('-', lineWidth));
-//        str.append(textHelper.newLines(1));
-        str.append(textHelper.fourColumnLineWithLeftAlignedText(activity.getString(R.string.receipt_date),
-                activity.getString(R.string.clock_in), activity.getString(R.string.clock_out), activity.getString(R.string.hours),
+        str.append(textHelper.fourColumnLineWithLeftAlignedTextPercentWidth(activity.getString(R.string.date), 25,
+                activity.getString(R.string.clock_in), 25, activity.getString(R.string.clock_out), 25, activity.getString(R.string.hours), 25,
                 lineWidth, 0));
-        for (TimeClock clock : timeClocks) {
-            Date updated = DateUtils.getDateStringAsDate(clock.updated, DateUtils.DATE_PATTERN);
-            Date punchtime = DateUtils.getDateStringAsDate(clock.punchtime, DateUtils.DATE_PATTERN);
-            str.append(textHelper.fourColumnLineWithLeftAlignedText(DateUtils.getDateAsString(punchtime,DateUtils.DATE_MM_DD),
-                    DateUtils.getDateAsString(punchtime,DateUtils.DATE_h_mm_a),
-                    DateUtils.getDateAsString(punchtime,DateUtils.DATE_h_mm_a), "6.5",
+        int minsTotal = 0;
+        for (ClockInOut clock : timeClocks) {
+            Date in = DateUtils.getDateStringAsDate(clock.getClockIn(), DateUtils.DATE_PATTERN);
+            Date out = null;
+            int hours = 0;
+            int mins = 0;
+            if (clock.getClockOut() != null) {
+                out = DateUtils.getDateStringAsDate(clock.getClockOut(), DateUtils.DATE_PATTERN);
+                hours = clock.getMinutesPeriod() / 60;
+                mins = clock.getMinutesPeriod() - (hours * 60);
+            }
+            str.append(textHelper.fourColumnLineWithLeftAlignedTextPercentWidth(DateUtils.getDateAsString(in, DateUtils.DATE_MM_DD), 25,
+                    DateUtils.getDateAsString(in, DateUtils.DATE_h_mm_a), 25,
+                    DateUtils.getDateAsString(out, DateUtils.DATE_h_mm_a), 25, String.format(Locale.getDefault(), "%d.%d", hours, mins), 25,
                     lineWidth, 0));
+            minsTotal += clock.getMinutesPeriod();
         }
         str.append(textHelper.newLines(1));
-        str.append(textHelper.centeredString(String.format("%s6.5", activity.getString(R.string.total_hours_worked)), lineWidth));
-        str.append(textHelper.newLines(3));
+        int hours = minsTotal / 60;
+        int mins = minsTotal - (hours * 60);
+        str.append(textHelper.centeredString(String.format(Locale.getDefault(), "%s  %d.%d",
+                activity.getString(R.string.total_hours_worked), hours, mins), lineWidth));
+        str.append(textHelper.newLines(4));
         print(str.toString());
     }
 

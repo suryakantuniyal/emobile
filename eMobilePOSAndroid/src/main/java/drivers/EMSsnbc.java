@@ -11,6 +11,7 @@ import android.os.AsyncTask;
 
 import com.StarMicronics.jasura.JAException;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplitedOrder;
@@ -490,7 +491,7 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     }
 
     @Override
-    public void printClockInOut(List<TimeClock> timeClocks, String clerkID) {
-
+    public void printClockInOut(List<ClockInOut> timeClocks, String clerkID) {
+        super.printClockInOut(timeClocks, LINE_WIDTH, clerkID);
     }
 }

@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.text.TextUtils;
 
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplitedOrder;
@@ -726,7 +727,7 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
     }
 
     @Override
-    public void printClockInOut(List<TimeClock> timeClocks, String clerkID) {
+    public void printClockInOut(List<ClockInOut> clockInOuts, String clerkID) {
 
     }
 

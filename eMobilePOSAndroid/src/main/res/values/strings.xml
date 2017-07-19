@@ -1335,5 +1335,6 @@
     <string name="clockReceipt">Clock IN/OUT</string>
     <string name="hours">Hours</string>
     <string name="total_hours_worked">Total Hours</string>
+    <string name="date">Date</string>
 
 </resources>

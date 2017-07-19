@@ -11,6 +11,7 @@ import com.android.dao.StoredPaymentsDAO;
 import com.android.database.PayMethodsHandler;
 import com.android.database.PaymentsHandler;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.PaymentDetails;
@@ -564,8 +565,8 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     }
 
     @Override
-    public void printClockInOut(List<TimeClock> timeClocks, String clerkID) {
-
+    public void printClockInOut(List<ClockInOut> timeClocks, String clerkID) {
+        super.printClockInOut(timeClocks, LINE_WIDTH, clerkID);
     }
     //
     // protected void printImage(int type) {

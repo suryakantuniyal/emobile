@@ -13,6 +13,7 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplitedOrder;
@@ -623,7 +624,7 @@ public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDevi
     }
 
     @Override
-    public void printClockInOut(List<TimeClock> timeClocks, String clerkID) {
+    public void printClockInOut(List<ClockInOut> timeClocks, String clerkID) {
 
     }
 

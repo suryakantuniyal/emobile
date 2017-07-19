@@ -3,6 +3,7 @@ package interfaces;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 
+import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplitedOrder;
@@ -90,5 +91,5 @@ public interface EMSDeviceManagerPrinterDelegate {
 
     boolean isConnected();
 
-    void printClockInOut(List<TimeClock> timeClocks, String clerkID);
+    void printClockInOut(List<ClockInOut> clockInOuts, String clerkID);
 }

@@ -11,6 +11,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMSEpayLoginInfo;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
@@ -395,7 +396,7 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
     }
 
     @Override
-    public void printClockInOut(List<TimeClock> timeClocks, String clerkID) {
+    public void printClockInOut(List<ClockInOut> timeClocks, String clerkID) {
 
     }
 
