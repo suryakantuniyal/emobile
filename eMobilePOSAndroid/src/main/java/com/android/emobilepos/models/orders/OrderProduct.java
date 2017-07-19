@@ -49,6 +49,7 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     private String uom_name = "";
     private String uom_conversion = "";
     private String uom_id = "";
+    @SerializedName("prod_taxid")
     private String prod_taxId = "";
     private BigDecimal prod_taxValue;
     private String discount_id = "";
@@ -77,7 +78,7 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     //    private String prod_taxtype;
     private String prod_price = "";
     private String prod_type = "";
-    private String tax_type = "";
+    //    private String tax_type = "";
     private String discount_is_taxable = "0";
     private String discount_is_fixed = "0";
     private Boolean hasAddons; //0 no addons, 1 it has addons
@@ -115,7 +116,7 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         this.setProd_taxcode(product.getProdTaxCode());
         this.setProd_taxId(product.getProdTaxType());
         this.setOrdprod_name(product.getProdName());
-        this.setTax_type(product.getProdTaxType());
+//        this.setTax_type(product.getProdTaxType());
         this.setProd_price_points(String.valueOf(product.getProdPricePoints()));
         this.setProd_value_points(String.valueOf(product.getProdValuePoints()));
         this.setPricesXGroupid(product.getPricesXGroupid());
@@ -588,7 +589,7 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     }
 
     public String getProd_price() {
-        if (TextUtils.isEmpty(prod_price)) {
+        if (TextUtils.isEmpty(prod_price) || prod_price.equalsIgnoreCase("null")) {
             prod_price = "0";
         }
         return prod_price;
@@ -606,13 +607,13 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         this.prod_type = prod_type;
     }
 
-    public String getTax_type() {
-        return tax_type;
-    }
-
-    public void setTax_type(String tax_type) {
-        this.tax_type = tax_type;
-    }
+//    public String getTax_type() {
+//        return tax_type;
+//    }
+//
+//    public void setTax_type(String tax_type) {
+//        this.tax_type = tax_type;
+//    }
 
     public String getDiscount_is_taxable() {
         return discount_is_taxable;

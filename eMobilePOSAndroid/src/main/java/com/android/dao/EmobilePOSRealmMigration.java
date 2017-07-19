@@ -4,6 +4,7 @@ import com.android.emobilepos.models.realms.CustomerCustomField;
 
 import io.realm.DynamicRealm;
 import io.realm.FieldAttribute;
+import io.realm.RealmObjectSchema;
 import io.realm.RealmSchema;
 
 /**
@@ -17,11 +18,28 @@ public class EmobilePOSRealmMigration implements io.realm.RealmMigration {
         if (oldVersion != newVersion) {
             RealmSchema schema = realm.getSchema();
             if (oldVersion < 4) {
-                schema.create(CustomerCustomField.class.getSimpleName()).
-                        addField("custId", String.class, FieldAttribute.INDEXED)
-                        .addField("custFieldId", String.class, FieldAttribute.INDEXED)
-                        .addField("custFieldName", String.class)
-                        .addField("custValue", String.class);
+                if (schema.contains(CustomerCustomField.class.getSimpleName())) {
+                    RealmObjectSchema custCustField = schema.get(CustomerCustomField.class.getSimpleName());
+                    if (custCustField.hasPrimaryKey()) {
+                        custCustField.removePrimaryKey();
+                    }
+                    if (custCustField.hasIndex("custId")) {
+                        custCustField.removeIndex("custId");
+                    }
+                    if (custCustField.hasIndex("custFieldId")) {
+                        custCustField.removeIndex("custFieldId");
+                    }
+
+                    schema.get(CustomerCustomField.class.getSimpleName()).
+                            addIndex("custId")
+                            .addIndex("custFieldId");
+                } else {
+                    schema.create(CustomerCustomField.class.getSimpleName()).
+                            addField("custId", String.class, FieldAttribute.INDEXED)
+                            .addField("custFieldId", String.class, FieldAttribute.INDEXED)
+                            .addField("custFieldName", String.class)
+                            .addField("custValue", String.class);
+                }
                 oldVersion++;
             }
         }
