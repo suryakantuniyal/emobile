@@ -233,6 +233,7 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
             dialog.setTitle(R.string.sync_title);
             dialog.setIndeterminate(true);
             dialog.setMessage(getString(R.string.sync_inprogress));
+            dialog.setCancelable(false);
             dialog.show();
         }
 

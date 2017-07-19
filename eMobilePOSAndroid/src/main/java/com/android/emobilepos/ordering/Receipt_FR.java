@@ -643,7 +643,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                         showPromptManagerPassword(REMOVE_ITEM, orderProductIdx, orderProductIdx);
                                     } else {
                                         proceedToRemove(orderProductIdx);
-                                        mainLVAdapter.notifyDataSetChanged();
                                     }
                                 } else {
                                     Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
@@ -1838,8 +1837,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         }
         receiptListView.invalidateViews();
         reCalculate();
-        Catalog_FR.instance.refreshListView();
-        refreshView();
+//        Catalog_FR.instance.refreshListView();
+//        refreshView();
     }
 
     public void reCalculate() {

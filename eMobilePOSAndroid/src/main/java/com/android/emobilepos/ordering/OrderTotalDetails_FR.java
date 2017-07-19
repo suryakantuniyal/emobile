@@ -726,10 +726,12 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             OrderLoyalty_FR.recalculatePoints(String.valueOf(totalDetails.getPointsSubTotal()), String.valueOf(totalDetails.getPointsInUse()),
                     String.valueOf(totalDetails.getPointsAcumulable()), gran_total.toString());
             BigDecimal discountableAmount = totalDetails.getSubtotal();
-            discountableAmount.subtract(Global.rewardChargeAmount);
+            discountableAmount = discountableAmount.subtract(Global.rewardChargeAmount);
             OrderRewards_FR.setRewardSubTotal(discountable_sub_total.toString());
             OrderingMain_FA mainFa = (OrderingMain_FA) getActivity();
             mainFa.enableCheckoutButton();
+            mainFa.getLeftFragment().mainLVAdapter.notifyDataSetChanged();
+            Receipt_FR.receiptListView.setSelection(mainFa.getLeftFragment().mainLVAdapter.selectedPosition);
         }
     }
 
