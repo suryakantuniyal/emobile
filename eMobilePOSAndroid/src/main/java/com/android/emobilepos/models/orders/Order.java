@@ -208,9 +208,9 @@ public class Order implements Cloneable {
         Tax tax;
         if (preferences.isRetailTaxes()) {
             if (!Global.taxID.isEmpty()) {
-                tax = taxHandler.getTax(Global.taxID, orderProduct.getTax_type(), Double.parseDouble(orderProduct.getProd_price() == null ? "0" : orderProduct.getProd_price()));
+                tax = taxHandler.getTax(Global.taxID, orderProduct.getProd_taxId(), Double.parseDouble(orderProduct.getProd_price() == null ? "0" : orderProduct.getProd_price()));
             } else {
-                tax = taxHandler.getTax(orderProduct.getProd_taxcode(), orderProduct.getTax_type(), Double.parseDouble(orderProduct.getProd_price() == null ? "0" : orderProduct.getProd_price()));
+                tax = taxHandler.getTax(orderProduct.getProd_taxcode(), orderProduct.getProd_taxId(), Double.parseDouble(orderProduct.getProd_price() == null ? "0" : orderProduct.getProd_price()));
             }
         } else {
             if (!Global.taxID.isEmpty()) {
@@ -221,7 +221,7 @@ public class Order implements Cloneable {
         }
         orderProduct.setTaxAmount(tax != null ? tax.getTaxRate() : "0");
 //        orderProduct.setProd_taxId(tax != null ? tax.getTaxId() : "");
-        orderProduct.setTax_type(tax != null ? tax.getTaxType() : "");
+        orderProduct.setProd_taxId(tax != null ? tax.getTaxType() : "");
     }
 
     public void setRetailTax(Context context, String taxID) {
@@ -230,15 +230,15 @@ public class Order implements Cloneable {
         for (OrderProduct product : orderProducts) {
             Tax tax;
             if (taxID != null) {
-                tax = taxesHandler.getTax(taxID, product.getTax_type(),
+                tax = taxesHandler.getTax(taxID, product.getProd_taxId(),
                         Global.getBigDecimalNum(product.getFinalPrice()).doubleValue());
             } else {
-                tax = taxesHandler.getTax(product.getProd_taxcode(), product.getTax_type(),
+                tax = taxesHandler.getTax(product.getProd_taxcode(), product.getProd_taxId(),
                         Global.getBigDecimalNum(product.getFinalPrice()).doubleValue());
             }
             product.setTaxAmount(tax != null ? tax.getTaxRate() : "0");
 //            product.setProd_taxId(tax != null ? tax.getTaxId() : "");
-            product.setTax_type(tax != null ? tax.getTaxType() : "");
+            product.setProd_taxId(tax != null ? tax.getTaxType() : "");
             BigDecimal taxTotal = Global.getBigDecimalNum(product.getFinalPrice())
                     .multiply(Global.getBigDecimalNum(product.getOrdprod_qty()))
                     .multiply(Global.getBigDecimalNum(tax.getTaxRate())).divide(new BigDecimal(100)).setScale(6, RoundingMode.HALF_UP);
