@@ -23,18 +23,16 @@ public class EmobilePOSRealmMigration implements io.realm.RealmMigration {
                     if (custCustField.hasPrimaryKey()) {
                         custCustField.removePrimaryKey();
                     }
-                    if(custCustField.hasIndex("custId")){
+                    if (custCustField.hasIndex("custId")) {
                         custCustField.removeIndex("custId");
                     }
-                    if(custCustField.hasIndex("custFieldId")){
+                    if (custCustField.hasIndex("custFieldId")) {
                         custCustField.removeIndex("custFieldId");
                     }
 
                     schema.get(CustomerCustomField.class.getSimpleName()).
-                            addField("custId", String.class, FieldAttribute.INDEXED)
-                            .addField("custFieldId", String.class, FieldAttribute.INDEXED)
-                            .addField("custFieldName", String.class)
-                            .addField("custValue", String.class);
+                            addIndex("custId")
+                            .addIndex("custFieldId");
                 } else {
                     schema.create(CustomerCustomField.class.getSimpleName()).
                             addField("custId", String.class, FieldAttribute.INDEXED)
