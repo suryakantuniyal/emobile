@@ -28,7 +28,7 @@ public final class TraccerParser {
                 VehicleList vehicles = new VehicleList();
                 JSONObject jsonObject = jsonVehicles.getJSONObject(i);
                 String date = jsonObject.getString("lastUpdate");
-                Log.d("Date", date);
+
                 vehicles.id = Integer.parseInt(jsonObject.get("id").toString());
                 vehicles.name = jsonObject.getString("name");
                 vehicles.category = jsonObject.getString("category");
@@ -54,8 +54,8 @@ public final class TraccerParser {
                 VehicleList vehicles = new VehicleList();
                 JSONObject jsonObject = jsonVehicles.getJSONObject(i);
                 if (jsonObject.getString("status").equals("online")) {
-                    String date = jsonObject.getString("lastUpdate");
-                    Log.d("Date", date);
+                    String date = jsonObject.getString("lastUpdates");
+
                     vehicles.id = Integer.parseInt(jsonObject.get("id").toString());
                     vehicles.name = jsonObject.getString("name");
                     vehicles.category = jsonObject.getString("category");
@@ -84,7 +84,7 @@ public final class TraccerParser {
                 JSONObject jsonObject = jsonVehicles.getJSONObject(i);
                 if (jsonObject.getString("status").equals("offline")) {
                     String date = jsonObject.getString("lastUpdate");
-                    Log.d("Date", date);
+
                     vehicles.id = Integer.parseInt(jsonObject.get("id").toString());
                     vehicles.name = jsonObject.getString("name");
                     vehicles.category = jsonObject.getString("category");
@@ -140,6 +140,7 @@ public final class TraccerParser {
     }
 
     public static DateTime getDate(String hh) {
+
         DateTime dateTime = DateTime.parse(hh);
         return dateTime;
     }

@@ -26,6 +26,8 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.text.DecimalFormat;
+
 import in.gtech.gogeotrack.R;
 import in.gtech.gogeotrack.api.APIServices;
 import in.gtech.gogeotrack.model.VehicleList;
@@ -42,7 +44,8 @@ public class TrackingDevicesActivity extends AppCompatActivity {
     private static ProgressDialog progressDialog;
     String mPermission = Manifest.permission.ACCESS_FINE_LOCATION;
     GPSTracker gps;
-    String statsString;
+    String statsString,address;
+    Double latitute,longitute,speed;
     private GoogleMap googleMap;
     private MarkerOptions markerOptions;
     private CameraPosition cameraPosition;
@@ -98,43 +101,47 @@ public class TrackingDevicesActivity extends AppCompatActivity {
     private void initView() {
 
         address_tv = (TextView) findViewById(R.id.vehicle_location);
-//        imageView = (ImageView) findViewById(R.id.back_button);
         vehicleName_tv = (TextView) findViewById(R.id.vehiclename_tv);
         speed_tv = (TextView) findViewById(R.id.vehiclespeed_tv);
         lastupdate_tv = (TextView) findViewById(R.id.update_tv);
         travelled_tv = (TextView) findViewById(R.id.travelled_tv);
         currentLocation = (ImageView) findViewById(R.id.location);
-        Intent getIntent = getIntent();
-        int id = getIntent.getIntExtra("device_id", -1);
-        String update = getIntent.getStringExtra("tupdate");
-        String name = getIntent.getStringExtra("tname");
-        String time = getIntent.getStringExtra("ttimer");
-        statsString = getIntent.getStringExtra("status");
-        vehicleName_tv.setText(name);
-        lastupdate_tv.setText(update);
-//        Log.e("Timmer",time);
-        travelled_tv.setText(time);
-        Log.e("idTrack", name);
         trackOnMap();
-        callDetailRequest(id);
-//        imageView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent intent = new Intent(TrackingDevicesActivity.this, MainActivity.class);
-//                intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-//                startActivity(intent);
-//                overridePendingTransition(R.anim.slide_out_left,R.anim.slide_in_right);
-//                finish();
-//
-//            }
-//        });
+
     }
 
     private void trackOnMap() {
         if (googleMap == null) {
             googleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
-            CameraUpdate point = CameraUpdateFactory.newLatLng(new LatLng(20.5937, 78.9629));
-            googleMap.moveCamera(point);
+            progressDialog.dismiss();
+            Intent getIntent = getIntent();
+            String update = getIntent.getStringExtra("tupdate");
+            String name = getIntent.getStringExtra("tname");
+            String time = getIntent.getStringExtra("ttimer");
+            statsString = getIntent.getStringExtra("status");
+            address = getIntent.getStringExtra("address");
+            latitute = getIntent.getDoubleExtra("lat",0.0);
+            longitute = getIntent.getDoubleExtra("long",0.0);
+            speed = getIntent.getDoubleExtra("speed",0.0);
+            vehicleName_tv.setText(name);
+            lastupdate_tv.setText(update);
+            travelled_tv.setText(time);
+            if (address.equals("null")) {
+                address_tv.setText("Loading...");
+            } else {
+                address_tv.setText(address);
+            }
+
+            double d = speed;
+            String formattedData = String.format("%.02f", d);
+            speed_tv.setText(formattedData);
+            cameraPosition(address,latitute,longitute);
+            currentLocation.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    cameraPosition(address,latitute,longitute);
+                }
+            });
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 // TODO: Consider calling
                 //    ActivityCompat#requestPermissions
@@ -152,28 +159,7 @@ public class TrackingDevicesActivity extends AppCompatActivity {
         }
     }
 
-    public void callDetailRequest(int id) {
-        APIServices.GetVehicleDetailById(TrackingDevicesActivity.this, id, new DetailResponseCallback() {
-            @Override
-            public void OnResponse(final VehicleList Response) {
-                progressDialog.dismiss();
-                if (Response.address.equals("null")) {
-                    address_tv.setText("Loading...");
-                } else {
-                    address_tv.setText(Response.address);
-                }
-                String speed = String.valueOf(Response.speed);
-                speed_tv.setText(speed);
-                cameraPosition(Response);
-                currentLocation.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        cameraPosition(Response);
-                    }
-                });
-            }
-        });
-    }
+
 
     @Override
     protected void onResume() {
@@ -181,15 +167,15 @@ public class TrackingDevicesActivity extends AppCompatActivity {
         trackOnMap();
     }
 
-    public void cameraPosition(VehicleList Response) {
+    public void cameraPosition(String add,Double latitute,Double longitute) {
         String address;
-        if (Response.address.equals("null")) {
+        if (add.equals("null")) {
             address = "Loading...";
         } else {
-            address = Response.address;
+            address = add;
         }
-        Log.d("Latlong", Response.latitute + "  " + Response.longitute);
-        markerOptions = new MarkerOptions().position(new LatLng(Response.latitute, Response.longitute)).title(address);
+        Log.d("Latlong", latitute + "  " + longitute);
+        markerOptions = new MarkerOptions().position(new LatLng(latitute, longitute)).title(address);
         if (statsString.equals("online")) {
             markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.greentruck));
         } else if (statsString.equals("offline")) {
@@ -198,7 +184,7 @@ public class TrackingDevicesActivity extends AppCompatActivity {
             markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_truck_med));
         }
         googleMap.addMarker(markerOptions);
-        cameraPosition = new CameraPosition.Builder().target(new LatLng(Response.latitute, Response.longitute)).zoom(14).build();
+        cameraPosition = new CameraPosition.Builder().target(new LatLng(latitute,longitute)).zoom(14).build();
         googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 

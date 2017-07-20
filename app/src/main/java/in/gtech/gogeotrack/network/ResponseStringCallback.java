@@ -6,4 +6,5 @@ package in.gtech.gogeotrack.network;
 
 public interface ResponseStringCallback {
     void OnResponse(String Response);
+    void OnFial(int Response);
 }

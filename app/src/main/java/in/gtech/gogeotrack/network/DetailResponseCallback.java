@@ -1,5 +1,7 @@
 package in.gtech.gogeotrack.network;
 
+import org.json.JSONArray;
+
 import in.gtech.gogeotrack.model.VehicleList;
 
 /**
@@ -7,5 +9,5 @@ import in.gtech.gogeotrack.model.VehicleList;
  */
 
 public interface DetailResponseCallback {
-    void OnResponse(VehicleList Response);
+    void OnResponse(JSONArray Response);
 }

@@ -1,14 +1,19 @@
 package in.gtech.gogeotrack.activity;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
@@ -27,6 +32,10 @@ import android.widget.TextView;
 
 import com.viewpagerindicator.CirclePageIndicator;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import in.gtech.gogeotrack.R;
 import in.gtech.gogeotrack.adapter.ViewPagerAdapter;
 import in.gtech.gogeotrack.model.VehicleList;
@@ -38,7 +47,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class Main2Activity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener, ResponseOnlineVehicle {
+        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
     public static ArrayList<VehicleList> listArrayList;
     public static int AllSize, onlinesize, offlinesize;
@@ -53,6 +62,7 @@ public class Main2Activity extends AppCompatActivity
     private ViewPagerAdapter viewPagerAdapter;
     private CardView mapView_button, listView_button;
     private TextView alldevice_iv, online_iv, offline_iv;
+    JSONObject previousData = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,12 +76,17 @@ public class Main2Activity extends AppCompatActivity
         progressDialog.setCancelable(false);
         progressDialog.show();
         mSharedPreferences = getSharedPreferences(URLContstant.PREFERENCE_NAME, MODE_PRIVATE);
-        sharedPrefs = getSharedPreferences("ArrayList", MODE_PRIVATE);
+        try {
+            JSONObject  deviceData=new JSONObject(mSharedPreferences.getString("deviceData","{}"));
+            Log.d("Out",String.valueOf(deviceData));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         setSupportActionBar(toolbar);
+        CheckGPS();
         init();
-        listArrayList = new ArrayList<VehicleList>();
         parseView();
-        Bundle b = getIntent().getExtras();
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -150,23 +165,22 @@ public class Main2Activity extends AppCompatActivity
             }
         });
     }
-
-    @Override
-    public void onSuccessOnline(ArrayList<VehicleList> result) {
-        Log.d("Response size", String.valueOf(result.size()));
-    }
-
     private void parseView() {
-        Log.d("MainSize", String.valueOf(SplashActivity.onlinesize));
+        JSONObject previousData = null;
         progressDialog.dismiss();
-        listArrayList = SplashActivity.listArrayList;
-        String json = sharedPrefs.getString("onlinesize", null);
+        try {
+            previousData = new JSONObject( mSharedPreferences.getString("deviceData","{}"));
+            Log.d("inside",String.valueOf(previousData));
+            JSONArray vehicleList = previousData.getJSONArray("totalLst");
+            JSONArray onlineList = previousData.getJSONArray("onlineLst");
+            JSONArray offlineList = previousData.getJSONArray("offlineLst");
+            totalDevices.setText(String.valueOf(vehicleList.length()));
+            onlineDevices.setText(String.valueOf(onlineList.length()));
+            offlineDevices.setText(String.valueOf(offlineList.length()));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
-        int total = SplashActivity.AllSize - Integer.parseInt(json);
-        Log.d("Kab ka bhai", String.valueOf(total));
-        totalDevices.setText(String.valueOf(SplashActivity.AllSize));
-        onlineDevices.setText(json);
-        offlineDevices.setText(String.valueOf(total));
 
     }
 
@@ -255,6 +269,8 @@ public class Main2Activity extends AppCompatActivity
             mEditor.putBoolean(URLContstant.KEY_LOGGED_IN, false);
             mEditor.putString(URLContstant.KEY_USERNAME,null);
             mEditor.putString(URLContstant.KEY_PASSWORD,null);
+            mEditor.putString("deviceData","{}");
+            mEditor.apply();
             Intent intent = new Intent(Main2Activity.this, SignUpAccount.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(intent);
@@ -271,7 +287,7 @@ public class Main2Activity extends AppCompatActivity
             intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(intent);
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-        } else if (view.getId() == R.id.online_img) {
+        } else if (view.getId() == R.id.online_img ) {
             Intent intent = new Intent(Main2Activity.this, OnLineOffLineActivity.class);
             intent.putExtra("onoff", "online");
             startActivity(intent);
@@ -284,4 +300,52 @@ public class Main2Activity extends AppCompatActivity
             startActivity(intent);
         }
     }
+
+
+
+    public void CheckGPS(){
+
+
+        if (!isGPSenabled(Main2Activity.this)){
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(Main2Activity.this);
+            builder.setMessage("GPS is Disable.Enbale it for better results")
+                    .setCancelable(false)
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                            startActivity(intent);
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
+            AlertDialog alert = builder.create();
+            alert.show();
+        } else {
+
+        }
+    }
+
+
+    public boolean isGPSenabled(Context context) {
+        LocationManager lm = null;
+        boolean gps_enabled = false,network_enabled=false;
+        if(lm==null)
+            lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        try{
+            gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        }catch(Exception ex){}
+        try{
+            network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        }catch(Exception ex){}
+        if (gps_enabled&&network_enabled){
+            return true;
+        }else {
+            return false;
+        }
+    }
+
 }

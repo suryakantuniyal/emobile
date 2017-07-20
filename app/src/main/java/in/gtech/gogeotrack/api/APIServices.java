@@ -2,6 +2,7 @@ package in.gtech.gogeotrack.api;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Base64;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -54,6 +55,7 @@ public final class APIServices {
     private static int MAX_RETRIES = 2;
     private static int BACKOFF_MULT = 1;
     static SharedPreferences sharedPrefs;
+    static String base;
     Context context;
 
     private APIServices() {
@@ -63,18 +65,19 @@ public final class APIServices {
         return ourInstance;
     }
 
-    public static void GetAllVehicleList(final Context context,String userName,String password, final ResponseCallbackEvents ResponseCallback) {
+    public  void GetAllVehicleList(final Context context,String userName,String password, final ResponseCallbackEvents ResponseCallback) {
 //        final String requestedUrl = URLContstant.BASE_URL + "/" + URLContstant.ALL_VEHICLES + "/?" + "email=yash.bhat94%40gmail.com&password=admin";
         final String requestedUrl = URLContstant.BASE_URL + "/" + URLContstant.ALL_VEHICLES + "/?" + "email="+userName +"&password=" +password;
         Log.d("API", ":: request url :: " + requestedUrl);
+        String BaseUser= userName +":"+password;
+        base = Base64.encodeToString(BaseUser.toString().getBytes(),Base64.DEFAULT);
         JsonArrayRequest jsObjRequest = new JsonArrayRequest
                 (requestedUrl, new Response.Listener<JSONArray>() {
 
                     @Override
                     public void onResponse(JSONArray response) {
                         if (response != null)
-                            Log.d("Restful response", response.toString());
-                        vehicleLists = TraccerParser.parseGetVehiclesRequest(response);
+                            vehicleLists = TraccerParser.parseGetVehiclesRequest(response);
                         ResponseCallback.onSuccess(vehicleLists);
 
                     }
@@ -90,7 +93,7 @@ public final class APIServices {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 HashMap<String, String> headers = new HashMap<>();
-                headers.put("Authorization", "Basic eWFzaC5iaGF0OTRAZ21haWwuY29tOmFkbWlu");
+                headers.put("Authorization", "Basic "+base);
                 return headers;
             }
         };
@@ -104,6 +107,8 @@ public final class APIServices {
     public static void GetAllOnlineVehicleList(final Context context,String userName,String password, final ResponseOnlineVehicle ResponseCallback) {
 //        final String requestedUrl = URLContstant.BASE_URL + "/" + URLContstant.ALL_VEHICLES + "/?" + "email=yash.bhat94%40gmail.com&password=admin";
         final String requestedUrl = URLContstant.BASE_URL + "/" + URLContstant.ALL_VEHICLES + "/?" + "email="+userName +"&password=" +password;
+        String BaseUser= userName +":"+password;
+        base = Base64.encodeToString(BaseUser.toString().getBytes(),Base64.DEFAULT);
         Log.d("API", ":: request url :: " + requestedUrl);
         JsonArrayRequest jsObjRequest = new JsonArrayRequest
                 (requestedUrl, new Response.Listener<JSONArray>() {
@@ -112,8 +117,8 @@ public final class APIServices {
                     public void onResponse(JSONArray response) {
                         if (response != null)
                             Log.d("Restful response", response.toString());
-                        onlineList = TraccerParser.parseGeOnlinetVehiclesRequest(response);
-                        ResponseCallback.onSuccessOnline(onlineList);
+//                        onlineList = TraccerParser.parseGeOnlinetVehiclesRequest(response);
+                        ResponseCallback.onSuccessOnline(response);
 
                     }
                 }, new Response.ErrorListener() {
@@ -128,7 +133,7 @@ public final class APIServices {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 HashMap<String, String> headers = new HashMap<>();
-                headers.put("Authorization", "Basic eWFzaC5iaGF0OTRAZ21haWwuY29tOmFkbWlu");
+                headers.put("Authorization", "Basic "+base);
                 return headers;
             }
         };
@@ -140,65 +145,19 @@ public final class APIServices {
     }
 
 
-    public static void GetAllOfflineVehicleList(final Context context,String userName,String password, final ResponseOfflineVehicle ResponseCallback) {
-        final String requestedUrl = URLContstant.BASE_URL + "/" + URLContstant.ALL_VEHICLES + "/?" + "email="+userName +"&password=" +password;
-        Log.d("API", ":: request url :: " + requestedUrl);
-        JsonArrayRequest jsObjRequest = new JsonArrayRequest
-                (requestedUrl, new Response.Listener<JSONArray>() {
-
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        if (response != null)
-                            Log.d("Restful response", response.toString());
-                        offlineList = TraccerParser.parseGeOfflinetVehiclesRequest(response);
-                        ResponseCallback.onSuccessOffline(offlineList);
-
-                    }
-                }, new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.e("Error", ":: Volley Error :: " + error);
-                        Toast.makeText(context, "Unable to reach our servers. Please check your internet connection.", Toast.LENGTH_SHORT).show();
-
-                    }
-                }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                HashMap<String, String> headers = new HashMap<>();
-                headers.put("Authorization", "Basic eWFzaC5iaGF0OTRAZ21haWwuY29tOmFkbWlu");
-                return headers;
-            }
-        };
-        jsObjRequest.setRetryPolicy(new DefaultRetryPolicy(
-                TIMEOUT_IN_SECONDS,
-                MAX_RETRIES,
-                BACKOFF_MULT));
-        RestapiCall.getInstance(context).addToRequestQueue(jsObjRequest);
-    }
 
     public static void GetVehicleDetailById(final Context context, int id, final DetailResponseCallback ResponseCallback) {
         final String requestedUrl = URLContstant.BASE_URL + "/" + "api" + "/" + "positions" + "/?" + "id=" + id;
-        Log.d("API", ":: request url :: " + requestedUrl);
+
         final JsonArrayRequest jsObjRequest = new JsonArrayRequest
                 (requestedUrl, new Response.Listener<JSONArray>() {
 
                     @Override
                     public void onResponse(JSONArray response) {
-                        if (response != null)
-                            Log.d("Detail response", response.toString());
-
-                        try {
-                            JSONObject jsonObject = response.getJSONObject(0);
-                            mvehicles = TraccerParser.getVehicleDetailById(jsonObject);
-                            mvehicles.latitute = jsonObject.getDouble("latitude");
-                            mvehicles.longitute = jsonObject.getDouble("longitude");
-                            mvehicles.speed = doubleToDecimalConverter(jsonObject.getDouble("speed"));
-                            mvehicles.distance_travelled = jsonObject.getJSONObject("attributes").getDouble("distance");
-                            ResponseCallback.OnResponse(mvehicles);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                        if (response != null){
+                            ResponseCallback.OnResponse(response);
                         }
+
                     }
                 }, new Response.ErrorListener() {
 
@@ -212,7 +171,7 @@ public final class APIServices {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 HashMap<String, String> headers = new HashMap<>();
-                headers.put("Authorization", "Basic eWFzaC5iaGF0OTRAZ21haWwuY29tOmFkbWlu");
+                headers.put("Authorization", "Basic "+base);
                 return headers;
             }
         };
@@ -317,12 +276,14 @@ public final class APIServices {
                         // response
                         Log.d("Response", response);
                         responseCallback.OnResponse(response);
+
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         // error
+                        responseCallback.OnFial(error.networkResponse.statusCode);
                         Log.d("Error.Response", String.valueOf(error));
                     }
                 }

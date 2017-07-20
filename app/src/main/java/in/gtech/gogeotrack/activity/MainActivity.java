@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -14,11 +13,16 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
+import android.widget.Toast;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import in.gtech.gogeotrack.R;
 import in.gtech.gogeotrack.adapter.VehicleslistAdapter;
@@ -26,22 +30,19 @@ import in.gtech.gogeotrack.model.VehicleList;
 import in.gtech.gogeotrack.utils.URLContstant;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements VehicleslistAdapter.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
 
-    public static ArrayList<VehicleList> onLineList;
-    public static ArrayList<VehicleList> offlineList;
-    public static ArrayList<VehicleList> latlongList;
     public static MenuItem searchMenuItem;
-    public static int AllSize, onlinesize, offlinesize;
     private static ProgressDialog progressDialog;
     SharedPreferences mSharedPreferences;
     private VehicleslistAdapter vehiclesAdapter;
     private RecyclerView recyclerView;
     private ArrayList<VehicleList> listArrayList;
-    private TextView username;
     private SwipeRefreshLayout swipeRefreshLayout;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -61,12 +62,13 @@ public class MainActivity extends AppCompatActivity
         swipeRefreshLayout.setRefreshing(false);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
         swipeRefreshLayout.setOnRefreshListener(this);
-        new Async().execute();
-        recyclerView = (RecyclerView) findViewById(R.id.vehicle_rv);
         listArrayList = new ArrayList<VehicleList>();
-        onLineList = new ArrayList<VehicleList>();
-        offlineList = new ArrayList<VehicleList>();
-        latlongList = new ArrayList<VehicleList>();
+        recyclerView = (RecyclerView) findViewById(R.id.vehicle_rv);
+        listArrayList = parseView();
+        if(listArrayList.size() == 0){
+            progressDialog.dismiss();
+            Toast.makeText(getApplicationContext(),"No Devices",Toast.LENGTH_SHORT).show();
+        }
         vehiclesAdapter = new VehicleslistAdapter(getBaseContext(), listArrayList, this);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
@@ -76,30 +78,41 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void OnItemClick(View view, int position) {
+    public void OnItemClick(View view, int position, List<VehicleList> mFilteredList) {
 
         if (view.getId() == R.id.detail_ll) {
 
             Intent intent = new Intent(MainActivity.this, VehicleDetailActivity.class);
-            intent.putExtra("id", listArrayList.get(position).getId());
-            intent.putExtra("name", listArrayList.get(position).getName());
-            intent.putExtra("pid", listArrayList.get(position).getPositionId());
-            intent.putExtra("uid", listArrayList.get(position).getUniqueId());
-            intent.putExtra("status", listArrayList.get(position).getStatus());
-            intent.putExtra("category", listArrayList.get(position).getCategory());
-            intent.putExtra("lastupdate", listArrayList.get(position).getLastUpdates());
-            intent.putExtra("diff", listArrayList.get(position).getTimeDiff());
+            Log.d("Position", String.valueOf(position));
+            intent.putExtra("id", mFilteredList.get(position).getId());
+            intent.putExtra("name", mFilteredList.get(position).getName());
+            intent.putExtra("pid", mFilteredList.get(position).getPositionId());
+            intent.putExtra("uid", mFilteredList.get(position).getUniqueId());
+            intent.putExtra("status", mFilteredList.get(position).getStatus());
+            intent.putExtra("category", mFilteredList.get(position).getCategory());
+            intent.putExtra("lastupdate", mFilteredList.get(position).getLastUpdates());
+            intent.putExtra("diff", mFilteredList.get(position).getTimeDiff());
+            intent.putExtra("address",mFilteredList.get(position).getAddress());
+            intent.putExtra("speed",mFilteredList.get(position).getSpeed());
+            intent.putExtra("lat",mFilteredList.get(position).getLatitute());
+            intent.putExtra("long",mFilteredList.get(position).getLongitute());
+            intent.putExtra("distance",mFilteredList.get(position).getDistance_travelled());
+            Log.d("latit", String.valueOf(mFilteredList.get(position).latitute));
             intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(intent);
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 
         } else if (view.getId() == R.id.track_ll) {
             Intent trackIntent = new Intent(MainActivity.this, TrackingDevicesActivity.class);
-            trackIntent.putExtra("device_id", listArrayList.get(position).getPositionId());
-            trackIntent.putExtra("tname", listArrayList.get(position).getName());
-            trackIntent.putExtra("status", listArrayList.get(position).getStatus());
-            trackIntent.putExtra("tupdate", listArrayList.get(position).getLastUpdates());
-            trackIntent.putExtra("ttimer", listArrayList.get(position).getTime());
+            trackIntent.putExtra("device_id", mFilteredList.get(position).getPositionId());
+            trackIntent.putExtra("tname", mFilteredList.get(position).getName());
+            trackIntent.putExtra("status", mFilteredList.get(position).getStatus());
+            trackIntent.putExtra("tupdate", mFilteredList.get(position).getLastUpdates());
+            trackIntent.putExtra("ttimer", mFilteredList.get(position).getTime());
+            trackIntent.putExtra("address",mFilteredList.get(position).getAddress());
+            trackIntent.putExtra("speed",mFilteredList.get(position).getSpeed());
+            trackIntent.putExtra("lat",mFilteredList.get(position).getLatitute());
+            trackIntent.putExtra("long",mFilteredList.get(position).getLongitute());
             trackIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(trackIntent);
             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
@@ -111,20 +124,33 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onRefresh() {
-        new Async().execute();
+        parseView();
     }
 
-    private void parseView() {
-        ArrayList<VehicleList> result = SplashActivity.listArrayList;
-        progressDialog.dismiss();
-        swipeRefreshLayout.setRefreshing(false);
-        for (int i = 0; i < result.size(); i++) {
-            final int finalI = i;
-            VehicleList vehicles = new VehicleList(result.get(finalI).id, result.get(finalI).name, result.get(finalI).uniqueId
-                    , result.get(finalI).status, result.get(finalI).lastUpdates, result.get(finalI).category, result.get(finalI).positionId, result.get(finalI).address,
-                    result.get(finalI).time, result.get(finalI).timeDiff);
-            listArrayList.add(vehicles);
+    private ArrayList<VehicleList> parseView() {
+
+        JSONObject previousData = null;
+        try {
+            previousData = new JSONObject(mSharedPreferences.getString("deviceData","{}"));
+            Log.d("tt", String.valueOf(previousData));
+            JSONArray vehicleList = previousData.getJSONArray("totalLst");
+            Log.d("to", String.valueOf(vehicleList));
+            progressDialog.dismiss();
+            swipeRefreshLayout.setRefreshing(false);
+            for (int i = 0; i < vehicleList.length(); i++) {
+                JSONObject jsonObject = vehicleList.getJSONObject(i);
+                VehicleList vehicleList1 = new VehicleList(jsonObject.getInt("id"),jsonObject.getString("name"),jsonObject.getString("uniqueId"),jsonObject.getString("status"),
+                        jsonObject.getString("date"),jsonObject.getString("category"),jsonObject.getInt("positionId"),jsonObject.getString("address"),jsonObject.getString("time"),jsonObject.getString("timeDiff")
+                ,jsonObject.getDouble("speed"),jsonObject.getDouble("latitude"),jsonObject.getDouble("longitude"),jsonObject.getDouble("distance"));
+                listArrayList.add(vehicleList1);
+            }
+            return listArrayList;
+
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
+
+        return listArrayList;
 
     }
 
@@ -150,43 +176,6 @@ public class MainActivity extends AppCompatActivity
         return super.onCreateOptionsMenu(menu);
     }
 
-//    private void parseView() {
-//        APIServices.GetAllVehicleList(MainActivity.this, new ResponseCallbackEvents() {
-//            @Override
-//            public void onSuccess(final ArrayList<VehicleList> result) {
-//                progressDialog.dismiss();
-//                AllSize = result.size();
-//                swipeRefreshLayout.setRefreshing(false);
-//                for (int i = 0; i < result.size(); i++) {
-//                    int id = result.get(i).positionId;
-//                    final int finalI = i;
-//                    APIServices.GetVehicleDetailById(MainActivity.this, id, new DetailResponseCallback() {
-//                        @Override
-//                        public void OnResponse(VehicleList Response) {
-//                            VehicleList vehicles = new VehicleList(result.get(finalI).id, result.get(finalI).name, result.get(finalI).uniqueId
-//                                    , result.get(finalI).status, result.get(finalI).lastUpdates, result.get(finalI).category, result.get(finalI).positionId, Response.address,
-//                                    result.get(finalI).time, result.get(finalI).timeDiff);
-//                            listArrayList.add(vehicles);
-//                            if(result.get(finalI).status.equals("online")){
-//                                onLineList.add(vehicles);
-//                            }
-//                            if(result.get(finalI).status.equals("offline")){
-//                                offlineList.add(vehicles);
-//                            }
-//
-//                            VehicleList latlong = new VehicleList(result.get(finalI).id,result.get(finalI).status,Response.latitute,Response.longitute);
-//                            latlongList.add(latlong);
-//                            vehiclesAdapter.notifyDataSetChanged();
-//
-//                        }
-//                    });
-//                }
-//                offlinesize = offlineList.size();
-//                onlinesize = onLineList.size();
-//
-//            }
-//        });
-//    }
 
     private void searchVehicle(SearchView searchView) {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -223,22 +212,4 @@ public class MainActivity extends AppCompatActivity
         super.onResume();
     }
 
-    public class Async extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            parseView();
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-        }
-    }
 }

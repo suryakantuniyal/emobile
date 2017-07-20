@@ -1,5 +1,7 @@
 package in.gtech.gogeotrack.network;
 
+import org.json.JSONArray;
+
 import in.gtech.gogeotrack.model.VehicleList;
 
 import java.util.ArrayList;
@@ -9,5 +11,5 @@ import java.util.ArrayList;
  */
 
 public interface ResponseOnlineVehicle {
-    void onSuccessOnline(ArrayList<VehicleList> result);
+    void onSuccessOnline(JSONArray jsonArray);
 }

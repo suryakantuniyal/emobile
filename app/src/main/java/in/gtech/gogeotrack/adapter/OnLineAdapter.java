@@ -1,6 +1,7 @@
 package in.gtech.gogeotrack.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,6 +16,10 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 
 import in.gtech.gogeotrack.R;
+import in.gtech.gogeotrack.activity.MainActivity;
+import in.gtech.gogeotrack.activity.OnLineOffLineActivity;
+import in.gtech.gogeotrack.activity.TrackingDevicesActivity;
+import in.gtech.gogeotrack.activity.VehicleDetailActivity;
 import in.gtech.gogeotrack.model.VehicleList;
 
 import java.util.ArrayList;
@@ -126,7 +131,7 @@ public class OnLineAdapter extends RecyclerView.Adapter<OnLineAdapter.MyViewHold
         private LinearLayout detail, track;
         private View v;
 
-        public MyViewHolder(View itemView) {
+        public MyViewHolder(final View itemView) {
             super(itemView);
             v = itemView;
             track = (LinearLayout) itemView.findViewById(R.id.track_ll);
@@ -141,10 +146,34 @@ public class OnLineAdapter extends RecyclerView.Adapter<OnLineAdapter.MyViewHold
             detail.setOnClickListener(this);
 
             track.setOnClickListener(new View.OnClickListener() {
+
                 @Override
                 public void onClick(View view) {
+                    Context context = itemView.getContext();
+                    if (view.getId() == R.id.detail_ll) {
+                        Intent intent = new Intent(context, VehicleDetailActivity.class);
+                        intent.putExtra("id", mFilteredList.get(getPosition()).getId());
+                        intent.putExtra("name", mFilteredList.get(getPosition()).getName());
+                        intent.putExtra("pid", mFilteredList.get(getPosition()).getPositionId());
+                        intent.putExtra("uid", mFilteredList.get(getPosition()).getUniqueId());
+                        intent.putExtra("status", mFilteredList.get(getPosition()).getStatus());
+                        intent.putExtra("category", mFilteredList.get(getPosition()).getCategory());
+                        intent.putExtra("lastupdate", mFilteredList.get(getPosition()).getLastUpdates());
+                        intent.putExtra("diff", mFilteredList.get(getPosition()).getTimeDiff());
+                        intent.putExtra("speed",mFilteredList.get(getPosition()).getSpeed());
+                        intent.putExtra("address",mFilteredList.get(getPosition()).getAddress());
+                        intent.putExtra("lat",mFilteredList.get(getPosition()).getLatitute());
+                        intent.putExtra("long",mFilteredList.get(getPosition()).getLongitute());
+                        intent.putExtra("distance",mFilteredList.get(getPosition()).getDistance_travelled());
+                        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                        context.startActivity(intent);
 
-                    cnoteClick.OnItemClick(view, getAdapterPosition());
+
+                    } else if (view.getId() == R.id.track_ll) {
+
+
+                    }
+
                 }
             });
 
@@ -152,7 +181,19 @@ public class OnLineAdapter extends RecyclerView.Adapter<OnLineAdapter.MyViewHold
             detail.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    cnoteClick.OnItemClick(view, getAdapterPosition());
+                    Context context = itemView.getContext();
+                    Intent trackIntent = new Intent(context, TrackingDevicesActivity.class);
+                    trackIntent.putExtra("device_id", mFilteredList.get(getPosition()).getPositionId());
+                    trackIntent.putExtra("tname", mFilteredList.get(getPosition()).getName());
+                    trackIntent.putExtra("tupdate", mFilteredList.get(getPosition()).getLastUpdates());
+                    trackIntent.putExtra("status", mFilteredList.get(getPosition()).getStatus());
+                    trackIntent.putExtra("ttimer", mFilteredList.get(getPosition()).getTime());
+                    trackIntent.putExtra("address",mFilteredList.get(getPosition()).getAddress());
+                    trackIntent.putExtra("speed",mFilteredList.get(getPosition()).getSpeed());
+                    trackIntent.putExtra("lat",mFilteredList.get(getPosition()).getLatitute());
+                    trackIntent.putExtra("long",mFilteredList.get(getPosition()).getLongitute());
+                    trackIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                    context.startActivity(trackIntent);
                 }
             });
 

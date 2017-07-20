@@ -51,6 +51,26 @@ public class VehicleList {
 
     }
 
+    public VehicleList(int id, String name, String uniqueId, String status, String lastUpdates, String category, int positionId, String address, String time, String timeDiff,Double speed,
+                       Double latitute,Double longitute,Double distance_travelled) {
+        this.id = id;
+        this.name = name;
+        this.uniqueId = uniqueId;
+        this.status = status;
+        this.lastUpdates = lastUpdates;
+        this.category = category;
+        this.positionId = positionId;
+        this.address = address;
+        this.time = time;
+        this.timeDiff = timeDiff;
+        this.speed = speed;
+        this.latitute = latitute;
+        this.longitute = longitute;
+        this.distance_travelled = distance_travelled;
+
+
+    }
+
     public int getId() {
         return id;
     }

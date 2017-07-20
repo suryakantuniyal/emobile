@@ -115,7 +115,7 @@ public class VehicleslistAdapter extends RecyclerView.Adapter<VehicleslistAdapte
     }
 
     public interface OnItemClickListener {
-        public void OnItemClick(View view, int position);
+        public void OnItemClick(View view, int position, List<VehicleList> mFilteredList);
 
     }
 
@@ -145,7 +145,7 @@ public class VehicleslistAdapter extends RecyclerView.Adapter<VehicleslistAdapte
                 @Override
                 public void onClick(View view) {
 
-                    cnoteClick.OnItemClick(view, getAdapterPosition());
+                    cnoteClick.OnItemClick(view, getAdapterPosition(), mFilteredList);
                 }
             });
 
@@ -153,7 +153,7 @@ public class VehicleslistAdapter extends RecyclerView.Adapter<VehicleslistAdapte
             detail.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    cnoteClick.OnItemClick(view, getAdapterPosition());
+                    cnoteClick.OnItemClick(view, getAdapterPosition(),mFilteredList);
                 }
             });
 
@@ -164,7 +164,7 @@ public class VehicleslistAdapter extends RecyclerView.Adapter<VehicleslistAdapte
         @Override
         public void onClick(View view) {
             if (mOnItemClickListener != null) {
-                mOnItemClickListener.OnItemClick(v, getAdapterPosition());
+                mOnItemClickListener.OnItemClick(v, getAdapterPosition(), mFilteredList);
 
             } else {
                 Log.d("itemclick", "OnItemClickListener is null");

@@ -138,7 +138,7 @@
                         <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
+                            android:layout_marginLeft="40dp"
                         android:text="Last Updated: "/>
                     <TextView
                         android:id="@+id/diff_tv"

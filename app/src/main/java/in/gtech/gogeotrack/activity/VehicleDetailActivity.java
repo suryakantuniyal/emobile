@@ -1,7 +1,9 @@
 package in.gtech.gogeotrack.activity;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -25,10 +27,13 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.json.JSONArray;
+
 import in.gtech.gogeotrack.R;
 import in.gtech.gogeotrack.api.APIServices;
 import in.gtech.gogeotrack.model.VehicleList;
 import in.gtech.gogeotrack.network.DetailResponseCallback;
+import in.gtech.gogeotrack.utils.URLContstant;
 
 /**
  * Created by silence12 on 21/6/17.
@@ -37,8 +42,7 @@ import in.gtech.gogeotrack.network.DetailResponseCallback;
 public class VehicleDetailActivity extends AppCompatActivity {
 
     private static final String TAG = VehicleDetailActivity.class.getSimpleName();
-    private static String address;
-    private static Double speed;
+
     GoogleMap googleMap;
     private TextView name_tv, positionId_tv, uniqueId_tv, status_tv, lastUpdate_tv, category_tv, contact_tv,
             speed_tv, distance_tv, timedated;
@@ -46,11 +50,13 @@ public class VehicleDetailActivity extends AppCompatActivity {
     private CollapsingToolbarLayout collapsingToolbarLayout;
     private ProgressDialog progressDialog;
     private String nameString, positionIdString, uniqueIdString, lastUpdatetString, categoryString, statusString,
-            contactString, diffString;
+            contactString, diffString,address;
     private int id, positionId;
     private Button homeButton;
     private MarkerOptions markerOptions;
+    Double speed,latitute,longitute,distance_trav;
     private CameraPosition cameraPosition;
+    SharedPreferences mSharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +67,7 @@ public class VehicleDetailActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setTitle("DeviceDetail");
         initViews();
-        getIntentFileds();
+        mSharedPreferences = getSharedPreferences(URLContstant.PREFERENCE_NAME, Context.MODE_PRIVATE);
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         collapsingToolbarLayout.setTitle(nameString);
         collapsingToolbarLayout.setCollapsedTitleTextColor(Color.WHITE);
@@ -81,10 +87,12 @@ public class VehicleDetailActivity extends AppCompatActivity {
                 }
             }
         });
-        new Async().execute();
+        callDetailRequest();
     }
 
-    private void getIntentFileds() {
+    public void callDetailRequest() {
+
+
         Intent getIntent = getIntent();
         id = getIntent.getIntExtra("id", -1);
         nameString = getIntent.getStringExtra("name");
@@ -95,27 +103,26 @@ public class VehicleDetailActivity extends AppCompatActivity {
         categoryString = getIntent.getStringExtra("category");
         contactString = getIntent.getStringExtra("contact");
         diffString = getIntent.getStringExtra("diff");
-        Log.d("Diff", diffString);
-    }
+        address = getIntent.getStringExtra("address");
+        latitute = getIntent.getDoubleExtra("lat",0.0);
+        longitute = getIntent.getDoubleExtra("long",0.0);
+        speed = getIntent.getDoubleExtra("speed",0.0);
+        distance_trav = getIntent.getDoubleExtra("distance",0.0);
+        Log.d("Distance", String.valueOf(distance_trav));
 
-    public void callDetailRequest(int id) {
-        APIServices.GetVehicleDetailById(VehicleDetailActivity.this, id, new DetailResponseCallback() {
-            @Override
-            public void OnResponse(VehicleList Response) {
                 progressDialog.dismiss();
                 name_tv.setText(nameString);
-                String speed = String.valueOf(Response.speed);
-                String distance = String.valueOf(Response.distance_travelled);
-                if (Response.address.equals("null")) {
+
+                if (address.equals("null")) {
                     positionId_tv.setText("Loading...");
                 } else {
-                    positionId_tv.setText(Response.address);
+                    positionId_tv.setText(address);
                 }
                 googleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map2)).getMap();
-                CameraUpdate point = CameraUpdateFactory.newLatLng(new LatLng(20.5937, 78.9629));
-                googleMap.moveCamera(point);
-                markerOptions = new MarkerOptions().position(new LatLng(Response.latitute, Response.longitute)).title(Response.address);
-                cameraPosition = new CameraPosition.Builder().target(new LatLng(Response.latitute, Response.longitute)).zoom(14).build();
+//                CameraUpdate point = CameraUpdateFactory.newLatLng(new LatLng(20.5937, 78.9629));
+//                googleMap.moveCamera(point);
+                markerOptions = new MarkerOptions().position(new LatLng(latitute,longitute)).title(address);
+                cameraPosition = new CameraPosition.Builder().target(new LatLng(latitute,longitute)).zoom(14).build();
                 googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
                 if (statusString.equals("online")) {
                     markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.greentruck));
@@ -129,15 +136,13 @@ public class VehicleDetailActivity extends AppCompatActivity {
                 lastUpdate_tv.setText(lastUpdatetString);
                 status_tv.setText(statusString);
                 category_tv.setText(categoryString);
-                speed_tv.setText(speed);
+                speed_tv.setText(String.valueOf(speed));
                 timedated.setText(diffString);
-                distance_tv.setText(distance);
-            }
-        });
+                distance_tv.setText(String.valueOf(distance_trav));
+
     }
 
     private void initViews() {
-//        projImageView = (ImageView) findViewById(R.id.category_image_iv);
         name_tv = (TextView) findViewById(R.id.project_name_tv);
         positionId_tv = (TextView) findViewById(R.id.positionId_tv);
         uniqueId_tv = (TextView) findViewById(R.id.uniqueid_tv);
@@ -154,10 +159,6 @@ public class VehicleDetailActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
-
-//        Glide.with(this).load(R.drawable.ic_truck).asBitmap()
-//                .centerCrop().placeholder(R.drawable.placeholderxx4).into(projImageView);
-
 
     }
 
@@ -179,7 +180,7 @@ public class VehicleDetailActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        new Async().execute();
+       callDetailRequest();
 
     }
 
@@ -216,22 +217,4 @@ public class VehicleDetailActivity extends AppCompatActivity {
         }
     }
 
-    public class Async extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            callDetailRequest(positionId);
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-        }
-    }
 }

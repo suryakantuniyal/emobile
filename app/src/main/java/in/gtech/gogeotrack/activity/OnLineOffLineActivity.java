@@ -1,9 +1,9 @@
 package in.gtech.gogeotrack.activity;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.MenuItemCompat;
@@ -19,16 +19,20 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import in.gtech.gogeotrack.R;
 import in.gtech.gogeotrack.adapter.VehicleslistAdapter;
 import in.gtech.gogeotrack.model.VehicleList;
+import in.gtech.gogeotrack.parser.TraccerParser;
+import in.gtech.gogeotrack.utils.URLContstant;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by silence12 on 5/7/17.
@@ -43,6 +47,7 @@ public class OnLineOffLineActivity extends AppCompatActivity implements SwipeRef
     private VehicleslistAdapter vehiclesAdapter;
     private RecyclerView recyclerView;
     private ArrayList<VehicleList> listArrayList;
+    SharedPreferences mSharedPreferences;
     private String onnOff;
 
     @Override
@@ -53,27 +58,23 @@ public class OnLineOffLineActivity extends AppCompatActivity implements SwipeRef
         setSupportActionBar(toolbar);
         getSupportActionBar().setIcon(R.mipmap.luncher_icon);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-//        getSupportActionBar().setIcon(R.mipmap.luncher_icon);
+        mSharedPreferences = getSharedPreferences(URLContstant.PREFERENCE_NAME, Context.MODE_PRIVATE);
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Wait a moment...");
         progressDialog.setCancelable(false);
         progressDialog.show();
         setTitle("Online Devices");
-        sharedPrefs = getSharedPreferences("ArrayList", MODE_PRIVATE);
-        Gson gson = new Gson();
-        String json = sharedPrefs.getString("onlist", null);
-        Type type = new TypeToken<ArrayList<VehicleList>>() {
-        }.getType();
-        arrayList = gson.fromJson(json, type);
-
-        Log.d("TransferData", String.valueOf(arrayList.size()));
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh_online);
         swipeRefreshLayout.setRefreshing(false);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
         swipeRefreshLayout.setOnRefreshListener(this);
-        new Async().execute();
-        recyclerView = (RecyclerView) findViewById(R.id.onlineoffline_rv);
         listArrayList = new ArrayList<VehicleList>();
+        recyclerView = (RecyclerView) findViewById(R.id.onlineoffline_rv);
+        listArrayList = parseView();
+        if(listArrayList.size() == 0){
+            progressDialog.dismiss();
+            Toast.makeText(getApplicationContext(),"No online Devices",Toast.LENGTH_SHORT).show();
+        }
         vehiclesAdapter = new VehicleslistAdapter(getBaseContext(), listArrayList, this);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
@@ -82,18 +83,32 @@ public class OnLineOffLineActivity extends AppCompatActivity implements SwipeRef
         vehiclesAdapter.setOnItemClickListener(this);
     }
 
-    private void parseView() {
-        ArrayList<VehicleList> result = arrayList;
-        progressDialog.dismiss();
-        swipeRefreshLayout.setRefreshing(false);
-        for (int i = 0; i < result.size(); i++) {
-            final int finalI = i;
-            VehicleList vehicles = new VehicleList(result.get(finalI).id, result.get(finalI).name, result.get(finalI).uniqueId
-                    , result.get(finalI).status, result.get(finalI).lastUpdates, result.get(finalI).category, result.get(finalI).positionId, result.get(finalI).address,
-                    result.get(finalI).time, result.get(finalI).timeDiff);
-            listArrayList.add(vehicles);
-//                    vehiclesAdapter.notifyDataSetChanged();
+
+    private ArrayList<VehicleList> parseView() {
+
+        JSONObject previousData = null;
+        try {
+            previousData = new JSONObject(mSharedPreferences.getString("deviceData","{}"));
+            Log.d("tt", String.valueOf(previousData.length()));
+            JSONArray vehicleList = previousData.getJSONArray("onlineLst");
+            Log.d("to", String.valueOf(vehicleList.length()));
+            progressDialog.dismiss();
+            swipeRefreshLayout.setRefreshing(false);
+            for (int i = 0; i < vehicleList.length(); i++) {
+                JSONObject jsonObject = vehicleList.getJSONObject(i);
+                VehicleList vehicleList1 = new VehicleList(jsonObject.getInt("id"),jsonObject.getString("name"),jsonObject.getString("uniqueId"),jsonObject.getString("status"),
+                        jsonObject.getString("date"),jsonObject.getString("category"),jsonObject.getInt("positionId"),jsonObject.getString("address"),jsonObject.getString("time"),jsonObject.getString("timeDiff")
+                        ,jsonObject.getDouble("speed"),jsonObject.getDouble("latitude"),jsonObject.getDouble("longitude"),jsonObject.getDouble("distance"));
+                listArrayList.add(vehicleList1);
+
+            }
+            return listArrayList;
+
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
+
+        return listArrayList;
 
     }
 
@@ -104,34 +119,45 @@ public class OnLineOffLineActivity extends AppCompatActivity implements SwipeRef
     }
 
     @Override
-    public void OnItemClick(View view, int position) {
+    public void OnItemClick(View view, int position, List<VehicleList> mFilteredList) {
         if (view.getId() == R.id.detail_ll) {
+
             Intent intent = new Intent(OnLineOffLineActivity.this, VehicleDetailActivity.class);
-            intent.putExtra("id", listArrayList.get(position).getId());
-            intent.putExtra("name", listArrayList.get(position).getName());
-            intent.putExtra("pid", listArrayList.get(position).getPositionId());
-            intent.putExtra("uid", listArrayList.get(position).getUniqueId());
-            intent.putExtra("status", listArrayList.get(position).getStatus());
-            intent.putExtra("category", listArrayList.get(position).getCategory());
-            intent.putExtra("lastupdate", listArrayList.get(position).getLastUpdates());
-            intent.putExtra("diff", listArrayList.get(position).getTimeDiff());
+            Log.d("Position", String.valueOf(position));
+            intent.putExtra("id", mFilteredList.get(position).getId());
+            intent.putExtra("name", mFilteredList.get(position).getName());
+            intent.putExtra("pid", mFilteredList.get(position).getPositionId());
+            intent.putExtra("uid", mFilteredList.get(position).getUniqueId());
+            intent.putExtra("status", mFilteredList.get(position).getStatus());
+            intent.putExtra("category", mFilteredList.get(position).getCategory());
+            intent.putExtra("lastupdate", mFilteredList.get(position).getLastUpdates());
+            intent.putExtra("diff", mFilteredList.get(position).getTimeDiff());
+            intent.putExtra("address",mFilteredList.get(position).getAddress());
+            intent.putExtra("speed",mFilteredList.get(position).getSpeed());
+            intent.putExtra("lat",mFilteredList.get(position).getLatitute());
+            intent.putExtra("long",mFilteredList.get(position).getLongitute());
+            intent.putExtra("distance",mFilteredList.get(position).getDistance_travelled());
+            Log.d("latit", String.valueOf(mFilteredList.get(position).latitute));
             intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(intent);
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 
         } else if (view.getId() == R.id.track_ll) {
             Intent trackIntent = new Intent(OnLineOffLineActivity.this, TrackingDevicesActivity.class);
-            trackIntent.putExtra("device_id", listArrayList.get(position).getPositionId());
-            trackIntent.putExtra("tname", listArrayList.get(position).getName());
-            trackIntent.putExtra("tupdate", listArrayList.get(position).getLastUpdates());
-            trackIntent.putExtra("status", listArrayList.get(position).getStatus());
-            trackIntent.putExtra("ttimer", listArrayList.get(position).getTime());
+            trackIntent.putExtra("device_id", mFilteredList.get(position).getPositionId());
+            trackIntent.putExtra("tname", mFilteredList.get(position).getName());
+            trackIntent.putExtra("status", mFilteredList.get(position).getStatus());
+            trackIntent.putExtra("tupdate", mFilteredList.get(position).getLastUpdates());
+            trackIntent.putExtra("ttimer", mFilteredList.get(position).getTime());
+            trackIntent.putExtra("address",mFilteredList.get(position).getAddress());
+            trackIntent.putExtra("speed",mFilteredList.get(position).getSpeed());
+            trackIntent.putExtra("lat",mFilteredList.get(position).getLatitute());
+            trackIntent.putExtra("long",mFilteredList.get(position).getLongitute());
             trackIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(trackIntent);
             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
 
         }
-
 
     }
 
@@ -185,26 +211,6 @@ public class OnLineOffLineActivity extends AppCompatActivity implements SwipeRef
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-    }
-
-    public class Async extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            parseView();
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            progressDialog.dismiss();
-        }
     }
 
 }

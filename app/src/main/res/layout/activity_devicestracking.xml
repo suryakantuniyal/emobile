@@ -262,7 +262,7 @@
                                 android:layout_height="20dp"
                                 android:text="Speed: "
                                 android:textColor="@color/red"
-                                android:textSize="15dp"
+                                android:textSize="13dp"
                                 />
                             <TextView
                                 android:layout_width="wrap_content"
@@ -273,14 +273,14 @@
                                 android:layout_marginLeft="10dp"
                                 android:text=""
                                 android:textColor="@color/red"
-                                android:textSize="15dp" />
+                                android:textSize="12dp" />
 
                             <TextView
                                 android:layout_width="50dp"
                                 android:layout_height="20dp"
                                 android:text=" km/h"
                                 android:textColor="@color/red"
-                                android:textSize="13dp"
+                                android:textSize="10dp"
                                 />
                         </LinearLayout>
                     </LinearLayout>

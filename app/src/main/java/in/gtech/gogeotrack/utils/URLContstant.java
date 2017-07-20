@@ -13,7 +13,7 @@ public class URLContstant {
     public static final String ALL_VEHICLES = "api/devices";
     public static final String API_KEY = "";
 
-    public static final String PREFERENCE_NAME = "org.traccar.manager";
+    public static final String PREFERENCE_NAME = "in.gtech.gogeotrack";
     public static final String FCM_KEY_TOKEN = "org.traccar.manager.fcmToken";
     public static final String KEY_OTP = "otp";
     public static final String KEY_APPLICATION_STATE = "state";

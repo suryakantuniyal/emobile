@@ -2,6 +2,8 @@ package in.gtech.gogeotrack.activity;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -11,6 +13,7 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -25,8 +28,16 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import in.gtech.gogeotrack.R;
+import in.gtech.gogeotrack.api.APIServices;
 import in.gtech.gogeotrack.model.VehicleList;
+import in.gtech.gogeotrack.network.DetailResponseCallback;
+import in.gtech.gogeotrack.network.ResponseCallbackEvents;
+import in.gtech.gogeotrack.utils.URLContstant;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +56,9 @@ public class MapViewActivity extends AppCompatActivity {
     MarkerOptions markerOptions;
     private List<VehicleList> mFilteredList;
     private CameraPosition cameraPosition;
+    SharedPreferences mSharedPreferences;
+    String userName,password;
+    private static ProgressDialog progressDialog;
 
 
     @Override
@@ -56,7 +70,13 @@ public class MapViewActivity extends AppCompatActivity {
         getSupportActionBar().setIcon(R.mipmap.luncher_icon);
         setTitle("MapView");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        result = SplashActivity.latlongList;
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Loading Map...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+        mSharedPreferences = getSharedPreferences(URLContstant.PREFERENCE_NAME, Context.MODE_PRIVATE);
+        userName = mSharedPreferences.getString(URLContstant.KEY_USERNAME, "");
+        password = mSharedPreferences.getString(URLContstant.KEY_PASSWORD,"");
         int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getBaseContext());
 
         // Showing status
@@ -82,23 +102,39 @@ public class MapViewActivity extends AppCompatActivity {
                 return;
             }
             googleMap.setMyLocationEnabled(true);
-            if (result.size() != 0) {
-                Double lat = 0.0;
-                Double lng = 0.0;
-                for (int i = 0; i < result.size(); i++) {
-                    lat = result.get(i).getLatitute();
-                    lng = result.get(i).getLongitute();
-                    drawMarker(new LatLng(lat, lng), result.get(i).status);
+            JSONObject previousData = null;
+                try {
+                    previousData = new JSONObject(mSharedPreferences.getString("deviceData","{}"));
+                    Log.d("tt", String.valueOf(previousData));
+                    JSONArray vehicleList = previousData.getJSONArray("totalLst");
+                    Log.d("to", String.valueOf(vehicleList));
+                    Double lat = 0.0;
+                    Double lng = 0.0;
+                    progressDialog.dismiss();
+                    for (int i = 0; i < vehicleList.length(); i++) {
+                        JSONObject jsonObject = vehicleList.getJSONObject(i);
+                        lat = jsonObject.getDouble("latitude");
+                        lng = jsonObject.getDouble("longitude");
+                        String address;
+                        if (jsonObject.getString("address").equals("null")) {
+                            address = "Loading...";
+                        } else {
+                            address = jsonObject.getString("address");
+                        }
+                        drawMarker(new LatLng(lat, lng),jsonObject.getString("status"),address);
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
             }
-        }
 
     }
 
-    private void drawMarker(LatLng point, String str) {
+    private void drawMarker(LatLng point, String str,String add) {
 
         MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(point);
+        markerOptions.position(point).title(add);
         if (str.equals("online")) {
             markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.greentruck));
         } else if (str.equals("offline")) {
@@ -112,45 +148,26 @@ public class MapViewActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
-        searchMenuItem = menu.findItem(R.id.action_search);
-        MenuItemCompat.setOnActionExpandListener(searchMenuItem, new MenuItemCompat.OnActionExpandListener() {
-            @Override
-            public boolean onMenuItemActionExpand(MenuItem menuItem) {
-                SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchMenuItem);
-                searchVehicle(searchView);
-                return true;
-            }
-
-            @Override
-            public boolean onMenuItemActionCollapse(MenuItem menuItem) {
-                return true;
-            }
-        });
+//        MenuInflater inflater = getMenuInflater();
+//        inflater.inflate(R.menu.main_menu, menu);
+//        searchMenuItem = menu.findItem(R.id.action_search);
+//        MenuItemCompat.setOnActionExpandListener(searchMenuItem, new MenuItemCompat.OnActionExpandListener() {
+//            @Override
+//            public boolean onMenuItemActionExpand(MenuItem menuItem) {
+//                SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchMenuItem);
+//                searchVehicle(searchView);
+//                return true;
+//            }
+//
+//            @Override
+//            public boolean onMenuItemActionCollapse(MenuItem menuItem) {
+//                return true;
+//            }
+//        });
         return super.onCreateOptionsMenu(menu);
     }
 
 
-    private void searchVehicle(SearchView searchView) {
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                for (int i = 0; i < result.size(); i++) {
-//                    if(result.get(i).getName().contains(query)){
-//                        cameraPosition = new CameraPosition.Builder().target(new LatLng(result.get(i).latitute,result.get(i).longitute)).zoom(14).build();
-//                        googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-//                    }
-                }
-                return true;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                return false;
-            }
-        });
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

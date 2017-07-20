@@ -60,9 +60,6 @@ public class WelcomeMessageActivity extends AppCompatActivity implements View.On
         alldevice_iv = (ImageView) findViewById(R.id.all_img_summary);
         online_iv = (ImageView) findViewById(R.id.online_img);
         offline_iv = (ImageView) findViewById(R.id.offline_img);
-        totalDevices.setText(String.valueOf(MainActivity.AllSize));
-        onlineDevices.setText(String.valueOf(MainActivity.onlinesize));
-        offlineDevices.setText(String.valueOf(MainActivity.offlinesize));
         listView_button.setOnClickListener(this);
         circleviewPager.setAdapter(viewPagerAdapter);
         circleviewPager.setCurrentItem(0);
