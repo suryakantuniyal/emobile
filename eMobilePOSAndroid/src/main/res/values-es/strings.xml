@@ -142,7 +142,7 @@
 
 
     <string name="add_gratuity">"Añadir Propina?"</string>
-    <string name="total_plus_tip">"Total + Propina:"</string>
+    <string name="total_plus_tip">"Subtotal (%1$s) + Propina (%2$s):"</string>
     <string name="confirmation_header">"Confirmar Cantidad"</string>
     <string name="confirmation_total">"Total"</string>
     <string name="confirmation_card_number">"Tarjeta #:"</string>

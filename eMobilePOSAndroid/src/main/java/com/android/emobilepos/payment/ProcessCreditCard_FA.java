@@ -79,6 +79,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -96,27 +97,19 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
     public static final String CREDITCARD_TYPE_JCB = "JCB", CREDITCARD_TYPE_CUP = "CUP",
             CREDITCARD_TYPE_DISCOVER = "Discover", CREDITCARD_TYPE_VISA = "Visa", CREDITCARD_TYPE_DINERS = "DinersClub",
             CREDITCARD_TYPE_MASTERCARD = "MasterCard", CREDITCARD_TYPE_AMEX = "AmericanExpress";
-    private HashMap<String, String> reverseXMLMap;
-
-    public enum PAYMENT_GIFT_CARDS {
-        GIFTCARDS, LOYALTYCARD, REWARD
-    }
-
-    private String creditCardType = "";
-
+    private static final String DATA_STRING_TAG = "com.motorolasolutions.emdk.datawedge.data_string";
     private static CheckBox cardSwipe = null;
     private static boolean cardReaderConnected = false;
-
-    private MyPreferences myPref;
-
-    private EditText hiddenField;
     private static EditText month, year, cardNum, ownersName, secCode, zipCode;
-
+    private static ProgressDialog myProgressDialog;
+    private static String ourIntentAction = "";
+    private HashMap<String, String> reverseXMLMap;
+    private String creditCardType = "";
+    private MyPreferences myPref;
+    private EditText hiddenField;
     private Global global;
     private Activity activity;
     private boolean hasBeenCreated = false;
-    private static ProgressDialog myProgressDialog;
-
     private PaymentsHandler payHandler;
     private InvoicePaymentsHandler invPayHandler;
     private String inv_id;
@@ -133,9 +126,8 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
     private EditText authIDField, transIDField;
     private TextView tax2Lbl;
     private EditText subtotal, tax1, tax2;
-    private List<GroupTax> groupTaxRate;
     // private boolean timedOut = false;
-
+    private List<GroupTax> groupTaxRate;
     private boolean isMultiInvoice = false, isOpenInvoice = false;
     private String[] inv_id_array, txnID_array;
     private double[] balance_array;
@@ -145,26 +137,296 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
     private EMSRover roverReader;
     private String custidkey = "";
     private TextView tvStatusMSR;
-
     private double amountToTip = 0;
     private double grandTotalAmount = 0;
-
     private TextView dlogGrandTotal;
     private EMSCallBack callBack;
     private CreditCardInfo cardInfoManager;
-
-    private static String ourIntentAction = "";
-    private static final String DATA_STRING_TAG = "com.motorolasolutions.emdk.datawedge.data_string";
     private Bundle extras;
     private boolean isDebit = false;
     private Button btnProcess;
     private ScrollView scrollView;
     private EMSIDTechUSB _msrUsbSams;
-
     //    private EMSWalker walkerReader;
     private NumberUtils numberUtils = new NumberUtils();
-
     private boolean isEverpay = false;
+    private String _charge_xml;
+    private boolean livePaymentRunning = false;
+
+    public static String getCardType(String number) {
+        String ccType = "";
+        boolean isMasked;
+        try {
+            if (TextUtils.isEmpty(number) || number.length() < 4) {
+                return "";
+            } else {
+                if (!TextUtils.isDigitsOnly(number.substring(0, 4))) {
+                    return "";
+                }
+                isMasked = true;
+            }
+        } catch (NumberFormatException ex) {
+            return "";
+        }
+        if (!isMasked && Integer.parseInt(number.substring(0, 6)) >= 622126
+                && Integer.parseInt(number.substring(0, 6)) <= 622925) {
+            ccType = CREDITCARD_TYPE_CUP;
+        } else if (!isMasked && (Integer.parseInt(number.substring(0, 6)) == 564182
+                || Integer.parseInt(number.substring(0, 6)) == 633110)) {
+            ccType = CREDITCARD_TYPE_DISCOVER;
+        } else {
+            switch (Integer.parseInt(number.substring(0, 4))) {
+                case 2014:
+                case 2149:
+                    ccType = CREDITCARD_TYPE_DINERS;
+                    break;
+                case 2131:
+                case 1800:
+                case 3528:
+                case 3529:
+                    ccType = CREDITCARD_TYPE_JCB;
+                    break;
+                case 6011:
+                    ccType = CREDITCARD_TYPE_DISCOVER;
+                    break;
+                case 3095:
+                    ccType = CREDITCARD_TYPE_DINERS;
+                    break;
+                case 6222:
+                case 6223:
+                case 6224:
+                case 6225:
+                case 6226:
+                case 6227:
+                case 6228:
+                case 6282:
+                case 6283:
+                case 6284:
+                case 6285:
+                case 6286:
+                case 6287:
+                case 6288:
+                    ccType = CREDITCARD_TYPE_CUP;
+                    break;
+                case 5018:
+                case 5020:
+                case 5038:
+                case 6304:
+                case 6759:
+                case 6761:
+                case 6763:
+                    ccType = CREDITCARD_TYPE_MASTERCARD;
+                    break;
+                case 6333:
+                    ccType = CREDITCARD_TYPE_VISA;
+                    break;
+                default: {
+                    switch (Integer.parseInt(number.substring(0, 3))) {
+                        case 300:
+                        case 301:
+                        case 302:
+                        case 303:
+                        case 304:
+                        case 305:
+                            ccType = CREDITCARD_TYPE_DINERS;
+                            break;
+                        case 353:
+                        case 354:
+                        case 355:
+                        case 356:
+                        case 357:
+                        case 358:
+                            ccType = CREDITCARD_TYPE_JCB;
+                            break;
+                        case 644:
+                        case 645:
+                        case 646:
+                        case 647:
+                        case 648:
+                        case 649:
+                            ccType = CREDITCARD_TYPE_DISCOVER;
+                            break;
+                        case 624:
+                        case 625:
+                        case 626:
+                            ccType = CREDITCARD_TYPE_CUP;
+                            break;
+                        default: {
+                            switch (Integer.parseInt(number.substring(0, 2))) {
+                                case 34:
+                                case 37:
+                                    ccType = CREDITCARD_TYPE_AMEX;
+                                    break;
+                                case 36:
+                                case 38:
+                                case 39:
+                                    ccType = CREDITCARD_TYPE_DINERS;
+                                    break;
+                                case 22:
+                                case 23:
+                                case 24:
+                                case 25:
+                                case 26:
+                                case 27:
+                                case 51:
+                                case 52:
+                                case 53:
+                                case 54:
+                                case 55:
+                                    if ((Integer.parseInt(number.substring(0, 4)) >= 2221 &&
+                                            Integer.parseInt(number.substring(0, 4)) <= 2720) ||
+                                            (Integer.parseInt(number.substring(0, 4)) >= 5100 &&
+                                                    Integer.parseInt(number.substring(0, 4)) <= 5599)) {
+                                        ccType = CREDITCARD_TYPE_MASTERCARD;
+                                    }
+                                    break;
+                                case 65:
+                                    ccType = CREDITCARD_TYPE_DISCOVER;
+                                    break;
+                                default: {
+
+                                    switch (Integer.parseInt(number.substring(0, 1))) {
+                                        case 3:
+                                            ccType = CREDITCARD_TYPE_JCB;
+                                            break;
+                                        case 5:
+                                        case 6:
+                                            ccType = CREDITCARD_TYPE_MASTERCARD;
+                                            break;
+                                        case 4:
+                                        case 9:
+                                            ccType = CREDITCARD_TYPE_VISA;
+                                            break;
+                                        default: {
+                                        }
+                                        break;
+                                    }
+
+                                }
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+                break;
+            }
+        }
+
+        return ccType;
+    }
+
+    public static HashMap<String, String> generateReverseXML(Activity activity, String chargeXml) {
+
+        int action = 0;
+
+        String xmlAppId = "";
+        try {
+            XmlPullParserFactory xmlFactoryObject = XmlPullParserFactory.newInstance();
+            XmlPullParser parser = xmlFactoryObject.newPullParser();
+            parser.setInput(new StringReader(chargeXml));
+
+            int event = parser.getEventType();
+            String tag = "";
+            boolean found = false;
+            while (event != XmlPullParser.END_DOCUMENT && !found) {
+
+                switch (event) {
+                    case XmlPullParser.START_TAG:
+                        tag = parser.getName();
+                        break;
+                    case XmlPullParser.END_TAG:
+                        break;
+                    case XmlPullParser.TEXT:
+                        if (tag != null) {
+                            if (tag.equals("app_id")) {
+                                xmlAppId = parser.getText();
+                                found = true;
+                            } else if (tag.equals("action"))
+                                action = Integer.parseInt(parser.getText());
+                        }
+                        break;
+                }
+                event = parser.next();
+            }
+
+        } catch (XmlPullParserException e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
+        }
+
+        String reverseXml = chargeXml.replaceAll("<action>.*?</action>",
+                "<action>" + EMSPayGate_Default.getReverseAction(EMSPayGate_Default.EAction.toAction(action)) + "</action>");
+
+        PaymentsXML_DB _payment_xml = new PaymentsXML_DB(activity);
+        HashMap<String, String> map = new HashMap<String, String>();
+
+        map.put(PaymentsXML_DB.app_id, xmlAppId);
+        map.put(PaymentsXML_DB.payment_xml, reverseXml);
+
+        _payment_xml.insert(map);
+        return map;
+    }
+
+    public static int getCreditLogo(String cardName) {
+        if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_AMEX)
+                || cardName.trim().contains("amex") || cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_AMEX)) {
+            return R.drawable.americanexpress;
+        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_DISCOVER)
+                || cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_DISCOVER)) {
+            return R.drawable.discover;
+        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_MASTERCARD) ||
+                cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_MASTERCARD)) {
+            return R.drawable.mastercard;
+        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_VISA) ||
+                cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_VISA)) {
+            return R.drawable.visa;
+        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_JCB) ||
+                cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_JCB)) {
+            return R.drawable.debitcard;
+        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_CUP) ||
+                cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_CUP)) {
+            return R.drawable.debitcard;
+        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_DINERS) ||
+                cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_DINERS)) {
+            return R.drawable.debitcard;
+        } else {
+            return R.drawable.debitcard;
+        }
+    }
+
+    public static String getCreditName(String cardName) {
+        if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_AMEX)
+                || cardName.trim().contains("amex") || cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_AMEX)) {
+            return ProcessCreditCard_FA.CREDITCARD_TYPE_AMEX;
+        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_DISCOVER)
+                || cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_DISCOVER)) {
+            return ProcessCreditCard_FA.CREDITCARD_TYPE_DISCOVER;
+        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_MASTERCARD) ||
+                cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_MASTERCARD)) {
+            return ProcessCreditCard_FA.CREDITCARD_TYPE_MASTERCARD;
+        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_VISA) ||
+                cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_VISA)) {
+            return ProcessCreditCard_FA.CREDITCARD_TYPE_VISA;
+        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_JCB) ||
+                cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_JCB)) {
+            return ProcessCreditCard_FA.CREDITCARD_TYPE_JCB;
+        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_CUP) ||
+                cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_CUP)) {
+            return ProcessCreditCard_FA.CREDITCARD_TYPE_CUP;
+        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_DINERS) ||
+                cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_DINERS)) {
+            return ProcessCreditCard_FA.CREDITCARD_TYPE_DINERS;
+        } else {
+            return "";
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -353,7 +615,6 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             setHandopintUIFields();
         }
     }
-
 
     private void setHandopintUIFields() {
         cardNum.setVisibility(View.GONE);
@@ -845,16 +1106,24 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         LayoutInflater inflater = LayoutInflater.from(activity);
         View dialogLayout = inflater.inflate(R.layout.tip_dialog_layout, null);
 
-        final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(activity, R.style.DialogLargeArea);
         final AlertDialog dialog = builder.create();
         dialog.setView(dialogLayout, 0, 0, 0, 0);
         dialog.setInverseBackgroundForced(true);
         dialog.setCancelable(false);
+        final double subTotal;
+        if (isFromMainMenu) {
+            subTotal = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDueField));
+        } else {
+            subTotal = Double.parseDouble(global.order.ord_subtotal);
+        }
 
         double amountToBePaid = Global
                 .formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
         grandTotalAmount = amountToBePaid + amountToTip;
-
+        final TextView totalAmountView = (TextView) dialogLayout.findViewById(R.id.totalAmountView);
+        totalAmountView.setText(String.format(Locale.getDefault(), getString(R.string.total_plus_tip),
+                Global.formatDoubleToCurrency(subTotal), Global.formatDoubleToCurrency(0)));
         Button tenPercent = (Button) dialogLayout.findViewById(R.id.tenPercent);
         Button fifteenPercent = (Button) dialogLayout.findViewById(R.id.fifteenPercent);
         Button twentyPercent = (Button) dialogLayout.findViewById(R.id.twentyPercent);
@@ -882,8 +1151,10 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                 if (Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(s.toString())) > 0) {
                     double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
                     amountToTip = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(s.toString()));
-                    grandTotalAmount = amountToBePaid + amountToTip;
+                    grandTotalAmount = subTotal + amountToTip;
                     dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
+                    totalAmountView.setText(String.format(Locale.getDefault(), getString(R.string.total_plus_tip),
+                            Global.formatDoubleToCurrency(subTotal), Global.formatDoubleToCurrency(amountToTip)));
                 }
                 NumberUtils.parseInputedCurrency(s, promptTipField);
             }
@@ -906,10 +1177,12 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             public void onClick(View v) {
                 double amountToBePaid = Global
                         .formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
-                amountToTip = (float) (amountToBePaid * 0.1);
-                grandTotalAmount = amountToBePaid + amountToTip;
+                amountToTip = (float) (subTotal * 0.1);
+                grandTotalAmount = subTotal + amountToTip;
                 dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
                 promptTipField.setText("");
+                totalAmountView.setText(String.format(Locale.getDefault(), getString(R.string.total_plus_tip),
+                        Global.formatDoubleToCurrency(subTotal), Global.formatDoubleToCurrency(amountToTip)));
             }
         });
 
@@ -919,10 +1192,12 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             public void onClick(View v) {
                 double amountToBePaid = Global
                         .formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
-                amountToTip = (float) (amountToBePaid * 0.15);
-                grandTotalAmount = amountToBePaid + amountToTip;
+                amountToTip = (float) (subTotal * 0.15);
+                grandTotalAmount = subTotal + amountToTip;
                 dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
                 promptTipField.setText("");
+                totalAmountView.setText(String.format(Locale.getDefault(), getString(R.string.total_plus_tip),
+                        Global.formatDoubleToCurrency(subTotal), Global.formatDoubleToCurrency(amountToTip)));
             }
         });
 
@@ -932,10 +1207,12 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             public void onClick(View v) {
                 double amountToBePaid = Global
                         .formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
-                amountToTip = (float) (amountToBePaid * 0.2);
-                grandTotalAmount = amountToBePaid + amountToTip;
+                amountToTip = (float) (subTotal * 0.2);
+                grandTotalAmount = subTotal + amountToTip;
                 dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
                 promptTipField.setText("");
+                totalAmountView.setText(String.format(Locale.getDefault(), getString(R.string.total_plus_tip),
+                        Global.formatDoubleToCurrency(subTotal), Global.formatDoubleToCurrency(amountToTip)));
             }
         });
 
@@ -945,8 +1222,10 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             public void onClick(View v) {
                 double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
                 amountToTip = 0;
-                grandTotalAmount = amountToBePaid;
+                grandTotalAmount = subTotal;
                 dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
+                totalAmountView.setText(String.format(Locale.getDefault(), getString(R.string.total_plus_tip),
+                        Global.formatDoubleToCurrency(subTotal), Global.formatDoubleToCurrency(amountToTip)));
                 // dialog.dismiss();
             }
         });
@@ -1084,169 +1363,6 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
     }
 
-    public static String getCardType(String number) {
-        String ccType = "";
-        boolean isMasked;
-        try {
-            if (TextUtils.isEmpty(number) || number.length() < 4) {
-                return "";
-            } else {
-                if (!TextUtils.isDigitsOnly(number.substring(0, 4))) {
-                    return "";
-                }
-                isMasked = true;
-            }
-        } catch (NumberFormatException ex) {
-            return "";
-        }
-        if (!isMasked && Integer.parseInt(number.substring(0, 6)) >= 622126
-                && Integer.parseInt(number.substring(0, 6)) <= 622925) {
-            ccType = CREDITCARD_TYPE_CUP;
-        } else if (!isMasked && (Integer.parseInt(number.substring(0, 6)) == 564182
-                || Integer.parseInt(number.substring(0, 6)) == 633110)) {
-            ccType = CREDITCARD_TYPE_DISCOVER;
-        } else {
-            switch (Integer.parseInt(number.substring(0, 4))) {
-                case 2014:
-                case 2149:
-                    ccType = CREDITCARD_TYPE_DINERS;
-                    break;
-                case 2131:
-                case 1800:
-                case 3528:
-                case 3529:
-                    ccType = CREDITCARD_TYPE_JCB;
-                    break;
-                case 6011:
-                    ccType = CREDITCARD_TYPE_DISCOVER;
-                    break;
-                case 3095:
-                    ccType = CREDITCARD_TYPE_DINERS;
-                    break;
-                case 6222:
-                case 6223:
-                case 6224:
-                case 6225:
-                case 6226:
-                case 6227:
-                case 6228:
-                case 6282:
-                case 6283:
-                case 6284:
-                case 6285:
-                case 6286:
-                case 6287:
-                case 6288:
-                    ccType = CREDITCARD_TYPE_CUP;
-                    break;
-                case 5018:
-                case 5020:
-                case 5038:
-                case 6304:
-                case 6759:
-                case 6761:
-                case 6763:
-                    ccType = CREDITCARD_TYPE_MASTERCARD;
-                    break;
-                case 6333:
-                    ccType = CREDITCARD_TYPE_VISA;
-                    break;
-                default: {
-                    switch (Integer.parseInt(number.substring(0, 3))) {
-                        case 300:
-                        case 301:
-                        case 302:
-                        case 303:
-                        case 304:
-                        case 305:
-                            ccType = CREDITCARD_TYPE_DINERS;
-                            break;
-                        case 353:
-                        case 354:
-                        case 355:
-                        case 356:
-                        case 357:
-                        case 358:
-                            ccType = CREDITCARD_TYPE_JCB;
-                            break;
-                        case 644:
-                        case 645:
-                        case 646:
-                        case 647:
-                        case 648:
-                        case 649:
-                            ccType = CREDITCARD_TYPE_DISCOVER;
-                            break;
-                        case 624:
-                        case 625:
-                        case 626:
-                            ccType = CREDITCARD_TYPE_CUP;
-                            break;
-                        default: {
-                            switch (Integer.parseInt(number.substring(0, 2))) {
-                                case 34:
-                                case 37:
-                                    ccType = CREDITCARD_TYPE_AMEX;
-                                    break;
-                                case 36:
-                                case 38:
-                                case 39:
-                                    ccType = CREDITCARD_TYPE_DINERS;
-                                    break;
-                                case 22:
-                                case 23:
-                                case 24:
-                                case 25:
-                                case 26:
-                                case 27:
-                                case 51:
-                                case 52:
-                                case 53:
-                                case 54:
-                                case 55:
-                                    if ((Integer.parseInt(number.substring(0, 4)) >= 2221 &&
-                                            Integer.parseInt(number.substring(0, 4)) <= 2720) ||
-                                            (Integer.parseInt(number.substring(0, 4)) >= 5100 &&
-                                                    Integer.parseInt(number.substring(0, 4)) <= 5599)) {
-                                        ccType = CREDITCARD_TYPE_MASTERCARD;
-                                    }
-                                    break;
-                                case 65:
-                                    ccType = CREDITCARD_TYPE_DISCOVER;
-                                    break;
-                                default: {
-
-                                    switch (Integer.parseInt(number.substring(0, 1))) {
-                                        case 3:
-                                            ccType = CREDITCARD_TYPE_JCB;
-                                            break;
-                                        case 5:
-                                        case 6:
-                                            ccType = CREDITCARD_TYPE_MASTERCARD;
-                                            break;
-                                        case 4:
-                                        case 9:
-                                            ccType = CREDITCARD_TYPE_VISA;
-                                            break;
-                                        default: {
-                                        }
-                                        break;
-                                    }
-
-                                }
-                                break;
-                            }
-                        }
-                        break;
-                    }
-                }
-                break;
-            }
-        }
-
-        return ccType;
-    }
-
     private void processStoreForward(String payment_xml, Payment payment) {
         if (_msrUsbSams != null && _msrUsbSams.isDeviceOpen()) {
             _msrUsbSams.CloseTheDevice();
@@ -1330,94 +1446,6 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         return value;
     }
 
-    private String _charge_xml;
-    private boolean livePaymentRunning = false;
-
-    private class processLivePaymentAsync extends AsyncTask<Object, String, Payment> {
-
-        private HashMap<String, String> parsedMap = new HashMap<>();
-        private boolean wasProcessed = false;
-        private boolean connectionFailed = false;
-        private String errorMsg = getString(R.string.dlog_msg_no_internet_access);
-
-        @Override
-        protected void onPreExecute() {
-            myProgressDialog = new ProgressDialog(activity);
-            myProgressDialog.setMessage(getString(R.string.please_wait_message));
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            myProgressDialog.show();
-            if (_msrUsbSams != null && _msrUsbSams.isDeviceOpen()) {
-                _msrUsbSams.CloseTheDevice();
-            }
-        }
-
-        @Override
-        protected Payment doInBackground(Object... params) {
-//            if (true) {
-//                openEverpayApp((Payment) params[1]);
-//            } else
-            if (NetworkUtils.isConnectedToInternet(activity) && !livePaymentRunning) {
-                livePaymentRunning = true;
-
-                Post httpClient = new Post(activity);
-                SAXParserFactory spf = SAXParserFactory.newInstance();
-                SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
-                _charge_xml = (String) params[0];
-
-                try {
-                    String xml = httpClient.postData(13, _charge_xml);
-
-                    if (xml.equals(Global.TIME_OUT) || xml.equals(Global.NOT_VALID_URL) || xml.isEmpty()) {
-                        connectionFailed = true;
-                        errorMsg = getString(R.string.dlog_msg_established_connection_failed);
-                    } else {
-                        InputSource inSource = new InputSource(new StringReader(xml));
-
-                        SAXParser sp = spf.newSAXParser();
-                        XMLReader xr = sp.getXMLReader();
-                        xr.setContentHandler(handler);
-                        xr.parse(inSource);
-                        parsedMap = handler.getData();
-
-                        if (parsedMap != null && parsedMap.size() > 0
-                                && parsedMap.get("epayStatusCode").equals("APPROVED"))
-                            wasProcessed = true;
-                        else if (parsedMap != null && parsedMap.size() > 0) {
-                            errorMsg = "statusCode = " + parsedMap.get("statusCode") + "\n" + parsedMap.get("statusMessage");
-                        } else
-                            errorMsg = xml;
-                    }
-
-                } catch (Exception e) {
-                    connectionFailed = true;
-                    Crashlytics.logException(e);
-                }
-            }
-
-            return (Payment) params[1];
-        }
-
-        @Override
-        protected void onPostExecute(Payment payment) {
-            myProgressDialog.dismiss();
-
-            livePaymentRunning = false;
-            if (wasProcessed) // payment processing succeeded
-            {
-                saveApprovedPayment(parsedMap, payment);
-            } else // payment processing failed
-            {
-                if (connectionFailed) {
-                    reverseXMLMap = generateReverseXML(activity, _charge_xml);
-                }
-
-                btnProcess.setEnabled(true);
-                showErrorDlog(false, connectionFailed, errorMsg, payment);
-            }
-        }
-    }
-
     private void openEverpayApp(Payment payment) {
 //        evertec.mobileapp
 //        Intent intent = getPackageManager().getLaunchIntentForPackage("evertec.mobileapp");
@@ -1431,106 +1459,6 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         intent.putExtra("customerNumber", "customer");
         intent.putExtra("saleAmount", Global.formatNumToLocale(grandTotalAmount));
         startActivityForResult(intent, 202);
-    }
-
-    private class processReverseAsync extends AsyncTask<Payment, Void, Payment> {
-
-        private HashMap<String, String> parsedMap = new HashMap<>();
-
-        private boolean reverseWasProcessed = false;
-        private boolean paymentWasApproved = false;
-        private String errorMsg = getString(R.string.dlog_msg_no_internet_access);
-        private boolean paymentWasDecline = false;
-
-        @Override
-        protected void onPreExecute() {
-            myProgressDialog = new ProgressDialog(activity);
-            myProgressDialog.setMessage(getString(R.string.please_wait_message));
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            myProgressDialog.show();
-        }
-
-        @Override
-        protected Payment doInBackground(Payment... params) {
-
-            if (NetworkUtils.isConnectedToInternet(activity)) {
-                Post httpClient = new Post(activity);
-
-                SAXParserFactory spf = SAXParserFactory.newInstance();
-                SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
-
-                try {
-                    String reverseXml = "";
-                    String xml = httpClient.postData(13, reverseXml);
-
-                    if (xml.equals(Global.TIME_OUT) || xml.equals(Global.NOT_VALID_URL) || xml.isEmpty()) {
-                        errorMsg = getString(R.string.dlog_msg_established_connection_failed);
-                    } else {
-                        InputSource inSource = new InputSource(new StringReader(xml));
-
-                        SAXParser sp = spf.newSAXParser();
-                        XMLReader xr = sp.getXMLReader();
-                        xr.setContentHandler(handler);
-                        xr.parse(inSource);
-                        parsedMap = handler.getData();
-
-                        if (parsedMap != null && parsedMap.size() > 0
-                                && (parsedMap.get("epayStatusCode").equals("APPROVED")))
-                            reverseWasProcessed = true;
-                        else if (parsedMap != null && parsedMap.get("epayStatusCode").equals("DECLINE")) {
-                            reverseWasProcessed = true;
-                            String _verify_payment_xml = _charge_xml.replaceAll("<action>.*?</action>", "<action>"
-                                    + EMSPayGate_Default.getPaymentAction("CheckTransactionStatus") + "</action>");
-                            xml = httpClient.postData(13, _verify_payment_xml);
-                            if (xml.equals(Global.TIME_OUT) || xml.equals(Global.NOT_VALID_URL)) {
-                                errorMsg = getString(R.string.dlog_msg_established_connection_failed);
-                            } else {
-                                inSource = new InputSource(new StringReader(xml));
-                                xr.parse(inSource);
-                                parsedMap = handler.getData();
-                                if (parsedMap != null) {
-                                    if (parsedMap.get("epayStatusCode").equals("APPROVED")) {
-                                        paymentWasApproved = true;
-                                    } else if (parsedMap.get("epayStatusCode").equals("DECLINE")) {
-                                        paymentWasDecline = true;
-                                        errorMsg = "statusCode = " + parsedMap.get("statusCode") + "\n" + parsedMap.get("statusMessage");
-                                    } else
-                                        errorMsg = xml;
-                                }
-                            }
-                        }
-                    }
-
-                } catch (Exception e) {
-                    Crashlytics.logException(e);
-                    errorMsg = e.getMessage();
-                }
-            }
-            return params[0];
-        }
-
-        @Override
-        protected void onPostExecute(Payment payment) {
-            myProgressDialog.dismiss();
-            String xmlAppId = reverseXMLMap.get(PaymentsXML_DB.app_id);
-
-            if (reverseWasProcessed) {
-                PaymentsXML_DB _paymentXml_DB = new PaymentsXML_DB(activity);
-                _paymentXml_DB.deleteRow(xmlAppId);
-                if (paymentWasApproved) {
-                    saveApprovedPayment(parsedMap, payment);
-                } else {
-                    if (paymentWasDecline) {
-                        showErrorDlog(false, false, errorMsg, payment);
-                    } else {
-                        finish();
-                    }
-                }
-            } else {
-                finish();
-            }
-        }
     }
 
     private void saveApprovedPayment(HashMap<String, String> parsedMap, Payment payment) {
@@ -1599,64 +1527,6 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             } else
                 finishPaymentTransaction(payment);
         }
-    }
-
-    public static HashMap<String, String> generateReverseXML(Activity activity, String chargeXml) {
-
-        int action = 0;
-
-        String xmlAppId = "";
-        try {
-            XmlPullParserFactory xmlFactoryObject = XmlPullParserFactory.newInstance();
-            XmlPullParser parser = xmlFactoryObject.newPullParser();
-            parser.setInput(new StringReader(chargeXml));
-
-            int event = parser.getEventType();
-            String tag = "";
-            boolean found = false;
-            while (event != XmlPullParser.END_DOCUMENT && !found) {
-
-                switch (event) {
-                    case XmlPullParser.START_TAG:
-                        tag = parser.getName();
-                        break;
-                    case XmlPullParser.END_TAG:
-                        break;
-                    case XmlPullParser.TEXT:
-                        if (tag != null) {
-                            if (tag.equals("app_id")) {
-                                xmlAppId = parser.getText();
-                                found = true;
-                            } else if (tag.equals("action"))
-                                action = Integer.parseInt(parser.getText());
-                        }
-                        break;
-                }
-                event = parser.next();
-            }
-
-        } catch (XmlPullParserException e) {
-            e.printStackTrace();
-            Crashlytics.logException(e);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            Crashlytics.logException(e);
-        } catch (IOException e) {
-            e.printStackTrace();
-            Crashlytics.logException(e);
-        }
-
-        String reverseXml = chargeXml.replaceAll("<action>.*?</action>",
-                "<action>" + EMSPayGate_Default.getReverseAction(EMSPayGate_Default.EAction.toAction(action)) + "</action>");
-
-        PaymentsXML_DB _payment_xml = new PaymentsXML_DB(activity);
-        HashMap<String, String> map = new HashMap<String, String>();
-
-        map.put(PaymentsXML_DB.app_id, xmlAppId);
-        map.put(PaymentsXML_DB.payment_xml, reverseXml);
-
-        _payment_xml.insert(map);
-        return map;
     }
 
     private void redetectMiuraPrinter() {
@@ -1781,48 +1651,6 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         }
 
         finish();
-    }
-
-    private class printAsync extends AsyncTask<Object, String, Payment> {
-        private boolean wasReprint = false;
-        private boolean printingSuccessful = true;
-
-        @Override
-        protected void onPreExecute() {
-            myProgressDialog = new ProgressDialog(activity);
-            myProgressDialog.setMessage("Printing...");
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            if (myProgressDialog.isShowing())
-                myProgressDialog.dismiss();
-            myProgressDialog.show();
-        }
-
-        @Override
-        protected Payment doInBackground(Object... params) {
-            Payment payment = (Payment) params[1];
-            wasReprint = (Boolean) params[0];
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
-                printingSuccessful = Global.mainPrinterManager.getCurrentDevice().printPaymentDetails(payment.getPay_id(), 1,
-                        wasReprint, payment.getEmvContainer());
-            }
-            return payment;
-        }
-
-        @Override
-        protected void onPostExecute(Payment payment) {
-            if (myProgressDialog != null && myProgressDialog.isShowing())
-                myProgressDialog.dismiss();
-            if (printingSuccessful) {
-                if (!wasReprint && myPref.getPreferences(MyPreferences.pref_prompt_customer_copy))
-                    showPrintDlg(true, false, payment);
-                else {
-                    finishPaymentTransaction(payment);
-                }
-            } else {
-                showPrintDlg(wasReprint, true, payment);
-            }
-        }
     }
 
     private void showPrintDlg(final boolean isReprint, boolean isRetry, final Payment payment) {
@@ -2140,6 +1968,21 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         return !error;
     }
 
+    @Override
+    public void startSignature() {
+        if (myProgressDialog != null && myProgressDialog.isShowing()) {
+            myProgressDialog.setMessage(activity.getString(R.string.processing_payment_msg));
+        }
+        Intent intent = new Intent(activity, DrawReceiptActivity.class);
+        intent.putExtra("isFromPayment", true);
+        startActivityForResult(intent, requestCode);
+    }
+
+    @Override
+    public void nfcWasRead(String nfcUID) {
+
+    }
+
 //
 //    private class ProcessHanpointAsync extends AsyncTask<Void, Void, Void> {
 //        @Override
@@ -2200,72 +2043,234 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 //        }
 //    }
 
-    @Override
-    public void startSignature() {
-        if (myProgressDialog != null && myProgressDialog.isShowing()) {
-            myProgressDialog.setMessage(activity.getString(R.string.processing_payment_msg));
+    public enum PAYMENT_GIFT_CARDS {
+        GIFTCARDS, LOYALTYCARD, REWARD
+    }
+
+    private class processLivePaymentAsync extends AsyncTask<Object, String, Payment> {
+
+        private HashMap<String, String> parsedMap = new HashMap<>();
+        private boolean wasProcessed = false;
+        private boolean connectionFailed = false;
+        private String errorMsg = getString(R.string.dlog_msg_no_internet_access);
+
+        @Override
+        protected void onPreExecute() {
+            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog.setMessage(getString(R.string.please_wait_message));
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setCancelable(false);
+            myProgressDialog.show();
+            if (_msrUsbSams != null && _msrUsbSams.isDeviceOpen()) {
+                _msrUsbSams.CloseTheDevice();
+            }
         }
-        Intent intent = new Intent(activity, DrawReceiptActivity.class);
-        intent.putExtra("isFromPayment", true);
-        startActivityForResult(intent, requestCode);
-    }
 
-    @Override
-    public void nfcWasRead(String nfcUID) {
+        @Override
+        protected Payment doInBackground(Object... params) {
+//            if (true) {
+//                openEverpayApp((Payment) params[1]);
+//            } else
+            if (NetworkUtils.isConnectedToInternet(activity) && !livePaymentRunning) {
+                livePaymentRunning = true;
 
-    }
+                Post httpClient = new Post(activity);
+                SAXParserFactory spf = SAXParserFactory.newInstance();
+                SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
+                _charge_xml = (String) params[0];
 
-    public static int getCreditLogo(String cardName) {
-        if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_AMEX)
-                || cardName.trim().contains("amex") || cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_AMEX)) {
-            return R.drawable.americanexpress;
-        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_DISCOVER)
-                || cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_DISCOVER)) {
-            return R.drawable.discover;
-        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_MASTERCARD) ||
-                cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_MASTERCARD)) {
-            return R.drawable.mastercard;
-        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_VISA) ||
-                cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_VISA)) {
-            return R.drawable.visa;
-        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_JCB) ||
-                cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_JCB)) {
-            return R.drawable.debitcard;
-        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_CUP) ||
-                cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_CUP)) {
-            return R.drawable.debitcard;
-        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_DINERS) ||
-                cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_DINERS)) {
-            return R.drawable.debitcard;
-        } else {
-            return R.drawable.debitcard;
+                try {
+                    String xml = httpClient.postData(13, _charge_xml);
+
+                    if (xml.equals(Global.TIME_OUT) || xml.equals(Global.NOT_VALID_URL) || xml.isEmpty()) {
+                        connectionFailed = true;
+                        errorMsg = getString(R.string.dlog_msg_established_connection_failed);
+                    } else {
+                        InputSource inSource = new InputSource(new StringReader(xml));
+
+                        SAXParser sp = spf.newSAXParser();
+                        XMLReader xr = sp.getXMLReader();
+                        xr.setContentHandler(handler);
+                        xr.parse(inSource);
+                        parsedMap = handler.getData();
+
+                        if (parsedMap != null && parsedMap.size() > 0
+                                && parsedMap.get("epayStatusCode").equals("APPROVED"))
+                            wasProcessed = true;
+                        else if (parsedMap != null && parsedMap.size() > 0) {
+                            errorMsg = "statusCode = " + parsedMap.get("statusCode") + "\n" + parsedMap.get("statusMessage");
+                        } else
+                            errorMsg = xml;
+                    }
+
+                } catch (Exception e) {
+                    connectionFailed = true;
+                    Crashlytics.logException(e);
+                }
+            }
+
+            return (Payment) params[1];
+        }
+
+        @Override
+        protected void onPostExecute(Payment payment) {
+            myProgressDialog.dismiss();
+
+            livePaymentRunning = false;
+            if (wasProcessed) // payment processing succeeded
+            {
+                saveApprovedPayment(parsedMap, payment);
+            } else // payment processing failed
+            {
+                if (connectionFailed) {
+                    reverseXMLMap = generateReverseXML(activity, _charge_xml);
+                }
+
+                btnProcess.setEnabled(true);
+                showErrorDlog(false, connectionFailed, errorMsg, payment);
+            }
         }
     }
 
-    public static String getCreditName(String cardName) {
-        if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_AMEX)
-                || cardName.trim().contains("amex") || cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_AMEX)) {
-            return ProcessCreditCard_FA.CREDITCARD_TYPE_AMEX;
-        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_DISCOVER)
-                || cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_DISCOVER)) {
-            return ProcessCreditCard_FA.CREDITCARD_TYPE_DISCOVER;
-        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_MASTERCARD) ||
-                cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_MASTERCARD)) {
-            return ProcessCreditCard_FA.CREDITCARD_TYPE_MASTERCARD;
-        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_VISA) ||
-                cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_VISA)) {
-            return ProcessCreditCard_FA.CREDITCARD_TYPE_VISA;
-        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_JCB) ||
-                cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_JCB)) {
-            return ProcessCreditCard_FA.CREDITCARD_TYPE_JCB;
-        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_CUP) ||
-                cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_CUP)) {
-            return ProcessCreditCard_FA.CREDITCARD_TYPE_CUP;
-        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_DINERS) ||
-                cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_DINERS)) {
-            return ProcessCreditCard_FA.CREDITCARD_TYPE_DINERS;
-        } else {
-            return "";
+    private class processReverseAsync extends AsyncTask<Payment, Void, Payment> {
+
+        private HashMap<String, String> parsedMap = new HashMap<>();
+
+        private boolean reverseWasProcessed = false;
+        private boolean paymentWasApproved = false;
+        private String errorMsg = getString(R.string.dlog_msg_no_internet_access);
+        private boolean paymentWasDecline = false;
+
+        @Override
+        protected void onPreExecute() {
+            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog.setMessage(getString(R.string.please_wait_message));
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setCancelable(false);
+            myProgressDialog.show();
+        }
+
+        @Override
+        protected Payment doInBackground(Payment... params) {
+
+            if (NetworkUtils.isConnectedToInternet(activity)) {
+                Post httpClient = new Post(activity);
+
+                SAXParserFactory spf = SAXParserFactory.newInstance();
+                SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
+
+                try {
+                    String reverseXml = "";
+                    String xml = httpClient.postData(13, reverseXml);
+
+                    if (xml.equals(Global.TIME_OUT) || xml.equals(Global.NOT_VALID_URL) || xml.isEmpty()) {
+                        errorMsg = getString(R.string.dlog_msg_established_connection_failed);
+                    } else {
+                        InputSource inSource = new InputSource(new StringReader(xml));
+
+                        SAXParser sp = spf.newSAXParser();
+                        XMLReader xr = sp.getXMLReader();
+                        xr.setContentHandler(handler);
+                        xr.parse(inSource);
+                        parsedMap = handler.getData();
+
+                        if (parsedMap != null && parsedMap.size() > 0
+                                && (parsedMap.get("epayStatusCode").equals("APPROVED")))
+                            reverseWasProcessed = true;
+                        else if (parsedMap != null && parsedMap.get("epayStatusCode").equals("DECLINE")) {
+                            reverseWasProcessed = true;
+                            String _verify_payment_xml = _charge_xml.replaceAll("<action>.*?</action>", "<action>"
+                                    + EMSPayGate_Default.getPaymentAction("CheckTransactionStatus") + "</action>");
+                            xml = httpClient.postData(13, _verify_payment_xml);
+                            if (xml.equals(Global.TIME_OUT) || xml.equals(Global.NOT_VALID_URL)) {
+                                errorMsg = getString(R.string.dlog_msg_established_connection_failed);
+                            } else {
+                                inSource = new InputSource(new StringReader(xml));
+                                xr.parse(inSource);
+                                parsedMap = handler.getData();
+                                if (parsedMap != null) {
+                                    if (parsedMap.get("epayStatusCode").equals("APPROVED")) {
+                                        paymentWasApproved = true;
+                                    } else if (parsedMap.get("epayStatusCode").equals("DECLINE")) {
+                                        paymentWasDecline = true;
+                                        errorMsg = "statusCode = " + parsedMap.get("statusCode") + "\n" + parsedMap.get("statusMessage");
+                                    } else
+                                        errorMsg = xml;
+                                }
+                            }
+                        }
+                    }
+
+                } catch (Exception e) {
+                    Crashlytics.logException(e);
+                    errorMsg = e.getMessage();
+                }
+            }
+            return params[0];
+        }
+
+        @Override
+        protected void onPostExecute(Payment payment) {
+            myProgressDialog.dismiss();
+            String xmlAppId = reverseXMLMap.get(PaymentsXML_DB.app_id);
+
+            if (reverseWasProcessed) {
+                PaymentsXML_DB _paymentXml_DB = new PaymentsXML_DB(activity);
+                _paymentXml_DB.deleteRow(xmlAppId);
+                if (paymentWasApproved) {
+                    saveApprovedPayment(parsedMap, payment);
+                } else {
+                    if (paymentWasDecline) {
+                        showErrorDlog(false, false, errorMsg, payment);
+                    } else {
+                        finish();
+                    }
+                }
+            } else {
+                finish();
+            }
+        }
+    }
+
+    private class printAsync extends AsyncTask<Object, String, Payment> {
+        private boolean wasReprint = false;
+        private boolean printingSuccessful = true;
+
+        @Override
+        protected void onPreExecute() {
+            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog.setMessage("Printing...");
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setCancelable(false);
+            if (myProgressDialog.isShowing())
+                myProgressDialog.dismiss();
+            myProgressDialog.show();
+        }
+
+        @Override
+        protected Payment doInBackground(Object... params) {
+            Payment payment = (Payment) params[1];
+            wasReprint = (Boolean) params[0];
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                printingSuccessful = Global.mainPrinterManager.getCurrentDevice().printPaymentDetails(payment.getPay_id(), 1,
+                        wasReprint, payment.getEmvContainer());
+            }
+            return payment;
+        }
+
+        @Override
+        protected void onPostExecute(Payment payment) {
+            if (myProgressDialog != null && myProgressDialog.isShowing())
+                myProgressDialog.dismiss();
+            if (printingSuccessful) {
+                if (!wasReprint && myPref.getPreferences(MyPreferences.pref_prompt_customer_copy))
+                    showPrintDlg(true, false, payment);
+                else {
+                    finishPaymentTransaction(payment);
+                }
+            } else {
+                showPrintDlg(wasReprint, true, payment);
+            }
         }
     }
 }

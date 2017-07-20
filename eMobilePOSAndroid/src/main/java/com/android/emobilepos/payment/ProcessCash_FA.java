@@ -44,6 +44,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import util.json.UIUtils;
 
@@ -449,7 +450,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         //****Method that works with both jelly bean/gingerbread
         //AlertDialog.Builder dialog = new AlertDialog.Builder(this,R.style.TransparentDialog);
 
-        final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(activity, R.style.DialogLargeArea);
         final AlertDialog dialog = builder.create();
         dialog.setView(dialogLayout, 0, 0, 0, 0);
         dialog.setInverseBackgroundForced(true);
@@ -460,7 +461,12 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
 
         double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
         grandTotalAmount = amountToBePaid + amountToTip;
-
+        final double subTotal;
+        if (isFromMainMenu) {
+            subTotal = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDue));
+        } else {
+            subTotal = Double.parseDouble(global.order.ord_subtotal);
+        }
         Button tenPercent = (Button) dialogLayout.findViewById(R.id.tenPercent);
         Button fifteenPercent = (Button) dialogLayout.findViewById(R.id.fifteenPercent);
         Button twentyPercent = (Button) dialogLayout.findViewById(R.id.twentyPercent);
@@ -475,8 +481,9 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         Button cancelTip = (Button) dialogLayout.findViewById(R.id.cancelTipButton);
         Button saveTip = (Button) dialogLayout.findViewById(R.id.acceptTipButton);
         Button noneButton = (Button) dialogLayout.findViewById(R.id.noneButton);
-
-
+        final TextView totalAmountView = (TextView) dialogLayout.findViewById(R.id.totalAmountView);
+        totalAmountView.setText(String.format(Locale.getDefault(), getString(R.string.total_plus_tip),
+                Global.formatDoubleToCurrency(subTotal), Global.formatDoubleToCurrency(0)));
         promptTipField.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
 
@@ -489,8 +496,10 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
                 if (Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(s.toString())) > 0) {
                     double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
                     amountToTip = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(s.toString()));
-                    grandTotalAmount = amountToBePaid + amountToTip;
+                    grandTotalAmount = subTotal + amountToTip;
                     dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
+                    totalAmountView.setText(String.format(Locale.getDefault(), getString(R.string.total_plus_tip),
+                            Global.formatDoubleToCurrency(subTotal), Global.formatDoubleToCurrency(amountToTip)));
                 }
                 NumberUtils.parseInputedCurrency(s, promptTipField);
             }
@@ -513,10 +522,12 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
             @Override
             public void onClick(View v) {
                 double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
-                amountToTip = (float) (amountToBePaid * (0.1));
-                grandTotalAmount = amountToBePaid + amountToTip;
+                amountToTip = (float) (subTotal * (0.1));
+                grandTotalAmount = subTotal + amountToTip;
                 dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
                 promptTipField.setText("");
+                totalAmountView.setText(String.format(Locale.getDefault(), getString(R.string.total_plus_tip),
+                        Global.formatDoubleToCurrency(subTotal), Global.formatDoubleToCurrency(amountToTip)));
             }
         });
 
@@ -525,10 +536,12 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
             @Override
             public void onClick(View v) {
                 double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
-                amountToTip = (float) (amountToBePaid * (0.15));
-                grandTotalAmount = amountToBePaid + amountToTip;
+                amountToTip = (float) (subTotal * (0.15));
+                grandTotalAmount = subTotal + amountToTip;
                 dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
                 promptTipField.setText("");
+                totalAmountView.setText(String.format(Locale.getDefault(), getString(R.string.total_plus_tip),
+                        Global.formatDoubleToCurrency(subTotal), Global.formatDoubleToCurrency(amountToTip)));
             }
         });
 
@@ -537,10 +550,12 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
             @Override
             public void onClick(View v) {
                 double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
-                amountToTip = (float) (amountToBePaid * (0.2));
-                grandTotalAmount = amountToBePaid + amountToTip;
+                amountToTip = (float) (subTotal * (0.2));
+                grandTotalAmount = subTotal + amountToTip;
                 dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
                 promptTipField.setText("");
+                totalAmountView.setText(String.format(Locale.getDefault(), getString(R.string.total_plus_tip),
+                        Global.formatDoubleToCurrency(subTotal), Global.formatDoubleToCurrency(amountToTip)));
             }
         });
 
@@ -551,8 +566,10 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
             public void onClick(View v) {
                 double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
                 amountToTip = 0;
-                grandTotalAmount = amountToBePaid;
+                grandTotalAmount = subTotal;
                 dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
+                totalAmountView.setText(String.format(Locale.getDefault(), getString(R.string.total_plus_tip),
+                        Global.formatDoubleToCurrency(subTotal), Global.formatDoubleToCurrency(amountToTip)));
                 //dialog.dismiss();
             }
         });
