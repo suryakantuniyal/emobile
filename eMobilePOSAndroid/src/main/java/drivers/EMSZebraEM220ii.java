@@ -13,9 +13,11 @@ import android.util.Base64;
 
 import com.StarMicronics.jasura.JAException;
 import com.android.database.MemoTextHandler;
+import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.TimeClock;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
@@ -597,6 +599,11 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
     @Override
     public boolean isConnected() {
         return true;
+    }
+
+    @Override
+    public void printClockInOut(List<ClockInOut> timeClocks, String clerkID) {
+        super.printClockInOut(timeClocks, LINE_WIDTH, clerkID);
     }
 
 }

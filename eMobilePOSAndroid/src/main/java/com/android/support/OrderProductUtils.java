@@ -1,6 +1,7 @@
 package com.android.support;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.android.emobilepos.models.orders.OrderProduct;
 
@@ -61,6 +62,16 @@ public class OrderProductUtils {
             }
         }
         return list;
+    }
+
+    public static void removeOrderProductsByOrderProductId(List<OrderProduct> orderProducts, String orderProductId) {
+        List<OrderProduct> toRemove = new ArrayList<>();
+        for (OrderProduct orderProduct : orderProducts) {
+            if (orderProduct.getOrdprod_id().equalsIgnoreCase(orderProductId)) {
+                toRemove.add(orderProduct);
+            }
+        }
+        orderProducts.removeAll(toRemove);
     }
 
     public static List<OrderProduct> getOrderProductsGroupBySKU(List<OrderProduct> orderProducts) {

@@ -9,9 +9,11 @@ import android.os.Handler;
 import android.os.Message;
 
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.TimeClock;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.internal.misccomm.MsrApiContext;
 import com.android.internal.misccomm.MsrManager;
@@ -437,6 +439,11 @@ public class EMSPAT215 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     @Override
     public boolean isConnected() {
         return true;
+    }
+
+    @Override
+    public void printClockInOut(List<ClockInOut> timeClocks, String clerkID) {
+        super.printClockInOut(timeClocks, LINE_WIDTH, clerkID);
     }
 
     @Override

@@ -34,6 +34,7 @@ import com.android.support.DateUtils;
 import com.android.support.GenerateNewID;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.OrderProductUtils;
 import com.android.support.SynchMethods;
 import com.android.support.TaxesCalculator;
 
@@ -458,6 +459,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         } else {//Rollback order checkout
             for (OrderProduct product : restaurantSplitedOrder.getOrderProducts()) {
                 product.setOrd_id(global.order.ord_id);
+                OrderProductUtils.removeOrderProductsByOrderProductId(global.order.getOrderProducts(), product.getOrdprod_id());
                 global.order.getOrderProducts().add(product);
                 if (summaryFa.splitType != SplittedOrderSummary_FA.SalesReceiptSplitTypes.SPLIT_EQUALLY) {
                     global.order.ord_subtotal = Global.getBigDecimalNum(global.order.ord_subtotal)

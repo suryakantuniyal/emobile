@@ -9,9 +9,11 @@ import android.os.Handler;
 import android.text.TextUtils;
 
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.TimeClock;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.CardParser;
 import com.android.support.ConsignmentTransaction;
@@ -722,6 +724,11 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
      */
     public boolean isConnected() {
         return RBA_API.GetConnectionStatus() == RBA_API.ConnectionStatus.CONNECTED;
+    }
+
+    @Override
+    public void printClockInOut(List<ClockInOut> clockInOuts, String clerkID) {
+
     }
 
 }

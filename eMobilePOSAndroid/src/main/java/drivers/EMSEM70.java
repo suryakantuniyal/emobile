@@ -9,9 +9,11 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.Handler;
 
+import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.TimeClock;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
@@ -271,6 +273,10 @@ public class EMSEM70 extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     @Override
     public boolean isConnected() {
         return true;
+    }
+
+    @Override
+    public void printClockInOut(List<ClockInOut> timeClocks, String clerkID) {
     }
 
     private Runnable runnableScannedData = new Runnable() {

@@ -53,7 +53,6 @@ public class OrderProductsHandler {
     private static final String prod_taxId = "prod_taxId"; // add
     private static final String prod_taxValue = "prod_taxValue"; // add
     private static final String discount_id = "discount_id";
-    private static final String prod_taxType = "prod_taxType";
     private static final String discount_value = "discount_value";
     private static final String cat_id = "cat_id";
     private static final String cat_name = "cat_name";
@@ -74,7 +73,7 @@ public class OrderProductsHandler {
     private static final String prodPricePoints = "prod_price_points";
     public static final List<String> attr = Arrays.asList(addon, isAdded, isPrinted, item_void, ordprod_id,
             ord_id, prod_id, prod_sku, prod_upc, ordprod_qty, overwrite_price, reason_id, ordprod_name, ordprod_comment, ordprod_desc,
-            pricelevel_id, prod_seq, uom_name, uom_conversion, uom_id, prod_taxId, prod_taxType, prod_taxValue, discount_id,
+            pricelevel_id, prod_seq, uom_name, uom_conversion, uom_id, prod_taxId, prod_taxValue, discount_id,
             discount_value, prod_istaxable, discount_is_taxable, discount_is_fixed, onHand, imgURL, prod_price,
             prod_type, itemTotal, itemSubtotal, addon_section_name, addon_position, hasAddons, cat_id, cat_name, assignedSeat,
             seatGroupId, addon_ordprod_id, prodPricePoints);

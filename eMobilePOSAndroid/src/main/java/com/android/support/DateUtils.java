@@ -17,7 +17,10 @@ public class DateUtils {
     public static final String DATE_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ";
     public static final String DATE_yyyy_MM_ddTHH_mm_ss = "yyyy-MM-dd'T'HH:mm:ss";
     public static final String DATE_yyyy_MM_dd = "yyyy-MM-dd";
+    public static final String DATE_yyyy_MM_dd_h_mm_a = "yyyy-MM-dd, h:mm:a";
     public static final String DATE_MMM_dd_yyyy_h_mm_a = "MMM dd,yyyy h:mm a";
+    public static final String DATE_MM_DD = "MM-dd";
+    public static final String DATE_h_mm_a = "h:mm a";
 
     public static String getDateAsString(Date date, String pattern) {
         if (date == null) {
