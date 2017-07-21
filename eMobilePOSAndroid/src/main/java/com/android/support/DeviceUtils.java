@@ -10,7 +10,11 @@ import android.util.Log;
 import com.android.dao.DeviceTableDAO;
 import com.android.emobilepos.models.realms.Device;
 import com.crashlytics.android.Crashlytics;
+import com.starmicronics.stario.PortInfo;
+import com.starmicronics.stario.StarIOPort;
+import com.starmicronics.stario.StarIOPortException;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +22,7 @@ import java.util.List;
 import drivers.EMSDeviceDriver;
 import drivers.EMSPowaPOS;
 import drivers.EMSmePOS;
+import drivers.star.utils.PrinterSetting;
 import main.EMSDeviceManager;
 
 /**
@@ -189,5 +194,22 @@ public class DeviceUtils {
             }
         }
         return null;
+    }
+
+    public static void connectStarTS650BT(Context context){
+        try {
+            EMSDeviceManager edm = new EMSDeviceManager();
+            ArrayList<PortInfo> mPortList = StarIOPort.searchPrinter("USB:", context);
+            MyPreferences preferences = new MyPreferences(context);
+            if(!mPortList.isEmpty()){
+                preferences.setPrinterType(Global.STAR);
+                preferences.setPrinterName(mPortList.get(0).getPortName());
+                preferences.setPrinterMACAddress(mPortList.get(0).getPortName());
+                Global.mainPrinterManager = edm.getManager();
+                Global.mainPrinterManager.loadDrivers(context, Global.STAR, EMSDeviceManager.PrinterInterfase.USB);
+            }
+        } catch (StarIOPortException e) {
+            e.printStackTrace();
+        }
     }
 }

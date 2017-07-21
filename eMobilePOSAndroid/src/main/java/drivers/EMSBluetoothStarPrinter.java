@@ -25,6 +25,7 @@ import com.android.support.CreditCardInfo;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.crashlytics.android.Crashlytics;
+import com.starmicronics.stario.PortInfo;
 import com.starmicronics.stario.StarIOPort;
 import com.starmicronics.stario.StarIOPortException;
 import com.starmicronics.stario.StarPrinterStatus;
@@ -65,7 +66,6 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     public void connect(Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
-
         cardManager = new CreditCardInfo();
         this.isPOSPrinter = isPOSPrinter;
         this.edm = edm;

@@ -49,17 +49,17 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
 
     private EMSDeviceDriver aDevice = null;
     private EMSDeviceManager instance;
+    private EMSDeviceManagerPrinterDelegate currentDevice;
 
     public EMSDeviceManager() {
         instance = this;
     }
 
-
     public EMSDeviceManager getManager() {
         return instance;
     }
 
-    public void loadDrivers(Activity activity, int type, boolean isTCP) {
+    public void loadDrivers(Activity activity, int type, PrinterInterfase interfase) {
 
         this.activity = activity;
 
@@ -70,7 +70,7 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 break;
             case Global.STAR:
                 aDevice = new EMSBluetoothStarPrinter();
-                if (!isTCP)
+                if (interfase == PrinterInterfase.BLUETOOTH)
                     promptTypeOfStarPrinter();
                 else
                     promptStarPrinterSize(true);
@@ -300,8 +300,6 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
         promptDialog.show();
     }
 
-    private EMSDeviceManagerPrinterDelegate currentDevice;
-
     public EMSDeviceManagerPrinterDelegate getCurrentDevice() {
         return currentDevice;
     }
@@ -361,5 +359,9 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
             alert.setMessage("Failed to connect device: \n" + err);
             alert.show();
         }
+    }
+
+    public enum PrinterInterfase {
+        USB, BLUETOOTH, TCP
     }
 }
