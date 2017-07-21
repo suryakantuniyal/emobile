@@ -70,7 +70,7 @@ public class EMSOT310 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
 
     @Override
-    public void connect(Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
+    public void connect(Context activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
         cardManager = new CreditCardInfo();

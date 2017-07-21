@@ -2,6 +2,7 @@ package drivers;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
@@ -54,7 +55,7 @@ public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrint
     private EMSDeviceManager edm;
     private String logicalName;
 
-    private void init(Activity activity, int paperSize, EMSDeviceManager edm) {
+    private void init(Context activity, int paperSize, EMSDeviceManager edm) {
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
         this.edm = edm;
@@ -81,7 +82,7 @@ public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrint
     }
 
     @Override
-    public void connect(Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
+    public void connect(Context activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
         init(activity, paperSize, edm);
         new processConnectionAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, 0);
     }
