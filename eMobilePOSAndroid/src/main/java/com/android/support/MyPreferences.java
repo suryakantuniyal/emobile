@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -30,7 +31,6 @@ public class MyPreferences {
     public static final String pref_enable_table_selection = "pref_enable_table_selection";
     public static final String pref_ask_seats = "pref_ask_seats";
     public static final String pref_use_navigationbar = "pref_use_navigationbar";
-    private static final String pref_automatic_sync = "pref_automatic_sync";
     public static final String pref_fast_scanning_mode = "pref_fast_scanning_mode";
     public static final String pref_signature_required_mode = "pref_signature_required_mode";
     public static final String pref_qr_code_reading = "pref_qr_code_reading";
@@ -113,6 +113,7 @@ public class MyPreferences {
     public static final String print_terms_conditions = "print_terms_conditions";
     public static final String print_emobilepos_website = "print_emobilepos_website";
     public static final String print_ivuloto_qr = "print_ivuloto_qr";
+    private static final String pref_automatic_sync = "pref_automatic_sync";
     private static final String pref_restaurant_mode = "pref_restaurant_mode";
     private static final String pref_retail_taxes = "pref_retail_taxes";
     private static final String pref_use_clerks = "pref_use_clerks";
@@ -185,6 +186,10 @@ public class MyPreferences {
         // prefEditor.commit();
     }
 
+    public static boolean isTeamSable() {
+        return Build.MODEL.toUpperCase().startsWith("SABRESD");
+    }
+
     public String getApplicationPassword() {
         return (prefs.getString(ApplicationPassword, ""));
     }
@@ -243,11 +248,6 @@ public class MyPreferences {
         return "";
     }
 
-    public String getAcctNumber() {
-        // return "150255140221";
-        return (prefs.getString(AccountNumber, ""));
-    }
-
 //    public String getZoneID() {
 //        // return "1";
 //        return (prefs.getString(zone_id, ""));
@@ -262,6 +262,11 @@ public class MyPreferences {
 //    public String getEmpID() {
 //        return (prefs.getString(emp_id, ""));
 //    }
+
+    public String getAcctNumber() {
+        // return "150255140221";
+        return (prefs.getString(AccountNumber, ""));
+    }
 
     /* Set/Get Password */
     public void setAcctNumber(String number) {
@@ -325,10 +330,6 @@ public class MyPreferences {
         prefEditor.commit();
     }
 
-    public String getLastPayID() {
-        return (prefs.getString(pay_id, ""));
-    }
-
 //    public void setAllEmpData(List<String[]> emp_data) {
 //
 //        prefEditor.putString(emp_id, getData(emp_id, 0, emp_data));
@@ -384,6 +385,10 @@ public class MyPreferences {
 //        return (prefs.getString(approveCode, ""));
 //    }
 
+    public String getLastPayID() {
+        return (prefs.getString(pay_id, ""));
+    }
+
     public void setLastPayID(String id) {
         prefEditor.putString(pay_id, getValidID(getLastPayID(), id));
         prefEditor.commit();
@@ -397,6 +402,24 @@ public class MyPreferences {
         prefEditor.putString(ConsTrans_ID, getValidID(getLastConsTransID(), id));
         prefEditor.commit();
     }
+
+//    public void setLastTransferID(String id) {
+//        prefEditor.putString(MSLastTransferID, getValidID(getLastTransferID(), id));
+//        prefEditor.commit();
+//    }
+//
+//    public String getLastTransferID() {
+//        return (prefs.getString(MSLastTransferID, ""));
+//    }
+//
+//    public void setLastOrdID(String id) {
+//        prefEditor.putString(MSLastOrderID, getValidID(getLastOrdID(), id));
+//        prefEditor.commit();
+//    }
+
+//    public String getLastOrdID() {
+//        return (prefs.getString(MSLastOrderID, ""));
+//    }
 
     private String getValidID(String curr_id, String new_id) {
         if (new_id == null) {
@@ -430,28 +453,6 @@ public class MyPreferences {
         }
 
         return curr_id;
-    }
-
-//    public void setLastTransferID(String id) {
-//        prefEditor.putString(MSLastTransferID, getValidID(getLastTransferID(), id));
-//        prefEditor.commit();
-//    }
-//
-//    public String getLastTransferID() {
-//        return (prefs.getString(MSLastTransferID, ""));
-//    }
-//
-//    public void setLastOrdID(String id) {
-//        prefEditor.putString(MSLastOrderID, getValidID(getLastOrdID(), id));
-//        prefEditor.commit();
-//    }
-
-//    public String getLastOrdID() {
-//        return (prefs.getString(MSLastOrderID, ""));
-//    }
-
-    public boolean getLogIn() {
-        return prefs.getBoolean(isLoggedIn, false);
     }
 
     // private String getValidID(String curr_id, String new_id) {
@@ -500,6 +501,10 @@ public class MyPreferences {
     // return curr_id;
     // }
 
+    public boolean getLogIn() {
+        return prefs.getBoolean(isLoggedIn, false);
+    }
+
     public void setLogIn(boolean val) {
         prefEditor.putBoolean(isLoggedIn, val);
         prefEditor.commit();
@@ -541,6 +546,10 @@ public class MyPreferences {
         prefEditor.commit();
     }
 
+//    public boolean getIsVAT() {
+//        return prefs.getBoolean(VAT, false);
+//    }
+
     public int getPrintPreviewLayoutWidth() {
         String width = sharedPref.getString(pref_printer_width, "MEDIUM");
         PrinterPreviewWidth previewWidth = PrinterPreviewWidth.valueOf(width);
@@ -555,10 +564,6 @@ public class MyPreferences {
                 return (int) UIUtils.convertDpToPixel(400, context);
         }
     }
-
-//    public boolean getIsVAT() {
-//        return prefs.getBoolean(VAT, false);
-//    }
 
     public boolean isMixAnMatch() {
         return getPreferences(pref_mix_match);
@@ -639,15 +644,15 @@ public class MyPreferences {
         return sharedPref.getBoolean(key, false);
     }
 
+//    public boolean requiresWaiterLogin() {
+//        return getPreferences(MyPreferences.pref_require_waiter_signin);
+//    }
+
     public void setPreferences(String key, boolean value) {
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putBoolean(key, value);
         editor.commit();
     }
-
-//    public boolean requiresWaiterLogin() {
-//        return getPreferences(MyPreferences.pref_require_waiter_signin);
-//    }
 
     public String getPreferencesValue(String key) {
         return sharedPref.getString(key, "");
@@ -695,11 +700,6 @@ public class MyPreferences {
         prefEditor.commit();
     }
 
-    public String getPrinterMACAddress() {
-        String printer_mac_address = "printer_mac_address";
-        return prefs.getString(printer_mac_address, "");
-    }
-
 //    public String swiperMACAddress(boolean isGet, String value) {
 //        String swiper_mac_address = "swiper_mac_address";
 //        if (isGet)
@@ -711,21 +711,15 @@ public class MyPreferences {
 //        return "";
 //    }
 
+    public String getPrinterMACAddress() {
+        String printer_mac_address = "printer_mac_address";
+        return prefs.getString(printer_mac_address, "");
+    }
+
     public void setPrinterMACAddress(String value) {
         String printer_mac_address = "printer_mac_address";
         prefEditor.putString(printer_mac_address, value);
         prefEditor.commit();
-    }
-
-    public String sledMACAddress(boolean isGet, String value) {
-        String sled_mac_address = "sled_mac_address";
-        if (isGet)
-            return prefs.getString(sled_mac_address, "");
-        else {
-            prefEditor.putString(sled_mac_address, value);
-            prefEditor.commit();
-        }
-        return "";
     }
 
 //    public String printerMACAddress(boolean isGet, String value) {
@@ -739,6 +733,17 @@ public class MyPreferences {
 //        return "";
 //    }
 
+    public String sledMACAddress(boolean isGet, String value) {
+        String sled_mac_address = "sled_mac_address";
+        if (isGet)
+            return prefs.getString(sled_mac_address, "");
+        else {
+            prefEditor.putString(sled_mac_address, value);
+            prefEditor.commit();
+        }
+        return "";
+    }
+
     public int getSwiperType() {
         String swiper_type = "swiper_type";
         return prefs.getInt(swiper_type, -1);
@@ -748,17 +753,6 @@ public class MyPreferences {
         String swiper_type = "swiper_type";
         prefEditor.putInt(swiper_type, type);
         prefEditor.commit();
-    }
-
-    public String cdtLine1(boolean get, String value) {
-        String cdt_line1 = "cdt_line1";
-        if (get)
-            return prefs.getString(cdt_line1, "Welcome to");
-        else {
-            prefEditor.putString(cdt_line1, value);
-            prefEditor.commit();
-        }
-        return "Welcome to";
     }
 //    public int swiperType(boolean isGet, int value) {
 //        String swiper_type = "swiper_type";
@@ -770,6 +764,17 @@ public class MyPreferences {
 //        }
 //        return -1;
 //    }
+
+    public String cdtLine1(boolean get, String value) {
+        String cdt_line1 = "cdt_line1";
+        if (get)
+            return prefs.getString(cdt_line1, "Welcome to");
+        else {
+            prefEditor.putString(cdt_line1, value);
+            prefEditor.commit();
+        }
+        return "Welcome to";
+    }
 
     public String cdtLine2(boolean get, String value) {
         String cdt_line2 = "cdt_line2";
@@ -835,6 +840,13 @@ public class MyPreferences {
         prefEditor.commit();
     }
 
+	/*
+     * public void setIsMagtekReader(boolean val) {
+	 * prefEditor.putBoolean("isMagtekReader", val); prefEditor.commit(); }
+	 * public boolean getisMagtekReader() { return
+	 * prefs.getBoolean("isMagtekReader", false); }
+	 */
+
     public boolean isET1(boolean isGet, boolean value) {
         String device_et1 = "device_et1";
         if (isGet)
@@ -845,13 +857,6 @@ public class MyPreferences {
         }
         return false;
     }
-
-	/*
-     * public void setIsMagtekReader(boolean val) {
-	 * prefEditor.putBoolean("isMagtekReader", val); prefEditor.commit(); }
-	 * public boolean getisMagtekReader() { return
-	 * prefs.getBoolean("isMagtekReader", false); }
-	 */
 
     public boolean isMC40(boolean isGet, boolean value) {
         String device_mc40 = "device_mc40";
