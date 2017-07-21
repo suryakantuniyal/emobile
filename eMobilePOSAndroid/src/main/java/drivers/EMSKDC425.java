@@ -8,14 +8,15 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
-import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.TimeClock;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.CardParser;
 import com.android.support.ConsignmentTransaction;
@@ -39,9 +40,7 @@ import koamtac.kdc.sdk.KDCGPSDataReceivedListener;
 import koamtac.kdc.sdk.KDCMSRDataReceivedListener;
 import koamtac.kdc.sdk.KDCNFCDataReceivedListener;
 import koamtac.kdc.sdk.KDCReader;
-import koamtac.kdc.sdk.KPOSConstants;
 import koamtac.kdc.sdk.KPOSData;
-import koamtac.kdc.sdk.KPOSDataReceivedListener;
 import main.EMSDeviceManager;
 
 /**
@@ -57,20 +56,54 @@ public class EMSKDC425 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
 {
 
+    private static final String AES_KEY = "ThisIsMyTestKeyForAESEncryption.";
     private static EMSCallBack scannerCallBack;
+    private static KDCReader kdc425Reader;
+    private static Handler handler;
+    String msg = "Failed to connect";
     private EMSDeviceManager edm;
     private EMSKDC425 thisInstance;
-    private static KDCReader kdc425Reader;
-    String msg = "Failed to connect";
-    private static final String AES_KEY = "ThisIsMyTestKeyForAESEncryption.";
-
-
-    private static Handler handler;
     private String scannedData = "";
     private BluetoothDevice btDev;
     private boolean isAutoConect = false;
     private CreditCardInfo cardInfo;
+    private Runnable doUpdateDidConnect = new Runnable() {
+        public void run() {
+            try {
+                if (scannerCallBack != null)
+                    scannerCallBack.readerConnectedSuccessfully(true);
 
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
+    private Runnable connectionCallBack = new Runnable() {
+        public void run() {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            showConnectionMessage();
+        }
+    };
+    private Runnable cardReadCallBack = new Runnable() {
+        public void run() {
+            scannerCallBack.cardWasReadSuccessfully(true, cardInfo);
+        }
+    };
+    private Runnable runnableScannedData = new Runnable() {
+        public void run() {
+            try {
+                if (scannerCallBack != null)
+                    scannerCallBack.scannerWasRead(scannedData);
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
 
     @Override
     public void connect(Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
@@ -88,7 +121,6 @@ public class EMSKDC425 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
             showConnectionMessage();
         }
     }
-
 
     @Override
     public boolean autoConnect(Activity activity, EMSDeviceManager edm, int paperSize, boolean isPOSPrinter,
@@ -117,7 +149,12 @@ public class EMSKDC425 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         kdc425Reader = new KDCReader(this, null, null, this, null, this, false);
         if (!kdc425Reader.IsConnected() && KDCReader.GetAvailableDeviceList() != null && KDCReader.GetAvailableDeviceList().size() > 0) {
             btDev = KDCReader.GetAvailableDeviceList().get(0);
-            kdc425Reader.Connect(btDev);
+            if (kdc425Reader != null && btDev != null) {
+                kdc425Reader.Connect(btDev);
+            } else {
+                return false;
+
+            }
         }
         return kdc425Reader.IsConnected();
     }
@@ -130,39 +167,6 @@ public class EMSKDC425 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     private void HandleNFCCardReadEvent(KPOSData pData) {
         String nfcUID = pData.GetNFCUID();
         scannerCallBack.nfcWasRead(nfcUID);
-    }
-
-
-    public class processConnectionAsync extends AsyncTask<Void, String, Boolean> {
-
-        private ProgressDialog myProgressDialog;
-
-        @Override
-        protected void onPreExecute() {
-            myProgressDialog = new ProgressDialog(activity);
-            myProgressDialog.setMessage("Connecting Printer...");
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            myProgressDialog.show();
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            return connectKDC425();
-        }
-
-        @Override
-        protected void onPostExecute(Boolean result) {
-            boolean isDestroyed = false;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                if (activity.isDestroyed()) {
-                    isDestroyed = true;
-                }
-            }
-            if (!activity.isFinishing() && !isDestroyed && myProgressDialog.isShowing()) {
-                myProgressDialog.dismiss();
-            }
-        }
     }
 
     @Override
@@ -179,7 +183,6 @@ public class EMSKDC425 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     public boolean printPaymentDetails(String payID, int isFromMainMenu, boolean isReprint, EMVContainer emvContainer) {
         return false;
     }
-
 
     @Override
     public boolean printBalanceInquiry(HashMap<String, String> values) {
@@ -241,12 +244,10 @@ public class EMSKDC425 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
     }
 
-
     @Override
     public void registerAll() {
         this.registerPrinter();
     }
-
 
     public void registerPrinter() {
         edm.setCurrentDevice(thisInstance);
@@ -312,35 +313,6 @@ public class EMSKDC425 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
     }
 
-    private Runnable doUpdateDidConnect = new Runnable() {
-        public void run() {
-            try {
-                if (scannerCallBack != null)
-                    scannerCallBack.readerConnectedSuccessfully(true);
-
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-    };
-
-    private Runnable connectionCallBack = new Runnable() {
-        public void run() {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            showConnectionMessage();
-        }
-    };
-
-    private Runnable cardReadCallBack = new Runnable() {
-        public void run() {
-            scannerCallBack.cardWasReadSuccessfully(true, cardInfo);
-        }
-    };
-
     private void showConnectionMessage() {
         if (kdc425Reader != null && kdc425Reader.IsConnected()) {
             edm.driverDidConnectToDevice(thisInstance, !isAutoConect);
@@ -356,8 +328,8 @@ public class EMSKDC425 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 //        kdc425Reader.EnableNFC_POS();
 //        kdc425Reader.EnableCardReader_POS((short) (KPOSConstants.CARD_TYPE_MAGNETIC | KPOSConstants.CARD_TYPE_EMV_CONTACT));
         if (handler == null)
-        if (handler == null)
-            handler = new Handler();
+            if (handler == null)
+                handler = new Handler();
 
     }
 
@@ -445,6 +417,11 @@ public class EMSKDC425 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     @Override
     public boolean isConnected() {
         return true;
+    }
+
+    @Override
+    public void printClockInOut(List<ClockInOut> timeClocks, String clerkID) {
+
     }
 
 
@@ -646,18 +623,6 @@ public class EMSKDC425 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 //        }
 //    }
 
-    private Runnable runnableScannedData = new Runnable() {
-        public void run() {
-            try {
-                if (scannerCallBack != null)
-                    scannerCallBack.scannerWasRead(scannedData);
-
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-    };
-
     private String cleanTrack(String track) {
         String c = track;//"hjdg$h&jk8^i0ssh6";
         Pattern pt = Pattern.compile("[^a-zA-Z0-9;/%?-_.,*= ]");
@@ -667,6 +632,38 @@ public class EMSKDC425 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
             c = c.replaceAll("\\" + s, "");
         }
         return c;
+    }
+
+    public class processConnectionAsync extends AsyncTask<Void, String, Boolean> {
+
+        private ProgressDialog myProgressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog.setMessage("Connecting Printer...");
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setCancelable(false);
+            myProgressDialog.show();
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            return connectKDC425();
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            boolean isDestroyed = false;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                if (activity.isDestroyed()) {
+                    isDestroyed = true;
+                }
+            }
+            if (!activity.isFinishing() && !isDestroyed && myProgressDialog.isShowing()) {
+                myProgressDialog.dismiss();
+            }
+        }
     }
 
 //    private void HandleCardSwipedEvent(KPOSData pData) {

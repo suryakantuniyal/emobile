@@ -21,6 +21,7 @@ import android.widget.TimePicker;
 
 import com.android.database.TimeClockHandler;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.TimeClock;
 import com.android.saxhandler.SAXPostHandler;
 import com.android.support.DateUtils;
@@ -142,6 +143,8 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
                 }
                 break;
         }
+        List<TimeClock> timeClocks = timeClockHandler.getEmployeeTimeClock(mClerkID);
+        printClockinOut(timeClocks);
     }
 
     private TimeClock createTimeClock(boolean isOut, String date) {
@@ -156,6 +159,138 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
             tempTC.status = "IN";
         }
         return tempTC;
+    }
+
+    private void printClockinOut(List<TimeClock> timeClocks) {
+        if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+            ClockInOut clockInOut = ClockInOut.getList(timeClocks);
+            List<ClockInOut> inOuts = new ArrayList<>();
+            inOuts.add(clockInOut);
+            Global.mainPrinterManager.getCurrentDevice().printClockInOut(inOuts, getClerkID());
+        }
+    }
+
+    private void switchButton(boolean isOut) {
+        if (isOut) {
+            clockOutOn = false;
+            clockInOn = true;
+        } else {
+            clockOutOn = true;
+            clockInOn = false;
+        }
+        clockOut.setEnabled(clockOutOn);
+        clockIn.setEnabled(clockInOn);
+    }
+
+    private void promptDateTime() {
+        View view = activity.getLayoutInflater().inflate(R.layout.date_time_picker_layout, null);
+        final TimePicker tp = (TimePicker) view.findViewById(R.id.timePicker);
+        final DatePicker dp = (DatePicker) view.findViewById(R.id.datePicker);
+
+        AlertDialog.Builder adb = new AlertDialog.Builder(activity);
+        adb.setView(view);
+        adb.setTitle(R.string.pick_date_time);
+        adb.setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                GregorianCalendar date = new GregorianCalendar(dp.getYear(), dp.getMonth(), dp.getDayOfMonth(),
+                        tp.getCurrentHour(), tp.getCurrentMinute(), 0);
+
+                listTimeClock.add(createTimeClock(true, formatDate(date)));
+                askForAdminPassDlg(Global.formatToDisplayDate(formatDate(date), 3));
+
+            }
+        });
+        adb.setNegativeButton(R.string.button_cancel, new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        Dialog promptDialog = adb.create();
+
+        tp.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
+
+            @Override
+            public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
+            }
+        });
+        promptDialog.show();
+    }
+
+    private String formatDate(GregorianCalendar calendar) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
+        SimpleDateFormat sdfTZ = new SimpleDateFormat("Z", Locale.getDefault());
+        Calendar cal = Calendar.getInstance();
+        TimeZone tz = cal.getTimeZone();
+        sdfTZ.setTimeZone(tz);
+        String cur_date = sdf.format(calendar.getTime());
+        String TimeZone = sdfTZ.format(calendar.getTime());
+        String ending = TimeZone.substring(TimeZone.length() - 2, TimeZone.length());
+        String begining = TimeZone.substring(0, TimeZone.length() - 2);
+        return String.format("%s%s:%s", cur_date, begining, ending);
+    }
+
+    private void askForAdminPassDlg(final String date) {
+
+        String sb = String.format("%s\n%s\n\n%s\n%s\n", getString(R.string.clock_in_on), clockDateTime.getText().toString(), getString(R.string.confirm_clock_out), date);
+
+        final Dialog globalDlog = new Dialog(activity, R.style.Theme_TransparentTest);
+        globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        globalDlog.setCancelable(false);
+        globalDlog.setContentView(R.layout.dlog_field_single_two_btn);
+
+        final EditText viewField = (EditText) globalDlog.findViewById(R.id.dlogFieldSingle);
+        viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        TextView viewTitle = (TextView) globalDlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = (TextView) globalDlog.findViewById(R.id.dlogMessage);
+        viewTitle.setText(R.string.dlog_title_confirm);
+        if (!validPassword)
+            viewTitle.setText(R.string.invalid_password);
+        else
+            viewTitle.setText(R.string.enter_password);
+
+        viewMsg.setText(sb);
+
+        Button btnLeft = (Button) globalDlog.findViewById(R.id.btnDlogLeft);
+        btnLeft.setText(R.string.button_ok);
+        Button btnRight = (Button) globalDlog.findViewById(R.id.btnDlogRight);
+        btnRight.setText(R.string.button_cancel);
+        btnLeft.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                String value = viewField.getText().toString();
+                if (myPref.loginAdmin(value)) // validate admin
+                // password
+                {
+                    validPassword = true;
+                    globalDlog.dismiss();
+                    timeClockHandler.insert(listTimeClock, false);
+                    listTimeClock.clear();
+                    new sendUnsyncTimeClock().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
+                } else {
+                    globalDlog.dismiss();
+                    validPassword = false;
+                    askForAdminPassDlg(date);
+                }
+            }
+        });
+        btnRight.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                globalDlog.dismiss();
+            }
+        });
+        globalDlog.show();
+    }
+
+    public String getClerkID() {
+        return mClerkID;
     }
 
     public class sendUnsyncTimeClock extends AsyncTask<Boolean, Void, Void> {
@@ -179,7 +314,7 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
                 SAXParserFactory spf = SAXParserFactory.newInstance();
                 handler = new SAXPostHandler();
                 try {
-                    String xml = httpClient.postData(Global.S_SUBMIT_TIME_CLOCK,  null);
+                    String xml = httpClient.postData(Global.S_SUBMIT_TIME_CLOCK, null);
                     InputSource inSource = new InputSource(new StringReader(xml));
                     SAXParser sp = spf.newSAXParser();
                     XMLReader xr = sp.getXMLReader();
@@ -376,135 +511,12 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
                     clockDateTime.setText(Global.formatToDisplayDate(inStringDate, 3));
                     switchButton(false);
                 }
+
             } else {
                 switchButton(true);
             }
             myProgressDialog.dismiss();
-
         }
 
-    }
-
-    private void switchButton(boolean isOut) {
-        if (isOut) {
-            clockOutOn = false;
-            clockInOn = true;
-        } else {
-            clockOutOn = true;
-            clockInOn = false;
-        }
-        clockOut.setEnabled(clockOutOn);
-        clockIn.setEnabled(clockInOn);
-    }
-
-    private void promptDateTime() {
-        View view = activity.getLayoutInflater().inflate(R.layout.date_time_picker_layout, null);
-        final TimePicker tp = (TimePicker) view.findViewById(R.id.timePicker);
-        final DatePicker dp = (DatePicker) view.findViewById(R.id.datePicker);
-
-        AlertDialog.Builder adb = new AlertDialog.Builder(activity);
-        adb.setView(view);
-        adb.setTitle(R.string.pick_date_time);
-        adb.setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
-
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-                GregorianCalendar date = new GregorianCalendar(dp.getYear(), dp.getMonth(), dp.getDayOfMonth(),
-                        tp.getCurrentHour(), tp.getCurrentMinute(), 0);
-
-                listTimeClock.add(createTimeClock(true, formatDate(date)));
-                askForAdminPassDlg(Global.formatToDisplayDate(formatDate(date), 3));
-
-            }
-        });
-        adb.setNegativeButton(R.string.button_cancel, new DialogInterface.OnClickListener() {
-
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-        Dialog promptDialog = adb.create();
-
-        tp.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
-
-            @Override
-            public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
-            }
-        });
-        promptDialog.show();
-    }
-
-    private String formatDate(GregorianCalendar calendar) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
-        SimpleDateFormat sdfTZ = new SimpleDateFormat("Z", Locale.getDefault());
-        Calendar cal = Calendar.getInstance();
-        TimeZone tz = cal.getTimeZone();
-        sdfTZ.setTimeZone(tz);
-        String cur_date = sdf.format(calendar.getTime());
-        String TimeZone = sdfTZ.format(calendar.getTime());
-        String ending = TimeZone.substring(TimeZone.length() - 2, TimeZone.length());
-        String begining = TimeZone.substring(0, TimeZone.length() - 2);
-        return String.format("%s%s:%s", cur_date, begining, ending);
-    }
-
-    private void askForAdminPassDlg(final String date) {
-
-        String sb = String.format("%s\n%s\n\n%s\n%s\n", getString(R.string.clock_in_on), clockDateTime.getText().toString(), getString(R.string.confirm_clock_out), date);
-
-        final Dialog globalDlog = new Dialog(activity, R.style.Theme_TransparentTest);
-        globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        globalDlog.setCancelable(false);
-        globalDlog.setContentView(R.layout.dlog_field_single_two_btn);
-
-        final EditText viewField = (EditText) globalDlog.findViewById(R.id.dlogFieldSingle);
-        viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        TextView viewTitle = (TextView) globalDlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) globalDlog.findViewById(R.id.dlogMessage);
-        viewTitle.setText(R.string.dlog_title_confirm);
-        if (!validPassword)
-            viewTitle.setText(R.string.invalid_password);
-        else
-            viewTitle.setText(R.string.enter_password);
-
-        viewMsg.setText(sb);
-
-        Button btnLeft = (Button) globalDlog.findViewById(R.id.btnDlogLeft);
-        btnLeft.setText(R.string.button_ok);
-        Button btnRight = (Button) globalDlog.findViewById(R.id.btnDlogRight);
-        btnRight.setText(R.string.button_cancel);
-        btnLeft.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                String value = viewField.getText().toString();
-                if (myPref.loginAdmin(value)) // validate admin
-                // password
-                {
-                    validPassword = true;
-                    globalDlog.dismiss();
-                    timeClockHandler.insert(listTimeClock, false);
-                    listTimeClock.clear();
-                    new sendUnsyncTimeClock().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
-                } else {
-                    globalDlog.dismiss();
-                    validPassword = false;
-                    askForAdminPassDlg(date);
-                }
-            }
-        });
-        btnRight.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                globalDlog.dismiss();
-            }
-        });
-        globalDlog.show();
-    }
-
-    public String getClerkID() {
-        return mClerkID;
     }
 }

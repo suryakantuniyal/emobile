@@ -861,6 +861,10 @@ public class GenerateXML {
             serializer.endTag(empstr, "holdName");
         }
 
+        String numberOfSeats = String.valueOf(order.numberOfSeats);
+        serializer.startTag(empstr, "numberOfSeats");
+        serializer.text(numberOfSeats);
+        serializer.endTag(empstr, "numberOfSeats");
 
         serializer.startTag(empstr, "associateID");
         serializer.text(StringUtil.nullStringToEmpty(order.associateID));

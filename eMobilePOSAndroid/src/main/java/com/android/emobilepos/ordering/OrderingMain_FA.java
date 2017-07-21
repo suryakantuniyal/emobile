@@ -232,6 +232,20 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
     }
 
+    public static void addOrderProduct(Context context, Order order, boolean isToGo, OrderProduct orderProduct, List<OrderAttributes> attributes) {
+        MyPreferences preferences = new MyPreferences(context);
+        if (preferences.isGroupReceiptBySku(isToGo)) {
+            List<OrderProduct> orderProductsGroupBySKU = OrderProductUtils.getOrderProductsGroupBySKU(order.getOrderProducts());
+            order.getOrderProducts().clear();
+            order.getOrderProducts().addAll(orderProductsGroupBySKU);
+        }
+        OrderProduct product;
+//        orderProduct.setRequiredProductAttributes(attributes);
+        product = orderProduct;
+        List<OrderProduct> products = new ArrayList<>();
+        products.add(product);
+    }
+
     public static void automaticAddOrder(Activity activity, boolean isFromAddon, Global global, OrderProduct orderProduct, String selectedSeatNumber) {
         if (OrderingMain_FA.returnItem)
             orderProduct.setReturned(true);

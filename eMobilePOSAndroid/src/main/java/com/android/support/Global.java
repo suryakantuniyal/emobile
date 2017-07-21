@@ -37,7 +37,9 @@ import android.widget.TextView;
 import com.android.crashreport.ExceptionHandler;
 import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.ClerkDAO;
+import com.android.dao.EmobilePOSRealmMigration;
 import com.android.dao.RealmModule;
+import com.android.database.DBManager;
 import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.R;
@@ -337,6 +339,19 @@ public class Global extends MultiDexApplication {
     private String selectedComments;
     private String selectedPO;
     private Dialog globalDlog;
+
+    public static void lockOrientation(Activity activity) {
+        if (activity != null) {
+            int orientation = Global.getScreenOrientation(activity);
+            activity.setRequestedOrientation(orientation);
+        }
+    }
+
+    public static void releaseOrientation(Activity activity) {
+        if (activity != null) {
+            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+        }
+    }
 
     public static String getPeripheralName(int type) {
         String _name = "Unknown";
@@ -1174,13 +1189,18 @@ public class Global extends MultiDexApplication {
     public static void dismissDialog(Activity activity, Dialog dialog) {
         boolean isDestroyed = false;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            if (activity.isDestroyed()) {
+            if (activity == null || activity.isDestroyed()) {
                 isDestroyed = true;
             }
         }
-        if (dialog != null && !activity.isFinishing() && !isDestroyed && dialog.isShowing()) {
+        if (dialog != null && activity != null && !activity.isFinishing() && !isDestroyed && dialog.isShowing()) {
             dialog.dismiss();
         }
+    }
+
+    @Override
+    public void onTerminate() {
+        super.onTerminate();
     }
 
     public int checkIfGroupBySKU(Activity activity, String prodID, String pickedQty) {
@@ -1304,8 +1324,9 @@ public class Global extends MultiDexApplication {
         Realm.init(this);
         isIvuLoto = getPackageName().contains(getString(R.string.ivupos_packageid));
         RealmConfiguration config = new RealmConfiguration.Builder()
-                .deleteRealmIfMigrationNeeded()
+                .migration(new EmobilePOSRealmMigration())
                 .modules(Realm.getDefaultModule(), new RealmModule())
+                .schemaVersion(EmobilePOSRealmMigration.REALM_SCHEMA_VERSION)
                 .build();
         Realm.setDefaultConfiguration(config);
         Realm.compactRealm(config);

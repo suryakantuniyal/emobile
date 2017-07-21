@@ -147,7 +147,7 @@
 
 
     <string name="add_gratuity">Add Gratuity?</string>
-    <string name="total_plus_tip">Total + Tip:</string>
+    <string name="total_plus_tip">Subtotal (%1$s) + Tip (%2$s):</string>
     <string name="confirmation_header">Confirm Amount</string>
     <string name="confirmation_total">Total</string>
     <string name="confirmation_card_number">Card #:</string>
@@ -1336,5 +1336,9 @@
     <string name="login_system_instructions">Login with your System password.</string>
     <string name="ivupos_apk_name" translatable="false">/emobileivupos.apk</string>
     <string name="emobile_apk_name" translatable="false">/emobilepos.apk</string>
+    <string name="clockReceipt">Clock IN/OUT</string>
+    <string name="hours">Hours</string>
+    <string name="total_hours_worked">Total Hours</string>
+    <string name="date">Date</string>
 
 </resources>
