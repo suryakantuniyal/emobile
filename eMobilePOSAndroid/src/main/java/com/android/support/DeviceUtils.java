@@ -19,10 +19,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
+import drivers.EMSBluetoothStarPrinter;
 import drivers.EMSDeviceDriver;
 import drivers.EMSPowaPOS;
 import drivers.EMSmePOS;
-import drivers.star.utils.PrinterSetting;
 import main.EMSDeviceManager;
 
 /**
@@ -36,6 +36,7 @@ public class DeviceUtils {
         List<Device> devices = DeviceTableDAO.getAll();
         HashMap<String, Integer> tempMap = new HashMap<>();
         EMSDeviceManager edm = null;
+        connectStarTS650BT(activity);
         if (forceReload || Global.multiPrinterMap.size() != devices.size()) {
             int i = 0;
             for (Device device : devices) {
@@ -196,17 +197,21 @@ public class DeviceUtils {
         return null;
     }
 
-    public static void connectStarTS650BT(Context context){
+    public static void connectStarTS650BT(Context context) {
         try {
             EMSDeviceManager edm = new EMSDeviceManager();
             ArrayList<PortInfo> mPortList = StarIOPort.searchPrinter("USB:", context);
             MyPreferences preferences = new MyPreferences(context);
-            if(!mPortList.isEmpty()){
+            if (!mPortList.isEmpty()) {
                 preferences.setPrinterType(Global.STAR);
                 preferences.setPrinterName(mPortList.get(0).getPortName());
                 preferences.setPrinterMACAddress(mPortList.get(0).getPortName());
+                preferences.posPrinter(false, true);
+                preferences.printerAreaSize(false, 48);
+                EMSBluetoothStarPrinter aDevice = new EMSBluetoothStarPrinter();
                 Global.mainPrinterManager = edm.getManager();
-                Global.mainPrinterManager.loadDrivers(context, Global.STAR, EMSDeviceManager.PrinterInterfase.USB);
+                aDevice.autoConnect((Activity) context,edm,48,true,preferences.getPrinterMACAddress(),"");
+//                Global.mainPrinterManager.loadDrivers(context, Global.STAR, EMSDeviceManager.PrinterInterfase.USB);
             }
         } catch (StarIOPortException e) {
             e.printStackTrace();

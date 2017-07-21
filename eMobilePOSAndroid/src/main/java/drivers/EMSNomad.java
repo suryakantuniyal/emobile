@@ -2,6 +2,7 @@ package drivers;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
@@ -54,7 +55,7 @@ import main.EMSDeviceManager;
 
 public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDeviceManagerPrinterDelegate {
 
-    private Activity activity;
+    private Context activity;
     private static AndroidTerminal terminal;
     private static String TERMINAL_ID = "2993001";
     private static String SECRET = "password";
@@ -68,7 +69,7 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
     private boolean isAutoConnect = false;
 
     @Override
-    public void connect(Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
+    public void connect(Context activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
         this.activity = activity;
         isAutoConnect = false;
         if (terminal != null) {

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;
+import android.content.Context;
 import android.os.Build;
 import android.view.View;
 import android.widget.AdapterView;
@@ -45,7 +46,7 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
 
     private Dialog promptDialog;
     private AlertDialog.Builder dialogBuilder;
-    private Activity activity;
+    private Context activity;
 
     private EMSDeviceDriver aDevice = null;
     private EMSDeviceManager instance;
@@ -59,7 +60,7 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
         return instance;
     }
 
-    public void loadDrivers(Activity activity, int type, PrinterInterfase interfase) {
+    public void loadDrivers(Context activity, int type, PrinterInterfase interfase) {
 
         this.activity = activity;
 
@@ -323,17 +324,21 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
     public void driverDidConnectToDevice(EMSDeviceDriver theDevice, boolean showPrompt) {
         boolean isDestroyed = false;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            if (this.activity.isDestroyed()) {
-                isDestroyed = true;
+            if (this.activity instanceof Activity) {
+                if (((Activity) this.activity).isDestroyed()) {
+                    isDestroyed = true;
+                }
             }
         }
-        if (showPrompt && !this.activity.isFinishing() && !isDestroyed) {
-            Builder dialog = new Builder(this.activity);
-            dialog.setNegativeButton(R.string.button_ok, null);
-            AlertDialog alert = dialog.create();
-            alert.setTitle(R.string.dlog_title_confirm);
-            alert.setMessage("Device is Online");
-            alert.show();
+        if (this.activity instanceof Activity) {
+            if (showPrompt && !((Activity) this.activity).isFinishing() && !isDestroyed) {
+                Builder dialog = new Builder(this.activity);
+                dialog.setNegativeButton(R.string.button_ok, null);
+                AlertDialog alert = dialog.create();
+                alert.setTitle(R.string.dlog_title_confirm);
+                alert.setMessage("Device is Online");
+                alert.show();
+            }
         }
 
         theDevice.registerAll();
@@ -347,17 +352,21 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
 
         boolean isDestroyed = false;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            if (this.activity.isDestroyed()) {
-                isDestroyed = true;
+            if (this.activity instanceof Activity) {
+                if (((Activity) this.activity).isDestroyed()) {
+                    isDestroyed = true;
+                }
             }
         }
-        if (showPrompt && !this.activity.isFinishing() && !isDestroyed) {
-            Builder dialog = new AlertDialog.Builder(this.activity);
-            dialog.setNegativeButton("Ok", null);
-            AlertDialog alert = dialog.create();
-            alert.setTitle(R.string.dlog_title_error);
-            alert.setMessage("Failed to connect device: \n" + err);
-            alert.show();
+        if (this.activity instanceof Activity) {
+            if (showPrompt && !((Activity) this.activity).isFinishing() && !isDestroyed) {
+                Builder dialog = new Builder(this.activity);
+                dialog.setNegativeButton("Ok", null);
+                AlertDialog alert = dialog.create();
+                alert.setTitle(R.string.dlog_title_error);
+                alert.setMessage("Failed to connect device: \n" + err);
+                alert.show();
+            }
         }
     }
 
