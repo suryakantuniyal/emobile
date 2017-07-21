@@ -37,6 +37,7 @@ import com.android.support.MyPreferences;
 import com.android.support.OrderProductUtils;
 import com.android.support.SynchMethods;
 import com.android.support.TaxesCalculator;
+import com.google.gson.Gson;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -418,6 +419,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         intent.putExtra("ord_taxID", order.tax_id);
         intent.putExtra("ord_type", Global.OrderType.SALES_RECEIPT);
         intent.putExtra("ord_email", "");
+        intent.putExtra("subTotal", order.ord_subtotal);
         if (myPref.isCustSelected()) {
             intent.putExtra("cust_id", myPref.getCustID());
             intent.putExtra("custidkey", myPref.getCustIDKey());
