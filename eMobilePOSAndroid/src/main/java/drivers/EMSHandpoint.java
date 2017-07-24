@@ -59,7 +59,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
     protected static Device device;
     private Handler handler;
     private EMSCallBack msrCallBack;
-    String msg = "Failed to connect";
+    String msg = "Failed to connectTFHKA";
     static boolean connected = false;
     private static ProgressDialog myProgressDialog;
     com.handpoint.api.Currency currency = com.handpoint.api.Currency.valueOf(java.util.Currency.getInstance(Locale.getDefault()).getCurrencyCode());

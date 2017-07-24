@@ -9,6 +9,7 @@ import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.BixolonDAO;
 import com.android.database.OrdersHandler;
 import com.android.database.PaymentsHandler;
+import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplitedOrder;
@@ -48,20 +49,26 @@ import main.EMSDeviceManager;
 
 public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
     private static final int HEADER_LENGTH = 8;
-    private static final int TAX_LENGTH = 3;
+    private static final int TAX_LENGTH_PANAMA = 3;
+    private static final int TAX_LENGTH_DOMINICAN = 5;
     private static final int LINE_WIDTH = 48;
-    String msg = "Failed to connect";
+    String msg = "Failed to connectTFHKA";
     private EMSDeviceManager edm;
+    private BixolonCountry country;
 
-    @Override
-    public void connect(final Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
+    public EMSBixolonRD(BixolonCountry country) {
+
+        this.country = country;
+    }
+
+    public void connectTFHKA(final Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
         this.activity = activity;
         this.edm = edm;
         if (printerTFHKA == null) {
             printerTFHKA = new TfhkaAndroid();
         }
         myPref = new MyPreferences(activity);
-        boolean connect = connect();
+        boolean connect = connectTFHKA();
         if (connect) {
             printerTFHKA.setSendCmdRetryAttempts(5);
             printerTFHKA.setSendCmdRetryInterval(1000);
@@ -71,7 +78,6 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
         }
     }
 
-
     @Override
     public boolean autoConnect(final Activity activity, EMSDeviceManager edm, int paperSize, boolean isPOSPrinter, String portName, String portNumber) {
         this.activity = activity;
@@ -80,7 +86,7 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
             printerTFHKA = new TfhkaAndroid();
         }
         myPref = new MyPreferences(activity);
-        boolean connect = connect();
+        boolean connect = connectTFHKA();
         if (connect) {
             printerTFHKA.setSendCmdRetryAttempts(5);
             printerTFHKA.setSendCmdRetryInterval(1000);
@@ -91,7 +97,7 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
         return true;
     }
 
-    private boolean connect() {
+    private boolean connectTFHKA() {
         return printerTFHKA.estado || printerTFHKA.OpenBTPrinter(myPref.getPrinterMACAddress());
     }
 
@@ -250,7 +256,6 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
         this.registerPrinter();
     }
 
-
     public void registerPrinter() {
         edm.setCurrentDevice(this);
     }
@@ -350,6 +355,11 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
         return false;
     }
 
+    @Override
+    public void printClockInOut(List<ClockInOut> clockInOuts, String clerkID) {
+        super.printClockInOut(clockInOuts, LINE_WIDTH, clerkID);
+    }
+
     public boolean sendDateTimeCommand(Date date) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
@@ -393,10 +403,13 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
 
     public boolean sendTaxes(List<Tax> taxes) {
         String taxCmd = "PT";
+        int taxLength = country == BixolonCountry.PANAMA ? TAX_LENGTH_PANAMA : TAX_LENGTH_DOMINICAN;
+        String taxChar = country == BixolonCountry.PANAMA ? "1" : "2";
         BixolonDAO.clearTaxes();
-        for (int i = 0; i < TAX_LENGTH; i++) {
+        for (int i = 0; i < taxLength; i++) {
             if (i < taxes.size()) {
-                taxCmd += "1" + String.format("%05.02f", Global.getRoundBigDecimal(Global.getBigDecimalNum(taxes.get(i).getTaxRate()), 2));
+                taxCmd += taxChar + String.format(Locale.getDefault(), "%05.02f",
+                        Global.getRoundBigDecimal(Global.getBigDecimalNum(taxes.get(i).getTaxRate()), 2));
             } else {
                 taxCmd += "20000";
             }
@@ -445,13 +458,17 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
         BixolonDAO.clearPaymentMethods();
         for (PaymentMethod paymentMethod : paymentMethods) {
             BixolonDAO.addPaymentMethod(i, paymentMethod);
-            cmd = printerTFHKA.SendCmd("PE" + String.format("%02d", i) + paymentMethod.getPaymethod_name());
+            cmd = printerTFHKA.SendCmd("PE" + String.format(Locale.getDefault(), "%02d", i) + paymentMethod.getPaymethod_name());
             i++;
             if (!cmd) {
                 break;
             }
         }
         return cmd;
+    }
+
+    public boolean printSetupInfo() {
+        return printerTFHKA.SendCmd("D");
     }
 
     private boolean printRUC(String ruc) {
@@ -542,6 +559,10 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
 
     private boolean printOrderId(Order order) {
         return printerTFHKA.SendCmd("jF" + String.format("%0" + (22 - order.ord_id.length()) + "d%s", 0, order.ord_id));
+    }
+
+    public enum BixolonCountry {
+        PANAMA, DOMINICAN_REPUBLIC
     }
 
 }

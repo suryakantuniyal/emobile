@@ -108,7 +108,7 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
 
 	public class processConnectionAsync extends AsyncTask<Integer, String, String> {
 
-		String msg = new String("Failed to connect");
+		String msg = new String("Failed to connectTFHKA");
 		boolean didConnect = false;
 
 		@Override
@@ -141,7 +141,7 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
 				didConnect = true;
 				break;
 			default:
-				msg = "Failed to connect: \nError - " + connectionRequest;
+				msg = "Failed to connectTFHKA: \nError - " + connectionRequest;
 				break;
 			}
 
