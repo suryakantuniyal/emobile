@@ -2,6 +2,7 @@ package drivers;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 
@@ -47,7 +48,7 @@ public class EMSMiura extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     BluetoothModule miuraPrinter = BluetoothModule.getInstance();
 
     @Override
-    public void connect(Activity activity, int paperSize, boolean isPOSPrinter, final EMSDeviceManager edm) {
+    public void connect(Context activity, int paperSize, boolean isPOSPrinter, final EMSDeviceManager edm) {
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
         this.isPOSPrinter = isPOSPrinter;

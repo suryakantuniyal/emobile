@@ -118,7 +118,7 @@ public class EMSDeviceDriver {
     protected EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
     protected List<String> printPref;
     protected MyPreferences myPref;
-    protected Activity activity;
+    protected Context activity;
     protected StarIOPort port;
     protected String encodedSignature;
     protected boolean isPOSPrinter = false;
@@ -173,7 +173,7 @@ public class EMSDeviceDriver {
         return Bitmap.createScaledBitmap(realImage, width, height, filter);
     }
 
-    public void connect(Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
+    public void connect(Context activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
     }
 
     public boolean autoConnect(Activity activity, EMSDeviceManager edm, int paperSize, boolean isPOSPrinter,

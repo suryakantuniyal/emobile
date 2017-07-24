@@ -152,6 +152,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
     private boolean isEverpay = false;
     private String _charge_xml;
     private boolean livePaymentRunning = false;
+    private String orderSubTotal;
 
     public static String getCardType(String number) {
         String ccType = "";
@@ -453,6 +454,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         isDebit = extras.getBoolean("isDebit");
         requireTransID = extras.getBoolean("requireTransID");
 
+        orderSubTotal = extras.getString("subTotal", "0");
         if (extras.getBoolean("salespayment")) {
             headerTitle.setText(getString(R.string.card_payment_title));
             isFromMainMenu = true;
@@ -1115,7 +1117,11 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         if (isFromMainMenu) {
             subTotal = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDueField));
         } else {
-            subTotal = Double.parseDouble(global.order.ord_subtotal);
+            if (!TextUtils.isEmpty(orderSubTotal) && Double.parseDouble(orderSubTotal) > 0) {
+                subTotal = Double.parseDouble(orderSubTotal);
+            } else {
+                subTotal = Double.parseDouble(global.order.ord_subtotal);
+            }
         }
 
         double amountToBePaid = Global

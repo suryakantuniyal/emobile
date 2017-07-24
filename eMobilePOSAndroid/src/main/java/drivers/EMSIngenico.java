@@ -2,6 +2,7 @@ package drivers;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
@@ -76,7 +77,7 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
     }
 
     @Override
-    public void connect(Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
+    public void connect(Context activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
         if (handler == null)
@@ -285,7 +286,7 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
                 RBA_API.SetParam(PARAMETER_ID.P23_REQ_ENABLE_DEVICES, "MCS");
                 RBA_API.SetParam(PARAMETER_ID.P23_REQ_OPTIONS, "1");
                 if (!isConnected()) {
-                    autoConnect(activity, edm, 0, isPOSPrinter, "", "");
+                    autoConnect((Activity) activity, edm, 0, isPOSPrinter, "", "");
                 }
                 ERROR_ID result = RBA_API.ProcessMessage(MESSAGE_ID.M23_CARD_READ);
                 if (result == ERROR_ID.RESULT_SUCCESS) {

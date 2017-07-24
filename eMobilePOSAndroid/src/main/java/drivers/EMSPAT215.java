@@ -2,6 +2,7 @@ package drivers;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
@@ -74,7 +75,7 @@ public class EMSPAT215 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     }
 
     @Override
-    public void connect(Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
+    public void connect(Context activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
         this.edm = edm;
@@ -242,7 +243,7 @@ public class EMSPAT215 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
     private void initMSR(boolean fullReload) {
         if (msrApiContext == null)
-            msrApiContext = MsrManager.getDefault(activity);
+            msrApiContext = MsrManager.getDefault((Activity) activity);
         releaseCardReader();
         EMSPAT215.runReader = true;
         if (fullReload) {
@@ -262,7 +263,7 @@ public class EMSPAT215 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
         int setMsrEnable = msrApiContext.setMsrEnable();
         int startReadData = msrApiContext.startReadData();
-        activity.runOnUiThread(doUpdateDidConnect);
+        ((Activity)activity).runOnUiThread(doUpdateDidConnect);
     }
 
     private Runnable doUpdateDidConnect = new Runnable() {
