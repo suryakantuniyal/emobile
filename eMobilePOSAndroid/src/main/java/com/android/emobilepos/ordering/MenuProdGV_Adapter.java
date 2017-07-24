@@ -23,6 +23,7 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
+import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 
 import util.json.UIUtils;
 
@@ -61,11 +62,11 @@ public class MenuProdGV_Adapter extends CursorAdapter {
         isRestMode = myPref.isRestaurantMode();
         global = (Global) activity.getApplication();
         if (isPortrait) {
-            options = new DisplayImageOptions.Builder().resetViewBeforeLoading(true).displayer(new FadeInBitmapDisplayer(800)).cacheOnDisc(true)
+            options = new DisplayImageOptions.Builder().resetViewBeforeLoading(true).displayer(new SimpleBitmapDisplayer()).cacheOnDisc(true)
                     .imageScaleType(ImageScaleType.IN_SAMPLE_INT).build();
             volPriceHandler = new VolumePricesHandler(activity);
         } else
-            options = new DisplayImageOptions.Builder().resetViewBeforeLoading(true).displayer(new FadeInBitmapDisplayer(800)).cacheOnDisc(true)
+            options = new DisplayImageOptions.Builder().resetViewBeforeLoading(true).displayer(new SimpleBitmapDisplayer()).cacheOnDisc(true)
                     .imageScaleType(ImageScaleType.IN_SAMPLE_INT).showImageOnLoading(R.drawable.loading_image).showImageForEmptyUri(R.drawable.no_image)
                     .build();
     }

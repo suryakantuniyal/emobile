@@ -60,36 +60,30 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
 
-import io.realm.RealmResults;
 import util.json.JsonUtils;
 
 public class PickerProduct_FA extends FragmentActivity implements OnClickListener, OnItemClickListener {
 
+    public static PickerProduct_FA instance;
+    private final int SEC_QTY = 3, SEC_CMT = 5, SEC_UOM = 4, SEC_PRICE_LEV = 6, SEC_DISCOUNT = 7, SEC_OTHER_TYPES = 9, SEC_ADDITIONAL_INFO = 10;
+    private final int INDEX_UOM = 0, INDEX_CMT = 1, INDEX_PRICE_LEVEL = 2, INDEX_DISCOUNT = 3, OFFSET = 4, MAIN_OFFSET = 3;
+    OrderProduct orderProduct = new OrderProduct();
     private boolean hasBeenCreated = false;
     private Activity activity;
     private Global global;
-
-
-    private final int SEC_QTY = 3, SEC_CMT = 5, SEC_UOM = 4, SEC_PRICE_LEV = 6, SEC_DISCOUNT = 7, SEC_OTHER_TYPES = 9, SEC_ADDITIONAL_INFO = 10;
     private String[] leftTitle, leftTitle2;
     private String[] rightTitle = new String[]{"ONE (Default)", "", "", "0.00 <No Discount>"};
-    private final int INDEX_UOM = 0, INDEX_CMT = 1, INDEX_PRICE_LEVEL = 2, INDEX_DISCOUNT = 3, OFFSET = 4, MAIN_OFFSET = 3;
-
-
     private ListViewAdapter lv_adapter;
     private Bundle extras;
-
     //Loading image library
     private ImageLoader imageLoader;
     private DisplayImageOptions options;
-
-
     private String qty_picked = "1";
-
     private String defaultVal = "0.00";
     private String defVal = "0";
     private String _ordprod_comment = "";
@@ -102,9 +96,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
     private boolean isModify;
     private int modifyOrderPosition = 0;
     private String imgURL;
-
     private MyPreferences myPref;
-
     private BigDecimal uomMultiplier = new BigDecimal("1.0");
     private boolean discountIsTaxable = false, discountWasSelected = false;
     private String basePrice;
@@ -112,24 +104,16 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
     private String priceLevelID = "", priceLevelName = "";
     private int pricelevel_position = 0, discount_position = 0, tax_position = 0, uom_position;
     private String prod_type = "";
-
     private VolumePricesHandler volPriceHandler;
     private ProductsAttrHandler prodAttrHandler;
     private AlertDialog promptDialog;
-
     private LinkedHashMap<String, List<String>> attributesMap;
     private String[] attributesKey;
     private LinkedHashMap<String, String> attributesSelected;
-
-
     private TextView headerProductID, headerOnHand;
     private ImageView headerImage;
-
-
     private String ordProdAttr = "";
     private boolean isFromAddon = false;
-    OrderProduct orderProduct = new OrderProduct();
-    public static PickerProduct_FA instance;
     private boolean isToGo;
 
 
@@ -582,20 +566,26 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             global.order.getOrderProducts().addAll(orderProductsGroupBySKU);
         }
         OrderProduct product;
-        if (isModify) {
-            orderProduct.setRequiredProductAttributes(global.ordProdAttr);
-            product = orderProduct;//global.orderProducts.size() == 0 ? null : global.orderProducts.get(modifyOrderPosition);
-        } else {
-            orderProduct.setRequiredProductAttributes(global.ordProdAttr);
-            product = orderProduct;
-        }
+//        if (isModify) {
+//            orderProduct.setRequiredProductAttributes(global.ordProdAttr);
+//            product = orderProduct;
+//        } else {
+        orderProduct.setRequiredProductAttributes(global.ordProdAttr);
+        product = orderProduct;
+//        }
         List<OrderProduct> products = new ArrayList<>();
         if (product != null) {
             products.add(product);
         }
-        if (!OrderingMain_FA.isRequiredAttributeConmpleted(products)) {
+        if (!OrderingMain_FA.isRequiredAttributeCompleted(products)) {
+            if (product != null) {
+                product.setAttributesCompleted(false);
+            }
             Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_required_attributes) + "\n\n" + ordProdAttr);
         } else {
+            if (product != null) {
+                product.setAttributesCompleted(true);
+            }
             double onHandQty = 0;
             if (!headerOnHand.getText().toString().isEmpty())
                 onHandQty = Double.parseDouble(headerOnHand.getText().toString());
@@ -943,14 +933,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         for (ProductAttribute attribute : orderProduct.getRequiredProductAttributes()) {
             attribute.setProductId(orderProduct.getOrdprod_id());
         }
-//        orderProduct.requiredProductAttributes = new ArrayList<>();
-//        int size = global.ordProdAttr.size();
-//        for (int i = 0; i < size; i++) {
-//            if (global.ordProdAttr.get(i).getProductId() == null || global.ordProdAttr.get(i).getProductId().isEmpty()) {
-//                global.ordProdAttr.get(i).setProductId(randomUUIDString);
-//                orderProduct.requiredProductAttributes.add(global.ordProdAttr.get(i));
-//            }
-//        }
+        orderProduct.setAttributesCompleted(OrderingMain_FA.isRequiredAttributeCompleted(Collections.singletonList(orderProduct)));
         if (isFromAddon) {
             Global.addonTotalAmount = 0;
             StringBuilder sb = new StringBuilder();
@@ -1447,15 +1430,6 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             return null;
         }
 
-        class ViewHolder {
-            TextView leftText;
-            TextView leftSubtitle;
-            TextView rightText;
-            Button add;
-            Button delete;
-        }
-
-
         void updateVolumePrice(BigDecimal qty) {
             String[] temp;
 
@@ -1477,6 +1451,14 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                 rightTitle[INDEX_PRICE_LEVEL] = Global.formatDoubleToCurrency(Double.parseDouble(basePrice)) + " <Base Price>";
                 prLevTotal = Global.formatNumToLocale(Double.parseDouble(basePrice));
             }
+        }
+
+        class ViewHolder {
+            TextView leftText;
+            TextView leftSubtitle;
+            TextView rightText;
+            Button add;
+            Button delete;
         }
     }
 

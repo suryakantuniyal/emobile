@@ -1,6 +1,10 @@
 package com.android.support;
 
+import com.elotouch.paypoint.register.printer.SerialPort;
 import com.zzzapi.uart.uart;
+
+import java.io.File;
+import java.io.OutputStream;
 
 import drivers.EMSELO;
 import drivers.EMSPAT100;
@@ -27,6 +31,17 @@ public class TerminalDisplay {
         } else if (myPref.isPAT215()) {
             EMSPAT215.getTerminalDisp().clearText();
             EMSPAT215.getTerminalDisp().displayText(Global.formatSam4sCDT(row1, row2));
+        } else if (MyPreferences.isTeamSable()) {
+            SerialPort mSerialPort;
+            try {
+                mSerialPort = new SerialPort(new File("/dev/ttymxc0"), 9600, 0);
+                OutputStream fs = mSerialPort.getOutputStream();
+                fs.write(Global.emptySpaces(40, 0, false).getBytes());
+                fs.write(Global.formatSam4sCDT(row1, row2).getBytes());
+                mSerialPort.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }

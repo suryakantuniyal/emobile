@@ -2,6 +2,7 @@ package drivers;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -68,7 +69,7 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
     }
 
     @Override
-    public void connect(Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
+    public void connect(Context activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
 
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
@@ -94,7 +95,7 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
         encrypt = new Encrypt(activity);
 
 
-        activity.runOnUiThread(new Runnable() {
+        ((Activity)activity).runOnUiThread(new Runnable() {
             public void run() {
                 zebraHandler = new Handler(new ZebraHandlerCallback());
                 myPrinter = new MobilePrinter(activity, zebraHandler, null);

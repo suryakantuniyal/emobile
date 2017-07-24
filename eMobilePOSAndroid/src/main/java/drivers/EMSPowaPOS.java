@@ -77,7 +77,7 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
                 if (global.getGlobalDlog() != null)
                     global.getGlobalDlog().dismiss();
                 global.promptForMandatoryLogin(activity);
-                SalesTab_FR.startDefault(activity, myPref.getPreferencesValue(MyPreferences.pref_default_transaction));
+                SalesTab_FR.startDefault((Activity) activity, myPref.getPreferencesValue(MyPreferences.pref_default_transaction));
             }
 
             if (initializedResult.equals(PowaPOSEnums.InitializedResult.SUCCESSFUL))
@@ -161,7 +161,7 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
     };
 
     @Override
-    public void connect(Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
+    public void connect(Context activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
         this.edm = edm;

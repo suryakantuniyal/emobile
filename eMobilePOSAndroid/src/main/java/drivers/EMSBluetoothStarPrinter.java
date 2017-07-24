@@ -3,6 +3,7 @@ package drivers;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
@@ -25,6 +26,7 @@ import com.android.support.CreditCardInfo;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.crashlytics.android.Crashlytics;
+import com.starmicronics.stario.PortInfo;
 import com.starmicronics.stario.StarIOPort;
 import com.starmicronics.stario.StarIOPortException;
 import com.starmicronics.stario.StarPrinterStatus;
@@ -62,10 +64,9 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     boolean isNetworkPrinter = false;
 
     @Override
-    public void connect(Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
+    public void connect(Context activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
-
         cardManager = new CreditCardInfo();
         this.isPOSPrinter = isPOSPrinter;
         this.edm = edm;
@@ -151,7 +152,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 if (!isNetworkPrinter && port != null) {
                     status = port.retreiveStatus();
                 }
-            } catch (StarIOPortException e) {
+            } catch (Exception e) {
                 try {
                     StarIOPort.releasePort(port);
                     port = getStarIOPort();
@@ -161,7 +162,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                     port = getStarIOPort();
                     Thread.sleep(1000);
                     status = port.retreiveStatus();
-                } catch (InterruptedException e1) {
+                } catch (Exception e1) {
                     e1.printStackTrace();
                 }
             }
@@ -169,7 +170,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 didConnect = true;
             }
 
-        } catch (StarIOPortException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         if (didConnect) {
@@ -233,7 +234,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                     StarPrinterStatus status = null;
                     try {
                         status = port.retreiveStatus();
-                    } catch (StarIOPortException e) {
+                    } catch (Exception e) {
                         try {
                             StarIOPort.releasePort(port);
                             port = getStarIOPort();
@@ -243,8 +244,8 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                             port = getStarIOPort();
                             Thread.sleep(1000);
                             status = port.retreiveStatus();
-                        } catch (InterruptedException e1) {
-                            e1.printStackTrace();
+                        } catch (Exception e1) {
+                           Crashlytics.logException(e1);
                         }
                     }
                     if (!status.offline) {
@@ -273,11 +274,11 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         protected void onPostExecute(String unused) {
             boolean isDestroyed = false;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                if (activity.isDestroyed()) {
+                if (((Activity)activity).isDestroyed()) {
                     isDestroyed = true;
                 }
             }
-            if (!activity.isFinishing() && !isDestroyed && myProgressDialog.isShowing()) {
+            if (!((Activity)activity).isFinishing() && !isDestroyed && myProgressDialog.isShowing()) {
                 myProgressDialog.dismiss();
             }
 
@@ -807,7 +808,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
             @Override
             protected void onPreExecute() {
-                if (!EMSBluetoothStarPrinter.this.activity.isFinishing())
+                if (!((Activity)EMSBluetoothStarPrinter.this.activity).isFinishing())
                     mProgressDialog.show();
             }
 
@@ -819,7 +820,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
             @Override
             protected void onPostExecute(Boolean result) {
-                if (!EMSBluetoothStarPrinter.this.activity.isFinishing()) {
+                if (!((Activity)EMSBluetoothStarPrinter.this.activity).isFinishing()) {
                     mProgressDialog.dismiss();
                 }
             }

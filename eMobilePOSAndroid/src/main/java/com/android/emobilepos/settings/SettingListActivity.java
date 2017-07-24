@@ -52,6 +52,7 @@ import com.android.emobilepos.country.CountryPicker;
 import com.android.emobilepos.country.CountryPickerListener;
 import com.android.emobilepos.mainmenu.SettingsTab_FR;
 import com.android.emobilepos.models.realms.PaymentMethod;
+import com.android.emobilepos.security.SecurityManager;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.HttpClient;
@@ -59,6 +60,9 @@ import com.android.support.MyPreferences;
 import com.android.support.SynchMethods;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.crashlytics.android.Crashlytics;
+import com.starmicronics.stario.PortInfo;
+import com.starmicronics.stario.StarIOPort;
+import com.starmicronics.stario.StarIOPortException;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -124,7 +128,12 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting_list);
         Bundle extras = this.getIntent().getExtras();
-        settingsType = (SettingsTab_FR.SettingsRoles) extras.get("settings_type");
+        if (extras.containsKey("settings_type")) {
+            settingsType = (SettingsTab_FR.SettingsRoles) extras.get("settings_type");
+        } else {
+            settingsType = SettingsTab_FR.SettingsRoles.GENERAL;
+        }
+
         View recyclerView = findViewById(R.id.setting_list);
         assert recyclerView != null;
         setupRecyclerView((RecyclerView) recyclerView);
@@ -565,10 +574,10 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                 case R.string.config_check_updates:
                     if (Global.isIvuLoto) {
                         new HttpClient().downloadFileAsync(getString(R.string.check_update_ivuurl),
-                                Environment.getExternalStorageDirectory().getAbsolutePath() + "/emobileivupos.apk", this, getActivity());
+                                Environment.getExternalStorageDirectory().getAbsolutePath() + getActivity().getString(R.string.ivupos_apk_name), this, getActivity());
                     } else {
                         new HttpClient().downloadFileAsync(getString(R.string.check_update_emurl),
-                                Environment.getExternalStorageDirectory().getAbsolutePath() + "/emobilepos.apk", this, getActivity());
+                                Environment.getExternalStorageDirectory().getAbsolutePath() + getActivity().getString(R.string.emobile_apk_name), this, getActivity());
                     }
                     break;
                 case R.string.config_backup_data:
@@ -585,8 +594,13 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     }
                     break;
                 case R.string.config_salesassociate_config:
-                    intent = new Intent(getActivity(), SalesAssociateConfigurationActivity.class);
-                    startActivity(intent);
+                    boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.ASSIGN_TABLES_WAITERS);
+                    if (hasPermissions) {
+                        intent = new Intent(getActivity(), SalesAssociateConfigurationActivity.class);
+                        startActivity(intent);
+                    } else {
+                        Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
+                    }
                     break;
             }
             return false;
@@ -902,7 +916,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
 
                     EMSDeviceManager edm = new EMSDeviceManager();
                     Global.mainPrinterManager = edm.getManager();
-                    Global.mainPrinterManager.loadDrivers(getActivity(), Global.STAR, true);
+                    Global.mainPrinterManager.loadDrivers(getActivity(), Global.STAR, EMSDeviceManager.PrinterInterfase.TCP);
 
                 }
             }).create();
@@ -929,7 +943,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
 
                     EMSDeviceManager edm = new EMSDeviceManager();
                     Global.mainPrinterManager = edm.getManager();
-                    Global.mainPrinterManager.loadDrivers(getActivity(), Global.SNBC, false);
+                    Global.mainPrinterManager.loadDrivers(getActivity(), Global.SNBC, EMSDeviceManager.PrinterInterfase.USB);
                     dlog.dismiss();
                 }
             });
@@ -1082,7 +1096,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
 
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.btSwiper = edm.getManager();
-                                Global.btSwiper.loadDrivers(getActivity(), Global.MAGTEK, false);
+                                Global.btSwiper.loadDrivers(getActivity(), Global.MAGTEK, EMSDeviceManager.PrinterInterfase.BLUETOOTH);
 
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("MIURA")) {
                                 myPref.setPrinterType(Global.MIURA);
@@ -1091,7 +1105,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
 
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();
-                                Global.mainPrinterManager.loadDrivers(getActivity(), Global.MIURA, false);
+                                Global.mainPrinterManager.loadDrivers(getActivity(), Global.MIURA, EMSDeviceManager.PrinterInterfase.BLUETOOTH);
 
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("STAR")) {
                                 myPref.setPrinterType(Global.STAR);
@@ -1100,7 +1114,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
 
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();
-                                Global.mainPrinterManager.loadDrivers(getActivity(), Global.STAR, false);
+                                Global.mainPrinterManager.loadDrivers(getActivity(), Global.STAR, EMSDeviceManager.PrinterInterfase.BLUETOOTH);
 
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("SPP-R")) {
                                 myPref.setPrinterType(Global.BIXOLON);
@@ -1108,7 +1122,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                                 myPref.setPrinterName(strDeviceName);
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();
-                                Global.mainPrinterManager.loadDrivers(getActivity(), Global.BIXOLON, false);
+                                Global.mainPrinterManager.loadDrivers(getActivity(), Global.BIXOLON, EMSDeviceManager.PrinterInterfase.BLUETOOTH);
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("P25")) {
                                 myPref.setPrinterType(Global.BAMBOO);
                                 myPref.setPrinterMACAddress(macAddressList.get(pos));
@@ -1116,7 +1130,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
 
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();
-                                Global.mainPrinterManager.loadDrivers(getActivity(), Global.BAMBOO, false);
+                                Global.mainPrinterManager.loadDrivers(getActivity(), Global.BAMBOO, EMSDeviceManager.PrinterInterfase.BLUETOOTH);
 
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("ISMP")
                                     || (val[pos].toUpperCase(Locale.getDefault()).contains("ICM") &&
@@ -1126,7 +1140,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                                 myPref.setSwiperName(strDeviceName);
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.btSwiper = edm.getManager();
-                                Global.btSwiper.loadDrivers(getActivity(), Global.ISMP, false);
+                                Global.btSwiper.loadDrivers(getActivity(), Global.ISMP, EMSDeviceManager.PrinterInterfase.BLUETOOTH);
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("EM220")) {
                                 myPref.setPrinterType(Global.ZEBRA);
                                 myPref.setPrinterMACAddress(macAddressList.get(pos));
@@ -1134,7 +1148,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
 
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();
-                                Global.mainPrinterManager.loadDrivers(getActivity(), Global.ZEBRA, false);
+                                Global.mainPrinterManager.loadDrivers(getActivity(), Global.ZEBRA, EMSDeviceManager.PrinterInterfase.BLUETOOTH);
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("MP")) {
                                 myPref.setPrinterType(Global.ONEIL);
                                 myPref.setPrinterMACAddress(macAddressList.get(pos));
@@ -1142,13 +1156,13 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
 
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();
-                                Global.mainPrinterManager.loadDrivers(getActivity(), Global.ONEIL, false);
+                                Global.mainPrinterManager.loadDrivers(getActivity(), Global.ONEIL, EMSDeviceManager.PrinterInterfase.BLUETOOTH);
                             } else if (val[pos].toUpperCase(Locale.getDefault()).startsWith("KDC")) {
                                 myPref.setSwiperMACAddress(macAddressList.get(pos));
                                 myPref.setSwiperType(Global.KDC425);
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.btSwiper = edm.getManager();
-                                Global.btSwiper.loadDrivers(getActivity(), Global.KDC425, false);
+                                Global.btSwiper.loadDrivers(getActivity(), Global.KDC425, EMSDeviceManager.PrinterInterfase.BLUETOOTH);
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("PP0")) {
                                 myPref.setSwiperType(Global.HANDPOINT);
                                 myPref.setSwiperMACAddress(macAddressList.get(pos));
@@ -1156,7 +1170,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
 
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.btSwiper = edm.getManager();
-                                Global.btSwiper.loadDrivers(getActivity(), Global.HANDPOINT, false);
+                                Global.btSwiper.loadDrivers(getActivity(), Global.HANDPOINT, EMSDeviceManager.PrinterInterfase.BLUETOOTH);
 
                             } else if (val[pos].toUpperCase(Locale.getDefault()).startsWith("WP")) {
                                 myPref.setSwiperType(Global.NOMAD);
@@ -1165,7 +1179,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
 
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.btSwiper = edm.getManager();
-                                Global.btSwiper.loadDrivers(getActivity(), Global.NOMAD, false);
+                                Global.btSwiper.loadDrivers(getActivity(), Global.NOMAD, EMSDeviceManager.PrinterInterfase.BLUETOOTH);
 
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("ICM") &&
                                     getActivity().getPackageName().equalsIgnoreCase(Global.EVOSNAP_PACKAGE_NAME)) {
@@ -1174,7 +1188,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                                 myPref.setSwiperName(strDeviceName);
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.btSwiper = edm.getManager();
-                                Global.btSwiper.loadDrivers(getActivity(), Global.ICMPEVO, false);
+                                Global.btSwiper.loadDrivers(getActivity(), Global.ICMPEVO, EMSDeviceManager.PrinterInterfase.BLUETOOTH);
                                 Global.btSwiper = edm.getManager();
 
                             } else {
@@ -1201,43 +1215,55 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
 
             MyPreferences myPref = new MyPreferences(getActivity());
             EMSDeviceManager edm = new EMSDeviceManager();
+            try {
+                ArrayList<PortInfo> mPortList = StarIOPort.searchPrinter("USB:", getActivity());
+                if(!mPortList.isEmpty()){
+                    myPref.setPrinterType(Global.STAR);
+                    myPref.setPrinterName(mPortList.get(0).getPortName());
+                    myPref.setPrinterMACAddress(mPortList.get(0).getPortName());
+                    Global.mainPrinterManager = edm.getManager();
+                    Global.mainPrinterManager.loadDrivers(getActivity(), Global.STAR, EMSDeviceManager.PrinterInterfase.USB);
+                }
+            } catch (StarIOPortException e) {
+                e.printStackTrace();
+            }
 
             if (myPref.isAsura(true, false)) {
                 myPref.setPrinterType(Global.ASURA);
                 Global.mainPrinterManager = edm.getManager();
-                Global.mainPrinterManager.loadDrivers(getActivity(), Global.ASURA, false);
+                Global.mainPrinterManager.loadDrivers(getActivity(), Global.ASURA, EMSDeviceManager.PrinterInterfase.USB);
 
             } else if (myPref.isPAT100()) {
                 myPref.setPrinterType(Global.PAT100);
                 Global.mainPrinterManager = edm.getManager();
-                Global.mainPrinterManager.loadDrivers(getActivity(), Global.PAT100, false);
+                Global.mainPrinterManager.loadDrivers(getActivity(), Global.PAT100, EMSDeviceManager.PrinterInterfase.USB);
             } else if (myPref.isPAT215()) {
                 edm = new EMSDeviceManager();
                 myPref.setPrinterType(Global.PAT215);
                 Global.embededMSR = edm.getManager();
-                Global.embededMSR.loadDrivers(getActivity(), Global.PAT215, false);
+                Global.embededMSR.loadDrivers(getActivity(), Global.PAT215, EMSDeviceManager.PrinterInterfase.USB);
             } else if (myPref.isEM100()) {
 
             } else if (myPref.isEM70()) {
                 myPref.setPrinterType(Global.EM70);
                 Global.mainPrinterManager = edm.getManager();
-                Global.mainPrinterManager.loadDrivers(getActivity(), Global.EM70, false);
+                Global.mainPrinterManager.loadDrivers(getActivity(), Global.EM70, EMSDeviceManager.PrinterInterfase.USB);
             } else if (myPref.isESY13P1()) {
                 myPref.setPrinterType(Global.ELOPAYPOINT);
                 Global.mainPrinterManager = edm.getManager();
-                Global.mainPrinterManager.loadDrivers(getActivity(), Global.ELOPAYPOINT, false);
+                Global.mainPrinterManager.loadDrivers(getActivity(), Global.ELOPAYPOINT, EMSDeviceManager.PrinterInterfase.USB);
             } else if (myPref.isOT310()) {
                 myPref.setPrinterType(Global.OT310);
                 Global.mainPrinterManager = edm.getManager();
-                Global.mainPrinterManager.loadDrivers(getActivity(), Global.OT310, false);
+                Global.mainPrinterManager.loadDrivers(getActivity(), Global.OT310, EMSDeviceManager.PrinterInterfase.USB);
             } else if (myPref.isMEPOS()) {
                 myPref.setPrinterType(Global.MEPOS);
                 Global.mainPrinterManager = edm.getManager();
-                Global.mainPrinterManager.loadDrivers(getActivity(), Global.MEPOS, false);
+                Global.mainPrinterManager.loadDrivers(getActivity(), Global.MEPOS, EMSDeviceManager.PrinterInterfase.USB);
             } else if (myPref.isPOWA()) {
                 myPref.setPrinterType(Global.POWA);
                 Global.mainPrinterManager = edm.getManager();
-                Global.mainPrinterManager.loadDrivers(getActivity(), Global.POWA, false);
+                Global.mainPrinterManager.loadDrivers(getActivity(), Global.POWA, EMSDeviceManager.PrinterInterfase.USB);
             }
         }
 
@@ -1319,6 +1345,37 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
 
     }
 
+    private static class Redetect extends AsyncTask<Void, Void, String> {
+        ProgressDialog dialog;
+        private Activity activity;
+
+        Redetect(Activity activity) {
+
+            this.activity = activity;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            activity.setRequestedOrientation(Global.getScreenOrientation(activity));
+            dialog = new ProgressDialog(activity);
+            dialog.setIndeterminate(true);
+            dialog.setMessage(activity.getString(R.string.connecting_devices));
+            dialog.show();
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            return DeviceUtils.autoConnect(activity, true);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            Toast.makeText(activity, s, Toast.LENGTH_LONG).show();
+            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+            dialog.dismiss();
+        }
+    }
+
     public class SimpleItemRecyclerViewAdapter
             extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
@@ -1382,37 +1439,6 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
             public String toString() {
                 return super.toString();
             }
-        }
-    }
-
-    private static class Redetect extends AsyncTask<Void, Void, String> {
-        ProgressDialog dialog;
-        private Activity activity;
-
-        Redetect(Activity activity) {
-
-            this.activity = activity;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            activity.setRequestedOrientation(Global.getScreenOrientation(activity));
-            dialog = new ProgressDialog(activity);
-            dialog.setIndeterminate(true);
-            dialog.setMessage(activity.getString(R.string.connecting_devices));
-            dialog.show();
-        }
-
-        @Override
-        protected String doInBackground(Void... params) {
-            return DeviceUtils.autoConnect(activity, true);
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            Toast.makeText(activity, s, Toast.LENGTH_LONG).show();
-            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-            dialog.dismiss();
         }
     }
 }

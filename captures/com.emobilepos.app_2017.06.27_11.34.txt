@@ -1,0 +1,351 @@
+TASK com.emobilepos.app id=3
+  ACTIVITY com.emobilepos.app/com.android.emobilepos.mainmenu.restaurant.DinningTablesActivity a5975c90 pid=1924
+    Local FragmentActivity a52a53f0 State:
+      mCreated=truemResumed=true mStopped=false mReallyStopped=false
+      mLoadersStarted=true
+    FragmentManager misc state:
+      mHost=android.support.v4.app.FragmentActivity$HostCallbacks@a5b6e7d0
+      mContainer=android.support.v4.app.FragmentActivity$HostCallbacks@a5b6e7d0
+      mCurState=5 mStateSaved=false mDestroyed=false
+    View Hierarchy:
+      com.android.internal.policy.impl.PhoneWindow$DecorView{a55ad368 V.E..... ... 0,0-2048,1440}
+        android.widget.LinearLayout{a567bd10 V.E..... ... 0,0-2048,1440}
+          android.view.ViewStub{a559d408 G.E..... ... 0,0-0,0 #1020338}
+          android.widget.FrameLayout{a5b197d8 V.ED.... ... 0,50-2048,1440 #1020002 android:id/content}
+            android.widget.LinearLayout{a554c760 V.E..... ... 0,0-2048,1390}
+              com.viewpagerindicator.TitlePageIndicator{a53cf408 V.ED.... ... 0,0-2048,75 #7f0f00cd app:id/indicator}
+              android.support.v4.view.ViewPager{a567cc18 VFED.... ... 0,75-2048,1390 #7f0f00ce app:id/container}
+                android.widget.RelativeLayout{a5b27520 V.E..... ... 0,0-2048,1315}
+                  android.widget.TextView{a55ab190 V.ED.... ... 0,0-2048,93 #7f0f0263 app:id/dlogTitle}
+                  android.widget.ScrollView{a5a5fd48 VFED.V.. ... 0,93-2048,1315 #7f0f0265 app:id/scrollView3}
+                    android.widget.LinearLayout{a5b06918 V.E..... ... 0,0-2048,1240}
+                      android.widget.LinearLayout{a5b32358 V.E..... ... 214,20-1834,1240}
+                        android.widget.RelativeLayout{a5a65738 V.E..... ... 2,2-1602,1202 #7f0f0266 app:id/dinningTableMap}
+                          android.widget.LinearLayout{a57286f8 V.E...C. ... 200,540-363,804 #7f0f025a app:id/table_map_container}
+                            android.widget.TextView{a5a0d2d8 V.ED.... ... 10,10-135,48 #7f0f025b app:id/tableNumbertextView}
+                            android.widget.RelativeLayout{a564eee0 V.E..... ... 12,48-132,168}
+                              android.widget.ImageView{a56b39a8 V.ED.... ... 0,0-120,120 #7f0f025c app:id/dinningtableimageView3}
+                              android.widget.ImageView{a5a3ffd8 G.ED.... ... 0,0-0,0 #7f0f025d app:id/selectedCheckboximageView}
+                            android.widget.LinearLayout{a56a3f60 V.E..... ... 31,170-113,208}
+                              android.widget.TextView{a56d1340 V.ED.... ... 0,0-80,38 #7f0f025e app:id/gueststextView16}
+                              android.widget.TextView{a56d1800 G.ED.... ... 0,0-0,0 #7f0f025f app:id/timetextView21}
+                            android.widget.TextView{a56d1cc0 G.ED.... ... 0,0-0,0 #7f0f0260 app:id/amounttextView23}
+                            android.widget.CheckBox{a56557d8 GFED..C. ... 0,0-0,0 #7f0f0261 app:id/selectedDinningTablecheckBox}
+                            android.widget.TextView{a55da518 V.ED.... ... 10,208-135,246 #7f0f0262 app:id/clerkNametextView23}
+                          android.widget.LinearLayout{a56d0e68 V.E...C. ... 1220,540-1383,844 #7f0f025a app:id/table_map_container}
+                            android.widget.TextView{a567df60 V.ED.... ... 10,10-135,48 #7f0f025b app:id/tableNumbertextView}
+                            android.widget.RelativeLayout{a53ae878 V.E..... ... 43,48-101,208}
+                              android.widget.ImageView{a55ca250 V.ED.... ... 0,0-58,160 #7f0f025c app:id/dinningtableimageView3}
+                              android.widget.ImageView{a5646070 G.ED.... ... 0,0-0,0 #7f0f025d app:id/selectedCheckboximageView}
+                            android.widget.LinearLayout{a5654f58 V.E..... ... 31,210-113,248}
+                              android.widget.TextView{a56576d8 V.ED.... ... 0,0-80,38 #7f0f025e app:id/gueststextView16}
+                              android.widget.TextView{a5663400 G.ED.... ... 0,0-0,0 #7f0f025f app:id/timetextView21}
+                            android.widget.TextView{a56d8a18 G.ED.... ... 0,0-0,0 #7f0f0260 app:id/amounttextView23}
+                            android.widget.CheckBox{a5729ca8 GFED..C. ... 0,0-0,0 #7f0f0261 app:id/selectedDinningTablecheckBox}
+                            android.widget.TextView{a5b289b0 V.ED.... ... 10,248-135,286 #7f0f0262 app:id/clerkNametextView23}
+                          android.widget.LinearLayout{a5b45028 V.E...C. ... 1220,820-1458,1164 #7f0f025a app:id/table_map_container}
+                            android.widget.TextView{a5b4bed8 V.ED.... ... 47,10-172,48 #7f0f025b app:id/tableNumbertextView}
+                            android.widget.RelativeLayout{a59cf898 V.E..... ... 10,48-210,248}
+                              android.widget.ImageView{a59cfda0 V.ED.... ... 0,0-200,200 #7f0f025c app:id/dinningtableimageView3}
+                              android.widget.ImageView{a5663df8 V.ED.... ... 68,57-132,142 #7f0f025d app:id/selectedCheckboximageView}
+                            android.widget.LinearLayout{a56e78b0 V.E..... ... 69,250-151,288}
+                              android.widget.TextView{a56e7b20 V.ED.... ... 0,0-80,38 #7f0f025e app:id/gueststextView16}
+                              android.widget.TextView{a5680b50 G.ED.... ... 0,0-0,0 #7f0f025f app:id/timetextView21}
+                            android.widget.TextView{a5635d68 G.ED.... ... 0,0-0,0 #7f0f0260 app:id/amounttextView23}
+                            android.widget.CheckBox{a5636348 GFED..C. ... 0,0-0,0 #7f0f0261 app:id/selectedDinningTablecheckBox}
+                            android.widget.TextView{a5b64910 V.ED.... ... 10,288-210,326 #7f0f0262 app:id/clerkNametextView23}
+                          android.widget.LinearLayout{a5a64760 V.E...C. ... 720,840-918,1143 #7f0f025a app:id/table_map_container}
+                            android.widget.TextView{a5a859b8 V.ED.... ... 27,10-152,48 #7f0f025b app:id/tableNumbertextView}
+                            android.widget.RelativeLayout{a59df7f0 V.E..... ... 10,48-170,208}
+                              android.widget.ImageView{a59dfcf8 V.ED.... ... 0,0-160,160 #7f0f025c app:id/dinningtableimageView3}
+                              android.widget.ImageView{a56cdeb0 V.ED.... ... 48,37-112,122 #7f0f025d app:id/selectedCheckboximageView}
+                            android.widget.LinearLayout{a56ce2c0 V.E..... ... 49,210-131,248}
+                              android.widget.TextView{a57018f0 V.ED.... ... 0,0-80,38 #7f0f025e app:id/gueststextView16}
+                              android.widget.TextView{a5701d78 G.ED.... ... 0,0-0,0 #7f0f025f app:id/timetextView21}
+                            android.widget.TextView{a56faa00 G.ED.... ... 0,0-0,0 #7f0f0260 app:id/amounttextView23}
+                            android.widget.CheckBox{a56fb0f0 GFED..C. ... 0,0-0,0 #7f0f0261 app:id/selectedDinningTablecheckBox}
+                            android.widget.TextView{a5b255a0 V.ED.... ... 10,248-170,285 #7f0f0262 app:id/clerkNametextView23}
+                          android.widget.LinearLayout{a55c55e8 V.E...CL ... 220,880-447,1183 #7f0f025a app:id/table_map_container}
+                            android.widget.TextView{a55c66a0 V.ED.... ... 42,10-167,48 #7f0f025b app:id/tableNumbertextView}
+                            android.widget.RelativeLayout{a55c6b50 V.E..... ... 44,48-164,168}
+                              android.widget.ImageView{a5684388 V.ED.... ... 0,0-120,120 #7f0f025c app:id/dinningtableimageView3}
+                              android.widget.ImageView{a56847f8 V.ED.... ... 28,17-92,102 #7f0f025d app:id/selectedCheckboximageView}
+                            android.widget.LinearLayout{a5684c68 V.E..... ... 10,170-199,208}
+                              android.widget.TextView{a5684ff0 V.ED.... ... 0,0-80,38 #7f0f025e app:id/gueststextView16}
+                              android.widget.TextView{a56856e0 V.ED.... ... 82,0-189,38 #7f0f025f app:id/timetextView21}
+                            android.widget.TextView{a5685dd0 V.ED.... ... 35,210-174,248 #7f0f0260 app:id/amounttextView23}
+                            android.widget.CheckBox{a5646c88 GFED..C. ... 0,0-0,0 #7f0f0261 app:id/selectedDinningTablecheckBox}
+                            android.widget.TextView{a5647cf0 V.ED.... ... 10,248-199,285 #7f0f0262 app:id/clerkNametextView23}
+                          android.widget.LinearLayout{a638e1f8 V.E...C. ... 1220,120-1383,383 #7f0f025a app:id/table_map_container}
+                            android.widget.TextView{a638f2d0 V.ED.... ... 10,10-135,48 #7f0f025b app:id/tableNumbertextView}
+                            android.widget.RelativeLayout{a638f790 V.E..... ... 12,48-132,168}
+                              android.widget.ImageView{a638fcd8 V.ED.... ... 0,0-120,120 #7f0f025c app:id/dinningtableimageView3}
+                              android.widget.ImageView{a6390158 G.ED.... ... 0,0-0,0 #7f0f025d app:id/selectedCheckboximageView}
+                            android.widget.LinearLayout{a63905d8 V.E..... ... 31,170-113,208}
+                              android.widget.TextView{a6390980 V.ED.... ... 0,0-80,38 #7f0f025e app:id/gueststextView16}
+                              android.widget.TextView{a6391080 G.ED.... ... 0,0-0,0 #7f0f025f app:id/timetextView21}
+                            android.widget.TextView{a6391780 G.ED.... ... 0,0-0,0 #7f0f0260 app:id/amounttextView23}
+                            android.widget.CheckBox{a55da260 GFED..C. ... 0,0-0,0 #7f0f0261 app:id/selectedDinningTablecheckBox}
+                            android.widget.TextView{a5619bb0 V.ED.... ... 10,208-135,245 #7f0f0262 app:id/clerkNametextView23}
+                          android.widget.LinearLayout{a55c83a0 V.E...C. ... 720,440-958,783 #7f0f025a app:id/table_map_container}
+                            android.widget.TextView{a561f898 V.ED.... ... 47,10-172,48 #7f0f025b app:id/tableNumbertextView}
+                            android.widget.RelativeLayout{a55c9278 V.E..... ... 10,48-210,248}
+                              android.widget.ImageView{a55e8e28 V.ED.... ... 0,0-200,200 #7f0f025c app:id/dinningtableimageView3}
+                              android.widget.ImageView{a56214a8 G.ED.... ... 0,0-0,0 #7f0f025d app:id/selectedCheckboximageView}
+                            android.widget.LinearLayout{a565ed48 V.E..... ... 69,250-151,288}
+                              android.widget.TextView{a5655470 V.ED.... ... 0,0-80,38 #7f0f025e app:id/gueststextView16}
+                              android.widget.TextView{a5657bf0 G.ED.... ... 0,0-0,0 #7f0f025f app:id/timetextView21}
+                            android.widget.TextView{a5681ba0 G.ED.... ... 0,0-0,0 #7f0f0260 app:id/amounttextView23}
+                            android.widget.CheckBox{a5640960 GFED..C. ... 0,0-0,0 #7f0f0261 app:id/selectedDinningTablecheckBox}
+                            android.widget.TextView{a56a0648 V.ED.... ... 10,288-210,325 #7f0f0262 app:id/clerkNametextView23}
+                android.widget.LinearLayout{a5b379c0 V.E..... ... 2048,0-4096,1315}
+                  android.widget.TextView{a5681620 V.ED.... ... 0,0-2048,93 #7f0f0263 app:id/dlogTitle}
+                  android.widget.GridView{a5b24e48 VFED.VCL ... 0,93-2048,1315 #7f0f0264 app:id/tablesGridLayout}
+                    android.widget.LinearLayout{a59e12a8 V.E..... ... 10,10-339,354 #7f0f025a app:id/table_map_container}
+                      android.widget.TextView{a564f558 V.ED.... ... 139,10-172,48 #7f0f025b app:id/tableNumbertextView}
+                      android.widget.RelativeLayout{a564fa98 V.E..... ... 55,48-255,248}
+                        android.widget.ImageView{a564ffe8 V.ED.... ... 0,0-200,200 #7f0f025c app:id/dinningtableimageView3}
+                        android.widget.ImageView{a56fb4c0 G.ED.... ... 0,0-0,0 #7f0f025d app:id/selectedCheckboximageView}
+                      android.widget.LinearLayout{a56fb690 V.E..... ... 114,250-196,288}
+                        android.widget.TextView{a56fb8c0 V.ED.... ... 0,0-80,38 #7f0f025e app:id/gueststextView16}
+                        android.widget.TextView{a56fbb60 G.ED.... ... 0,0-0,0 #7f0f025f app:id/timetextView21}
+                      android.widget.TextView{a5651c88 G.ED.... ... 0,0-0,0 #7f0f0260 app:id/amounttextView23}
+                      android.widget.CheckBox{a5abcd08 GFED..C. ... 0,0-0,0 #7f0f0261 app:id/selectedDinningTablecheckBox}
+                      android.widget.TextView{a55e4628 V.ED.... ... 10,288-301,326 #7f0f0262 app:id/clerkNametextView23}
+                    android.widget.LinearLayout{a56f0700 V.E..... ... 349,10-678,354 #7f0f025a app:id/table_map_container}
+                      android.widget.TextView{a56d34e0 V.ED.... ... 139,10-172,48 #7f0f025b app:id/tableNumbertextView}
+                      android.widget.RelativeLayout{a56d3940 V.E..... ... 55,48-255,248}
+                        android.widget.ImageView{a56d3e88 V.ED.... ... 0,0-200,200 #7f0f025c app:id/dinningtableimageView3}
+                        android.widget.ImageView{a56d4308 G.ED.... ... 0,0-0,0 #7f0f025d app:id/selectedCheckboximageView}
+                      android.widget.LinearLayout{a56d4788 V.E..... ... 114,250-196,288}
+                        android.widget.TextView{a56d4b30 V.ED.... ... 0,0-80,38 #7f0f025e app:id/gueststextView16}
+                        android.widget.TextView{a56d5230 G.ED.... ... 0,0-0,0 #7f0f025f app:id/timetextView21}
+                      android.widget.TextView{a56d5930 G.ED.... ... 0,0-0,0 #7f0f0260 app:id/amounttextView23}
+                      android.widget.CheckBox{a56d6030 GFED..C. ... 0,0-0,0 #7f0f0261 app:id/selectedDinningTablecheckBox}
+                      android.widget.TextView{a56d70a8 V.ED.... ... 10,288-301,326 #7f0f0262 app:id/clerkNametextView23}
+                    android.widget.LinearLayout{a56703b0 V.E..... ... 688,10-1017,354 #7f0f025a app:id/table_map_container}
+                      android.widget.TextView{a5671488 V.ED.... ... 139,10-172,48 #7f0f025b app:id/tableNumbertextView}
+                      android.widget.RelativeLayout{a5671948 V.E..... ... 55,48-255,248}
+                        android.widget.ImageView{a5671e90 V.ED.... ... 0,0-200,200 #7f0f025c app:id/dinningtableimageView3}
+                        android.widget.ImageView{a5672310 V.ED.... ... 68,57-132,142 #7f0f025d app:id/selectedCheckboximageView}
+                      android.widget.LinearLayout{a5672790 V.E..... ... 114,250-196,288}
+                        android.widget.TextView{a5672b38 V.ED.... ... 0,0-80,38 #7f0f025e app:id/gueststextView16}
+                        android.widget.TextView{a5673238 G.ED.... ... 0,0-0,0 #7f0f025f app:id/timetextView21}
+                      android.widget.TextView{a5673938 G.ED.... ... 0,0-0,0 #7f0f0260 app:id/amounttextView23}
+                      android.widget.CheckBox{a5674038 GFED..C. ... 0,0-0,0 #7f0f0261 app:id/selectedDinningTablecheckBox}
+                      android.widget.TextView{a56750b0 V.ED.... ... 10,288-301,326 #7f0f0262 app:id/clerkNametextView23}
+                    android.widget.LinearLayout{a564d1e0 V.E..... ... 1027,10-1356,354 #7f0f025a app:id/table_map_container}
+                      android.widget.TextView{a5a24880 V.ED.... ... 139,10-172,48 #7f0f025b app:id/tableNumbertextView}
+                      android.widget.RelativeLayout{a5a24d40 V.E..... ... 55,48-255,248}
+                        android.widget.ImageView{a5a25288 V.ED.... ... 0,0-200,200 #7f0f025c app:id/dinningtableimageView3}
+                        android.widget.ImageView{a5a25708 V.ED.... ... 68,57-132,142 #7f0f025d app:id/selectedCheckboximageView}
+                      android.widget.LinearLayout{a5a25b88 V.E..... ... 114,250-196,288}
+                        android.widget.TextView{a5a25f30 V.ED.... ... 0,0-80,38 #7f0f025e app:id/gueststextView16}
+                        android.widget.TextView{a5a26630 G.ED.... ... 0,0-0,0 #7f0f025f app:id/timetextView21}
+                      android.widget.TextView{a5a26d30 G.ED.... ... 0,0-0,0 #7f0f0260 app:id/amounttextView23}
+                      android.widget.CheckBox{a5a27430 GFED..C. ... 0,0-0,0 #7f0f0261 app:id/selectedDinningTablecheckBox}
+                      android.widget.TextView{a5a284a8 V.ED.... ... 10,288-301,326 #7f0f0262 app:id/clerkNametextView23}
+                    android.widget.LinearLayout{a55a2400 V.E..... ... 1366,10-1695,394 #7f0f025a app:id/table_map_container}
+                      android.widget.TextView{a55a34d8 V.ED.... ... 139,10-172,48 #7f0f025b app:id/tableNumbertextView}
+                      android.widget.RelativeLayout{a55a3998 V.E..... ... 55,48-255,248}
+                        android.widget.ImageView{a55a3ee0 V.ED.... ... 0,0-200,200 #7f0f025c app:id/dinningtableimageView3}
+                        android.widget.ImageView{a55a4360 V.ED.... ... 68,57-132,142 #7f0f025d app:id/selectedCheckboximageView}
+                      android.widget.LinearLayout{a55a47e0 V.E..... ... 61,250-250,288}
+                        android.widget.TextView{a55a4b88 V.ED.... ... 0,0-80,38 #7f0f025e app:id/gueststextView16}
+                        android.widget.TextView{a55a5288 V.ED.... ... 82,0-189,38 #7f0f025f app:id/timetextView21}
+                      android.widget.TextView{a55a5988 V.ED.... ... 86,290-225,328 #7f0f0260 app:id/amounttextView23}
+                      android.widget.CheckBox{a55a6088 GFED..C. ... 0,0-0,0 #7f0f0261 app:id/selectedDinningTablecheckBox}
+                      android.widget.TextView{a55a7100 V.ED.... ... 10,328-301,366 #7f0f0262 app:id/clerkNametextView23}
+                    android.widget.LinearLayout{a55ecd98 V.E..... ... 1705,10-2034,354 #7f0f025a app:id/table_map_container}
+                      android.widget.TextView{a5619610 V.ED.... ... 139,10-172,48 #7f0f025b app:id/tableNumbertextView}
+                      android.widget.RelativeLayout{a5640738 V.E..... ... 55,48-255,248}
+                        android.widget.ImageView{a5359fd8 V.ED.... ... 0,0-200,200 #7f0f025c app:id/dinningtableimageView3}
+                        android.widget.ImageView{a53a9de0 G.ED.... ... 0,0-0,0 #7f0f025d app:id/selectedCheckboximageView}
+                      android.widget.LinearLayout{a568f978 V.E..... ... 114,250-196,288}
+                        android.widget.TextView{a56b6a08 V.ED.... ... 0,0-80,38 #7f0f025e app:id/gueststextView16}
+                        android.widget.TextView{a56c62e0 G.ED.... ... 0,0-0,0 #7f0f025f app:id/timetextView21}
+                      android.widget.TextView{a571e230 G.ED.... ... 0,0-0,0 #7f0f0260 app:id/amounttextView23}
+                      android.widget.CheckBox{a5a29488 GFED..C. ... 0,0-0,0 #7f0f0261 app:id/selectedDinningTablecheckBox}
+                      android.widget.TextView{a5a4e5a8 V.ED.... ... 10,288-301,326 #7f0f0262 app:id/clerkNametextView23}
+                    android.widget.LinearLayout{a5ab4230 V.E..... ... 10,364-339,708 #7f0f025a app:id/table_map_container}
+                      android.widget.TextView{a564e578 V.ED.... ... 139,10-172,48 #7f0f025b app:id/tableNumbertextView}
+                      android.widget.RelativeLayout{a5b54758 V.E..... ... 55,48-255,248}
+                        android.widget.ImageView{a5659620 V.ED.... ... 0,0-200,200 #7f0f025c app:id/dinningtableimageView3}
+                        android.widget.ImageView{a56b3680 G.ED.... ... 0,0-0,0 #7f0f025d app:id/selectedCheckboximageView}
+                      android.widget.LinearLayout{a55c8ca0 V.E..... ... 114,250-196,288}
+                        android.widget.TextView{a55df728 V.ED.... ... 0,0-80,38 #7f0f025e app:id/gueststextView16}
+                        android.widget.TextView{a564ea28 G.ED.... ... 0,0-0,0 #7f0f025f app:id/timetextView21}
+                      android.widget.TextView{a5661d28 G.ED.... ... 0,0-0,0 #7f0f0260 app:id/amounttextView23}
+                      android.widget.CheckBox{a568eee8 GFED..C. ... 0,0-0,0 #7f0f0261 app:id/selectedDinningTablecheckBox}
+                      android.widget.TextView{a569d168 V.ED.... ... 10,288-301,326 #7f0f0262 app:id/clerkNametextView23}
+
+  ACTIVITY com.emobilepos.app/com.android.emobilepos.mainmenu.MainMenu_FA a5702970 pid=1924
+    Local FragmentActivity a52883d8 State:
+      mCreated=truemResumed=false mStopped=true mReallyStopped=true
+      mLoadersStarted=true
+    Active Fragments in a53bb9b8:
+      #0: SalesTab_FR{a5548a80 #0 id=0x7f0f00cf android:switcher:2131689679:0}
+        mFragmentId=#7f0f00cf mContainerId=#7f0f00cf mTag=android:switcher:2131689679:0
+        mState=2 mIndex=0 mWho=android:fragment:0 mBackStackNesting=0
+        mAdded=true mRemoving=false mFromLayout=false mInLayout=false
+        mHidden=false mDetached=false mMenuVisible=true mHasMenu=false
+        mRetainInstance=false mRetaining=false mUserVisibleHint=true
+        mFragmentManager=FragmentManager{a53bb9b8 in HostCallbacks{a53b93b0}}
+        mHost=android.support.v4.app.FragmentActivity$HostCallbacks@a53b93b0
+        mSavedViewState=android.util.SparseArray@a571b420
+        mContainer=android.support.v4.view.ViewPager{a53cd9b0 VFEDH... .......D 0,0-2048,1166 #7f0f00cf app:id/main_menu_pager}
+        mView=android.widget.LinearLayout{a554c350 V.E..... .......D 0,0-2048,1166}
+        mInnerView=android.widget.LinearLayout{a554c350 V.E..... .......D 0,0-2048,1166}
+        Child FragmentManager{a5549c90 in SalesTab_FR{a5548a80}}:
+          FragmentManager misc state:
+            mHost=android.support.v4.app.FragmentActivity$HostCallbacks@a53b93b0
+            mContainer=android.support.v4.app.Fragment$2@a5352590
+            mParent=SalesTab_FR{a5548a80 #0 id=0x7f0f00cf android:switcher:2131689679:0}
+            mCurState=2 mStateSaved=true mDestroyed=false
+      #1: SyncTab_FR{a5549198 #1 id=0x7f0f00cf android:switcher:2131689679:1}
+        mFragmentId=#7f0f00cf mContainerId=#7f0f00cf mTag=android:switcher:2131689679:1
+        mState=2 mIndex=1 mWho=android:fragment:1 mBackStackNesting=0
+        mAdded=true mRemoving=false mFromLayout=false mInLayout=false
+        mHidden=false mDetached=false mMenuVisible=false mHasMenu=false
+        mRetainInstance=false mRetaining=false mUserVisibleHint=false
+        mFragmentManager=FragmentManager{a53bb9b8 in HostCallbacks{a53b93b0}}
+        mHost=android.support.v4.app.FragmentActivity$HostCallbacks@a53b93b0
+        mSavedViewState=android.util.SparseArray@a530ec60
+        mContainer=android.support.v4.view.ViewPager{a53cd9b0 VFEDH... .......D 0,0-2048,1166 #7f0f00cf app:id/main_menu_pager}
+        mView=android.widget.LinearLayout{a55b8558 V.E..... ......I. 2048,0-4096,1166}
+        mInnerView=android.widget.LinearLayout{a55b8558 V.E..... ......I. 2048,0-4096,1166}
+        Child FragmentManager{a55b8238 in SyncTab_FR{a5549198}}:
+          FragmentManager misc state:
+            mHost=android.support.v4.app.FragmentActivity$HostCallbacks@a53b93b0
+            mContainer=android.support.v4.app.Fragment$2@a55b82c8
+            mParent=SyncTab_FR{a5549198 #1 id=0x7f0f00cf android:switcher:2131689679:1}
+            mCurState=2 mStateSaved=true mDestroyed=false
+    Added Fragments:
+      #0: SalesTab_FR{a5548a80 #0 id=0x7f0f00cf android:switcher:2131689679:0}
+      #1: SyncTab_FR{a5549198 #1 id=0x7f0f00cf android:switcher:2131689679:1}
+    FragmentManager misc state:
+      mHost=android.support.v4.app.FragmentActivity$HostCallbacks@a53b93b0
+      mContainer=android.support.v4.app.FragmentActivity$HostCallbacks@a53b93b0
+      mCurState=2 mStateSaved=true mDestroyed=false
+    View Hierarchy:
+      com.android.internal.policy.impl.PhoneWindow$DecorView{a534b8d0 I.E..... ... 0,0-2048,1440}
+        com.android.internal.widget.ActionBarOverlayLayout{a53023a0 V.E..... ... 0,0-2048,1440 #102033d android:id/action_bar_overlay_layout}
+          android.widget.FrameLayout{a53033e0 V.E..... ... 0,274-2048,1440 #1020002 android:id/content}
+            android.widget.LinearLayout{a53b5ae0 V.E..... ... 0,0-2048,1166}
+              android.support.v4.view.ViewPager{a53cd9b0 VFEDH... ... 0,0-2048,1166 #7f0f00cf app:id/main_menu_pager}
+                android.widget.LinearLayout{a554c350 V.E..... ... 0,0-2048,1166}
+                  android.widget.LinearLayout{a554cb48 V.E..... ... 0,0-2048,143}
+                    android.widget.LinearLayout{a554cf98 V.E...C. ... 20,20-2028,123 #7f0f0403 app:id/salesCustomerBut}
+                      android.widget.ImageButton{a554ebb8 VFED..C. ... 752,2-835,85 #7f0f0404 app:id/clearCustomerBut}
+                      android.widget.TextView{a5578ad8 V.ED.... ... 845,17-1239,70 #7f0f0405 app:id/salesCustomerName}
+                    android.widget.Button{a5579058 GFED..C. ... 0,0-0,0 #7f0f0406 app:id/invoiceButton}
+                  android.widget.EditText{a557a198 VFED..CL F.. 0,143-0,143 #7f0f027b app:id/hiddenField}
+                  android.widget.GridView{a559b7a8 VFED.VC. ... 0,143-2048,1166 #7f0f0407 app:id/salesGridLayout}
+                    android.widget.LinearLayout{a559dab0 V.E..... ... 10,0-679,300 #7f0f02c8 app:id/relativeLayout1}
+                      android.widget.ImageView{a5356e48 V.ED.... ... 246,22-406,182 #7f0f02c9 app:id/salesIcon}
+                      android.widget.TextView{a554a088 V.ED.... ... 2,202-651,282 #7f0f02ca app:id/salesText}
+                    android.widget.LinearLayout{a535ba28 V.E..... ... 689,0-1358,300 #7f0f02c8 app:id/relativeLayout1}
+                      android.widget.ImageView{a53967d0 V.ED.... ... 246,22-406,182 #7f0f02c9 app:id/salesIcon}
+                      android.widget.TextView{a55467f0 V.ED.... ... 2,202-651,282 #7f0f02ca app:id/salesText}
+                    android.widget.LinearLayout{a55aadd0 V.E..... ... 1368,0-2037,300 #7f0f02c8 app:id/relativeLayout1}
+                      android.widget.ImageView{a52b5a30 V.ED.... ... 246,22-406,182 #7f0f02c9 app:id/salesIcon}
+                      android.widget.TextView{a538e8d0 V.ED.... ... 2,202-651,282 #7f0f02ca app:id/salesText}
+                    android.widget.LinearLayout{a52a2788 V.E..... ... 10,310-679,610 #7f0f02c8 app:id/relativeLayout1}
+                      android.widget.ImageView{a539b3b0 V.ED.... ... 246,22-406,182 #7f0f02c9 app:id/salesIcon}
+                      android.widget.TextView{a5388618 V.ED.... ... 2,202-651,282 #7f0f02ca app:id/salesText}
+                    android.widget.LinearLayout{a53e72f8 V.E..... ... 689,310-1358,610 #7f0f02c8 app:id/relativeLayout1}
+                      android.widget.ImageView{a55a8aa8 V.ED.... ... 246,22-406,182 #7f0f02c9 app:id/salesIcon}
+                      android.widget.TextView{a55a8e28 V.ED.... ... 2,202-651,282 #7f0f02ca app:id/salesText}
+                    android.widget.LinearLayout{a55a9b00 V.E..... ... 1368,310-2037,610 #7f0f02c8 app:id/relativeLayout1}
+                      android.widget.ImageView{a5a3f7c0 V.ED.... ... 246,22-406,182 #7f0f02c9 app:id/salesIcon}
+                      android.widget.TextView{a5a3fb40 V.ED.... ... 2,202-651,282 #7f0f02ca app:id/salesText}
+                    android.widget.LinearLayout{a5a404f0 V.E..... ... 10,620-679,920 #7f0f02c8 app:id/relativeLayout1}
+                      android.widget.ImageView{a5a43860 V.ED.... ... 246,22-406,182 #7f0f02c9 app:id/salesIcon}
+                      android.widget.TextView{a5a43be0 V.ED.... ... 2,202-651,282 #7f0f02ca app:id/salesText}
+                    android.widget.LinearLayout{a5a44590 V.E..... ... 689,620-1358,920 #7f0f02c8 app:id/relativeLayout1}
+                      android.widget.ImageView{a5a47900 V.ED.... ... 246,22-406,182 #7f0f02c9 app:id/salesIcon}
+                      android.widget.TextView{a5a47c80 V.ED.... ... 2,202-651,282 #7f0f02ca app:id/salesText}
+                    android.widget.LinearLayout{a5a5a258 V.E..... ... 1368,620-2037,920 #7f0f02c8 app:id/relativeLayout1}
+                      android.widget.ImageView{a5a5d5c8 V.ED.... ... 246,22-406,182 #7f0f02c9 app:id/salesIcon}
+                      android.widget.TextView{a5a5d948 V.ED.... ... 2,202-651,282 #7f0f02ca app:id/salesText}
+                    android.widget.LinearLayout{a5a5e2f8 V.E..... ... 10,930-679,1230 #7f0f02c8 app:id/relativeLayout1}
+                      android.widget.ImageView{a5a61668 V.ED.... ... 246,22-406,182 #7f0f02c9 app:id/salesIcon}
+                      android.widget.TextView{a5a619e8 V.ED.... ... 2,202-651,282 #7f0f02ca app:id/salesText}
+                    android.widget.LinearLayout{a5a71b00 V.E..... ... 689,930-1358,1230 #7f0f02c8 app:id/relativeLayout1}
+                      android.widget.ImageView{a5a74e70 V.ED.... ... 246,22-406,182 #7f0f02c9 app:id/salesIcon}
+                      android.widget.TextView{a5a751f0 V.ED.... ... 2,202-651,282 #7f0f02ca app:id/salesText}
+                    android.widget.LinearLayout{a5aa52b0 V.E..... ... 1368,930-2037,1230 #7f0f02c8 app:id/relativeLayout1}
+                      android.widget.ImageView{a5aa8620 V.ED.... ... 246,22-406,182 #7f0f02c9 app:id/salesIcon}
+                      android.widget.TextView{a5aa89a0 V.ED.... ... 2,202-651,282 #7f0f02ca app:id/salesText}
+                android.widget.LinearLayout{a55b8558 V.E..... ... 2048,0-4096,1166}
+                  android.widget.LinearLayout{a53484a0 V.E..... ... 424,40-1624,180}
+                    android.widget.Button{a5544c70 VFED..C. ... 10,0-590,140 #7f0f046e app:id/syncSendButton}
+                    android.widget.Button{a5548bf8 VFED..C. ... 610,0-1190,140 #7f0f046f app:id/syncReceiveButton}
+                  android.widget.LinearLayout{a536b438 V.E..... ... 424,200-1624,370}
+                    android.widget.TextView{a5549438 V.ED.... ... 523,20-677,85 #7f0f0470 app:id/synchStatus}
+                    android.widget.TextView{a559e7c0 V.ED.... ... 262,85-937,150 #7f0f0471 app:id/synchFeedText}
+                  android.widget.TextView{a55ad710 V.ED.... ... 928,390-1119,455 #7f0f00b1 app:id/textView1}
+                  android.widget.LinearLayout{a538d0d0 V.E..... ... 424,475-1624,537}
+                    android.widget.TextView{a538d9f0 V.ED.... ... 0,0-355,62}
+                    android.widget.TextView{a5399e30 V.ED.... ... 355,0-591,62 #7f0f0472 app:id/syncPaymentsQty}
+                    android.widget.TextView{a5394598 V.ED.... ... 607,0-962,62}
+                    android.widget.TextView{a5394950 V.ED.... ... 962,0-1200,62 #7f0f0473 app:id/syncTemplatesQty}
+                  android.widget.LinearLayout{a53ce808 V.E..... ... 424,537-1624,599}
+                    android.widget.TextView{a5395300 V.ED.... ... 0,0-355,62}
+                    android.widget.TextView{a5395670 V.ED.... ... 355,0-591,62 #7f0f0474 app:id/sync_salesQty}
+                    android.widget.TextView{a53959e0 V.ED.... ... 607,0-962,62}
+                    android.widget.TextView{a5395d50 V.ED.... ... 962,0-1200,62 #7f0f0475 app:id/syncCustomersQty}
+                  android.widget.LinearLayout{a55b08b0 V.E..... ... 424,599-1624,661}
+                    android.widget.TextView{a53960c0 V.ED.... ... 0,0-355,62}
+                    android.widget.TextView{a5396430 V.ED.... ... 355,0-591,62 #7f0f0476 app:id/syncSignaturesQty}
+                    android.widget.TextView{a5396d78 V.ED.... ... 607,0-962,62}
+                    android.widget.TextView{a53970e8 V.ED.... ... 962,0-1200,62 #7f0f0477 app:id/syncVoidsQty}
+                  android.widget.LinearLayout{a538ff20 V.E..... ... 424,661-1624,723}
+                    android.widget.TextView{a5397458 V.ED.... ... 0,0-355,62}
+                    android.widget.TextView{a5399040 V.ED.... ... 355,0-591,62 #7f0f0478 app:id/syncConsignmentsQty}
+                    android.widget.TextView{a5399730 V.ED.... ... 607,0-962,62}
+                    android.widget.TextView{a539a8a0 V.ED.... ... 962,0-1200,62 #7f0f0479 app:id/syncTransfersQty}
+                  android.widget.LinearLayout{a536aef8 V.E..... ... 424,743-1624,1062}
+                    android.widget.TextView{a5544fc0 V.ED.... ... 354,40-845,125 #7f0f047a app:id/synchLastsynch}
+                    android.widget.LinearLayout{a53cfb58 V.E..... ... 40,125-1160,190}
+                      android.widget.TextView{a5545330 V.ED.... ... 0,0-373,65 #7f0f047b app:id/synchSend}
+                      android.widget.TextView{a55456a0 V.ED.... ... 373,0-1120,65 #7f0f047c app:id/synchSendDate}
+                    android.widget.LinearLayout{a53e4080 V.E..... ... 40,190-1160,279}
+                      android.widget.TextView{a5545a10 V.ED.... ... 0,0-373,65 #7f0f047d app:id/synchReceive}
+                      android.widget.TextView{a5546110 V.ED.... ... 373,0-1120,65 #7f0f047e app:id/synchReceiveDate}
+              android.widget.TextView{a536d230 G.ED.... ... 0,0-0,0 #7f0f00d0 app:id/synch_title}
+              android.widget.TextView{a52dff48 G.ED.... ... 0,0-0,0 #7f0f00d1 app:id/label_cc_offline}
+          android.widget.LinearLayout{a5325838 V.E..... ... 0,50-2048,274 #102033e android:id/top_action_bar}
+            com.android.internal.widget.ActionBarContainer{a52df9d0 V.ED.... ... 0,0-2048,224 #102033f android:id/action_bar_container}
+              com.android.internal.widget.ActionBarView{a537cd80 V.E..... ... 0,0-2048,112 #1020340 android:id/action_bar}
+                android.widget.LinearLayout{a532f6e8 VFE...C. ... 17,0-343,112}
+                  com.android.internal.widget.ActionBarView$HomeView{a53b73a0 V.E..... ... 0,0-112,112}
+                    android.widget.ImageView{a53a0d50 G.ED.... ... 0,0-0,0 #1020252 android:id/up}
+                    android.widget.ImageView{a53b3458 V.ED.... ... 8,8-104,104 #102002c android:id/home}
+                  android.widget.LinearLayout{a5331c28 V.E..... ... 112,0-326,112}
+                    android.widget.ImageView{a53c4c88 G.ED.... ... 0,0-0,0 #1020252 android:id/up}
+                    android.widget.LinearLayout{a5346f38 V.E..... ... 0,32-198,80}
+                      android.widget.TextView{a532dba8 V.ED.... ... 0,0-198,48 #102025a android:id/action_bar_title}
+                      android.widget.TextView{a5301d98 G.ED.... ... 0,0-0,0 #102025b android:id/action_bar_subtitle}
+                com.android.internal.view.menu.ActionMenuView{a5aeaff0 V.ED.... ... 1583,0-2048,112}
+                  com.android.internal.view.menu.ActionMenuItemView{a5af6528 VFED..CL ... 0,0-465,112 #7f0f04a5 app:id/logoutMenuItem}
+              com.android.internal.widget.ActionBarContextView{a53d18e0 G.E..... ... 0,0-0,0 #1020341 android:id/action_context_bar}
+              com.android.internal.widget.ScrollingTabContainerView{a53068f0 VFED.... ... 0,112-2048,224}
+                android.widget.LinearLayout{a5304a60 V.ED.... ... 0,0-2048,112}
+                  com.android.internal.widget.ScrollingTabContainerView$TabView{a5327bf8 VFE...C. .S. 7,0-261,112}
+                    android.widget.TextView{a53c8878 V.ED.... .S. 91,39-163,72}
+                  com.android.internal.widget.ScrollingTabContainerView$TabView{a532c050 VFE...C. ... 263,0-517,112}
+                    android.widget.TextView{a53c8c08 V.ED.... ... 96,39-158,72}
+                  com.android.internal.widget.ScrollingTabContainerView$TabView{a5379ab0 VFE...C. ... 519,0-773,112}
+                    android.widget.TextView{a5331f30 V.ED.... ... 76,39-178,72}
+                  com.android.internal.widget.ScrollingTabContainerView$TabView{a534be60 VFE...C. ... 775,0-1029,112}
+                    android.widget.TextView{a53d06d8 V.ED.... ... 80,39-173,72}
+                  com.android.internal.widget.ScrollingTabContainerView$TabView{a53c9088 VFE...C. ... 1031,0-1285,112}
+                    android.widget.TextView{a537da40 V.ED.... ... 69,39-184,72}
+                  com.android.internal.widget.ScrollingTabContainerView$TabView{a52aec08 VFE...C. ... 1287,0-1541,112}
+                    android.widget.TextView{a53cd020 V.ED.... ... 80,39-174,72}
+                  com.android.internal.widget.ScrollingTabContainerView$TabView{a53c42b0 VFE...C. ... 1543,0-1798,112}
+                    android.widget.TextView{a53333a0 V.ED.... ... 89,39-165,72}
+                  com.android.internal.widget.ScrollingTabContainerView$TabView{a53affc0 VFE...C. ... 1800,0-2055,112}
+                    android.widget.TextView{a5325f80 V.ED.... ... 88,39-166,72}
+            android.widget.ImageView{a539f558 V.ED.... ... 2048,0-2048,32}

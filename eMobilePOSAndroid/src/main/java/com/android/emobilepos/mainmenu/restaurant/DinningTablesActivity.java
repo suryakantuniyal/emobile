@@ -2,16 +2,21 @@ package com.android.emobilepos.mainmenu.restaurant;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.text.TextUtils;
 
+import com.android.dao.ClerkDAO;
+import com.android.dao.DinningTableDAO;
 import com.android.database.OrdersHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.orders.Order;
+import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.DinningTable;
 import com.android.emobilepos.models.realms.DinningTableOrder;
 import com.android.emobilepos.ordering.OrderingMain_FA;
@@ -24,11 +29,14 @@ import com.viewpagerindicator.IconPagerAdapter;
 import com.viewpagerindicator.PageIndicator;
 import com.viewpagerindicator.TitlePageIndicator;
 
+import java.util.List;
+
 public class DinningTablesActivity extends BaseFragmentActivityActionBar {
 
-    private SectionsPagerAdapter mSectionsPagerAdapter;
-
     public String associateId;
+    protected List<DinningTable> dinningTables;
+    protected Clerk associate;
+    private SectionsPagerAdapter mSectionsPagerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +45,10 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
         associateId = String.valueOf(extras.getInt("associateId"));
         setContentView(R.layout.activity_dinning_tables);
 //        new SynchOnHoldOrders().execute();
+        dinningTables = DinningTableDAO.getAll("number");//DinningTablesProxy.getDinningTables(getContext());
+        if (!TextUtils.isEmpty(associateId)) {
+            associate = ClerkDAO.getByEmpId(Integer.parseInt(associateId));
+        }
         refresh(0);
     }
 
@@ -63,6 +75,32 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
 
     public void setmSectionsPagerAdapter(SectionsPagerAdapter mSectionsPagerAdapter) {
         this.mSectionsPagerAdapter = mSectionsPagerAdapter;
+    }
+
+    @Override
+    public void onResume() {
+        Global global = (Global) getApplication();
+        if (global.isApplicationSentToBackground())
+            Global.loggedIn = false;
+        global.stopActivityTransitionTimer();
+
+        if (!Global.loggedIn) {
+            if (global.getGlobalDlog() != null)
+                global.getGlobalDlog().dismiss();
+            global.promptForMandatoryLogin(this);
+        }
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Global global = (Global) getApplication();
+        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+        boolean isScreenOn = powerManager.isScreenOn();
+        if (!isScreenOn)
+            Global.loggedIn = false;
+        global.startActivityTransitionTimer();
     }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter implements IconPagerAdapter {
@@ -103,32 +141,6 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
             }
             return null;
         }
-    }
-
-    @Override
-    public void onResume() {
-        Global global = (Global) getApplication();
-        if (global.isApplicationSentToBackground())
-            Global.loggedIn = false;
-        global.stopActivityTransitionTimer();
-
-        if (!Global.loggedIn) {
-            if (global.getGlobalDlog() != null)
-                global.getGlobalDlog().dismiss();
-            global.promptForMandatoryLogin(this);
-        }
-        super.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        Global global = (Global) getApplication();
-        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-        boolean isScreenOn = powerManager.isScreenOn();
-        if (!isScreenOn)
-            Global.loggedIn = false;
-        global.startActivityTransitionTimer();
     }
 //
 //    private class SynchOnHoldOrders extends AsyncTask<Void, String, Void> {
@@ -172,8 +184,19 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
 
     public class OpenOnHoldOrderTask extends AsyncTask<Object, Void, Boolean> {
 
-        private DinningTable table;
         DinningTableOrder tableOrder;
+        ProgressDialog dialog;
+        private DinningTable table;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            Global.lockOrientation(DinningTablesActivity.this);
+            dialog = new ProgressDialog(DinningTablesActivity.this);
+            dialog.setIndeterminate(true);
+            dialog.setMessage(getString(R.string.loading_orders));
+            dialog.show();
+        }
 
         @Override
         protected Boolean doInBackground(Object... params) {
@@ -184,29 +207,11 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
                 if (claimRequired) {
                     return false;
                 } else {
-//                    try {
-//                        OnHoldsManager.synchOrdersOnHoldDetails(DinningTablesActivity.this, tableOrder.getCurrentOrderId());
-//                        OrderProductsHandler orderProdHandler = new OrderProductsHandler(DinningTablesActivity.this);
-//                        Cursor c = orderProdHandler.getOrderProductsOnHold(tableOrder.getCurrentOrderId());
-//                        Global global = (Global) DinningTablesActivity.this.getApplication();
-//                        global.order.setOrderProducts(new ArrayList<OrderProduct>());
-//                        OnHoldActivity.addOrderProducts(DinningTablesActivity.this, c);
-                        Global.isFromOnHold = true;
-
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    } catch (SAXException e) {
-//                        e.printStackTrace();
-//                    }
+                    Global.isFromOnHold = true;
                 }
             } else {
                 OrdersHandler ordersHandler = new OrdersHandler(DinningTablesActivity.this);
                 if (ordersHandler.isOrderOffline(tableOrder.getCurrentOrderId())) {
-//                    OrderProductsHandler orderProdHandler = new OrderProductsHandler(DinningTablesActivity.this);
-//                    Cursor c = orderProdHandler.getOrderProductsOnHold(tableOrder.getCurrentOrderId());
-//                    Global global = (Global) DinningTablesActivity.this.getApplication();
-//                    global.order.setOrderProducts(new ArrayList<OrderProduct>());
-//                    OnHoldActivity.addOrderProducts(DinningTablesActivity.this, c);
                     Global.isFromOnHold = true;
                 } else {
                     return false;
@@ -229,6 +234,8 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
             } else {
                 Global.showPrompt(DinningTablesActivity.this, R.string.dlog_title_claimed_hold, getString(R.string.dlog_msg_cant_open_claimed_hold));
             }
+            Global.dismissDialog(DinningTablesActivity.this, dialog);
+            Global.releaseOrientation(DinningTablesActivity.this);
         }
 
         private void openOrderingMain() {

@@ -46,7 +46,7 @@ public class EMSmePOS extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     private static boolean connected = false;
 
     @Override
-    public void connect(final Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
+    public void connect(final Context activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
         this.activity = activity;
         this.edm = edm;
         myPref = new MyPreferences(activity);

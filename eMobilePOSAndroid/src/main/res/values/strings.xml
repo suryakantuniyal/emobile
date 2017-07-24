@@ -147,7 +147,7 @@
 
 
     <string name="add_gratuity">Add Gratuity?</string>
-    <string name="total_plus_tip">Total + Tip:</string>
+    <string name="total_plus_tip">Subtotal (%1$s) + Tip (%2$s):</string>
     <string name="confirmation_header">Confirm Amount</string>
     <string name="confirmation_total">Total</string>
     <string name="confirmation_card_number">Card #:</string>
@@ -1327,11 +1327,15 @@
     <string name="to">To:</string>
     <string name="endShiftReport">** End of shift report **</string>
     <string name="dlog_title_enter_clerk_manager_password">Enter Clerk/Manager Password</string>
+    <string name="processing_preview">Processing receipt preview.</string>
+
     <string name="login_form">Login Form</string>
     <string name="account_number">Account Number</string>
     <string name="login_instructions">Login with your registered eMobilePOS account number and password.</string>
     <string name="login_clerk_instructions">Login with your Clerk password.</string>
     <string name="login_system_instructions">Login with your System password.</string>
+    <string name="ivupos_apk_name" translatable="false">/emobileivupos.apk</string>
+    <string name="emobile_apk_name" translatable="false">/emobilepos.apk</string>
     <string name="clockReceipt">Clock IN/OUT</string>
     <string name="hours">Hours</string>
     <string name="total_hours_worked">Total Hours</string>

@@ -16,18 +16,38 @@ import java.util.Date;
 import java.util.Locale;
 
 public class GenerateNewID {
+    private static String delims = "[\\-]";
     private MyPreferences myPref;
     private Context activity;
-
-    public enum IdType {
-        ORDER_ID, PAYMENT_ID, CONSIGNMENT_ID, INVENTORY_TRANSFER_ID
-    }
-
-    private static String delims = "[\\-]";
 
     public GenerateNewID(Context activity) {
         this.activity = activity;
         myPref = new MyPreferences(activity);
+    }
+
+    public static String getQBOrderId(String orderId) {
+        String qbOrderId = orderId.replace("-", "");
+        qbOrderId = qbOrderId.substring(0, qbOrderId.length() - 4) + qbOrderId.substring(qbOrderId.length() - 2);
+        return qbOrderId;
+    }
+
+    public static boolean isValidLastId(String id, IdType idType) {
+        switch (idType) {
+            case ORDER_ID: {
+                String lastOrderID = AssignEmployeeDAO.getAssignEmployee(false).getMSLastOrderID();
+                EmobilePosId newId = new EmobilePosId(id);
+                EmobilePosId lastId = new EmobilePosId(lastOrderID);
+                if (Integer.parseInt(newId.getYear()) > Integer.parseInt(lastId.getYear())) {
+                    return true;
+                } else if (Integer.parseInt(newId.getYear()) == Integer.parseInt(lastId.getYear())
+                        && Integer.parseInt(newId.getSequence()) > Integer.parseInt(lastId.getSequence())) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+        return false;
     }
 
     public String getNextID(String currentId) {
@@ -35,7 +55,7 @@ public class GenerateNewID {
         int seq = Integer.parseInt(tokens[1]);
         seq++;
 
-        return tokens[0] + "-" + String.format("%05d", seq) + "-" + tokens[2];
+        return tokens[0] + "-" + String.format(Locale.getDefault(), "%05d", seq) + "-" + tokens[2];
     }
 
     public String getNextID(IdType idType) {
@@ -80,28 +100,7 @@ public class GenerateNewID {
         return sb.toString();
     }
 
-    public static String getQBOrderId(String orderId) {
-        String qbOrderId = orderId.replace("-", "");
-        qbOrderId = qbOrderId.substring(0, qbOrderId.length() - 4) + qbOrderId.substring(qbOrderId.length() - 2);
-        return qbOrderId;
-    }
-
-    public static boolean isValidLastId(String id, IdType idType) {
-        switch (idType) {
-            case ORDER_ID: {
-                String lastOrderID = AssignEmployeeDAO.getAssignEmployee(false).getMSLastOrderID();
-                EmobilePosId newId = new EmobilePosId(id);
-                EmobilePosId lastId = new EmobilePosId(lastOrderID);
-                if (Integer.parseInt(newId.getYear()) > Integer.parseInt(lastId.getYear())) {
-                    return true;
-                } else if (Integer.parseInt(newId.getYear()) == Integer.parseInt(lastId.getYear())
-                        && Integer.parseInt(newId.getSequence()) > Integer.parseInt(lastId.getSequence())) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        }
-        return false;
+    public enum IdType {
+        ORDER_ID, PAYMENT_ID, CONSIGNMENT_ID, INVENTORY_TRANSFER_ID
     }
 }

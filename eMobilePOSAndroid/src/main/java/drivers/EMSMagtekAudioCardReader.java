@@ -40,7 +40,7 @@ import main.EMSDeviceManager;
 public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
     public static final String CONFIG_FILE = "MTSCRADevConfig.cfg";
     private Handler handler;// = new Handler();
-    private Activity activity;
+    private Context activity;
     private AudioManager mAudioMgr;
     private CreditCardInfo cardManager;
     private Encrypt encrypt;
@@ -311,7 +311,7 @@ public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDevi
     };
 
     @Override
-    public void connect(Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
+    public void connect(Context activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
         this.edm = edm;
         this.activity = activity;
         thisInstance = this;
@@ -331,7 +331,7 @@ public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDevi
         boolean didConnect = false;
         this.activity = _activity;
 
-        activity.runOnUiThread(new Runnable() {
+        ((Activity)activity).runOnUiThread(new Runnable() {
             public void run() {
                 mMTSCRA = new MagTekSCRA(new Handler(new SCRAHandlerCallback()));
 
