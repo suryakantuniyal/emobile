@@ -26,8 +26,8 @@ import com.android.support.ConsignmentTransaction;
 import com.android.support.DateUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.crashlytics.android.Crashlytics;
 import com.thefactoryhka.android.controls.PrinterException;
-import com.thefactoryhka.android.pa.ReportData;
 import com.thefactoryhka.android.pa.S1PrinterData;
 import com.thefactoryhka.android.pa.TfhkaAndroid;
 
@@ -61,20 +61,38 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
         this.country = country;
     }
 
-    public void connectTFHKA(final Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
+    public void connect(final Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
         this.activity = activity;
         this.edm = edm;
         if (printerTFHKA == null) {
-            printerTFHKA = new TfhkaAndroid();
+            printerTFHKA = getInstanceOfTfhka(); //new TfhkaAndroid();
         }
         myPref = new MyPreferences(activity);
         boolean connect = connectTFHKA();
         if (connect) {
-            printerTFHKA.setSendCmdRetryAttempts(5);
-            printerTFHKA.setSendCmdRetryInterval(1000);
+            setSendCommandRetry(printerTFHKA);
+//            printerTFHKA.setSendCmdRetryAttempts(5);
+//            printerTFHKA.setSendCmdRetryInterval(1000);
             edm.driverDidConnectToDevice(this, true);
         } else {
             edm.driverDidNotConnectToDevice(this, msg, true);
+        }
+    }
+
+    private Object getInstanceOfTfhka() {
+        if (country == BixolonCountry.PANAMA)
+            return new TfhkaAndroid();
+        else
+            return new com.thefactoryhka.android.rd.TfhkaAndroid();
+    }
+
+    private void setSendCommandRetry(Object printer) {
+        if (printer instanceof TfhkaAndroid) {
+            ((TfhkaAndroid) printer).setSendCmdRetryAttempts(5);
+            ((TfhkaAndroid) printer).setSendCmdRetryInterval(1000);
+        } else {
+            ((com.thefactoryhka.android.rd.TfhkaAndroid) printer).setSendCmdRetryAttempts(5);
+            ((com.thefactoryhka.android.rd.TfhkaAndroid) printer).setSendCmdRetryInterval(1000);
         }
     }
 
@@ -83,13 +101,14 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
         this.activity = activity;
         this.edm = edm;
         if (printerTFHKA == null) {
-            printerTFHKA = new TfhkaAndroid();
+            printerTFHKA = getInstanceOfTfhka();//new TfhkaAndroid();
         }
         myPref = new MyPreferences(activity);
         boolean connect = connectTFHKA();
         if (connect) {
-            printerTFHKA.setSendCmdRetryAttempts(5);
-            printerTFHKA.setSendCmdRetryInterval(1000);
+            setSendCommandRetry(printerTFHKA);
+//            printerTFHKA.setSendCmdRetryAttempts(5);
+//            printerTFHKA.setSendCmdRetryInterval(1000);
             edm.driverDidConnectToDevice(this, false);
         } else {
             edm.driverDidNotConnectToDevice(this, msg, false);
@@ -98,11 +117,34 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
     }
 
     private boolean connectTFHKA() {
-        return printerTFHKA.estado || printerTFHKA.OpenBTPrinter(myPref.getPrinterMACAddress());
+        if (printerTFHKA instanceof TfhkaAndroid) {
+            return ((TfhkaAndroid) printerTFHKA).estado || ((TfhkaAndroid) printerTFHKA).OpenBTPrinter(myPref.getPrinterMACAddress());
+        } else {
+            return ((com.thefactoryhka.android.rd.TfhkaAndroid) printerTFHKA).estado
+                    || ((com.thefactoryhka.android.rd.TfhkaAndroid) printerTFHKA).OpenBTPrinter(myPref.getPrinterMACAddress());
+        }
+
     }
 
-    public TfhkaAndroid getPrinterTFHKA() {
-        return printerTFHKA;
+//    public Object getPrinterTFHKA() {
+//        return printerTFHKA;
+//    }
+
+    public Date getCurrentPrinterDateTime() {
+        if (printerTFHKA instanceof TfhkaAndroid) {
+            try {
+                return ((TfhkaAndroid) printerTFHKA).getS1PrinterData().getCurrentPrinterDateTime();
+            } catch (PrinterException e) {
+                Crashlytics.logException(e);
+            }
+        } else {
+            try {
+                return ((com.thefactoryhka.android.rd.TfhkaAndroid) printerTFHKA).getS1PrinterData().getCurrentPrinterDate();
+            } catch (PrinterException e) {
+                Crashlytics.logException(e);
+            }
+        }
+        return null;
     }
 
     @Override
@@ -110,15 +152,16 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
         OrdersHandler ordersHandler = new OrdersHandler(activity);
         Order order = ordersHandler.getOrder(ordID);
         Bixolon bixolon = BixolonDAO.getBixolon();
-        boolean cmd = printOrderId(order);
+        Global.OrderType type = Global.OrderType.getByCode(Integer.parseInt(order.ord_type));
+        boolean cmd = openDocument(type);
+        cmd = printOrderId(order);
         if (cmd) {
             cmd = printRUC(bixolon.getRuc());
             if (cmd) {
                 cmd = printMerchantName(bixolon.getMerchantName());
                 if (cmd) {
-                    Global.OrderType type = Global.OrderType.getByCode(Integer.parseInt(order.ord_type));
                     String typeDetails = getOrderTypeDetails(fromOnHold, order, LINE_WIDTH, type).replace(" ", "");
-                    cmd = printerTFHKA.SendCmd(String.format("%s%s", getCommentsChar(saleTypes), typeDetails));
+                    cmd = SendCmd(String.format("%s%s", getCommentsChar(saleTypes), typeDetails));
                     if (cmd) {
                         List<OrderProduct> orderProducts = order.getOrderProducts();
                         for (OrderProduct product : orderProducts) {
@@ -136,6 +179,9 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
                             cmd = printSubTotal();
                             if (cmd) {
                                 cmd = printTotal(order);
+                                if (cmd) {
+                                    cmd = closeDocument();
+                                }
                             }
                         }
                     }
@@ -143,22 +189,65 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
             }
         }
 
-        try {
-            ReportData xReport = printerTFHKA.getXReport();
-            S1PrinterData printerData = printerTFHKA.getS1PrinterData();
-            String machineNumber = printerData.getRegisteredMachineNumber();
-            int lastInvoice = cmd ? xReport.getNumberOfLastInvoice() : 0;
-            order.setBixolonTransactionId(String.format(Locale.getDefault(), "%s-%08d", machineNumber, lastInvoice));
-            ordersHandler.updateBixolonTransactionId(order);
-        } catch (PrinterException e) {
-            e.printStackTrace();
-        }
+//              ReportData xReport = getXReport();
+//            S1PrinterData printerData = printerTFHKA.getS1PrinterData();
+        String machineNumber = getRegisteredMachineNumber();
+        int lastInvoice = cmd ? getNumberOfLastInvoice() : 0;
+        order.setBixolonTransactionId(String.format(Locale.getDefault(), "%s-%08d", machineNumber, lastInvoice));
+        ordersHandler.updateBixolonTransactionId(order);
         if (!cmd) {
             saveFailedTransaction(order);
         } else {
             BixolonDAO.removeFailedOrder(order.ord_id);
         }
         return cmd;
+    }
+
+    private String getRegisteredMachineNumber() {
+        if (printerTFHKA instanceof TfhkaAndroid) {
+            try {
+                return ((TfhkaAndroid) printerTFHKA).getS1PrinterData().getRegisteredMachineNumber();
+            } catch (PrinterException e) {
+                Crashlytics.logException(e);
+            }
+        } else {
+            try {
+                return ((com.thefactoryhka.android.rd.TfhkaAndroid) printerTFHKA).getS1PrinterData().getRegisteredMachineNumber();
+            } catch (PrinterException e) {
+                Crashlytics.logException(e);
+            }
+        }
+        return "";
+    }
+
+    private int getNumberOfLastInvoice() {
+        if (printerTFHKA instanceof TfhkaAndroid) {
+            try {
+                return ((TfhkaAndroid) printerTFHKA).getXReport().getNumberOfLastInvoice();
+            } catch (PrinterException e) {
+                Crashlytics.logException(e);
+            }
+        } else {
+//            return ((com.thefactoryhka.android.rd.TfhkaAndroid)printerTFHKA).getS1PrinterData().getNumberOfLastInvoice();
+        }
+        return 0;
+    }
+
+    private boolean closeDocument() {
+        return SendCmd("199");
+    }
+
+    private boolean openDocument(Global.OrderType orderType) {
+        switch (country) {
+            case DOMINICAN_REPUBLIC: {
+                if (orderType == Global.OrderType.CONSIGNMENT_RETURN) {
+                    return SendCmd("/2");
+                } else {
+                    return SendCmd("/0");
+                }
+            }
+        }
+        return true;
     }
 
     private String getCommentsChar(Global.OrderType saleTypes) {
@@ -363,39 +452,39 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
     public boolean sendDateTimeCommand(Date date) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
-        boolean cmd = printerTFHKA.SendCmd("PJ3201"); //set print for retail mode
-        cmd = cmd && printerTFHKA.SendCmd("PG" + DateUtils.getDateAsString(new Date(), "ddMMyy"));
-        cmd = cmd && printerTFHKA.SendCmd("PF" + DateUtils.getDateAsString(new Date(), "HH:mm:ss"));
+        boolean cmd = SendCmd("PJ3201"); //set print for retail mode
+        cmd = cmd && SendCmd("PG" + DateUtils.getDateAsString(new Date(), "ddMMyy"));
+        cmd = cmd && SendCmd("PF" + DateUtils.getDateAsString(new Date(), "HH:mm:ss"));
         return cmd;
     }
 
     public boolean sendHeaders(String[] headers) {
-        printerTFHKA.SendCmd("I0Z0");
+        SendCmd("I0Z0");
         boolean cmd = true;
         for (int i = 0; i < HEADER_LENGTH; i++) {
             if (!cmd) {
                 return false;
             }
             if (i < headers.length) {
-                cmd = printerTFHKA.SendCmd("PH0" + (i + 1) + headers[i]);
+                cmd = SendCmd("PH0" + (i + 1) + headers[i]);
             } else {
-                cmd = printerTFHKA.SendCmd("PH0" + (i + 1) + "");
+                cmd = SendCmd("PH0" + (i + 1) + "");
             }
         }
         return cmd;
     }
 
     public boolean sendFooters(String[] footers) {
-        printerTFHKA.SendCmd("I0Z0");
+        SendCmd("I0Z0");
         boolean cmd = true;
         for (int i = 0; i < HEADER_LENGTH; i++) {
             if (!cmd) {
                 return false;
             }
             if (i < footers.length) {
-                cmd = printerTFHKA.SendCmd("PH9" + (i + 1) + footers[i]);
+                cmd = SendCmd("PH9" + (i + 1) + footers[i]);
             } else {
-                cmd = printerTFHKA.SendCmd("PH9" + (i + 1) + "");
+                cmd = SendCmd("PH9" + (i + 1) + "");
             }
         }
         return cmd;
@@ -423,9 +512,15 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
                 case 2:
                     BixolonDAO.addTax(taxes.get(i).getTaxId(), taxes.get(i).getTaxCodeId(), "#");
                     break;
+                case 3:
+                    BixolonDAO.addTax(taxes.get(i).getTaxId(), taxes.get(i).getTaxCodeId(), "$");
+                    break;
+                case 4:
+                    BixolonDAO.addTax(taxes.get(i).getTaxId(), taxes.get(i).getTaxCodeId(), "%");
+                    break;
             }
         }
-        boolean cmd = printerTFHKA.SendCmd("I0Z0");
+        boolean cmd = SendCmd("I0Z0");
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
@@ -433,9 +528,9 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
         }
         taxCmd = StringUtils.deleteAny(taxCmd, ".");
         if (cmd) {
-            cmd = printerTFHKA.SendCmd(taxCmd);
+            cmd = SendCmd(taxCmd);
             if (!cmd) {//retries if fails
-                cmd = printerTFHKA.SendCmd(taxCmd);
+                cmd = SendCmd(taxCmd);
             }
         } else {
             return false;
@@ -447,7 +542,7 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            cmd = printerTFHKA.SendCmd("Pt");
+            cmd = SendCmd("Pt");
         }
         return cmd;
     }
@@ -458,7 +553,7 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
         BixolonDAO.clearPaymentMethods();
         for (PaymentMethod paymentMethod : paymentMethods) {
             BixolonDAO.addPaymentMethod(i, paymentMethod);
-            cmd = printerTFHKA.SendCmd("PE" + String.format(Locale.getDefault(), "%02d", i) + paymentMethod.getPaymethod_name());
+            cmd = SendCmd("PE" + String.format(Locale.getDefault(), "%02d", i) + paymentMethod.getPaymethod_name());
             i++;
             if (!cmd) {
                 break;
@@ -468,49 +563,92 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
     }
 
     public boolean printSetupInfo() {
-        return printerTFHKA.SendCmd("D");
+        return SendCmd("D");
     }
 
     private boolean printRUC(String ruc) {
         if (TextUtils.isEmpty(ruc)) {
             return true;
-        } else {
-            return printerTFHKA.SendCmd(String.format("jR%s", ruc));
+        }
+        switch (country) {
+            case PANAMA: {
+                return SendCmd(String.format("jR%s", ruc));
+            }
+            case DOMINICAN_REPUBLIC: {
+                return SendCmd(String.format("iR0%s", ruc));
+            }
+            default:
+                return true;
+        }
+    }
+
+    private boolean sendNFC(String nfc) {
+        if (TextUtils.isEmpty(nfc)) {
+            return true;
+        }
+        switch (country) {
+            case DOMINICAN_REPUBLIC: {
+                return SendCmd(String.format("F%18s", nfc));
+            }
+            default:
+                return true;
         }
     }
 
     private boolean printMerchantName(String merchantName) {
         if (TextUtils.isEmpty(merchantName)) {
             return true;
-        } else {
-            return printerTFHKA.SendCmd(String.format("jS%s", merchantName));
+        }
+        switch (country) {
+            case PANAMA: {
+                return SendCmd(String.format("jS%s", merchantName));
+            }
+            case DOMINICAN_REPUBLIC: {
+                return SendCmd(String.format("iS0%s", merchantName));
+            }
+            default:
+                return true;
         }
     }
 
     private boolean printItemComments(String comments) {
         if (TextUtils.isEmpty(comments)) {
             return true;
-        } else {
-            return printerTFHKA.SendCmd(String.format("B%s", comments));
+        }
+        switch (country) {
+            case PANAMA: {
+                return SendCmd(String.format("B%s", comments));
+            }
+            default:
+                return true;
         }
     }
 
     private boolean printCustomerInfo(String data) {
-        return printerTFHKA.SendCmd(String.format("j2%s", data));
+        switch (country) {
+            case PANAMA: {
+                return SendCmd(String.format("j2%s", data));
+            }
+            case DOMINICAN_REPUBLIC: {
+                return SendCmd(String.format("i00%s", data));
+            }
+            default:
+                return true;
+        }
     }
 
     private boolean printSubTotal() {
-        return printerTFHKA.SendCmd("3");
+        return SendCmd("3");
     }
 
     private boolean printSubTotalDiscount(Order order) {
         String command;
         if (order.ord_discount_id.equalsIgnoreCase("")) {
-            command = String.format("p-%04d", order.ord_globalDiscount);
+            command = String.format(Locale.getDefault(), "p-%04d", order.ord_globalDiscount);
         } else {
-            command = String.format("q-%04d", order.ord_discount);
+            command = String.format(Locale.getDefault(), "q-%04d", order.ord_discount);
         }
-        return printerTFHKA.SendCmd(command);
+        return SendCmd(command);
     }
 
     private boolean printItem(OrderProduct product, boolean isCredit) {
@@ -529,7 +667,7 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
                     String.format("%0" + (8 - Global.getBigDecimalNum(product.getOrdprod_qty(), 3).toString().replace(".", "").length()) + "d%s", 0, Global.getBigDecimalNum(product.getOrdprod_qty(), 3).toString().replace(".", "")),
                     product.getOrdprod_name());
         }
-        return printerTFHKA.SendCmd(cmnd);
+        return SendCmd(cmnd);
     }
 
     private boolean printTotal(Order order) {
@@ -537,28 +675,82 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
         List<Payment> orderPayments = paymentsHandler.getOrderPayments(order.ord_id);
         String command = null;
         if (Global.OrderType.getByCode(Integer.parseInt(order.ord_type)) == Global.OrderType.RETURN) {
-            int paymentId = BixolonDAO.getPaymentmetodId(orderPayments.get(0).getPaymentMethod());
+            int paymentId = BixolonDAO.getPaymentMethodId(orderPayments.get(0).getPaymentMethod());
             command = String.format(Locale.getDefault(), "1%02d", paymentId);
         } else {
             if (orderPayments.size() == 1) {
-                int paymentId = BixolonDAO.getPaymentmetodId(orderPayments.get(0).getPaymentMethod());
+                int paymentId = BixolonDAO.getPaymentMethodId(orderPayments.get(0).getPaymentMethod());
                 command = String.format(Locale.getDefault(), "1%02d", paymentId);
             } else {
                 for (Payment payment : orderPayments) {
-                    int paymentId = BixolonDAO.getPaymentmetodId(payment.getPaymentMethod());
+                    int paymentId = BixolonDAO.getPaymentMethodId(payment.getPaymentMethod());
                     command = String.format(Locale.getDefault(), "2%012d", payment.getPay_amount());
                 }
             }
         }
-        return printerTFHKA.SendCmd(command);
+        return SendCmd(command);
     }
 
     private boolean voidLastTransaction() {
-        return printerTFHKA.SendCmd("7");
+        return SendCmd("7");
     }
 
     private boolean printOrderId(Order order) {
-        return printerTFHKA.SendCmd("jF" + String.format("%0" + (22 - order.ord_id.length()) + "d%s", 0, order.ord_id));
+        return SendCmd("jF" + String.format("%0" + (22 - order.ord_id.length()) + "d%s", 0, order.ord_id));
+    }
+
+    public void printZReport() throws PrinterException {
+        if (printerTFHKA instanceof TfhkaAndroid) {
+            ((TfhkaAndroid) printerTFHKA).printZReport();
+        } else {
+            ((com.thefactoryhka.android.rd.TfhkaAndroid) printerTFHKA).printZReport();
+        }
+    }
+
+    public void printXReport() throws PrinterException {
+        if (printerTFHKA instanceof TfhkaAndroid) {
+            ((TfhkaAndroid) printerTFHKA).printXReport();
+        } else {
+            ((com.thefactoryhka.android.rd.TfhkaAndroid) printerTFHKA).printXReport();
+        }
+    }
+
+    public drivers.bixolon.S1PrinterData getS1PrinterData() throws PrinterException {
+        drivers.bixolon.S1PrinterData printerData = new drivers.bixolon.S1PrinterData();
+        if (printerTFHKA instanceof TfhkaAndroid) {
+            S1PrinterData data = ((TfhkaAndroid) printerTFHKA).getS1PrinterData();
+            printerData.setAuditReportsCounter(data.getAuditReportsCounter());
+            printerData.setCashierNumber(data.getCashierNumber());
+            printerData.setCurrentPrinterDateTime(data.getCurrentPrinterDateTime());
+            printerData.setDailyClosureCounter(data.getDailyClosureCounter());
+            printerData.setDV(data.getDV());
+            printerData.setLastCNNumber(data.getLastCNNumber());
+            printerData.setLastInvoiceNumber(data.getLastInvoiceNumber());
+            printerData.setNumberNonFiscalDocuments(data.getNumberNonFiscalDocuments());
+            printerData.setQuantityNonFiscalDocuments(data.getQuantityNonFiscalDocuments());
+            printerData.setQuantityOfCNToday(data.getQuantityOfCNsToday());
+            printerData.setQuantityOfDebitNoteToday(data.getQuantityOfNDsToday());
+            printerData.setRegisteredMachineNumber(data.getRegisteredMachineNumber());
+            printerData.setRUC(data.getRUC());
+            printerData.setTotalDailySales(data.getTotalDailySales());
+        } else {
+            com.thefactoryhka.android.rd.S1PrinterData data = ((com.thefactoryhka.android.rd.TfhkaAndroid) printerTFHKA).getS1PrinterData();
+            printerData.setAuditReportsCounter(data.getFiscalReportsCounter());
+            printerData.setCashierNumber(data.getCashierNumber());
+            printerData.setCurrentPrinterDateTime(data.getCurrentPrinterDate());
+            printerData.setDailyClosureCounter(data.getDailyClosureCounter());
+//            printerData.setDV(data.getDV());
+//            printerData.setLastCNNumber(data.getNumLastCNNumber());
+//            printerData.setLastInvoiceNumber(data.getLastInvoiceNumber());
+            printerData.setNumberNonFiscalDocuments(data.getNumberOfLastNonFiscalDocument());
+            printerData.setQuantityNonFiscalDocuments(data.getQuantityNonFiscalDocuments());
+            printerData.setQuantityOfCNToday(data.getQuantityTransactionToday());
+//            printerData.setQuantityOfDebitNoteToday(data.getQuantityOfNDsToday());
+            printerData.setRegisteredMachineNumber(data.getRegisteredMachineNumber());
+            printerData.setRUC(data.getRNC());
+//            printerData.setTotalDailySales(data.getSaTotalDailySales());
+        }
+        return printerData;
     }
 
     public enum BixolonCountry {

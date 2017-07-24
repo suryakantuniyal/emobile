@@ -254,7 +254,7 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
         }
     }
 
-    private class LoadBixolonInfoTask extends AsyncTask<Object, Object, S1PrinterData> {
+    private class LoadBixolonInfoTask extends AsyncTask<Object, Object, drivers.bixolon.S1PrinterData> {
         ProgressDialog dialog;
 
         @Override
@@ -266,16 +266,16 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
         }
 
         @Override
-        protected S1PrinterData doInBackground(Object... params) {
+        protected drivers.bixolon.S1PrinterData doInBackground(Object... params) {
             EMSBixolonRD bixolon = null;
             if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null
                     && Global.mainPrinterManager.getCurrentDevice() instanceof EMSBixolonRD) {
                 bixolon = (EMSBixolonRD) Global.mainPrinterManager.getCurrentDevice();
             }
-            S1PrinterData printerData = null;
+            drivers.bixolon.S1PrinterData printerData = null;
             try {
                 if (bixolon != null) {
-                    printerData = bixolon.getPrinterTFHKA().getS1PrinterData();
+                    printerData = bixolon.getS1PrinterData();
                 }
             } catch (PrinterException e) {
                 e.printStackTrace();
@@ -284,11 +284,11 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
         }
 
         @Override
-        protected void onPostExecute(S1PrinterData printerData) {
+        protected void onPostExecute(drivers.bixolon.S1PrinterData printerData) {
             if (printerData != null) {
                 ((TextView) getView().findViewById(R.id.bixolonLastCRNoteNumbertextView)).setText(String.valueOf(printerData.getLastCNNumber()));
                 ((TextView) getView().findViewById(R.id.bixolonLastInvoiceNumbertextView)).setText(String.valueOf(printerData.getLastInvoiceNumber()));
-                ((TextView) getView().findViewById(R.id.bixolonLastDRNoteNumbertextView)).setText(String.valueOf(printerData.getLastNDNumber()));
+                ((TextView) getView().findViewById(R.id.bixolonLastDRNoteNumbertextView)).setText(String.valueOf(printerData.getLastDebitNoteNumber()));
                 ((TextView) getView().findViewById(R.id.bixolonLastNoFiscalDocNumbertextView)).setText(String.valueOf(printerData.getNumberNonFiscalDocuments()));
                 ((TextView) getView().findViewById(R.id.bixolonSerialNumbertextView)).setText(String.valueOf(printerData.getRegisteredMachineNumber()));
             }

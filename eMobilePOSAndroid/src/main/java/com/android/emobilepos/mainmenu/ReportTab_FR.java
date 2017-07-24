@@ -78,10 +78,10 @@ public class ReportTab_FR extends Fragment implements OnClickListener {
                     try {
                         switch (v.getId()) {
                             case R.id.bixolonPrintReportZ:
-                                bixolonRD.getPrinterTFHKA().printZReport();
+                                bixolonRD.printZReport();
                                 break;
                             case R.id.bixolonPrintReportX:
-                                bixolonRD.getPrinterTFHKA().printXReport();
+                                bixolonRD.printXReport();
                                 break;
                         }
                     } catch (PrinterException e) {

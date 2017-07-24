@@ -99,7 +99,7 @@ public class BixolonDAO {
         save(bixolon);
     }
 
-    public static int getPaymentmetodId(PaymentMethod paymentMethod) {
+    public static int getPaymentMethodId(PaymentMethod paymentMethod) {
         Realm realm = Realm.getDefaultInstance();
         try {
             BixolonPaymentMethod method = realm.where(BixolonPaymentMethod.class)

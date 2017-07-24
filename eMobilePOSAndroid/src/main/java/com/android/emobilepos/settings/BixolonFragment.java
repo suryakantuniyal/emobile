@@ -181,17 +181,17 @@ public class BixolonFragment extends Fragment implements View.OnClickListener {
 
         @Override
         protected Void doInBackground(Void... params) {
-            try {
+//            try {
                 TaxesHandler taxesHandler = new TaxesHandler(getActivity());
                 taxes = taxesHandler.getTaxes(true);
-                printerDate = bixolonDevice.getPrinterTFHKA().getS1PrinterData().getCurrentPrinterDateTime();
+                printerDate = bixolonDevice.getCurrentPrinterDateTime();
                 MemoTextHandler handler = new MemoTextHandler(getActivity());
                 headers = handler.getHeader();
                 footers = handler.getFooter();
                 paymentMethods = PaymentMethodDAO.getPaymentMethods();
-            } catch (PrinterException e) {
-                e.printStackTrace();
-            }
+//            } catch (PrinterException e) {
+//                e.printStackTrace();
+//            }
             return null;
         }
 

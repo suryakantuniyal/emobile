@@ -111,7 +111,7 @@ import util.StringUtil;
 public class EMSDeviceDriver {
     private static final boolean PRINT_TO_LOG = BuildConfig.PRINT_TO_LOG;
     static PrinterApiContext printerApi;
-    static TfhkaAndroid printerTFHKA;
+    static Object printerTFHKA;
     private static int PAPER_WIDTH;
     protected final String FORMAT = "windows-1252";
     private final int ALIGN_LEFT = 0, ALIGN_CENTER = 1;
@@ -263,6 +263,14 @@ public class EMSDeviceDriver {
         }
     }
 
+    protected boolean SendCmd(String cmd) {
+        if (printerTFHKA instanceof TfhkaAndroid) {
+            return ((TfhkaAndroid) printerTFHKA).SendCmd(cmd);
+        } else {
+            return ((com.thefactoryhka.android.rd.TfhkaAndroid) printerTFHKA).SendCmd(cmd);
+        }
+    }
+
     protected void print(String str) {
         str = removeAccents(str);
         if (PRINT_TO_LOG) {
@@ -272,7 +280,7 @@ public class EMSDeviceDriver {
         if (this instanceof EMSBixolonRD) {
             String[] split = str.split(("\n"));
             for (String line : split) {
-                printerTFHKA.SendCmd(String.format("80*%s", line));
+                SendCmd(String.format("80*%s", line));
             }
         } else if (this instanceof EMSELO) {
             eloPrinterApi.print(str);
@@ -359,7 +367,7 @@ public class EMSDeviceDriver {
         if (this instanceof EMSBixolonRD) {
             String[] split = new String(byteArray).split(("\n"));
             for (String line : split) {
-                printerTFHKA.SendCmd(String.format("80*%s", line));
+                SendCmd(String.format("80*%s", line));
             }
         } else if (this instanceof EMSELO) {
             eloPrinterApi.print(new String(byteArray));
@@ -545,9 +553,9 @@ public class EMSDeviceDriver {
             String[] split = str.split(("\n"));
             for (String line : split) {
                 if (isLargeFont) {
-                    printerTFHKA.SendCmd(String.format("80>%s", str));
+                    SendCmd(String.format("80>%s", str));
                 } else {
-                    printerTFHKA.SendCmd(String.format("80*%s", line));
+                    SendCmd(String.format("80*%s", line));
                 }
             }
         } else if (this instanceof EMSELO) {
@@ -1100,7 +1108,7 @@ public class EMSDeviceDriver {
 
     public void cutPaper() {
         if (this instanceof EMSBixolonRD) {
-            printerTFHKA.SendCmd(String.format("81*%s", " "));
+            SendCmd(String.format("81*%s", " "));
         } else if (this instanceof EMSsnbc) {
             // ******************************************************************************************
             // print in page mode
