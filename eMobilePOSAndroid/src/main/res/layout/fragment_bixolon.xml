@@ -14,6 +14,33 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/printBixolonSettingsbutton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/printSettings" />
+
+            <Button
+                android:id="@+id/printZReportbutton3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/printZReport" />
+
+            <Button
+                android:id="@+id/printXReportbutton2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/printXReport" />
+        </LinearLayout>
+
         <TextView
             android:id="@+id/textView2"
             style="@style/white_text_appearance"
@@ -352,7 +379,7 @@
             android:layout_height="wrap_content"
             android:background="@drawable/header_background"
             android:padding="8dp"
-            android:text="@string/taxes" />
+            android:text="@string/config_hard_code_payments" />
 
         <LinearLayout
             android:layout_width="match_parent"

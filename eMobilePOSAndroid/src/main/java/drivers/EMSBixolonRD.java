@@ -499,25 +499,25 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
             if (i < taxes.size()) {
                 taxCmd += taxChar + String.format(Locale.getDefault(), "%05.02f",
                         Global.getRoundBigDecimal(Global.getBigDecimalNum(taxes.get(i).getTaxRate()), 2));
+                switch (i) {
+                    case 0:
+                        BixolonDAO.addTax(taxes.get(i).getTaxId(), taxes.get(i).getTaxCodeId(), "!");
+                        break;
+                    case 1:
+                        BixolonDAO.addTax(taxes.get(i).getTaxId(), taxes.get(i).getTaxCodeId(), "\"");
+                        break;
+                    case 2:
+                        BixolonDAO.addTax(taxes.get(i).getTaxId(), taxes.get(i).getTaxCodeId(), "#");
+                        break;
+                    case 3:
+                        BixolonDAO.addTax(taxes.get(i).getTaxId(), taxes.get(i).getTaxCodeId(), "$");
+                        break;
+                    case 4:
+                        BixolonDAO.addTax(taxes.get(i).getTaxId(), taxes.get(i).getTaxCodeId(), "%");
+                        break;
+                }
             } else {
                 taxCmd += "20000";
-            }
-            switch (i) {
-                case 0:
-                    BixolonDAO.addTax(taxes.get(i).getTaxId(), taxes.get(i).getTaxCodeId(), "!");
-                    break;
-                case 1:
-                    BixolonDAO.addTax(taxes.get(i).getTaxId(), taxes.get(i).getTaxCodeId(), "\"");
-                    break;
-                case 2:
-                    BixolonDAO.addTax(taxes.get(i).getTaxId(), taxes.get(i).getTaxCodeId(), "#");
-                    break;
-                case 3:
-                    BixolonDAO.addTax(taxes.get(i).getTaxId(), taxes.get(i).getTaxCodeId(), "$");
-                    break;
-                case 4:
-                    BixolonDAO.addTax(taxes.get(i).getTaxId(), taxes.get(i).getTaxCodeId(), "%");
-                    break;
             }
         }
         boolean cmd = SendCmd("I0Z0");

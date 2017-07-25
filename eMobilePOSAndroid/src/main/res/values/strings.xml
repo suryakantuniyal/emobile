@@ -1340,5 +1340,8 @@
     <string name="hours">Hours</string>
     <string name="total_hours_worked">Total Hours</string>
     <string name="date">Date</string>
+    <string name="printSettings">Print Settings</string>
+    <string name="printZReport">Z Report</string>
+    <string name="printXReport">X Report</string>
 
 </resources>
