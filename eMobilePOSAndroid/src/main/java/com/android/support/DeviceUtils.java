@@ -199,6 +199,10 @@ public class DeviceUtils {
 
     public static void connectStarTS650BT(Context context) {
         try {
+            Collection<UsbDevice> usbDevices = getUSBDevices(context);
+            if (usbDevices.isEmpty()) {
+                return;
+            }
             EMSDeviceManager edm = new EMSDeviceManager();
             ArrayList<PortInfo> mPortList = StarIOPort.searchPrinter("USB:", context);
             MyPreferences preferences = new MyPreferences(context);
@@ -210,7 +214,7 @@ public class DeviceUtils {
                 preferences.printerAreaSize(false, 48);
                 EMSBluetoothStarPrinter aDevice = new EMSBluetoothStarPrinter();
                 Global.mainPrinterManager = edm.getManager();
-                aDevice.autoConnect((Activity) context,edm,48,true,preferences.getPrinterMACAddress(),"");
+                aDevice.autoConnect((Activity) context, edm, 48, true, preferences.getPrinterMACAddress(), "");
 //                Global.mainPrinterManager.loadDrivers(context, Global.STAR, EMSDeviceManager.PrinterInterfase.USB);
             }
         } catch (StarIOPortException e) {
