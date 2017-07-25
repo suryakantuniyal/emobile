@@ -15,7 +15,7 @@ import in.gtech.gogeotrack.utils.URLContstant;
  * Created by silence12 on 19/6/17.
  */
 
-public class SendRegistrationTokentoServer extends IntentService {
+public class  SendRegistrationTokentoServer extends IntentService {
 
     SharedPreferences mSharedPreferences;
 

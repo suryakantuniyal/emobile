@@ -43,7 +43,7 @@ public class OfflineActivity extends AppCompatActivity implements SwipeRefreshLa
     private SwipeRefreshLayout swipeRefreshLayout;
     private VehicleslistAdapter vehiclesAdapter;
     private RecyclerView recyclerView;
-    private ArrayList<VehicleList> listArrayList;
+    private List<VehicleList> listArrayList;
     SharedPreferences mSharedPreferences;
 
     @Override
@@ -76,10 +76,17 @@ public class OfflineActivity extends AppCompatActivity implements SwipeRefreshLa
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(vehiclesAdapter);
+        swipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                swipeRefreshLayout.setRefreshing(true);
+                parseView();
+            }
+        });
         vehiclesAdapter.setOnItemClickListener(this);
     }
 
-    private ArrayList<VehicleList> parseView() {
+    private List<VehicleList> parseView() {
 
         JSONObject previousData = null;
         try {
@@ -108,6 +115,7 @@ public class OfflineActivity extends AppCompatActivity implements SwipeRefreshLa
 
     @Override
     public void onRefresh() {
+        listArrayList.clear();
         parseView();
     }
 

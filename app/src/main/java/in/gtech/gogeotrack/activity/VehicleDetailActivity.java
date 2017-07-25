@@ -39,7 +39,7 @@ import in.gtech.gogeotrack.utils.URLContstant;
  * Created by silence12 on 21/6/17.
  */
 
-public class VehicleDetailActivity extends AppCompatActivity {
+public class   VehicleDetailActivity extends AppCompatActivity {
 
     private static final String TAG = VehicleDetailActivity.class.getSimpleName();
 
@@ -69,7 +69,6 @@ public class VehicleDetailActivity extends AppCompatActivity {
         initViews();
         mSharedPreferences = getSharedPreferences(URLContstant.PREFERENCE_NAME, Context.MODE_PRIVATE);
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        collapsingToolbarLayout.setTitle(nameString);
         collapsingToolbarLayout.setCollapsedTitleTextColor(Color.WHITE);
         collapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.ExpandedAppBar);
         progressDialog = new ProgressDialog(this);
@@ -88,6 +87,7 @@ public class VehicleDetailActivity extends AppCompatActivity {
             }
         });
         callDetailRequest();
+        collapsingToolbarLayout.setTitle(nameString);
     }
 
     public void callDetailRequest() {
@@ -119,6 +119,8 @@ public class VehicleDetailActivity extends AppCompatActivity {
                     positionId_tv.setText(address);
                 }
                 googleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map2)).getMap();
+                googleMap.getUiSettings().setZoomControlsEnabled(true);
+                googleMap.setPadding(10,10,10,20);
 //                CameraUpdate point = CameraUpdateFactory.newLatLng(new LatLng(20.5937, 78.9629));
 //                googleMap.moveCamera(point);
                 markerOptions = new MarkerOptions().position(new LatLng(latitute,longitute)).title(address);

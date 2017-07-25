@@ -16,8 +16,6 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 
 import in.gtech.gogeotrack.R;
-import in.gtech.gogeotrack.activity.MainActivity;
-import in.gtech.gogeotrack.activity.OnLineOffLineActivity;
 import in.gtech.gogeotrack.activity.TrackingDevicesActivity;
 import in.gtech.gogeotrack.activity.VehicleDetailActivity;
 import in.gtech.gogeotrack.model.VehicleList;

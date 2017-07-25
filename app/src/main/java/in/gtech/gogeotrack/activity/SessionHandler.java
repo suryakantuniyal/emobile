@@ -21,7 +21,7 @@ import in.gtech.gogeotrack.parser.TraccerParser;
  * Created by silence12 on 19/7/17.
  */
 
-public class SessionHandler  {
+public class   SessionHandler  {
 
     static SharedPreferences.Editor mEditor, editor;
     public SessionHandler(){}

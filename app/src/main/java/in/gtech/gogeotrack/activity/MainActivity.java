@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity
     SharedPreferences mSharedPreferences;
     private VehicleslistAdapter vehiclesAdapter;
     private RecyclerView recyclerView;
-    private ArrayList<VehicleList> listArrayList;
+    private List<VehicleList> listArrayList;
     private SwipeRefreshLayout swipeRefreshLayout;
 
 
@@ -74,6 +74,13 @@ public class MainActivity extends AppCompatActivity
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(vehiclesAdapter);
+        swipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                swipeRefreshLayout.setRefreshing(true);
+                parseView();
+            }
+        });
         vehiclesAdapter.setOnItemClickListener(this);
     }
 
@@ -124,10 +131,11 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onRefresh() {
+        listArrayList.clear();
         parseView();
     }
 
-    private ArrayList<VehicleList> parseView() {
+    private List<VehicleList> parseView() {
 
         JSONObject previousData = null;
         try {

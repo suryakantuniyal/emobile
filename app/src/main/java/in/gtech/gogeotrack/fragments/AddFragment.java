@@ -20,7 +20,7 @@ import in.gtech.gogeotrack.R;
  * Created by silence12 on 4/7/17.
  */
 
-public class AddFragment extends Fragment implements View.OnClickListener {
+public class    AddFragment extends Fragment implements View.OnClickListener {
 
     public static LinearLayout linlaHeaderProgress;
     static int page_pos = 1;

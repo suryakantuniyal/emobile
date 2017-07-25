@@ -13,7 +13,7 @@ import in.gtech.gogeotrack.fragments.AddFragment;
  * Created by silence12 on 4/7/17.
  */
 
-public class ViewPagerAdapter extends FragmentPagerAdapter {
+public class   ViewPagerAdapter extends FragmentPagerAdapter {
 
     final int PAGE_COUNT = 3;
     Context context;

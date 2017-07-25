@@ -34,7 +34,7 @@ public class VehicleslistAdapter extends RecyclerView.Adapter<VehicleslistAdapte
     private OnItemClickListener cnoteClick;
 
 
-    public VehicleslistAdapter(Context mContext, ArrayList<VehicleList> mVehicleList, OnItemClickListener cnoteClick) {
+    public VehicleslistAdapter(Context mContext, List<VehicleList> mVehicleList, OnItemClickListener cnoteClick) {
         this.mContext = mContext;
         this.vehicleLists = mVehicleList;
         mFilteredList = mVehicleList;
@@ -86,32 +86,61 @@ public class VehicleslistAdapter extends RecyclerView.Adapter<VehicleslistAdapte
 
     @Override
     public Filter getFilter() {
-        return new Filter() {
-            @Override
-            protected FilterResults performFiltering(CharSequence constraint) {
-                String charString = constraint.toString();
-                if (charString.isEmpty()) {
-                    mFilteredList = vehicleLists;
-                } else {
-                    List<VehicleList> filteredList = new ArrayList<>();
-                    for (VehicleList projectsModel : vehicleLists) {
-                        if (projectsModel.getName().contains(charString) || projectsModel.getStatus().contains(charString)) {
-                            filteredList.add(projectsModel);
-                        }
-                    }
-                    mFilteredList = filteredList;
-                }
-                FilterResults filterResults = new FilterResults();
-                filterResults.values = mFilteredList;
-                return filterResults;
-            }
+        return new MyFilter();
+//            @Override
+//            protected FilterResults performFiltering(CharSequence constraint) {
+//                String charString = constraint.toString();
+//                FilterResults filterResults = new FilterResults();
+//                if (charString.isEmpty()) {
+//                    mFilteredList = vehicleLists;
+//                } else {
+//                    List<VehicleList> filteredList = new ArrayList<>();
+//                    for (VehicleList projectsModel : vehicleLists) {
+//                        if (projectsModel.getName().contains(charString) || projectsModel.getStatus().contains(charString)) {
+//                            filteredList.add(projectsModel);
+//                        }
+//                    }
+//                    mFilteredList = filteredList;
+//                }
+//                filterResults.values = mFilteredList;
+//                return filterResults;
+//            }
+//
+//            @Override
+//            protected void publishResults(CharSequence constraint, FilterResults results) {
+//                mFilteredList = (List<VehicleList>) results.values;
+//                notifyDataSetChanged();
+//            }
+//        };
+    }
 
-            @Override
-            protected void publishResults(CharSequence constraint, FilterResults results) {
-                mFilteredList = (List<VehicleList>) results.values;
-                notifyDataSetChanged();
+
+    private class MyFilter extends Filter {
+
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            String charString = constraint.toString();
+            FilterResults filterResults = new FilterResults();
+            if (charString.isEmpty()) {
+                mFilteredList = vehicleLists;
+            } else {
+                List<VehicleList> filteredList = new ArrayList<>();
+                for (VehicleList projectsModel : vehicleLists) {
+                    if (projectsModel.getName().toLowerCase().contains(charString.toLowerCase()) || projectsModel.getStatus().contains(charString)) {
+                        filteredList.add(projectsModel);
+                    }
+                }
+                mFilteredList = filteredList;
             }
-        };
+            filterResults.values = mFilteredList;
+            return filterResults;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            mFilteredList = (List<VehicleList>) results.values;
+            notifyDataSetChanged();
+        }
     }
 
     public interface OnItemClickListener {
@@ -122,8 +151,7 @@ public class VehicleslistAdapter extends RecyclerView.Adapter<VehicleslistAdapte
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnFocusChangeListener {
 
         private TextView name_tv, positionId_tv, lastupdated_tv, timediff_tv, online_tv;
-        private LinearLayout track_ll, detail_ll;
-        private ImageView vehivle_iv, status_iv;
+        private ImageView  status_iv;
         private LinearLayout detail, track;
         private View v;
 

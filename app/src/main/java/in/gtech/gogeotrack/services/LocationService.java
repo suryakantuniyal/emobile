@@ -22,7 +22,7 @@ import android.widget.Toast;
 // https://stackoverflow.com/questions/13855049/how-to-show-multiple-markers-on-mapfragment-in-google-map-api-v2
 //  https://stackoverflow.com/questions/14908440/how-to-show-markers-all-the-time-by-asynctask-or-handler-in-google-map-version-2
 
-public class LocationService extends Service {
+public class   LocationService extends Service {
     public static final String BROADCAST_ACTION = "Location Changed";
     private static final int TWO_MINUTES = 1000 * 60 * 2;
     public LocationManager locationManager;

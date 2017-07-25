@@ -79,7 +79,7 @@ public class MapViewActivity extends AppCompatActivity {
         password = mSharedPreferences.getString(URLContstant.KEY_PASSWORD,"");
         int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getBaseContext());
 
-        // Showing status
+        // Showing statusen
         if (status != ConnectionResult.SUCCESS) {
 
             int requestCode = 10;
@@ -89,6 +89,8 @@ public class MapViewActivity extends AppCompatActivity {
         } else {
 
             googleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
+            googleMap.getUiSettings().setZoomControlsEnabled(true);
+            googleMap.setPadding(10,10,10,20);
             googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(28.644800, 77.216721)));
             googleMap.animateCamera(CameraUpdateFactory.zoomTo(10));
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {

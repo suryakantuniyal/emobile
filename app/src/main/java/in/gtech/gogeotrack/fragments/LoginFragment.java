@@ -124,7 +124,7 @@ public class LoginFragment extends Fragment {
                         public void OnFial(int Response) {
                             if(Response == 401){
                                 progressDialog.dismiss();
-                                Toast.makeText(getActivity(), "Incorrect User name of Password", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getActivity(), "Incorrect user name or password", Toast.LENGTH_SHORT).show();
                             }
 
                         }

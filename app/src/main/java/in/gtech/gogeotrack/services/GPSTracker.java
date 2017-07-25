@@ -20,7 +20,7 @@ import android.util.Log;
  * Created by silence12 on 6/7/17.
  */
 
-public class GPSTracker extends Service implements LocationListener {
+public class   GPSTracker extends Service implements LocationListener {
 
     // The minimum distance to change Updates in meters
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 100; // 10 meters

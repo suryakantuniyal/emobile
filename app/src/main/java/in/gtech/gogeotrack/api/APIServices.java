@@ -86,7 +86,7 @@ public final class APIServices {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.e("Error", ":: Volley Error :: " + error);
-                        Toast.makeText(context, "Unable to reach our servers. Please check your internet connection.", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(context, "Unable to reach our servers. Please check your internet connection.", Toast.LENGTH_SHORT).show();
 
                     }
                 }) {
@@ -126,7 +126,7 @@ public final class APIServices {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.e("Error", ":: Volley Error :: " + error);
-                        Toast.makeText(context, "Unable to reach our servers. Please check your internet connection.", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(context, "Unable to reach our servers. Please check your internet connection.", Toast.LENGTH_SHORT).show();
 
                     }
                 }) {

@@ -46,7 +46,7 @@ public class OnLineOffLineActivity extends AppCompatActivity implements SwipeRef
     private SwipeRefreshLayout swipeRefreshLayout;
     private VehicleslistAdapter vehiclesAdapter;
     private RecyclerView recyclerView;
-    private ArrayList<VehicleList> listArrayList;
+    private List<VehicleList> listArrayList;
     SharedPreferences mSharedPreferences;
     private String onnOff;
 
@@ -84,7 +84,7 @@ public class OnLineOffLineActivity extends AppCompatActivity implements SwipeRef
     }
 
 
-    private ArrayList<VehicleList> parseView() {
+    private List<VehicleList> parseView() {
 
         JSONObject previousData = null;
         try {
@@ -114,6 +114,7 @@ public class OnLineOffLineActivity extends AppCompatActivity implements SwipeRef
 
     @Override
     public void onRefresh() {
+        listArrayList.clear();
         parseView();
 
     }

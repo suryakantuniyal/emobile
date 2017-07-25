@@ -1,50 +1,41 @@
 package in.gtech.gogeotrack.activity;
 
-import android.app.AlertDialog;
+
+import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.location.LocationManager;
-import android.net.Uri;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.Settings;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.LinearLayout;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
+import android.widget.TextView;
 
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-
+import com.rampo.updatechecker.UpdateChecker;
 import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import in.gtech.gogeotrack.R;
 import in.gtech.gogeotrack.api.APIServices;
-import in.gtech.gogeotrack.model.VehicleList;
-import in.gtech.gogeotrack.network.DetailResponseCallback;
-import in.gtech.gogeotrack.network.ResponseCallbackEvents;
-import in.gtech.gogeotrack.network.ResponseOfflineVehicle;
 import in.gtech.gogeotrack.network.ResponseOnlineVehicle;
 import in.gtech.gogeotrack.utils.URLContstant;
+import in.gtech.gogeotrack.utils.UtilsFunctions;
 
-import java.util.ArrayList;
 
 /**
  * Created by silence12 on 26/6/17.
  */
 
-public class SplashActivity extends AppCompatActivity {
-    public static ArrayList<VehicleList> listArrayList;
-    public static ArrayList<VehicleList> latlongList;
+public class   SplashActivity extends AppCompatActivity {
     Boolean isActive = false;
+    private static int SPLASH_TIME_OUT = 2000;
     int Counter = 0;
     boolean Activenetwork = true;
     boolean GPS = false, networkedchecked = true;
@@ -54,55 +45,27 @@ public class SplashActivity extends AppCompatActivity {
     Snackbar Alertbar, Tryingbar;
     RelativeLayout coordinatorLayout;
     SharedPreferences sharedPrefs, sharedPreferences;
-    SharedPreferences.Editor arrayEditor, editor;
     String userName,password;
     GoogleApiAvailability mGoogleApiAvailability;
+    ProgressBar progressBar;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+        progressBar = (ProgressBar)findViewById(R.id.progressBar);
+        coordinatorLayout = (RelativeLayout) findViewById(R.id.coordinatorLayout);
         mSharedPreferences = getSharedPreferences(URLContstant.PREFERENCE_NAME, MODE_PRIVATE);
         sharedPrefs = getSharedPreferences("ArrayList", Context.MODE_PRIVATE);
         sharedPreferences = getSharedPreferences("OfflineList", Context.MODE_PRIVATE);
         userName = mSharedPreferences.getString(URLContstant.KEY_USERNAME, "");
         password = mSharedPreferences.getString(URLContstant.KEY_PASSWORD,"");
         mGoogleApiAvailability = GoogleApiAvailability.getInstance();
-        try {
-            int status = mGoogleApiAvailability.isGooglePlayServicesAvailable(getApplicationContext());
-            if (status != ConnectionResult.SUCCESS) {
-//                GOOGLE_PLAY_SERVICE_UPDATE_CODE
-                if(mGoogleApiAvailability.isUserResolvableError(status)) {
-                    mGoogleApiAvailability.getErrorDialog(this, status,0
-                            , new DialogInterface.OnCancelListener() {
-                                @Override
-                                public void onCancel(DialogInterface dialog) {
-                                    AlertDialog.Builder builder = new AlertDialog.Builder(SplashActivity.this);
-                                    builder.setMessage("Are you want to update ?")
-                                            .setTitle("Google play service Out of date.Google play services need to be Updated, tou are unable to use this app without updating your google services.")
-                                            .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialog, int which) {
-                                                    dialog.cancel();
-                                                    finish();
-                                                }
-                                            })
-                                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialog, int which) {
-                                                    dialog.cancel();
-                                                    Intent termcondlink = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=in.gtech.gogeotrack&hl=en"));
-                                                    startActivity(termcondlink);
-                                                }
-                                            }).show();
-                                }
-                            }).show();
-                }
-            }
-        } catch (Exception e){
-            Log.d("error",e.toString());
-        }
+        UpdateChecker checker = new UpdateChecker(this);
+        checker.start();
+
         if(userName ==null && password==null){
             Intent loginsignupactivityIntent = new Intent(this, SignUpAccount.class);
             loginsignupactivityIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -116,7 +79,7 @@ public class SplashActivity extends AppCompatActivity {
             finish();
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         }else {
-            allOnlineVehicle();
+            startAnimation();
         }
     }
 
@@ -192,6 +155,65 @@ public class SplashActivity extends AppCompatActivity {
         super.onStop();
         isActive = false;
     }
+    public void startAnimation(){
 
+        progressBar.setVisibility(View.VISIBLE);
+        final Context context = getApplicationContext() ;
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Log.d("run","after 2 sec");
+
+                if (UtilsFunctions.isNetworkAvailable(context)){
+                    allOnlineVehicle();
+                }
+                else {
+                    if (!UtilsFunctions.isNetworkAvailable(SplashActivity.this)){
+                        final AlertDialog.Builder builder = new AlertDialog.Builder(SplashActivity.this);
+                        LayoutInflater layoutInflater = LayoutInflater.from(SplashActivity.this);
+                        View view = layoutInflater.inflate(R.layout.disconnected_network, null);
+                        builder.setView(view);
+                        Button Tryagain = (Button)view.findViewById(R.id.tryagain);
+                        builder.setCancelable(false);
+                        final Dialog dialog = builder.create();
+                        dialog.show();
+                        Tryagain.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                dialog.cancel();
+                                if (!UtilsFunctions.isNetworkAvailable(getApplicationContext())){
+                                    dialog.show();
+                                } else{
+                                    allOnlineVehicle();
+                                }
+
+                            }
+                        });
+                    }
+                }
+            }
+        }, SPLASH_TIME_OUT);
+        Tryingbar = Snackbar.make(coordinatorLayout, "Trying to connect server.....",Snackbar.LENGTH_INDEFINITE);
+        Alertbar = Snackbar
+                .make(coordinatorLayout, "Unable to connect the server!", Snackbar.LENGTH_INDEFINITE)
+                .setAction("RETRY", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Alertbar.dismiss();
+                        View sbView = Tryingbar.getView();
+                        TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
+                        textView.setTextColor(Color.GREEN);
+                        Tryingbar.show();
+                        Counter = 0;
+                        isShown = false;
+                    }
+                });
+
+        Alertbar.setActionTextColor(Color.RED);
+        View sbView = Alertbar.getView();
+        TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
+        textView.setTextColor(Color.YELLOW);
+    }
 
 }

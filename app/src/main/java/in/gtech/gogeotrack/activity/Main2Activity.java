@@ -30,6 +30,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.rampo.updatechecker.UpdateChecker;
 import com.viewpagerindicator.CirclePageIndicator;
 
 import org.json.JSONArray;
@@ -46,7 +47,7 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class Main2Activity extends AppCompatActivity
+public class  Main2Activity  extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
     public static ArrayList<VehicleList> listArrayList;

@@ -21,6 +21,7 @@ import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -38,7 +39,7 @@ import in.gtech.gogeotrack.services.GPSTracker;
  * Created by silence12 on 22/6/17.
  */
 
-public class TrackingDevicesActivity extends AppCompatActivity {
+public class   TrackingDevicesActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_PERMISSION = 2;
     private static ProgressDialog progressDialog;
@@ -113,6 +114,8 @@ public class TrackingDevicesActivity extends AppCompatActivity {
     private void trackOnMap() {
         if (googleMap == null) {
             googleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
+            googleMap.getUiSettings().setZoomControlsEnabled(true);
+            googleMap.setPadding(0,10,10,200);
             progressDialog.dismiss();
             Intent getIntent = getIntent();
             String update = getIntent.getStringExtra("tupdate");
