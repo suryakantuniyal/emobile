@@ -23,6 +23,7 @@
                 android:id="@+id/printBixolonSettingsbutton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_margin="10dp"
                 android:layout_weight="1"
                 android:text="@string/printSettings" />
 
@@ -30,6 +31,7 @@
                 android:id="@+id/printZReportbutton3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_margin="10dp"
                 android:layout_weight="1"
                 android:text="@string/printZReport" />
 
@@ -37,6 +39,7 @@
                 android:id="@+id/printXReportbutton2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_margin="10dp"
                 android:layout_weight="1"
                 android:text="@string/printXReport" />
         </LinearLayout>

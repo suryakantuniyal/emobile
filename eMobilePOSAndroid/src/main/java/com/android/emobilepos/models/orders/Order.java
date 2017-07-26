@@ -222,8 +222,8 @@ public class Order implements Cloneable {
             }
         }
         orderProduct.setTaxAmount(tax != null ? tax.getTaxRate() : "0");
-//        orderProduct.setProd_taxId(tax != null ? tax.getTaxId() : "");
-        orderProduct.setProd_taxId(tax != null ? tax.getTaxType() : "");
+        orderProduct.setProd_taxId(tax != null ? tax.getTaxId() : "");
+//        orderProduct.setProd_taxId(tax != null ? tax.getTaxType() : "");
     }
 
     public void setRetailTax(Context context, String taxID) {

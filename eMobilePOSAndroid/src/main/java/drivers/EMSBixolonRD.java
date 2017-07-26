@@ -153,19 +153,24 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
         Order order = ordersHandler.getOrder(ordID);
         Bixolon bixolon = BixolonDAO.getBixolon();
         Global.OrderType type = Global.OrderType.getByCode(Integer.parseInt(order.ord_type));
-        boolean cmd = openDocument(type);
-        cmd = printOrderId(order);
+        boolean cmd = printMerchantName(bixolon.getMerchantName());
+        cmd = printRUC(bixolon.getRuc());
+        cmd = sendNFC("C000000000123456789");
+        cmd = openDocument(type);
+
+
+//        cmd = printOrderId(order);
         if (cmd) {
-            cmd = printRUC(bixolon.getRuc());
+//            cmd = printRUC(bixolon.getRuc());
             if (cmd) {
-                cmd = printMerchantName(bixolon.getMerchantName());
+//                cmd = printMerchantName(bixolon.getMerchantName());
                 if (cmd) {
-                    String typeDetails = getOrderTypeDetails(fromOnHold, order, LINE_WIDTH, type).replace(" ", "");
-                    cmd = SendCmd(String.format("%s%s", getCommentsChar(saleTypes), typeDetails));
+//                    String typeDetails = getOrderTypeDetails(fromOnHold, order, LINE_WIDTH, type).replace(" ", "");
+//                    cmd = SendCmd(String.format("%s%s", getCommentsChar(saleTypes), typeDetails));
                     if (cmd) {
                         List<OrderProduct> orderProducts = order.getOrderProducts();
                         for (OrderProduct product : orderProducts) {
-                            cmd = printItemComments(product.getOrdprod_desc());
+//                            cmd = printItemComments(product.getOrdprod_desc());
                             if (cmd) {
                                 cmd = printItem(product, saleTypes == Global.OrderType.RETURN);
                                 if (!cmd) {
@@ -674,21 +679,50 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
         PaymentsHandler paymentsHandler = new PaymentsHandler(activity);
         List<Payment> orderPayments = paymentsHandler.getOrderPayments(order.ord_id);
         String command = null;
-        if (Global.OrderType.getByCode(Integer.parseInt(order.ord_type)) == Global.OrderType.RETURN) {
-            int paymentId = BixolonDAO.getPaymentMethodId(orderPayments.get(0).getPaymentMethod());
-            command = String.format(Locale.getDefault(), "1%02d", paymentId);
-        } else {
-            if (orderPayments.size() == 1) {
+        if (country == BixolonCountry.PANAMA) {
+            if (Global.OrderType.getByCode(Integer.parseInt(order.ord_type)) == Global.OrderType.RETURN) {
                 int paymentId = BixolonDAO.getPaymentMethodId(orderPayments.get(0).getPaymentMethod());
                 command = String.format(Locale.getDefault(), "1%02d", paymentId);
             } else {
-                for (Payment payment : orderPayments) {
-                    int paymentId = BixolonDAO.getPaymentMethodId(payment.getPaymentMethod());
-                    command = String.format(Locale.getDefault(), "2%012d", payment.getPay_amount());
+                if (orderPayments.size() == 1) {
+                    int paymentId = BixolonDAO.getPaymentMethodId(orderPayments.get(0).getPaymentMethod());
+                    command = String.format(Locale.getDefault(), "1%02d", paymentId);
+                } else {
+                    for (Payment payment : orderPayments) {
+                        int paymentId = BixolonDAO.getPaymentMethodId(payment.getPaymentMethod());
+                        command = String.format(Locale.getDefault(), "2%012d", payment.getPay_amount());
+                    }
+                }
+            }
+            return SendCmd(command);
+        } else {
+            String payType = orderPayments.size() == 1 ? "1" : "2";
+            for (Payment payment : orderPayments) {
+                switch (payment.getPaymentMethod().getPaymentmethod_type().toUpperCase()) {
+                    case "CASH":
+                        command = String.format(Locale.getDefault(), "%s01%012d", payType, Integer.parseInt(StringUtils.deleteAny(payment.getPay_amount(), ".")));
+                        break;
+                    case "CHECK":
+                        command = String.format(Locale.getDefault(), "%s02%012d", payType, Integer.parseInt(StringUtils.deleteAny(payment.getPay_amount(), ".")));
+                        break;
+                    case "DISCOVER":
+                    case "MASTERCARD":
+                    case "VISA":
+                    case "DEBITCARD":
+                        command = String.format(Locale.getDefault(), "%s03%012d", payType, Integer.parseInt(StringUtils.deleteAny(payment.getPay_amount(), ".")));
+                        break;
+                    case "LOYALTYCARD":
+                    case "GIFTCARD":
+                    case "REWARD":
+                        command = String.format(Locale.getDefault(), "%s08%012d", payType, Integer.parseInt(StringUtils.deleteAny(payment.getPay_amount(), ".")));
+                        break;
+                }
+                if (!SendCmd(command)) {
+                    return false;
                 }
             }
         }
-        return SendCmd(command);
+        return true;
     }
 
     private boolean voidLastTransaction() {
@@ -696,7 +730,10 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
     }
 
     private boolean printOrderId(Order order) {
-        return SendCmd("jF" + String.format("%0" + (22 - order.ord_id.length()) + "d%s", 0, order.ord_id));
+        if (country == BixolonCountry.PANAMA) {
+            return SendCmd("jF" + String.format("%0" + (22 - order.ord_id.length()) + "d%s", 0, order.ord_id));
+        } else
+            return true;
     }
 
     public void printZReport() throws PrinterException {
@@ -751,6 +788,10 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
 //            printerData.setTotalDailySales(data.getSaTotalDailySales());
         }
         return printerData;
+    }
+
+    public Boolean printSettings() {
+        return SendCmd("D");
     }
 
     public enum BixolonCountry {

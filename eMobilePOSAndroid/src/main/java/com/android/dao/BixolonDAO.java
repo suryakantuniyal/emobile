@@ -59,8 +59,8 @@ public class BixolonDAO {
         BixolonTax bixolonTax;
         try {
             bixolonTax = realm.where(BixolonTax.class)
-                    .equalTo("taxId", prod_taxId)
-                    .equalTo("taxCode", prod_taxcode)
+                    .equalTo("taxId", prod_taxcode)
+//                    .equalTo("taxCode", prod_taxcode)
                     .findFirst();
             if (bixolonTax != null) {
                 bixolonTax = realm.copyFromRealm(bixolonTax);

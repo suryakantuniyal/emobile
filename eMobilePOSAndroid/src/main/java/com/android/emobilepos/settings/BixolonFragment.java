@@ -72,6 +72,9 @@ public class BixolonFragment extends Fragment implements View.OnClickListener {
             getView().findViewById(R.id.sendFooterbutton2c).setOnClickListener(this);
             getView().findViewById(R.id.sendTaxesbutton28).setOnClickListener(this);
             getView().findViewById(R.id.sendPaymentMethodsbutton28).setOnClickListener(this);
+            getView().findViewById(R.id.printZReportbutton3).setOnClickListener(this);
+            getView().findViewById(R.id.printXReportbutton2).setOnClickListener(this);
+            getView().findViewById(R.id.printBixolonSettingsbutton).setOnClickListener(this);
         }
         Bixolon bixolon = BixolonDAO.getBixolon();
         if (bixolon != null && getView() != null) {
@@ -99,13 +102,18 @@ public class BixolonFragment extends Fragment implements View.OnClickListener {
         BixolonDAO.save(bixolon);
     }
 
-    private enum Bixoloncommand {
-        SEND_DATE, SEND_HEADER, SEND_FOOTER, SEND_TAXES, SEND_PAYMENT_METHODS
-    }
-
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.printBixolonSettingsbutton:
+                new SendBixolonCommandTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, Bixoloncommand.PRINT_SETTINGS);
+                break;
+            case R.id.printXReportbutton2:
+                new SendBixolonCommandTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, Bixoloncommand.PRINT_X);
+                break;
+            case R.id.printZReportbutton3:
+                new SendBixolonCommandTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, Bixoloncommand.PRINT_Z);
+                break;
             case R.id.sendDateTimebutton2:
                 new SendBixolonCommandTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, Bixoloncommand.SEND_DATE);
                 break;
@@ -125,6 +133,10 @@ public class BixolonFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    private enum Bixoloncommand {
+        SEND_DATE, SEND_HEADER, SEND_FOOTER, SEND_TAXES, SEND_PAYMENT_METHODS, PRINT_Z, PRINT_X, PRINT_SETTINGS
+    }
+
     private class SendBixolonCommandTask extends AsyncTask<Bixoloncommand, Void, Boolean> {
         ProgressDialog dialog = new ProgressDialog(getActivity());
 
@@ -140,6 +152,22 @@ public class BixolonFragment extends Fragment implements View.OnClickListener {
         protected Boolean doInBackground(Bixoloncommand... params) {
             Bixoloncommand command = params[0];
             switch (command) {
+                case PRINT_SETTINGS:
+                    return bixolonDevice.printSettings();
+                case PRINT_Z:
+                    try {
+                        bixolonDevice.printZReport();
+                    } catch (PrinterException e) {
+                        return false;
+                    }
+                    return true;
+                case PRINT_X:
+                    try {
+                        bixolonDevice.printXReport();
+                    } catch (PrinterException e) {
+                        return false;
+                    }
+                    return true;
                 case SEND_DATE:
                     return bixolonDevice.sendDateTimeCommand(new Date());
                 case SEND_HEADER:
@@ -182,13 +210,13 @@ public class BixolonFragment extends Fragment implements View.OnClickListener {
         @Override
         protected Void doInBackground(Void... params) {
 //            try {
-                TaxesHandler taxesHandler = new TaxesHandler(getActivity());
-                taxes = taxesHandler.getTaxes(true);
-                printerDate = bixolonDevice.getCurrentPrinterDateTime();
-                MemoTextHandler handler = new MemoTextHandler(getActivity());
-                headers = handler.getHeader();
-                footers = handler.getFooter();
-                paymentMethods = PaymentMethodDAO.getPaymentMethods();
+            TaxesHandler taxesHandler = new TaxesHandler(getActivity());
+            taxes = taxesHandler.getTaxes(true);
+            printerDate = bixolonDevice.getCurrentPrinterDateTime();
+            MemoTextHandler handler = new MemoTextHandler(getActivity());
+            headers = handler.getHeader();
+            footers = handler.getFooter();
+            paymentMethods = PaymentMethodDAO.getPaymentMethods();
 //            } catch (PrinterException e) {
 //                e.printStackTrace();
 //            }
