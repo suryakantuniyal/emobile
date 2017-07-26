@@ -9,8 +9,7 @@ import io.realm.annotations.PrimaryKey;
 
 public class BixolonPaymentMethod extends RealmObject {
     @PrimaryKey
-    private
-    int id;
+    private int id;
     private PaymentMethod paymentMethod;
 
     public int getId() {

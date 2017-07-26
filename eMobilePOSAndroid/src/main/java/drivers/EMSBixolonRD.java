@@ -699,9 +699,9 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
             String payType = orderPayments.size() == 1 ? "1" : "2";
             for (Payment payment : orderPayments) {
                 switch (payment.getPaymentMethod().getPaymentmethod_type().toUpperCase()) {
-                    case "CASH":
-                        command = String.format(Locale.getDefault(), "%s01%012d", payType, Integer.parseInt(StringUtils.deleteAny(payment.getPay_amount(), ".")));
-                        break;
+//                    case "CASH":
+//                        command = String.format(Locale.getDefault(), "%s01%012d", payType, Integer.parseInt(StringUtils.deleteAny(payment.getPay_amount(), ".")));
+//                        break;
                     case "CHECK":
                         command = String.format(Locale.getDefault(), "%s02%012d", payType, Integer.parseInt(StringUtils.deleteAny(payment.getPay_amount(), ".")));
                         break;
