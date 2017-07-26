@@ -1576,6 +1576,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                getOrderingMainFa().buildOrderStarted = false;
                 globalDlog.dismiss();
             }
         });
