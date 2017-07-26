@@ -825,13 +825,14 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             }
         });
 
-//        if (withPrintRequest && myPref.getPreferences(MyPreferences.pref_enable_printing)
-//                && myPref.getPreferences(MyPreferences.pref_automatic_printing)) {
         if (Global.loyaltyCardInfo != null && !Global.loyaltyCardInfo.getCardNumUnencrypted().isEmpty()) {
             processInquiry(true);
         } else if (Global.rewardCardInfo != null && !Global.rewardCardInfo.getCardNumUnencrypted().isEmpty()) {
             processInquiry(false);
-        } else {
+        }
+
+        if (withPrintRequest && myPref.getPreferences(MyPreferences.pref_enable_printing)
+                && myPref.getPreferences(MyPreferences.pref_automatic_printing)) {
             if ((emvContainer != null && emvContainer.getGeniusResponse() != null &&
                     emvContainer.getGeniusResponse().getStatus().equalsIgnoreCase("APPROVED")) ||
                     emvContainer == null || emvContainer.getGeniusResponse() == null) {
