@@ -14,6 +14,7 @@ public class Bixolon extends RealmObject {
     @PrimaryKey
     private int pkid = 1;
     private String ruc;
+    private String ncf;
     private RealmList<BixolonTax> bixolontaxes = new RealmList<>();
     private RealmList<BixolonPaymentMethod> paymentMethods = new RealmList<>();
     private String merchantName;
@@ -48,5 +49,13 @@ public class Bixolon extends RealmObject {
 
     public String getMerchantName() {
         return merchantName;
+    }
+
+    public String getNcf() {
+        return ncf;
+    }
+
+    public void setNcf(String ncf) {
+        this.ncf = ncf;
     }
 }

@@ -155,7 +155,7 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
         Global.OrderType type = Global.OrderType.getByCode(Integer.parseInt(order.ord_type));
         boolean cmd = printMerchantName(bixolon.getMerchantName());
         cmd = printRUC(bixolon.getRuc());
-        cmd = sendNFC("C000000000123456789");
+        cmd = sendNFC(bixolon.getNcf());
         cmd = openDocument(type);
 
 
@@ -722,6 +722,7 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
                 }
             }
         }
+        SendCmd("101");
         return true;
     }
 

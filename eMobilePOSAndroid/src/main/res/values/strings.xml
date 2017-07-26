@@ -1343,5 +1343,6 @@
     <string name="printSettings">Print Settings</string>
     <string name="printZReport">Z Report</string>
     <string name="printXReport">X Report</string>
+    <string name="ncf">NCF</string>
 
 </resources>

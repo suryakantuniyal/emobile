@@ -2245,7 +2245,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         @Override
         protected void onPreExecute() {
             myProgressDialog = new ProgressDialog(activity);
-            myProgressDialog.setMessage("Printing...");
+            myProgressDialog.setMessage(getString(R.string.printing_message));
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);
             if (myProgressDialog.isShowing())
