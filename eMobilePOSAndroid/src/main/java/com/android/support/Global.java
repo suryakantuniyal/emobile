@@ -1480,7 +1480,7 @@ public class Global extends MultiDexApplication {
         return this.globalDlog;
     }
 
-    public void promptForMandatoryLogin(final Activity activity) {
+    public void promptForMandatoryLogin(final Context activity) {
         if (!loggedIn) {
             globalDlog = new Dialog(activity, R.style.FullscreenTheme);
             globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);

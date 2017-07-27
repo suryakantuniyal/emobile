@@ -42,7 +42,7 @@ public class EMSEM70 extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     String scannedData = "";
 
     @Override
-    public void connect(Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
+    public void connect(Context activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
         cardManager = new CreditCardInfo();
@@ -176,7 +176,7 @@ public class EMSEM70 extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
             filter.addAction("android.intent.action.bcr.newdata");
             filter.addAction("android.intent.action.scanner.data");
             activity.registerReceiver(mBroadcastReceiver, filter);
-            Intent intent = activity.getIntent();
+            Intent intent = ((Activity)activity).getIntent();
             String action = intent.getAction();
             if ("android.intent.action.bcr.newdata".equals(action)) {
                 String SCANNER_DATA_KEY = "com.partner.barcode.data";

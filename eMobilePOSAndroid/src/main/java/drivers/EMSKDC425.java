@@ -3,6 +3,7 @@ package drivers;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
@@ -106,7 +107,7 @@ public class EMSKDC425 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     };
 
     @Override
-    public void connect(Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
+    public void connect(Context activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
         this.edm = edm;
@@ -300,7 +301,7 @@ public class EMSKDC425 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
         // Enable KDCReader to decrypt MSR data using AES Key from KDC Device.
         if (key != null && kdc425Reader.EnableDecryptMSRData(true, key, length)) {
-            activity.runOnUiThread(new Runnable() {
+            ((Activity)activity).runOnUiThread(new Runnable() {
 
                 @Override
                 public void run() {
@@ -656,11 +657,11 @@ public class EMSKDC425 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         protected void onPostExecute(Boolean result) {
             boolean isDestroyed = false;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                if (activity.isDestroyed()) {
+                if (((Activity)activity).isDestroyed()) {
                     isDestroyed = true;
                 }
             }
-            if (!activity.isFinishing() && !isDestroyed && myProgressDialog.isShowing()) {
+            if (!((Activity)activity).isFinishing() && !isDestroyed && myProgressDialog.isShowing()) {
                 myProgressDialog.dismiss();
             }
         }

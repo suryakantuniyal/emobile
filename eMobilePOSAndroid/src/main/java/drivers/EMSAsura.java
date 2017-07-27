@@ -2,6 +2,7 @@ package drivers;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -73,7 +74,7 @@ public class EMSAsura extends EMSDeviceDriver
     private int PRINT_TXT_SIZE = 24;
     private int PAPER_WIDTH = 576;
     private String portSettings, portName;
-    private Activity activity;
+    private Context activity;
     private EMSAsura thisClassInstance;
 
     private EMSCallBack callBack, _scannerCallBack;
@@ -102,7 +103,7 @@ public class EMSAsura extends EMSDeviceDriver
     AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
 
     @Override
-    public void connect(Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
+    public void connect(Context activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
 
