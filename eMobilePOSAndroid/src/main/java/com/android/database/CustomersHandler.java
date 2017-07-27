@@ -546,14 +546,11 @@ public class CustomersHandler {
         if (customerId != null && !customerId.isEmpty()) {
             // SQLiteDatabase db = dbManager.openReadableDB();
 
-            StringBuilder sb = new StringBuilder();
-            sb.append(
-                    "SELECT c.cust_firstName,c.cust_lastName,b.addr_b_str1,b.addr_b_str2,b.addr_b_str3,b.addr_b_city,b.addr_b_state,b.addr_b_country,");
-            sb.append(
-                    "b.addr_b_zipcode,b.addr_s_str1,b.addr_s_str2,b.addr_s_str3,b.addr_s_city,b.addr_s_state,b.addr_s_country,b.addr_s_zipcode ");
-            sb.append("FROM Customers c LEFT OUTER JOIN Address b ON c.cust_id = b.cust_id WHERE c.cust_id = ?");
+            String sb = "SELECT c.cust_firstName,c.cust_lastName,b.addr_b_str1,b.addr_b_str2,b.addr_b_str3,b.addr_b_city,b.addr_b_state,b.addr_b_country," +
+                    "b.addr_b_zipcode,b.addr_s_str1,b.addr_s_str2,b.addr_s_str3,b.addr_s_city,b.addr_s_state,b.addr_s_country,b.addr_s_zipcode " +
+                    "FROM Customers c LEFT OUTER JOIN Address b ON c.cust_id = b.cust_id WHERE c.cust_id = ?";
 
-            Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), new String[]{customerId});
+            Cursor cursor = DBManager.getDatabase().rawQuery(sb, new String[]{customerId});
 
             if (cursor.moveToFirst()) {
                 customer.cust_firstName = cursor.getString(cursor.getColumnIndex(cust_firstName));
