@@ -33,6 +33,7 @@ import com.thefactoryhka.android.pa.TfhkaAndroid;
 
 import org.springframework.util.StringUtils;
 
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -153,49 +154,28 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
         Order order = ordersHandler.getOrder(ordID);
         Bixolon bixolon = BixolonDAO.getBixolon();
         Global.OrderType type = Global.OrderType.getByCode(Integer.parseInt(order.ord_type));
-        boolean cmd = printMerchantName(bixolon.getMerchantName());
+        boolean cmd = printBixolonMerchantName(bixolon.getMerchantName());
         cmd = printRUC(bixolon.getRuc());
         cmd = sendNFC(bixolon.getNcf());
         cmd = openDocument(type);
-
-
-//        cmd = printOrderId(order);
         if (cmd) {
-//            cmd = printRUC(bixolon.getRuc());
+            List<OrderProduct> orderProducts = order.getOrderProducts();
+            for (OrderProduct product : orderProducts) {
+                cmd = printBixolonItem(product, saleTypes == Global.OrderType.RETURN);
+                if (!cmd) {
+                    break;
+                }
+            }
             if (cmd) {
-//                cmd = printMerchantName(bixolon.getMerchantName());
+                cmd = printBixolonSubTotal();
                 if (cmd) {
-//                    String typeDetails = getOrderTypeDetails(fromOnHold, order, LINE_WIDTH, type).replace(" ", "");
-//                    cmd = SendCmd(String.format("%s%s", getCommentsChar(saleTypes), typeDetails));
+                    cmd = printBixolonTotal(order);
                     if (cmd) {
-                        List<OrderProduct> orderProducts = order.getOrderProducts();
-                        for (OrderProduct product : orderProducts) {
-//                            cmd = printItemComments(product.getOrdprod_desc());
-                            if (cmd) {
-                                cmd = printItem(product, saleTypes == Global.OrderType.RETURN);
-                                if (!cmd) {
-                                    break;
-                                }
-                            } else {
-                                break;
-                            }
-                        }
-                        if (cmd) {
-                            cmd = printSubTotal();
-                            if (cmd) {
-                                cmd = printTotal(order);
-                                if (cmd) {
-                                    cmd = closeDocument();
-                                }
-                            }
-                        }
+                        cmd = closeDocument();
                     }
                 }
             }
         }
-
-//              ReportData xReport = getXReport();
-//            S1PrinterData printerData = printerTFHKA.getS1PrinterData();
         String machineNumber = getRegisteredMachineNumber();
         int lastInvoice = cmd ? getNumberOfLastInvoice() : 0;
         order.setBixolonTransactionId(String.format(Locale.getDefault(), "%s-%08d", machineNumber, lastInvoice));
@@ -207,6 +187,7 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
         }
         return cmd;
     }
+
 
     private String getRegisteredMachineNumber() {
         if (printerTFHKA instanceof TfhkaAndroid) {
@@ -245,8 +226,8 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
     private boolean openDocument(Global.OrderType orderType) {
         switch (country) {
             case DOMINICAN_REPUBLIC: {
-                if (orderType == Global.OrderType.CONSIGNMENT_RETURN) {
-                    return SendCmd("/2");
+                if (orderType == Global.OrderType.RETURN) {
+                    return SendCmd("/1");
                 } else {
                     return SendCmd("/0");
                 }
@@ -600,7 +581,7 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
         }
     }
 
-    private boolean printMerchantName(String merchantName) {
+    private boolean printBixolonMerchantName(String merchantName) {
         if (TextUtils.isEmpty(merchantName)) {
             return true;
         }
@@ -616,7 +597,7 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
         }
     }
 
-    private boolean printItemComments(String comments) {
+    private boolean printBixolonItemComments(String comments) {
         if (TextUtils.isEmpty(comments)) {
             return true;
         }
@@ -642,7 +623,7 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
         }
     }
 
-    private boolean printSubTotal() {
+    private boolean printBixolonSubTotal() {
         return SendCmd("3");
     }
 
@@ -656,26 +637,82 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
         return SendCmd(command);
     }
 
-    private boolean printItem(OrderProduct product, boolean isCredit) {
+    private boolean printBixolonItem(OrderProduct product, boolean isCredit) {
         AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
         BixolonTax tax = BixolonDAO.getTax(product.getProd_taxId(), assignEmployee.getTaxDefault());
         String cmnd;
+        BigDecimal totalPrice = Global.getBigDecimalNum(product.getFinalPrice(), 2).add(product.getProd_taxValue());
+        int scaleQty = country == BixolonCountry.PANAMA ? 2 : 2;
         if (isCredit) {
             cmnd = String.format(Locale.getDefault(), "d%s%s%s",
-                    String.format("%0" + (10 - Global.getBigDecimalNum(product.getFinalPrice(), 2).toString().replace(".", "").length()) + "d%s", 0, Global.getBigDecimalNum(product.getFinalPrice(), 2).toString().replace(".", "")),
-                    String.format("%0" + (8 - Global.getBigDecimalNum(product.getOrdprod_qty(), 3).abs().toString().replace(".", "").length()) + "d%s", 0, Global.getBigDecimalNum(product.getOrdprod_qty(), 3).abs().toString().replace(".", "")),
+                    String.format("%0" + (10 - Global.getRoundBigDecimal(totalPrice, 2).toString().replace(".", "").length()) + "d%s", 0, Global.getRoundBigDecimal(totalPrice, 2).toString().replace(".", "")),
+                    String.format("%0" + (8 - Global.getBigDecimalNum(product.getOrdprod_qty(), scaleQty).abs().toString().replace(".", "").length()) + "d%s", 0, Global.getBigDecimalNum(product.getOrdprod_qty(), scaleQty).abs().toString().replace(".", "")),
                     product.getOrdprod_name());
         } else {
             cmnd = String.format(Locale.getDefault(), "%s%s%s%s",
                     tax == null ? " " : tax.getBixolonChar(),
-                    String.format("%0" + (10 - Global.getBigDecimalNum(product.getFinalPrice(), 2).toString().replace(".", "").length()) + "d%s", 0, Global.getBigDecimalNum(product.getFinalPrice(), 2).toString().replace(".", "")),
-                    String.format("%0" + (8 - Global.getBigDecimalNum(product.getOrdprod_qty(), 3).toString().replace(".", "").length()) + "d%s", 0, Global.getBigDecimalNum(product.getOrdprod_qty(), 3).toString().replace(".", "")),
+                    String.format("%0" + (10 - Global.getRoundBigDecimal(totalPrice, 2).toString().replace(".", "").length()) + "d%s", 0, Global.getRoundBigDecimal(totalPrice, 2).toString().replace(".", "")),
+                    String.format("%0" + (8 - Global.getBigDecimalNum(product.getOrdprod_qty(), scaleQty).toString().replace(".", "").length()) + "d%s", 0, Global.getBigDecimalNum(product.getOrdprod_qty(), scaleQty).toString().replace(".", "")),
                     product.getOrdprod_name());
         }
-        return SendCmd(cmnd);
+        boolean cmd = SendCmd(cmnd);
+        if (cmd) {
+            if (!TextUtils.isEmpty(product.getDiscount_id())) {
+                int scale = product.isDiscountFixed() ? 8 : 4;
+                String discount = Global.getBigDecimalNum(product.getDisAmount(), 2).toString().replace(".", "");
+                if (discount.length() < scale) {
+                    discount = String.format(Locale.getDefault(), "%0" + (scale - discount.length()) + "d%s", 0, discount);
+                }
+                if (product.isDiscountFixed()) {
+                    cmnd = "q" + "-" + discount;
+                } else {
+                    cmnd = "p" + "-" + discount;
+                }
+                cmd = SendCmd(cmnd);
+            }
+        }
+        return cmd;
     }
 
-    private boolean printTotal(Order order) {
+    private boolean printBixolonPayments(List<Payment> payments) {
+        String command = null;
+        if (country == BixolonCountry.PANAMA) {
+
+        } else {
+            String payType = payments.size() == 1 ? "1" : "2";
+            for (Payment payment : payments) {
+                switch (payment.getPaymentMethod().getPaymentmethod_type().toUpperCase()) {
+//                    case "CASH":
+//                        command = String.format(Locale.getDefault(), "%s01%012d", payType, Integer.parseInt(StringUtils.deleteAny(payment.getPay_amount(), ".")));
+//                        break;
+                    case "CHECK":
+                        command = String.format(Locale.getDefault(), "%s02%012d", payType,
+                                Integer.parseInt(StringUtils.deleteAny(Global.getBigDecimalNum(payment.getPay_amount(), 2).toString(), ".")));
+                        break;
+                    case "DISCOVER":
+                    case "MASTERCARD":
+                    case "VISA":
+                    case "DEBITCARD":
+                        command = String.format(Locale.getDefault(), "%s03%012d", payType,
+                                Integer.parseInt(StringUtils.deleteAny(Global.getBigDecimalNum(payment.getPay_amount(), 2).toString(), ".")));
+                        break;
+                    case "LOYALTYCARD":
+                    case "GIFTCARD":
+                    case "REWARD":
+                        command = String.format(Locale.getDefault(), "%s08%012d", payType,
+                                Integer.parseInt(StringUtils.deleteAny(Global.getBigDecimalNum(payment.getPay_amount(), 2).toString(), ".")));
+                        break;
+                }
+                if (command != null && !SendCmd(command)) {
+                    return false;
+                }
+            }
+        }
+        SendCmd("101");
+        return true;
+    }
+
+    private boolean printBixolonTotal(Order order) {
         PaymentsHandler paymentsHandler = new PaymentsHandler(activity);
         List<Payment> orderPayments = paymentsHandler.getOrderPayments(order.ord_id);
         String command = null;
@@ -696,34 +733,38 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
             }
             return SendCmd(command);
         } else {
-            String payType = orderPayments.size() == 1 ? "1" : "2";
-            for (Payment payment : orderPayments) {
-                switch (payment.getPaymentMethod().getPaymentmethod_type().toUpperCase()) {
-//                    case "CASH":
-//                        command = String.format(Locale.getDefault(), "%s01%012d", payType, Integer.parseInt(StringUtils.deleteAny(payment.getPay_amount(), ".")));
+            return printBixolonPayments(orderPayments);
+//            String payType = orderPayments.size() == 1 ? "1" : "2";
+//            for (Payment payment : orderPayments) {
+//                switch (payment.getPaymentMethod().getPaymentmethod_type().toUpperCase()) {
+////                    case "CASH":
+////                        command = String.format(Locale.getDefault(), "%s01%012d", payType, Integer.parseInt(StringUtils.deleteAny(payment.getPay_amount(), ".")));
+////                        break;
+//                    case "CHECK":
+//                        command = String.format(Locale.getDefault(), "%s02%012d", payType,
+//                                Integer.parseInt(StringUtils.deleteAny(Global.getBigDecimalNum(payment.getPay_amount(), 2).toString(), ".")));
 //                        break;
-                    case "CHECK":
-                        command = String.format(Locale.getDefault(), "%s02%012d", payType, Integer.parseInt(StringUtils.deleteAny(payment.getPay_amount(), ".")));
-                        break;
-                    case "DISCOVER":
-                    case "MASTERCARD":
-                    case "VISA":
-                    case "DEBITCARD":
-                        command = String.format(Locale.getDefault(), "%s03%012d", payType, Integer.parseInt(StringUtils.deleteAny(payment.getPay_amount(), ".")));
-                        break;
-                    case "LOYALTYCARD":
-                    case "GIFTCARD":
-                    case "REWARD":
-                        command = String.format(Locale.getDefault(), "%s08%012d", payType, Integer.parseInt(StringUtils.deleteAny(payment.getPay_amount(), ".")));
-                        break;
-                }
-                if (!SendCmd(command)) {
-                    return false;
-                }
-            }
+//                    case "DISCOVER":
+//                    case "MASTERCARD":
+//                    case "VISA":
+//                    case "DEBITCARD":
+//                        command = String.format(Locale.getDefault(), "%s03%012d", payType,
+//                                Integer.parseInt(StringUtils.deleteAny(Global.getBigDecimalNum(payment.getPay_amount(), 2).toString(), ".")));
+//                        break;
+//                    case "LOYALTYCARD":
+//                    case "GIFTCARD":
+//                    case "REWARD":
+//                        command = String.format(Locale.getDefault(), "%s08%012d", payType,
+//                                Integer.parseInt(StringUtils.deleteAny(Global.getBigDecimalNum(payment.getPay_amount(), 2).toString(), ".")));
+//                        break;
+//                }
+//                if (command != null && !SendCmd(command)) {
+//                    return false;
+//                }
+//            }
         }
-        SendCmd("101");
-        return true;
+//        SendCmd("101");
+//        return true;
     }
 
     private boolean voidLastTransaction() {
@@ -791,7 +832,7 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
         return printerData;
     }
 
-    public Boolean printSettings() {
+    public Boolean printBixolonSettings() {
         return SendCmd("D");
     }
 

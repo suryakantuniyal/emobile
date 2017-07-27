@@ -359,7 +359,7 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
 
 
     private void voidTransaction() {
-        paymentToBeRefunded = payHandler.getPaymentForVoid(pay_id);
+        paymentToBeRefunded = payHandler.getPayment(pay_id);
         if (myPref.getSwiperType() == Global.HANDPOINT || myPref.getSwiperType() == Global.ICMPEVO) {
             myProgressDialog = new ProgressDialog(activity);
             myProgressDialog.setMessage(getString(R.string.processing_refund));

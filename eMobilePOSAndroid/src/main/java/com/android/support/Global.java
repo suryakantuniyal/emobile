@@ -39,7 +39,6 @@ import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.ClerkDAO;
 import com.android.dao.EmobilePOSRealmMigration;
 import com.android.dao.RealmModule;
-import com.android.database.DBManager;
 import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.R;

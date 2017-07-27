@@ -155,7 +155,7 @@ public class BixolonFragment extends Fragment implements View.OnClickListener {
             Bixoloncommand command = params[0];
             switch (command) {
                 case PRINT_SETTINGS:
-                    return bixolonDevice.printSettings();
+                    return bixolonDevice.printBixolonSettings();
                 case PRINT_Z:
                     try {
                         bixolonDevice.printZReport();
