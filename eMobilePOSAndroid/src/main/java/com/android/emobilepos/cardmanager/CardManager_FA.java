@@ -69,81 +69,34 @@ import interfaces.EMSCallBack;
 public class CardManager_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener {
 
     public static final int CASE_GIFT = 0, CASE_LOYALTY = 1, CASE_REWARD = 2;
+    private static final String DATA_STRING_TAG = "com.motorolasolutions.emdk.datawedge.data_string";
+    private static CheckBox cardSwipe;
+    private static boolean cardReaderConnected = false;
+    private static String ourIntentAction = "";
+    EMSPayGate_Default.EAction PAYMENT_ACTION;
     private EditText hiddenField;
     private String finalMessage;
     private String amountAdded;
     private EMSRover roverReader;
-
-    public enum GiftCardActions {
-        CASE_ACTIVATE(0), CASE_ADD_BALANCE(1), CASE_BALANCE_INQUIRY(2), CASE_MANUAL_ADD(3), CASE_DEACTIVATE(4);
-
-        private int code;
-
-        GiftCardActions(int code) {
-            this.code = code;
-        }
-
-        public int getCode() {
-            return this.code;
-        }
-
-        public static GiftCardActions getByCode(int code) {
-            switch (code) {
-                case 0:
-                    return CASE_ACTIVATE;
-                case 1:
-                    return CASE_ADD_BALANCE;
-                case 2:
-                    return CASE_BALANCE_INQUIRY;
-                case 3:
-                    return CASE_MANUAL_ADD;
-                case 4:
-                    return CASE_DEACTIVATE;
-            }
-            return null;
-        }
-
-        public String getLabelByCode(Context context) {
-            switch (code) {
-                case 0:
-                    return context.getResources().getString(R.string.activate);
-                case 1:
-                    return context.getResources().getString(R.string.add_balance);
-                case 2:
-                    return context.getResources().getString(R.string.balance_inquiry);
-                case 3:
-                    return context.getResources().getString(R.string.manually_add_balance);
-                case 4:
-                    return context.getResources().getString(R.string.deactivate);
-            }
-            return null;
-        }
-    }
-
     private int cardTypeCase;
     private GiftCardActions giftCardActions;
     private String LOADING_MSG;
-    EMSPayGate_Default.EAction PAYMENT_ACTION;
     private EMSCallBack msrCallBack;
     private Global global;
     private boolean hasBeenCreated = false, cardWasFound = false;
-    private static CheckBox cardSwipe;
     private CreditCardInfo cardInfoManager;
     private EMSUniMagDriver uniMagReader;
     private EMSMagtekAudioCardReader magtekReader;
-    private static boolean cardReaderConnected = false;
     private MyPreferences myPref;
     private EditText fieldCardNum, fieldAmountToAdd;
     private boolean wasReadFromReader = false;
-    private static String ourIntentAction = "";
-    private static final String DATA_STRING_TAG = "com.motorolasolutions.emdk.datawedge.data_string";
     private Activity activity;
     private ProgressDialog myProgressDialog;
     private OrderProductsHandler ordProdDB;
     private HashMap<String, String> giftCardMap = new HashMap<String, String>();
     private PaymentsHandler paymentHandlerDB;
     private EMSIDTechUSB _msrUsbSams;
-
+    private Payment payment;
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
@@ -197,6 +150,9 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
         Button btnProcess = (Button) findViewById(R.id.processButton);
         btnProcess.setOnClickListener(this);
         fieldCardNum = (EditText) findViewById(R.id.fieldCardNumber);
+        if (extras.containsKey("cardNumber")) {
+            fieldCardNum.setText(extras.getString("cardNumber", ""));
+        }
         cardSwipe = (CheckBox) findViewById(R.id.checkboxCardSwipe);
         CustomerCustomField customField = CustomerCustomFieldsDAO.findEMWSCardIdByCustomerId(myPref.getCustID());
         fieldCardNum.setText(customField == null ? "" : customField.getCustValue());
@@ -281,7 +237,9 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
                     fieldAmountToAdd.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
                     fieldAmountToAdd.addTextChangedListener(getTextWatcher(fieldAmountToAdd));
                 }
-
+                if (extras.containsKey("amount")) {
+                    fieldAmountToAdd.setText(extras.getString("amount", "0.00"));
+                }
                 break;
         }
         cardInfoManager = new CreditCardInfo();
@@ -516,8 +474,6 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
         return true;
     }
 
-    private Payment payment;
-
     private void processInquiry() {
         String cardType = "GiftCard";
         if (cardTypeCase == CASE_LOYALTY)
@@ -570,6 +526,186 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
             } else {
                 Global.showPrompt(activity, R.string.dlog_title_error, getString(R.string.card_already_processed));
             }
+        }
+    }
+
+    private void showPrintDlg(final HashMap<String, String> parsedMap) {
+        final Dialog dlog = new Dialog(activity, R.style.Theme_TransparentTest);
+        dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dlog.setCancelable(false);
+        dlog.setContentView(R.layout.dlog_btn_left_right_layout);
+
+        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+        viewTitle.setText(R.string.dlog_title_confirm);
+        viewMsg.setText(R.string.dlog_msg_print_cust_copy);
+
+        dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
+
+        Button btnYes = (Button) dlog.findViewById(R.id.btnDlogLeft);
+        Button btnNo = (Button) dlog.findViewById(R.id.btnDlogRight);
+        btnYes.setText(R.string.button_yes);
+        btnNo.setText(R.string.button_no);
+
+        btnYes.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                dlog.dismiss();
+                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, parsedMap);
+
+            }
+        });
+        btnNo.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                dlog.dismiss();
+                showBalancePrompt(finalMessage);
+            }
+        });
+        dlog.show();
+    }
+
+    public void showBalancePrompt(String msg) {
+        final Dialog dlog = new Dialog(this, R.style.Theme_TransparentTest);
+        dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dlog.setContentView(R.layout.dlog_btn_single_layout);
+        dlog.setCancelable(false);
+        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+        viewTitle.setText(R.string.dlog_title_confirm);
+        viewMsg.setText(msg);
+        Button btnOk = (Button) dlog.findViewById(R.id.btnDlogSingle);
+        btnOk.setText(R.string.button_ok);
+        btnOk.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                dlog.dismiss();
+                finish();
+            }
+        });
+        dlog.show();
+    }
+
+    private void updateViewAfterSwipe() {
+        SimpleDateFormat dt = new SimpleDateFormat("yyyy", Locale.getDefault());
+        SimpleDateFormat dt2 = new SimpleDateFormat("yy", Locale.getDefault());
+        String formatedYear = "";
+        try {
+            Date date = dt2.parse(cardInfoManager.getCardExpYear());
+            formatedYear = dt.format(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
+
+        }
+
+        cardInfoManager.setCardExpYear(formatedYear);
+        fieldCardNum.setText(cardInfoManager.getCardNumUnencrypted());
+
+        switch (giftCardActions) {
+            case CASE_ACTIVATE:
+            case CASE_ADD_BALANCE:
+                giftCardMap = ordProdDB.getOrdProdGiftCard(cardInfoManager.getCardNumUnencrypted());
+                if (!giftCardMap.isEmpty())
+                    cardWasFound = true;
+                TextView labelAmount = (TextView) findViewById(R.id.labelAmount);
+                String temp = giftCardMap.get("overwrite_price") == null ? "-1" : giftCardMap.get("overwrite_price");
+                giftCardMap.put("overwrite_price", temp);
+                labelAmount.setText(Global.formatDoubleStrToCurrency(temp));
+                break;
+        }
+
+        wasReadFromReader = true;
+    }
+
+    @Override
+    public void cardWasReadSuccessfully(boolean read, CreditCardInfo cardManager) {
+        this.cardInfoManager = cardManager;
+        updateViewAfterSwipe();
+        if (uniMagReader != null && uniMagReader.readerIsConnected()) {
+            uniMagReader.startReading();
+        } else if (magtekReader == null && Global.btSwiper == null && _msrUsbSams == null
+                && Global.mainPrinterManager != null)
+            Global.mainPrinterManager.getCurrentDevice().loadCardReader(msrCallBack, false);
+    }
+
+    @Override
+    public void readerConnectedSuccessfully(boolean didConnect) {
+        if (didConnect) {
+            cardReaderConnected = true;
+            if (uniMagReader != null && uniMagReader.readerIsConnected())
+                uniMagReader.startReading();
+            if (!cardSwipe.isChecked())
+                cardSwipe.setChecked(true);
+        } else {
+            cardReaderConnected = false;
+            if (cardSwipe.isChecked())
+                cardSwipe.setChecked(false);
+        }
+    }
+
+    @Override
+    public void scannerWasRead(String data) {
+
+    }
+
+    @Override
+    public void startSignature() {
+
+    }
+
+    @Override
+    public void nfcWasRead(String nfcUID) {
+
+    }
+
+    public enum GiftCardActions {
+        CASE_ACTIVATE(0), CASE_ADD_BALANCE(1), CASE_BALANCE_INQUIRY(2), CASE_MANUAL_ADD(3), CASE_DEACTIVATE(4);
+
+        private int code;
+
+        GiftCardActions(int code) {
+            this.code = code;
+        }
+
+        public static GiftCardActions getByCode(int code) {
+            switch (code) {
+                case 0:
+                    return CASE_ACTIVATE;
+                case 1:
+                    return CASE_ADD_BALANCE;
+                case 2:
+                    return CASE_BALANCE_INQUIRY;
+                case 3:
+                    return CASE_MANUAL_ADD;
+                case 4:
+                    return CASE_DEACTIVATE;
+            }
+            return null;
+        }
+
+        public int getCode() {
+            return this.code;
+        }
+
+        public String getLabelByCode(Context context) {
+            switch (code) {
+                case 0:
+                    return context.getResources().getString(R.string.activate);
+                case 1:
+                    return context.getResources().getString(R.string.add_balance);
+                case 2:
+                    return context.getResources().getString(R.string.balance_inquiry);
+                case 3:
+                    return context.getResources().getString(R.string.manually_add_balance);
+                case 4:
+                    return context.getResources().getString(R.string.deactivate);
+            }
+            return null;
         }
     }
 
@@ -675,142 +811,6 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
             }
         }
     }
-
-    private void showPrintDlg(final HashMap<String, String> parsedMap) {
-        final Dialog dlog = new Dialog(activity, R.style.Theme_TransparentTest);
-        dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dlog.setCancelable(false);
-        dlog.setContentView(R.layout.dlog_btn_left_right_layout);
-
-        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
-        viewTitle.setText(R.string.dlog_title_confirm);
-        viewMsg.setText(R.string.dlog_msg_print_cust_copy);
-
-        dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
-
-        Button btnYes = (Button) dlog.findViewById(R.id.btnDlogLeft);
-        Button btnNo = (Button) dlog.findViewById(R.id.btnDlogRight);
-        btnYes.setText(R.string.button_yes);
-        btnNo.setText(R.string.button_no);
-
-        btnYes.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                dlog.dismiss();
-                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, parsedMap);
-
-            }
-        });
-        btnNo.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                dlog.dismiss();
-                showBalancePrompt(finalMessage);
-            }
-        });
-        dlog.show();
-    }
-
-
-    public void showBalancePrompt(String msg) {
-        final Dialog dlog = new Dialog(this, R.style.Theme_TransparentTest);
-        dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dlog.setContentView(R.layout.dlog_btn_single_layout);
-        dlog.setCancelable(false);
-        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
-        viewTitle.setText(R.string.dlog_title_confirm);
-        viewMsg.setText(msg);
-        Button btnOk = (Button) dlog.findViewById(R.id.btnDlogSingle);
-        btnOk.setText(R.string.button_ok);
-        btnOk.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-
-                dlog.dismiss();
-                finish();
-            }
-        });
-        dlog.show();
-    }
-
-    private void updateViewAfterSwipe() {
-        SimpleDateFormat dt = new SimpleDateFormat("yyyy", Locale.getDefault());
-        SimpleDateFormat dt2 = new SimpleDateFormat("yy", Locale.getDefault());
-        String formatedYear = "";
-        try {
-            Date date = dt2.parse(cardInfoManager.getCardExpYear());
-            formatedYear = dt.format(date);
-        } catch (ParseException e) {
-            e.printStackTrace();
-            Crashlytics.logException(e);
-
-        }
-
-        cardInfoManager.setCardExpYear(formatedYear);
-        fieldCardNum.setText(cardInfoManager.getCardNumUnencrypted());
-
-        switch (giftCardActions) {
-            case CASE_ACTIVATE:
-            case CASE_ADD_BALANCE:
-                giftCardMap = ordProdDB.getOrdProdGiftCard(cardInfoManager.getCardNumUnencrypted());
-                if (!giftCardMap.isEmpty())
-                    cardWasFound = true;
-                TextView labelAmount = (TextView) findViewById(R.id.labelAmount);
-                String temp = giftCardMap.get("overwrite_price") == null ? "-1" : giftCardMap.get("overwrite_price");
-                giftCardMap.put("overwrite_price", temp);
-                labelAmount.setText(Global.formatDoubleStrToCurrency(temp));
-                break;
-        }
-
-        wasReadFromReader = true;
-    }
-
-    @Override
-    public void cardWasReadSuccessfully(boolean read, CreditCardInfo cardManager) {
-        this.cardInfoManager = cardManager;
-        updateViewAfterSwipe();
-        if (uniMagReader != null && uniMagReader.readerIsConnected()) {
-            uniMagReader.startReading();
-        } else if (magtekReader == null && Global.btSwiper == null && _msrUsbSams == null
-                && Global.mainPrinterManager != null)
-            Global.mainPrinterManager.getCurrentDevice().loadCardReader(msrCallBack, false);
-    }
-
-    @Override
-    public void readerConnectedSuccessfully(boolean didConnect) {
-        if (didConnect) {
-            cardReaderConnected = true;
-            if (uniMagReader != null && uniMagReader.readerIsConnected())
-                uniMagReader.startReading();
-            if (!cardSwipe.isChecked())
-                cardSwipe.setChecked(true);
-        } else {
-            cardReaderConnected = false;
-            if (cardSwipe.isChecked())
-                cardSwipe.setChecked(false);
-        }
-    }
-
-    @Override
-    public void scannerWasRead(String data) {
-
-    }
-
-    @Override
-    public void startSignature() {
-
-    }
-
-    @Override
-    public void nfcWasRead(String nfcUID) {
-
-    }
-
 
     private class printAsync extends AsyncTask<HashMap<String, String>, String, HashMap<String, String>> {
         private boolean printSuccessful = true;

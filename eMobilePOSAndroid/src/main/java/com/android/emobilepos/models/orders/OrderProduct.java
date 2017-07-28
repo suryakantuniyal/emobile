@@ -96,6 +96,7 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     private String prod_extradesc;
     private String consignment_qty;
     private boolean attributesCompleted;
+    private boolean GC;
 
     public OrderProduct(Product product) {
         this.setAssignedSeat(product.getAssignedSeat());
@@ -108,6 +109,7 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         if (!TextUtils.isEmpty(product.getProdPrice())) {
             this.setMixMatchOriginalPrice(new BigDecimal(product.getProdPrice()));
         }
+        this.setGC(product.isGC());
         this.setImgURL(product.getProdImgName());
         this.setProd_type(product.getProdType());
         this.setOnHand(product.getProdOnHand());
@@ -901,5 +903,13 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
 
     public void setPayWithPoints(String payWithPoints) {
         this.payWithPoints = payWithPoints;
+    }
+
+    public boolean isGC() {
+        return GC;
+    }
+
+    public void setGC(boolean GC) {
+        this.GC = GC;
     }
 }

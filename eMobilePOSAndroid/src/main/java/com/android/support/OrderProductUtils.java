@@ -1,9 +1,9 @@
 package com.android.support;
 
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.android.emobilepos.models.orders.OrderProduct;
+import com.android.emobilepos.models.realms.ProductAttribute;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,13 +55,7 @@ public class OrderProductUtils {
     }
 
     public static List<OrderProduct> getOrderProductsByOrderProductId(List<OrderProduct> orderProducts, String orderProductId) {
-        List<OrderProduct> list = new ArrayList<>();
-        for (OrderProduct orderProduct : orderProducts) {
-            if (orderProduct.getOrdprod_id().equalsIgnoreCase(orderProductId)) {
-                list.add(orderProduct);
-            }
-        }
-        return list;
+        return null;
     }
 
     public static void removeOrderProductsByOrderProductId(List<OrderProduct> orderProducts, String orderProductId) {
@@ -111,5 +105,18 @@ public class OrderProductUtils {
         orderProducts.clear();
         orderProducts.addAll(parents.values());
 
+    }
+
+    public static boolean containsGiftCard(List<OrderProduct> orderProducts, String cardNumnber) {
+        for (OrderProduct product : orderProducts) {
+            if (product.isGC()) {
+                for (ProductAttribute attributes : product.getRequiredProductAttributes()) {
+                    if (attributes.getValue().equalsIgnoreCase(cardNumnber)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 }

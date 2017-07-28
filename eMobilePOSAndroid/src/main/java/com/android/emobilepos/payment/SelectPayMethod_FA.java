@@ -31,6 +31,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.dao.AssignEmployeeDAO;
+import com.android.dao.CustomerCustomFieldsDAO;
 import com.android.dao.PayMethodsDAO;
 import com.android.dao.PaymentMethodDAO;
 import com.android.dao.StoredPaymentsDAO;
@@ -41,13 +42,16 @@ import com.android.database.PaymentsHandler;
 import com.android.database.TaxesHandler;
 import com.android.database.VoidTransactionsHandler;
 import com.android.emobilepos.R;
+import com.android.emobilepos.cardmanager.CardManager_FA;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.GroupTax;
 import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.realms.AssignEmployee;
+import com.android.emobilepos.models.realms.CustomerCustomField;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.PaymentMethod;
 import com.android.emobilepos.ordering.SplittedOrderSummary_FA;
+import com.android.emobilepos.security.SecurityManager;
 import com.android.ivu.MersenneTwisterFast;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
@@ -57,6 +61,7 @@ import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NumberUtils;
+import com.android.support.OrderProductUtils;
 import com.android.support.Post;
 import com.android.support.TerminalDisplay;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
@@ -807,10 +812,12 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                                 && !myPref.getPreferences(MyPreferences.pref_automatic_printing)) {
                             showPrintDlg(false, false, emvContainer);
                         } else if (overAllRemainingBalance <= 0) {
+                            openGiftCardAddBalance();
                             finish();
                         }
                     }
                 } else if (overAllRemainingBalance <= 0) {
+                    openGiftCardAddBalance();
                     finish();
                 }
             }
@@ -839,6 +846,24 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
             }
 //            }
+        }
+    }
+
+    private void openGiftCardAddBalance() {
+        CustomerCustomField customField = CustomerCustomFieldsDAO.findEMWSCardIdByCustomerId(myPref.getCustID());
+        boolean containsGiftCard = customField != null && OrderProductUtils.containsGiftCard(global.order.getOrderProducts(), customField.getCustValue());
+        if (containsGiftCard) {
+            Intent intent = new Intent(this, CardManager_FA.class);
+            intent.putExtra("CARD_TYPE", CardManager_FA.CASE_GIFT);
+            intent.putExtra("amount", total);
+            intent.putExtra("cardNumber", customField.getCustValue());
+            boolean hasPermissions = SecurityManager.hasPermissions(this, SecurityManager.SecurityAction.MANUAL_ADD_BALANCE_LOYALTY);
+            if (hasPermissions) {
+                intent.putExtra("PROCESS_TYPE", CardManager_FA.GiftCardActions.CASE_MANUAL_ADD.getCode());
+                startActivity(intent);
+            } else {
+                Global.showPrompt(this, R.string.security_alert, getString(R.string.permission_denied));
+            }
         }
     }
 
