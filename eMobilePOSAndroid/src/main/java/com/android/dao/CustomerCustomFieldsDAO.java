@@ -49,4 +49,15 @@ public class CustomerCustomFieldsDAO {
         }
         return customField;
     }
+
+    public static void upsert(CustomerCustomField customField) {
+        Realm realm = Realm.getDefaultInstance();
+        try {
+            realm.beginTransaction();
+            realm.insertOrUpdate(customField);
+            realm.commitTransaction();
+        } finally {
+            realm.close();
+        }
+    }
 }

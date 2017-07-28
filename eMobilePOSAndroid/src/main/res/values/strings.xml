@@ -1340,5 +1340,7 @@
     <string name="hours">Hours</string>
     <string name="total_hours_worked">Total Hours</string>
     <string name="date">Date</string>
+    <string name="dlog_title_enter_giftcard_number">Enter gift card number</string>
+    <string name="giftcard_number">Gift Card Number:</string>
 
 </resources>

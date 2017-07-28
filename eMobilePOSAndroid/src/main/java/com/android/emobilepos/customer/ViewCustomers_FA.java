@@ -22,6 +22,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -340,7 +341,7 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
             holder.cust_id = (TextView) retView.findViewById(R.id.custSelecID);
             holder.cust_phone = (TextView) retView.findViewById(R.id.custSelecPhone);
             holder.pricelevel_name = (TextView) retView.findViewById(R.id.custSelecPriceLevel);
-            holder.moreInfoIcon = (ImageView) retView.findViewById(R.id.custSelecIcon);
+            holder.moreInfoIcon = (ImageButton) retView.findViewById(R.id.custSelecIcon);
             holder.i_cust_id = cursor.getColumnIndex("_id");
             holder.i_account_number = cursor.getColumnIndex("AccountNumnber");
             holder.i_cust_name = cursor.getColumnIndex("cust_name");
@@ -356,7 +357,7 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
 
         private class ViewHolder {
             TextView cust_name, CompanyName, cust_id, cust_phone, pricelevel_name;
-            ImageView moreInfoIcon;
+            ImageButton moreInfoIcon;
 
             int i_cust_id, i_account_number, i_cust_name, i_CompanyName, i_cust_phone, i_pricelevel_name;
         }

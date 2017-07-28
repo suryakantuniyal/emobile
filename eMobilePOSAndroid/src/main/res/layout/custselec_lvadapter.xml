@@ -80,14 +80,14 @@
                 android:textSize="@dimen/lview_cust_pricelevel" />
         </LinearLayout>
 
-        <ImageView
+        <ImageButton
             android:id="@+id/custSelecIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
+            android:layout_marginRight="5dp"
             android:layout_weight="0"
-            android:padding="5dp"
-            android:src="@drawable/add_blue" />
+            android:padding="15dp"
+            android:src="@android:drawable/ic_menu_edit" />
     </LinearLayout>
 
 </LinearLayout>
