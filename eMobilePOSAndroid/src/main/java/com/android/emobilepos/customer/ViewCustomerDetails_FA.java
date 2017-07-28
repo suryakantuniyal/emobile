@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.text.InputType;
@@ -145,7 +144,10 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar {
                 customField.setCustFieldName("ID");
                 customField.setCustValue(cardNumber);
                 CustomerCustomFieldsDAO.upsert(customField);
+                CustomersHandler handler = new CustomersHandler(ViewCustomerDetails_FA.this);
+                handler.updateSyncStatus(cust_id, false);
                 myAdapter.notifyDataSetChanged();
+
             }
         });
         globalDlog.show();

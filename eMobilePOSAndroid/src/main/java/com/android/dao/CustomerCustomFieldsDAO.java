@@ -25,6 +25,9 @@ public class CustomerCustomFieldsDAO {
     public static void insert(List<CustomerCustomField> customFields) {
         Realm realm = Realm.getDefaultInstance();
         try {
+            for (CustomerCustomField customField : customFields) {
+                customField.generatePrimaryKey();
+            }
             realm.beginTransaction();
             realm.insert(customFields);
             realm.commitTransaction();
@@ -38,8 +41,7 @@ public class CustomerCustomFieldsDAO {
         CustomerCustomField customField;
         try {
             customField = realm.where(CustomerCustomField.class)
-                    .equalTo("custId", custID)
-                    .equalTo("custFieldId", "EMS_CARD_ID_NUM")
+                    .equalTo("id", String.format("%sEMS_CARD_ID_NUM", custID))
                     .findFirst();
             if (customField != null) {
                 customField = realm.copyFromRealm(customField);
@@ -54,6 +56,7 @@ public class CustomerCustomFieldsDAO {
         Realm realm = Realm.getDefaultInstance();
         try {
             realm.beginTransaction();
+            customField.generatePrimaryKey();
             realm.insertOrUpdate(customField);
             realm.commitTransaction();
         } finally {

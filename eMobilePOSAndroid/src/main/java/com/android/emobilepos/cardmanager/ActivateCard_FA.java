@@ -18,8 +18,10 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.android.dao.CustomerCustomFieldsDAO;
 import com.android.database.OrderProductsHandler;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.realms.CustomerCustomField;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
@@ -52,21 +54,20 @@ import interfaces.EMSCallBack;
 public class ActivateCard_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener {
 
     public static final int CASE_GIFT = 0, CASE_LOYALTY = 1, CASE_REWARD = 2;
+    private static final String DATA_STRING_TAG = "com.motorolasolutions.emdk.datawedge.data_string";
+    private static CheckBox cardSwipe;
+    private static boolean cardReaderConnected = false;
+    private static String ourIntentAction = "";
     private int typeCase;
-
     private EMSCallBack msrCallBack;
     private Global global;
     private boolean hasBeenCreated = false;
-    private static CheckBox cardSwipe;
     private CreditCardInfo cardInfoManager;
     private EMSUniMagDriver uniMagReader;
     private EMSMagtekAudioCardReader magtekReader;
-    private static boolean cardReaderConnected = false;
     private MyPreferences myPref;
     private EditText fieldCardNum;
     private boolean wasReadFromReader = false;
-    private static String ourIntentAction = "";
-    private static final String DATA_STRING_TAG = "com.motorolasolutions.emdk.datawedge.data_string";
     private Activity activity;
     private EMSRover roverReader;
     private ProgressDialog myProgressDialog;
@@ -94,7 +95,8 @@ public class ActivateCard_FA extends BaseFragmentActivityActionBar implements EM
         fieldCardNum = (EditText) findViewById(R.id.fieldCardNumber);
         cardSwipe = (CheckBox) findViewById(R.id.checkboxCardSwipe);
         fieldCardNum = (EditText) findViewById(R.id.fieldCardNumber);
-
+        CustomerCustomField customField = CustomerCustomFieldsDAO.findEMWSCardIdByCustomerId(myPref.getCustID());
+        fieldCardNum.setText(customField == null ? "" : customField.getCustValue());
         TextView headerTitle = (TextView) findViewById(R.id.HeaderTitle);
         headerTitle.setText(getString(R.string.activate));
         LinearLayout ll = (LinearLayout) findViewById(R.id.placeHolderInfo);
@@ -297,85 +299,6 @@ public class ActivateCard_FA extends BaseFragmentActivityActionBar implements EM
         }
     }
 
-    private class processAsync extends AsyncTask<String, String, String> {
-
-        private HashMap<String, String> parsedMap = new HashMap<>();
-        private String urlToPost;
-        private boolean wasProcessed = false;
-        private String errorMsg = "Request could not be processed.";
-
-        @Override
-        protected void onPreExecute() {
-            myProgressDialog = new ProgressDialog(activity);
-            myProgressDialog.setMessage("Activating...");
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            myProgressDialog.show();
-
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-
-            Post httpClient = new Post(activity);
-
-            SAXParserFactory spf = SAXParserFactory.newInstance();
-            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
-            urlToPost = params[0];
-
-            try {
-                String xml = httpClient.postData(13,  urlToPost);
-
-                switch (xml) {
-                    case Global.TIME_OUT:
-                        errorMsg = "TIME OUT, would you like to try again?";
-                        break;
-                    case Global.NOT_VALID_URL:
-                        errorMsg = "Can not proceed...";
-                        break;
-                    default:
-                        InputSource inSource = new InputSource(new StringReader(xml));
-
-                        SAXParser sp = spf.newSAXParser();
-                        XMLReader xr = sp.getXMLReader();
-                        xr.setContentHandler(handler);
-                        xr.parse(inSource);
-                        parsedMap = handler.getData();
-
-                        if (parsedMap != null && parsedMap.size() > 0 && parsedMap.get("epayStatusCode").equals("APPROVED"))
-                            wasProcessed = true;
-                        else if (parsedMap != null && parsedMap.size() > 0) {
-                            errorMsg = "statusCode = " + parsedMap.get("statusCode") + "\n" +
-                                    parsedMap.get("statusMessage");
-                        } else
-                            errorMsg = xml;
-                        break;
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                Crashlytics.logException(e);
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String unused) {
-            myProgressDialog.dismiss();
-
-            if (wasProcessed) {
-                StringBuilder sb = new StringBuilder();
-                ordProdDB.updateOrdProdCardActivated(giftCardMap.get("ordprod_id"));
-                String temp = (parsedMap.get("CardBalance") == null ? "0.0" : parsedMap.get("CardBalance"));
-                sb.append("Card Balance: ").append(Global.getCurrencyFrmt(temp));
-                showBalancePrompt(sb.toString());
-            } else {
-                Global.showPrompt(activity, R.string.dlog_title_error, errorMsg);
-            }
-        }
-    }
-
     public void showBalancePrompt(String msg) {
         final Dialog dlog = new Dialog(this, R.style.Theme_TransparentTest);
         dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -456,5 +379,84 @@ public class ActivateCard_FA extends BaseFragmentActivityActionBar implements EM
     @Override
     public void nfcWasRead(String nfcUID) {
 
+    }
+
+    private class processAsync extends AsyncTask<String, String, String> {
+
+        private HashMap<String, String> parsedMap = new HashMap<>();
+        private String urlToPost;
+        private boolean wasProcessed = false;
+        private String errorMsg = "Request could not be processed.";
+
+        @Override
+        protected void onPreExecute() {
+            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog.setMessage("Activating...");
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setCancelable(false);
+            myProgressDialog.show();
+
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            Post httpClient = new Post(activity);
+
+            SAXParserFactory spf = SAXParserFactory.newInstance();
+            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
+            urlToPost = params[0];
+
+            try {
+                String xml = httpClient.postData(13, urlToPost);
+
+                switch (xml) {
+                    case Global.TIME_OUT:
+                        errorMsg = "TIME OUT, would you like to try again?";
+                        break;
+                    case Global.NOT_VALID_URL:
+                        errorMsg = "Can not proceed...";
+                        break;
+                    default:
+                        InputSource inSource = new InputSource(new StringReader(xml));
+
+                        SAXParser sp = spf.newSAXParser();
+                        XMLReader xr = sp.getXMLReader();
+                        xr.setContentHandler(handler);
+                        xr.parse(inSource);
+                        parsedMap = handler.getData();
+
+                        if (parsedMap != null && parsedMap.size() > 0 && parsedMap.get("epayStatusCode").equals("APPROVED"))
+                            wasProcessed = true;
+                        else if (parsedMap != null && parsedMap.size() > 0) {
+                            errorMsg = "statusCode = " + parsedMap.get("statusCode") + "\n" +
+                                    parsedMap.get("statusMessage");
+                        } else
+                            errorMsg = xml;
+                        break;
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String unused) {
+            myProgressDialog.dismiss();
+
+            if (wasProcessed) {
+                StringBuilder sb = new StringBuilder();
+                ordProdDB.updateOrdProdCardActivated(giftCardMap.get("ordprod_id"));
+                String temp = (parsedMap.get("CardBalance") == null ? "0.0" : parsedMap.get("CardBalance"));
+                sb.append("Card Balance: ").append(Global.getCurrencyFrmt(temp));
+                showBalancePrompt(sb.toString());
+            } else {
+                Global.showPrompt(activity, R.string.dlog_title_error, errorMsg);
+            }
+        }
     }
 }

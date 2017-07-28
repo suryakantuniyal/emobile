@@ -1,6 +1,5 @@
 package com.android.database;
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -51,17 +50,15 @@ public class CustomersHandler {
     private static final String AccountNumnber = "AccountNumnber";
 
     private static final String table_name = "Customers";
-
-    private StringBuilder sb1, sb2;
-    private HashMap<String, Integer> attrHash;
-    private List<String[]> custData;
-    private List<HashMap<String, Integer>> dictionaryListMap;
-
     private final List<String> attr = Arrays.asList(cust_id, cust_id_ref, qb_sync, zone_id, CompanyName,
             Salutation, cust_name, cust_chain, cust_balance, cust_limit, cust_contact, cust_firstName, cust_middleName,
             cust_lastName, cust_phone, cust_email, cust_fax, cust_update, isactive, cust_ordertype, cust_taxable,
             cust_salestaxcode, pricelevel_id, cust_terms, cust_pwd, cust_securityquestion, cust_securityanswer,
             cust_points, custidkey, cust_id_numeric, cust_dob, AccountNumnber);
+    private StringBuilder sb1, sb2;
+    private HashMap<String, Integer> attrHash;
+    private List<String[]> custData;
+    private List<HashMap<String, Integer>> dictionaryListMap;
 
     public CustomersHandler(Context activity) {
         attrHash = new HashMap<String, Integer>();
@@ -163,15 +160,9 @@ public class CustomersHandler {
     }
 
     public void insertOneCustomer(Customer customer) {
-        // SQLiteDatabase db =
-        // SQLiteDatabase.openDatabase(myPref.getDBpath(),Global.dbPass, null,
-        // SQLiteDatabase.NO_LOCALIZED_COLLATORS|
-        // SQLiteDatabase.OPEN_READWRITE);
-        // SQLiteDatabase db = dbManager.openWritableDB();
         DBManager.getDatabase().beginTransaction();
         try {
-
-            SQLiteStatement insert = null;
+            SQLiteStatement insert;
             StringBuilder sb = new StringBuilder();
             sb.append("INSERT INTO ").append(table_name).append(" (").append(sb1.toString()).append(") ")
                     .append("VALUES (").append(sb2.toString()).append(")");
@@ -211,82 +202,40 @@ public class CustomersHandler {
             insert.clearBindings();
             insert.close();
             DBManager.getDatabase().setTransactionSuccessful();
-
         } catch (Exception e) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(e.getMessage()).append(" [com.android.emobilepos.CustomersHandler (at Class.insertOneCustomer)]");
-
-//			Tracker tracker = EasyTracker.getInstance(activity);
-//			tracker.send(MapBuilder.createException(sb.toString(), false).build());
         } finally {
             DBManager.getDatabase().endTransaction();
         }
-        // db.close();
     }
 
     public void emptyTable() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("DELETE FROM ").append(table_name);
-        DBManager.getDatabase().execSQL(sb.toString());
+        DBManager.getDatabase().execSQL("DELETE FROM " + table_name);
     }
 
     public Cursor getUnsynchCustomers() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(
-                "SELECT cust_id,cust_name,cust_firstName,cust_lastName,CompanyName,cust_contact,cust_phone,cust_email,cust_dob FROM Customers WHERE qb_sync = '0'");
 
-        Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
-
-        // cursor.moveToFirst();
-        return cursor;
+        return DBManager.getDatabase().rawQuery("SELECT cust_id,cust_name,cust_firstName,cust_lastName,CompanyName,cust_contact,cust_phone,cust_email,cust_dob FROM Customers WHERE qb_sync = '0'", null);
     }
 
     public long getNumUnsyncCustomers() {
-        // SQLiteDatabase db =
-        // SQLiteDatabase.openDatabase(myPref.getDBpath(),Global.dbPass, null,
-        // SQLiteDatabase.NO_LOCALIZED_COLLATORS|
-        // SQLiteDatabase.OPEN_READWRITE);
-
-        // SQLiteDatabase db = dbManager.openReadableDB();
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT Count(*) FROM ").append(table_name).append(" WHERE qb_sync = '0'");
-
-        SQLiteStatement stmt = DBManager.getDatabase().compileStatement(sb.toString());
+        SQLiteStatement stmt = DBManager.getDatabase().compileStatement("SELECT Count(*) FROM " + table_name + " WHERE qb_sync = '0'");
         long count = stmt.simpleQueryForLong();
         stmt.close();
-        // db.close();
         return count;
     }
 
     public boolean unsyncCustomersLeft() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT Count(*) FROM ").append(table_name).append(" WHERE qb_sync = '0'");
-
-        SQLiteStatement stmt = DBManager.getDatabase().compileStatement(sb.toString());
+        SQLiteStatement stmt = DBManager.getDatabase().compileStatement("SELECT Count(*) FROM " + table_name + " WHERE qb_sync = '0'");
         long count = stmt.simpleQueryForLong();
-
-//		String str = "select count(*) from Products";
-//		stmt = DBManager.database.compileStatement(str);
-//		long c = stmt.simpleQueryForLong();
         stmt.close();
         return count != 0;
 
     }
 
     public void updateIsSync(List<String[]> list) {
-        // SQLiteDatabase db =
-        // SQLiteDatabase.openDatabase(myPref.getDBpath(),Global.dbPass, null,
-        // SQLiteDatabase.NO_LOCALIZED_COLLATORS|
-        // SQLiteDatabase.OPEN_READWRITE);
-
-        // SQLiteDatabase db = dbManager.openWritableDB();
-
         StringBuilder sb = new StringBuilder();
         sb.append(cust_id).append(" = ?");
-
         ContentValues args = new ContentValues();
-
         int size = list.size();
         for (int i = 0; i < size; i++) {
             if (list.get(i)[0].equals("0")) {
@@ -294,33 +243,29 @@ public class CustomersHandler {
                 DBManager.getDatabase().update(table_name, args, sb.toString(), new String[]{list.get(i)[1]});
             }
         }
-        // db.close();
+    }
+
+    public void updateSyncStatus(String customerId, boolean isSync) {
+        ContentValues args = new ContentValues();
+        args.put(qb_sync, isSync ? 1 : 0);
+        DBManager.getDatabase().update(table_name, args, cust_id + " = ?", new String[]{customerId});
     }
 
     public String getSpecificValue(String field, String param) {
-        // SQLiteDatabase db = dbManager.openReadableDB();//
-
         String data = "";
         String[] fields = new String[]{field};
         String[] arguments = new String[]{param};
-
         Cursor cursor = DBManager.getDatabase().query(true, table_name, fields, "cust_id=?", arguments, null, null, null, null);
-
         if (cursor.moveToFirst()) {
             do {
-
                 data = cursor.getString(cursor.getColumnIndex(field));
             } while (cursor.moveToNext());
         }
-
         cursor.close();
-        // db.close();
         return data;
     }
 
     public HashMap<String, String> getCustomerMap(String id) {
-        // SQLiteDatabase db = dbManager.openReadableDB();
-
         HashMap<String, String> tempMap = new HashMap<String, String>();
         String[] fields = new String[]{cust_name, cust_phone, cust_email};
         String[] arguments = new String[]{id};
@@ -336,25 +281,18 @@ public class CustomersHandler {
         }
 
         cursor.close();
-        // db.close();
         return tempMap;
     }
 
     public Cursor getCursorAllCust() {
-        // if(db==null||!db.isOpen())
-        // db = dbManager.openReadableDB();
-
         String query = "SELECT cust_id as _id,AccountNumnber, custidkey, cust_name,c.pricelevel_id,pl.pricelevel_name,cust_taxable,cust_salestaxcode,cust_email,CompanyName,cust_phone FROM Customers c LEFT OUTER JOIN PriceLevel pl ON c.pricelevel_id = pl.pricelevel_id ORDER BY cust_name";
 
         Cursor cursor = DBManager.getDatabase().rawQuery(query, null);
         cursor.moveToFirst();
-        // db.close();
         return cursor;
     }
 
     public HashMap<String, String> getCustomerInfo(String custID) {
-        // SQLiteDatabase db = dbManager.openReadableDB();
-
         String query = "SELECT cust_id,cust_name,cust_taxable,cust_salestaxcode,custidkey,pricelevel_id,cust_email FROM Customers WHERE cust_id = ?";
         Cursor c = DBManager.getDatabase().rawQuery(query, new String[]{custID});
         HashMap<String, String> map = new HashMap<String, String>();
@@ -369,7 +307,6 @@ public class CustomersHandler {
         }
 
         c.close();
-        // db.close();
         return map;
     }
 
@@ -380,19 +317,10 @@ public class CustomersHandler {
                 + "a.addr_b_str1,a.addr_b_str2,a.addr_b_str3,a.addr_b_city,a.addr_b_state,a.addr_b_country, a.addr_b_zipcode, a.addr_s_str1,"
                 + "a.addr_s_str2,a.addr_s_str3,a.addr_s_city,a.addr_s_state,a.addr_s_country, a.addr_s_zipcode FROM Customers c LEFT OUTER JOIN Address "
                 + "a ON c.cust_id = a.cust_id WHERE c.cust_id = ?";
-        // StringBuilder sb = new
-        // StringBuilder().append(subquery1).append(custID).append("'");
+
         StringBuilder custAddress = new StringBuilder();
         String[] billingAddress = new String[7];
         String[] shippingAddress = new String[7];
-
-		/*
-         * String[] fields = new String[] { cust_name, cust_contact, cust_phone,
-		 * cust_email, CompanyName, cust_balance, cust_limit, cust_taxable };
-		 * String[] arguments = new String[] { custID }; Cursor cursor =
-		 * db.query(true, table_name, fields, "cust_id=?", arguments, null,
-		 * null, null, null);
-		 */
 
         Cursor cursor = DBManager.getDatabase().rawQuery(subquery1, new String[]{custID});
 

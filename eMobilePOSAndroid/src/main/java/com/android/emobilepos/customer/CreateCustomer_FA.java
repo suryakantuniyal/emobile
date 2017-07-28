@@ -20,12 +20,14 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.android.dao.CustomerCustomFieldsDAO;
 import com.android.database.AddressHandler;
 import com.android.database.CustomersHandler;
 import com.android.database.PriceLevelHandler;
@@ -34,6 +36,7 @@ import com.android.database.TaxesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.Address;
 import com.android.emobilepos.models.Tax;
+import com.android.emobilepos.models.realms.CustomerCustomField;
 import com.android.support.Customer;
 import com.android.support.Global;
 import com.android.support.MyEditText;
@@ -57,29 +60,25 @@ public class CreateCustomer_FA extends BaseFragmentActivityActionBar implements 
             R.id.newCustEmail, R.id.newCustPhone, R.id.newCustContact, R.id.newCustBillStr1, R.id.newCustBillStr2, R.id.newCustBillCity,
             R.id.newCustBillState, R.id.newCustBillZip, R.id.newCustShipStr1, R.id.newCustShipStr2, R.id.newCustShipCity,
             R.id.newCustShipState, R.id.newCustShipZip, R.id.newCustDOB};
-    private static MyEditText[] field;
-
-
-    private String addr_b_type = "Residential", addr_s_type = "Residential";
     private static final int CUST_ALIAS = 0, CUST_NAME = 1, CUST_LASTNAME = 2, COMPANY_NAME = 3, EMAIL = 4, PHONE = 5, CUST_CONTACT = 6,
             B_STR1 = 7, B_STR2 = 8, B_CITY = 9, B_STATE = 10, B_ZIPCODE = 11, S_STR1 = 12, S_STR2 = 13, S_CITY = 14, S_STATE = 15,
             S_ZIPCODE = 16, DOB = 17;
-
-    private Spinner pricesList, taxesList, bCountrySpinner, sCountrySpinner;
+    static Activity activity;
+    private static MyEditText[] field;
+    private static String dobDate = "";
     private final int SPINNER_PRICELEVEL = 0, SPINNER_TAXES = 1, SPINNER_BILL_COUNTRY = 2, SPINNER_SHIP_COUNTRY = 3;
+    private String addr_b_type = "Residential", addr_s_type = "Residential";
+    private Spinner pricesList, taxesList, bCountrySpinner, sCountrySpinner;
     // private Spinner taxesList;
     private List<Tax> taxList;
     private List<String[]> priceLevelList;
     private List<String> isoCountryList = new ArrayList<String>(), nameCountryList = new ArrayList<String>();
-
-    static Activity activity;
     private int taxSelected = 0;
     private int priceLevelSelected = 0;
     private int bSelectedCountry = 0;
     private int sSelectedCountry = 0;
     private CustomAdapter taxAdapter, priceLevelAdapter;
     private String[] isoCountries, nameCountries;
-    private static String dobDate = "";
     private RadioGroup billingRadioGroup, shippingRadioGroup;
 
     private DialogFragment newFrag;
@@ -227,13 +226,13 @@ public class CreateCustomer_FA extends BaseFragmentActivityActionBar implements 
         }
 
         List<String[]> taxArr = new ArrayList<String[]>();
-        int i=0;
+        int i = 0;
         for (Tax tax : taxList) {
-            String[] arr=new String[5];
-            arr[0]=tax.getTaxName();
-            arr[1]=tax.getTaxId();
-            arr[2]=tax.getTaxRate();
-            arr[3]=tax.getTaxType();
+            String[] arr = new String[5];
+            arr[0] = tax.getTaxName();
+            arr[1] = tax.getTaxId();
+            arr[2] = tax.getTaxRate();
+            arr[3] = tax.getTaxType();
             taxArr.add(arr);
         }
         taxAdapter = new CustomAdapter(activity, android.R.layout.simple_spinner_item, taxes, taxArr, true);
@@ -319,7 +318,6 @@ public class CreateCustomer_FA extends BaseFragmentActivityActionBar implements 
         custData.cust_contact = field[CUST_CONTACT].getText().toString();
         custData.qb_sync = "0";
         custData.cust_dob = field[DOB].getText().toString();
-
         if (priceLevelSelected > 0)
             custData.pricelevel_id = priceLevelList.get(priceLevelSelected - 1)[1];
 
@@ -362,6 +360,13 @@ public class CreateCustomer_FA extends BaseFragmentActivityActionBar implements 
         // }
         custHandler.insertOneCustomer(custData);// insert new customer to table
 
+        CustomerCustomField customField = new CustomerCustomField();
+        customField.setCustId(lastCustID);
+        customField.setCustFieldId("EMS_CARD_ID_NUM");
+        customField.setCustFieldName("ID");
+        customField.setCustValue(((EditText) findViewById(R.id.giftCardNumber)).getText().toString());
+        CustomerCustomFieldsDAO.upsert(customField);
+
         // Set-up data for default selection of this newly created customer
         HashMap<String, String> custMap = custHandler.getCustomerInfo(lastCustID);
 
@@ -379,11 +384,117 @@ public class CreateCustomer_FA extends BaseFragmentActivityActionBar implements 
         myPref.setCustEmail(custMap.get("cust_email"));
     }
 
+    @Override
+    public void onCheckedChanged(RadioGroup group, int checkedId) {
+        // TODO Auto-generated method stub
+        switch (checkedId) {
+            case R.id.radioBillingResidential:
+                addr_b_type = "Residential";
+                break;
+            case R.id.radioBillingBusiness:
+                addr_b_type = "Business";
+                break;
+            case R.id.radioShippingResidential:
+                addr_s_type = "Residential";
+                break;
+            case R.id.radioShippingBusiness:
+                addr_s_type = "Business";
+                break;
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        // TODO Auto-generated method stub
+        switch (v.getId()) {
+            case R.id.newCustSaveBut:
+                int allWhitespaced = field[0].getText().toString().trim().length();
+
+                if (allWhitespaced == 0) {
+                    field[0].setBackgroundResource(R.drawable.edittext_wrong_input);
+                    Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.card_validation_error));
+                } else if (!field[EMAIL].getText().toString().isEmpty() && !validEmail(field[EMAIL].getText().toString())) {
+                    field[EMAIL].setBackgroundResource(R.drawable.edittext_wrong_input);
+                    Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.card_validation_error));
+                } else {
+                    field[0].setBackgroundResource(R.drawable.edittext_border);
+                    field[EMAIL].setBackgroundResource(R.drawable.edittext_border);
+                    insertNewCustomer();
+                    setResult(-1);
+                    finish();
+                }
+                break;
+        }
+    }
+
+    private boolean validEmail(String paramString) {
+        return Patterns.EMAIL_ADDRESS.matcher(paramString).matches();
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        // TODO Auto-generated method stub
+        if (isChecked) {
+            for (int i = B_STR1; i < B_ZIPCODE + 1; i++) {
+
+                field[i + 5].setText(field[i].getText().toString());
+            }
+            sCountrySpinner.setSelection(bSelectedCountry);
+        } else {
+            for (int i = B_STR1; i < B_ZIPCODE + 1; i++) {
+                field[i + 5].setText("");
+            }
+        }
+    }
+
+    public static class DateDialog extends DialogFragment implements DatePickerDialog.OnDateSetListener {
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            final Calendar c = Calendar.getInstance();
+            int year = c.get(Calendar.YEAR);
+            int month = c.get(Calendar.MONTH);
+            int day = c.get(Calendar.DAY_OF_MONTH);
+
+            return new DatePickerDialog(getActivity(), this, year, month, day);
+
+        }
+
+        @Override
+        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+
+            // Do something after user selects the date...
+            StringBuilder sb = new StringBuilder();
+            sb.append(Integer.toString(year)).append(Integer.toString(monthOfYear + 1)).append(Integer.toString(dayOfMonth));
+            Calendar cal = Calendar.getInstance();
+            cal.set(year, monthOfYear, dayOfMonth);
+            TimeZone tz = cal.getTimeZone();
+
+            SimpleDateFormat sdf1 = new SimpleDateFormat("yyyyMd", Locale.getDefault());
+            sdf1.setTimeZone(tz);
+            SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
+
+            try {
+                dobDate = sdf2.format(sdf1.parse(sb.toString()));
+            } catch (ParseException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
+            }
+            field[DOB].setText(Global.formatToDisplayDate(dobDate, 1));
+
+        }
+    }
+
     public class CustomAdapter extends ArrayAdapter<String> {
-        private Activity context;
         List<String> leftData = null;
         List<String[]> rightData = null;
         boolean isTax = false;
+        private Activity context;
 
         public CustomAdapter(Activity activity, int resource, List<String> left, List<String[]> right, boolean isTax) {
             super(activity, resource, left);
@@ -455,10 +566,10 @@ public class CreateCustomer_FA extends BaseFragmentActivityActionBar implements 
     }
 
     public class CountrySpinnerAdapter extends ArrayAdapter<String> {
-        private Activity context;
         List<String> leftData = null;
         List<String> rightData = null;
         boolean isBilling = false;
+        private Activity context;
 
         public CountrySpinnerAdapter(Activity activity, int resource, List<String> left, List<String> right, boolean isBilling) {
             super(activity, resource, left);
@@ -526,112 +637,6 @@ public class CreateCustomer_FA extends BaseFragmentActivityActionBar implements 
             }
             return 2;
 
-        }
-    }
-
-    public static class DateDialog extends DialogFragment implements DatePickerDialog.OnDateSetListener {
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-        }
-
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            final Calendar c = Calendar.getInstance();
-            int year = c.get(Calendar.YEAR);
-            int month = c.get(Calendar.MONTH);
-            int day = c.get(Calendar.DAY_OF_MONTH);
-
-            return new DatePickerDialog(getActivity(), this, year, month, day);
-
-        }
-
-        @Override
-        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-
-            // Do something after user selects the date...
-            StringBuilder sb = new StringBuilder();
-            sb.append(Integer.toString(year)).append(Integer.toString(monthOfYear + 1)).append(Integer.toString(dayOfMonth));
-            Calendar cal = Calendar.getInstance();
-            cal.set(year, monthOfYear, dayOfMonth);
-            TimeZone tz = cal.getTimeZone();
-
-            SimpleDateFormat sdf1 = new SimpleDateFormat("yyyyMd", Locale.getDefault());
-            sdf1.setTimeZone(tz);
-            SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
-
-            try {
-                dobDate = sdf2.format(sdf1.parse(sb.toString()));
-            } catch (ParseException e) {
-                e.printStackTrace();
-                Crashlytics.logException(e);
-            }
-            field[DOB].setText(Global.formatToDisplayDate(dobDate,  1));
-
-        }
-    }
-
-    @Override
-    public void onCheckedChanged(RadioGroup group, int checkedId) {
-        // TODO Auto-generated method stub
-        switch (checkedId) {
-            case R.id.radioBillingResidential:
-                addr_b_type = "Residential";
-                break;
-            case R.id.radioBillingBusiness:
-                addr_b_type = "Business";
-                break;
-            case R.id.radioShippingResidential:
-                addr_s_type = "Residential";
-                break;
-            case R.id.radioShippingBusiness:
-                addr_s_type = "Business";
-                break;
-        }
-    }
-
-    @Override
-    public void onClick(View v) {
-        // TODO Auto-generated method stub
-        switch (v.getId()) {
-            case R.id.newCustSaveBut:
-                int allWhitespaced = field[0].getText().toString().trim().length();
-
-                if (allWhitespaced == 0) {
-                    field[0].setBackgroundResource(R.drawable.edittext_wrong_input);
-                    Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.card_validation_error));
-                } else if (!field[EMAIL].getText().toString().isEmpty() && !validEmail(field[EMAIL].getText().toString())) {
-                    field[EMAIL].setBackgroundResource(R.drawable.edittext_wrong_input);
-                    Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.card_validation_error));
-                } else {
-                    field[0].setBackgroundResource(R.drawable.edittext_border);
-                    field[EMAIL].setBackgroundResource(R.drawable.edittext_border);
-                    insertNewCustomer();
-                    setResult(-1);
-                    finish();
-                }
-                break;
-        }
-    }
-
-    private boolean validEmail(String paramString) {
-        return Patterns.EMAIL_ADDRESS.matcher(paramString).matches();
-    }
-
-    @Override
-    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        // TODO Auto-generated method stub
-        if (isChecked) {
-            for (int i = B_STR1; i < B_ZIPCODE + 1; i++) {
-
-                field[i + 5].setText(field[i].getText().toString());
-            }
-            sCountrySpinner.setSelection(bSelectedCountry);
-        } else {
-            for (int i = B_STR1; i < B_ZIPCODE + 1; i++) {
-                field[i + 5].setText("");
-            }
         }
     }
 

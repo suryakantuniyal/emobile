@@ -23,12 +23,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.dao.AssignEmployeeDAO;
+import com.android.dao.CustomerCustomFieldsDAO;
 import com.android.dao.PaymentMethodDAO;
 import com.android.database.OrderProductsHandler;
 import com.android.database.PaymentsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.PaymentDetails;
 import com.android.emobilepos.models.realms.AssignEmployee;
+import com.android.emobilepos.models.realms.CustomerCustomField;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.PaymentMethod;
 import com.android.payments.EMSPayGate_Default;
@@ -196,7 +198,8 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
         btnProcess.setOnClickListener(this);
         fieldCardNum = (EditText) findViewById(R.id.fieldCardNumber);
         cardSwipe = (CheckBox) findViewById(R.id.checkboxCardSwipe);
-
+        CustomerCustomField customField = CustomerCustomFieldsDAO.findEMWSCardIdByCustomerId(myPref.getCustID());
+        fieldCardNum.setText(customField == null ? "" : customField.getCustValue());
         TextView headerTitle = (TextView) findViewById(R.id.HeaderTitle);
         LinearLayout ll = (LinearLayout) findViewById(R.id.placeHolderInfo);
 

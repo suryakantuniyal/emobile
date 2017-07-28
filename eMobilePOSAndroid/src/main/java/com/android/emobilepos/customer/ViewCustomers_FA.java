@@ -22,14 +22,12 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.android.database.CustomersHandler;
-import com.android.database.DBManager;
 import com.android.database.SalesTaxCodesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.history.HistoryTransactions_FA;
@@ -51,9 +49,6 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
     private Global global;
     private boolean hasBeenCreated = false;
     private MyPreferences myPref;
-    //private SQLiteDatabase db;
-    private DBManager dbManager;
-    private ViewCustomers_FA _thisActivity;
     private int selectedCustPosition = 0;
     private Dialog dlog;
 
@@ -64,14 +59,11 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
         setContentView(R.layout.custselec_listview_layout);
 
         activity = this;
-        _thisActivity = this;
         myPref = new MyPreferences(activity);
         global = (Global) getApplication();
         myListView = (ListView) findViewById(R.id.customerSelectionLV);
         final EditText search = (EditText) findViewById(R.id.searchCustomer);
 
-        dbManager = new DBManager(activity);
-        //db = dbManager.openReadableDB();
         handler = new CustomersHandler(this);
         myCursor = handler.getCursorAllCust();
         adap2 = new CustomCursorAdapter(this, myCursor, CursorAdapter.NO_SELECTION);
@@ -275,8 +267,8 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
             btnMapView.setText(R.string.cust_dlog_map);
             btnTrans.setText(R.string.cust_dlog_view_trans);
 
-            btnSelectCust.setOnClickListener(_thisActivity);
-            btnTrans.setOnClickListener(_thisActivity);
+            btnSelectCust.setOnClickListener(ViewCustomers_FA.this);
+            btnTrans.setOnClickListener(ViewCustomers_FA.this);
             dlog.show();
         }
     }
@@ -334,14 +326,14 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
 
         @Override
         public View newView(Context context, Cursor cursor, ViewGroup parent) {
-            final View retView = inflater.inflate(R.layout.custselec_lvadapter, parent, false);
+            final View retView = inflater.inflate(R.layout.custselec_lvadapter, null);
             ViewHolder holder = new ViewHolder();
             holder.cust_name = (TextView) retView.findViewById(R.id.custSelecName);
             holder.CompanyName = (TextView) retView.findViewById(R.id.custSelecCompanyName);
             holder.cust_id = (TextView) retView.findViewById(R.id.custSelecID);
             holder.cust_phone = (TextView) retView.findViewById(R.id.custSelecPhone);
             holder.pricelevel_name = (TextView) retView.findViewById(R.id.custSelecPriceLevel);
-            holder.moreInfoIcon = (ImageButton) retView.findViewById(R.id.custSelecIcon);
+            holder.moreInfoIcon = (ImageView) retView.findViewById(R.id.custSelecIcon);
             holder.i_cust_id = cursor.getColumnIndex("_id");
             holder.i_account_number = cursor.getColumnIndex("AccountNumnber");
             holder.i_cust_name = cursor.getColumnIndex("cust_name");
@@ -357,7 +349,7 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
 
         private class ViewHolder {
             TextView cust_name, CompanyName, cust_id, cust_phone, pricelevel_name;
-            ImageButton moreInfoIcon;
+            ImageView moreInfoIcon;
 
             int i_cust_id, i_account_number, i_cust_name, i_CompanyName, i_cust_phone, i_pricelevel_name;
         }
