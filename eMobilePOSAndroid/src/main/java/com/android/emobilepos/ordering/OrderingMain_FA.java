@@ -257,6 +257,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             total = total.add(Global.getBigDecimalNum(Global.formatNumToLocale(Global.addonTotalAmount)));
         }
         List<OrderProduct> list = Collections.singletonList(orderProduct);
+        OrderingMain_FA.prefillRequiredAttribute(activity, list);
         boolean attributeCompleted = OrderingMain_FA.isRequiredAttributeCompleted(list);
         orderProduct.setAttributesCompleted(attributeCompleted);
         total = total.multiply(OrderingMain_FA.returnItem && OrderingMain_FA.mTransType != Global.TransactionType.RETURN ? new BigDecimal(-1) : new BigDecimal(1));
@@ -322,6 +323,24 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             }
         }
         return true;
+    }
+
+    public static void prefillRequiredAttribute(Context context, List<OrderProduct> products) {
+        MyPreferences preferences = new MyPreferences(context);
+        String custID = preferences.getCustID();
+        for (OrderProduct product : products) {
+            List<ProductAttribute> attributes = OrderProductAttributeDAO.getByProdId(product.getProd_id());
+            for (ProductAttribute attribute : attributes) {
+                if (!product.getRequiredProductAttributes().contains(attribute)) {
+                    if (attribute.getAttributeId().equalsIgnoreCase("EMS_CARD_ID_NUM")) {
+                        CustomerCustomField customField = CustomerCustomFieldsDAO.findEMWSCardIdByCustomerId(custID);
+                        attribute.setValue(customField == null ? null : customField.getCustValue());
+                        product.getRequiredProductAttributes().add(attribute);
+                    }
+                }
+            }
+        }
+
     }
 
 //    private Handler SearchFieldHandler = new Handler() {
