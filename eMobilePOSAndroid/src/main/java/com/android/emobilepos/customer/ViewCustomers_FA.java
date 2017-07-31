@@ -51,6 +51,7 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
     private MyPreferences myPref;
     private int selectedCustPosition = 0;
     private Dialog dlog;
+    private EditText search;
 
 
     @Override
@@ -62,13 +63,12 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
         myPref = new MyPreferences(activity);
         global = (Global) getApplication();
         myListView = (ListView) findViewById(R.id.customerSelectionLV);
-        final EditText search = (EditText) findViewById(R.id.searchCustomer);
+        search = (EditText) findViewById(R.id.searchCustomer);
 
         handler = new CustomersHandler(this);
         myCursor = handler.getCursorAllCust();
         adap2 = new CustomCursorAdapter(this, myCursor, CursorAdapter.NO_SELECTION);
         myListView.setAdapter(adap2);
-
 
         Button addNewCust = (Button) findViewById(R.id.addCustButton);
         if (myPref.getPreferences(MyPreferences.pref_allow_customer_creation))
@@ -125,7 +125,8 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
 
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH ||
+                        actionId == EditorInfo.IME_ACTION_UNSPECIFIED) {
                     String text = v.getText().toString().trim();
                     InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
@@ -182,6 +183,16 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
             global.promptForMandatoryLogin(activity);
         }
         super.onResume();
+
+        // set focus on search
+        search.requestFocus();
+        search.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                inputMethodManager.showSoftInput(search, InputMethodManager.SHOW_IMPLICIT);
+            }
+        }, 100);
     }
 
     @Override
