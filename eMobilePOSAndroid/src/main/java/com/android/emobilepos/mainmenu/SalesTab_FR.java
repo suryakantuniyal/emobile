@@ -1094,63 +1094,71 @@ public class SalesTab_FR extends Fragment {
     }
 
     private void promptWithCustomer() {
-        //final Intent intent = new Intent(activity, SalesReceiptSplitActivity.class);
-        final Dialog dialog = new Dialog(activity, R.style.Theme_TransparentTest);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setCancelable(true);
-        dialog.setCanceledOnTouchOutside(true);
-        dialog.setContentView(R.layout.pre_dialog_layout);
-        Button withCust = (Button) dialog.findViewById(R.id.withCustBut);
-        Button withoutCust = (Button) dialog.findViewById(R.id.withOutCustBut);
-        Button cancel = (Button) dialog.findViewById(R.id.cancelPredialogBut);
+        if (!myPref.getPreferences(MyPreferences.pref_direct_customer_selection)) {
+            //final Intent intent = new Intent(activity, SalesReceiptSplitActivity.class);
+            final Dialog dialog = new Dialog(activity, R.style.Theme_TransparentTest);
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.setCancelable(true);
+            dialog.setCanceledOnTouchOutside(true);
+            dialog.setContentView(R.layout.pre_dialog_layout);
+            Button withCust = (Button) dialog.findViewById(R.id.withCustBut);
+            Button withoutCust = (Button) dialog.findViewById(R.id.withOutCustBut);
+            Button cancel = (Button) dialog.findViewById(R.id.cancelPredialogBut);
 
-        withCust.setOnClickListener(new View.OnClickListener() {
+            withCust.setOnClickListener(new View.OnClickListener() {
 
-            @Override
-            public void onClick(View v) {
-                if (myPref.isRestaurantMode() &&
-                        myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
-                    askEatInToGo();
-                } else {
-                    Intent intent = new Intent(activity, OrderingMain_FA.class);
-                    intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
-                    intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.TO_GO);
-                    startActivityForResult(intent, 0);
+                @Override
+                public void onClick(View v) {
+                    openWithCustomer();
+                    dialog.dismiss();
                 }
-                dialog.dismiss();
-            }
-        });
-        withoutCust.setOnClickListener(new View.OnClickListener() {
+            });
+            withoutCust.setOnClickListener(new View.OnClickListener() {
 
-            @Override
-            public void onClick(View v) {
-                salesInvoices.setVisibility(View.GONE);
-                myPref.resetCustInfo(getString(R.string.no_customer));
-                isCustomerSelected = false;
-                if (myPref.isRestaurantMode() &&
-                        myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
-                    askEatInToGo();
-                } else {
-                    Intent intent = new Intent(activity, OrderingMain_FA.class);
-                    intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.TO_GO);
-                    intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
-                    startActivityForResult(intent, 0);
-                }
+                @Override
+                public void onClick(View v) {
+                    salesInvoices.setVisibility(View.GONE);
+                    myPref.resetCustInfo(getString(R.string.no_customer));
+                    isCustomerSelected = false;
+                    if (myPref.isRestaurantMode() &&
+                            myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
+                        askEatInToGo();
+                    } else {
+                        Intent intent = new Intent(activity, OrderingMain_FA.class);
+                        intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.TO_GO);
+                        intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
+                        startActivityForResult(intent, 0);
+                    }
 //                intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
 //                startActivityForResult(intent, 0);
-                dialog.dismiss();
-            }
-        });
+                    dialog.dismiss();
+                }
+            });
 
-        cancel.setOnClickListener(new Button.OnClickListener() {
+            cancel.setOnClickListener(new Button.OnClickListener() {
 
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
+                }
+            });
 
-        dialog.show();
+            dialog.show();
+        } else {
+            openWithCustomer();
+        }
+    }
+
+    private void openWithCustomer() {
+        if (myPref.isRestaurantMode() &&
+                myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
+            askEatInToGo();
+        } else {
+            Intent intent = new Intent(activity, OrderingMain_FA.class);
+            intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
+            intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.TO_GO);
+            startActivityForResult(intent, 0);
+        }
     }
 
     private boolean isTablet() {
