@@ -55,7 +55,13 @@ public class OrderProductUtils {
     }
 
     public static List<OrderProduct> getOrderProductsByOrderProductId(List<OrderProduct> orderProducts, String orderProductId) {
-        return null;
+        List<OrderProduct> list = new ArrayList<>();
+        for (OrderProduct orderProduct : orderProducts) {
+            if (orderProduct.getOrdprod_id().equalsIgnoreCase(orderProductId)) {
+                list.add(orderProduct);
+            }
+        }
+        return list;
     }
 
     public static void removeOrderProductsByOrderProductId(List<OrderProduct> orderProducts, String orderProductId) {

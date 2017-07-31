@@ -525,7 +525,7 @@ public class ProductsHandler {
         }
 
         sb.append(
-                "SELECT  p.prod_id as '_id',p.gc as 'gc', p.prod_sku as 'prod_sku', p.prod_upc as 'prod_upc',p.prod_price as 'master_price'," +
+                "SELECT  p.prod_id as '_id',p.isGC as 'isGC', p.prod_sku as 'prod_sku', p.prod_upc as 'prod_upc',p.prod_price as 'master_price'," +
                         "vp.price as 'volume_price', ch.over_price_net as 'chain_price',");
         sb.append(
                 "CASE WHEN pl.pricelevel_type = 'FixedPercentage' THEN (p.prod_price+(p.prod_price*(pl.pricelevel_fixedpct/100))) ");
