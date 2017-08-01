@@ -1503,6 +1503,7 @@ public class EMSDeviceDriver {
                 activity.getString(R.string.total_hours_worked), hours, mins), lineWidth));
         str.append(textHelper.newLines(4));
         print(str.toString());
+        cutPaper();
     }
 
     public void printFooter(int lineWidth) {
