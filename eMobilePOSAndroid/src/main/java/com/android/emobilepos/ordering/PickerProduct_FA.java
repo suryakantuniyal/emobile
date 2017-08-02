@@ -577,7 +577,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         if (product != null) {
             products.add(product);
         }
-        if (!OrderingMain_FA.isRequiredAttributeCompleted(products)) {
+        if (!OrderingMain_FA.isRequiredAttributeCompleted(activity, products)) {
             if (product != null) {
                 product.setAttributesCompleted(false);
             }
@@ -933,7 +933,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         for (ProductAttribute attribute : orderProduct.getRequiredProductAttributes()) {
             attribute.setProductId(orderProduct.getOrdprod_id());
         }
-        orderProduct.setAttributesCompleted(OrderingMain_FA.isRequiredAttributeCompleted(Collections.singletonList(orderProduct)));
+        orderProduct.setAttributesCompleted(OrderingMain_FA.isRequiredAttributeCompleted(activity, Collections.singletonList(orderProduct)));
         if (isFromAddon) {
             Global.addonTotalAmount = 0;
             StringBuilder sb = new StringBuilder();

@@ -257,8 +257,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             total = total.add(Global.getBigDecimalNum(Global.formatNumToLocale(Global.addonTotalAmount)));
         }
         List<OrderProduct> list = Collections.singletonList(orderProduct);
-        OrderingMain_FA.prefillRequiredAttribute(activity, list);
-        boolean attributeCompleted = OrderingMain_FA.isRequiredAttributeCompleted(list);
+//        OrderingMain_FA.prefillRequiredAttribute(activity, list);
+        boolean attributeCompleted = OrderingMain_FA.isRequiredAttributeCompleted(activity, list);
         orderProduct.setAttributesCompleted(attributeCompleted);
         total = total.multiply(OrderingMain_FA.returnItem && OrderingMain_FA.mTransType != Global.TransactionType.RETURN ? new BigDecimal(-1) : new BigDecimal(1));
         orderProduct.setItemTotal(total.toString());
@@ -274,6 +274,16 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         UUID uuid = UUID.randomUUID();
         String randomUUIDString = uuid.toString();
         orderProduct.setOrdprod_id(randomUUIDString);
+
+        // update required product attributes
+        if (orderProduct.getRequiredProductAttributes() != null &&
+                orderProduct.getRequiredProductAttributes().size() > 0) {
+            for (ProductAttribute attribute : orderProduct.getRequiredProductAttributes()) {
+                attribute.setProductId(uuid.toString());
+            }
+            global.ordProdAttr.addAll(orderProduct.getRequiredProductAttributes());
+        }
+
         if (isFromAddon) {
             Global.addonTotalAmount = 0;
             StringBuilder sb = new StringBuilder();
@@ -313,16 +323,33 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 //        });
 //    }
 
-    public static boolean isRequiredAttributeCompleted(List<OrderProduct> products) {
+    public static boolean isRequiredAttributeCompleted(Context context, List<OrderProduct> products) {
         for (OrderProduct product : products) {
             List<ProductAttribute> attributes = OrderProductAttributeDAO.getByProdId(product.getProd_id());
             for (ProductAttribute attribute : attributes) {
+                if (fillWithCustomerAttribute(context, product, attribute)) {
+                    return true;
+                }
                 if (!product.getRequiredProductAttributes().contains(attribute)) {
                     return false;
                 }
             }
         }
         return true;
+    }
+
+    private static boolean fillWithCustomerAttribute(Context context, OrderProduct product, ProductAttribute attribute) {
+        MyPreferences preferences = new MyPreferences(context);
+        String custID = preferences.getCustID();
+        CustomerCustomField customField = CustomerCustomFieldsDAO.findEMWSCardIdByCustomerId(custID);
+        if (customField != null) {
+            if (customField.getCustFieldId().equalsIgnoreCase(attribute.getAttributeId())) {
+                attribute.setValue(customField.getCustValue());
+                product.getRequiredProductAttributes().add(attribute);
+                return true;
+            }
+        }
+        return false;
     }
 
     public static void prefillRequiredAttribute(Context context, List<OrderProduct> products) {
