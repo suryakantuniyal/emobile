@@ -65,8 +65,10 @@ import com.android.support.Encrypt;
 import com.android.support.GenerateNewID;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.NetworkUtils;
 import com.android.support.OrderProductUtils;
 import com.android.support.Post;
+import com.android.support.StringUtils;
 import com.android.support.TerminalDisplay;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.crashlytics.android.Crashlytics;
@@ -755,6 +757,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             if (rightFragment != null) {
                 rightFragment.loadCursor();
             }
+
+            prefetchLoyalty(true);
+
         } else if (resultCode == -1 || resultCode == 3) // Void transaction from
         // Sales Receipt
         {
@@ -830,7 +835,19 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             if (Global.btSled != null && Global.btSled.getCurrentDevice() != null)
                 Global.btSled.getCurrentDevice().loadScanner(callBackMSR);
         }
+
         super.onResume();
+    }
+
+    public void prefetchLoyalty(boolean isLoyalty) {
+        if (myPref.isCustSelected()) {
+            if (!TextUtils.isEmpty(myPref.getCustID())) {
+                CustomerCustomField customField = CustomerCustomFieldsDAO.findEMWSCardIdByCustomerId(myPref.getCustID());
+                if (customField != null) {
+                    processBalanceInquiry(isLoyalty, customField.getCustValue());
+                }
+            }
+        }
     }
 
     @Override
@@ -1227,9 +1244,25 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     }
 
     @Override
+    public void prefetchLoyaltyPoints() {
+        if (NetworkUtils.isConnectedToInternet(MainMenu_FA.activity)) {
+            prefetchLoyalty(true);
+            loyaltySwiped = true;
+        }
+    }
+
+    @Override
     public void startRewardSwiper() {
         showMSRprompt(false);
         loyaltySwiped = false;
+    }
+
+    @Override
+    public void prefetchRewardsBalance() {
+        if (NetworkUtils.isConnectedToInternet(MainMenu_FA.activity)) {
+            loyaltySwiped = false;
+            prefetchLoyalty(false);
+        }
     }
 
     @SuppressWarnings("deprecation")
@@ -1325,7 +1358,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
                 String temp = swiperField.getText().toString().trim();
                 if (temp.length() > 0) {
-                    processBalanceInquiry(isLoyaltyCard);
+                    processBalanceInquiry(isLoyaltyCard, temp);
                 }
             }
         });
@@ -1379,17 +1412,18 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         };
     }
 
-    private void populateCardInfo() {
+    private void populateCardInfo(String cardNumber) {
         if (!wasReadFromReader) {
+
             Encrypt encrypt = new Encrypt(this);
             cardInfoManager = new CreditCardInfo();
-            int size = swiperField.getText().toString().length();
+            int size = cardNumber.length();
             if (size > 4) {
-                String last4Digits = (String) swiperField.getText().toString().subSequence(size - 4, size);
+                String last4Digits = (String) cardNumber.subSequence(size - 4, size);
                 cardInfoManager.setCardLast4(last4Digits);
             }
-            cardInfoManager.setCardNumAESEncrypted(encrypt.encryptWithAES(swiperField.getText().toString()));
-            cardInfoManager.setCardNumUnencrypted(swiperField.getText().toString());
+            cardInfoManager.setCardNumAESEncrypted(encrypt.encryptWithAES(cardNumber));
+            cardInfoManager.setCardNumUnencrypted(cardNumber);
             cardInfoManager.setWasSwiped(false);
             if (loyaltySwiped)
                 Global.loyaltyCardInfo = cardInfoManager;
@@ -1398,9 +1432,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
     }
 
-    private void processBalanceInquiry(boolean isLoyaltyCard) {
+    private void processBalanceInquiry(boolean isLoyaltyCard, String cardNumber) {
         Payment payment = new Payment(this);
-        populateCardInfo();
+        populateCardInfo(cardNumber);
 
         if (isLoyaltyCard)
             payment.setPaymethod_id(PayMethodsHandler.getPayMethodID("LoyaltyCard"));

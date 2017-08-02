@@ -28,6 +28,7 @@ public class OrderLoyalty_FR extends Fragment implements OnClickListener {
 
     public interface SwiperLoyaltyCallback {
         void startLoyaltySwiper();
+        void prefetchLoyaltyPoints();
     }
 
 
@@ -75,7 +76,11 @@ public class OrderLoyalty_FR extends Fragment implements OnClickListener {
             Global global = (Global) OrderLoyalty_FR.this.getActivity().getApplication();
             OrderTotalDetails_FR.getFrag().reCalculate(global.order.getOrderProducts());
         }
+
+        callBackLoyaltySwiper.prefetchLoyaltyPoints();
+
         return view;
+
     }
 
 

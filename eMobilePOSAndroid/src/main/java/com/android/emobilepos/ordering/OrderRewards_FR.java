@@ -43,6 +43,7 @@ public class OrderRewards_FR extends Fragment implements OnClickListener {
 
     public interface SwiperRewardCallback {
         void startRewardSwiper();
+        void prefetchRewardsBalance();
     }
 
 
@@ -89,8 +90,12 @@ public class OrderRewards_FR extends Fragment implements OnClickListener {
             OrderTotalDetails_FR.getFrag().reCalculate(global.order.getOrderProducts());
         }
 
-        if (OrderingMain_FA.rewardsWasRead)
+        if (OrderingMain_FA.rewardsWasRead) {
             hideTapButton();
+        }
+//        else {
+//            callBackRewardSwiper.prefetchRewardsBalance();
+//        }
         return view;
     }
 
