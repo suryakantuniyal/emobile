@@ -73,14 +73,15 @@ public class StoredPaymentsDAO {
         Realm realm = Realm.getDefaultInstance();
         Payment payment = null;
         try {
-            realm.beginTransaction();
+//            realm.beginTransaction();
             StoreAndForward first = realm.where(StoreAndForward.class).equalTo("payment.pay_id", payID).findFirst();
             if (first != null) {
                 payment = first.getPayment();
             }
         } finally {
-            realm.commitTransaction();
+//            realm.commitTransaction();
         }
+
         switch (type) {
             // May come from History>Payment>Details
 //            case 0:
@@ -176,6 +177,7 @@ public class StoredPaymentsDAO {
 
         PaymentDetails details = new PaymentDetails();
         for (StoreAndForward sf : storeAndForwards) {
+            details.setPayType("0");
             details.setPay_amount(sf.getPayment().getPay_amount());
             details.setPaymethod_name(sf.getPayment().getPaymentMethod().getPaymethod_name());
             details.setPay_tip(sf.getPayment().getPay_tip());

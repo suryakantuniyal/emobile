@@ -306,18 +306,21 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         String row2 = Global.formatDoubleStrToCurrency(total);
         TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
 
-        if (!myPref.getPreferencesValue(MyPreferences.pref_default_payment_method).isEmpty()
-                && !myPref.getPreferencesValue(MyPreferences.pref_default_payment_method).equals("0")) {
-            String default_paymethod_id = myPref.getPreferencesValue(MyPreferences.pref_default_payment_method);
-            int i = 0;
-            for (PaymentMethod pm : payTypeList) {
-                if (pm.getPaymethod_id().equals(default_paymethod_id)) {
-                    selectPayment(i);
-                    break;
+        if (Double.parseDouble(total) != 0) { // Only go to default payment method if there is a balance pending.
+            if (!myPref.getPreferencesValue(MyPreferences.pref_default_payment_method).isEmpty()
+                    && !myPref.getPreferencesValue(MyPreferences.pref_default_payment_method).equals("0")) {
+                String default_paymethod_id = myPref.getPreferencesValue(MyPreferences.pref_default_payment_method);
+                int i = 0;
+                for (PaymentMethod pm : payTypeList) {
+                    if (pm.getPaymethod_id().equals(default_paymethod_id)) {
+                        selectPayment(i);
+                        break;
+                    }
+                    i++;
                 }
-                i++;
             }
         }
+
         initHeaderSection();
     }
 

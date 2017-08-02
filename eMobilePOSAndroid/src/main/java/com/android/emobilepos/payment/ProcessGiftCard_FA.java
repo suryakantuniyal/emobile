@@ -26,7 +26,9 @@ import android.widget.TextView;
 import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.CustomerCustomFieldsDAO;
 import com.android.dao.ShiftDAO;
+import com.android.dao.StoredPaymentsDAO;
 import com.android.database.DrawInfoHandler;
+import com.android.database.OrdersHandler;
 import com.android.database.PaymentsHandler;
 import com.android.database.TaxesHandler;
 import com.android.emobilepos.DrawReceiptActivity;
@@ -35,6 +37,7 @@ import com.android.emobilepos.models.GroupTax;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.CustomerCustomField;
 import com.android.emobilepos.models.realms.Payment;
+import com.android.emobilepos.models.realms.StoreAndForward;
 import com.android.ivu.MersenneTwisterFast;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
@@ -51,9 +54,13 @@ import com.crashlytics.android.Crashlytics;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -473,7 +480,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         }
 
 
-        if (redeemAll.isChecked())
+        if (redeemAll.isChecked() && !(myPref.getPreferences(MyPreferences.pref_use_store_and_forward) && cardType.equalsIgnoreCase("GIFTCARD")))
             cardInfoManager.setRedeemAll("1");
         else
             cardInfoManager.setRedeemAll("0");
@@ -499,7 +506,81 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
                     cardInfoManager);
         }
 
-        new processLivePaymentAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, generatedURL);
+        if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward) && cardType.equalsIgnoreCase("GIFTCARD")) {
+            processStoreForward(generatedURL, payment);
+        } else {
+            new processLivePaymentAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, generatedURL);
+        }
+    }
+
+    private void processStoreForward(String payment_xml, Payment payment) {
+        if (_msrUsbSams != null && _msrUsbSams.isDeviceOpen()) {
+            _msrUsbSams.CloseTheDevice();
+        }
+        payment.setPayment_xml(payment_xml);
+        payment.setPay_uuid(getXmlValue(payment_xml, "app_id"));
+
+        StoredPaymentsDAO.insert(activity, payment, StoreAndForward.PaymentType.GIFT_CARD);
+        Global.amountPaid = payment.getPay_amount();
+
+        OrdersHandler dbOrders = new OrdersHandler(this);
+        dbOrders.updateOrderStoredFwd(PaymentsHandler.getLastPaymentInserted().getJob_id(), "1");
+
+        Intent data = new Intent();
+        Bundle bundle = new Bundle();
+        bundle.putString("originalTotalAmount", payment.getOriginalTotalAmount());
+        bundle.putString("total_amount", Double.toString(Global
+                .formatNumFromLocale(payment.getOriginalTotalAmount())));
+        bundle.putString("pay_dueamount", payment.getPay_dueamount());
+        bundle.putString("pay_amount", payment.getPay_amount());
+        data.putExtras(bundle);
+        setResult(-2, data);
+        finish();
+    }
+
+    private String getXmlValue(String _xml, String attribute) {
+        String value = "";
+        try {
+            XmlPullParserFactory xmlFactoryObject = XmlPullParserFactory.newInstance();
+            XmlPullParser parser = xmlFactoryObject.newPullParser();
+            parser.setInput(new StringReader(_xml));
+
+            int event = parser.getEventType();
+            String tag = "";
+
+            boolean found = false;
+            while (event != XmlPullParser.END_DOCUMENT && !found) {
+
+                switch (event) {
+                    case XmlPullParser.START_TAG:
+                        tag = parser.getName();
+                        break;
+                    case XmlPullParser.END_TAG:
+                        break;
+                    case XmlPullParser.TEXT:
+                        if (tag != null) {
+                            if (tag.equals(attribute)) {
+                                value = parser.getText();
+                                found = true;
+                            }
+                        }
+                        break;
+                }
+                event = parser.next();
+            }
+
+        } catch (XmlPullParserException e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
+        }
+
+        return value;
     }
 
     public void showBalancePrompt(String msg) {

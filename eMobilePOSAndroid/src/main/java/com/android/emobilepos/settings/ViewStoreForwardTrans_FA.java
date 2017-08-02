@@ -342,6 +342,7 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
                                         }
                                         break;
                                     case CREDIT_CARD:
+                                    case GIFT_CARD:
                                         checkPaymentStatus(storeAndForward, _verify_payment_xml, _charge_xml);
                                         break;
                                 }
@@ -367,6 +368,7 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
                                         }
                                         break;
                                     case CREDIT_CARD:
+                                    case GIFT_CARD:
                                         processPayment(storeAndForward, _charge_xml);
                                         break;
                                 }
