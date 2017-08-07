@@ -1344,5 +1344,6 @@
     <string name="giftcard_number">Gift Card Number:</string>
     <string name="config_giftcard_auto_balance_request">Gift/Reward auto balance request</string>
     <string name="config_clear_customer">Clear customer after transaction</string>
+    <string name="config_giftcard_show_balance">Show gift card balance after payment</string>
 
 </resources>

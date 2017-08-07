@@ -56,6 +56,7 @@ public class MyPreferences {
     public static final String pref_display_redeem_all = "pref_display_redeem_all";
     public static final String pref_use_loyal_patron = "pref_use_loyal_patron";
     public static final String pref_giftcard_auto_balance_request = "pref_giftcard_auto_balance_request";
+    public static final String pref_giftcard_show_balance = "pref_giftcard_show_balance";
 
     public static final String pref_pay_with_tupyx = "pref_pay_with_tupyx";
     public static final String pref_mw_with_genius = "pref_mw_with_genius";
@@ -1199,6 +1200,10 @@ public class MyPreferences {
 
     public boolean isClearCustomerAfterTransaction() {
         return getPreferences(MyPreferences.pref_clear_customer);
+    }
+
+    public boolean isShowGiftCardBalanceAfterPayments() {
+        return getPreferences(MyPreferences.pref_giftcard_show_balance);
     }
 
     public void setIsUseClerks(boolean value) {

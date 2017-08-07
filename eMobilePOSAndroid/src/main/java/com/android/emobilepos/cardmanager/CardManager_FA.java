@@ -97,6 +97,7 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
     private PaymentsHandler paymentHandlerDB;
     private EMSIDTechUSB _msrUsbSams;
     private Payment payment;
+    private boolean resetCustomerOnFinish = false;
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
@@ -152,6 +153,7 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
         fieldCardNum = (EditText) findViewById(R.id.fieldCardNumber);
         if (extras.containsKey("cardNumber")) {
             fieldCardNum.setText(extras.getString("cardNumber", ""));
+            resetCustomerOnFinish = true;
         }
         cardSwipe = (CheckBox) findViewById(R.id.checkboxCardSwipe);
         CustomerCustomField customField = CustomerCustomFieldsDAO.findEMWSCardIdByCustomerId(myPref.getCustID());
@@ -232,7 +234,7 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
 
                 // Loyalty is based on points (whole numbers only) so we adjust the input for that case
                 if (cardTypeCase == CASE_LOYALTY) {
-                    fieldAmountToAdd.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
+                    fieldAmountToAdd.setInputType(InputType.TYPE_CLASS_NUMBER);
                 } else {
                     fieldAmountToAdd.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
                     fieldAmountToAdd.addTextChangedListener(getTextWatcher(fieldAmountToAdd));
@@ -317,7 +319,6 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
         if (_msrUsbSams != null && _msrUsbSams.isDeviceOpen()) {
             _msrUsbSams.CloseTheDevice();
         }
-
         super.onDestroy();
     }
 
@@ -327,19 +328,23 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
         String _audio_reader_type = myPref.getPreferencesValue(MyPreferences.pref_audio_card_reader);
         if (audioManager.isWiredHeadsetOn()) {
             if (_audio_reader_type != null && !_audio_reader_type.isEmpty() && !_audio_reader_type.equals("-1")) {
-                if (_audio_reader_type.equals(Global.AUDIO_MSR_UNIMAG)) {
-                    uniMagReader = new EMSUniMagDriver();
-                    uniMagReader.initializeReader(activity);
-                } else if (_audio_reader_type.equals(Global.AUDIO_MSR_MAGTEK)) {
-                    magtekReader = new EMSMagtekAudioCardReader(activity);
-                    new Thread(new Runnable() {
-                        public void run() {
-                            magtekReader.connectMagtek(true, msrCallBack);
-                        }
-                    }).start();
-                } else if (_audio_reader_type.equals(Global.AUDIO_MSR_ROVER)) {
-                    roverReader = new EMSRover();
-                    roverReader.initializeReader(activity, false);
+                switch (_audio_reader_type) {
+                    case Global.AUDIO_MSR_UNIMAG:
+                        uniMagReader = new EMSUniMagDriver();
+                        uniMagReader.initializeReader(activity);
+                        break;
+                    case Global.AUDIO_MSR_MAGTEK:
+                        magtekReader = new EMSMagtekAudioCardReader(activity);
+                        new Thread(new Runnable() {
+                            public void run() {
+                                magtekReader.connectMagtek(true, msrCallBack);
+                            }
+                        }).start();
+                        break;
+                    case Global.AUDIO_MSR_ROVER:
+                        roverReader = new EMSRover();
+                        roverReader.initializeReader(activity, false);
+                        break;
                 }
             }
         } else {
@@ -519,7 +524,7 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
             EMSPayGate_Default payGate = new EMSPayGate_Default(this, payment);
             String generatedURL;
             generatedURL = payGate.paymentWithAction(PAYMENT_ACTION, wasReadFromReader, cardType, cardInfoManager);
-            new processAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, generatedURL);
+            new ProcessAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, generatedURL);
         } else {
             if (paymentMethod == null) {
                 Global.showPrompt(activity, R.string.dlog_title_error, getString(R.string.invalid_payment_type));
@@ -552,7 +557,7 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
             @Override
             public void onClick(View v) {
                 dlog.dismiss();
-                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, parsedMap);
+                new PrintAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, parsedMap);
 
             }
         });
@@ -584,6 +589,9 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
             public void onClick(View v) {
 
                 dlog.dismiss();
+                if(resetCustomerOnFinish) {
+                    myPref.resetCustInfo(getString(R.string.no_customer));
+                }
                 finish();
             }
         });
@@ -709,9 +717,9 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
         }
     }
 
-    private class processAsync extends AsyncTask<String, String, String> {
+    private class ProcessAsync extends AsyncTask<String, String, String> {
 
-        private HashMap<String, String> parsedMap = new HashMap<String, String>();
+        private HashMap<String, String> parsedMap = new HashMap<>();
         private String urlToPost;
         private boolean wasProcessed = false;
         private String errorMsg = "Request could not be processed.";
@@ -737,28 +745,32 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
             urlToPost = params[0];
             try {
                 String xml = httpClient.postData(13, urlToPost);
-                if (xml.equals(Global.TIME_OUT)) {
-                    errorMsg = "TIME OUT, would you like to try again?";
-                } else if (xml.equals(Global.NOT_VALID_URL)) {
-                    errorMsg = "Can not proceed...";
-                } else {
-                    InputSource inSource = new InputSource(new StringReader(xml));
+                switch (xml) {
+                    case Global.TIME_OUT:
+                        errorMsg = "TIME OUT, would you like to try again?";
+                        break;
+                    case Global.NOT_VALID_URL:
+                        errorMsg = "Can not proceed...";
+                        break;
+                    default:
+                        InputSource inSource = new InputSource(new StringReader(xml));
 
-                    SAXParser sp = spf.newSAXParser();
-                    XMLReader xr = sp.getXMLReader();
-                    xr.setContentHandler(handler);
-                    xr.parse(inSource);
-                    parsedMap = handler.getData();
-                    if (fieldAmountToAdd != null) {
-                        parsedMap.put("amountAdded", amountAdded);
-                    }
+                        SAXParser sp = spf.newSAXParser();
+                        XMLReader xr = sp.getXMLReader();
+                        xr.setContentHandler(handler);
+                        xr.parse(inSource);
+                        parsedMap = handler.getData();
+                        if (fieldAmountToAdd != null) {
+                            parsedMap.put("amountAdded", amountAdded);
+                        }
 
-                    if (parsedMap != null && parsedMap.size() > 0 && parsedMap.get("epayStatusCode").equals("APPROVED"))
-                        wasProcessed = true;
-                    else if (parsedMap != null && parsedMap.size() > 0) {
-                        errorMsg = "statusCode = " + parsedMap.get("statusCode") + "\n" + parsedMap.get("statusMessage");
-                    } else
-                        errorMsg = xml;
+                        if (parsedMap != null && parsedMap.size() > 0 && parsedMap.get("epayStatusCode").equals("APPROVED"))
+                            wasProcessed = true;
+                        else if (parsedMap != null && parsedMap.size() > 0) {
+                            errorMsg = "statusCode = " + parsedMap.get("statusCode") + "\n" + parsedMap.get("statusMessage");
+                        } else
+                            errorMsg = xml;
+                        break;
                 }
 
             } catch (Exception e) {
@@ -812,7 +824,7 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
         }
     }
 
-    private class printAsync extends AsyncTask<HashMap<String, String>, String, HashMap<String, String>> {
+    private class PrintAsync extends AsyncTask<HashMap<String, String>, String, HashMap<String, String>> {
         private boolean printSuccessful = true;
 
         @Override
@@ -845,6 +857,9 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
             if (!printSuccessful) {
                 showPrintDlg(result);
             } else {
+                if(resetCustomerOnFinish) {
+                    myPref.resetCustInfo(getString(R.string.no_customer));
+                }
                 finish();
             }
 

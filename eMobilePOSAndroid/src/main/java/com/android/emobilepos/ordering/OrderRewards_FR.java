@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.dao.AssignEmployeeDAO;
 import com.android.database.OrdersHandler;
@@ -208,7 +209,8 @@ public class OrderRewards_FR extends Fragment implements OnClickListener {
         protected void onPostExecute(PaymentTask.Response result) {
             OrderingMain_FA mainFa = (OrderingMain_FA) getActivity();
             if (result.getResponseStatus() == PaymentTask.Response.ResponseStatus.OK) {
-                Global.showPrompt(getActivity(), R.string.rewards, result.getMessage());
+//                Global.showPrompt(getActivity(), R.string.rewards, result.getMessage());
+                Toast.makeText(getActivity(),result.getMessage(), Toast.LENGTH_LONG).show();
                 Global global = (Global) getActivity().getApplication();
                 BigDecimal rewardDiscount = mainFa.getLeftFragment()
                         .applyRewardDiscount(result.getApprovedAmount(), global.order.getOrderProducts());
@@ -229,8 +231,8 @@ public class OrderRewards_FR extends Fragment implements OnClickListener {
                 }
                 setRewardBalance(String.valueOf(Global.getRoundBigDecimal(newBalance)));
             } else {
+//                Toast.makeText(getActivity(), result.getMessage(), Toast.LENGTH_LONG).show();
                 Global.showPrompt(getActivity(), R.string.rewards, result.getMessage());
-
             }
             mainFa.buildOrderStarted = false;
         }

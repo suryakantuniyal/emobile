@@ -22,6 +22,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.CustomerCustomFieldsDAO;
@@ -584,37 +585,45 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
     }
 
     public void showBalancePrompt(String msg) {
-        final Dialog dlog = new Dialog(this, R.style.Theme_TransparentTest);
-        dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dlog.setCancelable(false);
-        dlog.setContentView(R.layout.dlog_btn_single_layout);
+        if (myPref.isShowGiftCardBalanceAfterPayments()) {
+            final Dialog dlog = new Dialog(this, R.style.Theme_TransparentTest);
+            dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dlog.setCancelable(false);
+            dlog.setContentView(R.layout.dlog_btn_single_layout);
 
-        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
-        viewTitle.setText(R.string.dlog_title_confirm);
-        viewMsg.setText(msg);
-        Button btnOk = (Button) dlog.findViewById(R.id.btnDlogSingle);
-        btnOk.setText(R.string.button_ok);
-        btnOk.setOnClickListener(new View.OnClickListener() {
+            TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
+            TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+            viewTitle.setText(R.string.dlog_title_confirm);
+            viewMsg.setText(msg);
+            Button btnOk = (Button) dlog.findViewById(R.id.btnDlogSingle);
+            btnOk.setText(R.string.button_ok);
+            btnOk.setOnClickListener(new View.OnClickListener() {
 
-            @Override
-            public void onClick(View v) {
-                dlog.dismiss();
+                @Override
+                public void onClick(View v) {
+                    dlog.dismiss();
+                    closeActivity();
+                }
+            });
+            dlog.show();
+        } else {
+            Toast.makeText(ProcessGiftCard_FA.this, msg, Toast.LENGTH_LONG).show();
+            closeActivity();
+        }
+    }
 
-                Intent data = new Intent();
-                Bundle bundle = new Bundle();
-                bundle.putString("originalTotalAmount", payment.getOriginalTotalAmount());
-                bundle.putString("total_amount", Double.toString(Global
-                        .formatNumFromLocale(payment.getOriginalTotalAmount())));
-                bundle.putString("pay_dueamount", payment.getPay_dueamount());
-                bundle.putString("pay_amount", payment.getPay_amount());
-                Global.amountPaid = payment.getPay_amount();
-                data.putExtras(bundle);
-                setResult(-2, data);
-                finish();
-            }
-        });
-        dlog.show();
+    public void closeActivity() {
+        Intent data = new Intent();
+        Bundle bundle = new Bundle();
+        bundle.putString("originalTotalAmount", payment.getOriginalTotalAmount());
+        bundle.putString("total_amount", Double.toString(Global
+                .formatNumFromLocale(payment.getOriginalTotalAmount())));
+        bundle.putString("pay_dueamount", payment.getPay_dueamount());
+        bundle.putString("pay_amount", payment.getPay_amount());
+        Global.amountPaid = payment.getPay_amount();
+        data.putExtras(bundle);
+        setResult(-2, data);
+        finish();
     }
 
     private void updateViewAfterSwipe() {

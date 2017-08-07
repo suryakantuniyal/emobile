@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -123,7 +122,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
     private int totalPayCount = 0;
     private String order_email = "";
     private Global.OrderType orderType;
-    private boolean isClicked;
     private boolean skipLogin;
     private Dialog dlog;
     private Handler handler = new Handler();
@@ -625,7 +623,9 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 if (overAllRemainingBalance <= 0 || ((typeOfProcedure == Global.FROM_JOB_INVOICE
                         || typeOfProcedure == Integer.parseInt(Global.OrderType.INVOICE.getCodeString()))))
                     activity.finish();
-                resetCustomer();
+                if (!openGiftCardAddBalance()) {
+                    resetCustomer();
+                }
             }
         });
         dlog.show();
@@ -772,71 +772,73 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
     }
 
     private void showPaymentSuccessDlog(final boolean withPrintRequest, final EMVContainer emvContainer, boolean isRetun) {
-
-        dlog = new Dialog(activity, R.style.Theme_TransparentTest);
-        dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dlog.setCancelable(false);
-        dlog.setContentView(R.layout.dlog_btn_single_layout);
-
-        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
-        viewTitle.setText(R.string.dlog_title_confirm);
+        String message;
+//        dlog = new Dialog(activity, R.style.Theme_TransparentTest);
+//        dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+//        dlog.setCancelable(false);
+//        dlog.setContentView(R.layout.dlog_btn_single_layout);
+//
+//        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
+//        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+//        viewTitle.setText(R.string.dlog_title_confirm);
         if (emvContainer != null && emvContainer.getGeniusResponse() != null) {
             if (emvContainer.getGeniusResponse().getStatus().equalsIgnoreCase("APPROVED")) {
                 if (isRetun) {
-                    viewMsg.setText(R.string.payment_return_saved_successfully);
+                    message = getString(R.string.payment_return_saved_successfully);
                 } else {
-                    viewMsg.setText(R.string.payment_saved_successfully);
+                    message = getString(R.string.payment_saved_successfully);
                 }
             } else {
-                viewMsg.setText(R.string.payment_save_declined);
+                message = getString(R.string.payment_save_declined);
             }
         } else {
             if (isRetun) {
-                viewMsg.setText(R.string.payment_return_saved_successfully);
+                message = getString(R.string.payment_return_saved_successfully);
             } else {
-                viewMsg.setText(R.string.payment_saved_successfully);
+                message = getString(R.string.payment_saved_successfully);
             }
         }
-
-        Button btnOk = (Button) dlog.findViewById(R.id.btnDlogSingle);
-        btnOk.setText(R.string.button_ok);
-        btnOk.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                dlog.dismiss();
-                if (withPrintRequest) {
-                    if (Global.loyaltyCardInfo != null && !Global.loyaltyCardInfo.getCardNumUnencrypted().isEmpty()) {
-                        showPrintDlg(false, false, emvContainer);
-                    } else if (Global.rewardCardInfo != null && !Global.rewardCardInfo.getCardNumUnencrypted().isEmpty()) {
-                        showPrintDlg(false, false, emvContainer);
-                    } else {
-                        if (myPref.getPreferences(MyPreferences.pref_enable_printing)
-                                && !myPref.getPreferences(MyPreferences.pref_automatic_printing)) {
-                            showPrintDlg(false, false, emvContainer);
-                        } else if (overAllRemainingBalance <= 0) {
-                            openGiftCardAddBalance();
-                            finish();
-                            resetCustomer();
-                        }
-                    }
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+//        Button btnOk = (Button) dlog.findViewById(R.id.btnDlogSingle);
+//        btnOk.setText(R.string.button_ok);
+//        btnOk.setOnClickListener(new OnClickListener() {
+//
+//            @Override
+//            public void onClick(View v) {
+//                dlog.dismiss();
+        if (withPrintRequest) {
+            if (Global.loyaltyCardInfo != null && !Global.loyaltyCardInfo.getCardNumUnencrypted().isEmpty()) {
+                showPrintDlg(false, false, emvContainer);
+            } else if (Global.rewardCardInfo != null && !Global.rewardCardInfo.getCardNumUnencrypted().isEmpty()) {
+                showPrintDlg(false, false, emvContainer);
+            } else {
+                if (myPref.getPreferences(MyPreferences.pref_enable_printing)
+                        && !myPref.getPreferences(MyPreferences.pref_automatic_printing)) {
+                    showPrintDlg(false, false, emvContainer);
                 } else if (overAllRemainingBalance <= 0) {
                     openGiftCardAddBalance();
                     finish();
                     resetCustomer();
                 }
             }
-        });
-        dlog.show();
-
-        dlog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                handler.removeCallbacks(runnable);
+        } else if (overAllRemainingBalance <= 0) {
+            if (!openGiftCardAddBalance()) {
+                resetCustomer();
             }
-        });
+            finish();
+
+        }
+//            }
+//        });
+//        dlog.show();
+
+//        dlog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+//
+//            @Override
+//            public void onDismiss(DialogInterface dialog) {
+        handler.removeCallbacks(runnable);
+//            }
+//        });
 
         if (Global.loyaltyCardInfo != null && !Global.loyaltyCardInfo.getCardNumUnencrypted().isEmpty()) {
             processInquiry(true);
@@ -855,7 +857,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         }
     }
 
-    private void openGiftCardAddBalance() {
+    private boolean openGiftCardAddBalance() {
         CustomerCustomField customField = CustomerCustomFieldsDAO.findEMWSCardIdByCustomerId(myPref.getCustID());
         boolean containsGiftCard = customField != null && OrderProductUtils.containsGiftCard(global.order.getOrderProducts(), customField.getCustValue());
         if (containsGiftCard) {
@@ -867,10 +869,12 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             if (hasPermissions) {
                 intent.putExtra("PROCESS_TYPE", CardManager_FA.GiftCardActions.CASE_MANUAL_ADD.getCode());
                 startActivity(intent);
+                return true;
             } else {
                 Global.showPrompt(this, R.string.security_alert, getString(R.string.permission_denied));
             }
         }
+        return false;
     }
 
     private void processInquiry(boolean isLoyalty) {
@@ -995,7 +999,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         if (UIUtils.singleOnClick(view)) {
             selectPayment(position);
         } else {
-            Toast.makeText(this, "Multiple click detected", Toast.LENGTH_LONG);
+            Toast.makeText(this, "Multiple click detected", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -1233,10 +1237,14 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         protected void onPostExecute(String unused) {
             if (printSuccessful) {
                 if (overAllRemainingBalance <= 0 || (typeOfProcedure == Global.FROM_JOB_INVOICE
-                        || typeOfProcedure == Integer.parseInt(Global.OrderType.INVOICE.getCodeString())))
+                        || typeOfProcedure == Integer.parseInt(Global.OrderType.INVOICE.getCodeString()))) {
+                    if (!openGiftCardAddBalance()) {
+                        resetCustomer();
+                    }
                     activity.finish();
-                resetCustomer();
-                showPrintDlg(wasReprint, true, null);
+                } else {
+                    showPrintDlg(wasReprint, true, null);
+                }
             }
             myProgressDialog.dismiss();
         }
