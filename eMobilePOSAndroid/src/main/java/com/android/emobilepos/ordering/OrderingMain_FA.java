@@ -68,7 +68,6 @@ import com.android.support.MyPreferences;
 import com.android.support.NetworkUtils;
 import com.android.support.OrderProductUtils;
 import com.android.support.Post;
-import com.android.support.StringUtils;
 import com.android.support.TerminalDisplay;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.crashlytics.android.Crashlytics;
@@ -132,6 +131,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     private LinearLayout catalogContainer, receiptContainer;
     private Catalog_FR rightFragment;
     private Receipt_FR leftFragment;
+    private OrderLoyalty_FR loyaltyFragment;
     private MyPreferences myPref;
     private Global global;
     private boolean hasBeenCreated = false;
@@ -1606,6 +1606,14 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         this.orderAttributes = orderAttributes;
     }
 
+    public OrderLoyalty_FR getLoyaltyFragment() {
+        return loyaltyFragment;
+    }
+
+    public void setLoyaltyFragment(OrderLoyalty_FR loyaltyFragment) {
+        this.loyaltyFragment = loyaltyFragment;
+    }
+
     public enum OrderingAction {
         HOLD, CHECKOUT, NONE, BACK_PRESSED
     }
@@ -1697,8 +1705,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             {
                 String temp = (parsedMap.get("CardBalance") == null ? "0.0" : parsedMap.get("CardBalance"));
                 if (loyaltySwiped) {
-                    OrderLoyalty_FR.getFrag().hideTapButton();
-                    OrderLoyalty_FR.setPointBalance(temp);
+                    loyaltyFragment.hideTapButton();
+                    loyaltyFragment.setPointBalance(temp);
                 } else {
                     OrderRewards_FR.getFrag().hideTapButton();
                     OrderRewards_FR.setRewardBalance(temp);

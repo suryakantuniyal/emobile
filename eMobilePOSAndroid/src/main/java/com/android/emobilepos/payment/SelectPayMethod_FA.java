@@ -907,30 +907,35 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         loyaltyRewardPayment.setCard_type(cardType);
         loyaltyRewardPayment.setPay_type("0");
         if (isLoyalty) {
-            loyaltyRewardPayment.setPay_amount(Global.loyaltyCharge);
-            EMSPayGate_Default payGate = new EMSPayGate_Default(this, loyaltyRewardPayment);
-            boolean wasSwiped = cardInfoManager.getWasSwiped();
-            reqChargeLoyaltyReward = payGate.paymentWithAction(EMSPayGate_Default.EAction.ChargeLoyaltyCardAction, wasSwiped, cardType,
-                    cardInfoManager);
-            loyaltyRewardPayment.setPay_amount(Global.loyaltyAddAmount);
-            payGate = new EMSPayGate_Default(this, loyaltyRewardPayment);
-            String reqAddLoyalty = payGate.paymentWithAction(EMSPayGate_Default.EAction.AddValueLoyaltyCardAction, wasSwiped, cardType,
-                    cardInfoManager);
-            loyaltyRewardPayment.setPay_amount(Global.loyaltyCharge);
-            new processLoyaltyAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            if (new BigDecimal(Global.loyaltyCharge).compareTo(BigDecimal.valueOf(0)) == 1) {
+                loyaltyRewardPayment.setPay_amount(Global.loyaltyCharge);
+                EMSPayGate_Default payGate = new EMSPayGate_Default(this, loyaltyRewardPayment);
+                boolean wasSwiped = cardInfoManager.getWasSwiped();
+                reqChargeLoyaltyReward = payGate.paymentWithAction(EMSPayGate_Default.EAction.ChargeLoyaltyCardAction, wasSwiped, cardType,
+                        cardInfoManager);
+//            loyaltyRewardPayment.setPay_amount(Global.loyaltyAddAmount);
+                payGate = new EMSPayGate_Default(this, loyaltyRewardPayment);
+                String reqAddLoyalty = payGate.paymentWithAction(EMSPayGate_Default.EAction.AddValueLoyaltyCardAction, wasSwiped, cardType,
+                        cardInfoManager);
+//            loyaltyRewardPayment.setPay_amount(Global.loyaltyCharge);
+                new processLoyaltyAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            }
         } else {
             BigDecimal bdOrigAmount = new BigDecimal(cardInfoManager.getOriginalTotalAmount());
-            if (Global.rewardChargeAmount.compareTo(new BigDecimal("0")) == 1)
+            if (Global.rewardChargeAmount.compareTo(new BigDecimal("0")) == 1) {
                 loyaltyRewardPayment.setOriginalTotalAmount(Global.rewardAccumulableSubtotal.add(bdOrigAmount)
                         .toString());
-            else
+            } else {
                 loyaltyRewardPayment.setOriginalTotalAmount(Global.rewardAccumulableSubtotal.toString());
-            loyaltyRewardPayment.setPay_amount(Global.rewardChargeAmount.toString());
-            EMSPayGate_Default payGate = new EMSPayGate_Default(this, loyaltyRewardPayment);
-            boolean wasSwiped = cardInfoManager.getWasSwiped();
-            reqChargeLoyaltyReward = payGate.paymentWithAction(EMSPayGate_Default.EAction.ChargeRewardAction, wasSwiped, cardType,
-                    cardInfoManager);
-            new processRewardAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            }
+            if (Global.rewardChargeAmount.compareTo(BigDecimal.valueOf(0)) == 1) {
+                loyaltyRewardPayment.setPay_amount(Global.rewardChargeAmount.toString());
+                EMSPayGate_Default payGate = new EMSPayGate_Default(this, loyaltyRewardPayment);
+                boolean wasSwiped = cardInfoManager.getWasSwiped();
+                reqChargeLoyaltyReward = payGate.paymentWithAction(EMSPayGate_Default.EAction.ChargeRewardAction, wasSwiped, cardType,
+                        cardInfoManager);
+                new processRewardAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            }
         }
 
     }

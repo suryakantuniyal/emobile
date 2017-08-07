@@ -706,7 +706,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     public void processPayWithLoyalty(OrderSeatProduct orderSeatProduct) {
         if (!Boolean.parseBoolean(orderSeatProduct.orderProduct.getPayWithPoints())) {
             String price = orderSeatProduct.orderProduct.getProd_price_points();
-            if (OrderLoyalty_FR.isValidPointClaim(price)) {
+            if (getOrderingMainFa().getLoyaltyFragment().isValidPointClaim(price)) {
                 orderSeatProduct.orderProduct.setOverwrite_price(null);
                 orderSeatProduct.orderProduct.setItemTotal("0.00");
                 orderSeatProduct.orderProduct.setProd_price("0.00");
@@ -2085,7 +2085,10 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     callBackRecalculate = (RecalculateCallback) frag;
                     return frag;
                 case 1:
-                    return OrderLoyalty_FR.init(position);
+                    OrderLoyalty_FR loyaltyFr = OrderLoyalty_FR.init(position);
+                    OrderingMain_FA mainFa = (OrderingMain_FA) getActivity();
+                    mainFa.setLoyaltyFragment(loyaltyFr);
+                    return loyaltyFr;
                 default:
                     return OrderRewards_FR.init(position);
 
