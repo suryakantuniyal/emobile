@@ -165,6 +165,10 @@
             android:key="pref_use_loyal_patron"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_use_loyal_patron" />
+        <CheckBoxPreference
+            android:key="pref_giftcard_auto_balance_request"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_giftcard_auto_balance_request" />
     </PreferenceCategory>
     <PreferenceCategory
         android:layout="@layout/settings_custom_header_layout"

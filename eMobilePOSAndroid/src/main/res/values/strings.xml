@@ -1342,5 +1342,6 @@
     <string name="date">Date</string>
     <string name="dlog_title_enter_giftcard_number">Enter gift card number</string>
     <string name="giftcard_number">Gift Card Number:</string>
+    <string name="config_giftcard_auto_balance_request">Gift/Reward auto balance request</string>
 
 </resources>

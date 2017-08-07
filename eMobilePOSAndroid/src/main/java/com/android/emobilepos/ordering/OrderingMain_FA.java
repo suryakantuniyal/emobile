@@ -354,23 +354,23 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         return false;
     }
 
-    public static void prefillRequiredAttribute(Context context, List<OrderProduct> products) {
-        MyPreferences preferences = new MyPreferences(context);
-        String custID = preferences.getCustID();
-        for (OrderProduct product : products) {
-            List<ProductAttribute> attributes = OrderProductAttributeDAO.getByProdId(product.getProd_id());
-            for (ProductAttribute attribute : attributes) {
-                if (!product.getRequiredProductAttributes().contains(attribute)) {
-                    if (attribute.getAttributeId().equalsIgnoreCase("EMS_CARD_ID_NUM")) {
-                        CustomerCustomField customField = CustomerCustomFieldsDAO.findEMWSCardIdByCustomerId(custID);
-                        attribute.setValue(customField == null ? null : customField.getCustValue());
-                        product.getRequiredProductAttributes().add(attribute);
-                    }
-                }
-            }
-        }
-
-    }
+//    public static void prefillRequiredAttribute(Context context, List<OrderProduct> products) {
+//        MyPreferences preferences = new MyPreferences(context);
+//        String custID = preferences.getCustID();
+//        for (OrderProduct product : products) {
+//            List<ProductAttribute> attributes = OrderProductAttributeDAO.getByProdId(product.getProd_id());
+//            for (ProductAttribute attribute : attributes) {
+//                if (!product.getRequiredProductAttributes().contains(attribute)) {
+//                    if (attribute.getAttributeId().equalsIgnoreCase("EMS_CARD_ID_NUM")) {
+//                        CustomerCustomField customField = CustomerCustomFieldsDAO.findEMWSCardIdByCustomerId(custID);
+//                        attribute.setValue(customField == null ? null : customField.getCustValue());
+//                        product.getRequiredProductAttributes().add(attribute);
+//                    }
+//                }
+//            }
+//        }
+//
+//    }
 
 //    private Handler SearchFieldHandler = new Handler() {
 //        public void handleMessage(Message msg) {
@@ -840,7 +840,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     }
 
     public void prefetchLoyalty(boolean isLoyalty) {
-        if (myPref.isCustSelected()) {
+        if (myPref.isCustSelected() && myPref.isGiftCardAutoBalanceRequest()) {
             if (!TextUtils.isEmpty(myPref.getCustID())) {
                 CustomerCustomField customField = CustomerCustomFieldsDAO.findEMWSCardIdByCustomerId(myPref.getCustID());
                 if (customField != null) {
