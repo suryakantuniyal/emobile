@@ -142,29 +142,17 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
     private void selectCustomer(int itemIndex) {
         Intent results = new Intent();
         myCursor.moveToPosition(itemIndex);
-
         String name = myCursor.getString(myCursor.getColumnIndex("cust_name"));
         results.putExtra("customer_name", name);
-
-        SalesTaxCodesHandler taxHandler = new SalesTaxCodesHandler(activity);
-        SalesTaxCodesHandler.TaxableCode taxable = taxHandler.checkIfCustTaxable(myCursor.getString(myCursor.getColumnIndex("cust_taxable")));
-        myPref.setCustTaxCode(taxable, myCursor.getString(myCursor.getColumnIndex("cust_salestaxcode")));
-//        if (taxable == SalesTaxCodesHandler.TaxableCode.TAXABLE)
-//            myPref.setCustTaxCode(myCursor.getString(myCursor.getColumnIndex("cust_salestaxcode")));
-//        else if (taxable == SalesTaxCodesHandler.TaxableCode.NON_TAXABLE)
-//            myPref.setCustTaxCode("");
-//        else
-//            myPref.setCustTaxCode(null);
-
+//        SalesTaxCodesHandler taxHandler = new SalesTaxCodesHandler(activity);
+//        SalesTaxCodesHandler.TaxableCode taxable = taxHandler.checkIfCustTaxable(myCursor.getString(myCursor.getColumnIndex("cust_taxable")));
+//        myPref.setCustTaxCode(taxable, myCursor.getString(myCursor.getColumnIndex("cust_salestaxcode")));
         myPref.setCustID(myCursor.getString(myCursor.getColumnIndex("_id")));    //getting cust_id as _id
         myPref.setCustName(name);
         myPref.setCustIDKey(myCursor.getString(myCursor.getColumnIndex("custidkey")));
         myPref.setCustSelected(true);
-
         myPref.setCustPriceLevel(myCursor.getString(myCursor.getColumnIndex("pricelevel_id")));
-
         myPref.setCustEmail(myCursor.getString(myCursor.getColumnIndex("cust_email")));
-
         setResult(1, results);
         finish();
     }

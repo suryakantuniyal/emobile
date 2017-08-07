@@ -1317,14 +1317,10 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         @Override
         protected void onPostExecute(Void unused) {
             myProgressDialog.dismiss();
-
-            if (wasProcessed) // payment processing succeeded
-            {
+            if (wasProcessed) {
                 loyaltyRewardPayment.setPay_issync("1");
                 paymentHandlerDB.insert(loyaltyRewardPayment);
-                showBalancePrompt("Card was processed");
-            } else // payment processing failed
-            {
+            } else {
                 showBalancePrompt(errorMsg);
             }
         }

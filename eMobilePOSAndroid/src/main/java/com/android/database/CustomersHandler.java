@@ -285,7 +285,9 @@ public class CustomersHandler {
     }
 
     public Cursor getCursorAllCust() {
-        String query = "SELECT cust_id as _id,AccountNumnber, custidkey, cust_name,c.pricelevel_id,pl.pricelevel_name,cust_taxable,cust_salestaxcode,cust_email,CompanyName,cust_phone FROM Customers c LEFT OUTER JOIN PriceLevel pl ON c.pricelevel_id = pl.pricelevel_id ORDER BY cust_name";
+        String query = "SELECT cust_id as _id,AccountNumnber, custidkey, cust_name,c.pricelevel_id,pl.pricelevel_name," +
+                "cust_taxable,cust_salestaxcode,cust_email,CompanyName,cust_phone " +
+                "FROM Customers c LEFT OUTER JOIN PriceLevel pl ON c.pricelevel_id = pl.pricelevel_id ORDER BY cust_name";
 
         Cursor cursor = DBManager.getDatabase().rawQuery(query, null);
         cursor.moveToFirst();
@@ -315,7 +317,8 @@ public class CustomersHandler {
 
         String subquery1 = "SELECT c.cust_name,c.cust_contact,c.cust_phone,c.cust_email,c.CompanyName,c.cust_balance,c.cust_limit,c.cust_taxable,c.cust_salestaxcode,"
                 + "a.addr_b_str1,a.addr_b_str2,a.addr_b_str3,a.addr_b_city,a.addr_b_state,a.addr_b_country, a.addr_b_zipcode, a.addr_s_str1,"
-                + "a.addr_s_str2,a.addr_s_str3,a.addr_s_city,a.addr_s_state,a.addr_s_country, a.addr_s_zipcode FROM Customers c LEFT OUTER JOIN Address "
+                + "a.addr_s_str2,a.addr_s_str3,a.addr_s_city,a.addr_s_state,a.addr_s_country, a.addr_s_zipcode " +
+                "FROM Customers c LEFT OUTER JOIN Address "
                 + "a ON c.cust_id = a.cust_id WHERE c.cust_id = ?";
 
         StringBuilder custAddress = new StringBuilder();
@@ -482,14 +485,13 @@ public class CustomersHandler {
         if (customerId != null && !customerId.isEmpty()) {
             // SQLiteDatabase db = dbManager.openReadableDB();
 
-            StringBuilder sb = new StringBuilder();
-            sb.append(
-                    "SELECT c.cust_firstName,c.cust_lastName,b.addr_b_str1,b.addr_b_str2,b.addr_b_str3,b.addr_b_city,b.addr_b_state,b.addr_b_country,");
-            sb.append(
-                    "b.addr_b_zipcode,b.addr_s_str1,b.addr_s_str2,b.addr_s_str3,b.addr_s_city,b.addr_s_state,b.addr_s_country,b.addr_s_zipcode ");
-            sb.append("FROM Customers c LEFT OUTER JOIN Address b ON c.cust_id = b.cust_id WHERE c.cust_id = ?");
+            String sb = ("SELECT c.cust_firstName,c.cust_lastName,b.addr_b_str1,b.addr_b_str2,b.addr_b_str3,b.addr_b_city," +
+                    " b.addr_b_state,b.addr_b_country,") +
+                    " b.addr_b_zipcode,b.addr_s_str1,b.addr_s_str2,b.addr_s_str3,b.addr_s_city,b.addr_s_state,b.addr_s_country," +
+                    " b.addr_s_zipcode , cust_taxable, cust_salestaxcode" +
+                    " FROM Customers c LEFT OUTER JOIN Address b ON c.cust_id = b.cust_id WHERE c.cust_id = ?";
 
-            Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), new String[]{customerId});
+            Cursor cursor = DBManager.getDatabase().rawQuery(sb, new String[]{customerId});
 
             if (cursor.moveToFirst()) {
                 customer.cust_firstName = cursor.getString(cursor.getColumnIndex(cust_firstName));
@@ -508,6 +510,9 @@ public class CustomersHandler {
                 customer.shippingAddress.addr_s_state = cursor.getString(cursor.getColumnIndex("addr_s_state"));
                 customer.shippingAddress.addr_s_country = cursor.getString(cursor.getColumnIndex("addr_s_country"));
                 customer.shippingAddress.addr_s_zipcode = cursor.getString(cursor.getColumnIndex("addr_s_zipcode"));
+                customer.cust_taxable = cursor.getString(cursor.getColumnIndex("cust_taxable"));
+                customer.cust_salestaxcode = cursor.getString(cursor.getColumnIndex("cust_salestaxcode"));
+
             }
 
             cursor.close();

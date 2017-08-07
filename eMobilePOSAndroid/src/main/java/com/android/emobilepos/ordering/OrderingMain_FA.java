@@ -38,11 +38,13 @@ import com.android.dao.CustomerCustomFieldsDAO;
 import com.android.dao.OrderProductAttributeDAO;
 import com.android.database.AddressHandler;
 import com.android.database.CustomerInventoryHandler;
+import com.android.database.CustomersHandler;
 import com.android.database.OrderProductsAttr_DB;
 import com.android.database.OrderProductsHandler;
 import com.android.database.OrdersHandler;
 import com.android.database.PayMethodsHandler;
 import com.android.database.ProductsHandler;
+import com.android.database.SalesTaxCodesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.OrderProductListAdapter;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
@@ -61,6 +63,7 @@ import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.soundmanager.SoundManager;
 import com.android.support.CreditCardInfo;
+import com.android.support.Customer;
 import com.android.support.Encrypt;
 import com.android.support.GenerateNewID;
 import com.android.support.Global;
@@ -427,6 +430,14 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         btnCheckout = (Button) findViewById(R.id.btnCheckOut);
         btnCheckout.setOnClickListener(this);
         myPref = new MyPreferences(this);
+        if (myPref.isCustSelected()) {
+            CustomersHandler customersHandler = new CustomersHandler(this);
+            Customer customer = customersHandler.getCustomer(myPref.getCustID());
+            SalesTaxCodesHandler taxHandler = new SalesTaxCodesHandler(this);
+            SalesTaxCodesHandler.TaxableCode taxable = taxHandler.checkIfCustTaxable(customer.cust_taxable);
+            myPref.setCustTaxCode(taxable, customer.cust_salestaxcode);
+        }
+
         extras = getIntent().getExtras();
         mTransType = (Global.TransactionType) extras.get("option_number");
         setRestaurantSaleType((Global.RestaurantSaleType) extras.get("RestaurantSaleType"));
