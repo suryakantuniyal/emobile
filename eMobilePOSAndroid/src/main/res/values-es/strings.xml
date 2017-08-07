@@ -1309,7 +1309,8 @@
     <string name="hours">Horas</string>
     <string name="total_hours_worked">Total Horas</string>
     <string name="date">Fecha</string>
-    <string name="dlog_title_enter_giftcard_number">Introduzca el número de la tarjeta de regalo</string>
-    <string name="giftcard_number">Número de Tarjeta de Regalo:</string>
+    <string name="dlog_title_enter_giftcard_number">Introduzca el número de targeta reagalo.</string>
+    <string name="giftcard_number">Número de targeta:</string>
+
 
 </resources>
