@@ -199,6 +199,7 @@ public class SalesTab_FR extends Fragment {
             myListview.setOnItemClickListener(new MyListener());
             myListview.invalidateViews();
         } else {
+            salesInvoices.setVisibility(View.GONE);
             isCustomerSelected = false;
             selectedCust.setText(getString(R.string.no_customer));
             myAdapter = new SalesMenuAdapter(getActivity(), false);

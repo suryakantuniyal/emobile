@@ -43,6 +43,7 @@ public class MyPreferences {
     public static final String pref_mix_match = "pref_mix_match";
     public static final String pref_holds_polling_service = "pref_holds_polling_service";
     public static final String pref_require_customer = "pref_require_customer";
+    public static final String pref_clear_customer = "pref_clear_customer";
     public static final String pref_show_confirmation_screen = "pref_show_confirmation_screen";
     public static final String pref_direct_customer_selection = "pref_direct_customer_selection";
     public static final String pref_display_customer_account_number = "pref_display_customer_account_number";
@@ -1194,6 +1195,10 @@ public class MyPreferences {
 
     public boolean isGiftCardAutoBalanceRequest() {
         return getPreferences(MyPreferences.pref_giftcard_auto_balance_request);
+    }
+
+    public boolean isClearCustomerAfterTransaction() {
+        return getPreferences(MyPreferences.pref_clear_customer);
     }
 
     public void setIsUseClerks(boolean value) {

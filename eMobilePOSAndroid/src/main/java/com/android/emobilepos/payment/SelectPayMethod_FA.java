@@ -625,6 +625,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 if (overAllRemainingBalance <= 0 || ((typeOfProcedure == Global.FROM_JOB_INVOICE
                         || typeOfProcedure == Integer.parseInt(Global.OrderType.INVOICE.getCodeString()))))
                     activity.finish();
+                resetCustomer();
             }
         });
         dlog.show();
@@ -817,11 +818,13 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                         } else if (overAllRemainingBalance <= 0) {
                             openGiftCardAddBalance();
                             finish();
+                            resetCustomer();
                         }
                     }
                 } else if (overAllRemainingBalance <= 0) {
                     openGiftCardAddBalance();
                     finish();
+                    resetCustomer();
                 }
             }
         });
@@ -1065,6 +1068,12 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         }
     }
 
+    private void resetCustomer() {
+        if (myPref.isClearCustomerAfterTransaction()) {
+            myPref.resetCustInfo(getString(R.string.no_customer));
+        }
+    }
+
     private class CardsListAdapter extends BaseAdapter implements Filterable {
         private Context context;
         private LayoutInflater myInflater;
@@ -1226,7 +1235,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 if (overAllRemainingBalance <= 0 || (typeOfProcedure == Global.FROM_JOB_INVOICE
                         || typeOfProcedure == Integer.parseInt(Global.OrderType.INVOICE.getCodeString())))
                     activity.finish();
-            } else {
+                resetCustomer();
                 showPrintDlg(wasReprint, true, null);
             }
             myProgressDialog.dismiss();
