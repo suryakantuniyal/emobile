@@ -152,7 +152,12 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
             ProcessCash_FA.setTaxLabels(groupTaxRate, tax1Lbl, tax2Lbl);
 
         }
-
+        if (myPref.isPrefillTotalAmount()) {
+            this.fieldAmountTendered.setText(
+                    Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(extras.getString("amount")))));
+        } else {
+            this.fieldAmountTendered.setText("");
+        }
         if (myPref.isCustSelected()) {
             if (!TextUtils.isEmpty(myPref.getCustID())) {
                 CustomerCustomField customField = CustomerCustomFieldsDAO.findEMWSCardIdByCustomerId(myPref.getCustID());

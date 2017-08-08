@@ -538,7 +538,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         this.amountPaidField.addTextChangedListener(getTextWatcher(amountPaidField));
 
         this.amountPaidField.setOnFocusChangeListener(getFocusListener(this.amountPaidField));
-        if (myPref.getPreferences(MyPreferences.pref_prefill_total_amount))
+        if (myPref.isPrefillTotalAmount())
             this.amountPaidField.setText(
                     Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(extras.getString("amount")))));
         else

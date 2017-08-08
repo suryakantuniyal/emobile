@@ -72,7 +72,7 @@ public class MyPreferences {
     public static final String pref_allow_manual_credit_card = "pref_allow_manual_credit_card";
     public static final String pref_show_tips_for_cash = "pref_show_tips_for_cash";
     public static final String pref_audio_card_reader = "pref_audio_card_reader";
-    public static final String pref_prefill_total_amount = "pref_prefill_total_amount";
+    private static final String pref_prefill_total_amount = "pref_prefill_total_amount";
     public static final String pref_use_store_and_forward = "pref_use_store_and_forward";
     public static final String pref_return_require_refund = "pref_return_require_refund";
     public static final String pref_convert_to_reward = "pref_convert_to_reward";
@@ -1205,7 +1205,9 @@ public class MyPreferences {
     public boolean isShowGiftCardBalanceAfterPayments() {
         return getPreferences(MyPreferences.pref_giftcard_show_balance);
     }
-
+    public boolean isPrefillTotalAmount() {
+        return getPreferences(MyPreferences.pref_prefill_total_amount);
+    }
     public void setIsUseClerks(boolean value) {
         setPreferences(MyPreferences.pref_use_clerks, value);
     }
