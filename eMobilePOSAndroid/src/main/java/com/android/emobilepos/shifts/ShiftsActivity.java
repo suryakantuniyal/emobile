@@ -307,6 +307,8 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
         //set the ending petty cash equal to the beginning petty cash, decrease the ending petty cash every time there is an expense
         shift.setEndingPettyCash(NumberUtils.cleanCurrencyFormatedNumber(totalAmountEditText.getText().toString()));
         ShiftDAO.insertOrUpdate(shift);
+        if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)
+            Global.mainPrinterManager.getCurrentDevice().openCashDrawer();
         finish();
     }
 

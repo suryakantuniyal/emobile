@@ -24,11 +24,9 @@ import android.widget.TextView;
 import com.android.dao.CustomerCustomFieldsDAO;
 import com.android.database.AddressHandler;
 import com.android.database.CustomersHandler;
-import com.android.database.DBManager;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.realms.CustomerCustomField;
 import com.android.support.Global;
-import com.android.support.MyPreferences;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import java.util.ArrayList;
@@ -39,37 +37,31 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar {
     private final int CASE_BILLING = 0, CASE_SHIPPING = 1, CASE_GIFTCARD = 2;
     private ListViewAdapter myAdapter;
     private List<String> allInfoLeft;
-    private List<String> allInfoRight = new ArrayList<String>();
+    private List<String> allInfoRight = new ArrayList<>();
     private List<String> allFinancialLeft = Arrays.asList("Balance", "Limit", "Taxable", "Tax ID");
-    private List<String> allFinancialRight = new ArrayList<String>();
-    private List<String> data = new ArrayList<String>();
+    private List<String> allFinancialRight = new ArrayList<>();
     private Global global;
     private boolean hasBeenCreated = false;
     private Activity activity;
     private String cust_id;
-    private DBManager dbManager;
+    private List<CustomerCustomField> customFields;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.customer_moreinfo_layout);
-
         activity = this;
-        dbManager = new DBManager(this.activity);
         global = (Global) getApplication();
-
         allInfoLeft = Arrays.asList(getString(R.string.cust_detail_name), getString(R.string.cust_detail_contact),
                 getString(R.string.cust_detail_phone), getString(R.string.cust_detail_email), getString(R.string.cust_detail_company));
         allFinancialLeft = Arrays.asList(getString(R.string.cust_detail_balance), getString(R.string.cust_detail_limit),
                 getString(R.string.cust_detail_taxable), getString(R.string.cust_detail_tax_id));
-
         Bundle extras = getIntent().getExtras();
-
-        //SQLiteDatabase myDB = dbManager.openReadableDB();
         CustomersHandler custHandler = new CustomersHandler(this);
 
         cust_id = extras.getString("cust_id");
-        data = custHandler.getCustDetails(cust_id);
+        customFields = CustomerCustomFieldsDAO.getCustomFields(cust_id);
+        List<String> data = custHandler.getCustDetails(cust_id);
         int size = data.size();
         for (int i = 0; i < size; i++) {
             if (i < 5) {
@@ -78,13 +70,9 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar {
                 allFinancialRight.add(data.get(i));
             }
         }
-        //myDB.close();
-
         ListView myListview = (ListView) findViewById(R.id.custMoreInfoLV);
         myAdapter = new ListViewAdapter(this);
         myListview.setAdapter(myAdapter);
-
-
         myListview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
@@ -94,27 +82,25 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar {
                     showAddressDialog(CASE_BILLING);
                 } else if (pos == offset + 1) {
                     showAddressDialog(CASE_SHIPPING);
-                } else if (pos == offset + 3) {
-                    promptGiftCardNumber();
+                } else if (pos >= offset + 3) {
+                    if (customFields.get(pos - offset - 3).getCustFieldId().equalsIgnoreCase("EMS_CARD_ID_NUM")) {
+                        promptGiftCardNumber(customFields.get(pos - offset - 3).getCustValue());
+                    }
                 }
             }
         });
-
-
         hasBeenCreated = true;
     }
 
 
-    private void promptGiftCardNumber() {
+    private void promptGiftCardNumber(String currentValue) {
         final Dialog globalDlog = new Dialog(this, R.style.Theme_TransparentTest);
         globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         globalDlog.setCancelable(true);
         globalDlog.setContentView(R.layout.dlog_field_single_layout);
-
-
-        final MyPreferences myPref = new MyPreferences(this);
         final EditText viewField = (EditText) globalDlog.findViewById(R.id.dlogFieldSingle);
         viewField.setInputType(InputType.TYPE_CLASS_NUMBER);
+        viewField.setText(currentValue);
         TextView viewTitle = (TextView) globalDlog.findViewById(R.id.dlogTitle);
         TextView viewMsg = (TextView) globalDlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.header_title_gift_card);
@@ -146,6 +132,7 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar {
                 CustomerCustomFieldsDAO.upsert(customField);
                 CustomersHandler handler = new CustomersHandler(ViewCustomerDetails_FA.this);
                 handler.updateSyncStatus(cust_id, false);
+                customFields = CustomerCustomFieldsDAO.getCustomFields(cust_id);
                 myAdapter.notifyDataSetChanged();
 
             }
@@ -181,12 +168,9 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar {
 
     private void showAddressDialog(int type) {
         AddressHandler addressHandler = new AddressHandler(activity);
-        List<String[]> addressDownloadedItems = new ArrayList<String[]>();
-
+        List<String[]> addressDownloadedItems = new ArrayList<>();
         AlertDialog.Builder adb = new AlertDialog.Builder(activity);
         String dialogTitle = "";
-
-
         switch (type) {
             case CASE_BILLING:
                 addressDownloadedItems = addressHandler.getSpecificAddress(cust_id, CASE_BILLING);
@@ -200,11 +184,8 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar {
 
         int size = addressDownloadedItems.size();
         String[] addressItems = new String[size];
-        //addressItems[0] = "None";
-
         StringBuilder sb = new StringBuilder();
-        String temp = "";
-
+        String temp;
         for (int i = 0; i < size; i++) {
             temp = addressDownloadedItems.get(i)[0];
             if (!temp.isEmpty())                            //address 1
@@ -256,7 +237,11 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar {
         @Override
         public int getCount() {
             //+3 for the dividers +2 for the actual address
-            return allInfoLeft.size() + allFinancialLeft.size() + 3 + 2 + 2;
+            int count = allInfoLeft.size() + allFinancialLeft.size() + 3 + 2 + customFields.size();
+            if (!customFields.isEmpty()) {
+                count++;
+            }
+            return count;
         }
 
         @Override
@@ -290,8 +275,8 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar {
                             holder.left.setText(getString(R.string.cust_detail_financial_info));
                         } else if (position == (allInfoLeft.size() + allFinancialLeft.size() + 2)) {
                             holder.left.setText(getString(R.string.cust_detail_address));
-                        } else if (position == (allInfoLeft.size() + allFinancialLeft.size() + 2 + 3)) {
-                            holder.left.setText(getString(R.string.header_title_gift_card));
+                        } else if ((position == (allInfoLeft.size() + allFinancialLeft.size() + 2 + 3)) && !customFields.isEmpty()) {
+                            holder.left.setText(getString(R.string.header_title_customer_custom_fields));
                         }
                         break;
                     }
@@ -327,14 +312,6 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar {
             }
 
             if (type != 0) {
-//                if (position == 0) {
-//                    holder.left.setText(getString(R.string.cust_detail_info));
-//                } else if (position == (allInfoLeft.size() + 1)) {
-//                    holder.left.setText(getString(R.string.cust_detail_financial_info));
-//                } else {
-//                    holder.left.setText(getString(R.string.cust_detail_address));
-//                }
-//            } else {
                 int length2 = allInfoLeft.size() + 2 + allFinancialLeft.size();
                 if (position > 0 && position <= allInfoLeft.size()) {
                     holder.left.setText(allInfoLeft.get(position - 1));
@@ -350,11 +327,11 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar {
                     holder.left.setText(getString(R.string.cust_detail_ship));
                     holder.right.setSingleLine(true);
                     holder.right.setText("");
-                } else if (position == length2 + 4) {
-                    CustomerCustomField customField = CustomerCustomFieldsDAO.findEMWSCardIdByCustomerId(cust_id);
-                    holder.left.setText(getString(R.string.giftcard_number));
+                } else if (position >= length2 + 4) {
+                    CustomerCustomField customField = customFields.get(position - length2 - 4);//CustomerCustomFieldsDAO.findEMWSCardIdByCustomerId(cust_id);
+                    holder.left.setText(customField.getCustFieldName());
                     holder.right.setSingleLine(true);
-                    holder.right.setText(customField == null ? "" : customField.getCustValue());
+                    holder.right.setText(customField.getCustValue());
                 }
             }
             return convertView;
@@ -362,7 +339,6 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar {
 
         @Override
         public Filter getFilter() {
-            // TODO Auto-generated method stub
             return null;
         }
 

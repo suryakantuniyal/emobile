@@ -5,6 +5,7 @@ import com.android.emobilepos.models.realms.CustomerCustomField;
 import java.util.List;
 
 import io.realm.Realm;
+import io.realm.RealmResults;
 
 /**
  * Created by guarionex on 7/10/17.
@@ -62,5 +63,21 @@ public class CustomerCustomFieldsDAO {
         } finally {
             realm.close();
         }
+    }
+
+    public static List<CustomerCustomField> getCustomFields(String custID) {
+        Realm realm = Realm.getDefaultInstance();
+        List<CustomerCustomField> customFields;
+        try {
+            customFields = realm.where(CustomerCustomField.class)
+                    .equalTo("custId", custID)
+                    .findAll();
+            if (customFields != null) {
+                customFields = realm.copyFromRealm(customFields);
+            }
+        } finally {
+            realm.close();
+        }
+        return customFields;
     }
 }
