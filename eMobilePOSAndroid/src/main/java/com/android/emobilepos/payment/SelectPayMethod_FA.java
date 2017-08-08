@@ -858,20 +858,22 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
     }
 
     private boolean openGiftCardAddBalance() {
-        CustomerCustomField customField = CustomerCustomFieldsDAO.findEMWSCardIdByCustomerId(myPref.getCustID());
-        boolean containsGiftCard = customField != null && OrderProductUtils.containsGiftCard(global.order.getOrderProducts(), customField.getCustValue());
-        if (containsGiftCard) {
-            Intent intent = new Intent(this, CardManager_FA.class);
-            intent.putExtra("CARD_TYPE", CardManager_FA.CASE_GIFT);
-            intent.putExtra("amount", total);
-            intent.putExtra("cardNumber", customField.getCustValue());
-            boolean hasPermissions = SecurityManager.hasPermissions(this, SecurityManager.SecurityAction.MANUAL_ADD_BALANCE_LOYALTY);
-            if (hasPermissions) {
-                intent.putExtra("PROCESS_TYPE", CardManager_FA.GiftCardActions.CASE_MANUAL_ADD.getCode());
-                startActivity(intent);
-                return true;
-            } else {
-                Global.showPrompt(this, R.string.security_alert, getString(R.string.permission_denied));
+        if (global.order != null && !global.order.getOrderProducts().isEmpty()) {
+            CustomerCustomField customField = CustomerCustomFieldsDAO.findEMWSCardIdByCustomerId(myPref.getCustID());
+            boolean containsGiftCard = customField != null && OrderProductUtils.containsGiftCard(global.order.getOrderProducts(), customField.getCustValue());
+            if (containsGiftCard) {
+                Intent intent = new Intent(this, CardManager_FA.class);
+                intent.putExtra("CARD_TYPE", CardManager_FA.CASE_GIFT);
+                intent.putExtra("amount", total);
+                intent.putExtra("cardNumber", customField.getCustValue());
+                boolean hasPermissions = SecurityManager.hasPermissions(this, SecurityManager.SecurityAction.MANUAL_ADD_BALANCE_LOYALTY);
+                if (hasPermissions) {
+                    intent.putExtra("PROCESS_TYPE", CardManager_FA.GiftCardActions.CASE_MANUAL_ADD.getCode());
+                    startActivity(intent);
+                    return true;
+                } else {
+                    Global.showPrompt(this, R.string.security_alert, getString(R.string.permission_denied));
+                }
             }
         }
         return false;
