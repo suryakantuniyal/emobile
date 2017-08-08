@@ -2120,7 +2120,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
         @Override
         protected void onPostExecute(Payment payment) {
-            myProgressDialog.dismiss();
+            Global.dismissDialog(ProcessCreditCard_FA.this, myProgressDialog);
 
             livePaymentRunning = false;
             if (wasProcessed) // payment processing succeeded
@@ -2217,7 +2217,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
         @Override
         protected void onPostExecute(Payment payment) {
-            myProgressDialog.dismiss();
+            Global.dismissDialog(ProcessCreditCard_FA.this, myProgressDialog);
             String xmlAppId = reverseXMLMap.get(PaymentsXML_DB.app_id);
 
             if (reverseWasProcessed) {
@@ -2266,8 +2266,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
         @Override
         protected void onPostExecute(Payment payment) {
-            if (myProgressDialog != null && myProgressDialog.isShowing())
-                myProgressDialog.dismiss();
+            Global.dismissDialog(ProcessCreditCard_FA.this, myProgressDialog);
             if (printingSuccessful) {
                 if (!wasReprint && myPref.getPreferences(MyPreferences.pref_prompt_customer_copy))
                     showPrintDlg(true, false, payment);

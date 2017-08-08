@@ -97,7 +97,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
     private GridView myListview;
     private String total;
     private String paid;
-    private Activity activity;
     private String pay_id;
     private String job_id = ""; // invoice #
     private List<PaymentMethod> payTypeList;
@@ -238,8 +237,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        activity = this;
-
         setContentView(R.layout.card_list_layout);
         myListview = (GridView) findViewById(R.id.cardsListview);
         global = (Global) getApplication();
@@ -284,7 +281,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         File cacheDir = new File(myPref.getCacheDir());
         if (!cacheDir.exists())
             cacheDir.mkdirs();
-        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(activity)
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
                 .discCache(new UnlimitedDiscCache(cacheDir)).build();
         imageLoader.init(config);
         imageLoader.handleSlowNetwork(true);
@@ -382,7 +379,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             finish();
         } else {
             if (orderType == Global.OrderType.SALES_RECEIPT || (orderType == Global.OrderType.INVOICE && myPref.isRequireFullPayment())) {
-                final Dialog dialog = new Dialog(activity, R.style.Theme_TransparentTest);
+                final Dialog dialog = new Dialog(this, R.style.Theme_TransparentTest);
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 dialog.setCancelable(true);
                 dialog.setContentView(R.layout.void_dialog_layout);
@@ -405,7 +402,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                             promptManagerPassword();
                         } else {
                             dialog.dismiss();
-                            voidTransaction(activity, job_id, orderType.name());
+                            voidTransaction(SelectPayMethod_FA.this, job_id, orderType.name());
                         }
                     }
                 });
@@ -420,7 +417,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             } else {
 
                 if (job_id != null) {
-                    OrdersHandler handler = new OrdersHandler(activity);
+                    OrdersHandler handler = new OrdersHandler(this);
                     handler.updateIsProcessed(job_id, "1");
                 }
 
@@ -432,7 +429,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                     if (!myPref.getPreferences(MyPreferences.pref_automatic_printing))
                         showPrintDlg(false, false, null);
                     else
-                        new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
+                        new PrintAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
                 } else {
                     if (Global.overallPaidAmount == 0)
                         setResult(-1);
@@ -453,7 +450,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         String ivuLottoNum = "";
 
         if (Global.isIvuLoto) {
-            DrawInfoHandler drawDateInfo = new DrawInfoHandler(activity);
+            DrawInfoHandler drawDateInfo = new DrawInfoHandler(this);
             MersenneTwisterFast mersenneTwister = new MersenneTwisterFast();
             drawDate = drawDateInfo.getDrawDate();
             ivuLottoNum = mersenneTwister.generateIVULoto();
@@ -580,7 +577,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
     }
 
     private void showPrintDlg(final boolean isReprint, boolean isRetry, final EMVContainer emvContainer) {
-        final Dialog dlog = new Dialog(activity, R.style.Theme_TransparentTest);
+        final Dialog dlog = new Dialog(this, R.style.Theme_TransparentTest);
         dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dlog.setCancelable(false);
         dlog.setContentView(R.layout.dlog_btn_left_right_layout);
@@ -611,7 +608,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             @Override
             public void onClick(View v) {
                 dlog.dismiss();
-                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, isReprint, emvContainer);
+                new PrintAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, isReprint, emvContainer);
 
             }
         });
@@ -622,7 +619,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 dlog.dismiss();
                 if (overAllRemainingBalance <= 0 || ((typeOfProcedure == Global.FROM_JOB_INVOICE
                         || typeOfProcedure == Integer.parseInt(Global.OrderType.INVOICE.getCodeString()))))
-                    activity.finish();
+                    finish();
                 if (!openGiftCardAddBalance()) {
                     resetCustomer();
                 }
@@ -632,7 +629,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
     }
 
     private void promptManagerPassword() {
-        final Dialog globalDlog = new Dialog(activity, R.style.Theme_TransparentTest);
+        final Dialog globalDlog = new Dialog(this, R.style.Theme_TransparentTest);
         globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         globalDlog.setCancelable(true);
         globalDlog.setContentView(R.layout.dlog_field_single_layout);
@@ -660,7 +657,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 globalDlog.dismiss();
                 String pass = viewField.getText().toString();
                 if (!pass.isEmpty() && myPref.loginManager(pass.trim())) {
-                    voidTransaction(activity, job_id, extras.getString("ord_type"));
+                    voidTransaction(SelectPayMethod_FA.this, job_id, extras.getString("ord_type"));
                 } else {
                     promptManagerPassword();
                 }
@@ -695,7 +692,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             showPaymentSuccessDlog(true, emvContainer, false);
         } else if (resultCode == -2) {
             totalPayCount++;
-            OrdersHandler ordersHandler = new OrdersHandler(activity);
+            OrdersHandler ordersHandler = new OrdersHandler(this);
             if (!TextUtils.isEmpty(job_id)) {
                 ordersHandler.updateIsTotalLinesPay(job_id, Integer.toString(totalPayCount));
             }
@@ -773,14 +770,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
     private void showPaymentSuccessDlog(final boolean withPrintRequest, final EMVContainer emvContainer, boolean isRetun) {
         String message;
-//        dlog = new Dialog(activity, R.style.Theme_TransparentTest);
-//        dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-//        dlog.setCancelable(false);
-//        dlog.setContentView(R.layout.dlog_btn_single_layout);
-//
-//        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
-//        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
-//        viewTitle.setText(R.string.dlog_title_confirm);
         if (emvContainer != null && emvContainer.getGeniusResponse() != null) {
             if (emvContainer.getGeniusResponse().getStatus().equalsIgnoreCase("APPROVED")) {
                 if (isRetun) {
@@ -799,14 +788,20 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             }
         }
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
-//        Button btnOk = (Button) dlog.findViewById(R.id.btnDlogSingle);
-//        btnOk.setText(R.string.button_ok);
-//        btnOk.setOnClickListener(new OnClickListener() {
-//
-//            @Override
-//            public void onClick(View v) {
-//                dlog.dismiss();
-        if (withPrintRequest) {
+        if (Global.loyaltyCardInfo != null && !Global.loyaltyCardInfo.getCardNumUnencrypted().isEmpty()) {
+            processInquiry(true);
+        } else if (Global.rewardCardInfo != null && !Global.rewardCardInfo.getCardNumUnencrypted().isEmpty()) {
+            processInquiry(false);
+        }
+
+        if (withPrintRequest && myPref.getPreferences(MyPreferences.pref_enable_printing)
+                && myPref.getPreferences(MyPreferences.pref_automatic_printing)) {
+            if ((emvContainer != null && emvContainer.getGeniusResponse() != null &&
+                    emvContainer.getGeniusResponse().getStatus().equalsIgnoreCase("APPROVED")) ||
+                    emvContainer == null || emvContainer.getGeniusResponse() == null) {
+                new PrintAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
+            }
+        } else if (withPrintRequest) {
             if (Global.loyaltyCardInfo != null && !Global.loyaltyCardInfo.getCardNumUnencrypted().isEmpty()) {
                 showPrintDlg(false, false, emvContainer);
             } else if (Global.rewardCardInfo != null && !Global.rewardCardInfo.getCardNumUnencrypted().isEmpty()) {
@@ -826,35 +821,8 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 resetCustomer();
             }
             finish();
-
         }
-//            }
-//        });
-//        dlog.show();
-
-//        dlog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-//
-//            @Override
-//            public void onDismiss(DialogInterface dialog) {
         handler.removeCallbacks(runnable);
-//            }
-//        });
-
-        if (Global.loyaltyCardInfo != null && !Global.loyaltyCardInfo.getCardNumUnencrypted().isEmpty()) {
-            processInquiry(true);
-        } else if (Global.rewardCardInfo != null && !Global.rewardCardInfo.getCardNumUnencrypted().isEmpty()) {
-            processInquiry(false);
-        }
-
-        if (withPrintRequest && myPref.getPreferences(MyPreferences.pref_enable_printing)
-                && myPref.getPreferences(MyPreferences.pref_automatic_printing)) {
-            if ((emvContainer != null && emvContainer.getGeniusResponse() != null &&
-                    emvContainer.getGeniusResponse().getStatus().equalsIgnoreCase("APPROVED")) ||
-                    emvContainer == null || emvContainer.getGeniusResponse() == null) {
-                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
-            }
-//            }
-        }
     }
 
     private boolean openGiftCardAddBalance() {
@@ -927,7 +895,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 String reqAddLoyalty = payGate.paymentWithAction(EMSPayGate_Default.EAction.AddValueLoyaltyCardAction, wasSwiped, cardType,
                         cardInfoManager);
 //            loyaltyRewardPayment.setPay_amount(Global.loyaltyCharge);
-                new processLoyaltyAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                new ProcessLoyaltyAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
         } else {
             BigDecimal bdOrigAmount = new BigDecimal(cardInfoManager.getOriginalTotalAmount());
@@ -943,7 +911,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 boolean wasSwiped = cardInfoManager.getWasSwiped();
                 reqChargeLoyaltyReward = payGate.paymentWithAction(EMSPayGate_Default.EAction.ChargeRewardAction, wasSwiped, cardType,
                         cardInfoManager);
-                new processRewardAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                new ProcessRewardAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
         }
 
@@ -969,7 +937,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                     if (!myPref.getPreferences(MyPreferences.pref_automatic_printing))
                         showPrintDlg(false, false, null);
                     else
-                        new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
+                        new PrintAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
                 } else {
                     finish();
                 }
@@ -980,7 +948,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
     @Override
     public void onClick(View v) {
-        Intent intent = new Intent(activity, ProcessBoloro_FA.class);
+        Intent intent = new Intent(this, ProcessBoloro_FA.class);
         intent.putExtra("paymethod_id", payTypeList.get(selectedPosition).getPaymethod_id());
         switch (v.getId()) {
             case R.id.btnDlogTop:
@@ -1028,7 +996,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             intent.putExtras(extras);
             initIntents(extras, intent);
         } else if (payTypeList.get(position).getPaymentmethod_type().equals("Wallet")) {
-            Intent intent = new Intent(activity, ProcessTupyx_FA.class);
+            Intent intent = new Intent(this, ProcessTupyx_FA.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());
             intent.putExtras(extras);
@@ -1036,7 +1004,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         } else if (payTypeList.get(position).getPaymentmethod_type().equals("Boloro")) {
             //If store & forward is selected then boloro only accept NFC payments
             if (myPref.isPrefUseStoreForward()) {
-                Intent intent = new Intent(activity, ProcessBoloro_FA.class);
+                Intent intent = new Intent(this, ProcessBoloro_FA.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 intent.putExtra("paymethod_id", payTypeList.get(selectedPosition).getPaymethod_id());
                 intent.putExtra("isNFC", true);
@@ -1048,7 +1016,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         } else if (payTypeList.get(position).getPaymentmethod_type().toUpperCase(Locale.getDefault()).contains("GIFT") ||
                 payTypeList.get(position).getPaymentmethod_type().toUpperCase(Locale.getDefault()).contains("REWARD") ||
                 payTypeList.get(position).getPaymentmethod_type().toUpperCase(Locale.getDefault()).contains("LOYALTYCARD")) {
-            Intent intent = new Intent(activity, ProcessGiftCard_FA.class);
+            Intent intent = new Intent(this, ProcessGiftCard_FA.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());
             intent.putExtra("paymentmethod_type", payTypeList.get(position).getPaymentmethod_type());
@@ -1057,7 +1025,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         } else {
             boolean isDebit = payTypeList.get(position).getPaymentmethod_type().toUpperCase(Locale.getDefault()).trim().contains("DEBIT");
             if (myPref.isPrefUseStoreForward() && isDebit) {
-                Global.showPrompt(activity, R.string.invalid_payment_type, getString(R.string.invalid_storeforward_payment_type));
+                Global.showPrompt(this, R.string.invalid_payment_type, getString(R.string.invalid_storeforward_payment_type));
             } else {
                 Intent intent = new Intent(this, ProcessCreditCard_FA.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
@@ -1200,7 +1168,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
     }
 
-    private class printAsync extends AsyncTask<Object, String, String> {
+    private class PrintAsync extends AsyncTask<Object, String, String> {
         private boolean wasReprint = false;
         private boolean printSuccessful = true;
 
@@ -1209,7 +1177,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
                 Global.mainPrinterManager.getCurrentDevice().loadScanner(null);
             }
-            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog = new ProgressDialog(SelectPayMethod_FA.this);
             myProgressDialog.setMessage("Printing...");
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);
@@ -1237,22 +1205,23 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
         @Override
         protected void onPostExecute(String unused) {
+            Global.dismissDialog(SelectPayMethod_FA.this, myProgressDialog);
             if (printSuccessful) {
                 if (overAllRemainingBalance <= 0 || (typeOfProcedure == Global.FROM_JOB_INVOICE
                         || typeOfProcedure == Integer.parseInt(Global.OrderType.INVOICE.getCodeString()))) {
                     if (!openGiftCardAddBalance()) {
                         resetCustomer();
                     }
-                    activity.finish();
+                    finish();
                 } else {
                     showPrintDlg(wasReprint, true, null);
                 }
             }
-            myProgressDialog.dismiss();
+
         }
     }
 
-    private class processLoyaltyAsync extends AsyncTask<Void, Void, Void> {
+    private class ProcessLoyaltyAsync extends AsyncTask<Void, Void, Void> {
 
         private HashMap<String, String> parsedMap = new HashMap<>();
         private boolean wasProcessed = false;
@@ -1260,7 +1229,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
         @Override
         protected void onPreExecute() {
-            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog = new ProgressDialog(SelectPayMethod_FA.this);
             myProgressDialog.setMessage(getString(R.string.processing_loyalty_card));
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);
@@ -1270,7 +1239,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
         @Override
         protected Void doInBackground(Void... params) {
-            Post httpClient = new Post(activity);
+            Post httpClient = new Post(SelectPayMethod_FA.this);
 
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
@@ -1318,7 +1287,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
         @Override
         protected void onPostExecute(Void unused) {
-            myProgressDialog.dismiss();
+            Global.dismissDialog(SelectPayMethod_FA.this, myProgressDialog);
             if (wasProcessed) {
                 loyaltyRewardPayment.setPay_issync("1");
                 paymentHandlerDB.insert(loyaltyRewardPayment);
@@ -1328,14 +1297,14 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         }
     }
 
-    private class processRewardAsync extends AsyncTask<Void, Void, HashMap<String, String>> {
+    private class ProcessRewardAsync extends AsyncTask<Void, Void, HashMap<String, String>> {
 
         private boolean wasProcessed = false;
         private String errorMsg = "Reward could not be processed.";
 
         @Override
         protected void onPreExecute() {
-            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog = new ProgressDialog(SelectPayMethod_FA.this);
             myProgressDialog.setMessage(getString(R.string.processing_reward));
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);
@@ -1345,7 +1314,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
         @Override
         protected HashMap<String, String> doInBackground(Void... params) {
-            Post httpClient = new Post(activity);
+            Post httpClient = new Post(SelectPayMethod_FA.this);
 
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
@@ -1394,8 +1363,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
         @Override
         protected void onPostExecute(HashMap<String, String> parsedMap) {
-            myProgressDialog.dismiss();
-
+            Global.dismissDialog(SelectPayMethod_FA.this, myProgressDialog);
             if (wasProcessed) // payment processing succeeded
             {
                 String balance = (parsedMap.get("CardBalance") == null ? "0.0" : parsedMap.get("CardBalance"));

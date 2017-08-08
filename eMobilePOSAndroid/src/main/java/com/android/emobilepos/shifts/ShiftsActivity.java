@@ -287,6 +287,8 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
         shift.setShiftStatus(Shift.ShiftStatus.PENDING);
         ShiftDAO.insertOrUpdate(shift);
         setShiftUI();
+        if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)
+            Global.mainPrinterManager.getCurrentDevice().openCashDrawer();
         new SendShiftTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
