@@ -1543,6 +1543,9 @@ public class EMSDeviceDriver {
             printPref = myPref.getPrintingPreferences();
             StringBuilder sb = new StringBuilder();
             printImage(0);
+            if(myPref.isCustSelected()){
+
+            }
             if (printPref.contains(MyPreferences.print_header))
                 printHeader(lineWidth);
             if (values.containsKey("amountAdded")) {

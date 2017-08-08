@@ -568,8 +568,8 @@
     <string name="cust_add_save">Save</string>
     <string name="cust_add_info">Customer Information</string>
     <string name="cust_add_alias">Customer Alias (Required)</string>
-    <string name="cust_add_first_name">First Name</string>
-    <string name="cust_add_last_name">Last Name</string>
+    <string name="cust_add_first_name">First Name (Required)</string>
+    <string name="cust_add_last_name">Last Name (Required)</string>
     <string name="cust_add_company">Company</string>
     <string name="cust_add_email">e-Mail</string>
     <string name="cust_add_phone">Phone</string>

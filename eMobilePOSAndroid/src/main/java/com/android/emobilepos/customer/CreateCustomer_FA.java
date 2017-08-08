@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.PowerManager;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.util.Patterns;
 import android.view.LayoutInflater;
@@ -39,7 +40,6 @@ import com.android.emobilepos.models.Tax;
 import com.android.emobilepos.models.realms.CustomerCustomField;
 import com.android.support.Customer;
 import com.android.support.Global;
-import com.android.support.MyEditText;
 import com.android.support.MyPreferences;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.crashlytics.android.Crashlytics;
@@ -56,30 +56,27 @@ import java.util.UUID;
 
 public class CreateCustomer_FA extends BaseFragmentActivityActionBar implements OnCheckedChangeListener, CompoundButton.OnCheckedChangeListener
         , OnClickListener {
-    final static int[] fieldID = new int[]{R.id.newCustAlias, R.id.newCustfName, R.id.newCustlName, R.id.newCustCompany,
-            R.id.newCustEmail, R.id.newCustPhone, R.id.newCustContact, R.id.newCustBillStr1, R.id.newCustBillStr2, R.id.newCustBillCity,
-            R.id.newCustBillState, R.id.newCustBillZip, R.id.newCustShipStr1, R.id.newCustShipStr2, R.id.newCustShipCity,
-            R.id.newCustShipState, R.id.newCustShipZip, R.id.newCustDOB};
-    private static final int CUST_ALIAS = 0, CUST_NAME = 1, CUST_LASTNAME = 2, COMPANY_NAME = 3, EMAIL = 4, PHONE = 5, CUST_CONTACT = 6,
-            B_STR1 = 7, B_STR2 = 8, B_CITY = 9, B_STATE = 10, B_ZIPCODE = 11, S_STR1 = 12, S_STR2 = 13, S_CITY = 14, S_STATE = 15,
-            S_ZIPCODE = 16, DOB = 17;
-    static Activity activity;
-    private static MyEditText[] field;
-    private static String dobDate = "";
+    //    final int[] fieldID = new int[]{R.id.newCustfName, R.id.newCustlName, R.id.newCustCompany,
+//            R.id.newCustEmail, R.id.newCustPhone, R.id.newCustContact, R.id.newCustBillStr1, R.id.newCustBillStr2, R.id.newCustBillCity,
+//            R.id.newCustBillState, R.id.newCustBillZip, R.id.newCustShipStr1, R.id.newCustShipStr2, R.id.newCustShipCity,
+//            R.id.newCustShipState, R.id.newCustShipZip, R.id.newCustDOB};
+//    private final int CUST_ALIAS = 0, CUST_NAME = 1, CUST_LASTNAME = 2, COMPANY_NAME = 3, EMAIL = 4, PHONE = 5, CUST_CONTACT = 6,
+//            B_STR1 = 7, B_STR2 = 8, B_CITY = 9, B_STATE = 10, B_ZIPCODE = 11, S_STR1 = 12, S_STR2 = 13, S_CITY = 14, S_STATE = 15,
+//            S_ZIPCODE = 16, DOB = 17;
     private final int SPINNER_PRICELEVEL = 0, SPINNER_TAXES = 1, SPINNER_BILL_COUNTRY = 2, SPINNER_SHIP_COUNTRY = 3;
+    //    private MyEditText[] field;
+//    private String dobDate = "";
     private String addr_b_type = "Residential", addr_s_type = "Residential";
-    private Spinner pricesList, taxesList, bCountrySpinner, sCountrySpinner;
+    private Spinner bCountrySpinner;
+    private Spinner sCountrySpinner;
     // private Spinner taxesList;
     private List<Tax> taxList;
     private List<String[]> priceLevelList;
-    private List<String> isoCountryList = new ArrayList<String>(), nameCountryList = new ArrayList<String>();
+    private List<String> isoCountryList = new ArrayList<>(), nameCountryList = new ArrayList<>();
     private int taxSelected = 0;
     private int priceLevelSelected = 0;
     private int bSelectedCountry = 0;
     private int sSelectedCountry = 0;
-    private CustomAdapter taxAdapter, priceLevelAdapter;
-    private String[] isoCountries, nameCountries;
-    private RadioGroup billingRadioGroup, shippingRadioGroup;
 
     private DialogFragment newFrag;
 
@@ -91,34 +88,31 @@ public class CreateCustomer_FA extends BaseFragmentActivityActionBar implements 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.new_customer_layout);
         global = (Global) getApplication();
-        activity = this;
 
         setupSpinners();
         setupCountries();
 
 
-        int length = fieldID.length;
-        field = new MyEditText[length];
+//        int length = fieldID.length;
+//        field = new MyEditText[length];
 
         // for i = 0 - 6 (Customer Information)
         // for i = 7 - 12 (Billing Address)
         // for i = 13 - 18 (Shipping Address)
-        for (int i = 0; i < length; i++) {
-            field[i] = (MyEditText) activity.findViewById(fieldID[i]);
-        }
+//        for (int i = 0; i < length; i++) {
+//            field[i] = (MyEditText) findViewById(fieldID[i]);
+//        }
 
-        CheckBox sameAddress = (CheckBox) activity.findViewById(R.id.newCustCheckBox);
+        CheckBox sameAddress = (CheckBox) findViewById(R.id.newCustCheckBox);
         sameAddress.setOnCheckedChangeListener(this);
 
-        Button save = (Button) activity.findViewById(R.id.newCustSaveBut);
+        Button save = (Button) findViewById(R.id.newCustSaveBut);
         save.setOnClickListener(this);
 
-        field[DOB].setOnTouchListener(new View.OnTouchListener() {
+        ((EditText) findViewById(R.id.newCustDOB)).setOnTouchListener(new View.OnTouchListener() {
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                // TODO Auto-generated method stub
-
                 if (newFrag == null) {
                     newFrag = new DateDialog();
                     newFrag.show(getSupportFragmentManager(), "dialog");
@@ -133,7 +127,6 @@ public class CreateCustomer_FA extends BaseFragmentActivityActionBar implements 
 
     @Override
     public void onResume() {
-
         if (global.isApplicationSentToBackground())
             Global.loggedIn = false;
         global.stopActivityTransitionTimer();
@@ -141,7 +134,7 @@ public class CreateCustomer_FA extends BaseFragmentActivityActionBar implements 
         if (hasBeenCreated && !Global.loggedIn) {
             if (global.getGlobalDlog() != null)
                 global.getGlobalDlog().dismiss();
-            global.promptForMandatoryLogin(activity);
+            global.promptForMandatoryLogin(this);
         }
         super.onResume();
     }
@@ -158,7 +151,8 @@ public class CreateCustomer_FA extends BaseFragmentActivityActionBar implements 
 
 
     private OnItemSelectedListener getItemSelectedListener(final int spinnerType) {
-        OnItemSelectedListener listener = new OnItemSelectedListener() {
+
+        return new OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 // your code here
@@ -198,13 +192,11 @@ public class CreateCustomer_FA extends BaseFragmentActivityActionBar implements 
                 }
             }
         };
-
-        return listener;
     }
 
     private void setupSpinners() {
-        List<String> taxes = new ArrayList<String>();
-        List<String> priceLevel = new ArrayList<String>();
+        List<String> taxes = new ArrayList<>();
+        List<String> priceLevel = new ArrayList<>();
         taxes.add("Select One");
         priceLevel.add("Select One");
 
@@ -225,8 +217,7 @@ public class CreateCustomer_FA extends BaseFragmentActivityActionBar implements 
                 priceLevel.add(priceLevelList.get(i)[0]);
         }
 
-        List<String[]> taxArr = new ArrayList<String[]>();
-        int i = 0;
+        List<String[]> taxArr = new ArrayList<>();
         for (Tax tax : taxList) {
             String[] arr = new String[5];
             arr[0] = tax.getTaxName();
@@ -235,15 +226,15 @@ public class CreateCustomer_FA extends BaseFragmentActivityActionBar implements 
             arr[3] = tax.getTaxType();
             taxArr.add(arr);
         }
-        taxAdapter = new CustomAdapter(activity, android.R.layout.simple_spinner_item, taxes, taxArr, true);
-        priceLevelAdapter = new CustomAdapter(activity, android.R.layout.simple_spinner_item, priceLevel, priceLevelList, false);
+        CustomAdapter taxAdapter = new CustomAdapter(this, android.R.layout.simple_spinner_item, taxes, taxArr, true);
+        CustomAdapter priceLevelAdapter = new CustomAdapter(this, android.R.layout.simple_spinner_item, priceLevel, priceLevelList, false);
 
-        pricesList = (Spinner) findViewById(R.id.newCustList1);
-        taxesList = (Spinner) findViewById(R.id.newCustList2);
+        Spinner pricesList = (Spinner) findViewById(R.id.newCustList1);
+        Spinner taxesList = (Spinner) findViewById(R.id.newCustList2);
 
-        billingRadioGroup = (RadioGroup) findViewById(R.id.radioGroupBillingAddressType);
+        RadioGroup billingRadioGroup = (RadioGroup) findViewById(R.id.radioGroupBillingAddressType);
         billingRadioGroup.setOnCheckedChangeListener(this);
-        shippingRadioGroup = (RadioGroup) findViewById(R.id.radioGroupShippingAddressType);
+        RadioGroup shippingRadioGroup = (RadioGroup) findViewById(R.id.radioGroupShippingAddressType);
         shippingRadioGroup.setOnCheckedChangeListener(this);
 
         taxesList.setAdapter(taxAdapter);
@@ -260,30 +251,28 @@ public class CreateCustomer_FA extends BaseFragmentActivityActionBar implements 
     }
 
     private void setupCountries() {
-        this.isoCountries = Locale.getISOCountries();
-        this.nameCountries = new String[isoCountries.length];
+        String[] isoCountries = Locale.getISOCountries();
+        String[] nameCountries = new String[isoCountries.length];
         nameCountryList.add("Select One");
         isoCountryList.add("");
         int i = 0;
-        MyPreferences myPref = new MyPreferences(activity);
+        MyPreferences myPref = new MyPreferences(this);
         String defaultCountry = myPref.defaultCountryCode(true, null);
-        for (String country : this.isoCountries) {
-
+        for (String country : isoCountries) {
             isoCountryList.add(country);
             Locale locale = new Locale(Locale.getDefault().getDisplayLanguage(), country);
-            this.nameCountries[i] = locale.getDisplayCountry();
-            nameCountryList.add(this.nameCountries[i]);
+            nameCountries[i] = locale.getDisplayCountry();
+            nameCountryList.add(nameCountries[i]);
             if (defaultCountry.equals(country)) {
                 bSelectedCountry = i + 1;
                 sSelectedCountry = i + 1;
             }
             i++;
-
         }
 
-        CountrySpinnerAdapter billingAdapter = new CountrySpinnerAdapter(activity, android.R.layout.simple_spinner_item,
+        CountrySpinnerAdapter billingAdapter = new CountrySpinnerAdapter(this, android.R.layout.simple_spinner_item,
                 this.nameCountryList, this.isoCountryList, true);
-        CountrySpinnerAdapter shippingAdapter = new CountrySpinnerAdapter(activity, android.R.layout.simple_spinner_item,
+        CountrySpinnerAdapter shippingAdapter = new CountrySpinnerAdapter(this, android.R.layout.simple_spinner_item,
                 this.nameCountryList, this.isoCountryList, false);
 
         bCountrySpinner.setAdapter(billingAdapter);
@@ -293,31 +282,31 @@ public class CreateCustomer_FA extends BaseFragmentActivityActionBar implements 
         sCountrySpinner.setSelection(sSelectedCountry);
     }
 
+    private EditText getEditText(int id) {
+        return (EditText) findViewById(id);
+    }
+
     private void insertNewCustomer() {
-        CustomersHandler custHandler = new CustomersHandler(activity);
-        AddressHandler addressHandler = new AddressHandler(activity);
-        SalesTaxCodesHandler taxCodeHandler = new SalesTaxCodesHandler(activity);
+        CustomersHandler custHandler = new CustomersHandler(this);
+        AddressHandler addressHandler = new AddressHandler(this);
+        SalesTaxCodesHandler taxCodeHandler = new SalesTaxCodesHandler(this);
 
         Customer custData = new Customer();
         Address addrData = new Address();
-        MyPreferences myPref = new MyPreferences(activity);
+        MyPreferences myPref = new MyPreferences(this);
 
-        // String lastCustID = custHandler.getLastCustID();
-        // GenerateNewID idGenerator = new GenerateNewID(activity);
-
-        // -----Start preparing customer for insert--------//
-        // lastCustID = idGenerator.generate(lastCustID, 2);
         String lastCustID = UUID.randomUUID().toString().toUpperCase(Locale.getDefault());
         custData.cust_id = lastCustID;
-        custData.cust_name = field[CUST_ALIAS].getText().toString();
-        custData.cust_firstName = field[CUST_NAME].getText().toString();
-        custData.cust_lastName = field[CUST_LASTNAME].getText().toString();
-        custData.CompanyName = field[COMPANY_NAME].getText().toString();
-        custData.cust_email = field[EMAIL].getText().toString();
-        custData.cust_phone = field[PHONE].getText().toString();
-        custData.cust_contact = field[CUST_CONTACT].getText().toString();
+        custData.cust_name = String.format("%s %s", getEditText(R.id.newCustfName).getText().toString(),
+                getEditText(R.id.newCustlName).getText().toString());//field[CUST_ALIAS].getText().toString();
+        custData.cust_firstName = getEditText(R.id.newCustfName).getText().toString();
+        custData.cust_lastName = getEditText(R.id.newCustlName).getText().toString();
+        custData.CompanyName = getEditText(R.id.newCustCompany).getText().toString();
+        custData.cust_email = getEditText(R.id.newCustEmail).getText().toString();
+        custData.cust_phone = getEditText(R.id.newCustPhone).getText().toString();
+        custData.cust_contact = getEditText(R.id.newCustContact).getText().toString();
         custData.qb_sync = "0";
-        custData.cust_dob = field[DOB].getText().toString();
+        custData.cust_dob = getEditText(R.id.newCustDOB).getText().toString();
         if (priceLevelSelected > 0)
             custData.pricelevel_id = priceLevelList.get(priceLevelSelected - 1)[1];
 
@@ -327,30 +316,29 @@ public class CreateCustomer_FA extends BaseFragmentActivityActionBar implements 
             myPref.setCustTaxCode(custData.cust_salestaxcode);
         }
 
-        String addrLastID = UUID.randomUUID().toString();
-        addrData.addr_id = addrLastID;
+        addrData.addr_id = UUID.randomUUID().toString();
         addrData.cust_id = lastCustID;
         // add zone id
 
         // add addr_type
-        addrData.addr_b_str1 = field[B_STR1].getText().toString();
-        addrData.addr_b_str2 = field[B_STR2].getText().toString();
+        addrData.addr_b_str1 = getEditText(R.id.newCustBillStr1).getText().toString();
+        addrData.addr_b_str2 = getEditText(R.id.newCustBillStr2).getText().toString();
         // add addr_b_str3
-        addrData.addr_b_city = field[B_CITY].getText().toString();
-        addrData.addr_b_state = field[B_STATE].getText().toString();
+        addrData.addr_b_city = getEditText(R.id.newCustBillCity).getText().toString();
+        addrData.addr_b_state = getEditText(R.id.newCustBillState).getText().toString();
         if (bSelectedCountry > 0)
             addrData.addr_b_country = isoCountryList.get(bSelectedCountry);
-        addrData.addr_b_zipcode = field[B_ZIPCODE].getText().toString();
+        addrData.addr_b_zipcode = getEditText(R.id.newCustBillZip).getText().toString();
 
         // add addr_s_name
-        addrData.addr_s_str1 = field[S_STR1].getText().toString();
-        addrData.addr_s_str2 = field[S_STR2].getText().toString();
+        addrData.addr_s_str1 = getEditText(R.id.newCustShipStr1).getText().toString();
+        addrData.addr_s_str2 = getEditText(R.id.newCustShipStr2).getText().toString();
         // add addr_s_str3
-        addrData.addr_s_city = field[S_CITY].getText().toString();
-        addrData.addr_s_state = field[S_STATE].getText().toString();
+        addrData.addr_s_city = getEditText(R.id.newCustShipCity).getText().toString();
+        addrData.addr_s_state = getEditText(R.id.newCustShipState).getText().toString();
         if (sSelectedCountry > 0)
             addrData.addr_s_country = isoCountryList.get(sSelectedCountry);
-        addrData.addr_s_zipcode = field[S_ZIPCODE].getText().toString();
+        addrData.addr_s_zipcode = getEditText(R.id.newCustShipZip).getText().toString();
 
         addrData.addr_b_type = addr_b_type;
         addrData.addr_s_type = addr_s_type;
@@ -370,12 +358,6 @@ public class CreateCustomer_FA extends BaseFragmentActivityActionBar implements 
         // Set-up data for default selection of this newly created customer
         HashMap<String, String> custMap = custHandler.getCustomerInfo(lastCustID);
 
-//		SalesTaxCodesHandler taxHandler = new SalesTaxCodesHandler(activity);
-//		if (taxHandler.checkIfCustTaxable(custMap.get("cust_taxable")))
-//			myPref.setCustTaxCode(custMap.get("cust_salestaxcode"));
-//		else
-//			myPref.setCustTaxCode("");
-
         myPref.setCustID(custMap.get("cust_id"));
         myPref.setCustName(custMap.get("cust_name"));
         myPref.setCustPriceLevel(custData.pricelevel_id);
@@ -386,7 +368,6 @@ public class CreateCustomer_FA extends BaseFragmentActivityActionBar implements 
 
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {
-        // TODO Auto-generated method stub
         switch (checkedId) {
             case R.id.radioBillingResidential:
                 addr_b_type = "Residential";
@@ -405,20 +386,22 @@ public class CreateCustomer_FA extends BaseFragmentActivityActionBar implements 
 
     @Override
     public void onClick(View v) {
-        // TODO Auto-generated method stub
         switch (v.getId()) {
             case R.id.newCustSaveBut:
-                int allWhitespaced = field[0].getText().toString().trim().length();
+//                int allWhitespaced = field[0].getText().toString().trim().length();
 
-                if (allWhitespaced == 0) {
-                    field[0].setBackgroundResource(R.drawable.edittext_wrong_input);
-                    Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.card_validation_error));
-                } else if (!field[EMAIL].getText().toString().isEmpty() && !validEmail(field[EMAIL].getText().toString())) {
-                    field[EMAIL].setBackgroundResource(R.drawable.edittext_wrong_input);
-                    Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.card_validation_error));
+                if (getEditText(R.id.newCustfName).getText().toString().isEmpty()) {
+                    getEditText(R.id.newCustfName).setBackgroundResource(R.drawable.edittext_wrong_input);
+                    Global.showPrompt(this, R.string.dlog_title_error, getString(R.string.card_validation_error));
+                } else if (getEditText(R.id.newCustlName).getText().toString().isEmpty()) {
+                    getEditText(R.id.newCustlName).setBackgroundResource(R.drawable.edittext_wrong_input);
+                    Global.showPrompt(this, R.string.dlog_title_error, getString(R.string.card_validation_error));
+                } else if (!getEditText(R.id.newCustEmail).getText().toString().isEmpty() &&
+                        !validEmail(getEditText(R.id.newCustEmail).getText().toString())) {
+                    getEditText(R.id.newCustEmail).setBackgroundResource(R.drawable.edittext_wrong_input);
+                    Global.showPrompt(this, R.string.dlog_title_error, getString(R.string.card_validation_error));
                 } else {
-                    field[0].setBackgroundResource(R.drawable.edittext_border);
-                    field[EMAIL].setBackgroundResource(R.drawable.edittext_border);
+                    getEditText(R.id.newCustEmail).setBackgroundResource(R.drawable.edittext_border);
                     insertNewCustomer();
                     setResult(-1);
                     finish();
@@ -433,17 +416,26 @@ public class CreateCustomer_FA extends BaseFragmentActivityActionBar implements 
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        // TODO Auto-generated method stub
         if (isChecked) {
-            for (int i = B_STR1; i < B_ZIPCODE + 1; i++) {
+            getEditText(R.id.newCustShipStr1).setText(getEditText(R.id.newCustBillStr1).getText().toString());
+            getEditText(R.id.newCustShipStr2).setText(getEditText(R.id.newCustBillStr2).getText().toString());
+            getEditText(R.id.newCustShipCity).setText(getEditText(R.id.newCustBillCity).getText().toString());
+            getEditText(R.id.newCustShipState).setText(getEditText(R.id.newCustBillState).getText().toString());
+            getEditText(R.id.newCustShipZip).setText(getEditText(R.id.newCustBillZip).getText().toString());
 
-                field[i + 5].setText(field[i].getText().toString());
-            }
+//            for (int i = B_STR1; i < B_ZIPCODE + 1; i++) {
+//                field[i + 5].setText(field[i].getText().toString());
+//            }
             sCountrySpinner.setSelection(bSelectedCountry);
         } else {
-            for (int i = B_STR1; i < B_ZIPCODE + 1; i++) {
-                field[i + 5].setText("");
-            }
+            getEditText(R.id.newCustShipStr1).setText("");
+            getEditText(R.id.newCustShipStr2).setText("");
+            getEditText(R.id.newCustShipCity).setText("");
+            getEditText(R.id.newCustShipState).setText("");
+            getEditText(R.id.newCustShipZip).setText("");
+//            for (int i = B_STR1; i < B_ZIPCODE + 1; i++) {
+//                field[i + 5].setText("");
+//            }
         }
     }
 
@@ -454,6 +446,7 @@ public class CreateCustomer_FA extends BaseFragmentActivityActionBar implements 
             super.onCreate(savedInstanceState);
         }
 
+        @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             final Calendar c = Calendar.getInstance();
@@ -479,24 +472,26 @@ public class CreateCustomer_FA extends BaseFragmentActivityActionBar implements 
             sdf1.setTimeZone(tz);
             SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
 
+            String dobDate = "";
             try {
+
                 dobDate = sdf2.format(sdf1.parse(sb.toString()));
             } catch (ParseException e) {
                 e.printStackTrace();
                 Crashlytics.logException(e);
             }
-            field[DOB].setText(Global.formatToDisplayDate(dobDate, 1));
+            ((EditText) getActivity().findViewById(R.id.newCustDOB)).setText(Global.formatToDisplayDate(dobDate, 1));
 
         }
     }
 
-    public class CustomAdapter extends ArrayAdapter<String> {
+    private class CustomAdapter extends ArrayAdapter<String> {
         List<String> leftData = null;
         List<String[]> rightData = null;
         boolean isTax = false;
         private Activity context;
 
-        public CustomAdapter(Activity activity, int resource, List<String> left, List<String[]> right, boolean isTax) {
+        CustomAdapter(Activity activity, int resource, List<String> left, List<String[]> right, boolean isTax) {
             super(activity, resource, left);
             this.context = activity;
             this.leftData = left;
@@ -504,6 +499,7 @@ public class CreateCustomer_FA extends BaseFragmentActivityActionBar implements 
             this.isTax = isTax;
         }
 
+        @NonNull
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             View view = super.getView(position, convertView, parent);
@@ -513,10 +509,7 @@ public class CreateCustomer_FA extends BaseFragmentActivityActionBar implements 
             TextView text = (TextView) view.findViewById(android.R.id.text1);
             text.setTextColor(Color.BLACK);// choose your color
             text.setPadding(35, 0, 0, 0);
-
             return view;
-
-            // return super.getView(position,convertView,parent);
         }
 
         @Override
@@ -565,13 +558,13 @@ public class CreateCustomer_FA extends BaseFragmentActivityActionBar implements 
 
     }
 
-    public class CountrySpinnerAdapter extends ArrayAdapter<String> {
+    private class CountrySpinnerAdapter extends ArrayAdapter<String> {
         List<String> leftData = null;
         List<String> rightData = null;
         boolean isBilling = false;
         private Activity context;
 
-        public CountrySpinnerAdapter(Activity activity, int resource, List<String> left, List<String> right, boolean isBilling) {
+        CountrySpinnerAdapter(Activity activity, int resource, List<String> left, List<String> right, boolean isBilling) {
             super(activity, resource, left);
             this.context = activity;
             this.leftData = left;
@@ -579,6 +572,7 @@ public class CreateCustomer_FA extends BaseFragmentActivityActionBar implements 
             this.isBilling = isBilling;
         }
 
+        @NonNull
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             View view = super.getView(position, convertView, parent);
@@ -588,10 +582,7 @@ public class CreateCustomer_FA extends BaseFragmentActivityActionBar implements 
             TextView text = (TextView) view.findViewById(android.R.id.text1);
             text.setTextColor(Color.BLACK);// choose your color
             text.setPadding(35, 0, 0, 0);
-
             return view;
-
-            // return super.getView(position,convertView,parent);
         }
 
         @Override
@@ -611,16 +602,13 @@ public class CreateCustomer_FA extends BaseFragmentActivityActionBar implements 
             int type = getItemViewType(position);
             switch (type) {
                 case 0: {
-
                     break;
                 }
                 case 1: {
-                    // rightView.setText(rightData.get(position-1));
                     checked.setVisibility(View.VISIBLE);
                     break;
                 }
                 case 2: {
-                    // rightView.setText(rightData.get(position-1));
                     break;
                 }
             }

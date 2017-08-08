@@ -561,8 +561,8 @@
     <string name="cust_add_save">"Guardar"</string>
     <string name="cust_add_info">"Información del cliente"</string>
     <string name="cust_add_alias">"Alias ​​del cliente (obligatorio)"</string>
-    <string name="cust_add_first_name">"Nombre"</string>
-    <string name="cust_add_last_name">"Apellido"</string>
+    <string name="cust_add_first_name">"Nombre (obligatorio)"</string>
+    <string name="cust_add_last_name">"Apellido (obligatorio)"</string>
     <string name="cust_add_company">"Empresa"</string>
     <string name="cust_add_email">"Correo electrónico"</string>
     <string name="cust_add_phone">"Teléfono"</string>
