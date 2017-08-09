@@ -26,7 +26,12 @@ public class StoredPaymentsDAO {
 
     public static StoreAndForward getStoreAndForward(String pay_uuid) {
         Realm realm = Realm.getDefaultInstance();
-        return realm.where(StoreAndForward.class).equalTo("payment.pay_uuid", pay_uuid).findFirst();
+        StoreAndForward first = realm.where(StoreAndForward.class).equalTo("payment.pay_uuid", pay_uuid).findFirst();
+        if (first != null) {
+            first = realm.copyFromRealm(first);
+        }
+        realm.close();
+        return first;
     }
 
 //    public static void updateSignaturePayment(final String pay_uuid, final String encodedImage) {
@@ -43,14 +48,20 @@ public class StoredPaymentsDAO {
 //    }
 
 
-    public static long getRetryTransCount(String _job_id) {
-        return (long) Realm.getDefaultInstance().where(StoreAndForward.class).equalTo("payment.job_id", _job_id)
+    public static int getRetryTransCount(String _job_id) {
+        Realm realm = Realm.getDefaultInstance();
+        int size = realm.where(StoreAndForward.class).equalTo("payment.job_id", _job_id)
                 .equalTo("payment.is_retry", "1").findAll().size();
+        realm.close();
+        return size;
     }
 
     public static long getCountPendingStoredPayments(String job_id) {
-        return (long) Realm.getDefaultInstance().where(StoreAndForward.class)
+        Realm realm = Realm.getDefaultInstance();
+        int size = realm.where(StoreAndForward.class)
                 .equalTo("payment.job_id", job_id).findAll().size();
+        realm.close();
+        return size;
     }
 
     public static void deletePaymentFromJob(String _job_id) {
@@ -64,6 +75,7 @@ public class StoredPaymentsDAO {
             }
         } finally {
             realm.commitTransaction();
+            realm.close();
         }
     }
 
@@ -76,9 +88,10 @@ public class StoredPaymentsDAO {
 //            realm.beginTransaction();
             StoreAndForward first = realm.where(StoreAndForward.class).equalTo("payment.pay_id", payID).findFirst();
             if (first != null) {
-                payment = first.getPayment();
+                payment = realm.copyFromRealm(first.getPayment());
             }
         } finally {
+            realm.close();
 //            realm.commitTransaction();
         }
 
@@ -166,12 +179,14 @@ public class StoredPaymentsDAO {
 
     public static List<PaymentDetails> getPaymentForPrintingTransactions(String jobID) {
         Realm realm = Realm.getDefaultInstance();
-        RealmResults<StoreAndForward> storeAndForwards;
+        List<StoreAndForward> storeAndForwards;
         try {
-            realm.beginTransaction();
             storeAndForwards = realm.where(StoreAndForward.class).equalTo("payment.job_id", jobID).findAll();
+            if (storeAndForwards != null) {
+                storeAndForwards = realm.copyFromRealm(storeAndForwards);
+            }
         } finally {
-            realm.commitTransaction();
+            realm.close();
         }
         List<PaymentDetails> list = new ArrayList<>();
 
@@ -205,6 +220,7 @@ public class StoredPaymentsDAO {
             }
         } finally {
             realm.commitTransaction();
+            realm.close();
         }
     }
 
@@ -217,6 +233,7 @@ public class StoredPaymentsDAO {
                     .findAll().deleteAllFromRealm();
         } finally {
             realm.commitTransaction();
+            realm.close();
         }
     }
 
@@ -227,6 +244,7 @@ public class StoredPaymentsDAO {
             storeAndForward.setRetry(true);
         } finally {
             realm.commitTransaction();
+            realm.close();
         }
     }
 
@@ -248,6 +266,7 @@ public class StoredPaymentsDAO {
         } catch (Exception e) {
             realm.cancelTransaction();
         }
+        realm.close();
         PaymentsHandler.setLastPaymentInserted(payment);
         new MyPreferences(activity).setLastPayID(payment.getPay_id());
     }
@@ -259,6 +278,7 @@ public class StoredPaymentsDAO {
             storeAndForward.setRetry(true);
         } finally {
             realm.commitTransaction();
+            realm.close();
         }
     }
 
@@ -286,11 +306,18 @@ public class StoredPaymentsDAO {
                 lastPayID = assignEmployee.getEmpId() + "-" + "00001" + "-" + year;
             }
             myPref.setLastPayID(lastPayID);
+            realm.close();
         }
         return lastPayID;
     }
 
-    public static RealmResults<StoreAndForward> getAll() {
-        return Realm.getDefaultInstance().where(StoreAndForward.class).findAll();
+    public static List<StoreAndForward> getAll() {
+        Realm realm = Realm.getDefaultInstance();
+        List<StoreAndForward> all = realm.where(StoreAndForward.class).findAll();
+        if (all != null) {
+            all = realm.copyFromRealm(all);
+        }
+        realm.close();
+        return all;
     }
 }

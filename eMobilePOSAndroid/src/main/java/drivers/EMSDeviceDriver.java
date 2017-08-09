@@ -1548,7 +1548,7 @@ public class EMSDeviceDriver {
             StringBuilder sb = new StringBuilder();
             printImage(0);
             if (myPref.isCustSelected()) {
-
+                sb.append(textHandler.centeredString(myPref.getCustName(), lineWidth));
             }
             if (printPref.contains(MyPreferences.print_header))
                 printHeader(lineWidth);
@@ -1557,13 +1557,13 @@ public class EMSDeviceDriver {
             } else {
                 sb.append("* ").append(getString(R.string.balance_inquiry));
             }
-            sb.append(" *\n\n\n");
+            sb.append(" *\n");
             print(textHandler.centeredString(sb.toString(), lineWidth), FORMAT);
             sb.setLength(0);
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
                     getString(R.string.receipt_time), lineWidth, 0));
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(DateUtils.getDateAsString(new Date(), "MMM/dd/yyyy"), DateUtils.getDateAsString(new Date(), "hh:mm:ss"), lineWidth, 0))
-                    .append("\n\n");
+                    .append("\n");
 
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.card_number),
                     "*" + values.get("pay_maccount"), lineWidth, 0));

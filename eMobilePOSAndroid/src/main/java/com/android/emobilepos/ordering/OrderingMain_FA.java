@@ -805,7 +805,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
             OrderTotalDetails_FR.resetView();
             finish();
-            myPref.resetCustInfo(getString(R.string.no_customer));
+            if (myPref.isClearCustomerAfterTransaction()) {
+                myPref.resetCustInfo(getString(R.string.no_customer));
+            }
             SalesTab_FR.startDefault(MainMenu_FA.activity,
                     myPref.getPreferencesValue(MyPreferences.pref_default_transaction));
         }

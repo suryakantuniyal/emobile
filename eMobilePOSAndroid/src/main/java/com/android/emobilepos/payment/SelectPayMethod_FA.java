@@ -1189,16 +1189,19 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         protected String doInBackground(Object... params) {
             wasReprint = (Boolean) params[0];
             EMVContainer emvContainer = params.length > 1 ? (EMVContainer) params[1] : null;
-
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
-                if (isFromMainMenu || extras.getBoolean("histinvoices") ||
-                        (emvContainer != null && emvContainer.getGeniusResponse() != null &&
-                                emvContainer.getGeniusResponse().getStatus().equalsIgnoreCase("DECLINED")))
-                    printSuccessful = Global.mainPrinterManager.getCurrentDevice().printPaymentDetails(PaymentsHandler.getLastPaymentInserted().getPay_id(), 1,
-                            wasReprint, emvContainer);
-                else
-                    printSuccessful = Global.mainPrinterManager.getCurrentDevice().printTransaction(job_id, orderType,
-                            wasReprint, false, emvContainer);
+            try {
+                if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                    if (isFromMainMenu || extras.getBoolean("histinvoices") ||
+                            (emvContainer != null && emvContainer.getGeniusResponse() != null &&
+                                    emvContainer.getGeniusResponse().getStatus().equalsIgnoreCase("DECLINED")))
+                        printSuccessful = Global.mainPrinterManager.getCurrentDevice().printPaymentDetails(PaymentsHandler.getLastPaymentInserted().getPay_id(), 1,
+                                wasReprint, emvContainer);
+                    else
+                        printSuccessful = Global.mainPrinterManager.getCurrentDevice().printTransaction(job_id, orderType,
+                                wasReprint, false, emvContainer);
+                }
+            } catch (Exception e) {
+                Crashlytics.logException(e);
             }
             return null;
         }

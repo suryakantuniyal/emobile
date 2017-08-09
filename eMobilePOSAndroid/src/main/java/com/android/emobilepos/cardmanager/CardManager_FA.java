@@ -153,7 +153,9 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
         fieldCardNum = (EditText) findViewById(R.id.fieldCardNumber);
         if (extras.containsKey("cardNumber")) {
             fieldCardNum.setText(extras.getString("cardNumber", ""));
-            resetCustomerOnFinish = true;
+            if (myPref.isClearCustomerAfterTransaction()) {
+                resetCustomerOnFinish = true;
+            }
         }
         cardSwipe = (CheckBox) findViewById(R.id.checkboxCardSwipe);
         CustomerCustomField customField = CustomerCustomFieldsDAO.findEMWSCardIdByCustomerId(myPref.getCustID());
@@ -589,7 +591,7 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
             public void onClick(View v) {
 
                 dlog.dismiss();
-                if(resetCustomerOnFinish) {
+                if (resetCustomerOnFinish) {
                     myPref.resetCustInfo(getString(R.string.no_customer));
                 }
                 finish();
@@ -857,7 +859,7 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
             if (!printSuccessful) {
                 showPrintDlg(result);
             } else {
-                if(resetCustomerOnFinish) {
+                if (resetCustomerOnFinish) {
                     myPref.resetCustInfo(getString(R.string.no_customer));
                 }
                 finish();

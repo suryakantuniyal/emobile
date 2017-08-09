@@ -310,7 +310,7 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
             Realm realm = Realm.getDefaultInstance();
             if (NetworkUtils.isConnectedToInternet(activity) && !livePaymentRunning) {
                 realm.beginTransaction();
-                storeAndForwards = StoredPaymentsDAO.getAll(); //realm.where(StoreAndForward.class).findAll();
+                storeAndForwards = realm.where(StoreAndForward.class).findAll();
                 realm.commitTransaction();
                 for (StoreAndForward storeAndForward : storeAndForwards) {
                     if (!livePaymentRunning) {
