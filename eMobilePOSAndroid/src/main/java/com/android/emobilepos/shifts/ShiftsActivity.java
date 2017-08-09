@@ -586,33 +586,16 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
 
         @Override
         protected Boolean doInBackground(Void... params) {
-//            DBManager dbManager = new DBManager(ShiftsActivity.this);
-//            SynchMethods sm = new SynchMethods(dbManager);
-//            if (NetworkUtils.isConnectedToInternet(ShiftsActivity.this)) {
-//                try {
-//                    sm.postShift(ShiftsActivity.this);
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                    Crashlytics.logException(e);
-//                    return false;
-//                }
-//            } else {
-//                return false;
-//            }
-//            return true;
+
             return sendShifts();
         }
 
         @Override
         protected void onPostExecute(Boolean result) {
             dialog.dismiss();
-//            if (result) {
             if (shift.getShiftStatus() == Shift.ShiftStatus.CLOSED) {
                 finish();
             }
-//            } else {
-//                Global.showPrompt(ShiftsActivity.this, R.string.dlog_title_error, getString(R.string.error_sync_closed_shift));
-//            }
         }
     }
 }
