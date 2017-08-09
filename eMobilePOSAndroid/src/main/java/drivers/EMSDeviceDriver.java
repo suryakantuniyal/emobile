@@ -236,8 +236,12 @@ public class EMSDeviceDriver {
     }
 
     private void addTaxesLine(List<DataTaxes> taxes, Order order, int lineWidth, StringBuilder sb) {
+        BigDecimal taxableAmount = new BigDecimal(0);
+        for (OrderProduct product : order.getOrderProducts()) {
+            taxableAmount = taxableAmount.add(product.getProductPriceTaxableAmountCalculated());
+        }
         for (DataTaxes tax : taxes) {
-            BigDecimal taxAmount = new BigDecimal(order.ord_subtotal)
+            BigDecimal taxAmount = taxableAmount
                     .multiply(new BigDecimal(tax.getTax_rate())
                             .divide(new BigDecimal(100)))
                     .setScale(2, RoundingMode.HALF_UP);
@@ -1543,7 +1547,7 @@ public class EMSDeviceDriver {
             printPref = myPref.getPrintingPreferences();
             StringBuilder sb = new StringBuilder();
             printImage(0);
-            if(myPref.isCustSelected()){
+            if (myPref.isCustSelected()) {
 
             }
             if (printPref.contains(MyPreferences.print_header))

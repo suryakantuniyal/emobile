@@ -813,20 +813,20 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         return price;
     }
 
-    public BigDecimal getTaxAmountCalculated() {
-        BigDecimal taxAmount = getProductPriceTaxableAmountCalculated()
-                .multiply(Global.getBigDecimalNum(getTaxAmount()).divide(new BigDecimal("100"), 4, RoundingMode.HALF_UP))
-                .setScale(4, RoundingMode.HALF_UP);
-        setProd_taxValue(taxAmount);
-        return taxAmount;
-    }
+//    public BigDecimal getTaxAmountCalculated() {
+//        BigDecimal taxAmount = getProductPriceTaxableAmountCalculated()
+//                .multiply(Global.getBigDecimalNum(getTaxAmount()).divide(new BigDecimal("100"), 4, RoundingMode.HALF_UP))
+//                .setScale(4, RoundingMode.HALF_UP);
+//        setProd_taxValue(taxAmount);
+//        return taxAmount;
+//    }
 
     public BigDecimal getItemSubtotalCalculated() {
         BigDecimal subtotal;
         BigDecimal addonsTotalPrice = getAddonsTotalPrice();
         BigDecimal finalPrice = new BigDecimal(getFinalPrice()).multiply(new BigDecimal(getOrdprod_qty()));
         if (isVAT()) {
-            finalPrice = finalPrice.add(getTaxAmountCalculated());
+            finalPrice = finalPrice.add(getProd_taxValue());
         }
         BigDecimal discount = Global.getBigDecimalNum(getDisTotal());
         subtotal = finalPrice.subtract(discount).add(addonsTotalPrice).setScale(6, RoundingMode.HALF_UP);
@@ -838,14 +838,14 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         BigDecimal addonsTotalPrice = getAddonsTotalPrice();
         BigDecimal finalPrice = new BigDecimal(getFinalPrice()).multiply(new BigDecimal(getOrdprod_qty()));
         if (isVAT()) {
-            finalPrice = finalPrice.add(getTaxAmountCalculated());
+            finalPrice = finalPrice.add(getProd_taxValue());
         }
         subtotal = finalPrice.add(addonsTotalPrice).setScale(6, RoundingMode.HALF_UP);
         return subtotal;
     }
 
     public BigDecimal getGranTotalCalculated() {
-        BigDecimal taxAmount = isVAT() ? new BigDecimal(0) : getTaxAmountCalculated();
+        BigDecimal taxAmount = isVAT() ? new BigDecimal(0) : getProd_taxValue();
         BigDecimal subtotalCalculated = getItemSubtotalCalculated();
         BigDecimal granTotal = subtotalCalculated.add(taxAmount)
                 .setScale(6, RoundingMode.HALF_UP);
