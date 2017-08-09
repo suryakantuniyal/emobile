@@ -1,10 +1,8 @@
 package com.android.emobilepos.customer;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.text.InputType;
@@ -25,6 +23,7 @@ import com.android.dao.CustomerCustomFieldsDAO;
 import com.android.database.AddressHandler;
 import com.android.database.CustomersHandler;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.Address;
 import com.android.emobilepos.models.realms.CustomerCustomField;
 import com.android.support.Global;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
@@ -32,6 +31,8 @@ import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import util.StringUtil;
 
 public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar {
     private final int CASE_BILLING = 0, CASE_SHIPPING = 1, CASE_GIFTCARD = 2;
@@ -45,6 +46,7 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar {
     private Activity activity;
     private String cust_id;
     private List<CustomerCustomField> customFields;
+    private List<Address> address;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -70,6 +72,8 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar {
                 allFinancialRight.add(data.get(i));
             }
         }
+        AddressHandler addressHandler = new AddressHandler(this);
+        address = addressHandler.getSpecificAddress(cust_id);
         ListView myListview = (ListView) findViewById(R.id.custMoreInfoLV);
         myAdapter = new ListViewAdapter(this);
         myListview.setAdapter(myAdapter);
@@ -78,11 +82,12 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int pos, long arg3) {
                 int offset = allInfoLeft.size() + 3 + allFinancialLeft.size();
-                if (pos == offset) {
-                    showAddressDialog(CASE_BILLING);
-                } else if (pos == offset + 1) {
-                    showAddressDialog(CASE_SHIPPING);
-                } else if (pos >= offset + 3) {
+//                if (pos == offset) {
+//                    showAddressDialog(CASE_BILLING);
+//                } else if (pos == offset + 1) {
+//                    showAddressDialog(CASE_SHIPPING);
+//                } else
+                if (pos >= offset + 3) {
                     if (customFields.get(pos - offset - 3).getCustFieldId().equalsIgnoreCase("EMS_CARD_ID_NUM")) {
                         promptGiftCardNumber(customFields.get(pos - offset - 3).getCustValue());
                     }
@@ -166,71 +171,69 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar {
     }
 
 
-    private void showAddressDialog(int type) {
-        AddressHandler addressHandler = new AddressHandler(activity);
-        List<String[]> addressDownloadedItems = new ArrayList<>();
-        AlertDialog.Builder adb = new AlertDialog.Builder(activity);
-        String dialogTitle = "";
-        switch (type) {
-            case CASE_BILLING:
-                addressDownloadedItems = addressHandler.getSpecificAddress(cust_id, CASE_BILLING);
-                dialogTitle = "Billing Address";
-                break;
-            case CASE_SHIPPING:
-                addressDownloadedItems = addressHandler.getSpecificAddress(cust_id, CASE_SHIPPING);
-                dialogTitle = "Shipping Address";
-                break;
-        }
-
-        int size = addressDownloadedItems.size();
-        String[] addressItems = new String[size];
-        StringBuilder sb = new StringBuilder();
-        String temp;
-        for (int i = 0; i < size; i++) {
-            temp = addressDownloadedItems.get(i)[0];
-            if (!temp.isEmpty())                            //address 1
-                sb.append(temp).append(" ");
-            temp = addressDownloadedItems.get(i)[1];
-            if (!temp.isEmpty())                            //address 2
-                sb.append(temp).append(" ");
-            temp = addressDownloadedItems.get(i)[2];
-            if (!temp.isEmpty())                            //address 3
-                sb.append(temp).append("\t\t");
-            temp = addressDownloadedItems.get(i)[3];
-            if (!temp.isEmpty())                            //address country
-                sb.append(temp).append(" ");
-            temp = addressDownloadedItems.get(i)[4];
-            if (!temp.isEmpty())                            //address city
-                sb.append(temp).append(" ");
-            temp = addressDownloadedItems.get(i)[5];        //address state
-            if (!temp.isEmpty())
-                sb.append(temp).append(" ");
-            temp = addressDownloadedItems.get(i)[6];    //address zipcode
-            if (!temp.isEmpty())
-                sb.append(temp).append(" ");
-            addressItems[i] = sb.toString();
-            sb.setLength(0);
-        }
-
-        adb.setItems(addressItems, new DialogInterface.OnClickListener() {
-
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-            }
-        });
-
-        adb.setNegativeButton("OK", null);
-        adb.setTitle(dialogTitle);
-        adb.show();
-    }
+//    private void showAddressDialog(int type) {
+//        AddressHandler addressHandler = new AddressHandler(activity);
+//        List<String[]> addressDownloadedItems = new ArrayList<>();
+//        AlertDialog.Builder adb = new AlertDialog.Builder(activity);
+//        String dialogTitle = "";
+//        switch (type) {
+//            case CASE_BILLING:
+//                addressDownloadedItems = addressHandler.getSpecificAddress(cust_id, CASE_BILLING);
+//                dialogTitle = "Billing Address";
+//                break;
+//            case CASE_SHIPPING:
+//                addressDownloadedItems = addressHandler.getSpecificAddress(cust_id, CASE_SHIPPING);
+//                dialogTitle = "Shipping Address";
+//                break;
+//        }
+//
+//        int size = addressDownloadedItems.size();
+//        String[] addressItems = new String[size];
+//        StringBuilder sb = new StringBuilder();
+//        String temp;
+//        for (int i = 0; i < size; i++) {
+//            temp = addressDownloadedItems.get(i)[0];
+//            if (!temp.isEmpty())                            //address 1
+//                sb.append(temp).append(" ");
+//            temp = addressDownloadedItems.get(i)[1];
+//            if (!temp.isEmpty())                            //address 2
+//                sb.append(temp).append(" ");
+//            temp = addressDownloadedItems.get(i)[2];
+//            if (!temp.isEmpty())                            //address 3
+//                sb.append(temp).append("\t\t");
+//            temp = addressDownloadedItems.get(i)[3];
+//            if (!temp.isEmpty())                            //address country
+//                sb.append(temp).append(" ");
+//            temp = addressDownloadedItems.get(i)[4];
+//            if (!temp.isEmpty())                            //address city
+//                sb.append(temp).append(" ");
+//            temp = addressDownloadedItems.get(i)[5];        //address state
+//            if (!temp.isEmpty())
+//                sb.append(temp).append(" ");
+//            temp = addressDownloadedItems.get(i)[6];    //address zipcode
+//            if (!temp.isEmpty())
+//                sb.append(temp).append(" ");
+//            addressItems[i] = sb.toString();
+//            sb.setLength(0);
+//        }
+//
+//        adb.setItems(addressItems, new DialogInterface.OnClickListener() {
+//
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//            }
+//        });
+//
+//        adb.setNegativeButton("OK", null);
+//        adb.setTitle(dialogTitle);
+//        adb.show();
+//    }
 
 
     public class ListViewAdapter extends BaseAdapter implements Filterable {
         private LayoutInflater myInflater;
 
-
         public ListViewAdapter(Context context) {
-
             myInflater = LayoutInflater.from(context);
         }
 
@@ -322,11 +325,38 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar {
                     holder.right.setText(allFinancialRight.get(ind));
                 } else if (position == length2 + 1) {
                     holder.left.setText(getString(R.string.cust_detail_bill));
-                    holder.right.setText("");
+                    if (address != null && !address.isEmpty()) {
+                        Address addr = ViewCustomerDetails_FA.this.address.get(0);
+                        String str = String.format("%s %s %s%s %s %s %s",
+                                StringUtil.nullStringToEmpty(addr.addr_b_str1),
+                                StringUtil.nullStringToEmpty(addr.addr_b_str2),
+                                StringUtil.nullStringToEmpty(addr.addr_b_str3),
+                                StringUtil.nullStringToEmpty(addr.addr_b_city),
+                                StringUtil.nullStringToEmpty(addr.addr_b_state),
+                                StringUtil.nullStringToEmpty(addr.addr_b_zipcode),
+                                StringUtil.nullStringToEmpty(addr.addr_b_country));
+                        holder.right.setText(str);
+                    } else {
+                        holder.right.setText("");
+                    }
                 } else if (position == length2 + 2) {
                     holder.left.setText(getString(R.string.cust_detail_ship));
                     holder.right.setSingleLine(true);
-                    holder.right.setText("");
+                    if (address != null && !address.isEmpty()) {
+                        Address addr = ViewCustomerDetails_FA.this.address.get(0);
+                        String str = String.format("%s %s %s%s %s %s %s",
+                                StringUtil.nullStringToEmpty(addr.addr_s_str1),
+                                StringUtil.nullStringToEmpty(addr.addr_s_str2),
+                                StringUtil.nullStringToEmpty(addr.addr_s_str3),
+                                StringUtil.nullStringToEmpty(addr.addr_s_city),
+                                StringUtil.nullStringToEmpty(addr.addr_s_state),
+                                StringUtil.nullStringToEmpty(addr.addr_s_zipcode),
+                                StringUtil.nullStringToEmpty(addr.addr_s_country));
+                        holder.right.setText(str);
+                    } else {
+                        holder.right.setText("");
+                    }
+
                 } else if (position >= length2 + 4) {
                     CustomerCustomField customField = customFields.get(position - length2 - 4);//CustomerCustomFieldsDAO.findEMWSCardIdByCustomerId(cust_id);
                     holder.left.setText(customField.getCustFieldName());
