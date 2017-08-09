@@ -41,6 +41,7 @@ import com.android.database.CustomerInventoryHandler;
 import com.android.database.CustomersHandler;
 import com.android.database.OrderProductsAttr_DB;
 import com.android.database.OrderProductsHandler;
+import com.android.database.OrderTaxes_DB;
 import com.android.database.OrdersHandler;
 import com.android.database.PayMethodsHandler;
 import com.android.database.ProductsHandler;

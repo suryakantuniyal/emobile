@@ -221,14 +221,23 @@ public class Order implements Cloneable {
             totalTaxAmount = totalTaxAmount.add(taxAmount);
         } else {
             if (!Global.taxID.isEmpty()) {
-                for (DataTaxes dataTaxes : getListOrderTaxes()) {
+                tax = taxHandler.getTax(Global.taxID, "", Double.parseDouble(TextUtils.isEmpty(orderProduct.getProd_price()) ? "0" : orderProduct.getProd_price()));
+                if (listOrderTaxes != null) {
+                    for (DataTaxes dataTaxes : getListOrderTaxes()) {
+                        BigDecimal taxAmount = orderProduct.getProductPriceTaxableAmountCalculated()
+                                .multiply(new BigDecimal(dataTaxes.getTax_rate())
+                                        .divide(new BigDecimal(100)))
+                                .setScale(2, RoundingMode.HALF_UP);
+                        totalTaxAmount = totalTaxAmount.add(taxAmount);
+                    }
+                } else {
                     BigDecimal taxAmount = orderProduct.getProductPriceTaxableAmountCalculated()
-                            .multiply(new BigDecimal(dataTaxes.getTax_rate())
+                            .multiply(new BigDecimal(tax.getTaxRate())
                                     .divide(new BigDecimal(100)))
                             .setScale(2, RoundingMode.HALF_UP);
                     totalTaxAmount = totalTaxAmount.add(taxAmount);
                 }
-                tax = taxHandler.getTax(Global.taxID, "", Double.parseDouble(TextUtils.isEmpty(orderProduct.getProd_price()) ? "0" : orderProduct.getProd_price()));
+
             } else {
                 tax = taxHandler.getTax(orderProduct.getProd_taxcode(), "", Double.parseDouble(TextUtils.isEmpty(orderProduct.getProd_price()) ? "0" : orderProduct.getProd_price()));
                 BigDecimal taxAmount = orderProduct.getProductPriceTaxableAmountCalculated()
