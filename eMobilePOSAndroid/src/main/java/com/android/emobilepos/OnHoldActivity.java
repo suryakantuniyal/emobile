@@ -58,6 +58,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class OnHoldActivity extends BaseFragmentActivityActionBar {
+    boolean validPassword = true;
     private Activity activity;
     private Cursor myCursor;
     private Global global;
@@ -66,98 +67,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
     private boolean hasBeenCreated = false;
     private MyPreferences myPref;
     private int selectedPos = 0;
-    boolean validPassword = true;
     private HoldsCursorAdapter myAdapter;
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.onhold_layout);
-        activity = this;
-        global = (Global) activity.getApplication();
-        myPref = new MyPreferences(activity);
-        ListView listView = (ListView) findViewById(R.id.onHoldListView);
-        OrdersHandler ordersHandler = new OrdersHandler(activity);
-        myCursor = ordersHandler.getOrdersOnHoldCursor();
-        long unsyncOrdersOnHold = ordersHandler.getNumUnsyncOrdersOnHold();
-        if (unsyncOrdersOnHold > 0) {
-            DBManager dbManager = new DBManager(this);
-            SynchMethods sm = new SynchMethods(dbManager);
-            sm.synchSendOnHold(false, false, this);
-        }
-        myAdapter = new HoldsCursorAdapter(activity, myCursor, CursorAdapter.NO_SELECTION);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int pos,
-                                    long count) {
-                selectedPos = pos;
-                openPrintOnHold();
-            }
-        });
-        listView.setAdapter(myAdapter);
-        hasBeenCreated = true;
-        if (myPref.isPollingHoldsEnable() && !PollingNotificationService.isServiceRunning(this)) {
-            PollingNotificationService.start(this);
-        }
-
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        switch (id) {
-            case R.id.refreshHolds: {
-                new RefreshHolds().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                break;
-            }
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    public class RefreshHolds extends AsyncTask<Void, Void, Void> {
-        private ProgressDialog myProgressDialog;
-
-        @Override
-        protected void onPreExecute() {
-            myProgressDialog = new ProgressDialog(activity);
-            myProgressDialog.setMessage("Loading...");
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(true);
-            myProgressDialog.setCanceledOnTouchOutside(true);
-            myProgressDialog.show();
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            try {
-                if (myPref.isPollingHoldsEnable() && !PollingNotificationService.isServiceRunning(OnHoldActivity.this)) {
-                    PollingNotificationService.start(OnHoldActivity.this);
-                }
-                SynchMethods.synchOrdersOnHoldList(OnHoldActivity.this);
-                Intent intent = new Intent(MainMenu_FA.NOTIFICATION_RECEIVED);
-                intent.putExtra(MainMenu_FA.NOTIFICATION_MESSAGE, String.valueOf(NotificationEvent.NotificationEventAction.SYNC_HOLDS.getCode()));
-                sendBroadcast(intent);
-                Log.d("NotificationHandler", "sendBroadcast");
-            } catch (SAXException e) {
-                e.printStackTrace();
-                Crashlytics.logException(e);
-            } catch (IOException e) {
-                e.printStackTrace();
-                Crashlytics.logException(e);
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            if (myProgressDialog != null && myProgressDialog.isShowing()) {
-                myProgressDialog.dismiss();
-            }
-        }
-    }
-
-
     private BroadcastReceiver messageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -185,6 +95,53 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             handler.post(runnable);
         }
     };
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.onhold_layout);
+        activity = this;
+        global = (Global) activity.getApplication();
+        myPref = new MyPreferences(activity);
+        ListView listView = (ListView) findViewById(R.id.onHoldListView);
+        OrdersHandler ordersHandler = new OrdersHandler(activity);
+        myCursor = ordersHandler.getOrdersOnHoldCursor();
+        long unsyncOrdersOnHold = ordersHandler.getNumUnsyncOrdersOnHold();
+        if (unsyncOrdersOnHold > 0) {
+            new SyncOnHolds().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+//            DBManager dbManager = new DBManager(this);
+//            SynchMethods sm = new SynchMethods(dbManager);
+//            sm.synchSendOnHold(false, false, this, null);
+        }
+        myAdapter = new HoldsCursorAdapter(activity, myCursor, CursorAdapter.NO_SELECTION);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int pos,
+                                    long count) {
+                selectedPos = pos;
+                openPrintOnHold();
+            }
+        });
+        listView.setAdapter(myAdapter);
+        hasBeenCreated = true;
+        if (myPref.isPollingHoldsEnable() && !PollingNotificationService.isServiceRunning(this)) {
+            PollingNotificationService.start(this, PollingNotificationService.PollingServicesFlag.ONHOLDS.getCode() | PollingNotificationService.PollingServicesFlag.DINING_TABLES.getCode());
+        }
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id) {
+            case R.id.refreshHolds: {
+                new RefreshHolds().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                break;
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     public void onDestroy() {
@@ -217,190 +174,8 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         global.startActivityTransitionTimer();
     }
 
-    public class checkHoldStatus extends AsyncTask<Void, String, String> {
-        boolean wasProcessed = false;
-        private ProgressDialog myProgressDialog;
-
-        @Override
-        protected void onPreExecute() {
-            myProgressDialog = new ProgressDialog(activity);
-            myProgressDialog.setMessage("Loading...");
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            myProgressDialog.show();
-        }
-
-        @Override
-        protected String doInBackground(Void... params) {
-            myCursor.moveToPosition(selectedPos);
-            myPref.setCustSelected(false);
-            String ordID = myCursor.getString(myCursor.getColumnIndex("ord_id"));
-            global.setSelectedComments(myCursor.getString(myCursor.getColumnIndex("ord_comment")));
-            if (NetworkUtils.isConnectedToInternet(activity)) {
-                try {
-                    if (!isUpdateOnHold) {
-                        if (!OnHoldsManager.isOnHoldAdminClaimRequired(ordID, activity)) {
-                            wasProcessed = true;
-                            OnHoldsManager.updateStatusOnHold(ordID, activity);
-                        }
-                    } else {
-                        wasProcessed = true;
-                        OnHoldsManager.updateStatusOnHold(ordID, activity);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Crashlytics.logException(e);
-                }
-                return null;
-            } else {
-                OrdersHandler ordersHandler = new OrdersHandler(activity);
-                if (ordersHandler.isOrderOffline(ordID))
-                    wasProcessed = true;
-                return null;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(String unused) {
-            myProgressDialog.dismiss();
-
-            if (wasProcessed) {
-                new executeOnHoldAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
-            } else {
-                claimedTransactionPrompt();
-            }
-        }
-    }
-
-    private class executeOnHoldAsync extends AsyncTask<Boolean, Void, Intent> {
-        private boolean proceed = false;
-        private Intent intent;
-        private OrderProductsHandler orderProdHandler;
-        private boolean forPrinting = false;
-        private ProgressDialog myProgressDialog;
-
-        @Override
-        protected void onPreExecute() {
-            myProgressDialog = new ProgressDialog(activity);
-            myProgressDialog.setMessage("Please wait...");
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            myProgressDialog.show();
-        }
-
-        @Override
-        protected Intent doInBackground(Boolean... params) {
-            myCursor.moveToPosition(selectedPos);
-            Order order = OrdersHandler.getOrder(myCursor, activity);
-            orderProdHandler = new OrderProductsHandler(activity);
-            Global.lastOrdID = order.ord_id;
-            Global.taxID = order.tax_id;
-            orderType = Global.OrderType.getByCode(Integer.parseInt(order.ord_type));
-            String ord_HoldName = order.ord_HoldName;
-            selectCustomer(order.cust_id);
-            forPrinting = params[0];
-            if (!forPrinting) {
-                intent = new Intent(activity, OrderingMain_FA.class);
-                String assignedTable = order.assignedTable;
-                intent.putExtra("selectedDinningTableNumber", assignedTable);
-                intent.putExtra("onHoldOrderJson", order.toJson());
-
-                intent.putExtra("openFromHold", true);
-                if (assignedTable != null && !assignedTable.isEmpty()) {
-                    intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.EAT_IN);
-                } else {
-                    intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.TO_GO);
-                }
-                switch (orderType) {
-                    case SALES_RECEIPT:
-                        intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
-                        break;
-                    case RETURN:
-                        intent.putExtra("option_number", Global.TransactionType.RETURN);
-                        break;
-                    case ORDER:
-                        intent.putExtra("option_number", Global.TransactionType.ORDERS);
-                        break;
-                    case INVOICE:
-                        intent.putExtra("option_number", Global.TransactionType.INVOICE);
-                        break;
-                    case ESTIMATE:
-                        intent.putExtra("option_number", Global.TransactionType.ESTIMATE);
-                        break;
-                }
-                intent.putExtra("ord_HoldName", ord_HoldName);
-                intent.putExtra("associateId", order.associateID);
-                Global.isFromOnHold = true;
-            }
-
-            if (NetworkUtils.isConnectedToInternet(activity))
-                proceed = true;
-
-            return intent;
-        }
-
-        @Override
-        protected void onPostExecute(Intent intent) {
-            myProgressDialog.dismiss();
-            if (proceed) {
-                DBManager dbManager = new DBManager(activity);
-                if (!forPrinting)
-                    dbManager.synchDownloadOnHoldDetails(intent, myCursor.getString(myCursor.getColumnIndex("ord_id")), 0, activity);
-                else
-                    dbManager.synchDownloadOnHoldDetails(intent, myCursor.getString(myCursor.getColumnIndex("ord_id")), 1, activity);
-            } else {
-                Cursor c = orderProdHandler.getOrderProductsOnHold(myCursor.getString(myCursor.getColumnIndex("ord_id")));
-                int size = c.getCount();
-                if (size > 0) {
-                    if (!forPrinting) {
-//                        addOrderProducts(OnHoldActivity.this, c);
-                        startActivityForResult(intent, 0);
-                        activity.finish();
-                    } else {
-                        DBManager dbManager = new DBManager(activity);
-                        dbManager.synchDownloadOnHoldDetails(intent, myCursor.getString(myCursor.getColumnIndex("ord_id")), 1, activity);
-                    }
-                } else
-                    Toast.makeText(activity, "no available items", Toast.LENGTH_LONG).show();
-            }
-        }
-    }
-
     public void printOnHoldTransaction() {
         new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
-
-    private class printAsync extends AsyncTask<Void, Void, Void> {
-        private boolean printSuccessful = true;
-        private ProgressDialog myProgressDialog;
-
-        @Override
-        protected void onPreExecute() {
-            myProgressDialog = new ProgressDialog(activity);
-            myProgressDialog.setMessage("Printing...");
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            myProgressDialog.show();
-
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
-                printSuccessful = Global.mainPrinterManager.getCurrentDevice().printTransaction(Global.lastOrdID, orderType, false, true);
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void unused) {
-            myProgressDialog.dismiss();
-
-            if (!printSuccessful)
-                showPrintDlg();
-
-        }
     }
 
     private void showPrintDlg() {
@@ -632,6 +407,213 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
     }
 
+    private void selectCustomer(String custID) {
+        if (custID != null && !custID.isEmpty()) {
+            CustomersHandler ch = new CustomersHandler(activity);
+            HashMap<String, String> temp = ch.getCustomerInfo(custID);
+            SalesTaxCodesHandler taxHandler = new SalesTaxCodesHandler(activity);
+            SalesTaxCodesHandler.TaxableCode taxable = taxHandler.checkIfCustTaxable(temp.get("cust_taxable"));
+            myPref.setCustTaxCode(taxable, temp.get("cust_salestaxcode"));
+            myPref.setCustID(temp.get("cust_id"));    //getting cust_id as _id
+            myPref.setCustName(temp.get("cust_name"));
+            myPref.setCustIDKey(temp.get("custidkey"));
+            myPref.setCustSelected(true);
+            myPref.setCustPriceLevel(temp.get("pricelevel_id"));
+            myPref.setCustEmail(temp.get("cust_email"));
+        }
+    }
+
+    public class RefreshHolds extends AsyncTask<Void, Void, Void> {
+        private ProgressDialog myProgressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog.setMessage("Loading...");
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setCancelable(true);
+            myProgressDialog.setCanceledOnTouchOutside(true);
+            myProgressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                if (myPref.isPollingHoldsEnable() && !PollingNotificationService.isServiceRunning(OnHoldActivity.this)) {
+                    PollingNotificationService.start(OnHoldActivity.this, PollingNotificationService.PollingServicesFlag.ONHOLDS.getCode() | PollingNotificationService.PollingServicesFlag.DINING_TABLES.getCode());
+                }
+                SynchMethods.synchOrdersOnHoldList(OnHoldActivity.this);
+                Intent intent = new Intent(MainMenu_FA.NOTIFICATION_RECEIVED);
+                intent.putExtra(MainMenu_FA.NOTIFICATION_MESSAGE, String.valueOf(NotificationEvent.NotificationEventAction.SYNC_HOLDS.getCode()));
+                sendBroadcast(intent);
+                Log.d("NotificationHandler", "sendBroadcast");
+            } catch (SAXException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
+            } catch (IOException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            if (myProgressDialog != null && myProgressDialog.isShowing()) {
+                myProgressDialog.dismiss();
+            }
+        }
+    }
+
+    public class checkHoldStatus extends AsyncTask<Void, String, String> {
+        boolean wasProcessed = false;
+        private ProgressDialog myProgressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog.setMessage("Loading...");
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setCancelable(false);
+            myProgressDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            myCursor.moveToPosition(selectedPos);
+            myPref.setCustSelected(false);
+            String ordID = myCursor.getString(myCursor.getColumnIndex("ord_id"));
+            global.setSelectedComments(myCursor.getString(myCursor.getColumnIndex("ord_comment")));
+            if (NetworkUtils.isConnectedToInternet(activity)) {
+                try {
+                    if (!isUpdateOnHold) {
+                        if (!OnHoldsManager.isOnHoldAdminClaimRequired(ordID, activity)) {
+                            wasProcessed = true;
+                            OnHoldsManager.updateStatusOnHold(ordID, activity);
+                        }
+                    } else {
+                        wasProcessed = true;
+                        OnHoldsManager.updateStatusOnHold(ordID, activity);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Crashlytics.logException(e);
+                }
+                return null;
+            } else {
+                OrdersHandler ordersHandler = new OrdersHandler(activity);
+                if (ordersHandler.isOrderOffline(ordID))
+                    wasProcessed = true;
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String unused) {
+            myProgressDialog.dismiss();
+
+            if (wasProcessed) {
+                new executeOnHoldAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
+            } else {
+                claimedTransactionPrompt();
+            }
+        }
+    }
+
+    private class executeOnHoldAsync extends AsyncTask<Boolean, Void, Intent> {
+        private boolean proceed = false;
+        private Intent intent;
+        private OrderProductsHandler orderProdHandler;
+        private boolean forPrinting = false;
+        private ProgressDialog myProgressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog.setMessage("Please wait...");
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setCancelable(false);
+            myProgressDialog.show();
+        }
+
+        @Override
+        protected Intent doInBackground(Boolean... params) {
+            myCursor.moveToPosition(selectedPos);
+            Order order = OrdersHandler.getOrder(myCursor, activity);
+            orderProdHandler = new OrderProductsHandler(activity);
+            Global.lastOrdID = order.ord_id;
+            Global.taxID = order.tax_id;
+            orderType = Global.OrderType.getByCode(Integer.parseInt(order.ord_type));
+            String ord_HoldName = order.ord_HoldName;
+            selectCustomer(order.cust_id);
+            forPrinting = params[0];
+            if (!forPrinting) {
+                intent = new Intent(activity, OrderingMain_FA.class);
+                String assignedTable = order.assignedTable;
+                intent.putExtra("selectedDinningTableNumber", assignedTable);
+                intent.putExtra("onHoldOrderJson", order.toJson());
+
+                intent.putExtra("openFromHold", true);
+                if (assignedTable != null && !assignedTable.isEmpty()) {
+                    intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.EAT_IN);
+                } else {
+                    intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.TO_GO);
+                }
+                switch (orderType) {
+                    case SALES_RECEIPT:
+                        intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
+                        break;
+                    case RETURN:
+                        intent.putExtra("option_number", Global.TransactionType.RETURN);
+                        break;
+                    case ORDER:
+                        intent.putExtra("option_number", Global.TransactionType.ORDERS);
+                        break;
+                    case INVOICE:
+                        intent.putExtra("option_number", Global.TransactionType.INVOICE);
+                        break;
+                    case ESTIMATE:
+                        intent.putExtra("option_number", Global.TransactionType.ESTIMATE);
+                        break;
+                }
+                intent.putExtra("ord_HoldName", ord_HoldName);
+                intent.putExtra("associateId", order.associateID);
+                Global.isFromOnHold = true;
+            }
+
+            if (NetworkUtils.isConnectedToInternet(activity))
+                proceed = true;
+
+            return intent;
+        }
+
+        @Override
+        protected void onPostExecute(Intent intent) {
+            myProgressDialog.dismiss();
+            if (proceed) {
+                DBManager dbManager = new DBManager(activity);
+                if (!forPrinting)
+                    dbManager.synchDownloadOnHoldDetails(intent, myCursor.getString(myCursor.getColumnIndex("ord_id")), 0, activity);
+                else
+                    dbManager.synchDownloadOnHoldDetails(intent, myCursor.getString(myCursor.getColumnIndex("ord_id")), 1, activity);
+            } else {
+                Cursor c = orderProdHandler.getOrderProductsOnHold(myCursor.getString(myCursor.getColumnIndex("ord_id")));
+                int size = c.getCount();
+                if (size > 0) {
+                    if (!forPrinting) {
+//                        addOrderProducts(OnHoldActivity.this, c);
+                        startActivityForResult(intent, 0);
+                        activity.finish();
+                    } else {
+                        DBManager dbManager = new DBManager(activity);
+                        dbManager.synchDownloadOnHoldDetails(intent, myCursor.getString(myCursor.getColumnIndex("ord_id")), 1, activity);
+                    }
+                } else
+                    Toast.makeText(activity, "no available items", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
 //    public static void addOrderProducts(Activity activity, Cursor c) {
 //        OrderProductsHandler orderProductsHandler = new OrderProductsHandler(activity);
 //        c.moveToFirst();
@@ -677,19 +659,36 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 //        }
 //    }
 
-    private void selectCustomer(String custID) {
-        if (custID != null && !custID.isEmpty()) {
-            CustomersHandler ch = new CustomersHandler(activity);
-            HashMap<String, String> temp = ch.getCustomerInfo(custID);
-            SalesTaxCodesHandler taxHandler = new SalesTaxCodesHandler(activity);
-            SalesTaxCodesHandler.TaxableCode taxable = taxHandler.checkIfCustTaxable(temp.get("cust_taxable"));
-            myPref.setCustTaxCode(taxable, temp.get("cust_salestaxcode"));
-            myPref.setCustID(temp.get("cust_id"));    //getting cust_id as _id
-            myPref.setCustName(temp.get("cust_name"));
-            myPref.setCustIDKey(temp.get("custidkey"));
-            myPref.setCustSelected(true);
-            myPref.setCustPriceLevel(temp.get("pricelevel_id"));
-            myPref.setCustEmail(temp.get("cust_email"));
+    private class printAsync extends AsyncTask<Void, Void, Void> {
+        private boolean printSuccessful = true;
+        private ProgressDialog myProgressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog.setMessage("Printing...");
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setCancelable(false);
+            myProgressDialog.show();
+
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                printSuccessful = Global.mainPrinterManager.getCurrentDevice().printTransaction(Global.lastOrdID, orderType, false, true);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void unused) {
+            myProgressDialog.dismiss();
+
+            if (!printSuccessful)
+                showPrintDlg();
+
         }
     }
 
@@ -769,6 +768,33 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             TextView holdID, holdName, offlineFlag, guestsNumber, orderTotal, timeOnSite;
             TextView tableTextView;
             int i_issync, i_holdID, i_holdName, i_assignedTable, i_orderTotal, i_numberOfSeats, i_timeCreated;
+        }
+    }
+
+    private class SyncOnHolds extends AsyncTask<Void, Void, Boolean> {
+        ProgressDialog dialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            dialog = new ProgressDialog(OnHoldActivity.this);
+            dialog.setIndeterminate(true);
+            dialog.setCancelable(false);
+            dialog.setMessage(getString(R.string.sync_sending_orders));
+            dialog.show();
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            DBManager dbManager = new DBManager(OnHoldActivity.this);
+            SynchMethods sm = new SynchMethods(dbManager);
+            return sm.synchSendOnHold(false, false, OnHoldActivity.this, null);
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            super.onPostExecute(result);
+            Global.dismissDialog(OnHoldActivity.this, dialog);
         }
     }
 }

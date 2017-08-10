@@ -2,6 +2,7 @@ package drivers;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
@@ -9,9 +10,11 @@ import android.os.Handler;
 import android.text.TextUtils;
 
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.TimeClock;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.CardParser;
 import com.android.support.ConsignmentTransaction;
@@ -74,7 +77,7 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
     }
 
     @Override
-    public void connect(Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
+    public void connect(Context activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
         if (handler == null)
@@ -283,7 +286,7 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
                 RBA_API.SetParam(PARAMETER_ID.P23_REQ_ENABLE_DEVICES, "MCS");
                 RBA_API.SetParam(PARAMETER_ID.P23_REQ_OPTIONS, "1");
                 if (!isConnected()) {
-                    autoConnect(activity, edm, 0, isPOSPrinter, "", "");
+                    autoConnect((Activity) activity, edm, 0, isPOSPrinter, "", "");
                 }
                 ERROR_ID result = RBA_API.ProcessMessage(MESSAGE_ID.M23_CARD_READ);
                 if (result == ERROR_ID.RESULT_SUCCESS) {
@@ -722,6 +725,11 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
      */
     public boolean isConnected() {
         return RBA_API.GetConnectionStatus() == RBA_API.ConnectionStatus.CONNECTED;
+    }
+
+    @Override
+    public void printClockInOut(List<ClockInOut> clockInOuts, String clerkID) {
+
     }
 
 }

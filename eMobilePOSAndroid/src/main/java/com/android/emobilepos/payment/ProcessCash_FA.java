@@ -44,15 +44,16 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import util.json.UIUtils;
 
 public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener {
+    String orderSubTotal;
     //    private ProgressDialog myProgressDialog;
     private AlertDialog.Builder dialog;
     private Context thisContext = this;
     private Activity activity = this;
-
     //    private Payment payment;
     private Global global;
     private boolean hasBeenCreated = false;
@@ -63,25 +64,55 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
     private EditText customerNameField, customerEmailField, phoneNumberField;
     private TextView change;
     private boolean isMultiInvoice = false;
-
-
     private String[] inv_id_array, txnID_array;
     private double[] balance_array;
     private boolean isInvoice = false;
-
     private boolean showTipField = true;
     private String custidkey = "";
-
     private double amountToTip = 0;
     private double grandTotalAmount = 0;
     private boolean isRefund = false;
-
     private MyPreferences myPref;
     private TextView dlogGrandTotal;
     private Bundle extras;
     private Button btnProcess;
     private List<GroupTax> groupTaxRate;
 
+    public static void setTaxLabels(List<GroupTax> groupTaxRate, TextView tax1Lbl, TextView tax2Lbl) {
+        Collections.sort(groupTaxRate, new Comparator<GroupTax>() {
+            @Override
+            public int compare(GroupTax o1, GroupTax o2) {
+                return o1.getPrTax().compareTo(o2.getPrTax());
+            }
+        });
+        if (groupTaxRate.size() > 0)
+            tax1Lbl.setText(groupTaxRate.get(0).getTaxName());
+        if (groupTaxRate.size() > 1)
+            tax2Lbl.setText(groupTaxRate.get(1).getTaxName());
+    }
+
+    public static void calculateTaxes(List<GroupTax> groupTaxRate, EditText subtotal, EditText tax1, EditText tax2) {
+        double subtotalDbl = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(subtotal));
+        //set default taxes values to zero
+        BigDecimal tax1Rate = new BigDecimal(0.00);
+        BigDecimal tax2Rate = new BigDecimal(0.00);
+
+        //if we have taxes then
+        if (groupTaxRate.size() > 0) {
+            tax1Rate = new BigDecimal(Double.parseDouble(groupTaxRate.get(0).getTaxRate()));
+            if (groupTaxRate.size() > 1) {
+                tax2Rate = new BigDecimal(Double.parseDouble(groupTaxRate.get(1).getTaxRate()));
+            }
+        }
+
+        BigDecimal tax1Dbl = new BigDecimal(subtotalDbl).multiply(tax1Rate);
+        BigDecimal tax2Dbl = new BigDecimal(subtotalDbl).multiply(tax2Rate);
+
+        DecimalFormat df = new DecimalFormat("0.00");
+        df.setRoundingMode(RoundingMode.HALF_UP);
+        tax1.setText(df.format(tax1Dbl.doubleValue()));
+        tax2.setText(df.format(tax2Dbl.doubleValue()));
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -119,7 +150,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         } else if (extras.getBoolean("salesinvoice")) {
             headerTitle.setText(R.string.cash_invoice_lbl);
         }
-
+        orderSubTotal = extras.getString("subTotal", "0");
         amountDue = (EditText) findViewById(R.id.amountDueCashEdit);
         reference = (EditText) findViewById(R.id.referenceNumber);
         tipAmount = (EditText) findViewById(R.id.tipAmountField);
@@ -411,21 +442,6 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         });
     }
 
-
-    public static void setTaxLabels(List<GroupTax> groupTaxRate, TextView tax1Lbl, TextView tax2Lbl) {
-        Collections.sort(groupTaxRate, new Comparator<GroupTax>() {
-            @Override
-            public int compare(GroupTax o1, GroupTax o2) {
-                return o1.getPrTax().compareTo(o2.getPrTax());
-            }
-        });
-        if (groupTaxRate.size() > 0)
-            tax1Lbl.setText(groupTaxRate.get(0).getTaxName());
-        if (groupTaxRate.size() > 1)
-            tax2Lbl.setText(groupTaxRate.get(1).getTaxName());
-    }
-
-
     private void recalculateChange() {
         amountToTip = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(tipAmount));
         double totAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDue));
@@ -440,7 +456,6 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
 
     }
 
-
     private void promptTipConfirmation() {
         LayoutInflater inflater = LayoutInflater.from(activity);
         View dialogLayout = inflater.inflate(R.layout.tip_dialog_layout, null);
@@ -449,7 +464,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         //****Method that works with both jelly bean/gingerbread
         //AlertDialog.Builder dialog = new AlertDialog.Builder(this,R.style.TransparentDialog);
 
-        final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(activity, R.style.DialogLargeArea);
         final AlertDialog dialog = builder.create();
         dialog.setView(dialogLayout, 0, 0, 0, 0);
         dialog.setInverseBackgroundForced(true);
@@ -460,7 +475,12 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
 
         double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
         grandTotalAmount = amountToBePaid + amountToTip;
-
+        final double subTotal;
+        if (isFromMainMenu) {
+            subTotal = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDue));
+        } else {
+            subTotal = Double.parseDouble(orderSubTotal);
+        }
         Button tenPercent = (Button) dialogLayout.findViewById(R.id.tenPercent);
         Button fifteenPercent = (Button) dialogLayout.findViewById(R.id.fifteenPercent);
         Button twentyPercent = (Button) dialogLayout.findViewById(R.id.twentyPercent);
@@ -475,8 +495,9 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         Button cancelTip = (Button) dialogLayout.findViewById(R.id.cancelTipButton);
         Button saveTip = (Button) dialogLayout.findViewById(R.id.acceptTipButton);
         Button noneButton = (Button) dialogLayout.findViewById(R.id.noneButton);
-
-
+        final TextView totalAmountView = (TextView) dialogLayout.findViewById(R.id.totalAmountView);
+        totalAmountView.setText(String.format(Locale.getDefault(), getString(R.string.total_plus_tip),
+                Global.formatDoubleToCurrency(subTotal), Global.formatDoubleToCurrency(0)));
         promptTipField.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
 
@@ -489,8 +510,10 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
                 if (Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(s.toString())) > 0) {
                     double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
                     amountToTip = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(s.toString()));
-                    grandTotalAmount = amountToBePaid + amountToTip;
+                    grandTotalAmount = subTotal + amountToTip;
                     dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
+                    totalAmountView.setText(String.format(Locale.getDefault(), getString(R.string.total_plus_tip),
+                            Global.formatDoubleToCurrency(subTotal), Global.formatDoubleToCurrency(amountToTip)));
                 }
                 NumberUtils.parseInputedCurrency(s, promptTipField);
             }
@@ -513,10 +536,12 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
             @Override
             public void onClick(View v) {
                 double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
-                amountToTip = (float) (amountToBePaid * (0.1));
-                grandTotalAmount = amountToBePaid + amountToTip;
+                amountToTip = (float) (subTotal * (0.1));
+                grandTotalAmount = subTotal + amountToTip;
                 dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
                 promptTipField.setText("");
+                totalAmountView.setText(String.format(Locale.getDefault(), getString(R.string.total_plus_tip),
+                        Global.formatDoubleToCurrency(subTotal), Global.formatDoubleToCurrency(amountToTip)));
             }
         });
 
@@ -525,10 +550,12 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
             @Override
             public void onClick(View v) {
                 double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
-                amountToTip = (float) (amountToBePaid * (0.15));
-                grandTotalAmount = amountToBePaid + amountToTip;
+                amountToTip = (float) (subTotal * (0.15));
+                grandTotalAmount = subTotal + amountToTip;
                 dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
                 promptTipField.setText("");
+                totalAmountView.setText(String.format(Locale.getDefault(), getString(R.string.total_plus_tip),
+                        Global.formatDoubleToCurrency(subTotal), Global.formatDoubleToCurrency(amountToTip)));
             }
         });
 
@@ -537,10 +564,12 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
             @Override
             public void onClick(View v) {
                 double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
-                amountToTip = (float) (amountToBePaid * (0.2));
-                grandTotalAmount = amountToBePaid + amountToTip;
+                amountToTip = (float) (subTotal * (0.2));
+                grandTotalAmount = subTotal + amountToTip;
                 dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
                 promptTipField.setText("");
+                totalAmountView.setText(String.format(Locale.getDefault(), getString(R.string.total_plus_tip),
+                        Global.formatDoubleToCurrency(subTotal), Global.formatDoubleToCurrency(amountToTip)));
             }
         });
 
@@ -551,8 +580,10 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
             public void onClick(View v) {
                 double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
                 amountToTip = 0;
-                grandTotalAmount = amountToBePaid;
+                grandTotalAmount = subTotal;
                 dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
+                totalAmountView.setText(String.format(Locale.getDefault(), getString(R.string.total_plus_tip),
+                        Global.formatDoubleToCurrency(subTotal), Global.formatDoubleToCurrency(amountToTip)));
                 //dialog.dismiss();
             }
         });
@@ -581,31 +612,6 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         });
         dialog.show();
     }
-
-
-    public static void calculateTaxes(List<GroupTax> groupTaxRate, EditText subtotal, EditText tax1, EditText tax2) {
-        double subtotalDbl = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(subtotal));
-        //set default taxes values to zero
-        BigDecimal tax1Rate = new BigDecimal(0.00);
-        BigDecimal tax2Rate = new BigDecimal(0.00);
-
-        //if we have taxes then
-        if (groupTaxRate.size() > 0) {
-            tax1Rate = new BigDecimal(Double.parseDouble(groupTaxRate.get(0).getTaxRate()));
-            if (groupTaxRate.size() > 1) {
-                tax2Rate = new BigDecimal(Double.parseDouble(groupTaxRate.get(1).getTaxRate()));
-            }
-        }
-
-        BigDecimal tax1Dbl = new BigDecimal(subtotalDbl).multiply(tax1Rate);
-        BigDecimal tax2Dbl = new BigDecimal(subtotalDbl).multiply(tax2Rate);
-
-        DecimalFormat df = new DecimalFormat("0.00");
-        df.setRoundingMode(RoundingMode.HALF_UP);
-        tax1.setText(df.format(tax1Dbl.doubleValue()));
-        tax2.setText(df.format(tax2Dbl.doubleValue()));
-    }
-
 
     private Payment processPayment() {
         PaymentsHandler payHandler = new PaymentsHandler(activity);
@@ -809,97 +815,6 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
 
     }
 
-
-    private class processPaymentAsync extends AsyncTask<Boolean, String, Payment> {
-
-        private ProgressDialog progressDialog;
-
-        @Override
-        protected void onPreExecute() {
-            progressDialog = new ProgressDialog(thisContext);
-            progressDialog.setMessage(getString(R.string.processing_payment_msg));
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            progressDialog.setCancelable(false);
-            progressDialog.show();
-        }
-
-
-        @Override
-        protected Payment doInBackground(Boolean... params) {
-            Payment payment;
-            boolean isMultiPayment = params[0];
-            if (isMultiPayment)
-                payment = processMultiInvoicePayment();
-            else
-                payment = processPayment();
-
-            return payment;
-        }
-
-        @Override
-        protected void onPostExecute(Payment payment) {
-            progressDialog.dismiss();
-
-            double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
-            double actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDue));
-
-            if (myPref.getPreferences(MyPreferences.pref_print_receipt_transaction_payment) && !isFromMainMenu) {
-
-                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, payment);
-
-                if (amountToBePaid > actualAmount)
-                    showChangeDlg();
-            } else if (amountToBePaid > actualAmount)
-                showChangeDlg();
-            else
-                finish();
-
-        }
-    }
-
-
-    private class printAsync extends AsyncTask<Payment, Void, Payment> {
-        private boolean printSuccessful = true;
-        private ProgressDialog myProgressDialog;
-
-        @Override
-        protected void onPreExecute() {
-            myProgressDialog = new ProgressDialog(activity);
-            myProgressDialog.setMessage(getString(R.string.printing_message));
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            if (myProgressDialog.isShowing())
-                myProgressDialog.dismiss();
-            myProgressDialog.show();
-
-        }
-
-        @Override
-        protected Payment doInBackground(Payment... params) {
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
-                printSuccessful = Global.mainPrinterManager.getCurrentDevice().printPaymentDetails(params[0].getPay_id(), 1, false, null);
-            }
-            return params[0];
-        }
-
-        @Override
-        protected void onPostExecute(Payment payment) {
-            if (myProgressDialog.isShowing()) {
-                myProgressDialog.dismiss();
-            }
-            double actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDue));
-            double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
-
-            if (printSuccessful) {
-                if (amountToBePaid <= actualAmount)
-                    finish();
-            } else {
-                showPrintDlg(true, payment);
-            }
-        }
-    }
-
-
     private void showPrintDlg(boolean isRetry, final Payment payment) {
         final Dialog dlog = new Dialog(activity, R.style.Theme_TransparentTest);
         dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -944,7 +859,6 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         });
         dlog.show();
     }
-
 
     private void showChangeDlg() {
         final Dialog dlog = new Dialog(activity, R.style.Theme_TransparentTest);
@@ -1004,7 +918,6 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         }
     }
 
-
     @Override
     public void onClick(View v) {
         int temp = 0;
@@ -1026,6 +939,94 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         amountToBePaid += temp;
         grandTotalAmount = amountToBePaid + amountToTip;
         paid.setText(Global.formatDoubleToCurrency(amountToBePaid));
+    }
+
+    private class processPaymentAsync extends AsyncTask<Boolean, String, Payment> {
+
+        private ProgressDialog progressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            progressDialog = new ProgressDialog(thisContext);
+            progressDialog.setMessage(getString(R.string.processing_payment_msg));
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+
+        @Override
+        protected Payment doInBackground(Boolean... params) {
+            Payment payment;
+            boolean isMultiPayment = params[0];
+            if (isMultiPayment)
+                payment = processMultiInvoicePayment();
+            else
+                payment = processPayment();
+
+            return payment;
+        }
+
+        @Override
+        protected void onPostExecute(Payment payment) {
+            progressDialog.dismiss();
+
+            double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
+            double actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDue));
+
+            if (myPref.getPreferences(MyPreferences.pref_print_receipt_transaction_payment) && !isFromMainMenu) {
+
+                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, payment);
+
+                if (amountToBePaid > actualAmount)
+                    showChangeDlg();
+            } else if (amountToBePaid > actualAmount)
+                showChangeDlg();
+            else
+                finish();
+
+        }
+    }
+
+    private class printAsync extends AsyncTask<Payment, Void, Payment> {
+        private boolean printSuccessful = true;
+        private ProgressDialog myProgressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog.setMessage(getString(R.string.printing_message));
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setCancelable(false);
+            if (myProgressDialog.isShowing())
+                myProgressDialog.dismiss();
+            myProgressDialog.show();
+
+        }
+
+        @Override
+        protected Payment doInBackground(Payment... params) {
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                printSuccessful = Global.mainPrinterManager.getCurrentDevice().printPaymentDetails(params[0].getPay_id(), 1, false, null);
+            }
+            return params[0];
+        }
+
+        @Override
+        protected void onPostExecute(Payment payment) {
+            if (myProgressDialog.isShowing()) {
+                myProgressDialog.dismiss();
+            }
+            double actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDue));
+            double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
+
+            if (printSuccessful) {
+                if (amountToBePaid <= actualAmount)
+                    finish();
+            } else {
+                showPrintDlg(true, payment);
+            }
+        }
     }
 
 }

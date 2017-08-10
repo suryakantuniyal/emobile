@@ -1,6 +1,7 @@
 package com.android.support.emsutils;
 
 import android.app.Activity;
+import android.content.Context;
 import android.text.TextUtils;
 
 import com.android.emobilepos.models.EMSEpayLoginInfo;
@@ -28,7 +29,7 @@ import javax.xml.parsers.SAXParserFactory;
 public class EMSUtils {
     public enum EPayStatusCode {DECLINE, APPROVED}
 
-    public static EMSEpayLoginInfo getEmsEpayLoginInfo(Activity activity) {
+    public static EMSEpayLoginInfo getEmsEpayLoginInfo(Context activity) {
         EMSEpayLoginInfo loginInfo = new EMSEpayLoginInfo();
         EMSPayGate_Default payGate = new EMSPayGate_Default(activity, null);
         String request = payGate.paymentWithAction(EMSPayGate_Default.EAction.HandpointWorkingKey, false, null,

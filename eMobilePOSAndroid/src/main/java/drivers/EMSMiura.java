@@ -2,14 +2,17 @@ package drivers;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 
 import com.StarMicronics.jasura.JAException;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.TimeClock;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.Global;
@@ -45,7 +48,7 @@ public class EMSMiura extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     BluetoothModule miuraPrinter = BluetoothModule.getInstance();
 
     @Override
-    public void connect(Activity activity, int paperSize, boolean isPOSPrinter, final EMSDeviceManager edm) {
+    public void connect(Context activity, int paperSize, boolean isPOSPrinter, final EMSDeviceManager edm) {
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
         this.isPOSPrinter = isPOSPrinter;
@@ -326,6 +329,11 @@ public class EMSMiura extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     @Override
     public boolean isConnected() {
         return true;
+    }
+
+    @Override
+    public void printClockInOut(List<ClockInOut> timeClocks, String clerkID) {
+        super.printClockInOut(timeClocks, LINE_WIDTH, clerkID);
     }
 
     @Override

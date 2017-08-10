@@ -35,10 +35,10 @@ import com.android.emobilepos.firebase.NotificationSettings;
 import com.android.emobilepos.firebase.PollingNotificationService;
 import com.android.emobilepos.firebase.RegistrationIntentService;
 import com.android.emobilepos.models.realms.Clerk;
+import com.android.emobilepos.security.SecurityManager;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
-import com.android.support.NetworkUtils;
 import com.android.support.SynchMethods;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.crashlytics.android.Crashlytics;
@@ -46,21 +46,29 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.microsoft.windowsazure.notifications.NotificationsManager;
 
+import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
+import android_serialport_api.SerialPort;
 import drivers.EMSsnbc;
 import main.EMSDeviceManager;
 
 import static com.android.emobilepos.models.firebase.NotificationEvent.NotificationEventAction;
 
 public class MainMenu_FA extends BaseFragmentActivityActionBar {
-
     public static final String NOTIFICATION_RECEIVED = "NOTIFICATION_RECEIVED";
     public static final String NOTIFICATION_MESSAGE = "NOTIFICATION_MESSAGE";
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     public static Activity activity;
     private static MyPreferences myPref;
+
+    static {
+        System.loadLibrary("serial_port");
+    }
+
     private Global global;
     private boolean hasBeenCreated = false;
     private TextView synchTextView, tvStoreForward;
@@ -166,12 +174,11 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                global.getCurrLocation(MainMenu_FA.this, true);
+                Global.getCurrLocation(MainMenu_FA.this, true);
             }
         }).start();
 
         hasBeenCreated = true;
-
 
     }
 
@@ -217,7 +224,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
             Intent intent = new Intent(this, RegistrationIntentService.class);
             startService(intent);
         } else {
-            if (myPref.isPollingHoldsEnable()) {
+            if ((myPref.isPollingHoldsEnable() || myPref.isAutoSyncEnable()) && !PollingNotificationService.isServiceRunning(this)) {
                 startPollingService();
             }
         }
@@ -244,7 +251,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
     @Override
     public void onResume() {
-        if (myPref.isPollingHoldsEnable() && !PollingNotificationService.isServiceRunning(this)) {
+        if ((myPref.isPollingHoldsEnable() || myPref.isAutoSyncEnable()) && !PollingNotificationService.isServiceRunning(this)) {
             startPollingService();
         }
         registerReceiver(messageReceiver, new IntentFilter(NOTIFICATION_RECEIVED));
@@ -263,11 +270,12 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
             global.promptForMandatoryLogin(activity);
         }
 
-        if (myPref.getPreferences(MyPreferences.pref_automatic_sync) && hasBeenCreated && NetworkUtils.isConnectedToInternet(activity)) {
+        if (myPref.isAutoSyncEnable() && hasBeenCreated) {
             DBManager dbManager = new DBManager(activity, Global.FROM_SYNCH_ACTIVITY);
-//            dbManager.synchSend(false, true, activity);
             SynchMethods sm = new SynchMethods(dbManager);
             sm.synchSend(Global.FROM_SYNCH_ACTIVITY, true, activity);
+            getSynchTextView().setText(getString(R.string.sync_inprogress));
+            getSynchTextView().setVisibility(View.VISIBLE);
         }
 
         if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward))
@@ -286,7 +294,14 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
     }
 
     private void startPollingService() {
-        PollingNotificationService.start(this);
+        int flags = 0;
+        if (myPref.isPollingHoldsEnable()) {
+            flags = PollingNotificationService.PollingServicesFlag.ONHOLDS.getCode() | PollingNotificationService.PollingServicesFlag.DINING_TABLES.getCode();
+        }
+        if (myPref.isAutoSyncEnable()) {
+            flags = flags | PollingNotificationService.PollingServicesFlag.AUTO_SYNC.getCode();
+        }
+        PollingNotificationService.start(this, flags);
     }
 
     private void stopPollingService() {
@@ -472,7 +487,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
                 }
             }
 
-            if (myTabs.get(0) == tag && hasBeenCreated) {
+            if (myTabs.get(0) == tag && hasBeenCreated && SecurityManager.hasPermissions(myContext, SecurityManager.SecurityAction.OPEN_ORDER)) {
                 SalesTab_FR.startDefault(activity, myPref.getPreferencesValue(MyPreferences.pref_default_transaction));
             }
         }

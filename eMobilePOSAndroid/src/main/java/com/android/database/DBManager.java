@@ -23,32 +23,48 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class DBManager {
-    public static final int VERSION = 52;
+    public static final int VERSION = 55;
     private static final String DB_NAME_OLD = "emobilepos.sqlite";
     private static final String CIPHER_DB_NAME = "emobilepos.sqlcipher";
     private static final String PASSWORD = "em0b1l3p05";
     //    private boolean sendAndReceive = false;
     private static SQLiteDatabase database;
     private final String[] CREATE_INDEX = {
-            "CREATE INDEX prod_id_index ON EmpInv (prod_id)",
-            "CREATE INDEX VolumePrices_prod_id_index ON VolumePrices (prod_id)",
-            "CREATE INDEX minQty_index ON VolumePrices (minQty)",
-            "CREATE INDEX maxQty_index ON VolumePrices (maxQty)",
-            "CREATE INDEX pricelevel_id_index ON VolumePrices (pricelevel_id)",
-            "CREATE INDEX Products_Images_prod_id_index ON Products_Images (prod_id)",
-            "CREATE INDEX type_index ON Products_Images (type)",
-            "CREATE INDEX prod_sku_index ON Products (prod_sku)",
-            "CREATE INDEX prod_upc_index ON Products (prod_upc)",
-            "CREATE INDEX prod_name_index ON Products (prod_name)",
-            "CREATE INDEX prod_type_index ON Products (prod_type)",
-            "CREATE INDEX prod_taxcode_index ON Products (prod_taxcode)",
-            "CREATE INDEX productchainxref_prod_id_index ON ProductChainXRef (prod_id)",
-            "CREATE INDEX cust_chain_index ON ProductChainXRef (cust_chain)",
-            "CREATE INDEX productaliases_alias_index ON ProductAliases (prod_alias)",
-            "CREATE INDEX productaliases_prod_id_index ON ProductAliases (prod_id)",
-            "CREATE INDEX pricelevelitems_prod_id_index ON PriceLevelItems (pricelevel_prod_id)",
-            "CREATE INDEX pricepevel_pricelevel_id_index ON PriceLevel (pricelevel_id)",
-            "CREATE INDEX salestaxcodes_taxcode_id_index ON SalesTaxCodes (taxcode_id)"
+            "CREATE INDEX IF NOT EXISTS prod_id_index ON EmpInv (prod_id)",
+            "CREATE INDEX IF NOT EXISTS locationsinventory_prod_id_index ON LocationsInventory (prod_id)",
+            "CREATE INDEX IF NOT EXISTS orderproduct_prod_id_index ON OrderProduct (prod_id)",
+            "CREATE INDEX IF NOT EXISTS orderproduct_prod_id_index ON OrderProduct (cat_id)",
+            "CREATE INDEX IF NOT EXISTS orderproduct_isAdded_index ON OrderProduct (isAdded)",
+            "CREATE INDEX IF NOT EXISTS orderproduct_prod_taxId_index ON OrderProduct (prod_taxId)",
+            "CREATE INDEX IF NOT EXISTS orderproduct_prod_sku_index ON OrderProduct (prod_sku)",
+            "CREATE INDEX IF NOT EXISTS orderproduct_prod_upc_index ON OrderProduct (prod_upc)",
+            "CREATE INDEX IF NOT EXISTS OrderProductsAttr_ordprod_id_index ON OrderProduct (ordprod_id)",
+            "CREATE INDEX IF NOT EXISTS Payments_paymethod_id_index ON Payments (paymethod_id)",
+            "CREATE INDEX IF NOT EXISTS Product_addons_prod_id_index ON Product_addons (prod_id)",
+            "CREATE INDEX IF NOT EXISTS Taxes_tax_id_index ON Taxes (tax_id)",
+            "CREATE INDEX IF NOT EXISTS Taxes_tax_code_id_index ON Taxes (tax_code_id)",
+            "CREATE INDEX IF NOT EXISTS Taxes_Group_taxGroupId_index ON Taxes_Group (taxGroupId)",
+            "CREATE INDEX IF NOT EXISTS Taxes_Group_taxId_index ON Taxes_Group (taxId)",
+            "CREATE INDEX IF NOT EXISTS Taxes_Group_taxcode_id_index ON Taxes_Group (taxcode_id)",
+
+            "CREATE INDEX IF NOT EXISTS VolumePrices_prod_id_index ON VolumePrices (prod_id)",
+            "CREATE INDEX IF NOT EXISTS minQty_index ON VolumePrices (minQty)",
+            "CREATE INDEX IF NOT EXISTS maxQty_index ON VolumePrices (maxQty)",
+            "CREATE INDEX IF NOT EXISTS pricelevel_id_index ON VolumePrices (pricelevel_id)",
+            "CREATE INDEX IF NOT EXISTS Products_Images_prod_id_index ON Products_Images (prod_id)",
+            "CREATE INDEX IF NOT EXISTS type_index ON Products_Images (type)",
+            "CREATE INDEX IF NOT EXISTS prod_sku_index ON Products (prod_sku)",
+            "CREATE INDEX IF NOT EXISTS prod_upc_index ON Products (prod_upc)",
+            "CREATE INDEX IF NOT EXISTS prod_name_index ON Products (prod_name)",
+            "CREATE INDEX IF NOT EXISTS prod_type_index ON Products (prod_type)",
+            "CREATE INDEX IF NOT EXISTS prod_taxcode_index ON Products (prod_taxcode)",
+            "CREATE INDEX IF NOT EXISTS productchainxref_prod_id_index ON ProductChainXRef (prod_id)",
+            "CREATE INDEX IF NOT EXISTS cust_chain_index ON ProductChainXRef (cust_chain)",
+            "CREATE INDEX IF NOT EXISTS productaliases_alias_index ON ProductAliases (prod_alias)",
+            "CREATE INDEX IF NOT EXISTS productaliases_prod_id_index ON ProductAliases (prod_id)",
+            "CREATE INDEX IF NOT EXISTS pricelevelitems_prod_id_index ON PriceLevelItems (pricelevel_prod_id)",
+            "CREATE INDEX IF NOT EXISTS pricepevel_pricelevel_id_index ON PriceLevel (pricelevel_id)",
+            "CREATE INDEX IF NOT EXISTS salestaxcodes_taxcode_id_index ON SalesTaxCodes (taxcode_id)"
     };
     private final String CREATE_ADDRESS = "CREATE TABLE [Address] ([addr_id] varchar NOT NULL ,[cust_id]varchar NOT NULL ,[addr_b_str1]varchar,"
             + "[addr_b_str2]varchar,[addr_b_str3]varchar,[addr_b_city]varchar,[addr_b_state]varchar,[addr_b_country]varchar,[addr_b_zipcode]varchar,"
@@ -168,31 +184,11 @@ public class DBManager {
             + "[loc_id] [varchar](50) NOT NULL, [cat_id] [varchar](50) NOT NULL, [printer_id] [int] NOT NULL)";
     private final String CREATE_PRODCATXREF = "CREATE TABLE [ProdCatXref]( [idKey] [int] PRIMARY KEY NOT NULL, [prod_id] [varchar](50) NOT NULL, "
             + "[cat_id] [varchar](50) NOT NULL, [_update] [datetime] NULL, [isactive] [bit] NOT NULL)";
-
-//    public void synchReceive(Activity activity) {
-//        SynchMethods sm = new SynchMethods(managerInstance);
-//        sm.synchReceive(type, activity);
-//    }
-
-//    public void synchSend(boolean sendAndReceive, boolean isFromMainMenu, Activity activity) {
-//        this.sendAndReceive = sendAndReceive;
-//        SynchMethods sm = new SynchMethods(managerInstance);
-//        sm.synchSend(type, isFromMainMenu, activity);
-//    }
     private final String CREATE_PRODUCTCHAINXREF = "CREATE TABLE [ProductChainXRef]( [chainKey] [uniqueidentifier] PRIMARY KEY NOT NULL, "
             + "[cust_chain] [varchar](50) NOT NULL, [prod_id] [varchar](50) NOT NULL, [over_price_gross] [money] NULL, [over_price_net] [money] NOT NULL, "
             + "[isactive] [tinyint] NOT NULL, [productchain_update] [datetime] NULL, [customer_item] [varchar](20) NULL)";
     private final String CREATE_PRODUCT_ADDONS = "CREATE TABLE [Product_addons]( [rest_addons] [int] PRIMARY KEY NOT NULL, [prod_id] [varchar](50) NULL, "
             + "[cat_id] [varchar](50) NULL, [isactive] [bit] NULL, [_update] [datetime] NULL)";
-
-//    public void synchSendOrdersOnHold(boolean downloadHoldList, boolean checkOutOnHold) {
-//        SynchMethods sm = new SynchMethods(managerInstance);
-//        sm.synchSendOnHold(downloadHoldList, checkOutOnHold);
-//    }
-
-//    public boolean isSendAndReceive() {
-//        return this.sendAndReceive;
-//    }
     private final String CREATE_PRODUCTS = "CREATE TABLE [Products]( [prod_id] [varchar](50) PRIMARY KEY NOT NULL, [prod_type] [varchar](50) NULL, "
             + "[prod_disc_type] [varchar](50) NULL, [cat_id] [varchar](50) NULL, [prod_sku] [varchar](255) NULL, [prod_upc] [varchar](50) NULL, "
             + "[prod_name] [varchar](255) NULL, [prod_desc] [varchar](4000) NULL, [prod_extradesc] [varchar](255) NULL, [prod_onhand] [real] NULL, "
@@ -559,6 +555,9 @@ public class DBManager {
             getDatabase().execSQL("ALTER TABLE [Orders] ADD COLUMN [prod_prices_group_id] [varchar](50) NULL");
         }
 
+        for (String sql : CREATE_INDEX) {
+            getDatabase().execSQL(sql);
+        }
     }
 
     public boolean unsynchItemsLeft() {

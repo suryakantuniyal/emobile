@@ -27,16 +27,14 @@ import com.android.database.TemplateHandler;
 import com.android.database.TransferLocations_DB;
 import com.android.database.VoidTransactionsHandler;
 import com.android.emobilepos.R;
-import com.android.support.DateUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NetworkUtils;
 import com.android.support.SynchMethods;
 
-import java.util.Date;
-
 public class SyncTab_FR extends Fragment implements View.OnClickListener {
     public static Handler syncTabHandler;
+    ProgressDialog dialog;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -59,7 +57,21 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
         syncTabHandler = new Handler(new Handler.Callback() {
             @Override
             public boolean handleMessage(Message msg) {
-                setViewData(getView());
+
+                switch (msg.what) {
+//                    case 1:
+//                        dialog = new ProgressDialog(getActivity());
+//                        dialog.setIndeterminate(true);
+//                        dialog.setMessage(getString(R.string.sync_inprogress));
+//                        dialog.show();
+//                        break;
+                    case 0:
+                        MainMenu_FA mainMenuFa = (MainMenu_FA) getActivity();
+                        mainMenuFa.getSynchTextView().setVisibility(View.GONE);
+                        Global.dismissDialog(getActivity(), dialog);
+                    default:
+                        setViewData(getView());
+                }
                 return false;
             }
         });
@@ -149,6 +161,10 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.syncSendButton:
+                dialog = new ProgressDialog(getActivity());
+                dialog.setIndeterminate(true);
+                dialog.setMessage(getString(R.string.sync_inprogress));
+                dialog.show();
                 DBManager dbManager = new DBManager(getActivity(), Global.FROM_SYNCH_ACTIVITY);
                 SynchMethods sm = new SynchMethods(dbManager);
                 if (NetworkUtils.isConnectedToInternet(getActivity())) {
@@ -177,6 +193,7 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
             dialog.setTitle(R.string.sync_title);
             dialog.setIndeterminate(true);
             dialog.setMessage(getString(R.string.sync_inprogress));
+            dialog.setCancelable(false);
             dialog.show();
         }
 

@@ -28,6 +28,7 @@ import util.StringUtil;
 
 public class OrderProductsHandler {
 
+    public static final String table_name = "OrderProduct";
     private static final String ord_id = "ord_id";
     private static final String addon = "addon";
     private static final String isAdded = "isAdded";
@@ -55,7 +56,6 @@ public class OrderProductsHandler {
     private static final String discount_value = "discount_value";
     private static final String cat_id = "cat_id";
     private static final String cat_name = "cat_name";
-
     private static final String prod_istaxable = "prod_istaxable";
     private static final String discount_is_taxable = "discount_is_taxable";
     private static final String discount_is_fixed = "discount_is_fixed";
@@ -65,31 +65,25 @@ public class OrderProductsHandler {
     private static final String prod_type = "prod_type";
     private static final String itemTotal = "itemTotal";
     private static final String itemSubtotal = "itemSubtotal";
-
     private static final String addon_section_name = "addon_section_name";
     private static final String addon_position = "addon_position";
     private static final String hasAddons = "hasAddons";
-
     private static final String assignedSeat = "assignedSeat";
     private static final String seatGroupId = "seatGroupId";
     private static final String prodPricePoints = "prod_price_points";
-
     public static final List<String> attr = Arrays.asList(addon, isAdded, isPrinted, item_void, ordprod_id,
             ord_id, prod_id, prod_sku, prod_upc, ordprod_qty, overwrite_price, reason_id, ordprod_name, ordprod_comment, ordprod_desc,
             pricelevel_id, prod_seq, uom_name, uom_conversion, uom_id, prod_taxId, prod_taxValue, discount_id,
             discount_value, prod_istaxable, discount_is_taxable, discount_is_fixed, onHand, imgURL, prod_price,
             prod_type, itemTotal, itemSubtotal, addon_section_name, addon_position, hasAddons, cat_id, cat_name, assignedSeat,
             seatGroupId, addon_ordprod_id, prodPricePoints);
-    private AssignEmployee assignEmployee;
-
-
-    private StringBuilder sb1, sb2, sb3;
     public final String empStr = "";
     public HashMap<String, Integer> attrHash;
+    private AssignEmployee assignEmployee;
+    private StringBuilder sb1, sb2, sb3;
     //    public Global global;
     private List<String[]> data;
     private List<HashMap<String, Integer>> dictionaryListMap;
-    public static final String table_name = "OrderProduct";
     private MyPreferences myPref;
     private ProductsHandler productsHandler;
 
@@ -177,7 +171,7 @@ public class OrderProductsHandler {
                 insert.bindString(index(uom_id), prod.getUom_id() == null ? "" : prod.getUom_id()); // uom_id
                 insert.bindString(index(prod_taxId), prod.getProd_taxId() == null ? "" : prod.getProd_taxId()); // prod_taxId
                 insert.bindDouble(index(prod_taxValue),
-                        prod.getProd_taxValue() == null ? 0 : Double.valueOf(String.valueOf(Global.getRoundBigDecimal(prod.getProd_taxValue(),2))));
+                        prod.getProd_taxValue() == null ? 0 : Double.valueOf(String.valueOf(Global.getRoundBigDecimal(prod.getProd_taxValue(), 2))));
                 insert.bindString(index(discount_id), prod.getDiscount_id() == null ? "" : prod.getDiscount_id()); // discount_id
                 insert.bindString(index(discount_value),
                         TextUtils.isEmpty(prod.getDiscount_value()) ? "0" : prod.getDiscount_value()); // discount_value

@@ -3,6 +3,7 @@ package drivers;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
@@ -12,9 +13,11 @@ import android.os.Handler;
 import com.StarMicronics.jasura.JAException;
 import com.android.dao.DeviceTableDAO;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.TimeClock;
 import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.CardParser;
@@ -23,6 +26,7 @@ import com.android.support.CreditCardInfo;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.crashlytics.android.Crashlytics;
+import com.starmicronics.stario.PortInfo;
 import com.starmicronics.stario.StarIOPort;
 import com.starmicronics.stario.StarIOPortException;
 import com.starmicronics.stario.StarPrinterStatus;
@@ -60,10 +64,9 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     boolean isNetworkPrinter = false;
 
     @Override
-    public void connect(Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
+    public void connect(Context activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
-
         cardManager = new CreditCardInfo();
         this.isPOSPrinter = isPOSPrinter;
         this.edm = edm;
@@ -271,11 +274,11 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         protected void onPostExecute(String unused) {
             boolean isDestroyed = false;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                if (activity.isDestroyed()) {
+                if (((Activity)activity).isDestroyed()) {
                     isDestroyed = true;
                 }
             }
-            if (!activity.isFinishing() && !isDestroyed && myProgressDialog.isShowing()) {
+            if (!((Activity)activity).isFinishing() && !isDestroyed && myProgressDialog.isShowing()) {
                 myProgressDialog.dismiss();
             }
 
@@ -794,13 +797,18 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         return status != null && !status.offline;
     }
 
+    @Override
+    public void printClockInOut(List<ClockInOut> timeClocks, String clerkID) {
+        super.printClockInOut(timeClocks, LINE_WIDTH, clerkID);
+    }
+
     private void starIoExtManagerConnect() {
         final Dialog mProgressDialog = new ProgressDialog(EMSBluetoothStarPrinter.this.activity);
         AsyncTask<Void, Void, Boolean> asyncTask = new AsyncTask<Void, Void, Boolean>() {
 
             @Override
             protected void onPreExecute() {
-                if (!EMSBluetoothStarPrinter.this.activity.isFinishing())
+                if (!((Activity)EMSBluetoothStarPrinter.this.activity).isFinishing())
                     mProgressDialog.show();
             }
 
@@ -812,7 +820,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
             @Override
             protected void onPostExecute(Boolean result) {
-                if (!EMSBluetoothStarPrinter.this.activity.isFinishing()) {
+                if (!((Activity)EMSBluetoothStarPrinter.this.activity).isFinishing()) {
                     mProgressDialog.dismiss();
                 }
             }

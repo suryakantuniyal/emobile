@@ -51,10 +51,10 @@ public class OrderCalculator {
         BigDecimal prodQty = new BigDecimal(product.getOrdprod_qty());
         if (myPref.isRetailTaxes()) {
             if (!taxId.isEmpty()) {
-                taxRate = taxHandler.getTaxRate(taxId, product.getTax_type(), Double.parseDouble(product.getFinalPrice()));
-                prod_taxId = product.getTax_type();
+                taxRate = taxHandler.getTaxRate(taxId, product.getProd_taxId(), Double.parseDouble(product.getFinalPrice()));
+                prod_taxId = product.getProd_taxId();
             } else {
-                taxRate = taxHandler.getTaxRate(product.getProd_taxcode(), product.getTax_type(), Double.parseDouble(product.getFinalPrice()));
+                taxRate = taxHandler.getTaxRate(product.getProd_taxcode(), product.getProd_taxId(), Double.parseDouble(product.getFinalPrice()));
                 prod_taxId = product.getProd_taxcode();
             }
         } else {
