@@ -23,7 +23,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class DBManager {
-    public static final int VERSION = 55;
+    public static final int VERSION = 57;
     private static final String DB_NAME_OLD = "emobilepos.sqlite";
     private static final String CIPHER_DB_NAME = "emobilepos.sqlcipher";
     private static final String PASSWORD = "em0b1l3p05";
@@ -119,7 +119,7 @@ public class DBManager {
             + "[uom_id] [varchar],[prod_istaxable][tinyint] NULL,[discount_is_taxable][tinyint],[discount_is_fixed][tinyint],[onHand][double],"
             + "[imgURL][varchar],[prod_price][money],[prod_type][varchar],[cardIsActivated][tinyint] DEFAULT 0,[itemTotal][money],[itemSubtotal][money],[addon_section_name][varchar],"
             + "[addon_position][varchar],[hasAddons][tinyint] DEFAULT 0,[ordprod_comment][varchar](50),[prod_sku] [varchar](255) NULL, " +
-            " [prod_upc] [varchar](50) NULL, [assignedSeat] [varchar](10), [seatGroupId][int] NULL, [prod_price_points] [int] NULL)";
+            " [isGC] [bit] NULL, [prod_upc] [varchar](50) NULL, [assignedSeat] [varchar](10), [seatGroupId][int] NULL, [prod_price_points] [int] NULL)";
     private final String CREATE_ORDERS = "CREATE TABLE [Orders]( [ord_id] [varchar](50) PRIMARY KEY NOT NULL, [qbord_id] [varchar](50) NULL, "
             + "[qbtxid] [varchar](255) NULL, [emp_id] [int] NULL, [cust_id] [varchar](50) NULL,[custidkey] [varchar], [ord_po] [varchar](50) NULL, [total_lines] [int] NULL, "
             + "[total_lines_pay] [int] NULL, [ord_total] [money] NULL, [ord_signature] [image] NULL, [ord_comment] [varchar](255) NULL, "
@@ -196,7 +196,7 @@ public class DBManager {
             + "[prod_taxcode] [varchar](50) NULL, [prod_taxtype] [varchar](50) NULL, [prod_glaccount] [varchar](50) NULL, [prod_mininv] [int] NULL, "
             + "[prod_update] [datetime] NULL, [isactive] [int] NULL, [prod_showOnline] [tinyint] NULL, [prod_ispromo] [tinyint] NULL, "
             + "[prod_shipping] [tinyint] NULL, [prod_weight] [real] NULL, [prod_expense] [bit] NULL, [prod_disc_type_points] [varchar](255) NULL, "
-            + "[prod_price_points] [int] NULL, [prod_value_points] [int] NULL, [prod_prices_group_id] [varchar](50) NULL)";
+            + "[isGC] [bit] NULL, [prod_price_points] [int] NULL, [prod_value_points] [int] NULL, [prod_prices_group_id] [varchar](50) NULL)";
     private final String CREATE_PRODUCTALIASES = "CREATE TABLE [ProductAliases] ([alias_id_pk] INTEGER PRIMARY KEY AUTOINCREMENT,"
             + "[prod_id] [varchar](50), [prod_alias] [varchar](50))";
     private final String CREATE_PRODUCTS_IMAGES = "CREATE TABLE [Products_Images]( [img_id] [int] PRIMARY KEY NOT NULL, "

@@ -78,7 +78,7 @@ public class StoreAndForward extends RealmObject {
     }
 
     public enum PaymentType {
-        BOLORO(0), CREDIT_CARD(1);
+        BOLORO(0), CREDIT_CARD(1), GIFT_CARD(2);
         int code;
 
         PaymentType(int code) {
@@ -95,6 +95,8 @@ public class StoreAndForward extends RealmObject {
                     return BOLORO;
                 case 1:
                     return CREDIT_CARD;
+                case 2:
+                    return GIFT_CARD;
                 default:
                     return CREDIT_CARD;
             }

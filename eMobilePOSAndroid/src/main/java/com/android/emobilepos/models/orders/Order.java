@@ -165,7 +165,7 @@ public class Order implements Cloneable {
                 totalDetails.setSubtotal(totalDetails.getSubtotal()
                         .add(orderProduct.getItemSubtotalCalculated()).setScale(6, RoundingMode.HALF_UP));
                 totalDetails.setTax(totalDetails.getTax()
-                        .add(orderProduct.getTaxAmountCalculated()).setScale(6, RoundingMode.HALF_UP));
+                        .add(orderProduct.getProd_taxValue()).setScale(6, RoundingMode.HALF_UP));
                 totalDetails.setGranTotal(totalDetails.getGranTotal()
                         .add(orderProduct.getGranTotalCalculated()).setScale(6, RoundingMode.HALF_UP));
             }
@@ -207,20 +207,49 @@ public class Order implements Cloneable {
         TaxesHandler taxHandler = new TaxesHandler(context);
         MyPreferences preferences = new MyPreferences(context);
         Tax tax;
+        BigDecimal totalTaxAmount = new BigDecimal(0);
         if (preferences.isRetailTaxes()) {
             if (!Global.taxID.isEmpty()) {
                 tax = taxHandler.getTax(Global.taxID, orderProduct.getProd_taxId(), Double.parseDouble(TextUtils.isEmpty(orderProduct.getProd_price()) ? "0" : orderProduct.getProd_price()));
             } else {
                 tax = taxHandler.getTax(orderProduct.getProd_taxcode(), orderProduct.getProd_taxId(), Double.parseDouble(TextUtils.isEmpty(orderProduct.getProd_price()) ? "0" : orderProduct.getProd_price()));
             }
+            BigDecimal taxAmount = orderProduct.getProductPriceTaxableAmountCalculated()
+                    .multiply(new BigDecimal(tax.getTaxRate())
+                            .divide(new BigDecimal(100)))
+                    .setScale(2, RoundingMode.HALF_UP);
+            totalTaxAmount = totalTaxAmount.add(taxAmount);
         } else {
             if (!Global.taxID.isEmpty()) {
                 tax = taxHandler.getTax(Global.taxID, "", Double.parseDouble(TextUtils.isEmpty(orderProduct.getProd_price()) ? "0" : orderProduct.getProd_price()));
+                if (listOrderTaxes != null) {
+                    for (DataTaxes dataTaxes : getListOrderTaxes()) {
+                        BigDecimal taxAmount = orderProduct.getProductPriceTaxableAmountCalculated()
+                                .multiply(new BigDecimal(dataTaxes.getTax_rate())
+                                        .divide(new BigDecimal(100)))
+                                .setScale(2, RoundingMode.HALF_UP);
+                        totalTaxAmount = totalTaxAmount.add(taxAmount);
+                    }
+                } else {
+                    BigDecimal taxAmount = orderProduct.getProductPriceTaxableAmountCalculated()
+                            .multiply(new BigDecimal(tax.getTaxRate())
+                                    .divide(new BigDecimal(100)))
+                            .setScale(2, RoundingMode.HALF_UP);
+                    totalTaxAmount = totalTaxAmount.add(taxAmount);
+                }
+
             } else {
                 tax = taxHandler.getTax(orderProduct.getProd_taxcode(), "", Double.parseDouble(TextUtils.isEmpty(orderProduct.getProd_price()) ? "0" : orderProduct.getProd_price()));
+                BigDecimal taxAmount = orderProduct.getProductPriceTaxableAmountCalculated()
+                        .multiply(new BigDecimal(tax.getTaxRate())
+                                .divide(new BigDecimal(100)))
+                        .setScale(2, RoundingMode.HALF_UP);
+                totalTaxAmount = totalTaxAmount.add(taxAmount);
+
             }
         }
         orderProduct.setTaxAmount(tax != null ? tax.getTaxRate() : "0");
+        orderProduct.setProd_taxValue(totalTaxAmount);
 //        orderProduct.setProd_taxId(tax != null ? tax.getTaxId() : "");
         orderProduct.setProd_taxId(tax != null ? tax.getTaxType() : "");
     }

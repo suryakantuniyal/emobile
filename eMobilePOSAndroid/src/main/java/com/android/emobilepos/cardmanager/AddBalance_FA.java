@@ -18,8 +18,10 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.android.dao.CustomerCustomFieldsDAO;
 import com.android.database.OrderProductsHandler;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.realms.CustomerCustomField;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
@@ -91,6 +93,8 @@ public class AddBalance_FA extends BaseFragmentActivityActionBar implements EMSC
         btnProcess.setOnClickListener(this);
         fieldCardNum = (EditText) findViewById(R.id.fieldCardNumber);
         cardSwipe = (CheckBox) findViewById(R.id.checkboxCardSwipe);
+        CustomerCustomField customField = CustomerCustomFieldsDAO.findEMWSCardIdByCustomerId(myPref.getCustID());
+        fieldCardNum.setText(customField == null ? "" : customField.getCustValue());
 
 
         TextView headerTitle = (TextView) findViewById(R.id.HeaderTitle);

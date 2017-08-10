@@ -38,6 +38,7 @@ import java.util.Date;
 
 public class ShiftsActivity extends BaseFragmentActivityActionBar implements View.OnClickListener, TextWatcher {
 
+    Global global;
     private EditText oneDollarEditText;
     private EditText fiveDollarEditText;
     private EditText tenDollarEditText;
@@ -48,7 +49,6 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
     private EditText fiveCentsEditText;
     private EditText tenCentsEditText;
     private EditText quarterCentsEditText;
-
     private TextView oneDollarTextView;
     private TextView fiveDollarTextView;
     private TextView tenDollarTextView;
@@ -59,7 +59,6 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
     private TextView fiveCentsTextView;
     private TextView tenCentsTextView;
     private TextView quarterCentsTextView;
-
     private int oneCent;
     private int fiveCents;
     private int tenCents;
@@ -72,7 +71,6 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
     private int hundredDollars;
     private TextView totalAmountEditText;
     private TextView shortOverStatusTextView;
-
     private Shift shift;
     private Button submitShiftbutton;
     private TextView openOnLbl;
@@ -81,7 +79,6 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
     private TextView pettyCashLbl;
     private TextView pettyCash;
     private MyPreferences preferences;
-    Global global;
     private TextView endingCashAmounteditText;
 
     @Override
@@ -290,6 +287,8 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
         shift.setShiftStatus(Shift.ShiftStatus.PENDING);
         ShiftDAO.insertOrUpdate(shift);
         setShiftUI();
+        if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)
+            Global.mainPrinterManager.getCurrentDevice().openCashDrawer();
         new SendShiftTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
@@ -310,6 +309,8 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
         //set the ending petty cash equal to the beginning petty cash, decrease the ending petty cash every time there is an expense
         shift.setEndingPettyCash(NumberUtils.cleanCurrencyFormatedNumber(totalAmountEditText.getText().toString()));
         ShiftDAO.insertOrUpdate(shift);
+        if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)
+            Global.mainPrinterManager.getCurrentDevice().openCashDrawer();
         finish();
     }
 
@@ -420,39 +421,6 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
         recalculate();
     }
 
-    private class GetShiftTask extends AsyncTask<Void, Void, Void> {
-        ProgressDialog dialog;
-
-        @Override
-        protected void onPreExecute() {
-            dialog = new ProgressDialog(ShiftsActivity.this);
-            dialog.setTitle(getString(R.string.shift_title));
-            dialog.setMessage(getString(R.string.sync_dload_shifts));
-            dialog.show();
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            DBManager dbManager = new DBManager(ShiftsActivity.this);
-            SynchMethods sm = new SynchMethods(dbManager);
-            if (NetworkUtils.isConnectedToInternet(ShiftsActivity.this)) {
-                try {
-                    sm.synchShifts();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Crashlytics.logException(e);
-                }
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            dialog.dismiss();
-            openUI();
-        }
-    }
-
     private void openUI() {
         setContentView(R.layout.activity_shifts);
         shift = ShiftDAO.getShiftByClerkId(Integer.parseInt(preferences.getClerkID()));
@@ -554,6 +522,57 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
         setShiftUI();
     }
 
+    private boolean sendShifts() {
+        DBManager dbManager = new DBManager(ShiftsActivity.this);
+        SynchMethods sm = new SynchMethods(dbManager);
+        if (NetworkUtils.isConnectedToInternet(ShiftsActivity.this)) {
+            try {
+                sm.postShift(ShiftsActivity.this);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
+                return false;
+            }
+        } else {
+            return false;
+        }
+        return true;
+    }
+
+    private class GetShiftTask extends AsyncTask<Void, Void, Void> {
+        ProgressDialog dialog;
+
+        @Override
+        protected void onPreExecute() {
+            dialog = new ProgressDialog(ShiftsActivity.this);
+            dialog.setTitle(getString(R.string.shift_title));
+            dialog.setMessage(getString(R.string.sync_dload_shifts));
+            dialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            sendShifts();
+            DBManager dbManager = new DBManager(ShiftsActivity.this);
+            SynchMethods sm = new SynchMethods(dbManager);
+            if (NetworkUtils.isConnectedToInternet(ShiftsActivity.this)) {
+                try {
+                    sm.synchShifts();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Crashlytics.logException(e);
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            dialog.dismiss();
+            openUI();
+        }
+    }
+
     private class SendShiftTask extends AsyncTask<Void, Void, Boolean> {
         ProgressDialog dialog;
 
@@ -567,31 +586,15 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            DBManager dbManager = new DBManager(ShiftsActivity.this);
-            SynchMethods sm = new SynchMethods(dbManager);
-            if (NetworkUtils.isConnectedToInternet(ShiftsActivity.this)) {
-                try {
-                    sm.postShift(ShiftsActivity.this);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Crashlytics.logException(e);
-                    return false;
-                }
-            } else {
-                return false;
-            }
-            return true;
+
+            return sendShifts();
         }
 
         @Override
         protected void onPostExecute(Boolean result) {
             dialog.dismiss();
-            if (result) {
-                if (shift.getShiftStatus() == Shift.ShiftStatus.CLOSED) {
-                    finish();
-                }
-            } else {
-                Global.showPrompt(ShiftsActivity.this, R.string.dlog_title_error, getString(R.string.error_sync_closed_shift));
+            if (shift.getShiftStatus() == Shift.ShiftStatus.CLOSED) {
+                finish();
             }
         }
     }
