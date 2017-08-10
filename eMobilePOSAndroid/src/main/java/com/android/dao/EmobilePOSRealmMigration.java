@@ -40,8 +40,9 @@ public class EmobilePOSRealmMigration implements io.realm.RealmMigration {
                             .addField("custFieldName", String.class)
                             .addField("custValue", String.class);
                 }
-                oldVersion++;
+                oldVersion = 4;
             }
+
             if (oldVersion == 4) {
                 schema.remove(CustomerCustomField.class.getSimpleName());
                 schema.create(CustomerCustomField.class.getSimpleName()).
