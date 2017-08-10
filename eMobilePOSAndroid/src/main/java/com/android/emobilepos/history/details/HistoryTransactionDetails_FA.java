@@ -584,9 +584,9 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         voidHandler.insert(ord);
         //Section to update the local ShiftPeriods database to reflect the VOID
 //        ShiftPeriodsDBHandler handlerSP = new ShiftPeriodsDBHandler(activity);
-        amountToBeSubstracted = Double.parseDouble(NumberUtils.cleanCurrencyFormatedNumber(order.ord_total)); //find total to be credited
+//        amountToBeSubstracted = Double.parseDouble(NumberUtils.cleanCurrencyFormatedNumber(order.ord_total)); //find total to be credited
         //update ShiftPeriods (isReturn set to true)
-        ShiftDAO.updateShiftAmounts(amountToBeSubstracted, true);
+//        ShiftDAO.updateShiftAmounts(amountToBeSubstracted, true);
         //Check if Stored&Forward active and delete from record if any payment were made
         if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
             handler.updateOrderStoredFwd(order_id, "0");
@@ -675,6 +675,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                 String paymentType;
                 for (int i = 0; i < size; i++) {
                     paymentType = listVoidPayments.get(i).getCard_type().toUpperCase(Locale.getDefault()).trim();
+                    ShiftDAO.updateShiftAmounts(Global.getBigDecimalNum(listVoidPayments.get(0).getPay_amount(), 2).doubleValue(), true);
                     if (paymentType.equals("GIFTCARD")) {
                         payGate = new EMSPayGate_Default(activity, listVoidPayments.get(i));
                         xml = post.postData(13, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidGiftCardAction, false, listVoidPayments.get(i).getCard_type(), null));

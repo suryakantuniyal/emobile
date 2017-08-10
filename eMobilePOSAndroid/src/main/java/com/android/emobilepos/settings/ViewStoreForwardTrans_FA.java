@@ -310,7 +310,7 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
             Realm realm = Realm.getDefaultInstance();
             if (NetworkUtils.isConnectedToInternet(activity) && !livePaymentRunning) {
                 realm.beginTransaction();
-                storeAndForwards = StoredPaymentsDAO.getAll(); //realm.where(StoreAndForward.class).findAll();
+                storeAndForwards = realm.where(StoreAndForward.class).findAll();
                 realm.commitTransaction();
                 for (StoreAndForward storeAndForward : storeAndForwards) {
                     if (!livePaymentRunning) {
@@ -342,6 +342,7 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
                                         }
                                         break;
                                     case CREDIT_CARD:
+                                    case GIFT_CARD:
                                         checkPaymentStatus(storeAndForward, _verify_payment_xml, _charge_xml);
                                         break;
                                 }
@@ -367,6 +368,7 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
                                         }
                                         break;
                                     case CREDIT_CARD:
+                                    case GIFT_CARD:
                                         processPayment(storeAndForward, _charge_xml);
                                         break;
                                 }

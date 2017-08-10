@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.dao.AssignEmployeeDAO;
 import com.android.database.OrdersHandler;
@@ -31,20 +32,14 @@ import java.math.BigDecimal;
 public class OrderRewards_FR extends Fragment implements OnClickListener {
 
     private static OrderRewards_FR myFrag;
-    private SwiperRewardCallback callBackRewardSwiper;
-    private ImageButton btnTap;
-    private TextView tapTxtLabel;
     private static EditText fieldRewardBalance;
     private static TextView subTotalValue;
     private static String balance = "";
     private static String subtotal = "0";
+    private SwiperRewardCallback callBackRewardSwiper;
+    private ImageButton btnTap;
+    private TextView tapTxtLabel;
     private Button btnPayRewards;
-
-
-    public interface SwiperRewardCallback {
-        void startRewardSwiper();
-    }
-
 
     public static OrderRewards_FR init(int val) {
         OrderRewards_FR frag = new OrderRewards_FR();
@@ -55,17 +50,29 @@ public class OrderRewards_FR extends Fragment implements OnClickListener {
         return frag;
     }
 
-
     public static OrderRewards_FR getFrag() {
         return myFrag;
     }
 
+    public static void setRewardBalance(String value) {
+        balance = value;
+        if (fieldRewardBalance != null)
+            fieldRewardBalance.setText(balance);
+        Global.rewardCardInfo.setOriginalTotalAmount(value);
+    }
+
+    public static void setRewardSubTotal(String value) {
+        subtotal = value;
+        if (subTotalValue != null) {
+            Global.rewardAccumulableSubtotal = new BigDecimal(subtotal);
+            subTotalValue.setText(value);
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -89,11 +96,14 @@ public class OrderRewards_FR extends Fragment implements OnClickListener {
             OrderTotalDetails_FR.getFrag().reCalculate(global.order.getOrderProducts());
         }
 
-        if (OrderingMain_FA.rewardsWasRead)
+        if (OrderingMain_FA.rewardsWasRead) {
             hideTapButton();
+        }
+//        else {
+//            callBackRewardSwiper.prefetchRewardsBalance();
+//        }
         return view;
     }
-
 
     @Override
     public void onClick(View v) {
@@ -105,55 +115,13 @@ public class OrderRewards_FR extends Fragment implements OnClickListener {
                 Global global = (Global) getActivity().getApplication();
                 Order order = Receipt_FR.buildOrder(getActivity(), global, "", "",
                         ((OrderingMain_FA) getActivity()).getSelectedDinningTableNumber(),
-                        ((OrderingMain_FA) getActivity()).getAssociateId(),((OrderingMain_FA) getActivity()).getOrderAttributes(),
-                        ((OrderingMain_FA) getActivity()).getListOrderTaxes(),global.order.getOrderProducts());
+                        ((OrderingMain_FA) getActivity()).getAssociateId(), ((OrderingMain_FA) getActivity()).getOrderAttributes(),
+                        ((OrderingMain_FA) getActivity()).getListOrderTaxes(), global.order.getOrderProducts());
                 OrdersHandler ordersHandler = new OrdersHandler(getActivity());
                 ordersHandler.insert(order);
                 global.order = order;
                 new ProcessRewardPaymentTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new BigDecimal(subtotal));
                 break;
-        }
-    }
-
-    private class ProcessRewardPaymentTask extends AsyncTask<BigDecimal, Void, PaymentTask.Response> {
-
-        private Payment payment;
-
-        @Override
-        protected PaymentTask.Response doInBackground(BigDecimal... params) {
-            payment = getPayment(false, params[0]);
-            Global.rewardCardInfo.setRedeemAll("1");
-            return PaymentTask.processRewardPayment(getActivity(), params[0], Global.rewardCardInfo, payment);
-        }
-
-        @Override
-        protected void onPostExecute(PaymentTask.Response result) {
-            if (result.getResponseStatus() == PaymentTask.Response.ResponseStatus.OK) {
-                Global.showPrompt(getActivity(), R.string.rewards, result.getMessage());
-                Global global = (Global) getActivity().getApplication();
-                OrderingMain_FA mainFa = (OrderingMain_FA) getActivity();
-                BigDecimal rewardDiscount = mainFa.getLeftFragment()
-                        .applyRewardDiscount(result.getApprovedAmount(), global.order.getOrderProducts());
-
-                if (OrderTotalDetails_FR.getFrag() != null) {
-                    OrderTotalDetails_FR.getFrag().reCalculate(global.order.getOrderProducts());
-                }
-                btnPayRewards.setClickable(false);
-                btnPayRewards.setEnabled(false);
-                payment.setPay_issync("1");
-                payment.setPay_transid(result.getTransactionId());
-                PaymentsHandler paymentsHandler = new PaymentsHandler(getActivity());
-                paymentsHandler.insert(payment);
-                BigDecimal zero = new BigDecimal(0);
-                BigDecimal newBalance = Global.getBigDecimalNum(balance).subtract(result.getApprovedAmount());
-                if (newBalance.compareTo(zero) == -1) {
-                    newBalance = zero;
-                }
-                setRewardBalance(String.valueOf(Global.getRoundBigDecimal(newBalance)));
-            } else {
-                Global.showPrompt(getActivity(), R.string.rewards, result.getMessage());
-
-            }
         }
     }
 
@@ -220,19 +188,53 @@ public class OrderRewards_FR extends Fragment implements OnClickListener {
     }
 
 
-    public static void setRewardBalance(String value) {
-        balance = value;
-        if (fieldRewardBalance != null)
-            fieldRewardBalance.setText(balance);
-        Global.rewardCardInfo.setOriginalTotalAmount(value);
+    public interface SwiperRewardCallback {
+        void startRewardSwiper();
+
+        void prefetchRewardsBalance();
     }
 
+    private class ProcessRewardPaymentTask extends AsyncTask<BigDecimal, Void, PaymentTask.Response> {
 
-    public static void setRewardSubTotal(String value) {
-        subtotal = value;
-        if (subTotalValue != null) {
-            Global.rewardAccumulableSubtotal = new BigDecimal(subtotal);
-            subTotalValue.setText(value);
+        private Payment payment;
+
+        @Override
+        protected PaymentTask.Response doInBackground(BigDecimal... params) {
+            payment = getPayment(false, params[0]);
+            Global.rewardCardInfo.setRedeemAll("1");
+            return PaymentTask.processRewardPayment(getActivity(), params[0], Global.rewardCardInfo, payment);
+        }
+
+        @Override
+        protected void onPostExecute(PaymentTask.Response result) {
+            OrderingMain_FA mainFa = (OrderingMain_FA) getActivity();
+            if (result.getResponseStatus() == PaymentTask.Response.ResponseStatus.OK) {
+//                Global.showPrompt(getActivity(), R.string.rewards, result.getMessage());
+                Toast.makeText(getActivity(),result.getMessage(), Toast.LENGTH_LONG).show();
+                Global global = (Global) getActivity().getApplication();
+                BigDecimal rewardDiscount = mainFa.getLeftFragment()
+                        .applyRewardDiscount(result.getApprovedAmount(), global.order.getOrderProducts());
+
+                if (OrderTotalDetails_FR.getFrag() != null) {
+                    OrderTotalDetails_FR.getFrag().reCalculate(global.order.getOrderProducts());
+                }
+                btnPayRewards.setClickable(false);
+                btnPayRewards.setEnabled(false);
+                payment.setPay_issync("1");
+                payment.setPay_transid(result.getTransactionId());
+                PaymentsHandler paymentsHandler = new PaymentsHandler(getActivity());
+                paymentsHandler.insert(payment);
+                BigDecimal zero = new BigDecimal(0);
+                BigDecimal newBalance = Global.getBigDecimalNum(balance).subtract(result.getApprovedAmount());
+                if (newBalance.compareTo(zero) == -1) {
+                    newBalance = zero;
+                }
+                setRewardBalance(String.valueOf(Global.getRoundBigDecimal(newBalance)));
+            } else {
+//                Toast.makeText(getActivity(), result.getMessage(), Toast.LENGTH_LONG).show();
+                Global.showPrompt(getActivity(), R.string.rewards, result.getMessage());
+            }
+            mainFa.buildOrderStarted = false;
         }
     }
 }

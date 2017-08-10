@@ -100,7 +100,7 @@
     <string name="dlog_msg_swiper_loading">Swiper is:</string>
     <string name="connected">CONNECTED</string>
     <string name="disconnected">DISCONNECTED</string>
-    <string name="loading">LOADING</string>
+    <string name="loading">Loading</string>
 
     <string name="dlog_title_enter_number">Enter Number</string>
     <string name="dlog_title_enter_manager_password">Enter Manager Password</string>
@@ -568,8 +568,8 @@
     <string name="cust_add_save">Save</string>
     <string name="cust_add_info">Customer Information</string>
     <string name="cust_add_alias">Customer Alias (Required)</string>
-    <string name="cust_add_first_name">First Name</string>
-    <string name="cust_add_last_name">Last Name</string>
+    <string name="cust_add_first_name">First Name (Required)</string>
+    <string name="cust_add_last_name">Last Name (Required)</string>
     <string name="cust_add_company">Company</string>
     <string name="cust_add_email">e-Mail</string>
     <string name="cust_add_phone">Phone</string>
@@ -1340,5 +1340,11 @@
     <string name="hours">Hours</string>
     <string name="total_hours_worked">Total Hours</string>
     <string name="date">Date</string>
+    <string name="dlog_title_enter_giftcard_number">Enter gift card number</string>
+    <string name="giftcard_number">Gift Card Number:</string>
+    <string name="config_giftcard_auto_balance_request">Gift/Reward auto balance request</string>
+    <string name="config_clear_customer">Clear customer after transaction</string>
+    <string name="config_giftcard_show_balance">Show gift card balance after payment</string>
+    <string name="header_title_customer_custom_fields">Custom Fields</string>
 
 </resources>
