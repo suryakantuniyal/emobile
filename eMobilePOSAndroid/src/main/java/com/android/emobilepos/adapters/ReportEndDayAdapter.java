@@ -1,6 +1,7 @@
 package com.android.emobilepos.adapters;
 
 import android.app.Activity;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -100,7 +101,8 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
         BigDecimal invoiceAmount = new BigDecimal("0");
 
         for (Order ord : listOrdTypes) {
-            switch (Global.OrderType.getByCode(Integer.parseInt(ord.ord_type))) {
+            switch (Global.OrderType.getByCode(TextUtils.isEmpty(ord.ord_type) ? Global.OrderType.SALES_RECEIPT.getCode()
+                    : Integer.parseInt(ord.ord_type))) {
                 case RETURN:
                     ord.ord_type_name = activity.getString(R.string.eod_report_return);
                     returnAmount = new BigDecimal(ord.ord_total);

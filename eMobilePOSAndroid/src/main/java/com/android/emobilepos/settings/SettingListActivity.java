@@ -124,7 +124,12 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting_list);
         Bundle extras = this.getIntent().getExtras();
-        settingsType = (SettingsTab_FR.SettingsRoles) extras.get("settings_type");
+        if (extras.containsKey("settings_type")) {
+            settingsType = (SettingsTab_FR.SettingsRoles) extras.get("settings_type");
+        } else {
+            settingsType = SettingsTab_FR.SettingsRoles.GENERAL;
+        }
+
         View recyclerView = findViewById(R.id.setting_list);
         assert recyclerView != null;
         setupRecyclerView((RecyclerView) recyclerView);
@@ -1319,6 +1324,37 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
 
     }
 
+    private static class Redetect extends AsyncTask<Void, Void, String> {
+        ProgressDialog dialog;
+        private Activity activity;
+
+        Redetect(Activity activity) {
+
+            this.activity = activity;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            activity.setRequestedOrientation(Global.getScreenOrientation(activity));
+            dialog = new ProgressDialog(activity);
+            dialog.setIndeterminate(true);
+            dialog.setMessage(activity.getString(R.string.connecting_devices));
+            dialog.show();
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            return DeviceUtils.autoConnect(activity, true);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            Toast.makeText(activity, s, Toast.LENGTH_LONG).show();
+            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+            dialog.dismiss();
+        }
+    }
+
     public class SimpleItemRecyclerViewAdapter
             extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
@@ -1382,37 +1418,6 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
             public String toString() {
                 return super.toString();
             }
-        }
-    }
-
-    private static class Redetect extends AsyncTask<Void, Void, String> {
-        ProgressDialog dialog;
-        private Activity activity;
-
-        Redetect(Activity activity) {
-
-            this.activity = activity;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            activity.setRequestedOrientation(Global.getScreenOrientation(activity));
-            dialog = new ProgressDialog(activity);
-            dialog.setIndeterminate(true);
-            dialog.setMessage(activity.getString(R.string.connecting_devices));
-            dialog.show();
-        }
-
-        @Override
-        protected String doInBackground(Void... params) {
-            return DeviceUtils.autoConnect(activity, true);
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            Toast.makeText(activity, s, Toast.LENGTH_LONG).show();
-            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-            dialog.dismiss();
         }
     }
 }
