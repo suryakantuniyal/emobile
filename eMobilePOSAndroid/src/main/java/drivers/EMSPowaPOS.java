@@ -16,9 +16,11 @@ import android.widget.Toast;
 import com.StarMicronics.jasura.JAException;
 import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.SalesTab_FR;
+import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.TimeClock;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.Global;
@@ -36,7 +38,6 @@ import com.starmicronics.stario.StarIOPortException;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 import interfaces.EMSCallBack;
@@ -76,7 +77,7 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
                 if (global.getGlobalDlog() != null)
                     global.getGlobalDlog().dismiss();
                 global.promptForMandatoryLogin(activity);
-                SalesTab_FR.startDefault(activity, myPref.getPreferencesValue(MyPreferences.pref_default_transaction));
+                SalesTab_FR.startDefault((Activity) activity, myPref.getPreferencesValue(MyPreferences.pref_default_transaction));
             }
 
             if (initializedResult.equals(PowaPOSEnums.InitializedResult.SUCCESSFUL))
@@ -160,7 +161,7 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
     };
 
     @Override
-    public void connect(Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
+    public void connect(Context activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
         this.edm = edm;
@@ -291,6 +292,11 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
     @Override
     public boolean isConnected() {
         return true;
+    }
+
+    @Override
+    public void printClockInOut(List<ClockInOut> timeClocks, String clerkID) {
+        super.printClockInOut(timeClocks, LINE_WIDTH, clerkID);
     }
 
     @Override

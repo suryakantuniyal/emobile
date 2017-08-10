@@ -85,7 +85,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import util.json.JsonUtils;
 import util.json.UIUtils;
 
 public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements OnClickListener, OnItemClickListener {
@@ -826,19 +825,19 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             }
         });
 
-        if (withPrintRequest && myPref.getPreferences(MyPreferences.pref_enable_printing)
-                && myPref.getPreferences(MyPreferences.pref_automatic_printing)) {
-            if (Global.loyaltyCardInfo != null && !Global.loyaltyCardInfo.getCardNumUnencrypted().isEmpty()) {
-                processInquiry(true);
-            } else if (Global.rewardCardInfo != null && !Global.rewardCardInfo.getCardNumUnencrypted().isEmpty()) {
-                processInquiry(false);
-            } else {
-                if ((emvContainer != null && emvContainer.getGeniusResponse() != null &&
-                        emvContainer.getGeniusResponse().getStatus().equalsIgnoreCase("APPROVED")) ||
-                        emvContainer == null || emvContainer.getGeniusResponse() == null) {
-                    new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
-                }
+//        if (withPrintRequest && myPref.getPreferences(MyPreferences.pref_enable_printing)
+//                && myPref.getPreferences(MyPreferences.pref_automatic_printing)) {
+        if (Global.loyaltyCardInfo != null && !Global.loyaltyCardInfo.getCardNumUnencrypted().isEmpty()) {
+            processInquiry(true);
+        } else if (Global.rewardCardInfo != null && !Global.rewardCardInfo.getCardNumUnencrypted().isEmpty()) {
+            processInquiry(false);
+        } else {
+            if ((emvContainer != null && emvContainer.getGeniusResponse() != null &&
+                    emvContainer.getGeniusResponse().getStatus().equalsIgnoreCase("APPROVED")) ||
+                    emvContainer == null || emvContainer.getGeniusResponse() == null) {
+                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
             }
+//            }
         }
     }
 
@@ -970,22 +969,26 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             Intent intent = new Intent(this, ProcessCash_FA.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());
+            intent.putExtras(extras);
 
             initIntents(extras, intent);
         } else if (payTypeList.get(position).getPaymentmethod_type().equals("Check")) {
             Intent intent = new Intent(this, ProcessCheck_FA.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());
+            intent.putExtras(extras);
             initIntents(extras, intent);
         } else if (payTypeList.get(position).getPaymentmethod_type().equals("Genius")) {
             Intent intent = new Intent(this, ProcessGenius_FA.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());
+            intent.putExtras(extras);
             initIntents(extras, intent);
         } else if (payTypeList.get(position).getPaymentmethod_type().equals("Wallet")) {
             Intent intent = new Intent(activity, ProcessTupyx_FA.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());
+            intent.putExtras(extras);
             initIntents(extras, intent);
         } else if (payTypeList.get(position).getPaymentmethod_type().equals("Boloro")) {
             //If store & forward is selected then boloro only accept NFC payments
@@ -994,6 +997,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 intent.putExtra("paymethod_id", payTypeList.get(selectedPosition).getPaymethod_id());
                 intent.putExtra("isNFC", true);
+                intent.putExtras(extras);
                 initIntents(extras, intent);
             } else {
                 showBoloroDlog();
@@ -1005,6 +1009,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());
             intent.putExtra("paymentmethod_type", payTypeList.get(position).getPaymentmethod_type());
+            intent.putExtras(extras);
             initIntents(extras, intent);
         } else {
             boolean isDebit = payTypeList.get(position).getPaymentmethod_type().toUpperCase(Locale.getDefault()).trim().contains("DEBIT");
@@ -1014,6 +1019,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 Intent intent = new Intent(this, ProcessCreditCard_FA.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());
+                intent.putExtras(extras);
                 intent.putExtra("paymentmethod_type", payTypeList.get(position).getPaymentmethod_type());
                 intent.putExtra("requireTransID", payTypeList.get(position).getOriginalTransid().equalsIgnoreCase("1"));
                 if (payTypeList.get(position).getPaymentmethod_type().toUpperCase(Locale.getDefault()).trim().contains("DEBIT"))

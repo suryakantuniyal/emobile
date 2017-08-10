@@ -31,10 +31,13 @@ import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.support.DateUtils;
+import com.android.support.GenerateNewID;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.OrderProductUtils;
 import com.android.support.SynchMethods;
 import com.android.support.TaxesCalculator;
+import com.google.gson.Gson;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -48,6 +51,7 @@ import java.util.StringTokenizer;
  * Created by Guarionex on 2/19/2016.
  */
 public class SplittedOrderDetailsFR extends Fragment implements View.OnClickListener {
+    public SplitedOrder restaurantSplitedOrder;
     private TextView orderId;
     private TextView subtotal;
     private MyPreferences myPref;
@@ -58,7 +62,6 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
     private LinearLayout productAddonsSection;
     private LinearLayout orderProductSection;
     private LayoutInflater inflater;
-    public SplitedOrder restaurantSplitedOrder;
     private LinearLayout receiptPreview;
     private AssignEmployee assignEmployee;
 
@@ -318,32 +321,6 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         }
     }
 
-    public class PrintPreview extends AsyncTask<SplitedOrder, Void, Void> {
-        private ProgressDialog myProgressDialog;
-
-        @Override
-        protected void onPreExecute() {
-            myProgressDialog = new ProgressDialog(getActivity());
-            myProgressDialog.setMessage("Printing...");
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            myProgressDialog.show();
-        }
-
-        @Override
-        protected Void doInBackground(SplitedOrder... params) {
-            for (SplitedOrder order : params) {
-                Global.mainPrinterManager.getCurrentDevice().printReceiptPreview(order);
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void none) {
-            myProgressDialog.dismiss();
-        }
-    }
-
     private void saveHoldOrder(SplitedOrder splitedOrder) {
         OrdersHandler ordersHandler = new OrdersHandler(getActivity());
         OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB();
@@ -351,6 +328,8 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         OrderProductsHandler productsHandler = new OrderProductsHandler(getActivity());
         SplittedOrderSummary_FA summaryFa = (SplittedOrderSummary_FA) getActivity();
         if (summaryFa.getOrderSummaryFR().getGridView().getAdapter().getCount() > 1) {
+            GenerateNewID newID = new GenerateNewID(getActivity());
+            splitedOrder.ord_id = newID.getNextID(GenerateNewID.IdType.ORDER_ID);
             for (OrderProduct product : splitedOrder.getOrderProducts()) {
                 if (global.order.getOrderProducts().contains(product)) {
                     global.order.getOrderProducts().remove(product);
@@ -371,6 +350,8 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                 global.order.ord_HoldName = "Table " + global.order.assignedTable + " " + DateUtils.getDateAsString(new Date(), "MMM/dd/yy hh:mm");
             }
             global.order.processed = "10";
+        } else {
+            splitedOrder.ord_id = global.order.ord_id;
         }
 
         if (splitedOrder.getOrderProducts().size() > 0) {
@@ -399,9 +380,9 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                 if (splitedOrder.getListOrderTaxes() != null && splitedOrder.getListOrderTaxes().size() > 0) {
                     ordTaxesDB.insert(splitedOrder.getListOrderTaxes(), splitedOrder.ord_id);
                 }
-                DBManager dbManager = new DBManager(getActivity());
-                SynchMethods sm = new SynchMethods(dbManager);
-                sm.synchSendOnHold(false, true, getActivity());
+//                DBManager dbManager = new DBManager(getActivity());
+//                SynchMethods sm = new SynchMethods(dbManager);
+//                sm.synchSendOnHold(false, true, getActivity());
             } else if (summaryFa.splitType == SplittedOrderSummary_FA.SalesReceiptSplitTypes.SPLIT_EQUALLY) {
                 splitedOrder.processed = "10";
                 splitedOrder.isOnHold = "0";
@@ -438,6 +419,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         intent.putExtra("ord_taxID", order.tax_id);
         intent.putExtra("ord_type", Global.OrderType.SALES_RECEIPT);
         intent.putExtra("ord_email", "");
+        intent.putExtra("subTotal", order.ord_subtotal);
         if (myPref.isCustSelected()) {
             intent.putExtra("cust_id", myPref.getCustID());
             intent.putExtra("custidkey", myPref.getCustIDKey());
@@ -449,6 +431,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         SplittedOrderSummary_FA summaryFa = (SplittedOrderSummary_FA) getActivity();
+        Global global = (Global) getActivity().getApplication();
         summaryFa.checkoutCount++;
         if (resultCode == SplittedOrderSummary_FA.NavigationResult.PAYMENT_SELECTION_VOID.getCode()) {
             summaryFa.voidTransaction(false, restaurantSplitedOrder.ord_id);
@@ -466,16 +449,19 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         } else if (resultCode == SplittedOrderSummary_FA.NavigationResult.PAYMENT_COMPLETED.getCode()) {
             removeCheckoutOrder(summaryFa);
             if (summaryFa.getOrderSummaryFR().getGridView().getAdapter().getCount() == 0) {
-                getActivity().setResult(-1);
-                getActivity().finish();
+//                DBManager dbManager = new DBManager(getActivity());
+//                SynchMethods sm = new SynchMethods(dbManager);
+//                sm.synchSendOnHold(false, true, getActivity(), restaurantSplitedOrder.ord_id);
+                new SyncOnHolds().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+//                getActivity().setResult(-1);
+//                getActivity().finish();
             } else {
                 summaryFa.getOrderDetailsFR().setReceiptOrder((SplitedOrder) summaryFa.getOrderSummaryFR().getGridView().getAdapter().getItem(0));
             }
         } else {//Rollback order checkout
-
-            Global global = (Global) getActivity().getApplication();
             for (OrderProduct product : restaurantSplitedOrder.getOrderProducts()) {
                 product.setOrd_id(global.order.ord_id);
+                OrderProductUtils.removeOrderProductsByOrderProductId(global.order.getOrderProducts(), product.getOrdprod_id());
                 global.order.getOrderProducts().add(product);
                 if (summaryFa.splitType != SplittedOrderSummary_FA.SalesReceiptSplitTypes.SPLIT_EQUALLY) {
                     global.order.ord_subtotal = Global.getBigDecimalNum(global.order.ord_subtotal)
@@ -520,6 +506,62 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                     summaryFa.orderSeatProducts.remove(seatProduct);
                 }
             }
+        }
+    }
+
+    public class PrintPreview extends AsyncTask<SplitedOrder, Void, Void> {
+        private ProgressDialog myProgressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            myProgressDialog = new ProgressDialog(getActivity());
+            myProgressDialog.setMessage("Printing...");
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setCancelable(false);
+            myProgressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(SplitedOrder... params) {
+            for (SplitedOrder order : params) {
+                Global.mainPrinterManager.getCurrentDevice().printReceiptPreview(order);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void none) {
+            myProgressDialog.dismiss();
+        }
+    }
+
+
+    private class SyncOnHolds extends AsyncTask<Void, Void, Boolean> {
+        ProgressDialog dialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            dialog = new ProgressDialog(getActivity());
+            dialog.setIndeterminate(true);
+            dialog.setCancelable(false);
+            dialog.setMessage(getString(R.string.sync_sending_orders));
+            dialog.show();
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            DBManager dbManager = new DBManager(getActivity());
+            SynchMethods sm = new SynchMethods(dbManager);
+            return sm.synchSendOnHold(false, false, getActivity(), null);
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            super.onPostExecute(result);
+            Global.dismissDialog(getActivity(), dialog);
+            getActivity().setResult(-1);
+            getActivity().finish();
         }
     }
 }

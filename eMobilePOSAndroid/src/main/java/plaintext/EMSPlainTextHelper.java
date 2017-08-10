@@ -234,7 +234,7 @@ public class EMSPlainTextHelper {
         StringBuilder sb = new StringBuilder();
 
         if (numSpaces > 0) {
-            sb.append("\n");
+//            sb.append("\n");
             sb.append(first);
             sb.append(this.spaces(numSpaces - theIndentation));
             sb.append(second);

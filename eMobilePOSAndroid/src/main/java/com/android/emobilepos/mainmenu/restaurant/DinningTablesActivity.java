@@ -33,10 +33,10 @@ import java.util.List;
 
 public class DinningTablesActivity extends BaseFragmentActivityActionBar {
 
-    private SectionsPagerAdapter mSectionsPagerAdapter;
-    protected List<DinningTable> dinningTables;
     public String associateId;
+    protected List<DinningTable> dinningTables;
     protected Clerk associate;
+    private SectionsPagerAdapter mSectionsPagerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +77,32 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
         this.mSectionsPagerAdapter = mSectionsPagerAdapter;
     }
 
+    @Override
+    public void onResume() {
+        Global global = (Global) getApplication();
+        if (global.isApplicationSentToBackground())
+            Global.loggedIn = false;
+        global.stopActivityTransitionTimer();
+
+        if (!Global.loggedIn) {
+            if (global.getGlobalDlog() != null)
+                global.getGlobalDlog().dismiss();
+            global.promptForMandatoryLogin(this);
+        }
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Global global = (Global) getApplication();
+        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+        boolean isScreenOn = powerManager.isScreenOn();
+        if (!isScreenOn)
+            Global.loggedIn = false;
+        global.startActivityTransitionTimer();
+    }
+
     public class SectionsPagerAdapter extends FragmentPagerAdapter implements IconPagerAdapter {
 
         public SectionsPagerAdapter(FragmentManager fm) {
@@ -115,32 +141,6 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
             }
             return null;
         }
-    }
-
-    @Override
-    public void onResume() {
-        Global global = (Global) getApplication();
-        if (global.isApplicationSentToBackground())
-            Global.loggedIn = false;
-        global.stopActivityTransitionTimer();
-
-        if (!Global.loggedIn) {
-            if (global.getGlobalDlog() != null)
-                global.getGlobalDlog().dismiss();
-            global.promptForMandatoryLogin(this);
-        }
-        super.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        Global global = (Global) getApplication();
-        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-        boolean isScreenOn = powerManager.isScreenOn();
-        if (!isScreenOn)
-            Global.loggedIn = false;
-        global.startActivityTransitionTimer();
     }
 //
 //    private class SynchOnHoldOrders extends AsyncTask<Void, String, Void> {
@@ -184,13 +184,14 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
 
     public class OpenOnHoldOrderTask extends AsyncTask<Object, Void, Boolean> {
 
-        private DinningTable table;
         DinningTableOrder tableOrder;
         ProgressDialog dialog;
+        private DinningTable table;
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            Global.lockOrientation(DinningTablesActivity.this);
             dialog = new ProgressDialog(DinningTablesActivity.this);
             dialog.setIndeterminate(true);
             dialog.setMessage(getString(R.string.loading_orders));
@@ -233,7 +234,8 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
             } else {
                 Global.showPrompt(DinningTablesActivity.this, R.string.dlog_title_claimed_hold, getString(R.string.dlog_msg_cant_open_claimed_hold));
             }
-            dialog.dismiss();
+            Global.dismissDialog(DinningTablesActivity.this, dialog);
+            Global.releaseOrientation(DinningTablesActivity.this);
         }
 
         private void openOrderingMain() {

@@ -85,8 +85,7 @@ import javax.xml.parsers.SAXParserFactory;
 import interfaces.EMSCallBack;
 
 public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener, OnItemClickListener {
-    private boolean hasBeenCreated = false;
-    private Global global;
+    private static List<String> allInfoLeft;
     private final int CASE_TOTAL = 0;
     private final int CASE_OVERALL_PAID_AMOUNT = 1;
     private final int CASE_TIP_AMOUNT = 2;
@@ -101,7 +100,8 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
     private final int CASE_PAY_ID = 11;
     private final int CASE_PAID_AMOUNT = 12;
     private final int CASE_PAID_AMOUNT_NO_CURRENCY = 13;
-    private static List<String> allInfoLeft;
+    private boolean hasBeenCreated = false;
+    private Global global;
     private String order_id;
     private List<OrderProduct> orderedProd;
     private Drawable mapDrawable;
@@ -116,6 +116,8 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
     private MyPreferences myPref;
     private Order order;
     private List<Payment> paymentsToVoid;
+    private List<Payment> listVoidPayments;
+    private PaymentsHandler payHandler;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -323,41 +325,6 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
 
     }
 
-    private class printAsync extends AsyncTask<String, String, String> {
-        private boolean printSuccessful = true;
-
-        @Override
-        protected void onPreExecute() {
-            myProgressDialog = new ProgressDialog(activity);
-            myProgressDialog.setMessage("Printing...");
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            if (myProgressDialog.isShowing())
-                myProgressDialog.dismiss();
-            myProgressDialog.show();
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            Bundle extras = activity.getIntent().getExtras();
-            String trans_type = extras.getString("trans_type");
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
-                if (Global.OrderType.getByCode(Integer.parseInt(trans_type)) != Global.OrderType.CONSIGNMENT_FILLUP
-                        && Global.OrderType.getByCode(Integer.parseInt(trans_type)) != Global.OrderType.CONSIGNMENT_PICKUP) {
-                    printSuccessful = Global.mainPrinterManager.getCurrentDevice().printTransaction(order_id, Global.OrderType.getByCode(Integer.parseInt(trans_type)), true, false);
-                }
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String unused) {
-            myProgressDialog.dismiss();
-            if (!printSuccessful)
-                showPrintDlg();
-        }
-    }
-
     private void showPrintDlg() {
         final Dialog dlog = new Dialog(activity, R.style.Theme_TransparentTest);
         dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -411,9 +378,11 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                         temp = Global.formatNumToLocale(Double.parseDouble(paymentMapList.get(0).getPay_amount()));
 
                     for (int i = 1; i < size; i++) {
-                        if (paymentMapList.get(i).getPaymentMethod().getPaymethod_name().equalsIgnoreCase("LoyaltyCard"))
+                        if (paymentMapList.get(i).getPaymentMethod() != null && paymentMapList.get(i).getPaymentMethod().getPaymethod_name().equalsIgnoreCase("LoyaltyCard"))
                             otherAmount = Global.addSubsStrings(true, otherAmount, Global.formatNumToLocale(Double.parseDouble(paymentMapList.get(i).getPay_amount())));
-                        else
+                        else if (paymentMapList.get(i).getPaymethod_id() != null && paymentMapList.get(i).getPaymethod_id().equalsIgnoreCase("LoyaltyCard")) {
+                            otherAmount = Global.addSubsStrings(true, otherAmount, Global.formatNumToLocale(Double.parseDouble(paymentMapList.get(i).getPay_amount())));
+                        } else
                             temp = Global.addSubsStrings(true, temp, Global.formatNumToLocale(Double.parseDouble(paymentMapList.get(i).getPay_amount())));
                     }
                 }
@@ -460,7 +429,11 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                 data = order.c_email;
                 break;
             case CASE_PAYMETHOD_NAME:
-                data = paymentMapList.get(position).getPaymentMethod().getPaymethod_name();
+                if (paymentMapList.get(position).getPaymentMethod() != null)
+                    data = paymentMapList.get(position).getPaymentMethod().getPaymethod_name();
+                else {
+                    data = paymentMapList.get(position).getPaymethod_id();
+                }
                 break;
             case CASE_PAY_ID:
                 data = paymentMapList.get(position).getPay_id();
@@ -597,9 +570,6 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         }
     }
 
-    private List<Payment> listVoidPayments;
-    private PaymentsHandler payHandler;
-
     private void voidTransaction() {
         double amountToBeSubstracted;
         OrdersHandler handler = new OrdersHandler(activity);
@@ -639,6 +609,41 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         } else
             Global.showPrompt(activity, R.string.dlog_title_success, getString(R.string.dlog_msg_transaction_voided));
         activity.setResult(100);
+    }
+
+    private class printAsync extends AsyncTask<String, String, String> {
+        private boolean printSuccessful = true;
+
+        @Override
+        protected void onPreExecute() {
+            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog.setMessage("Printing...");
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setCancelable(false);
+            if (myProgressDialog.isShowing())
+                myProgressDialog.dismiss();
+            myProgressDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            Bundle extras = activity.getIntent().getExtras();
+            String trans_type = extras.getString("trans_type");
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                if (Global.OrderType.getByCode(Integer.parseInt(trans_type)) != Global.OrderType.CONSIGNMENT_FILLUP
+                        && Global.OrderType.getByCode(Integer.parseInt(trans_type)) != Global.OrderType.CONSIGNMENT_PICKUP) {
+                    printSuccessful = Global.mainPrinterManager.getCurrentDevice().printTransaction(order_id, Global.OrderType.getByCode(Integer.parseInt(trans_type)), true, false);
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String unused) {
+            myProgressDialog.dismiss();
+            if (!printSuccessful)
+                showPrintDlg();
+        }
     }
 
     public class voidPaymentAsync extends AsyncTask<Void, Void, Void> {
@@ -851,15 +856,6 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
             return null;
         }
 
-        public class ViewHolder {
-            TextView textLine1;
-            TextView textLine2;
-            TextView ordProdQty;
-            TextView ordProdPrice;
-            ImageView iconImage;
-            ImageView moreDetails;
-        }
-
         @Override
         public int getItemViewType(int position) {
             if (position == 0 || (position == (allInfoLeft.size() + 1)) || (position == (orderedProd.size() + allInfoLeft.size() + 2)) || (position == (orderedProd.size() + allInfoLeft.size() + paymentMapList.size() + 3))) //divider
@@ -879,6 +875,15 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         @Override
         public int getViewTypeCount() {
             return 4;
+        }
+
+        public class ViewHolder {
+            TextView textLine1;
+            TextView textLine2;
+            TextView ordProdQty;
+            TextView ordProdPrice;
+            ImageView iconImage;
+            ImageView moreDetails;
         }
     }
 }

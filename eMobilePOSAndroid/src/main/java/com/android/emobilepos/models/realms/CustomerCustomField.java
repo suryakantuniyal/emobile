@@ -15,7 +15,7 @@ public class CustomerCustomField extends RealmObject {
 
     @SerializedName("cust_id")
     @Expose
-    @PrimaryKey
+    @Index
     private String custId;
     @SerializedName("cust_field_id")
     @Expose

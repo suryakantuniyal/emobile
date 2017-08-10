@@ -2,6 +2,7 @@ package drivers;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -15,10 +16,12 @@ import com.android.database.PayMethodsHandler;
 import com.android.database.PaymentsHandler;
 import com.android.database.ProductsHandler;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.PaymentDetails;
 import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.TimeClock;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
@@ -60,7 +63,7 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
     }
 
     @Override
-    public void connect(Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
+    public void connect(Context activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
         thisInstance = this;
@@ -1066,6 +1069,11 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
     @Override
     public boolean isConnected() {
         return true;
+    }
+
+    @Override
+    public void printClockInOut(List<ClockInOut> timeClocks, String clerkID) {
+        super.printClockInOut(timeClocks, LINE_WIDTH, clerkID);
     }
 
     @Override

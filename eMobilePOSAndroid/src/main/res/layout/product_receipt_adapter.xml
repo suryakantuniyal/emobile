@@ -63,31 +63,33 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical">
 
-                <LinearLayout
+                <ImageButton
+                    android:id="@+id/loyaltyPayimageButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="10dp">
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginRight="5dp"
+                    android:src="@drawable/ic_loyalty_black_24dp" />
 
-                    <TextView
-                        android:id="@+id/itemQty"
-                        style="@style/text_shadow"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text=""
-                        android:textColor="#000000"
-                        android:textSize="@dimen/txt_receipt_medium"
-                        android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/itemQty"
+                    style="@style/text_shadow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textColor="#000000"
+                    android:textSize="@dimen/txt_receipt_medium"
+                    android:textStyle="bold" />
 
-                    <TextView
-                        android:id="@+id/textView2"
-                        style="@style/text_shadow"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="1dp"
-                        android:text="x"
-                        android:textColor="#000000"
-                        android:textSize="@dimen/txt_receipt_medium" />
-                </LinearLayout>
+                <TextView
+                    android:id="@+id/textView2"
+                    style="@style/text_shadow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="1dp"
+                    android:text="x"
+                    android:textColor="#000000"
+                    android:textSize="@dimen/txt_receipt_medium" />
 
                 <TextView
                     android:id="@+id/itemName"
@@ -163,7 +165,6 @@
                     style="?android:attr/buttonStyleSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/grey_shadow_button_layer"
                     android:paddingLeft="5dp"
                     android:paddingRight="10dp"
                     android:text="Addon"

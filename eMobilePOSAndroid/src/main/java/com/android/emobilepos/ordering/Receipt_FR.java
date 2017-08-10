@@ -98,10 +98,11 @@ import java.util.HashMap;
 import java.util.List;
 
 import drivers.EMSBluetoothStarPrinter;
+import interfaces.PayWithLoyalty;
 import util.json.JsonUtils;
 
 public class Receipt_FR extends Fragment implements OnClickListener,
-        OnItemClickListener, OnDrawerOpenListener, OnDrawerCloseListener {
+        OnItemClickListener, OnDrawerOpenListener, OnDrawerCloseListener, PayWithLoyalty {
 
     public static ListView receiptListView;
     public static Receipt_FR fragInstance;
@@ -280,7 +281,10 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             addSeatButton.setVisibility(View.GONE);
         }
         ImageView plusBut = (ImageView) view.findViewById(R.id.plusButton);
-        plusBut.setOnClickListener(this);
+//        plusBut.setOnClickListener(this);
+
+        LinearLayout customerLinearLayout = (LinearLayout) view.findViewById(R.id.customerLinearLayout);
+        customerLinearLayout.setOnClickListener(this);
 
         btnTemplate = (Button) view.findViewById(R.id.templateButton);
         btnTemplate.setOnClickListener(this);
@@ -360,6 +364,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 case CONSIGNMENT: {
                     custName.setText(myPref.getCustName());
                     plusBut.setVisibility(View.INVISIBLE);
+                    customerLinearLayout.setOnClickListener(null);
                     btnTemplate
                             .setBackgroundResource(R.drawable.disabled_gloss_button_selector);
                     btnTemplate.setOnClickListener(null);
@@ -521,7 +526,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     mainLVAdapter.notifyDataSetChanged();
                 }
                 break;
-            case R.id.plusButton:
+            case R.id.customerLinearLayout:
                 intent = new Intent(getActivity(), ViewCustomers_FA.class);
                 startActivityForResult(intent, 0);
                 break;
@@ -638,7 +643,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                         showPromptManagerPassword(REMOVE_ITEM, orderProductIdx, orderProductIdx);
                                     } else {
                                         proceedToRemove(orderProductIdx);
-                                        mainLVAdapter.notifyDataSetChanged();
                                     }
                                 } else {
                                     Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
@@ -659,22 +663,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                             case R.id.viewVariations:
                                 break;
                             case R.id.payWithLoyalty:
-                                if (!Boolean.parseBoolean(global.order.getOrderProducts().get(orderProductIdx).getPayWithPoints())) {
-                                    String price = orderSeatProduct.orderProduct.getProd_price_points();
-                                    if (OrderLoyalty_FR.isValidPointClaim(price)) {
-                                        orderSeatProduct.orderProduct.setOverwrite_price(null);
-                                        orderSeatProduct.orderProduct.setItemTotal("0.00");
-//                                        orderSeatProduct.orderProduct.setItemSubtotal("0.00");
-                                        orderSeatProduct.orderProduct.setPayWithPoints("true");
-                                        refreshView();
-                                    } else
-                                        Global.showPrompt(getActivity(),
-                                                R.string.dlog_title_error,
-                                                "Not enough points available");
-                                } else {
-                                    Global.showPrompt(getActivity(), R.string.dlog_title_error,
-                                            "Points claimed");
-                                }
+                                processPayWithLoyalty(orderSeatProduct);
                                 break;
                             case R.id.overridePrice:
                                 if (hasOverwritePermission) {
@@ -710,6 +699,28 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         }
         receiptListView.smoothScrollToPosition(position);
 
+    }
+
+
+    @Override
+    public void processPayWithLoyalty(OrderSeatProduct orderSeatProduct) {
+        if (!Boolean.parseBoolean(orderSeatProduct.orderProduct.getPayWithPoints())) {
+            String price = orderSeatProduct.orderProduct.getProd_price_points();
+            if (OrderLoyalty_FR.isValidPointClaim(price)) {
+                orderSeatProduct.orderProduct.setOverwrite_price(null);
+                orderSeatProduct.orderProduct.setItemTotal("0.00");
+                orderSeatProduct.orderProduct.setProd_price("0.00");
+//                                        orderSeatProduct.orderProduct.setItemSubtotal("0.00");
+                orderSeatProduct.orderProduct.setPayWithPoints("true");
+                refreshView();
+            } else
+                Global.showPrompt(getActivity(),
+                        R.string.dlog_title_error,
+                        "Not enough points available");
+        } else {
+            Global.showPrompt(getActivity(), R.string.dlog_title_error,
+                    "Points claimed");
+        }
     }
 
     public void checkoutOrder() {
@@ -947,9 +958,10 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     if (myPref.isRestaurantMode()) {
                         new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
                     }
-                    DBManager dbManager = new DBManager(getActivity());
-                    SynchMethods sm = new SynchMethods(dbManager);
-                    sm.synchSendOnHold(false, false, getActivity());
+                    new SyncOnHolds().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+//                    DBManager dbManager = new DBManager(getActivity());
+//                    SynchMethods sm = new SynchMethods(dbManager);
+//                    sm.synchSendOnHold(false, false, getActivity(), null);
                 } else {
                     if (global.order.ord_HoldName == null || global.order.ord_HoldName.isEmpty()) {
                         showOnHoldPromptName(ordersHandler, orderProductsHandler);
@@ -974,9 +986,10 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                 global.order.ord_id);
                     if (myPref.isRestaurantMode())
                         new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
-                    DBManager dbManager = new DBManager(getActivity());
-                    SynchMethods sm = new SynchMethods(dbManager);
-                    sm.synchSendOnHold(false, true, getActivity());
+//                    DBManager dbManager = new DBManager(getActivity());
+//                    SynchMethods sm = new SynchMethods(dbManager);
+//                    sm.synchSendOnHold(false, true, getActivity(), global.order.ord_id);
+                    new SyncOnHolds().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 } else {
                     ordersHandler.updateFinishOnHold(Global.lastOrdID);
                     global.order.isVoid = "1";
@@ -1599,17 +1612,18 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             global.order.setOrderProducts(new ArrayList<OrderProduct>());
             global.resetOrderDetailsValues();
         }
-        DBManager dbManager = new DBManager(getActivity());
-        SynchMethods sm = new SynchMethods(dbManager);
-        sm.synchSendOnHold(false, false, getActivity());
-
-        if (!isToGo && ((OrderingMain_FA) getActivity()).orderingAction != OrderingMain_FA.OrderingAction.HOLD
-                && (((OrderingMain_FA) getActivity()).orderingAction == OrderingMain_FA.OrderingAction.CHECKOUT ||
-                ((OrderingMain_FA) getActivity()).orderingAction != OrderingMain_FA.OrderingAction.BACK_PRESSED)) {
-            showSplitedOrderPreview();
-        } else {
-            getActivity().finish();
-        }
+        new SyncOnHolds().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+//        DBManager dbManager = new DBManager(getActivity());
+//        SynchMethods sm = new SynchMethods(dbManager);
+//        sm.synchSendOnHold(false, false, getActivity(), null);
+//
+//        if (!isToGo && ((OrderingMain_FA) getActivity()).orderingAction != OrderingMain_FA.OrderingAction.HOLD
+//                && (((OrderingMain_FA) getActivity()).orderingAction == OrderingMain_FA.OrderingAction.CHECKOUT ||
+//                ((OrderingMain_FA) getActivity()).orderingAction != OrderingMain_FA.OrderingAction.BACK_PRESSED)) {
+//            showSplitedOrderPreview();
+//        } else {
+//            getActivity().finish();
+//        }
     }
 
     public void voidCancelOnHold(int type) {
@@ -1823,8 +1837,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         }
         receiptListView.invalidateViews();
         reCalculate();
-        Catalog_FR.instance.refreshListView();
-        refreshView();
+//        Catalog_FR.instance.refreshListView();
+//        refreshView();
     }
 
     public void reCalculate() {
@@ -2217,4 +2231,45 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             }
         }
     }
+
+    class SyncOnHolds extends AsyncTask<Void, Void, Boolean> {
+        ProgressDialog dialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            Global.lockOrientation(getActivity());
+            dialog = new ProgressDialog(getActivity());
+            dialog.setIndeterminate(true);
+            dialog.setCancelable(false);
+            dialog.setMessage(getString(R.string.sync_sending_orders));
+            dialog.show();
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            DBManager dbManager = new DBManager(getActivity());
+            SynchMethods sm = new SynchMethods(dbManager);
+            boolean result = sm.synchSendOnHold(false, false, getActivity(), null);
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            super.onPostExecute(result);
+            Global.dismissDialog(getActivity(), dialog);
+            if (getActivity() != null) {
+                if (!isToGo && ((OrderingMain_FA) getActivity()).orderingAction != OrderingMain_FA.OrderingAction.HOLD
+                        && (((OrderingMain_FA) getActivity()).orderingAction == OrderingMain_FA.OrderingAction.CHECKOUT ||
+                        ((OrderingMain_FA) getActivity()).orderingAction != OrderingMain_FA.OrderingAction.BACK_PRESSED)) {
+                    showSplitedOrderPreview();
+                } else {
+                    getActivity().finish();
+                }
+            }
+            Global.releaseOrientation(getActivity());
+        }
+    }
+
+
 }

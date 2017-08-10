@@ -13,9 +13,11 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.TimeClock;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
 import com.android.support.ConsignmentTransaction;
@@ -38,7 +40,7 @@ import main.EMSDeviceManager;
 public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
     public static final String CONFIG_FILE = "MTSCRADevConfig.cfg";
     private Handler handler;// = new Handler();
-    private Activity activity;
+    private Context activity;
     private AudioManager mAudioMgr;
     private CreditCardInfo cardManager;
     private Encrypt encrypt;
@@ -309,7 +311,7 @@ public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDevi
     };
 
     @Override
-    public void connect(Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
+    public void connect(Context activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
         this.edm = edm;
         this.activity = activity;
         thisInstance = this;
@@ -329,7 +331,7 @@ public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDevi
         boolean didConnect = false;
         this.activity = _activity;
 
-        activity.runOnUiThread(new Runnable() {
+        ((Activity)activity).runOnUiThread(new Runnable() {
             public void run() {
                 mMTSCRA = new MagTekSCRA(new Handler(new SCRAHandlerCallback()));
 
@@ -619,6 +621,11 @@ public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDevi
     @Override
     public boolean isConnected() {
         return true;
+    }
+
+    @Override
+    public void printClockInOut(List<ClockInOut> timeClocks, String clerkID) {
+
     }
 
 

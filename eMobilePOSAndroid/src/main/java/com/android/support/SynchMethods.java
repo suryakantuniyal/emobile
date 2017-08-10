@@ -1,6 +1,7 @@
 package com.android.support;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -446,10 +447,42 @@ public class SynchMethods {
         new SynchDownloadOnHoldDetails(activity).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, ordID);
     }
 
-    public void synchSendOnHold(boolean downloadHoldList, boolean checkoutOnHold, Activity activity) {
+    public boolean synchSendOnHold(boolean downloadHoldList, boolean checkoutOnHold, Activity activity, String ord_id) {
         this.downloadHoldList = downloadHoldList;
         this.checkoutOnHold = checkoutOnHold;
-        new SynchSendOrdersOnHold(activity).execute();
+//        new SynchSendOrdersOnHold(activity).execute(ord_id);
+
+        String err_msg;
+        boolean isError = false;
+        try {
+
+            if (NetworkUtils.isConnectedToInternet(context)) {
+                err_msg = sendOrdersOnHold();
+                if (err_msg.isEmpty()) {
+                    if (checkoutOnHold) {
+                        post.postData(Global.S_CHECKOUT_ON_HOLD, ord_id);
+                    }
+                } else
+                    isError = true;
+            } else {
+                isError = true;
+                err_msg = context.getString(R.string.dlog_msg_no_internet_access);
+            }
+        } catch (Exception e) {
+            isError = true;
+            err_msg = "Unhandled Exception";
+        }
+
+        if (downloadHoldList) {
+            if (!isError) {
+                new SynchDownloadOnHoldProducts(activity).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
+            } else {
+                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+                Intent intent = new Intent(context, OnHoldActivity.class);
+                context.startActivity(intent);
+            }
+        }
+        return isError;
     }
 
     /************************************
@@ -769,11 +802,11 @@ public class SynchMethods {
      * Send On Holds
      ************************************/
 
-    private String sendOrdersOnHold(SynchSendOrdersOnHold task) throws IOException, SAXException, ParserConfigurationException {
+    private String sendOrdersOnHold() throws IOException, SAXException, ParserConfigurationException {
         SAXSynchOrdPostHandler handler = new SAXSynchOrdPostHandler();
         OrdersHandler ordersHandler = new OrdersHandler(context);
         if (ordersHandler.getNumUnsyncOrdersOnHold() > 0) {
-            task.updateProgress(context.getString(R.string.sync_sending_orders));
+//            task.updateProgress(context.getString(R.string.sync_sending_orders));
             xml = post.postData(Global.S_SUBMIT_ON_HOLD, "");
             if (xml.contains("error")) {
                 return getTagValue(xml, "error");
@@ -1973,10 +2006,11 @@ public class SynchMethods {
 
     }
 
-    private class SynchSendOrdersOnHold extends AsyncTask<Void, String, String> {
+    private class SynchSendOrdersOnHold extends AsyncTask<String, String, String> {
         boolean isError = false;
         String err_msg = "";
         private Activity activity;
+        private ProgressDialog myProgressDialog;
 
         private SynchSendOrdersOnHold(Activity activity) {
             this.activity = activity;
@@ -1985,17 +2019,19 @@ public class SynchMethods {
         @Override
         protected void onPreExecute() {
             int orientation = context.getResources().getConfiguration().orientation;
-//            activity.setRequestedOrientation(Global.getScreenOrientation(context));
-//            if (myProgressDialog != null && myProgressDialog.isShowing())
-//                myProgressDialog.dismiss();
-//            myProgressDialog = new ProgressDialog(context);
-//            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-//            myProgressDialog.setCancelable(false);
-//
-//            if (!checkoutOnHold) {
-//                myProgressDialog.show();
-//            }
+            if (context instanceof OrderingMain_FA) {
+                activity.setRequestedOrientation(Global.getScreenOrientation(context));
+                if (myProgressDialog != null && myProgressDialog.isShowing())
+                    myProgressDialog.dismiss();
+                myProgressDialog = new ProgressDialog(context);
+                myProgressDialog.setIndeterminate(true);
+                myProgressDialog.setMessage(context.getString(R.string.sync_on_hold));
+                myProgressDialog.setCancelable(false);
 
+                if (!checkoutOnHold) {
+                    myProgressDialog.show();
+                }
+            }
         }
 
         @Override
@@ -2008,13 +2044,16 @@ public class SynchMethods {
         }
 
         @Override
-        protected String doInBackground(Void... params) {
+        protected String doInBackground(String... params) {
             try {
+
                 if (NetworkUtils.isConnectedToInternet(context)) {
-                    err_msg = sendOrdersOnHold(this);
+                    err_msg = sendOrdersOnHold();
                     if (err_msg.isEmpty()) {
-                        if (checkoutOnHold)
-                            post.postData(Global.S_CHECKOUT_ON_HOLD, Global.lastOrdID);
+                        if (checkoutOnHold) {
+                            String orderId = params[0];
+                            post.postData(Global.S_CHECKOUT_ON_HOLD, orderId);
+                        }
                     } else
                         isError = true;
                 } else {
@@ -2031,6 +2070,9 @@ public class SynchMethods {
         protected void onPostExecute(String unused) {
 //            if (!activity.isFinishing() && myProgressDialog != null && myProgressDialog.isShowing())
 //                myProgressDialog.dismiss();
+            if (context instanceof OrderingMain_FA) {
+                Global.dismissDialog((Activity) context, myProgressDialog);
+            }
             if (!downloadHoldList) {
                 boolean closeActivity = true;
                 if ((context instanceof OrderingMain_FA &&

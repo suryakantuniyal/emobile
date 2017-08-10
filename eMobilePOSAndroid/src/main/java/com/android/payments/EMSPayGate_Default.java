@@ -1,6 +1,7 @@
 package com.android.payments;
 
 import android.app.Activity;
+import android.content.Context;
 import android.text.TextUtils;
 import android.util.Xml;
 
@@ -27,7 +28,7 @@ import java.util.UUID;
 
 public class EMSPayGate_Default {
 
-    private Activity activity;
+    private Context activity;
     private MyPreferences myPref;
     private Payment payment;
 
@@ -46,7 +47,7 @@ public class EMSPayGate_Default {
     private static final int REVERSE_DEBIT_CARD = 9994;
     private static final int REVERSE_CHECK = 9992;
 
-    public EMSPayGate_Default(Activity activity, Payment payment) {
+    public EMSPayGate_Default(Context activity, Payment payment) {
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
         this.payment = payment;

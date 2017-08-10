@@ -2,6 +2,7 @@ package drivers;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,9 +14,11 @@ import android.util.Base64;
 
 import com.StarMicronics.jasura.JAException;
 import com.android.database.MemoTextHandler;
+import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.TimeClock;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
@@ -66,7 +69,7 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
     }
 
     @Override
-    public void connect(Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
+    public void connect(Context activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
 
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
@@ -92,7 +95,7 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
         encrypt = new Encrypt(activity);
 
 
-        activity.runOnUiThread(new Runnable() {
+        ((Activity)activity).runOnUiThread(new Runnable() {
             public void run() {
                 zebraHandler = new Handler(new ZebraHandlerCallback());
                 myPrinter = new MobilePrinter(activity, zebraHandler, null);
@@ -597,6 +600,11 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
     @Override
     public boolean isConnected() {
         return true;
+    }
+
+    @Override
+    public void printClockInOut(List<ClockInOut> timeClocks, String clerkID) {
+        super.printClockInOut(timeClocks, LINE_WIDTH, clerkID);
     }
 
 }

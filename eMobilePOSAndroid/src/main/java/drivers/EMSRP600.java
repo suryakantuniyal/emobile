@@ -2,6 +2,7 @@ package drivers;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
@@ -9,9 +10,11 @@ import android.os.Handler;
 import android.os.Message;
 
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.TimeClock;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
@@ -52,7 +55,7 @@ public class EMSRP600 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     }
 
     @Override
-    public void connect(Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
+    public void connect(Context activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
         posInterfaceAPI = new POSUSBAPI(activity);
@@ -270,6 +273,11 @@ public class EMSRP600 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     @Override
     public boolean isConnected() {
         return true;
+    }
+
+    @Override
+    public void printClockInOut(List<ClockInOut> timeClocks, String clerkID) {
+        super.printClockInOut(timeClocks, LINE_WIDTH, clerkID);
     }
 
     @Override

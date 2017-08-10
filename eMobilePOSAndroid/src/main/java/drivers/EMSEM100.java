@@ -1,13 +1,16 @@
 package drivers;
 
 import android.app.Activity;
+import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.Handler;
 
+import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.TimeClock;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
@@ -36,7 +39,7 @@ public class EMSEM100 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     String scannedData = "";
 
     @Override
-    public void connect(Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
+    public void connect(Context activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
         cardManager = new CreditCardInfo();
@@ -242,6 +245,10 @@ public class EMSEM100 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     @Override
     public boolean isConnected() {
         return true;
+    }
+
+    @Override
+    public void printClockInOut(List<ClockInOut> timeClocks, String clerkID) {
     }
 
 
