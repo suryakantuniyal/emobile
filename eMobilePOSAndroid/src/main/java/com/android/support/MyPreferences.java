@@ -43,6 +43,7 @@ public class MyPreferences {
     public static final String pref_mix_match = "pref_mix_match";
     public static final String pref_holds_polling_service = "pref_holds_polling_service";
     public static final String pref_require_customer = "pref_require_customer";
+    public static final String pref_clear_customer = "pref_clear_customer";
     public static final String pref_show_confirmation_screen = "pref_show_confirmation_screen";
     public static final String pref_direct_customer_selection = "pref_direct_customer_selection";
     public static final String pref_display_customer_account_number = "pref_display_customer_account_number";
@@ -54,6 +55,9 @@ public class MyPreferences {
     public static final String pref_display_also_redeem = "pref_display_also_redeem";
     public static final String pref_display_redeem_all = "pref_display_redeem_all";
     public static final String pref_use_loyal_patron = "pref_use_loyal_patron";
+    public static final String pref_giftcard_auto_balance_request = "pref_giftcard_auto_balance_request";
+    public static final String pref_giftcard_show_balance = "pref_giftcard_show_balance";
+
     public static final String pref_pay_with_tupyx = "pref_pay_with_tupyx";
     public static final String pref_mw_with_genius = "pref_mw_with_genius";
     public static final String pref_config_genius_peripheral = "pref_config_genius_peripheral";
@@ -68,7 +72,7 @@ public class MyPreferences {
     public static final String pref_allow_manual_credit_card = "pref_allow_manual_credit_card";
     public static final String pref_show_tips_for_cash = "pref_show_tips_for_cash";
     public static final String pref_audio_card_reader = "pref_audio_card_reader";
-    public static final String pref_prefill_total_amount = "pref_prefill_total_amount";
+    private static final String pref_prefill_total_amount = "pref_prefill_total_amount";
     public static final String pref_use_store_and_forward = "pref_use_store_and_forward";
     public static final String pref_return_require_refund = "pref_return_require_refund";
     public static final String pref_convert_to_reward = "pref_convert_to_reward";
@@ -1212,12 +1216,26 @@ public class MyPreferences {
         return getPreferences(MyPreferences.pref_require_shift_transactions);
     }
 
-    public boolean isUseClerks() {
-        return getPreferences(MyPreferences.pref_use_clerks);
+    public boolean isGiftCardAutoBalanceRequest() {
+        return getPreferences(MyPreferences.pref_giftcard_auto_balance_request);
     }
 
+    public boolean isClearCustomerAfterTransaction() {
+        return getPreferences(MyPreferences.pref_clear_customer);
+    }
+
+    public boolean isShowGiftCardBalanceAfterPayments() {
+        return getPreferences(MyPreferences.pref_giftcard_show_balance);
+    }
+    public boolean isPrefillTotalAmount() {
+        return getPreferences(MyPreferences.pref_prefill_total_amount);
+    }
     public void setIsUseClerks(boolean value) {
         setPreferences(MyPreferences.pref_use_clerks, value);
+    }
+
+    public boolean isUseClerks() {
+        return getPreferences(MyPreferences.pref_use_clerks);
     }
 
     public String getGeniusIP() {

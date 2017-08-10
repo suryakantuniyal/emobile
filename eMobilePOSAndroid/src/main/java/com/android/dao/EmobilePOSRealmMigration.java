@@ -77,6 +77,15 @@ public class EmobilePOSRealmMigration implements io.realm.RealmMigration {
 
                 }
             }
+            if (oldVersion == 4) {
+                schema.remove(CustomerCustomField.class.getSimpleName());
+                schema.create(CustomerCustomField.class.getSimpleName()).
+                        addField("id", String.class, FieldAttribute.PRIMARY_KEY)
+                        .addField("custId", String.class, FieldAttribute.INDEXED)
+                        .addField("custFieldId", String.class, FieldAttribute.INDEXED)
+                        .addField("custFieldName", String.class)
+                        .addField("custValue", String.class);
+            }
         } catch (Exception e) {
             Crashlytics.logException(e);
         }

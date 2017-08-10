@@ -21,6 +21,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.ShiftDAO;
@@ -861,28 +862,29 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
     }
 
     private void showChangeDlg() {
-        final Dialog dlog = new Dialog(activity, R.style.Theme_TransparentTest);
-        dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dlog.setCancelable(false);
-        dlog.setContentView(R.layout.dlog_btn_single_layout);
-
-        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
-        viewTitle.setText(R.string.dlog_title_confirm);
-        //sb.append(getString(R.string.dlog_msg_print_cust_copy)).append("\n\n");
-        viewMsg.setText(getString(R.string.changeLbl) + change.getText().toString());
-        Button btnOK = (Button) dlog.findViewById(R.id.btnDlogSingle);
-        btnOK.setText(R.string.button_ok);
-
-        btnOK.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                dlog.dismiss();
-                finish();
-            }
-        });
-        dlog.show();
+        Toast.makeText(this, getString(R.string.changeLbl) + change.getText().toString(), Toast.LENGTH_LONG).show();
+//        final Dialog dlog = new Dialog(activity, R.style.Theme_TransparentTest);
+//        dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+//        dlog.setCancelable(false);
+//        dlog.setContentView(R.layout.dlog_btn_single_layout);
+//
+//        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
+//        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+//        viewTitle.setText(R.string.dlog_title_confirm);
+//        //sb.append(getString(R.string.dlog_msg_print_cust_copy)).append("\n\n");
+//        viewMsg.setText(getString(R.string.changeLbl) + change.getText().toString());
+//        Button btnOK = (Button) dlog.findViewById(R.id.btnDlogSingle);
+//        btnOK.setText(R.string.button_ok);
+//
+//        btnOK.setOnClickListener(new View.OnClickListener() {
+//
+//            @Override
+//            public void onClick(View v) {
+//                dlog.dismiss();
+        finish();
+//            }
+//        });
+//        dlog.show();
     }
 
     @Override

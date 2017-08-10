@@ -71,12 +71,14 @@ public class OrderProductsHandler {
     private static final String assignedSeat = "assignedSeat";
     private static final String seatGroupId = "seatGroupId";
     private static final String prodPricePoints = "prod_price_points";
+    private static final String isGC = "isGC";
+
     public static final List<String> attr = Arrays.asList(addon, isAdded, isPrinted, item_void, ordprod_id,
             ord_id, prod_id, prod_sku, prod_upc, ordprod_qty, overwrite_price, reason_id, ordprod_name, ordprod_comment, ordprod_desc,
             pricelevel_id, prod_seq, uom_name, uom_conversion, uom_id, prod_taxId, prod_taxValue, discount_id,
             discount_value, prod_istaxable, discount_is_taxable, discount_is_fixed, onHand, imgURL, prod_price,
             prod_type, itemTotal, itemSubtotal, addon_section_name, addon_position, hasAddons, cat_id, cat_name, assignedSeat,
-            seatGroupId, addon_ordprod_id, prodPricePoints);
+            seatGroupId, addon_ordprod_id, prodPricePoints, isGC);
     public final String empStr = "";
     public HashMap<String, Integer> attrHash;
     private AssignEmployee assignEmployee;
@@ -200,6 +202,7 @@ public class OrderProductsHandler {
                 insert.bindString(index(assignedSeat), prod.getAssignedSeat() == null ? "" : prod.getAssignedSeat());
                 insert.bindLong(index(seatGroupId), prod.getSeatGroupId());
                 insert.bindLong(index(prodPricePoints), Double.valueOf(prod.getProd_price_points()).longValue());
+                insert.bindString(index(isGC), String.valueOf(prod.isGC()));
                 insert.execute();
                 insert.clearBindings();
                 Log.d("Insert OrderProduct", prod.toString());
@@ -412,6 +415,7 @@ public class OrderProductsHandler {
         product.setAddon_ordprod_id(cursor.getString(cursor.getColumnIndex(addon_ordprod_id)));
         product.setAdded(Boolean.parseBoolean(cursor.getString(cursor.getColumnIndex(isAdded))));
         product.setPrinted(Boolean.parseBoolean(cursor.getString(cursor.getColumnIndex(isPrinted))));
+        product.setGC(Boolean.parseBoolean(cursor.getString(cursor.getColumnIndex(isGC))));
         product.setItem_void(cursor.getString(cursor.getColumnIndex(item_void)));
         product.setOrdprod_id(cursor.getString(cursor.getColumnIndex(ordprod_id)));
         product.setOrd_id(cursor.getString(cursor.getColumnIndex(ord_id)));

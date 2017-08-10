@@ -238,8 +238,12 @@ public class EMSDeviceDriver {
     }
 
     private void addTaxesLine(List<DataTaxes> taxes, Order order, int lineWidth, StringBuilder sb) {
+        BigDecimal taxableAmount = new BigDecimal(0);
+        for (OrderProduct product : order.getOrderProducts()) {
+            taxableAmount = taxableAmount.add(product.getProductPriceTaxableAmountCalculated());
+        }
         for (DataTaxes tax : taxes) {
-            BigDecimal taxAmount = new BigDecimal(order.ord_subtotal)
+            BigDecimal taxAmount = taxableAmount
                     .multiply(new BigDecimal(tax.getTax_rate())
                             .divide(new BigDecimal(100)))
                     .setScale(2, RoundingMode.HALF_UP);
@@ -1540,6 +1544,7 @@ public class EMSDeviceDriver {
                 activity.getString(R.string.total_hours_worked), hours, mins), lineWidth));
         str.append(textHelper.newLines(4));
         print(str.toString());
+        cutPaper();
     }
 
     public void printFooter(int lineWidth) {
@@ -1579,6 +1584,9 @@ public class EMSDeviceDriver {
             printPref = myPref.getPrintingPreferences();
             StringBuilder sb = new StringBuilder();
             printImage(0);
+            if (myPref.isCustSelected()) {
+                sb.append(textHandler.centeredString(myPref.getCustName(), lineWidth));
+            }
             if (printPref.contains(MyPreferences.print_header))
                 printHeader(lineWidth);
             if (values.containsKey("amountAdded")) {
@@ -1586,13 +1594,13 @@ public class EMSDeviceDriver {
             } else {
                 sb.append("* ").append(getString(R.string.balance_inquiry));
             }
-            sb.append(" *\n\n\n");
+            sb.append(" *\n");
             print(textHandler.centeredString(sb.toString(), lineWidth), FORMAT);
             sb.setLength(0);
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
                     getString(R.string.receipt_time), lineWidth, 0));
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(DateUtils.getDateAsString(new Date(), "MMM/dd/yyyy"), DateUtils.getDateAsString(new Date(), "hh:mm:ss"), lineWidth, 0))
-                    .append("\n\n");
+                    .append("\n");
 
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.card_number),
                     "*" + values.get("pay_maccount"), lineWidth, 0));

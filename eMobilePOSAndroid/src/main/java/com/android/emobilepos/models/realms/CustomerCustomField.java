@@ -6,12 +6,15 @@ import com.google.gson.annotations.SerializedName;
 import io.realm.RealmObject;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
+import util.StringUtil;
 
 /**
  * Created by guarionex on 7/10/17.
  */
 
 public class CustomerCustomField extends RealmObject {
+    @PrimaryKey
+    private String id;
 
     @SerializedName("cust_id")
     @Expose
@@ -33,6 +36,7 @@ public class CustomerCustomField extends RealmObject {
     }
 
     public void setCustId(String custId) {
+        generatePrimaryKey();
         this.custId = custId;
     }
 
@@ -41,6 +45,7 @@ public class CustomerCustomField extends RealmObject {
     }
 
     public void setCustFieldId(String custFieldId) {
+        generatePrimaryKey();
         this.custFieldId = custFieldId;
     }
 
@@ -58,6 +63,10 @@ public class CustomerCustomField extends RealmObject {
 
     public void setCustValue(String custValue) {
         this.custValue = custValue;
+    }
+
+    public void generatePrimaryKey() {
+        id = String.format("%s%s", StringUtil.nullStringToEmpty(custId).toUpperCase(), StringUtil.nullStringToEmpty(custFieldId).toUpperCase());
     }
 
 }

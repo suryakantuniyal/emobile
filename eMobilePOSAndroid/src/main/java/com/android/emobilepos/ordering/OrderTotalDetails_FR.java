@@ -723,7 +723,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             granTotal.setText(Global.getCurrencyFrmt(String.valueOf(gran_total)));
             globalTax.setText(Global.getCurrencyFrmt(String.valueOf(tax_amount)));
             globalDiscount.setText(Global.getCurrencyFrmt(String.valueOf(discount_amount)));
-            OrderLoyalty_FR.recalculatePoints(String.valueOf(totalDetails.getPointsSubTotal()), String.valueOf(totalDetails.getPointsInUse()),
+            getOrderingMainFa().getLoyaltyFragment().recalculatePoints(String.valueOf(totalDetails.getPointsSubTotal()), String.valueOf(totalDetails.getPointsInUse()),
                     String.valueOf(totalDetails.getPointsAcumulable()), gran_total.toString());
             BigDecimal discountableAmount = totalDetails.getSubtotal();
             discountableAmount = discountableAmount.subtract(Global.rewardChargeAmount);

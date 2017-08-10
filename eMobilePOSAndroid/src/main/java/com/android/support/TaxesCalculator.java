@@ -495,81 +495,81 @@ public class TaxesCalculator {
 
     }
 
-    public void reCalculate(Order order, List<OrderProduct> orderProducts) {
-        int size = orderProducts.size();
-        taxableSubtotal = new BigDecimal("0.00");
-        taxableDueAmount = new BigDecimal("0.00");
-        BigDecimal tempTaxableAmount = new BigDecimal("0");
-        itemsDiscountTotal = new BigDecimal(0);
-        List<DataTaxes> taxesHolder = getTaxesHolder();
-        boolean isVAT = assignEmployee.isVAT();
-
-        BigDecimal sub_total;
-        BigDecimal gran_total;
-        TaxesCalculator taxes = null;
-        if (size > 0) {
-            BigDecimal amount = new BigDecimal("0.00");
-            BigDecimal discountableAmount = new BigDecimal("0");
-            BigDecimal prodPrice;
-            String val;
-            int pointsSubTotal = 0, pointsInUse = 0, pointsAcumulable = 0;
-            for (int i = 0; i < size; i++) {
-                taxes = calculateTaxes(orderProducts.get(i));
-                if (myPref.getPreferences(MyPreferences.pref_show_removed_void_items_in_printout)) {
-                    String temp = orderProducts.get(i).getItem_void();
-
-                    if (temp.equals("1"))
-                        val = "0.00";
-                    else {
-                        if (isVAT) {
-                            val = orderProducts.get(i).getItemTotalVatExclusive();
-                        } else
-                            val = orderProducts.get(i).getItemTotal();
-                    }
-                } else {
-                    if (isVAT) {
-                        val = orderProducts.get(i).getItemTotalVatExclusive();
-                    } else
-                        val = String.valueOf(orderProducts.get(i).getItemSubtotalCalculated());
-                }
-                if (val == null || val.isEmpty())
-                    val = "0.00";
-                prodPrice = new BigDecimal(val);
-                discountableAmount = discountableAmount.add(prodPrice);
-                try {
-                    if (orderProducts.get(i).getDiscount_value() != null
-                            && !orderProducts.get(i).getDiscount_value().isEmpty())
-                        itemsDiscountTotal = itemsDiscountTotal.add(new BigDecimal(orderProducts.get(i).getDiscount_value()));
-                } catch (NumberFormatException e) {
-                }
-                amount = amount.add(prodPrice);
-                pointsSubTotal += Double.parseDouble(orderProducts.get(i).getProd_price_points());
-                pointsAcumulable += Double.parseDouble(orderProducts.get(i).getProd_value_points());
-                if (Boolean.parseBoolean(orderProducts.get(i).getPayWithPoints()))
-                    pointsInUse += Double.parseDouble(orderProducts.get(i).getProd_price_points());
-            }
-
-            discountable_sub_total = discountableAmount.subtract(Global.rewardChargeAmount);
-            sub_total = amount.subtract(Global.rewardChargeAmount);
-//            tax_amount = tempTaxableAmount;
-            gran_total = sub_total.subtract(discount_amount).add(tempTaxableAmount)
-                    .subtract(itemsDiscountTotal);
-
-            OrderLoyalty_FR.recalculatePoints(Integer.toString(pointsSubTotal), Integer.toString(pointsInUse),
-                    Integer.toString(pointsAcumulable), gran_total.toString());
-            OrderRewards_FR.setRewardSubTotal(discountable_sub_total.toString());
-        } else {
-            discountable_sub_total = new BigDecimal(0);
-            sub_total = new BigDecimal(0);
-            gran_total = new BigDecimal(0);
-            OrderLoyalty_FR.recalculatePoints("0", "0", "0", gran_total.toString());
-        }
-        order.gran_total = String.valueOf(Global.getRoundBigDecimal(gran_total));
-        order.ord_discount = String.valueOf(Global.getRoundBigDecimal(discountable_sub_total));
-        order.ord_subtotal = String.valueOf(Global.getRoundBigDecimal(sub_total));
-        order.ord_discount_id = discountID;
-        order.ord_taxamount = String.valueOf(Global.getRoundBigDecimal(taxes.taxableAmount));
-    }
+//    public void reCalculate(Order order, List<OrderProduct> orderProducts) {
+//        int size = orderProducts.size();
+//        taxableSubtotal = new BigDecimal("0.00");
+//        taxableDueAmount = new BigDecimal("0.00");
+//        BigDecimal tempTaxableAmount = new BigDecimal("0");
+//        itemsDiscountTotal = new BigDecimal(0);
+//        List<DataTaxes> taxesHolder = getTaxesHolder();
+//        boolean isVAT = assignEmployee.isVAT();
+//
+//        BigDecimal sub_total;
+//        BigDecimal gran_total;
+//        TaxesCalculator taxes = null;
+//        if (size > 0) {
+//            BigDecimal amount = new BigDecimal("0.00");
+//            BigDecimal discountableAmount = new BigDecimal("0");
+//            BigDecimal prodPrice;
+//            String val;
+//            int pointsSubTotal = 0, pointsInUse = 0, pointsAcumulable = 0;
+//            for (int i = 0; i < size; i++) {
+//                taxes = calculateTaxes(orderProducts.get(i));
+//                if (myPref.getPreferences(MyPreferences.pref_show_removed_void_items_in_printout)) {
+//                    String temp = orderProducts.get(i).getItem_void();
+//
+//                    if (temp.equals("1"))
+//                        val = "0.00";
+//                    else {
+//                        if (isVAT) {
+//                            val = orderProducts.get(i).getItemTotalVatExclusive();
+//                        } else
+//                            val = orderProducts.get(i).getItemTotal();
+//                    }
+//                } else {
+//                    if (isVAT) {
+//                        val = orderProducts.get(i).getItemTotalVatExclusive();
+//                    } else
+//                        val = String.valueOf(orderProducts.get(i).getItemSubtotalCalculated());
+//                }
+//                if (val == null || val.isEmpty())
+//                    val = "0.00";
+//                prodPrice = new BigDecimal(val);
+//                discountableAmount = discountableAmount.add(prodPrice);
+//                try {
+//                    if (orderProducts.get(i).getDiscount_value() != null
+//                            && !orderProducts.get(i).getDiscount_value().isEmpty())
+//                        itemsDiscountTotal = itemsDiscountTotal.add(new BigDecimal(orderProducts.get(i).getDiscount_value()));
+//                } catch (NumberFormatException e) {
+//                }
+//                amount = amount.add(prodPrice);
+//                pointsSubTotal += Double.parseDouble(orderProducts.get(i).getProd_price_points());
+//                pointsAcumulable += Double.parseDouble(orderProducts.get(i).getProd_value_points());
+//                if (Boolean.parseBoolean(orderProducts.get(i).getPayWithPoints()))
+//                    pointsInUse += Double.parseDouble(orderProducts.get(i).getProd_price_points());
+//            }
+//
+//            discountable_sub_total = discountableAmount.subtract(Global.rewardChargeAmount);
+//            sub_total = amount.subtract(Global.rewardChargeAmount);
+////            tax_amount = tempTaxableAmount;
+//            gran_total = sub_total.subtract(discount_amount).add(tempTaxableAmount)
+//                    .subtract(itemsDiscountTotal);
+//
+//            OrderLoyalty_FR.recalculatePoints(Integer.toString(pointsSubTotal), Integer.toString(pointsInUse),
+//                    Integer.toString(pointsAcumulable), gran_total.toString());
+//            OrderRewards_FR.setRewardSubTotal(discountable_sub_total.toString());
+//        } else {
+//            discountable_sub_total = new BigDecimal(0);
+//            sub_total = new BigDecimal(0);
+//            gran_total = new BigDecimal(0);
+//            OrderLoyalty_FR.recalculatePoints("0", "0", "0", gran_total.toString());
+//        }
+//        order.gran_total = String.valueOf(Global.getRoundBigDecimal(gran_total));
+//        order.ord_discount = String.valueOf(Global.getRoundBigDecimal(discountable_sub_total));
+//        order.ord_subtotal = String.valueOf(Global.getRoundBigDecimal(sub_total));
+//        order.ord_discount_id = discountID;
+//        order.ord_taxamount = String.valueOf(Global.getRoundBigDecimal(taxes.taxableAmount));
+//    }
 
     public static OrderProduct getTaxableOrderProduct(Order order, OrderProduct orderProduct, Tax tax) {
 
