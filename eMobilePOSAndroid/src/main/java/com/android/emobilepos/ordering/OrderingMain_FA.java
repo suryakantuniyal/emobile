@@ -47,6 +47,8 @@ import com.android.database.ProductsHandler;
 import com.android.database.SalesTaxCodesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.OrderProductListAdapter;
+import com.android.emobilepos.customer.ViewCustomers_FA;
+import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.mainmenu.SalesTab_FR;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.OrderSeatProduct;
@@ -474,6 +476,10 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
+        if (myPref.isCustomerRequired() && !myPref.isCustSelected()) {
+            Intent intent = new Intent(this, ViewCustomers_FA.class);
+            startActivityForResult(intent, Global.FROM_CUSTOMER_SELECTION_ACTIVITY);
+        }
     }
 
     private void setupTitle() {
@@ -749,8 +755,15 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             global.clearListViewData();
             Global.showCDTDefault(this);
             reloadDefaultTransaction();
-        } else if (resultCode == 2 || resultCode == 0)
+        } else if (resultCode == 2 || resultCode == 0) {
             this.refreshView();
+        } else if (resultCode == Global.FROM_CUSTOMER_SELECTION_ACTIVITY) {
+            Bundle extras = data.getExtras();
+            boolean goto_main = extras.getBoolean("GOTO_MAIN", false);
+            if (goto_main) {
+                finish();
+            }
+        }
     }
 
     @Override
@@ -817,7 +830,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             if (Global.btSled != null && Global.btSled.getCurrentDevice() != null)
                 Global.btSled.getCurrentDevice().loadScanner(callBackMSR);
         }
-
         super.onResume();
     }
 

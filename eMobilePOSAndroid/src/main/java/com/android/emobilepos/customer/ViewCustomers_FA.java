@@ -28,7 +28,6 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.android.database.CustomersHandler;
-import com.android.database.SalesTaxCodesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.history.HistoryTransactions_FA;
 import com.android.emobilepos.security.SecurityManager;
@@ -37,22 +36,19 @@ import com.android.support.MyPreferences;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements OnClickListener, OnItemClickListener {
+    boolean isManualEntry = true;
     private ListView myListView;
-
     private Context thisContext = this;
     private Activity activity;
-
     private Cursor myCursor;
     private CustomCursorAdapter adap2;
     private CustomersHandler handler;
-
     private Global global;
     private boolean hasBeenCreated = false;
     private MyPreferences myPref;
     private int selectedCustPosition = 0;
     private Dialog dlog;
     private EditText search;
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -78,7 +74,13 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
 
         search.setOnEditorActionListener(getSearchActionListener());
         search.addTextChangedListener(getSearchTextWatcher());
-
+        search.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                isManualEntry = false;
+                return true;
+            }
+        });
         myListView.setOnItemClickListener(this);
         hasBeenCreated = true;
     }
@@ -114,6 +116,11 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
 
                     adap2 = new CustomCursorAdapter(thisContext, myCursor, CursorAdapter.NO_SELECTION);
                     myListView.setAdapter(adap2);
+                    if (!isManualEntry) {
+                        if (adap2.getCount() == 1) {
+                            selectCustomer(0);
+                        }
+                    }
                 }
             }
         };
@@ -184,6 +191,16 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
     }
 
     @Override
+    public void onBackPressed() {
+        if (!myPref.isCustSelected()) {
+            Intent data = getIntent();
+            data.putExtra("GOTO_MAIN", true);
+            setResult(Global.FROM_CUSTOMER_SELECTION_ACTIVITY, data);
+        }
+        finish();
+    }
+
+    @Override
     public void onPause() {
         super.onPause();
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
@@ -243,7 +260,7 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        if (myPref.getPreferences(MyPreferences.pref_direct_customer_selection)) {
+        if (myPref.isDirectCustomerSelection()) {
             selectCustomer(position);
         } else {
             selectedCustPosition = position;
