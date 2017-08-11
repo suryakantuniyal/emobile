@@ -38,7 +38,7 @@ import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import interfaces.BCRCallbacks;
 import util.json.UIUtils;
 
-public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements OnClickListener, OnItemClickListener, BCRCallbacks {
+public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements OnClickListener, OnItemClickListener {
     boolean isManualEntry = true;
     private ListView myListView;
     private Context thisContext = this;
