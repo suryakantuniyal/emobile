@@ -55,7 +55,7 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
 
     private MyEditText fieldCardNum, fieldComment;
     private EditText fieldHiddenSwiper, fieldHiddenScan;
-    private static CheckBox checkBox;
+    private CheckBox checkBox;
     private MyPreferences myPref;
     private CreditCardInfo cardInfoManager;
     private Activity activity;
@@ -210,7 +210,7 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
             Global.btSwiper.getCurrentDevice().releaseCardReader();
         else if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
             Global.mainPrinterManager.getCurrentDevice().releaseCardReader();
-            Global.mainPrinterManager.getCurrentDevice().loadScanner(OrderingMain_FA.instance.callBackMSR);
+            Global.mainPrinterManager.getCurrentDevice().loadScanner(this);
         }
         if (_msrUsbSams != null && _msrUsbSams.isDeviceOpen()) {
             _msrUsbSams.CloseTheDevice();

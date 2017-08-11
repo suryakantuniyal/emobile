@@ -67,7 +67,6 @@ import drivers.EMSPowaPOS;
 import drivers.EMSmePOS;
 
 public class SalesTab_FR extends Fragment {
-    public static Activity activity;
     //    boolean validPassword = true;
     private SalesMenuAdapter myAdapter;
     private GridView myListview;
@@ -115,10 +114,9 @@ public class SalesTab_FR extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.sales_layout, container, false);
-        activity = getActivity();
-        myPref = new MyPreferences(activity);
+        myPref = new MyPreferences(getActivity());
         myPref.setLogIn(true);
-        SettingListActivity.loadDefaultValues(activity);
+        SettingListActivity.loadDefaultValues(getActivity());
         myListview = (GridView) view.findViewById(R.id.salesGridLayout);
 
         thisContext = getActivity();
@@ -188,7 +186,7 @@ public class SalesTab_FR extends Fragment {
 
     @Override
     public void onResume() {
-        Global global = (Global) activity.getApplication();
+        Global global = (Global) getActivity().getApplication();
         global.resetOrderDetailsValues();
         global.clearListViewData();
         if (myPref.isCustSelected()) {
@@ -256,7 +254,7 @@ public class SalesTab_FR extends Fragment {
                 case TIP_ADJUSTMENT: {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.TIP_ADJUSTMENT);
                     if (hasPermissions) {
-                        intent = new Intent(activity, TipAdjustmentFA.class);
+                        intent = new Intent(getActivity(), TipAdjustmentFA.class);
                         startActivity(intent);
                     } else {
                         promptWithCustomer();
@@ -272,7 +270,7 @@ public class SalesTab_FR extends Fragment {
                                     myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
                                 askEatInToGo();
                             } else {
-                                intent = new Intent(activity, OrderingMain_FA.class);
+                                intent = new Intent(getActivity(), OrderingMain_FA.class);
                                 intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.TO_GO);
                                 intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
                                 startActivityForResult(intent, 0);
@@ -294,7 +292,7 @@ public class SalesTab_FR extends Fragment {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
-                        intent = new Intent(activity, OrderingMain_FA.class);
+                        intent = new Intent(getActivity(), OrderingMain_FA.class);
                         intent.putExtra("option_number", Global.TransactionType.ORDERS);
                         startActivityForResult(intent, 0);
 //                        } else {
@@ -309,7 +307,7 @@ public class SalesTab_FR extends Fragment {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
-                        intent = new Intent(activity, OrderingMain_FA.class);
+                        intent = new Intent(getActivity(), OrderingMain_FA.class);
                         intent.putExtra("option_number", Global.TransactionType.RETURN);
                         startActivityForResult(intent, 0);
 //                        } else {
@@ -324,7 +322,7 @@ public class SalesTab_FR extends Fragment {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
-                        intent = new Intent(activity, OrderingMain_FA.class);
+                        intent = new Intent(getActivity(), OrderingMain_FA.class);
                         intent.putExtra("option_number", Global.TransactionType.INVOICE);
                         startActivityForResult(intent, 0);
 //                        } else {
@@ -339,7 +337,7 @@ public class SalesTab_FR extends Fragment {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
-                        intent = new Intent(activity, OrderingMain_FA.class);
+                        intent = new Intent(getActivity(), OrderingMain_FA.class);
                         intent.putExtra("option_number", Global.TransactionType.ESTIMATE);
                         startActivityForResult(intent, 0);
 //                        } else {
@@ -355,7 +353,7 @@ public class SalesTab_FR extends Fragment {
                             SecurityManager.SecurityAction.TAKE_PAYMENT);
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
-                        intent = new Intent(activity, SelectPayMethod_FA.class);
+                        intent = new Intent(getActivity(), SelectPayMethod_FA.class);
                         intent.putExtra("salespayment", true);
                         intent.putExtra("amount", "0.00");
                         intent.putExtra("paid", "0.00");
@@ -380,7 +378,7 @@ public class SalesTab_FR extends Fragment {
                             SecurityManager.SecurityAction.TAKE_PAYMENT);
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
-                        intent = new Intent(activity, GiftCard_FA.class);
+                        intent = new Intent(getActivity(), GiftCard_FA.class);
                         startActivity(intent);
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
@@ -395,7 +393,7 @@ public class SalesTab_FR extends Fragment {
                             SecurityManager.SecurityAction.TAKE_PAYMENT);
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
-                        intent = new Intent(activity, LoyaltyCard_FA.class);
+                        intent = new Intent(getActivity(), LoyaltyCard_FA.class);
                         startActivity(intent);
                     } else {
                         Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
@@ -410,7 +408,7 @@ public class SalesTab_FR extends Fragment {
                             SecurityManager.SecurityAction.TAKE_PAYMENT);
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
-                        intent = new Intent(activity, RewardCard_FA.class);
+                        intent = new Intent(getActivity(), RewardCard_FA.class);
                         startActivity(intent);
                     } else {
                         Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
@@ -426,7 +424,7 @@ public class SalesTab_FR extends Fragment {
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                         //EasyTracker.getTracker().sendEvent("ui_action", "button_press", "Refund", null);
-                        intent = new Intent(activity, SelectPayMethod_FA.class);
+                        intent = new Intent(getActivity(), SelectPayMethod_FA.class);
                         intent.putExtra("salesrefund", true);
                         intent.putExtra("amount", "0.00");
                         intent.putExtra("paid", "0.00");
@@ -465,7 +463,7 @@ public class SalesTab_FR extends Fragment {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
-                        intent = new Intent(activity, ConsignmentMain_FA.class);
+                        intent = new Intent(getActivity(), ConsignmentMain_FA.class);
                         startActivity(intent);
                     } else {
                         Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
@@ -482,7 +480,7 @@ public class SalesTab_FR extends Fragment {
                     boolean hasPermissions = myPref.isUseClerks() && SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.SHIFT_CLERK);
                     if (hasPermissions) {
-                        intent = new Intent(activity, ShiftsActivity.class);
+                        intent = new Intent(getActivity(), ShiftsActivity.class);
                         startActivity(intent);
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
@@ -494,7 +492,7 @@ public class SalesTab_FR extends Fragment {
                             SecurityManager.SecurityAction.NO_SALE);
                     if (hasPermissions) {
                         if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen()) {
-                            intent = new Intent(activity, ShiftExpensesList_FA.class);
+                            intent = new Intent(getActivity(), ShiftExpensesList_FA.class);
                             startActivity(intent);
                         } else {
                             Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
@@ -514,13 +512,13 @@ public class SalesTab_FR extends Fragment {
                     if (hasPermissions) {
                         if (validateClerkShift(Global.TransactionType.getByCode(pos))) {
                             if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
-                                Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_select_customer));
+                                Global.showPrompt(getActivity(), R.string.dlog_title_error, getString(R.string.dlog_msg_select_customer));
                             } else {
                                 if (myPref.isRestaurantMode() &&
                                         myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
                                     askEatInToGo();
                                 } else {
-                                    intent = new Intent(activity, OrderingMain_FA.class);
+                                    intent = new Intent(getActivity(), OrderingMain_FA.class);
                                     intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
                                     startActivityForResult(intent, 0);
                                 }
@@ -541,9 +539,9 @@ public class SalesTab_FR extends Fragment {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                         if (validateClerkShift(Global.TransactionType.getByCode(pos))) {
                             if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
-                                Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_select_customer));
+                                Global.showPrompt(getActivity(), R.string.dlog_title_error, getString(R.string.dlog_msg_select_customer));
                             } else {
-                                intent = new Intent(activity, OrderingMain_FA.class);
+                                intent = new Intent(getActivity(), OrderingMain_FA.class);
                                 intent.putExtra("option_number", Global.TransactionType.RETURN);
                                 startActivityForResult(intent, 0);
                             }
@@ -563,9 +561,9 @@ public class SalesTab_FR extends Fragment {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                         if (validateClerkShift(Global.TransactionType.getByCode(pos))) {
                             if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
-                                Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_select_customer));
+                                Global.showPrompt(getActivity(), R.string.dlog_title_error, getString(R.string.dlog_msg_select_customer));
                             } else {
-                                intent = new Intent(activity, SelectPayMethod_FA.class);
+                                intent = new Intent(getActivity(), SelectPayMethod_FA.class);
                                 intent.putExtra("salespayment", true);
                                 intent.putExtra("amount", "0.00");
                                 intent.putExtra("paid", "0.00");
@@ -587,7 +585,7 @@ public class SalesTab_FR extends Fragment {
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                         if (validateClerkShift(Global.TransactionType.getByCode(pos))) {
-                            intent = new Intent(activity, GiftCard_FA.class);
+                            intent = new Intent(getActivity(), GiftCard_FA.class);
                             startActivity(intent);
                         }
                     } else {
@@ -604,7 +602,7 @@ public class SalesTab_FR extends Fragment {
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                         if (validateClerkShift(Global.TransactionType.getByCode(pos))) {
-                            intent = new Intent(activity, LoyaltyCard_FA.class);
+                            intent = new Intent(getActivity(), LoyaltyCard_FA.class);
                             startActivity(intent);
                         }
                     } else {
@@ -621,7 +619,7 @@ public class SalesTab_FR extends Fragment {
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                         if (validateClerkShift(Global.TransactionType.getByCode(pos))) {
-                            intent = new Intent(activity, RewardCard_FA.class);
+                            intent = new Intent(getActivity(), RewardCard_FA.class);
                             startActivity(intent);
                         }
                     } else {
@@ -639,7 +637,7 @@ public class SalesTab_FR extends Fragment {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                         if (validateClerkShift(Global.TransactionType.getByCode(pos))) {
 
-                            intent = new Intent(activity, SelectPayMethod_FA.class);
+                            intent = new Intent(getActivity(), SelectPayMethod_FA.class);
                             intent.putExtra("salesrefund", true);
                             intent.putExtra("amount", "0.00");
                             intent.putExtra("paid", "0.00");
@@ -683,7 +681,7 @@ public class SalesTab_FR extends Fragment {
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                         if (validateClerkShift(Global.TransactionType.getByCode(pos))) {
-                            intent = new Intent(activity, TipAdjustmentFA.class);
+                            intent = new Intent(getActivity(), TipAdjustmentFA.class);
                             startActivity(intent);
                         }
                     } else {
@@ -714,7 +712,7 @@ public class SalesTab_FR extends Fragment {
                             SecurityManager.SecurityAction.NO_SALE);
                     if (hasPermissions) {
                         if (myPref.isUseClerks() && validateClerkShift(Global.TransactionType.getByCode(pos))) {
-                            intent = new Intent(activity, ShiftExpensesList_FA.class);
+                            intent = new Intent(getActivity(), ShiftExpensesList_FA.class);
                             startActivity(intent);
                         } else if (!myPref.isUseClerks()) {
                             promptClerkLogin(Global.TransactionType.getByCode(pos));
@@ -773,7 +771,7 @@ public class SalesTab_FR extends Fragment {
                                 break;
                             }
                             case SHIFT_EXPENSES: {
-                                Intent intent = new Intent(activity, ShiftExpensesList_FA.class);
+                                Intent intent = new Intent(getActivity(), ShiftExpensesList_FA.class);
                                 startActivity(intent);
                                 break;
                             }
@@ -811,7 +809,7 @@ public class SalesTab_FR extends Fragment {
     }
 
     private void askEatInToGo() {
-        final Dialog popDlog = new Dialog(activity, R.style.TransparentDialog);
+        final Dialog popDlog = new Dialog(getActivity(), R.style.TransparentDialog);
         popDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         popDlog.setCancelable(true);
         popDlog.setCanceledOnTouchOutside(true);
@@ -822,7 +820,7 @@ public class SalesTab_FR extends Fragment {
             @Override
             public void onClick(View v) {
                 popDlog.dismiss();
-                Intent intent = new Intent(activity, OrderingMain_FA.class);
+                Intent intent = new Intent(getActivity(), OrderingMain_FA.class);
                 intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
                 intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.TO_GO);
                 startActivityForResult(intent, 0);
@@ -990,7 +988,7 @@ public class SalesTab_FR extends Fragment {
     }
 
     private void confirmSelectedLocations() {
-        final Dialog globalDlog = new Dialog(activity, R.style.Theme_TransparentTest);
+        final Dialog globalDlog = new Dialog(getActivity(), R.style.Theme_TransparentTest);
         globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         globalDlog.setCancelable(true);
         globalDlog.setCanceledOnTouchOutside(false);
@@ -1023,7 +1021,7 @@ public class SalesTab_FR extends Fragment {
             public void onClick(View v) {
                 globalDlog.dismiss();
                 Global.isInventoryTransfer = true;
-                Intent intent = new Intent(activity, OrderingMain_FA.class);
+                Intent intent = new Intent(getActivity(), OrderingMain_FA.class);
                 intent.putExtra("option_number", Global.TransactionType.LOCATION);
                 startActivityForResult(intent, 0);
             }
@@ -1075,7 +1073,7 @@ public class SalesTab_FR extends Fragment {
 //    }
 
     private void startSaleRceipt(Global.RestaurantSaleType restaurantSaleType, int selectedSeatsAmount, String tableNumber) {
-        Intent intent = new Intent(activity, OrderingMain_FA.class);
+        Intent intent = new Intent(getActivity(), OrderingMain_FA.class);
         intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
         intent.putExtra("RestaurantSaleType", restaurantSaleType);
 
@@ -1097,7 +1095,7 @@ public class SalesTab_FR extends Fragment {
     private void promptWithCustomer() {
         if (!myPref.getPreferences(MyPreferences.pref_direct_customer_selection)) {
             //final Intent intent = new Intent(activity, SalesReceiptSplitActivity.class);
-            final Dialog dialog = new Dialog(activity, R.style.Theme_TransparentTest);
+            final Dialog dialog = new Dialog(getActivity(), R.style.Theme_TransparentTest);
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             dialog.setCancelable(true);
             dialog.setCanceledOnTouchOutside(true);
@@ -1145,7 +1143,7 @@ public class SalesTab_FR extends Fragment {
                 myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
             askEatInToGo();
         } else {
-            Intent intent = new Intent(activity, OrderingMain_FA.class);
+            Intent intent = new Intent(getActivity(), OrderingMain_FA.class);
             intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
             intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.TO_GO);
             startActivityForResult(intent, 0);
@@ -1197,7 +1195,7 @@ public class SalesTab_FR extends Fragment {
             myPref.setIsESY13P1(true);
             return true;
         } else {
-            return (activity.getResources().getConfiguration().screenLayout
+            return (getActivity().getResources().getConfiguration().screenLayout
                     & Configuration.SCREENLAYOUT_SIZE_MASK)
                     >= Configuration.SCREENLAYOUT_SIZE_LARGE;
         }
@@ -1208,7 +1206,7 @@ public class SalesTab_FR extends Fragment {
         return new TextWatcher() {
             private boolean doneScanning = false;
             private String val = "";
-            private CustomersHandler custHandler = new CustomersHandler(activity);
+            private CustomersHandler custHandler = new CustomersHandler(getActivity());
             private HashMap<String, String> map = new HashMap<String, String>();
 
             @Override
@@ -1219,7 +1217,7 @@ public class SalesTab_FR extends Fragment {
                     map = custHandler.getCustomerInfo(val.replace("\n", "").trim());
 
                     if (map.size() > 0) {
-                        SalesTaxCodesHandler taxHandler = new SalesTaxCodesHandler(activity);
+                        SalesTaxCodesHandler taxHandler = new SalesTaxCodesHandler(getActivity());
                         SalesTaxCodesHandler.TaxableCode taxable = taxHandler.checkIfCustTaxable(map.get("cust_taxable"));
                         myPref.setCustTaxCode(taxable, map.get("cust_taxable"));
 

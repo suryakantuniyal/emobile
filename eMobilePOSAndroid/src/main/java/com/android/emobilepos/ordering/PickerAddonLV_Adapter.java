@@ -33,12 +33,11 @@ public class PickerAddonLV_Adapter extends CursorAdapter implements OnClickListe
     private ImageLoader imageLoader;
     private OrderProduct orderProduct;
     private DisplayImageOptions options;
-    private Activity activity;
     private final int SELECT_EMPTY = 0, SELECT_CHECKED = 1, SELECT_CROSS = 2;
     private final int COLOR_GREEN = Color.rgb(0, 112, 60), COLOR_RED = Color.RED, COLOR_BLUE = Color.rgb(24, 136, 161);
     private boolean itHasAddonProducts = true;
     private Cursor c;
-    ProductAddonsHandler prodAddonsHandler;
+    private ProductAddonsHandler prodAddonsHandler;
 
     public interface ProductClickedCallback {
         void productClicked(int position);
@@ -46,7 +45,6 @@ public class PickerAddonLV_Adapter extends CursorAdapter implements OnClickListe
 
     public PickerAddonLV_Adapter(Activity context, Cursor _c, int flags, ImageLoader _imageLoader, OrderProduct orderProduct) {
         super(context, _c, flags);
-        activity = context;
         inflater = LayoutInflater.from(context);
         imageLoader = _imageLoader;
         prodAddonsHandler = new ProductAddonsHandler(context);

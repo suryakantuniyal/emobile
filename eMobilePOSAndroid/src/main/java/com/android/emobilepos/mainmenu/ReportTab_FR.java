@@ -33,7 +33,7 @@ public class ReportTab_FR extends Fragment implements OnClickListener {
         btnEndOfDay.setEnabled(hasPermissions);
         btnPerShift.setEnabled(hasPermissions);
         if (!hasPermissions) {
-            Toast.makeText(getActivity(), R.string.permission_denied, Toast.LENGTH_LONG);
+            Toast.makeText(getActivity(), R.string.permission_denied, Toast.LENGTH_LONG).show();
         }
         return view;
 

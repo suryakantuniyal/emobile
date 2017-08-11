@@ -62,8 +62,6 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
     private LinearLayout productAddonsSection;
     private LinearLayout orderProductSection;
     private LayoutInflater inflater;
-    private LinearLayout receiptPreview;
-    private AssignEmployee assignEmployee;
 
     @Nullable
     @Override
@@ -72,7 +70,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                 container, false);
         this.inflater = inflater;
         myPref = new MyPreferences(getActivity());
-        assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
         LinearLayout previewContainer = (LinearLayout) detailView.findViewById(R.id.receiptPreviewContainer);
         ViewGroup.LayoutParams params = previewContainer.getLayoutParams();
         params.width = myPref.getPrintPreviewLayoutWidth();
@@ -107,7 +105,6 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         TextView footer2 = (TextView) detailView.findViewById(R.id.footerLine2textView);
         TextView footer3 = (TextView) detailView.findViewById(R.id.footerLine3textView);
         orderProductSection = (LinearLayout) detailView.findViewById(R.id.order_products_section_linearlayout);
-        receiptPreview = (LinearLayout) detailView.findViewById(R.id.receiptPreviewContainer);
         deviceName.setText(String.format("%s(%s)", assignEmployee.getEmpName(), String.valueOf(assignEmployee.getEmpId())));
         orderDate.setText(DateUtils.getDateAsString(new Date(), "MMM/dd/yyyy"));
 
@@ -180,6 +177,10 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         productAddonsSection.addView(itemLL);
     }
 
+    private SplittedOrderSummary_FA getSplittedOrderSummaryFa(){
+        return (SplittedOrderSummary_FA) getActivity();
+    }
+
     private void applyPreviewCalculations(SplitedOrder splitedOrder) {
         SplittedOrderSummary_FA orderSummaryFa = (SplittedOrderSummary_FA) getActivity();
         BigDecimal orderSubtotal = new BigDecimal(0);
@@ -197,7 +198,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
             if (orderSummaryFa.getTax() != null) {
                 TaxesCalculator taxesCalculator = new TaxesCalculator(getActivity(), product, splitedOrder.tax_id,
                         orderSummaryFa.getTax(), orderSummaryFa.getDiscount(), Global.getBigDecimalNum(splitedOrder.ord_subtotal),
-                        Global.getBigDecimalNum(splitedOrder.ord_discount));
+                        Global.getBigDecimalNum(splitedOrder.ord_discount), getSplittedOrderSummaryFa().transType);
                 orderTaxes = orderTaxes.add(taxesCalculator.getTaxableAmount());
                 splitedOrder.setListOrderTaxes(taxesCalculator.getListOrderTaxes());
 

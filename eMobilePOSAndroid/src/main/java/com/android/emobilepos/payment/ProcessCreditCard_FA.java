@@ -124,7 +124,6 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
     private EditText amountPaidField;
     private EditText phoneNumberField, customerEmailField;
     private EditText authIDField, transIDField;
-    private TextView tax2Lbl;
     private EditText subtotal, tax1, tax2;
     // private boolean timedOut = false;
     private List<GroupTax> groupTaxRate;
@@ -147,8 +146,6 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
     private Button btnProcess;
     private ScrollView scrollView;
     private EMSIDTechUSB _msrUsbSams;
-    //    private EMSWalker walkerReader;
-    private NumberUtils numberUtils = new NumberUtils();
     private boolean isEverpay = false;
     private String _charge_xml;
     private boolean livePaymentRunning = false;
@@ -494,7 +491,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         tax1 = (EditText) findViewById(R.id.tax1CardAmount);
         tax2 = (EditText) findViewById(R.id.tax2CardAmount);
         TextView tax1Lbl = (TextView) findViewById(R.id.tax1CreditCardLbl);
-        tax2Lbl = (TextView) findViewById(R.id.tax2CreditCardLbl);
+        TextView tax2Lbl = (TextView) findViewById(R.id.tax2CreditCardLbl);
 
         tax1.setText(Global.formatDoubleStrToCurrency(extras.getString("Tax1_amount")));
         tax2.setText(Global.formatDoubleStrToCurrency(extras.getString("Tax2_amount")));

@@ -423,7 +423,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         }
     }
 
-    public class RefreshHolds extends AsyncTask<Void, Void, Void> {
+    private class RefreshHolds extends AsyncTask<Void, Void, Void> {
         private ProgressDialog myProgressDialog;
 
         @Override
@@ -465,7 +465,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         }
     }
 
-    public class checkHoldStatus extends AsyncTask<Void, String, String> {
+    private class checkHoldStatus extends AsyncTask<Void, String, String> {
         boolean wasProcessed = false;
         private ProgressDialog myProgressDialog;
 
@@ -692,7 +692,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         }
     }
 
-    public class HoldsCursorAdapter extends CursorAdapter {
+    private class HoldsCursorAdapter extends CursorAdapter {
         private LayoutInflater inflater;
 
         HoldsCursorAdapter(Context context, Cursor c, int flags) {

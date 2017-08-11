@@ -12,9 +12,6 @@ import com.android.emobilepos.models.Tax;
 import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
-import com.android.emobilepos.ordering.OrderLoyalty_FR;
-import com.android.emobilepos.ordering.OrderRewards_FR;
-import com.android.emobilepos.ordering.OrderingMain_FA;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -27,26 +24,28 @@ import java.util.List;
  */
 public class TaxesCalculator {
     private final Global global;
+    private final OrderProduct orderProduct;
+    private final String taxID;
+    private final Tax taxSelected;
+    List<HashMap<String, String>> listMapTaxes;
+    AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
     private BigDecimal discount_rate;
     private BigDecimal discount_amount;
     private String discountID;
     private BigDecimal taxableSubtotal = new BigDecimal("0");
-    List<HashMap<String, String>> listMapTaxes;
     private Activity activity;
     private MyPreferences myPref;
-    private final OrderProduct orderProduct;
-    private final String taxID;
-    private final Tax taxSelected;
     private BigDecimal taxableAmount = new BigDecimal(0.00);
     private Discount discountSelected;
     private BigDecimal discountable_sub_total;
     private BigDecimal itemsDiscountTotal;
     private BigDecimal taxableDueAmount = new BigDecimal(0.00);
-    AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
     private ArrayList<DataTaxes> listOrderTaxes;
+    private Global.TransactionType mTransType;
 
     public TaxesCalculator(Activity activity, OrderProduct orderProduct, String taxID, Tax taxSelected,
-                           Discount discount, BigDecimal discountable_sub_total, BigDecimal itemsDiscountTotal) {
+                           Discount discount, BigDecimal discountable_sub_total, BigDecimal itemsDiscountTotal, Global.TransactionType mTransType) {
+        this.mTransType = mTransType;
         this.setDiscountable_sub_total(discountable_sub_total);
         this.setItemsDiscountTotal(itemsDiscountTotal);
         global = (Global) activity.getApplication();
@@ -61,6 +60,50 @@ public class TaxesCalculator {
         setupTaxesHolder();
         setDiscountValue();
         calculateTaxes();
+    }
+
+    public static ArrayList<DataTaxes> getDataTaxes(OrderProduct orderProduct, Context context, String taxID) {
+        List<HashMap<String, String>> listMapTaxes = getTaxValue(orderProduct, context, taxID);
+        int size = listMapTaxes.size();
+        ArrayList<DataTaxes> listOrderTaxes = new ArrayList<>();
+        DataTaxes tempTaxes;
+        for (int i = 0; i < size; i++) {
+            tempTaxes = new DataTaxes();
+            tempTaxes.setTax_name(listMapTaxes.get(i).get("tax_name"));
+            tempTaxes.setOrd_id("");
+            tempTaxes.setTax_amount("0");
+            tempTaxes.setTax_rate(listMapTaxes.get(i).get("tax_rate"));
+            listOrderTaxes.add(tempTaxes);
+        }
+        return listOrderTaxes;
+    }
+
+    public static List<HashMap<String, String>> getTaxValue(OrderProduct orderProduct, Context context, String taxID) {
+        List<HashMap<String, String>> listMapTaxes = new ArrayList<>();
+        TaxesHandler taxesHandler = new TaxesHandler(context);
+        TaxesGroupHandler taxesGroupHandler = new TaxesGroupHandler(context);
+        MyPreferences preferences = new MyPreferences(context);
+        if (!preferences.isRetailTaxes()) {
+            listMapTaxes = taxesHandler.getTaxDetails(taxID, "");
+            if (listMapTaxes.size() > 0 && listMapTaxes.get(0).get("tax_type").equals("G")) {
+                listMapTaxes = taxesGroupHandler.getIndividualTaxes(listMapTaxes.get(0).get("tax_id"),
+                        listMapTaxes.get(0).get("tax_code_id"));
+            }
+        } else {
+            Tax tax = taxesHandler.getTax(taxID, orderProduct.getProd_taxId(),
+                    Double.parseDouble(orderProduct.getFinalPrice()));
+            HashMap<String, String> mapTax = new HashMap<>();
+            mapTax.put("tax_id", taxID);
+            mapTax.put("tax_name", tax.getTaxName());
+            mapTax.put("tax_rate", tax.getTaxRate());
+            listMapTaxes.add(mapTax);
+        }
+        return listMapTaxes;
+    }
+
+    public static OrderProduct getTaxableOrderProduct(Order order, OrderProduct orderProduct, Tax tax) {
+
+        return new OrderProduct();
     }
 
     public void calculateTaxes() {
@@ -144,7 +187,7 @@ public class TaxesCalculator {
                 BigDecimal temp = new BigDecimal(taxAmount).divide(new BigDecimal("100")).setScale(6,
                         RoundingMode.HALF_UP);
 //                tempSubTotal = tempSubTotal.abs().subtract(new BigDecimal(orderProduct.getDiscount_value()).abs());
-                if (orderProduct.isReturned() && OrderingMain_FA.mTransType != Global.TransactionType.RETURN) {
+                if (orderProduct.isReturned() && mTransType != Global.TransactionType.RETURN) {
                     tempSubTotal = tempSubTotal.negate();
                 }
                 BigDecimal tax1 = tempSubTotal.multiply(temp);
@@ -334,7 +377,6 @@ public class TaxesCalculator {
         setTaxableAmount(getTaxableAmount().add(_total_tax).setScale(6, RoundingMode.HALF_UP));
     }
 
-
     public void setTaxValue() {
         TaxesHandler taxesHandler = new TaxesHandler(activity);
         TaxesGroupHandler taxesGroupHandler = new TaxesGroupHandler(activity);
@@ -360,45 +402,6 @@ public class TaxesCalculator {
             mapTax.put("tax_rate", tax.getTaxRate());
             listMapTaxes.add(mapTax);
         }
-    }
-
-    public static ArrayList<DataTaxes> getDataTaxes(OrderProduct orderProduct, Context context, String taxID) {
-        List<HashMap<String, String>> listMapTaxes = getTaxValue(orderProduct, context, taxID);
-        int size = listMapTaxes.size();
-        ArrayList<DataTaxes> listOrderTaxes = new ArrayList<>();
-        DataTaxes tempTaxes;
-        for (int i = 0; i < size; i++) {
-            tempTaxes = new DataTaxes();
-            tempTaxes.setTax_name(listMapTaxes.get(i).get("tax_name"));
-            tempTaxes.setOrd_id("");
-            tempTaxes.setTax_amount("0");
-            tempTaxes.setTax_rate(listMapTaxes.get(i).get("tax_rate"));
-            listOrderTaxes.add(tempTaxes);
-        }
-        return listOrderTaxes;
-    }
-
-    public static List<HashMap<String, String>> getTaxValue(OrderProduct orderProduct, Context context, String taxID) {
-        List<HashMap<String, String>> listMapTaxes = new ArrayList<>();
-        TaxesHandler taxesHandler = new TaxesHandler(context);
-        TaxesGroupHandler taxesGroupHandler = new TaxesGroupHandler(context);
-        MyPreferences preferences = new MyPreferences(context);
-        if (!preferences.isRetailTaxes()) {
-            listMapTaxes = taxesHandler.getTaxDetails(taxID, "");
-            if (listMapTaxes.size() > 0 && listMapTaxes.get(0).get("tax_type").equals("G")) {
-                listMapTaxes = taxesGroupHandler.getIndividualTaxes(listMapTaxes.get(0).get("tax_id"),
-                        listMapTaxes.get(0).get("tax_code_id"));
-            }
-        } else {
-            Tax tax = taxesHandler.getTax(taxID, orderProduct.getProd_taxId(),
-                    Double.parseDouble(orderProduct.getFinalPrice()));
-            HashMap<String, String> mapTax = new HashMap<>();
-            mapTax.put("tax_id", taxID);
-            mapTax.put("tax_name", tax.getTaxName());
-            mapTax.put("tax_rate", tax.getTaxRate());
-            listMapTaxes.add(mapTax);
-        }
-        return listMapTaxes;
     }
 
     public BigDecimal getDiscount_rate() {
@@ -488,13 +491,6 @@ public class TaxesCalculator {
         return dataTaxes;
     }
 
-    private TaxesCalculator calculateTaxes(OrderProduct orderProduct) {
-
-        return new TaxesCalculator(activity, orderProduct, Global.taxID,
-                taxSelected, discountSelected, discountable_sub_total, itemsDiscountTotal);
-
-    }
-
 //    public void reCalculate(Order order, List<OrderProduct> orderProducts) {
 //        int size = orderProducts.size();
 //        taxableSubtotal = new BigDecimal("0.00");
@@ -570,17 +566,19 @@ public class TaxesCalculator {
 //        order.ord_discount_id = discountID;
 //        order.ord_taxamount = String.valueOf(Global.getRoundBigDecimal(taxes.taxableAmount));
 //    }
-
-    public static OrderProduct getTaxableOrderProduct(Order order, OrderProduct orderProduct, Tax tax) {
-
-        return new OrderProduct();
-    }
+//
+//    private TaxesCalculator calculateTaxes(OrderProduct orderProduct) {
+//
+//        return new TaxesCalculator(activity, orderProduct, Global.taxID,
+//                taxSelected, discountSelected, discountable_sub_total, itemsDiscountTotal);
+//
+//    }
 
     public ArrayList<DataTaxes> getListOrderTaxes() {
         return listOrderTaxes;
     }
 
-    public void setListOrderTaxes(ArrayList<DataTaxes> listOrderTaxes) {
-        this.listOrderTaxes = listOrderTaxes;
-    }
+//    public void setListOrderTaxes(ArrayList<DataTaxes> listOrderTaxes) {
+//        this.listOrderTaxes = listOrderTaxes;
+//    }
 }

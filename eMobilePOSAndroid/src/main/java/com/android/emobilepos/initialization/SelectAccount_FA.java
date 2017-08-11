@@ -47,7 +47,6 @@ import io.realm.Realm;
 public class SelectAccount_FA extends BaseFragmentActivityActionBar {
     private Context thisContext;
     private ProgressDialog myProgressDialog;
-    private Activity activity;
     private Dialog promptDialog;
     private DBManager dbManager;
 
@@ -88,11 +87,10 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
     public void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
-        activity = this;
-        new DBManager(activity);
+        new DBManager(this);
         final MyPreferences myPref = new MyPreferences(this);
         if (myPref.getLogIn()) {
-            dbManager = new DBManager(activity, Global.FROM_LOGIN_ACTIVITTY);
+            dbManager = new DBManager(this, Global.FROM_LOGIN_ACTIVITTY);
             if (dbManager.isNewDBVersion()) {
                 dbManager.alterTables();
                 AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
@@ -116,7 +114,7 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
                     startActivity(intent);
                     finish();
                 } else {
-                    AlertDialog.Builder alertDlogBuilder = new AlertDialog.Builder(activity);
+                    AlertDialog.Builder alertDlogBuilder = new AlertDialog.Builder(this);
                     promptDialog = alertDlogBuilder.setTitle("Urgent").setCancelable(false)
                             .setMessage("A new Database version must be installed...").
                                     setPositiveButton("Install", new DialogInterface.OnClickListener() {
@@ -161,7 +159,7 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
         }
     }
 
-    public class SyncReceiveTask extends AsyncTask<DBManager, Void, Boolean> {
+    private class SyncReceiveTask extends AsyncTask<DBManager, Void, Boolean> {
         ProgressDialog dialog;
 
         @Override
@@ -187,14 +185,14 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
                 Global.showPrompt(SelectAccount_FA.this, R.string.sync_title, getString(R.string.sync_fail));
             } else {
                 Intent intent = new Intent(SelectAccount_FA.this, MainMenu_FA.class);
-                activity.setResult(-1);
+                setResult(-1);
                 startActivity(intent);
-                activity.finish();
+                finish();
             }
         }
     }
 
-    public class validateLoginAsync extends AsyncTask<String, String, Boolean> {
+    private class validateLoginAsync extends AsyncTask<String, String, Boolean> {
 
         @Override
         protected void onPreExecute() {
@@ -207,7 +205,7 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
 
         @Override
         protected Boolean doInBackground(String... params) {
-            Post post = new Post(activity);
+            Post post = new Post(SelectAccount_FA.this);
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SaxLoginHandler handler = new SaxLoginHandler();
             boolean proceed = false;
@@ -228,7 +226,7 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
         @Override
         protected void onPostExecute(Boolean proceed) {
             myProgressDialog.dismiss();
-            MyPreferences myPref = new MyPreferences(activity);
+            MyPreferences myPref = new MyPreferences(SelectAccount_FA.this);
             if (proceed) {
                 Intent intent = new Intent(thisContext, SelectEmployee_FA.class);
                 startActivityForResult(intent, 0);
@@ -282,14 +280,12 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
             if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                     && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-                if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
-                } else {
+                if (!shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
                     requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                             PermissionType.ACCESS_FINE_LOCATION.ordinal());
                 }
 
-                if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION)) {
-                } else {
+                if (!shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION)) {
                     requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
                             PermissionType.ACCESS_COARSE_LOCATION.ordinal());
                 }
@@ -300,8 +296,7 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
     public void checkWritePermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                } else {
+                if (!shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                     requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                             PermissionType.WRITE_EXTERNAL_STORAGE.ordinal());
                 }
@@ -312,8 +307,7 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
     public void checkCameraPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
-                } else {
+                if (!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
                     requestPermissions(new String[]{Manifest.permission.CAMERA},
                             PermissionType.CAMERA.ordinal());
                 }
@@ -324,8 +318,7 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
     public void checkPhoneStatePermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-                if (shouldShowRequestPermissionRationale(Manifest.permission.READ_PHONE_STATE)) {
-                } else {
+                if (!shouldShowRequestPermissionRationale(Manifest.permission.READ_PHONE_STATE)) {
                     requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE},
                             PermissionType.READ_PHONE_STATE.ordinal());
                 }
@@ -336,8 +329,7 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
     public void checkMicrophonePermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-                if (shouldShowRequestPermissionRationale(Manifest.permission.MODIFY_AUDIO_SETTINGS)) {
-                } else {
+                if (!shouldShowRequestPermissionRationale(Manifest.permission.MODIFY_AUDIO_SETTINGS)) {
                     requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO},
                             PermissionType.ACCESS_MICROPHONE.ordinal());
                 }

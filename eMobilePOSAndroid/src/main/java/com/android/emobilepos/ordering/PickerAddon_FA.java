@@ -22,9 +22,9 @@ import android.widget.TextView;
 import com.android.database.ProductAddonsHandler;
 import com.android.database.ProductsHandler;
 import com.android.emobilepos.R;
-import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.ParentAddon;
 import com.android.emobilepos.models.Product;
+import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
@@ -54,7 +54,6 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
     private Global global;
     private boolean isEditAddon = false;
     private MyPreferences myPref;
-    private int item_position = 0;
     private String _prod_id = "";
     private StringBuilder _ord_desc = new StringBuilder();
     private BigDecimal addedAddon = new BigDecimal("0");
@@ -62,16 +61,16 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
     private ImageLoader imageLoader;
     private DisplayImageOptions options;
     private ProductAddonsHandler prodAddonsHandler;
-    public static PickerAddon_FA instance;
     private String selectedSeatNumber;
     private OrderProduct orderProduct;
     private List<ParentAddon> parentAddons;
-
+    private Global.TransactionType mTransType;
+    private List<View> listParentViews;
+    private int index_selected_parent = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         myPref = new MyPreferences(this);
-        instance = this;
         if (!myPref.getIsTablet())                        //reset to default layout (not as dialog)
             super.setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
@@ -90,12 +89,12 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
         global = (Global) activity.getApplication();
         prodAddonsHandler = new ProductAddonsHandler(activity);
         _prod_id = extras.getString("prod_id");
+        mTransType = (Global.TransactionType) extras.get("transType");
         orderProduct = gson.fromJson(extras.getString("orderProduct"), OrderProduct.class);
         parentAddons = prodAddonsHandler.getParentAddons(orderProduct.getProd_id());
         Cursor c = prodAddonsHandler.getSpecificChildAddons(_prod_id, parentAddons.get(0).getCategoryId());
         myGridView = (GridView) findViewById(R.id.asset_grid);
         isEditAddon = extras.getBoolean("isEditAddon", false);
-        item_position = extras.getInt("item_position");
         selectedSeatNumber = extras.getString("selectedSeatNumber");
         File cacheDir = new File(myPref.getCacheDir());
         if (!cacheDir.exists())
@@ -117,7 +116,6 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
         createParentAddons();
         hasBeenCreated = true;
     }
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -154,7 +152,6 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
 
     @Override
     public void onDestroy() {
-        instance = null;
         super.onDestroy();
     }
 
@@ -166,10 +163,6 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
                 break;
         }
     }
-
-
-    private List<View> listParentViews;
-    private int index_selected_parent = 0;
 
     private void createParentAddons() {
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -240,16 +233,18 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
                 intent.putExtra("orderProduct", orderProduct.toJson());
                 intent.putExtra("isFromAddon", true);
                 intent.putExtra("cat_id", extras.getString("cat_id"));
+                intent.putExtra("transType", mTransType);
+
                 startActivityForResult(intent, 0);
             } else {
-                OrderingMain_FA.automaticAddOrder(activity, true, global, orderProduct, selectedSeatNumber);
+                OrderingMain_FA.automaticAddOrder(activity, true, global, orderProduct, selectedSeatNumber, mTransType);
                 activity.setResult(2);
             }
 
         } else {
             updateLineItem();
-            if (Receipt_FR.fragInstance != null)
-                Receipt_FR.fragInstance.reCalculate();
+//            if (Receipt_FR.fragInstance != null)
+//                Receipt_FR.fragInstance.reCalculate();
         }
         activity.finish();
     }
