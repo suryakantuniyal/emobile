@@ -264,9 +264,8 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             case SEC_OTHER_TYPES:
                 Intent results = new Intent();
                 results.putExtra("prod_name", extras.getString("prod_name"));
-                activity.setResult(9, results);
-
-                activity.finish();
+                setResult(9, results);
+                finish();
                 break;
             case SEC_ADDITIONAL_INFO:
                 Intent intent = new Intent(activity, OrderAttributes_FA.class);
@@ -622,8 +621,8 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                     setProductInfo(OrderProductUtils.getOrderProductsByOrderProductId(global.order.getOrderProducts(), orderProduct.getOrdprod_id()).get(0));
                 }
 
-                activity.setResult(2);
-                activity.finish();
+                setResult(2);
+                finish();
             }
         }
     }

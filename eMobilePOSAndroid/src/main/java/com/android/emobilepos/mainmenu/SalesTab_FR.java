@@ -267,7 +267,7 @@ public class SalesTab_FR extends Fragment {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
-                        if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
+                        if (myPref.isCustomerRequired()) {
                             if (myPref.isRestaurantMode() &&
                                     myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
                                 askEatInToGo();
@@ -513,7 +513,7 @@ public class SalesTab_FR extends Fragment {
                             SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
                         if (validateClerkShift(Global.TransactionType.getByCode(pos))) {
-                            if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
+                            if (myPref.isCustomerRequired()) {
                                 Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_select_customer));
                             } else {
                                 if (myPref.isRestaurantMode() &&
@@ -540,7 +540,7 @@ public class SalesTab_FR extends Fragment {
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                         if (validateClerkShift(Global.TransactionType.getByCode(pos))) {
-                            if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
+                            if (myPref.isCustomerRequired()) {
                                 Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_select_customer));
                             } else {
                                 intent = new Intent(activity, OrderingMain_FA.class);
@@ -562,7 +562,7 @@ public class SalesTab_FR extends Fragment {
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                         if (validateClerkShift(Global.TransactionType.getByCode(pos))) {
-                            if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
+                            if (myPref.isCustomerRequired()) {
                                 Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_select_customer));
                             } else {
                                 intent = new Intent(activity, SelectPayMethod_FA.class);
