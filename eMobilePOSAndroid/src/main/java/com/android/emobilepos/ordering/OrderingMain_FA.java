@@ -47,7 +47,6 @@ import com.android.database.ProductsHandler;
 import com.android.database.SalesTaxCodesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.OrderProductListAdapter;
-import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.mainmenu.SalesTab_FR;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.OrderSeatProduct;
@@ -156,6 +155,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     private String associateId;
     private List<OrderAttributes> orderAttributes;
     private ArrayList<DataTaxes> listOrderTaxes;
+    private boolean loyaltySwiped = false;
+    private Dialog dlogMSR;
+    private SoundManager soundManager;
     //    public Handler receiptListHandler;
     private Handler ScanResultHandler = new Handler() {
         public void handleMessage(Message msg) {
@@ -166,13 +168,13 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
                     strDecodeResult = decodeResult.barcodeData.trim();
                     if (!strDecodeResult.isEmpty()) {
-                        SoundManager.playSound(1, 1);
+                        soundManager.playSound(1, 1);
                         scanAddItem(strDecodeResult);
                     }
                     break;
 
                 case DecodeManager.MESSAGE_DECODER_FAIL: {
-                    SoundManager.playSound(2, 1);
+                    soundManager.playSound(2, 1);
                 }
                 break;
                 case DecodeManager.MESSAGE_DECODER_READY: {
@@ -201,8 +203,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             }
         }
     };
-    private boolean loyaltySwiped = false;
-    private Dialog dlogMSR;
+
 
     public static void voidTransaction(Activity activity, Order order, List<ProductAttribute> ordProdAttr) {
         if (!Global.lastOrdID.isEmpty()) {
@@ -465,7 +466,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         // using the StartActivity method let's handle the intent
         Intent i = getIntent();
         handleDecodeData(i);
-
+        soundManager = SoundManager.getInstance();
         hasBeenCreated = true;
 
     }
@@ -798,9 +799,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         if (myPref.isDolphin(true, false) && mDecodeManager == null) {
             mDecodeManager = new DecodeManager(this, ScanResultHandler);
             try {
-                SoundManager.getInstance();
-                SoundManager.initSounds(this);
-                SoundManager.loadSounds();
+                soundManager.initSounds(this);
+                soundManager.loadSounds();
                 mDecodeManager.disableSymbology(CommonDefine.SymbologyID.SYM_CODE39);
                 mDecodeManager.setSymbologyDefaults(CommonDefine.SymbologyID.SYM_UPCA);
             } catch (RemoteException e) {

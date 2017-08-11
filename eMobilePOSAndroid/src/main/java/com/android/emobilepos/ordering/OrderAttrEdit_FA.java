@@ -81,6 +81,7 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
     // Honeywell Dolphin black
     private DecodeManager mDecodeManager = null;
     private boolean scannerInDecodeMode = false;
+    private SoundManager soundManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -133,6 +134,7 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
 
         setUpCardReader();
         setUpIfModify();
+        soundManager = SoundManager.getInstance();
 
         hasBeenCreated = true;
     }
@@ -161,9 +163,8 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
             }
         }
         if (mDecodeManager != null) {
-            SoundManager.getInstance();
-            SoundManager.initSounds(this);
-            SoundManager.loadSounds();
+            soundManager.initSounds(this);
+            soundManager.loadSounds();
         }
 
         super.onResume();
@@ -514,7 +515,7 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
                     break;
 
                 case DecodeManager.MESSAGE_DECODER_FAIL: {
-                    SoundManager.playSound(2, 1);
+                    soundManager.playSound(2, 1);
                 }
                 break;
                 case DecodeManager.MESSAGE_DECODER_READY: {

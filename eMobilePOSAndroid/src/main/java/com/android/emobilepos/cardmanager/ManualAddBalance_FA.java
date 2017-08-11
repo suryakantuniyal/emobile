@@ -61,7 +61,7 @@ public class ManualAddBalance_FA extends BaseFragmentActivityActionBar implement
     private EMSCallBack msrCallBack;
     private Global global;
     private boolean hasBeenCreated = false;
-    private static CheckBox cardSwipe;
+    private CheckBox cardSwipe;
     private CreditCardInfo cardInfoManager;
     private EMSUniMagDriver uniMagReader;
     private EMSMagtekAudioCardReader magtekReader;
@@ -74,7 +74,6 @@ public class ManualAddBalance_FA extends BaseFragmentActivityActionBar implement
     private static final String DATA_STRING_TAG = "com.motorolasolutions.emdk.datawedge.data_string";
     private ProgressDialog myProgressDialog;
     private Activity activity;
-    private NumberUtils numberUtils = new NumberUtils();
 
 
     @Override
