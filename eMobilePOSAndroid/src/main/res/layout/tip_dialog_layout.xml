@@ -17,8 +17,7 @@
             android:id="@+id/textView1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="30dp"
-            android:layout_marginTop="30dp"
+            android:layout_marginBottom="10dp"
             android:shadowColor="#FFFFFF"
             android:shadowDx="1"
             android:shadowDy="1"
@@ -33,13 +32,14 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:gravity="center"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp">
 
             <TextView
                 android:id="@+id/totalAmountView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingRight="3dp"
                 android:shadowColor="#FFFFFF"
                 android:shadowDx="1"
                 android:shadowDy="1"
@@ -66,8 +66,10 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:gravity="center">
+            android:layout_marginBottom="10dp"
+            android:gravity="center"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp">
 
             <Button
                 android:id="@+id/tenPercent"
@@ -108,7 +110,7 @@
             android:id="@+id/noneButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="10dp"
             android:background="@drawable/blue_btn_selector"
             android:paddingLeft="5dp"
             android:paddingRight="14dp"
@@ -119,7 +121,9 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center">
+            android:gravity="center"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp">
 
             <TextView
                 android:id="@+id/textView2"
@@ -133,7 +137,7 @@
 
             <com.android.support.MyEditText
                 android:id="@+id/otherTipAmountField"
-                android:layout_width="200dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="5dp"
                 android:background="@drawable/text_field_selector"
@@ -141,22 +145,23 @@
                 android:gravity="right"
                 android:inputType="numberDecimal"
                 android:textColor="#000000"
-                android:textSize="@dimen/field_text_size"></com.android.support.MyEditText>
+                android:textSize="@dimen/field_text_size" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
             android:gravity="center"
             android:orientation="horizontal"
-            android:paddingBottom="30dp">
+            android:layout_marginTop="10dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp">
 
             <Button
                 android:id="@+id/cancelTipButton"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="20dp"
+                android:layout_weight="1"
                 android:background="@drawable/blue_btn_selector"
                 android:paddingLeft="5dp"
                 android:paddingRight="14dp"
@@ -166,9 +171,9 @@
 
             <Button
                 android:id="@+id/acceptTipButton"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
+                android:layout_weight="1"
                 android:background="@drawable/blue_btn_selector"
                 android:paddingLeft="5dp"
                 android:paddingRight="14dp"
