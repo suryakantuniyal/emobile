@@ -35,7 +35,10 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
-public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements OnClickListener, OnItemClickListener {
+import interfaces.BCRCallbacks;
+import util.json.UIUtils;
+
+public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements OnClickListener, OnItemClickListener, BCRCallbacks {
     boolean isManualEntry = true;
     private ListView myListView;
     private Context thisContext = this;
@@ -75,10 +78,28 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
         search.setOnEditorActionListener(getSearchActionListener());
         search.addTextChangedListener(getSearchTextWatcher());
         search.setOnKeyListener(new View.OnKeyListener() {
+            public long startTyping;
+            public long stopTyping;
+
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 isManualEntry = false;
-                return true;
+//                if (startTyping == 0) {
+//                    startTyping = SystemClock.currentThreadTimeMillis();
+//                    v.postDelayed(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            if (search.getText().length() > 5) {
+//                                myCursor = handler.getSearchCust(search.getText().toString());
+//                                if (myCursor.getCount() == 1) {
+//                                    selectCustomer(0);
+//                                }
+//                            }
+//                        }
+//                    }, 1000);
+//                }
+                UIUtils.startBCR(v, search, ViewCustomers_FA.this);
+                return false;
             }
         });
         myListView.setOnItemClickListener(this);
@@ -98,7 +119,7 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
 
             @Override
             public void afterTextChanged(Editable arg0) {
-
+                String s = arg0.toString();
             }
 
             @Override
@@ -288,6 +309,15 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
             dlog.show();
         }
     }
+
+    @Override
+    public void executeBCR() {
+        myCursor = handler.getSearchCust(search.getText().toString());
+        if (myCursor.getCount() == 1) {
+            selectCustomer(0);
+        }
+    }
+
 
     public class CustomCursorAdapter extends CursorAdapter {
         private LayoutInflater inflater;
