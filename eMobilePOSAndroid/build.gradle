@@ -51,7 +51,7 @@ android {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
             versionName "1.2.2.58"
-            versionCode 135
+            versionCode 136
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -65,7 +65,7 @@ android {
             minSdkVersion 15
             applicationId 'com.emobilepos.icmpevo.app'
             versionName "1.2.2.58"
-            versionCode 135
+            versionCode 136
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -93,7 +93,7 @@ android {
             minSdkVersion 15
             applicationId 'com.emobilepos.ivupos.app'
             versionName "1.2.2.58"
-            versionCode 135
+            versionCode 136
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
