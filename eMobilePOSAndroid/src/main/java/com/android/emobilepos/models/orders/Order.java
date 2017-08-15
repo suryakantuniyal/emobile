@@ -172,6 +172,7 @@ public class Order implements Cloneable {
             if (discount != null) {
                 if (discount.isFixed()) {
                     totalDetails.setGranTotal(totalDetails.getGranTotal().subtract(Global.getBigDecimalNum(discount.getProductPrice())).setScale(6, RoundingMode.HALF_UP));
+
                 } else {
                     BigDecimal disAmout = totalDetails.getSubtotal()
                             .multiply(Global.getBigDecimalNum(discount.getProductPrice())

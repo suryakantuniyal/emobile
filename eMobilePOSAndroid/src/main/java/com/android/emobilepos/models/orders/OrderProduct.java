@@ -828,7 +828,7 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         if (isVAT()) {
             finalPrice = finalPrice.add(getProd_taxValue());
         }
-        BigDecimal discount = Global.getBigDecimalNum(getDisTotal());
+        BigDecimal discount = getDiscountTotal();
         subtotal = finalPrice.subtract(discount).add(addonsTotalPrice).setScale(6, RoundingMode.HALF_UP);
         return subtotal;
     }
@@ -852,8 +852,23 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         return granTotal;
     }
 
+//    public BigDecimal getDiscountTotal() {
+//        return Global.getBigDecimalNum(getDisTotal());
+//}
+
     public BigDecimal getDiscountTotal() {
-        return Global.getBigDecimalNum(getDisTotal());
+        BigDecimal calculatedDiscount;
+        BigDecimal disAmount = Global.getBigDecimalNum(getDisAmount());
+        if (isDiscountFixed()) {
+            calculatedDiscount = disAmount;
+        } else {
+            calculatedDiscount = getItemTotalCalculated().multiply(disAmount).divide(new BigDecimal(100)).setScale(6, RoundingMode.HALF_UP);
+        }
+        if (getItemTotalCalculated().compareTo(calculatedDiscount) < 1) {
+            calculatedDiscount = getItemTotalCalculated();
+        }
+        setDisTotal(String.valueOf(Global.getRoundBigDecimal(calculatedDiscount)));
+        return Global.getRoundBigDecimal(calculatedDiscount);
     }
 
     public BigDecimal getProductPriceTaxableAmountCalculated() {
