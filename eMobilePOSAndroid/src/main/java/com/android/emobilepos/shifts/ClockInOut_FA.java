@@ -91,7 +91,7 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
         hasBeenCreated = true;
         clockOut.setOnClickListener(this);
         clockIn.setOnClickListener(this);
-        new sendUnsyncTimeClock().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
+        new SendUnsyncTimeClock().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
     }
 
     @Override
@@ -128,7 +128,7 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
                     listTimeClock.add(createTimeClock(false, DateUtils.getDateAsString(new Date())));
                     timeClockHandler.insert(listTimeClock, false);
                     listTimeClock.clear();
-                    new sendUnsyncTimeClock().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
+                    new SendUnsyncTimeClock().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
                 }
                 break;
             case R.id.clockOut:
@@ -137,7 +137,7 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
                     listTimeClock.add(createTimeClock(true, DateUtils.getDateAsString(new Date())));
                     timeClockHandler.insert(listTimeClock, false);
                     listTimeClock.clear();
-                    new sendUnsyncTimeClock().execute(false);
+                    new SendUnsyncTimeClock().execute(false);
                 } else {
                     promptDateTime();
                 }
@@ -271,7 +271,7 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
                     globalDlog.dismiss();
                     timeClockHandler.insert(listTimeClock, false);
                     listTimeClock.clear();
-                    new sendUnsyncTimeClock().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
+                    new SendUnsyncTimeClock().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
                 } else {
                     globalDlog.dismiss();
                     validPassword = false;
@@ -293,7 +293,7 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
         return mClerkID;
     }
 
-    public class sendUnsyncTimeClock extends AsyncTask<Boolean, Void, Void> {
+    public class SendUnsyncTimeClock extends AsyncTask<Boolean, Void, Void> {
         boolean receiveTimeClock = false;
 
         @Override
@@ -342,14 +342,14 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
         protected void onPostExecute(Void n) {
             myProgressDialog.dismiss();
             if (receiveTimeClock)
-                new getLastUpdate().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                new GetLastUpdate().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             else
                 activity.finish();
         }
 
     }
 
-    public class getLastUpdate extends AsyncTask<Void, String, String> {
+    public class GetLastUpdate extends AsyncTask<Void, String, String> {
         String errorMsg = "";
         boolean timedOut = false;
         boolean isOut = false;

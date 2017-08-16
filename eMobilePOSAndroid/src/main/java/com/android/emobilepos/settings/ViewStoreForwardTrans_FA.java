@@ -51,6 +51,7 @@ import javax.xml.parsers.SAXParserFactory;
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
+import util.json.UIUtils;
 
 public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar implements OnItemClickListener, OnClickListener {
     private Activity activity;
@@ -136,13 +137,15 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
         switch (v.getId()) {
             case R.id.btnProcessAll:
                 btnProcessAll.setEnabled(false);
-                new processLivePaymentAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                if(UIUtils.singleOnClick(v)) {
+                    new ProcessLivePaymentAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                }
                 break;
         }
     }
 
 
-    private class processLivePaymentAsync extends AsyncTask<Void, Void, Void> {
+    private class ProcessLivePaymentAsync extends AsyncTask<Void, Void, Void> {
         private HashMap<String, String> boloroHashMap = new HashMap<String, String>();
 
         private HashMap<String, String> parsedMap = new HashMap<String, String>();
