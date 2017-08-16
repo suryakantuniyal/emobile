@@ -857,6 +857,9 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
 //}
 
     public BigDecimal getDiscountTotal() {
+        if (isReturned()) {
+            return new BigDecimal(0);
+        }
         BigDecimal calculatedDiscount;
         BigDecimal disAmount = Global.getBigDecimalNum(getDisAmount());
         if (isDiscountFixed()) {
