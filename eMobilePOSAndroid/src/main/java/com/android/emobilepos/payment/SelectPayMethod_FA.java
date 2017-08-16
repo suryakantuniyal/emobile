@@ -345,11 +345,19 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         }
         skipLogin = false;
         initHeaderSection();
+        this.myListview.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                myListview.setOnItemClickListener(SelectPayMethod_FA.this);
+            }
+        }, 1000);
+
         super.onResume();
     }
 
     @Override
     public void onPause() {
+        myListview.setOnItemClickListener(null);
         super.onPause();
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         boolean isScreenOn;

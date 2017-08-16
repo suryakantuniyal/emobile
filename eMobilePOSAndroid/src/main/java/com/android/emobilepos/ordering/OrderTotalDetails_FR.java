@@ -579,6 +579,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             }
         }
         taxSelected = position;
+        setupTaxesHolder();
         Global.taxPosition = position;
         Global.taxID = taxID;
     }
