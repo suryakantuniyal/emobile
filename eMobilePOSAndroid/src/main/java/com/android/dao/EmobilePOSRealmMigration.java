@@ -19,7 +19,7 @@ import io.realm.RealmSchema;
  * Created by Guarionex on 4/13/2016.
  */
 public class EmobilePOSRealmMigration implements io.realm.RealmMigration {
-    public static int REALM_SCHEMA_VERSION = 5;
+    public static int REALM_SCHEMA_VERSION = 6;
 
     @Override
     public void migrate(DynamicRealm realm, long oldVersion, long newVersion) {
@@ -49,9 +49,20 @@ public class EmobilePOSRealmMigration implements io.realm.RealmMigration {
                                 .addField("custFieldName", String.class)
                                 .addField("custValue", String.class);
                     }
-                    oldVersion++;
+                    oldVersion = 4;
                 }
                 if (oldVersion == 4) {
+                    schema.remove(CustomerCustomField.class.getSimpleName());
+                    schema.create(CustomerCustomField.class.getSimpleName()).
+                            addField("id", String.class, FieldAttribute.PRIMARY_KEY)
+                            .addField("custId", String.class, FieldAttribute.INDEXED)
+                            .addField("custFieldId", String.class, FieldAttribute.INDEXED)
+                            .addField("custFieldName", String.class)
+                            .addField("custValue", String.class);
+                    oldVersion++;
+                }
+
+                if (oldVersion == 5) {
                     schema.create(BixolonTransaction.class.getSimpleName()).
                             addField("orderId", String.class, FieldAttribute.PRIMARY_KEY)
                             .addField("bixolonTransactionId", String.class, FieldAttribute.INDEXED)
@@ -74,17 +85,8 @@ public class EmobilePOSRealmMigration implements io.realm.RealmMigration {
                             .addRealmListField("bixolontaxes", schema.get(BixolonTax.class.getSimpleName()))
                             .addRealmListField("paymentMethods", schema.get(BixolonPaymentMethod.class.getSimpleName()))
                             .addField("merchantName", String.class);
-
+                    oldVersion++;
                 }
-            }
-            if (oldVersion == 4) {
-                schema.remove(CustomerCustomField.class.getSimpleName());
-                schema.create(CustomerCustomField.class.getSimpleName()).
-                        addField("id", String.class, FieldAttribute.PRIMARY_KEY)
-                        .addField("custId", String.class, FieldAttribute.INDEXED)
-                        .addField("custFieldId", String.class, FieldAttribute.INDEXED)
-                        .addField("custFieldName", String.class)
-                        .addField("custValue", String.class);
             }
         } catch (Exception e) {
             Crashlytics.logException(e);
