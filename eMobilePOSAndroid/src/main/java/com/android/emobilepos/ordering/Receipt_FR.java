@@ -974,7 +974,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 if (!voidOnHold) {
                     ordersHandler.updateFinishOnHold(Global.lastOrdID);
                     global.order.processed = "10";
-                    global.order.isOnHold = "0";
+                    global.order.isOnHold = "1";
                     ordersHandler.insert(global.order);
                     global.encodedImage = "";
                     orderProductsHandler.insert(order.getOrderProducts());
@@ -2237,7 +2237,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         }
     }
 
-    class SyncOnHolds extends AsyncTask<Void, Void, Boolean> {
+    private class SyncOnHolds extends AsyncTask<Void, Void, Boolean> {
         ProgressDialog dialog;
 
         @Override
@@ -2255,8 +2255,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         protected Boolean doInBackground(Void... params) {
             DBManager dbManager = new DBManager(getActivity());
             SynchMethods sm = new SynchMethods(dbManager);
-            boolean result = sm.synchSendOnHold(false, false, getActivity(), null);
-            return result;
+            return sm.synchSendOnHold(false, false, getActivity(), null);
         }
 
         @Override
@@ -2268,10 +2267,11 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         && (((OrderingMain_FA) getActivity()).orderingAction == OrderingMain_FA.OrderingAction.CHECKOUT ||
                         ((OrderingMain_FA) getActivity()).orderingAction != OrderingMain_FA.OrderingAction.BACK_PRESSED)) {
                     showSplitedOrderPreview();
-                } else {
+                } else if (getOrderingMainFa().orderingAction != OrderingMain_FA.OrderingAction.CHECKOUT) {
                     getActivity().finish();
                 }
             }
+            getOrderingMainFa().buildOrderStarted = false;
             Global.releaseOrientation(getActivity());
         }
     }

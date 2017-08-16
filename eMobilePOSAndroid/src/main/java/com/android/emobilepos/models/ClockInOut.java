@@ -37,7 +37,7 @@ public class ClockInOut {
         if (!TextUtils.isEmpty(clockInOut.getClockOut())) {
             out = DateUtils.getDateStringAsDate(clockInOut.getClockOut(), DateUtils.DATE_PATTERN);
         }
-        if (in.compareTo(out) == -1) {
+        if (in != null && out != null && in.compareTo(out) == -1) {
             Map<TimeUnit, Long> timeMap = DateUtils.computeDiff(in, out);
             Long days = timeMap.get(TimeUnit.DAYS) * 60 * 24;
             Long hours = timeMap.get(TimeUnit.HOURS) * 60;
