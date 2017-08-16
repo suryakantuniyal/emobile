@@ -579,6 +579,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             }
         }
         taxSelected = position;
+        setupTaxesHolder();
         Global.taxPosition = position;
         Global.taxID = taxID;
     }
@@ -694,6 +695,11 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
     private class ReCalculate extends AsyncTask<List<OrderProduct>, Void, OrderTotalDetails> {
 
         @Override
+        protected void onPreExecute() {
+            Global.lockOrientation(getActivity());
+        }
+
+        @Override
         protected OrderTotalDetails doInBackground(List<OrderProduct>... params) {
             List<OrderProduct> orderProducts = params[0];
             if (myPref.isMixAnMatch() && orderProducts != null && !orderProducts.isEmpty()) {
@@ -723,8 +729,10 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             granTotal.setText(Global.getCurrencyFrmt(String.valueOf(gran_total)));
             globalTax.setText(Global.getCurrencyFrmt(String.valueOf(tax_amount)));
             globalDiscount.setText(Global.getCurrencyFrmt(String.valueOf(discount_amount)));
-            getOrderingMainFa().getLoyaltyFragment().recalculatePoints(String.valueOf(totalDetails.getPointsSubTotal()), String.valueOf(totalDetails.getPointsInUse()),
-                    String.valueOf(totalDetails.getPointsAcumulable()), gran_total.toString());
+            if(getOrderingMainFa().getLoyaltyFragment()!=null) {
+                getOrderingMainFa().getLoyaltyFragment().recalculatePoints(String.valueOf(totalDetails.getPointsSubTotal()), String.valueOf(totalDetails.getPointsInUse()),
+                        String.valueOf(totalDetails.getPointsAcumulable()), gran_total.toString());
+            }
             BigDecimal discountableAmount = totalDetails.getSubtotal();
             discountableAmount = discountableAmount.subtract(Global.rewardChargeAmount);
             OrderRewards_FR.setRewardSubTotal(discountable_sub_total.toString());
@@ -732,6 +740,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             mainFa.enableCheckoutButton();
             mainFa.getLeftFragment().mainLVAdapter.notifyDataSetChanged();
             Receipt_FR.receiptListView.setSelection(mainFa.getLeftFragment().mainLVAdapter.selectedPosition);
+//            Global.releaseOrientation(getActivity());
         }
     }
 

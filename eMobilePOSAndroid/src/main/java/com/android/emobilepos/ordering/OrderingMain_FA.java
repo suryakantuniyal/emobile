@@ -41,7 +41,6 @@ import com.android.database.CustomerInventoryHandler;
 import com.android.database.CustomersHandler;
 import com.android.database.OrderProductsAttr_DB;
 import com.android.database.OrderProductsHandler;
-import com.android.database.OrderTaxes_DB;
 import com.android.database.OrdersHandler;
 import com.android.database.PayMethodsHandler;
 import com.android.database.ProductsHandler;
@@ -417,6 +416,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         super.onCreate(savedInstanceState);
         setContentView(R.layout.order_main_layout);
         global = (Global) getApplication();
+        Global.lockOrientation(this);
         if (savedInstanceState == null) {
             global.resetOrderDetailsValues();
             global.clearListViewData();
@@ -1484,7 +1484,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     cardInfoManager);
         }
 
-        new processAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, generatedURL);
+        new ProcessAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, generatedURL);
     }
 
     public int getSelectedSeatsAmount() {
@@ -1643,15 +1643,15 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
     }
 
-    private class processAsync extends AsyncTask<String, String, HashMap<String, String>> {
+    private class ProcessAsync extends AsyncTask<String, String, HashMap<String, String>> {
         private String urlToPost;
         private boolean wasProcessed = false;
         private String errorMsg = "Request could not be processed.";
 
         @Override
         protected void onPreExecute() {
-            int orientation = Global.getScreenOrientation(OrderingMain_FA.this);
-            setRequestedOrientation(orientation);
+//            int orientation = Global.getScreenOrientation(OrderingMain_FA.this);
+//            setRequestedOrientation(orientation);
             myProgressDialog = new ProgressDialog(OrderingMain_FA.this);
             myProgressDialog.setMessage("Processing Balance Inquiry...");
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -1708,8 +1708,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
         @Override
         protected void onPostExecute(HashMap<String, String> parsedMap) {
-            if (Global.isTablet(OrderingMain_FA.this))
-                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+//            if (Global.isTablet(OrderingMain_FA.this))
+//                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
 
             if (myProgressDialog != null && myProgressDialog.isShowing()) {
                 myProgressDialog.dismiss();
@@ -1718,7 +1718,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             if (wasProcessed) // payment processing succeeded
             {
                 String temp = (parsedMap.get("CardBalance") == null ? "0.0" : parsedMap.get("CardBalance"));
-                if (loyaltySwiped) {
+                if (loyaltySwiped && loyaltyFragment != null) {
                     loyaltyFragment.hideTapButton();
                     loyaltyFragment.setPointBalance(temp);
                 } else {
