@@ -42,7 +42,6 @@ public class MyPreferences {
     public static final String pref_show_only_group_taxes = "pref_show_only_group_taxes";
     public static final String pref_mix_match = "pref_mix_match";
     public static final String pref_holds_polling_service = "pref_holds_polling_service";
-    public static final String pref_require_customer = "pref_require_customer";
     public static final String pref_clear_customer = "pref_clear_customer";
     public static final String pref_show_confirmation_screen = "pref_show_confirmation_screen";
     public static final String pref_direct_customer_selection = "pref_direct_customer_selection";
@@ -57,7 +56,6 @@ public class MyPreferences {
     public static final String pref_use_loyal_patron = "pref_use_loyal_patron";
     public static final String pref_giftcard_auto_balance_request = "pref_giftcard_auto_balance_request";
     public static final String pref_giftcard_show_balance = "pref_giftcard_show_balance";
-
     public static final String pref_pay_with_tupyx = "pref_pay_with_tupyx";
     public static final String pref_mw_with_genius = "pref_mw_with_genius";
     public static final String pref_config_genius_peripheral = "pref_config_genius_peripheral";
@@ -72,7 +70,6 @@ public class MyPreferences {
     public static final String pref_allow_manual_credit_card = "pref_allow_manual_credit_card";
     public static final String pref_show_tips_for_cash = "pref_show_tips_for_cash";
     public static final String pref_audio_card_reader = "pref_audio_card_reader";
-    private static final String pref_prefill_total_amount = "pref_prefill_total_amount";
     public static final String pref_use_store_and_forward = "pref_use_store_and_forward";
     public static final String pref_return_require_refund = "pref_return_require_refund";
     public static final String pref_convert_to_reward = "pref_convert_to_reward";
@@ -117,6 +114,8 @@ public class MyPreferences {
     public static final String print_terms_conditions = "print_terms_conditions";
     public static final String print_emobilepos_website = "print_emobilepos_website";
     public static final String print_ivuloto_qr = "print_ivuloto_qr";
+    private static final String pref_require_customer = "pref_require_customer";
+    private static final String pref_prefill_total_amount = "pref_prefill_total_amount";
     private static final String pref_automatic_sync = "pref_automatic_sync";
     private static final String pref_restaurant_mode = "pref_restaurant_mode";
     private static final String pref_retail_taxes = "pref_retail_taxes";
@@ -1227,9 +1226,11 @@ public class MyPreferences {
     public boolean isShowGiftCardBalanceAfterPayments() {
         return getPreferences(MyPreferences.pref_giftcard_show_balance);
     }
+
     public boolean isPrefillTotalAmount() {
         return getPreferences(MyPreferences.pref_prefill_total_amount);
     }
+
     public void setIsUseClerks(boolean value) {
         setPreferences(MyPreferences.pref_use_clerks, value);
     }
@@ -1425,6 +1426,15 @@ public class MyPreferences {
     public void setIsPersistClerk(boolean persistClerk) {
         prefEditor.putBoolean("persistClerk", persistClerk);
         prefEditor.commit();
+    }
+
+    public boolean isCustomerRequired() {
+        return getPreferences(MyPreferences.pref_require_customer);
+    }
+
+    public boolean isDirectCustomerSelection() {
+        return getPreferences(MyPreferences.pref_direct_customer_selection);
+
     }
 
 

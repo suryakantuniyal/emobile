@@ -65,8 +65,10 @@ import java.util.HashMap;
 import drivers.EMSDeviceDriver;
 import drivers.EMSPowaPOS;
 import drivers.EMSmePOS;
+import interfaces.BCRCallbacks;
+import util.json.UIUtils;
 
-public class SalesTab_FR extends Fragment {
+public class SalesTab_FR extends Fragment implements BCRCallbacks {
     public static Activity activity;
     //    boolean validPassword = true;
     private SalesMenuAdapter myAdapter;
@@ -267,7 +269,7 @@ public class SalesTab_FR extends Fragment {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
-                        if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
+                        if (myPref.isCustomerRequired()) {
                             if (myPref.isRestaurantMode() &&
                                     myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
                                 askEatInToGo();
@@ -513,7 +515,7 @@ public class SalesTab_FR extends Fragment {
                             SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
                         if (validateClerkShift(Global.TransactionType.getByCode(pos))) {
-                            if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
+                            if (myPref.isCustomerRequired()) {
                                 Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_select_customer));
                             } else {
                                 if (myPref.isRestaurantMode() &&
@@ -540,7 +542,7 @@ public class SalesTab_FR extends Fragment {
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                         if (validateClerkShift(Global.TransactionType.getByCode(pos))) {
-                            if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
+                            if (myPref.isCustomerRequired()) {
                                 Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_select_customer));
                             } else {
                                 intent = new Intent(activity, OrderingMain_FA.class);
@@ -562,7 +564,7 @@ public class SalesTab_FR extends Fragment {
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                         if (validateClerkShift(Global.TransactionType.getByCode(pos))) {
-                            if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
+                            if (myPref.isCustomerRequired()) {
                                 Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_select_customer));
                             } else {
                                 intent = new Intent(activity, SelectPayMethod_FA.class);
@@ -1267,6 +1269,7 @@ public class SalesTab_FR extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                UIUtils.startBCR(getView(), hiddenField, SalesTab_FR.this);
                 if (s.toString().contains("\n")) {
                     val = s.toString();
                     doneScanning = true;
@@ -1275,20 +1278,36 @@ public class SalesTab_FR extends Fragment {
         };
     }
 
+    @Override
+    public void executeBCR() {
+        CustomersHandler custHandler = new CustomersHandler(getActivity());
+        HashMap<String, String> map = custHandler.getCustomerInfo(hiddenField.getText().toString().replace("\n", "").trim());
+        hiddenField.setText("");
+        if (map.size() > 0) {
+            SalesTaxCodesHandler taxHandler = new SalesTaxCodesHandler(activity);
+            SalesTaxCodesHandler.TaxableCode taxable = taxHandler.checkIfCustTaxable(map.get("cust_taxable"));
+            myPref.setCustTaxCode(taxable, map.get("cust_taxable"));
+            myPref.setCustID(map.get("cust_id"));    //getting cust_id as _id
+            myPref.setCustName(map.get("cust_name"));
+            myPref.setCustIDKey(map.get("custidkey"));
+            myPref.setCustSelected(true);
+            myPref.setCustPriceLevel(map.get("pricelevel_id"));
+            myPref.setCustEmail(map.get("cust_email"));
+            selectedCust.setText(map.get("cust_name"));
+            salesInvoices.setVisibility(View.VISIBLE);
+            isCustomerSelected = true;
+            myAdapter = new SalesMenuAdapter(getActivity(), true);
+            myListview.setAdapter(myAdapter);
+            myListview.setOnItemClickListener(new MyListener());
+        }
+    }
+
     public class MyListener implements AdapterView.OnItemClickListener {
 
         @Override
         public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
             final int adapterPos = (Integer) myAdapter.getItem(position);
-
-//            if (myPref.isUseClerks()) {
-//                promptClerkPassword(adapterPos);
-//            } else
-//            if (myPref.getPreferences(MyPreferences.pref_require_shift_transactions) && myPref.getShiftIsOpen()) {
-//                Global.showPrompt(activity, R.string.dlog_title_error, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
-//            } else {
             performListViewClick(adapterPos);
-//            }
         }
     }
 
