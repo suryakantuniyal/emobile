@@ -2272,7 +2272,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 }
             }
             getOrderingMainFa().buildOrderStarted = false;
-            Global.releaseOrientation(getActivity());
+//            Global.releaseOrientation(getActivity());
         }
     }
 
