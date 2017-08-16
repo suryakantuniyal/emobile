@@ -223,7 +223,7 @@ public class Order implements Cloneable {
         } else {
             if (!Global.taxID.isEmpty()) {
                 tax = taxHandler.getTax(Global.taxID, "", Double.parseDouble(TextUtils.isEmpty(orderProduct.getProd_price()) ? "0" : orderProduct.getProd_price()));
-                if (listOrderTaxes != null) {
+                if (listOrderTaxes != null && getListOrderTaxes() != null && !getListOrderTaxes().isEmpty()) {
                     for (DataTaxes dataTaxes : getListOrderTaxes()) {
                         BigDecimal taxAmount = orderProduct.getProductPriceTaxableAmountCalculated()
                                 .multiply(new BigDecimal(dataTaxes.getTax_rate())
