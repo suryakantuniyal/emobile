@@ -2,7 +2,6 @@ package com.android.emobilepos.mainmenu;
 
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
-import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
@@ -46,13 +45,9 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.microsoft.windowsazure.notifications.NotificationsManager;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
-import android_serialport_api.SerialPort;
 import drivers.EMSsnbc;
 import main.EMSDeviceManager;
 
@@ -62,12 +57,12 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
     public static final String NOTIFICATION_RECEIVED = "NOTIFICATION_RECEIVED";
     public static final String NOTIFICATION_MESSAGE = "NOTIFICATION_MESSAGE";
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
-    private MyPreferences myPref;
 
     static {
         System.loadLibrary("serial_port");
     }
 
+    private MyPreferences myPref;
     private Global global;
     private boolean hasBeenCreated = false;
     private TextView synchTextView, tvStoreForward;
@@ -485,7 +480,10 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
             }
 
             if (myTabs.get(0) == tag && hasBeenCreated && SecurityManager.hasPermissions(myContext, SecurityManager.SecurityAction.OPEN_ORDER)) {
-                SalesTab_FR.startDefault(MainMenu_FA.this, myPref.getPreferencesValue(MyPreferences.pref_default_transaction));
+//                SalesTab_FR.startDefault(MainMenu_FA.this, myPref.getPreferencesValue(MyPreferences.pref_default_transaction));
+                String value = myPref.getPreferencesValue(MyPreferences.pref_default_transaction);
+                Global.TransactionType type = Global.TransactionType.getByCode(Integer.parseInt(value));
+                SalesTab_FR.startDefault(MainMenu_FA.this, type);
             }
         }
 

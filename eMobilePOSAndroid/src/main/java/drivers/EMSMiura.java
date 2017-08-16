@@ -11,8 +11,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.SplitedOrder;
-import com.android.emobilepos.models.TimeClock;
+import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.Global;
@@ -43,12 +42,12 @@ import main.EMSDeviceManager;
 
 public class EMSMiura extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate, MPIConnectionDelegate {
 
+    BluetoothModule miuraPrinter = BluetoothModule.getInstance();
     private int LINE_WIDTH = 32;
     private EMSDeviceManager edm;
-    BluetoothModule miuraPrinter = BluetoothModule.getInstance();
 
     @Override
-    public void connect(Context activity, int paperSize, boolean isPOSPrinter, final EMSDeviceManager edm) {
+    public void connect(final Context activity, int paperSize, boolean isPOSPrinter, final EMSDeviceManager edm) {
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
         this.isPOSPrinter = isPOSPrinter;
@@ -60,12 +59,12 @@ public class EMSMiura extends EMSDeviceDriver implements EMSDeviceManagerPrinter
         miuraPrinter.openSessionDefaultDevice(new BluetoothConnectionListener() {
             @Override
             public void onConnected() {
-                edm.driverDidConnectToDevice(EMSMiura.this, true);
+                edm.driverDidConnectToDevice(EMSMiura.this, true, activity);
             }
 
             @Override
             public void onDisconnected() {
-                edm.driverDidNotConnectToDevice(EMSMiura.this, getString(R.string.fail_to_connect), true);
+                edm.driverDidNotConnectToDevice(EMSMiura.this, getString(R.string.fail_to_connect), true, activity);
             }
         });
     }
@@ -81,7 +80,7 @@ public class EMSMiura extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     }
 
     @Override
-    public boolean autoConnect(Activity activity, final EMSDeviceManager edm, int paperSize, boolean isPOSPrinter,
+    public boolean autoConnect(final Activity activity, final EMSDeviceManager edm, int paperSize, boolean isPOSPrinter,
                                String _portName, String _portNumber) {
         final boolean[] didConnect = {false};
         this.activity = activity;
@@ -90,7 +89,7 @@ public class EMSMiura extends EMSDeviceDriver implements EMSDeviceManagerPrinter
         this.edm = edm;
         if (getMiuraDevice() == null) {
             didConnect[0] = false;
-            edm.driverDidNotConnectToDevice(EMSMiura.this, getString(R.string.fail_to_connect), false);
+            edm.driverDidNotConnectToDevice(EMSMiura.this, getString(R.string.fail_to_connect), false, activity);
         } else {
             miuraPrinter.setDefaultDevice(activity, getMiuraDevice());
             miuraPrinter.setSelectedBluetoothDevice(getMiuraDevice());
@@ -101,13 +100,13 @@ public class EMSMiura extends EMSDeviceDriver implements EMSDeviceManagerPrinter
                 @Override
                 public void onConnected() {
                     didConnect[0] = true;
-                    edm.driverDidConnectToDevice(EMSMiura.this, false);
+                    edm.driverDidConnectToDevice(EMSMiura.this, false, activity);
                 }
 
                 @Override
                 public void onDisconnected() {
                     didConnect[0] = false;
-                    edm.driverDidNotConnectToDevice(EMSMiura.this, getString(R.string.fail_to_connect), false);
+                    edm.driverDidNotConnectToDevice(EMSMiura.this, getString(R.string.fail_to_connect), false, activity);
                 }
             });
         }
@@ -275,7 +274,7 @@ public class EMSMiura extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     }
 
     @Override
-    public void printReceiptPreview(SplitedOrder splitedOrder) {
+    public void printReceiptPreview(SplittedOrder splitedOrder) {
         try {
             setPaperWidth(LINE_WIDTH);
             super.printReceiptPreview(splitedOrder, LINE_WIDTH);

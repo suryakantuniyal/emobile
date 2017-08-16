@@ -787,12 +787,16 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 //            }
 
 //            OrderTotalDetails_FR.resetView();
-            finish();
+
             if (myPref.isClearCustomerAfterTransaction()) {
                 myPref.resetCustInfo(getString(R.string.no_customer));
             }
-            SalesTab_FR.startDefault(this,
-                    myPref.getPreferencesValue(MyPreferences.pref_default_transaction));
+            String value = myPref.getPreferencesValue(MyPreferences.pref_default_transaction);
+            Global.TransactionType type = Global.TransactionType.getByCode(Integer.parseInt(value));
+            SalesTab_FR.startDefault(this, type);
+            finish();
+//            SalesTab_FR.startDefault(this,
+//                    myPref.getPreferencesValue(MyPreferences.pref_default_transaction));
         }
     }
 

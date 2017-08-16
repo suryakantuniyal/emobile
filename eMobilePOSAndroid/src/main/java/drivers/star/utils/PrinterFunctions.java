@@ -169,8 +169,8 @@ public class PrinterFunctions {
 		return commands.getByteArray();
 	}
 
-	public final static byte[] createCommandsEnglishRasterModeCoupon(int width, SCBBitmapConverter.Rotation rotation,
-			Bitmap bitmap) {
+	public static byte[] createCommandsEnglishRasterModeCoupon(int width, SCBBitmapConverter.Rotation rotation,
+															   Bitmap bitmap) {
 		CommandDataList commands = new CommandDataList();
 
 		// Bitmap bitmap = BitmapFactory.decodeResource( resource,
@@ -191,12 +191,11 @@ public class PrinterFunctions {
 		return commands.getByteArray();
 	}
 
-	public final static byte[] getCutPaperCommand() {
-		byte[] ba = { 0x1b, 0x64, 0x03 };
-		return ba;
+	public static byte[] getCutPaperCommand() {
+		return new byte[]{ 0x1b, 0x64, 0x03 };
 	}
 
-	public final static byte[] createCommandsOpenCashDrawer() {
+	public static byte[] createCommandsOpenCashDrawer() {
 		byte[] commands = new byte[1];
 
 		commands[0] = 0x07; // BEL
@@ -254,7 +253,7 @@ public class PrinterFunctions {
 	 */
 	public static void PrintBitmap(Context context, String portName, String portSettings, Bitmap source, int maxWidth,
 			boolean compressionEnable) {
-		ArrayList<Byte> commands = new ArrayList<Byte>();
+		ArrayList<Byte> commands = new ArrayList<>();
 		Byte[] tempList;
 
 		RasterDocument rasterDoc = new RasterDocument(drivers.star.utils.RasterDocument.RasSpeed.Medium,
@@ -317,7 +316,7 @@ public class PrinterFunctions {
 			 */
 			StarPrinterStatus status = port.beginCheckedBlock();
 
-			if (true == status.offline) {
+			if (status.offline) {
 				throw new StarIOPortException("A printer is offline");
 			}
 
@@ -330,11 +329,11 @@ public class PrinterFunctions {
 														// method.
 			status = port.endCheckedBlock();
 
-			if (true == status.coverOpen) {
+			if (status.coverOpen) {
 				throw new StarIOPortException("Printer cover is open");
-			} else if (true == status.receiptPaperEmpty) {
+			} else if (status.receiptPaperEmpty) {
 				throw new StarIOPortException("Receipt paper is empty");
-			} else if (true == status.offline) {
+			} else if (status.offline) {
 				throw new StarIOPortException("Printer is offline");
 			}
 		} catch (StarIOPortException e) {

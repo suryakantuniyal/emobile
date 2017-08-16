@@ -11,13 +11,13 @@ import java.util.List;
 /**
  * Created by guari_000 on 2/4/2016.
  */
-public class SplitedOrder extends Order implements Cloneable, Comparable<SplitedOrder> {
+public class SplittedOrder extends Order implements Cloneable, Comparable<SplittedOrder> {
     private List<OrderProduct> orderProducts;
     private String tableNumber;
     public long splittedOrderId = System.currentTimeMillis();
     private Activity activity;
 
-    public SplitedOrder(Activity activity, Order order) {
+    public SplittedOrder(Activity activity, Order order) {
         super(activity);
         this.activity = activity;
         init(order);
@@ -115,11 +115,11 @@ public class SplitedOrder extends Order implements Cloneable, Comparable<Splited
 
     @Override
     public boolean equals(Object o) {
-        return o instanceof SplitedOrder && this.splittedOrderId == (((SplitedOrder) o).splittedOrderId);
+        return o instanceof SplittedOrder && this.splittedOrderId == (((SplittedOrder) o).splittedOrderId);
     }
 
     @Override
-    public int compareTo(SplitedOrder another) {
+    public int compareTo(SplittedOrder another) {
         return this.ord_id.compareTo(another.ord_id);
     }
 }
