@@ -740,7 +740,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             String newName = extras.getString("customer_name");
             Global.taxID = "";
             leftFragment.custName.setText(newName);
-            leftFragment.orderTotalDetailsFr.initSpinners();
+            if(leftFragment.orderTotalDetailsFr!=null) {
+                leftFragment.orderTotalDetailsFr.initSpinners();
+            }
             if (catalogFr != null) {
                 catalogFr.loadCursor();
             }
