@@ -11,7 +11,6 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -110,6 +109,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     public ListView receiptListView;
     public TextView custName;
     public OrderProductListAdapter mainLVAdapter;
+    public OrderTotalDetails_FR orderTotalDetailsFr;
+    public OrderRewards_FR orderRewardsFr;
     private AddProductBtnCallback callBackAddProd;
     private boolean isToGo;
     private Order onHoldOrder;
@@ -137,8 +138,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     private RecalculateCallback callBackRecalculate;
     private UpdateHeaderTitleCallback callBackUpdateHeaderTitle;
     private String order_email = "";
-    public OrderTotalDetails_FR orderTotalDetailsFr;
-    public OrderRewards_FR orderRewardsFr;
 
     public Receipt_FR() {
 

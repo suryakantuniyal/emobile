@@ -1407,6 +1407,13 @@ public class MyPreferences {
         prefEditor.commit();
     }
 
+    public boolean isSkipEmailPhone() {
+        return getPreferences(MyPreferences.pref_skip_email_phone);
+    }
+
+    public boolean isShowCashChangeAmount() {
+        return getPreferences(MyPreferences.pref_cash_show_change);
+    }
     public boolean isCustomerRequired() {
         return getPreferences(MyPreferences.pref_require_customer);
     }
@@ -1414,14 +1421,6 @@ public class MyPreferences {
     public boolean isDirectCustomerSelection() {
         return getPreferences(MyPreferences.pref_direct_customer_selection);
 
-    }
-
-    public boolean isSkipEmailPhone() {
-        return getPreferences(MyPreferences.pref_skip_email_phone);
-    }
-
-    public boolean isShowCashChangeAmount() {
-        return getPreferences(MyPreferences.pref_cash_show_change);
     }
 
     public enum PrinterPreviewWidth {SMALL, MEDIUM, LARGE}
