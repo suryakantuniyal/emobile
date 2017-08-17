@@ -317,6 +317,10 @@
             android:key="pref_store_and_forward_transactions"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_store_and_forward_transactions" />
+        <CheckBoxPreference
+            android:key="pref_cash_show_change"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_cash_show_change" />
     </PreferenceCategory>
     <PreferenceCategory
         android:layout="@layout/settings_custom_header_layout"

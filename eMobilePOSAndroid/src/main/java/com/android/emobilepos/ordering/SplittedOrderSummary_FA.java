@@ -844,11 +844,11 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                         .multiply(getGlobalDiscountPercentge().setScale(6, RoundingMode.HALF_UP)));
                 itemDiscountTotal = itemDiscountTotal.add(Global.getBigDecimalNum(product.getDiscount_value()));
                 if (getTax() != null) {
-                    TaxesCalculator taxesCalculator = new TaxesCalculator(this, product, splitedOrder.tax_id,
-                            getTax(), getDiscount(), Global.getBigDecimalNum(splitedOrder.ord_subtotal),
-                            Global.getBigDecimalNum(splitedOrder.ord_discount), transType);
-                    orderTaxes = orderTaxes.add(taxesCalculator.getTaxableAmount());
-                    splitedOrder.setListOrderTaxes(taxesCalculator.getListOrderTaxes());
+//                    TaxesCalculator taxesCalculator = new TaxesCalculator(this, product, splitedOrder.tax_id,
+//                            getTax(), getDiscount(), Global.getBigDecimalNum(splitedOrder.ord_subtotal),
+//                            Global.getBigDecimalNum(splitedOrder.ord_discount), transType);
+                    orderTaxes = orderTaxes.add(product.getProductPriceTaxableAmountCalculated());
+                    splitedOrder.setListOrderTaxes(splitedOrder.getListOrderTaxes());
                 }
             }
             orderGranTotal = orderSubtotal.subtract(itemDiscountTotal).setScale(6, RoundingMode.HALF_UP)

@@ -747,8 +747,12 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         } else {
 
             if (myPref.getPreferences(MyPreferences.pref_skip_want_add_more_products)) {
-                if (myPref.getPreferences(MyPreferences.pref_skip_email_phone) && !myPref.getPreferences(MyPreferences.pref_ask_order_comments)) {
-                    Order order = buildOrder(getActivity(), global, "", ord_HoldName,
+                if (myPref.isSkipEmailPhone() && !myPref.getPreferences(MyPreferences.pref_ask_order_comments)) {
+                    String email = "";
+                    if (myPref.isCustSelected()) {
+                        email = myPref.getCustEmail();
+                    }
+                    Order order = buildOrder(getActivity(), global, email, ord_HoldName,
                             ((OrderingMain_FA) getActivity()).getSelectedDinningTableNumber(),
                             ((OrderingMain_FA) getActivity()).getAssociateId(), ((OrderingMain_FA) getActivity()).getOrderAttributes(),
                             ((OrderingMain_FA) getActivity()).getListOrderTaxes(), global.order.getOrderProducts());
@@ -790,7 +794,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 .findViewById(R.id.phoneNumField);
         Button done = (Button) dialog.findViewById(R.id.OKButton);
         //if skip email phone enabled then hide fields
-        if (myPref.getPreferences(MyPreferences.pref_skip_email_phone)) {
+        if (myPref.isSkipEmailPhone()) {
             emailInput.setVisibility(View.GONE);
             phoneNum.setVisibility(View.GONE);
         }
@@ -893,8 +897,12 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             @Override
             public void onClick(View v) {
                 dlog.dismiss();
-                if (myPref.getPreferences(MyPreferences.pref_skip_email_phone) && !myPref.getPreferences(MyPreferences.pref_ask_order_comments)) {
-                    Order order = buildOrder(getActivity(), global, "", ord_HoldName,
+                if (myPref.isSkipEmailPhone() && !myPref.getPreferences(MyPreferences.pref_ask_order_comments)) {
+                    String email = "";
+                    if (myPref.isCustSelected()) {
+                        email = myPref.getCustEmail();
+                    }
+                    Order order = buildOrder(getActivity(), global, email, ord_HoldName,
                             ((OrderingMain_FA) getActivity()).getSelectedDinningTableNumber(),
                             ((OrderingMain_FA) getActivity()).getAssociateId(), ((OrderingMain_FA) getActivity()).getOrderAttributes(),
                             ((OrderingMain_FA) getActivity()).getListOrderTaxes(), global.order.getOrderProducts());

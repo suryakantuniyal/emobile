@@ -8,6 +8,10 @@
             android:key="pref_prefill_total_amount"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_prefill_total_amount" />
+        <CheckBoxPreference
+            android:key="pref_cash_show_change"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_cash_show_change" />
     </PreferenceCategory>
 
 </PreferenceScreen>

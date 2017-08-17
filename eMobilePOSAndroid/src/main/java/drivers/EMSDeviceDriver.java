@@ -57,6 +57,7 @@ import com.android.support.ConsignmentTransaction;
 import com.android.support.DateUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.TaxesCalculator;
 import com.crashlytics.android.Crashlytics;
 import com.miurasystems.miuralibrary.api.executor.MiuraManager;
 import com.miurasystems.miuralibrary.api.listener.MiuraDefaultListener;
@@ -241,10 +242,9 @@ public class EMSDeviceDriver {
             taxableAmount = taxableAmount.add(product.getProductPriceTaxableAmountCalculated());
         }
         for (DataTaxes tax : taxes) {
-            BigDecimal taxAmount = taxableAmount
-                    .multiply(new BigDecimal(tax.getTax_rate())
-                            .divide(new BigDecimal(100),BigDecimal.ROUND_HALF_UP))
-                    .setScale(2, RoundingMode.HALF_UP);
+            List<BigDecimal> rates = new ArrayList<>();
+            rates.add(new BigDecimal(tax.getTax_rate()));
+            BigDecimal taxAmount = TaxesCalculator.calculateTax(taxableAmount, rates);
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(tax.getTax_name(),
                     Global.getCurrencyFormat(String.valueOf(taxAmount)), lineWidth, 2));
         }
@@ -1053,7 +1053,7 @@ public class EMSDeviceDriver {
         } catch (JAException e) {
             e.printStackTrace();
             Crashlytics.logException(e);
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             Crashlytics.logException(e);
         }
