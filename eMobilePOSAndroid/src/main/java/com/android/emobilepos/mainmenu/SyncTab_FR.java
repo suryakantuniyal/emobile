@@ -57,14 +57,7 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
         syncTabHandler = new Handler(new Handler.Callback() {
             @Override
             public boolean handleMessage(Message msg) {
-
                 switch (msg.what) {
-//                    case 1:
-//                        dialog = new ProgressDialog(getActivity());
-//                        dialog.setIndeterminate(true);
-//                        dialog.setMessage(getString(R.string.sync_inprogress));
-//                        dialog.show();
-//                        break;
                     case 0:
                         MainMenu_FA mainMenuFa = (MainMenu_FA) getActivity();
                         mainMenuFa.getSynchTextView().setVisibility(View.GONE);

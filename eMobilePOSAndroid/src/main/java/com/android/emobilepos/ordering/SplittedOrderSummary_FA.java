@@ -85,8 +85,8 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
     private BigDecimal globalDiscountPercentge = new BigDecimal(0);
     private BigDecimal globalDiscountAmount = new BigDecimal(0);
     private Button splitEquallyQtyBtn;
-    private AssignEmployee assignEmployee;
     List<SplitedOrder> calculatedSplitedOrders = new ArrayList<>();
+    public Global.TransactionType transType;
 
 
     public String getTaxID() {
@@ -161,10 +161,10 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
         Bundle extras = this.getIntent().getExtras();
         preferences = new MyPreferences(this);
         generateNewID = new GenerateNewID(this);
-        assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
 
         Gson gson = JsonUtils.getInstance();
         if (extras != null) {
+            transType = (Global.TransactionType) extras.get("transType");
             Type listType = new TypeToken<List<OrderSeatProduct>>() {
             }.getType();
             String json = extras.getString("orderSeatProductList");
@@ -855,7 +855,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                 if (getTax() != null) {
                     TaxesCalculator taxesCalculator = new TaxesCalculator(this, product, splitedOrder.tax_id,
                             getTax(), getDiscount(), Global.getBigDecimalNum(splitedOrder.ord_subtotal),
-                            Global.getBigDecimalNum(splitedOrder.ord_discount));
+                            Global.getBigDecimalNum(splitedOrder.ord_discount), transType);
                     orderTaxes = orderTaxes.add(taxesCalculator.getTaxableAmount());
                     splitedOrder.setListOrderTaxes(taxesCalculator.getListOrderTaxes());
                 }

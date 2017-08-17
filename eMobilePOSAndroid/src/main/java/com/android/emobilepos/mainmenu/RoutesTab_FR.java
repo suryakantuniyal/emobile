@@ -22,14 +22,12 @@ import java.util.Calendar;
 public class RoutesTab_FR extends Fragment {
 
 	private LinearLayout button;
-	private Activity activity;
-	
+
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
 		View view = inflater.inflate(R.layout.routes_layout, container, false);
-		activity = getActivity();
 		button = (LinearLayout) view.findViewById(R.id.dateButton);
 		return view;
 
@@ -44,49 +42,6 @@ public class RoutesTab_FR extends Fragment {
 
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				
-				//getDimensions();
-			
-//				DBManager manag = new DBManager(getContext());
-//				manag.dbBackupDB();
-//				
-		        /*Intent sharingIntent = new Intent(Intent.ACTION_SEND);
-		        sharingIntent.setType("vnd.android.cursor.dir/email");      
-		        sharingIntent.setType("application/octet-stream");
-		        //CHANGE: using correct path:
-		        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "my email subject");
-		        sharingIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-		        sharingIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://"+manag.dbBackupDB()));
-		        startActivity(Intent.createChooser(sharingIntent, "Send email"));  
-				
-				
-				*/
-				
-				
-				/*
-				CustomerInventoryHandler custInventoryHandler = new CustomerInventoryHandler(activity);
-				custInventoryHandler.emptyTable();
-				ConsignmentTransactionHandler te = new ConsignmentTransactionHandler(activity);
-				te.emptyTable();*/
-				
-				
-//				OrdersHandler h1 = new OrdersHandler(activity);
-//				OrderProductsHandler h2 = new OrderProductsHandler(activity);
-//				PaymentsHandler h3 = new PaymentsHandler(activity);
-//				TimeClockHandler h4 = new TimeClockHandler(activity);
-//				ShiftPeriodsDBHandler h5 = new ShiftPeriodsDBHandler(activity);
-//				InvoicePaymentsHandler h6 = new InvoicePaymentsHandler(activity);
-//				TransferInventory_DB h7 = new TransferInventory_DB(activity);
-//				TransferLocations_DB h8 = new TransferLocations_DB(activity);
-//				h1.emptyTable();
-//				h2.emptyTable();
-//				h3.emptyTable();
-//				h4.emptyTable();
-//				h5.emptyTable();
-//				h6.emptyTable();
-//				h7.emptyTable();
-//				h8.emptyTable();
 											
 				DialogFragment newFrag = new DateDialog();
 				newFrag.show(getFragmentManager(), "dialog");
@@ -137,7 +92,7 @@ public class RoutesTab_FR extends Fragment {
 			       sb.append("undefined");
 			}
 			
-			Toast.makeText(activity, sb.toString(), Toast.LENGTH_LONG).show();
+			Toast.makeText(getActivity(), sb.toString(), Toast.LENGTH_LONG).show();
 	}
 	
 	

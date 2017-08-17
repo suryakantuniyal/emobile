@@ -1,6 +1,5 @@
 package com.android.emobilepos.ordering;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -45,7 +44,6 @@ public class ViewProductDetails_FA extends BaseFragmentActivityActionBar impleme
     private List<String> identInfo = new ArrayList<>();
     private List<String> attributes = new ArrayList<>();
     private Global global;
-    private Activity activity;
     private boolean hasBeenCreated = false;
 
     private String vidLink = "", img_url = "";
@@ -56,8 +54,6 @@ public class ViewProductDetails_FA extends BaseFragmentActivityActionBar impleme
         super.onCreate(savedInstanceState);
         setContentView(R.layout.catalog_proddetails_layout);
         ListView myListView = (ListView) findViewById(R.id.catalogProdDetailsLV);
-        activity = this;
-
 
         infoTitle = Arrays.asList(getAString(R.string.catalog_name), getAString(R.string.catalog_description),
                 getAString(R.string.cat_details_extra_desc), getAString(R.string.cat_details_prod_det_type), getAString(R.string.cat_details_tax_code),
@@ -122,7 +118,7 @@ public class ViewProductDetails_FA extends BaseFragmentActivityActionBar impleme
         if (hasBeenCreated && !Global.loggedIn) {
             if (global.getGlobalDlog() != null)
                 global.getGlobalDlog().dismiss();
-            global.promptForMandatoryLogin(activity);
+            global.promptForMandatoryLogin(this);
         }
         super.onResume();
     }
@@ -139,20 +135,56 @@ public class ViewProductDetails_FA extends BaseFragmentActivityActionBar impleme
 
 
     private String getAString(int id) {
-        Resources resources = activity.getResources();
+        Resources resources = getResources();
         return resources.getString(id);
     }
 
+    public void showPrompt(String title, String msg) {
+        final Dialog dlog = new Dialog(this, R.style.Theme_TransparentTest);
+        dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dlog.setCancelable(true);
+        dlog.setCanceledOnTouchOutside(true);
+        dlog.setContentView(R.layout.dlog_btn_single_layout);
+
+        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+        viewTitle.setText(title);
+        viewMsg.setText(msg);
+        Button btnOk = (Button) dlog.findViewById(R.id.btnDlogSingle);
+        btnOk.setText(R.string.button_ok);
+        btnOk.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                dlog.dismiss();
+            }
+        });
+        dlog.show();
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.catalogVideoLink:
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(vidLink)));
+                break;
+            case R.id.catalogHeaderImage:
+                Intent intent = new Intent(this, ShowProductImageActivity.class);
+                intent.putExtra("url", img_url);
+                startActivity(intent);
+                break;
+        }
+    }
 
     private class ListViewAdapter extends BaseAdapter {
 
+        LayoutInflater myInflater;
         private int size1;
         private int size2;
         private int size3;
-        LayoutInflater myInflater;
 
 
-        public ListViewAdapter(Context context) {
+        ListViewAdapter(Context context) {
             myInflater = LayoutInflater.from(context);
             size1 = infoTitle.size();
             size2 = inventTitle.size();
@@ -312,50 +344,11 @@ public class ViewProductDetails_FA extends BaseFragmentActivityActionBar impleme
             return 5;
         }
 
-        public class ViewHolder {
+        class ViewHolder {
             TextView leftTitle;
             TextView leftSubtitle;
             TextView rightTitle;
             ImageView moreInfoIcon;
-        }
-    }
-
-
-    public void showPrompt(String title, String msg) {
-        final Dialog dlog = new Dialog(activity, R.style.Theme_TransparentTest);
-        dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dlog.setCancelable(true);
-        dlog.setCanceledOnTouchOutside(true);
-        dlog.setContentView(R.layout.dlog_btn_single_layout);
-
-        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
-        viewTitle.setText(title);
-        viewMsg.setText(msg);
-        Button btnOk = (Button) dlog.findViewById(R.id.btnDlogSingle);
-        btnOk.setText(R.string.button_ok);
-        btnOk.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                dlog.dismiss();
-            }
-        });
-        dlog.show();
-    }
-
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.catalogVideoLink:
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(vidLink)));
-                break;
-            case R.id.catalogHeaderImage:
-                Intent intent = new Intent(this, ShowProductImageActivity.class);
-                intent.putExtra("url", img_url);
-                startActivity(intent);
-                break;
         }
     }
 

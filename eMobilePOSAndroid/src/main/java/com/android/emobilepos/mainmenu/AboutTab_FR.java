@@ -25,7 +25,6 @@ public class AboutTab_FR extends Fragment implements OnClickListener {
     private long _last_time = 0;
     private long _time_difference = 0;
     private int counter = 0;
-    private Activity activity;
     private boolean deleteIsRunning = false;
     private ImageView posLogo;
 
@@ -34,7 +33,6 @@ public class AboutTab_FR extends Fragment implements OnClickListener {
 
         View view = inflater.inflate(R.layout.about_layout, container, false);
         AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
-        activity = getActivity();
         MyPreferences myPref = new MyPreferences(getActivity());
         TextView acctNumber = (TextView) view.findViewById(R.id.acctNum);
         TextView employee = (TextView) view.findViewById(R.id.employeeNameID);
@@ -83,19 +81,19 @@ public class AboutTab_FR extends Fragment implements OnClickListener {
 
         @Override
         protected void onPreExecute() {
-            Toast.makeText(activity, "Data being deleted", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), "Data being deleted", Toast.LENGTH_LONG).show();
 
         }
 
         @Override
         protected Void doInBackground(Void... params) {
-            DBManager dbManager = new DBManager(activity);
+            DBManager dbManager = new DBManager(getActivity());
             dbManager.deleteAllTablesData();
             return null;
         }
 
         protected void onPostExecute(Void unused) {
-            Toast.makeText(activity, "Data was deleted", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), "Data was deleted", Toast.LENGTH_LONG).show();
         }
 
     }

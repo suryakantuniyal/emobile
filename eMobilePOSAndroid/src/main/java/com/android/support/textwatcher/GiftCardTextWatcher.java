@@ -7,6 +7,7 @@ import android.widget.EditText;
 
 import com.android.support.CreditCardInfo;
 import com.android.support.Global;
+import com.crashlytics.android.Crashlytics;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -17,7 +18,7 @@ import java.util.Locale;
  * Created by Guarionex on 12/3/2015.
  */
 public class GiftCardTextWatcher implements android.text.TextWatcher {
-    boolean doneScanning = false;
+    private boolean doneScanning = false;
     private EditText hiddenEditText;
     private final CreditCardInfo creditCardInfo;
     private Context context;
@@ -74,7 +75,7 @@ public class GiftCardTextWatcher implements android.text.TextWatcher {
                     Date date = dt2.parse(creditCardInfo.getCardExpYear());
                     formatedYear = dt.format(date);
                 } catch (ParseException e) {
-
+                    Crashlytics.logException(e);
                 }
                 creditCardInfo.setCardExpYear(formatedYear);
                 creditCardInfo.setWasSwiped(true);

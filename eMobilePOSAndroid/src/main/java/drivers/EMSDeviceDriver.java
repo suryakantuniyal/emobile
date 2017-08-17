@@ -1083,6 +1083,10 @@ public class EMSDeviceDriver {
     }
 
     public void cutPaper() {
+        if (PRINT_TO_LOG) {
+            Log.d("Cut", "Paper Cut");
+            return;
+        }
         if (this instanceof EMSsnbc) {
             // ******************************************************************************************
             // print in page mode
