@@ -1347,5 +1347,6 @@
     <string name="config_giftcard_show_balance">Show gift card balance after payment</string>
     <string name="header_title_customer_custom_fields">Custom Fields</string>
     <string name="sending">Sending…</string>
+    <string name="config_cash_show_change">Show cash payment change amount</string>
 
 </resources>
