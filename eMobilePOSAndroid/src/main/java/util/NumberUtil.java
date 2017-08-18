@@ -292,7 +292,7 @@ public class NumberUtil {
 		byte[] byte2 = new byte[2];
 
 		for (int i = byte2.length - 1; i > -1; i--) {
-			byte2[i] = new Integer(tmp_num & 0xff).byteValue();
+			byte2[i] = Integer.valueOf(tmp_num & 0xff).byteValue();
 			tmp_num = tmp_num >> 8;
 		}
 

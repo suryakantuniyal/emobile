@@ -58,7 +58,6 @@ import com.android.emobilepos.shifts.ShiftsActivity;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
-import com.crashlytics.android.Crashlytics;
 
 import java.util.HashMap;
 
@@ -81,33 +80,36 @@ public class SalesTab_FR extends Fragment implements BCRCallbacks {
     private DinningTable selectedDinningTable;
     private int selectedSeatsAmount;
 
-    public static void startDefault(Activity activity, String type) {
-        if (activity != null) {
-            int transType;
-            try {
-                if (type == null || type.isEmpty())
-                    type = "-1";
-                transType = Integer.parseInt(type);
-            } catch (NumberFormatException e) {
-                Crashlytics.logException(e);
-                transType = -1;
-            }
+    public static void startDefault(Activity activity, Global.TransactionType type) {
+        if (activity != null && type != null) {
+            Intent intent = new Intent(activity, OrderingMain_FA.class);
+            intent.putExtra("option_number", type);
+            activity.startActivityForResult(intent, 0);
+//            int transType;
+//            try {
+////                if (type == null)
+////                    type = "-1";
+//                transType = Integer.parseInt(type);
+//            } catch (NumberFormatException e) {
+//                Crashlytics.logException(e);
+//                transType = -1;
+//            }
 
-            Intent intent;
-            if (transType != -1) {
-                switch (transType) {
-                    case 0:
-                        intent = new Intent(activity, OrderingMain_FA.class);
-                        intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
-                        activity.startActivityForResult(intent, 0);
-                        break;
-                    case 2:
-                        intent = new Intent(activity, OrderingMain_FA.class);
-                        intent.putExtra("option_number", Global.TransactionType.RETURN);
-                        activity.startActivityForResult(intent, 0);
-                        break;
-                }
-            }
+
+//            if (transType != -1) {
+//                switch (type) {
+//                    case SALE_RECEIPT:
+//                        intent = new Intent(activity, OrderingMain_FA.class);
+//                        intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
+//                        activity.startActivityForResult(intent, 0);
+//                        break;
+//                    case 2:
+//                        intent = new Intent(activity, OrderingMain_FA.class);
+//                        intent.putExtra("option_number", Global.TransactionType.RETURN);
+//                        activity.startActivityForResult(intent, 0);
+//                        break;
+//                }
+//            }
         }
 
     }

@@ -115,8 +115,8 @@ public class MyPreferences {
     public static final String print_emobilepos_website = "print_emobilepos_website";
     public static final String print_ivuloto_qr = "print_ivuloto_qr";
     private static final String pref_skip_email_phone = "pref_skip_email_phone";
-    private static final String pref_require_customer = "pref_require_customer";
     private static final String pref_prefill_total_amount = "pref_prefill_total_amount";
+    private static final String pref_require_customer = "pref_require_customer";
     private static final String pref_automatic_sync = "pref_automatic_sync";
     private static final String pref_restaurant_mode = "pref_restaurant_mode";
     private static final String pref_retail_taxes = "pref_retail_taxes";
@@ -1422,7 +1422,6 @@ public class MyPreferences {
         return getPreferences(MyPreferences.pref_direct_customer_selection);
 
     }
-
 
     public enum PrinterPreviewWidth {SMALL, MEDIUM, LARGE}
 

@@ -78,7 +78,7 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
 			if(!isTCP)
 				promptTypeOfStarPrinter();
 			else
-				promptStarPrinterSize(true);
+				promptStarPrinterSize(true, activity);
 			break;
 		case Global.BAMBOO:
 			aDevice = new EMSBlueBambooP25();
@@ -192,9 +192,9 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
 				promptDialog.dismiss();
 				if(pos==0)
 					
-					promptStarPrinterSize(true);
+					promptStarPrinterSize(true, activity);
 				else
-					promptStarPrinterSize(false);
+					promptStarPrinterSize(false, activity);
 			}
 		});
 		

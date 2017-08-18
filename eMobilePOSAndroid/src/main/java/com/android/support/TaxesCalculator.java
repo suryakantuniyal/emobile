@@ -8,7 +8,7 @@ import java.util.List;
  * Created by Guarionex on 2/3/2016.
  */
 public class TaxesCalculator {
-    
+
     public static BigDecimal calculateTax(BigDecimal taxableAmount, List<BigDecimal> rates) {
         BigDecimal totalTaxAmount = new BigDecimal(0);
         for (BigDecimal rate : rates) {

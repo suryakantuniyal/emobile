@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class StarBitmap
 {
@@ -44,8 +45,7 @@ public class StarBitmap
 	
 	private int pixelBrightness(int red, int green, int blue)
 	{
-		int level = (red + green + blue) / 3;
-		return level;
+		return (red + green + blue) / 3;
 	}
 	
 	private int PixelIndex(int x, int y)
@@ -180,7 +180,7 @@ public class StarBitmap
 		}
 		
 		//Converts the image to a Monochrome image using a Steinbert Dithering algorithm.  This call can be removed but it that will also remove any dithering.
-		if(dithering == true)
+		if(dithering)
 		{
 			ConvertToMonochromeSteinbertDithering((float)1.5);
 		}
@@ -191,7 +191,7 @@ public class StarBitmap
 			mWidth++;
 		}
 		
-		ArrayList<Byte> data = new ArrayList<Byte>();
+		ArrayList<Byte> data = new ArrayList<>();
 		
 		//The real algorithm for converting an image to star data is below
 		for(int y = 0; y < height; y++)
@@ -200,9 +200,8 @@ public class StarBitmap
 			int shortWidth = mWidth % 256;
 			
 			byte startingBytes[] = {'b', (byte)shortWidth, (byte)longWidth};
-			for(int count=0;count<startingBytes.length; count++)
-			{
-				data.add(startingBytes[count]);
+			for (byte startingByte : startingBytes) {
+				data.add(startingByte);
 			}
 			
 			
@@ -250,7 +249,7 @@ public class StarBitmap
 			return imageData;
 		}
 		
-		if(dithering == true)
+		if(dithering)
 		{
 			ConvertToMonochromeSteinbertDithering((float)1.5);
 		}
@@ -267,7 +266,7 @@ public class StarBitmap
 		//u_int8_t n2 = (u_int8_t)(byteWidth / 256);
 		
 		byte[] data;
-		ArrayList<Byte> someData = new ArrayList<Byte>();
+		ArrayList<Byte> someData = new ArrayList<>();
 		
 //		Byte[] beginingBytes = {0x1b, 0x40, 0x1b, 0x58, 0x32, 0x18};
 		Byte[] beginingBytes = {0x1b, 0x40,    // ESC @
@@ -277,21 +276,15 @@ public class StarBitmap
 				                (byte) (mWidth % 256), (byte) (mWidth / 256),
 				                (byte) ((height + 40) % 256), (byte) ((height + 40) / 256),
 				                0x1b, 0x58, 0x32, 0x18};    // ESC X 2 n
-		for(int count=0;count<beginingBytes.length; count++)
-		{
-			someData.add(beginingBytes[count]);
-		}
+		Collections.addAll(someData, beginingBytes);
 		int totalRowCount = 0;
 		
 		for(int z=0; z< (height - (height % 24))/24; z++)
 		{
 			Byte[] imagestarting = { 0x1b, 0x58, 0x34, 0, 24 };
 			imagestarting[3] = (byte)byteWidth;
-			
-			for(int count=0;count<imagestarting.length;count++)
-			{
-				someData.add(imagestarting[count]);
-			}
+
+			Collections.addAll(someData, imagestarting);
 			
 			idx = 0;
 			data = new byte[byteWidth * 24];
@@ -316,14 +309,12 @@ public class StarBitmap
 				}
 				totalRowCount++;
 			}
-			for(int count=0;count<data.length; count++)
-			{
-				someData.add(data[count]);
+			for (byte aData : data) {
+				someData.add(aData);
 			}
 			byte[] imageData2 = {0x1b, 0x58, 0x32, 0x18};
-			for(int count=0;count<imageData2.length; count++)
-			{
-				someData.add(imageData2[count]);
+			for (byte anImageData2 : imageData2) {
+				someData.add(anImageData2);
 			}
 		}
 			
@@ -332,9 +323,8 @@ public class StarBitmap
 			byte[] imageData3 = {0x1b, 0x58, 0x34, 0, 0};
 			imageData3[3] = (byte)byteWidth;
 			imageData3[4] = 24;
-			for(int count=0;count<imageData3.length; count++)
-			{
-				someData.add(imageData3[count]);
+			for (byte anImageData3 : imageData3) {
+				someData.add(anImageData3);
 			}
 			int idx2 = 0;
 			data = new byte[byteWidth * 24];
@@ -366,15 +356,13 @@ public class StarBitmap
 				}
 				totalRowCount++;
 			}
-			for(int count=0;count<data.length;count++)
-			{
-				someData.add(data[count]);
+			for (byte aData : data) {
+				someData.add(aData);
 			}
 			
 			byte[] imageData4 = {0x1b, 0x58, 0x32, 0x18};
-			for(int count=0;count<imageData4.length;count++)
-			{
-				someData.add(imageData4[count]);
+			for (byte anImageData4 : imageData4) {
+				someData.add(anImageData4);
 			}
 		}
 		
@@ -385,9 +373,8 @@ public class StarBitmap
 //		}
 		byte imageData5[] = {0x0c,    // FF (printing of page mode and return printing of standard mode) /* for smooth printing by mobile printer */
 				             0x1b, 0x4A, 0x28};
-		for(int count=0;count<imageData5.length;count++)
-		{
-			someData.add(imageData5[count]);
+		for (byte anImageData5 : imageData5) {
+			someData.add(anImageData5);
 		}
 		
 		imageData = new byte[someData.size()];
@@ -406,7 +393,7 @@ public class StarBitmap
 			return imageData;
 		}
 		
-		if(dithering == true)
+		if(dithering)
 		{
 			ConvertToMonochromeSteinbertDithering((float)1.5);
 		}
@@ -418,7 +405,7 @@ public class StarBitmap
 			mHeight++;
 		}
 		
-		ArrayList<Byte> data = new ArrayList<Byte>();
+		ArrayList<Byte> data = new ArrayList<>();
 		int heightLocation = 0;
 		int bitLocation = 0;
 		byte nextByte = 0;
@@ -430,17 +417,15 @@ public class StarBitmap
 		}
 		
 		byte[] cancelColor = new byte[] {0x1b, 0x1e, 'C', 48};
-		for(int count=0;count<cancelColor.length;count++)
-		{
-			data.add(cancelColor[count]);
+		for (byte aCancelColor : cancelColor) {
+			data.add(aCancelColor);
 		}
 		
 		for(int x=0; x<mHeight; x++)
 		{
 			byte[] imageCommand = new byte[] {0x1b, 'K', (byte)cwidth, 0};
-			for(int count=0;count<imageCommand.length;count++)
-			{
-				data.add(imageCommand[count]);
+			for (byte anImageCommand : imageCommand) {
+				data.add(anImageCommand);
 			}
 			
 			for(int w=0;w<cwidth; w++)
@@ -472,9 +457,8 @@ public class StarBitmap
 			}
 			heightLocation++;
 			byte[] lineFeed = new byte[] {0x1b, 0x49, 0x10};
-			for(int count=0;count<lineFeed.length;count++)
-			{
-				data.add(lineFeed[count]);
+			for (byte aLineFeed : lineFeed) {
+				data.add(aLineFeed);
 			}
 		}		
 		

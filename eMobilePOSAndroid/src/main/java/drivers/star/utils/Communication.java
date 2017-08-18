@@ -1,5 +1,6 @@
 package drivers.star.utils;
 
+import com.crashlytics.android.Crashlytics;
 import com.starmicronics.stario.StarIOPort;
 import com.starmicronics.stario.StarIOPortException;
 import com.starmicronics.stario.StarPrinterStatus;
@@ -117,6 +118,7 @@ public class Communication {
             result = Result.Success;
         }
         catch (StarIOPortException e) {
+            Crashlytics.logException(e);
         }
 //        finally {
 //            if (port != null) {

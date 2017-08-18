@@ -740,7 +740,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             String newName = extras.getString("customer_name");
             Global.taxID = "";
             leftFragment.custName.setText(newName);
-            leftFragment.orderTotalDetailsFr.initSpinners();
+            if(leftFragment.orderTotalDetailsFr!=null) {
+                leftFragment.orderTotalDetailsFr.initSpinners();
+            }
             if (catalogFr != null) {
                 catalogFr.loadCursor();
             }
@@ -787,12 +789,16 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 //            }
 
 //            OrderTotalDetails_FR.resetView();
-            finish();
+
             if (myPref.isClearCustomerAfterTransaction()) {
                 myPref.resetCustInfo(getString(R.string.no_customer));
             }
-            SalesTab_FR.startDefault(this,
-                    myPref.getPreferencesValue(MyPreferences.pref_default_transaction));
+            String value = myPref.getPreferencesValue(MyPreferences.pref_default_transaction);
+            Global.TransactionType type = Global.TransactionType.getByCode(Integer.parseInt(value));
+            SalesTab_FR.startDefault(this, type);
+            finish();
+//            SalesTab_FR.startDefault(this,
+//                    myPref.getPreferencesValue(MyPreferences.pref_default_transaction));
         }
     }
 
