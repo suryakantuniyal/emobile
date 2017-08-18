@@ -126,7 +126,6 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
     private EditText authIDField, transIDField;
     private TextView tax2Lbl;
     private EditText subtotal, tax1, tax2;
-    // private boolean timedOut = false;
     private List<GroupTax> groupTaxRate;
     private boolean isMultiInvoice = false, isOpenInvoice = false;
     private String[] inv_id_array, txnID_array;
@@ -147,8 +146,6 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
     private Button btnProcess;
     private ScrollView scrollView;
     private EMSIDTechUSB _msrUsbSams;
-    //    private EMSWalker walkerReader;
-    private NumberUtils numberUtils = new NumberUtils();
     private boolean isEverpay = false;
     private String _charge_xml;
     private boolean livePaymentRunning = false;
@@ -1123,7 +1120,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             if (!TextUtils.isEmpty(orderSubTotal) && Double.parseDouble(orderSubTotal) > 0) {
                 subTotal = Double.parseDouble(orderSubTotal);
             } else {
-                subTotal = Double.parseDouble(global.order.ord_subtotal);
+                subTotal = Math.abs(Double.parseDouble(global.order.ord_subtotal));
             }
         }
 
