@@ -36,7 +36,6 @@ public class MyPreferences {
     public static final String pref_qr_code_reading = "pref_qr_code_reading";
     public static final String pref_enable_multi_category = "pref_enable_multi_category";
     public static final String pref_ask_order_comments = "pref_ask_order_comments";
-    public static final String pref_skip_email_phone = "pref_skip_email_phone";
     //    private final String zone_id = "zone_id";
 //    private final String VAT = "VAT";
     public static final String pref_show_only_group_taxes = "pref_show_only_group_taxes";
@@ -56,6 +55,7 @@ public class MyPreferences {
     public static final String pref_use_loyal_patron = "pref_use_loyal_patron";
     public static final String pref_giftcard_auto_balance_request = "pref_giftcard_auto_balance_request";
     public static final String pref_giftcard_show_balance = "pref_giftcard_show_balance";
+    public static final String pref_cash_show_change = "pref_cash_show_change";
     public static final String pref_pay_with_tupyx = "pref_pay_with_tupyx";
     public static final String pref_mw_with_genius = "pref_mw_with_genius";
     public static final String pref_config_genius_peripheral = "pref_config_genius_peripheral";
@@ -114,6 +114,7 @@ public class MyPreferences {
     public static final String print_terms_conditions = "print_terms_conditions";
     public static final String print_emobilepos_website = "print_emobilepos_website";
     public static final String print_ivuloto_qr = "print_ivuloto_qr";
+    private static final String pref_skip_email_phone = "pref_skip_email_phone";
     private static final String pref_require_customer = "pref_require_customer";
     private static final String pref_prefill_total_amount = "pref_prefill_total_amount";
     private static final String pref_automatic_sync = "pref_automatic_sync";
@@ -1437,6 +1438,13 @@ public class MyPreferences {
 
     }
 
+    public boolean isSkipEmailPhone() {
+        return getPreferences(MyPreferences.pref_skip_email_phone);
+    }
+
+    public boolean isShowCashChangeAmount() {
+        return getPreferences(MyPreferences.pref_cash_show_change);
+    }
 
     public enum PrinterPreviewWidth {SMALL, MEDIUM, LARGE}
 
