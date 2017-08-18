@@ -24,6 +24,7 @@ import util.StringUtil;
 
 public class ProductsHandler {
 
+    public static final String prod_prices_group_id = "prod_prices_group_id";
     private static final String prod_id = "prod_id";
     private static final String prod_type = "prod_type";
     private static final String prod_disc_type = "prod_disc_type";
@@ -44,6 +45,7 @@ public class ProductsHandler {
     private static final String prod_mininv = "prod_mininv";
     private static final String prod_update = "prod_update";
     private static final String isactive = "isactive";
+    private static final String isGC = "isGC";
     private static final String prod_showOnline = "prod_showOnline";
     private static final String prod_ispromo = "prod_ispromo";
     private static final String prod_shipping = "prod_shipping";
@@ -52,13 +54,11 @@ public class ProductsHandler {
     private static final String prod_disc_type_points = "prod_disc_type_points";
     private static final String prod_price_points = "prod_price_points";
     private static final String prod_value_points = "prod_value_points";
-    public static final String prod_prices_group_id = "prod_prices_group_id";
-
     private static final List<String> attr = Arrays.asList(prod_id, prod_type, prod_disc_type, cat_id,
             prod_sku, prod_upc, prod_name, prod_desc, prod_extradesc, prod_onhand, prod_onorder, prod_uom, prod_price,
             prod_cost, prod_taxcode, prod_taxtype, prod_glaccount, prod_mininv, prod_update, isactive, prod_showOnline,
             prod_ispromo, prod_shipping, prod_weight, prod_expense, prod_disc_type_points, prod_price_points,
-            prod_value_points, prod_prices_group_id);
+            prod_value_points, prod_prices_group_id, isGC);
 
     private static final String table_name = "Products";
     private StringBuilder sb1, sb2;
@@ -128,6 +128,7 @@ public class ProductsHandler {
             insert.bindLong(index(prod_price_points), product.getProdPricePoints()); // prod_price_points
             insert.bindLong(index(prod_value_points), product.getProdValuePoints()); // prod_value_points
             insert.bindString(index(prod_prices_group_id), StringUtil.nullStringToEmpty(product.getPricesXGroupid())); // prod_value_points
+            insert.bindString(index(isGC), String.valueOf(product.isGC()));
 
             insert.execute();
             insert.clearBindings();
@@ -157,7 +158,7 @@ public class ProductsHandler {
 
         if (TextUtils.isEmpty(categoryId)) {
             sb.append(
-                    "SELECT  p.prod_id as '_id',  p.prod_prices_group_id as 'prod_prices_group_id'," +
+                    "SELECT  p.prod_id as '_id', p.isGC as 'isGC', p.prod_prices_group_id as 'prod_prices_group_id'," +
                             " p.prod_price as 'master_price'," +
                             "vp.price as 'volume_price', ch.over_price_net as 'chain_price',");
             sb.append(
@@ -256,7 +257,7 @@ public class ProductsHandler {
         } else {
 
             sb.append(
-                    "SELECT  p.prod_id as '_id', p.prod_prices_group_id as 'prod_prices_group_id', p.prod_sku, " +
+                    "SELECT  p.prod_id as '_id',p.isGC as 'isGC', p.prod_prices_group_id as 'prod_prices_group_id', p.prod_sku, " +
                             "p.prod_upc, p.prod_price as 'master_price',vp.price as 'volume_price',ch.over_price_net as 'chain_price',");
             sb.append(
                     "CASE WHEN pl.pricelevel_type = 'FixedPercentage' THEN (p.prod_price+(p.prod_price*(pl.pricelevel_fixedpct/100))) ");
@@ -524,11 +525,14 @@ public class ProductsHandler {
         }
 
         sb.append(
-                "SELECT  p.prod_id as '_id', p.prod_sku as 'prod_sku', p.prod_upc as 'prod_upc',p.prod_price as 'master_price',vp.price as 'volume_price', ch.over_price_net as 'chain_price',");
+                "SELECT  p.prod_id as '_id',p.isGC as 'isGC', p.prod_sku as 'prod_sku', p.prod_upc as 'prod_upc',p.prod_price as 'master_price'," +
+                        "vp.price as 'volume_price', ch.over_price_net as 'chain_price',");
         sb.append(
                 "CASE WHEN pl.pricelevel_type = 'FixedPercentage' THEN (p.prod_price+(p.prod_price*(pl.pricelevel_fixedpct/100))) ");
         sb.append(
-                "ELSE pli.pricelevel_price END AS 'pricelevel_price',p.prod_price_points,p.prod_value_points,p.prod_name,p.prod_desc,p.prod_extradesc,p.prod_onhand as 'master_prod_onhand',ei.prod_onhand as 'local_prod_onhand',i.prod_img_name, CASE WHEN p.prod_taxcode='' THEN '0' ELSE IFNULL(s.taxcode_istaxable,'1')  END AS 'prod_istaxable' ");
+                "ELSE pli.pricelevel_price END AS 'pricelevel_price',p.prod_price_points,p.prod_value_points,p.prod_name,p.prod_desc," +
+                        "p.prod_extradesc,p.prod_onhand as 'master_prod_onhand',ei.prod_onhand as 'local_prod_onhand',i.prod_img_name, " +
+                        "CASE WHEN p.prod_taxcode='' THEN '0' ELSE IFNULL(s.taxcode_istaxable,'1')  END AS 'prod_istaxable' ");
         sb.append(",p.prod_taxcode,p.prod_taxtype, p.prod_type,p.cat_id, c.cat_name as 'cat_name' ");
 
         if (myPref.isCustSelected() && myPref.getPreferences(MyPreferences.pref_filter_products_by_customer)) {
@@ -568,7 +572,8 @@ public class ProductsHandler {
         }
 
         sb.append(
-                "FROM Products p LEFT OUTER JOIN EmpInv ei ON ei.prod_id = p.prod_id LEFT OUTER JOIN VolumePrices vp ON p.prod_id = vp.prod_id AND '1' BETWEEN vp.minQty AND vp.maxQty  AND ");
+                "FROM Products p LEFT OUTER JOIN EmpInv ei ON ei.prod_id = p.prod_id LEFT OUTER JOIN VolumePrices vp ON " +
+                        "p.prod_id = vp.prod_id AND '1' BETWEEN vp.minQty AND vp.maxQty  AND ");
         sb.append("vp.pricelevel_id = ? LEFT OUTER JOIN PriceLevelItems pli ON p.prod_id = pli.pricelevel_prod_id ");
         sb.append(
                 "AND pli.pricelevel_id = ? LEFT OUTER JOIN PriceLevel pl ON pl.pricelevel_id = ? LEFT OUTER JOIN Products_Images i ON p.prod_id = i.prod_id AND i.type = 'I' ");
@@ -623,6 +628,7 @@ public class ProductsHandler {
             }
 //            data[4] = temp;
 
+            product.setGC(Boolean.parseBoolean(cursor.getString(cursor.getColumnIndex(isGC))));
             product.setProdImgName(cursor.getString(cursor.getColumnIndex("prod_img_name")));
             product.setProdIstaxable(cursor.getString(cursor.getColumnIndex("prod_istaxable")));
             product.setProdType(cursor.getString(cursor.getColumnIndex("prod_type")));
@@ -811,7 +817,7 @@ public class ProductsHandler {
         sb.append(
                 "CASE WHEN pl.pricelevel_type = 'FixedPercentage' THEN (p.prod_price+(p.prod_price*(pl.pricelevel_fixedpct/100))) ");
         sb.append(
-                "ELSE pli.pricelevel_price END AS 'pricelevel_price',p.prod_price_points,p.prod_value_points,p.prod_name," +
+                "ELSE pli.pricelevel_price END AS 'pricelevel_price',p.prod_price_points,p.prod_value_points,p.prod_name, p.isGC as 'isGC', " +
                         "p.prod_desc,p.prod_extradesc,p.prod_onhand as 'master_prod_onhand',ei.prod_onhand as 'local_prod_onhand',i.prod_img_name, CASE WHEN p.prod_taxcode='' THEN '0' ELSE IFNULL(s.taxcode_istaxable,'1')  END AS 'prod_istaxable' ");
         sb.append(",p.prod_taxcode,p.prod_taxtype,p.prod_type,p.cat_id,c.cat_name as 'cat_name' ");
 

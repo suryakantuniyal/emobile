@@ -561,8 +561,8 @@
     <string name="cust_add_save">"Guardar"</string>
     <string name="cust_add_info">"Información del cliente"</string>
     <string name="cust_add_alias">"Alias ​​del cliente (obligatorio)"</string>
-    <string name="cust_add_first_name">"Nombre"</string>
-    <string name="cust_add_last_name">"Apellido"</string>
+    <string name="cust_add_first_name">"Nombre (obligatorio)"</string>
+    <string name="cust_add_last_name">"Apellido (obligatorio)"</string>
     <string name="cust_add_company">"Empresa"</string>
     <string name="cust_add_email">"Correo electrónico"</string>
     <string name="cust_add_phone">"Teléfono"</string>
@@ -1309,6 +1309,13 @@
     <string name="hours">Horas</string>
     <string name="total_hours_worked">Total Horas</string>
     <string name="date">Fecha</string>
+    <string name="dlog_title_enter_giftcard_number">Introduzca el número de targeta reagalo.</string>
+    <string name="giftcard_number">Número de targeta:</string>
+    <string name="config_giftcard_auto_balance_request">Solicitar balance de la targeta regalo</string>
+    <string name="config_clear_customer">Eliminar cliente en cada transacción</string>
+    <string name="config_giftcard_show_balance">Mostrar el balance de la targeta regalo luego del pago</string>
+    <string name="header_title_customer_custom_fields">Información Adicional</string>
+    <string name="config_cash_show_change">Mostrar el cambio a pagos realizados en efectivo</string>
 
 
 </resources>

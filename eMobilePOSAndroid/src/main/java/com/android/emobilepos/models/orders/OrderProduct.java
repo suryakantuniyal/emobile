@@ -96,6 +96,7 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     private String prod_extradesc;
     private String consignment_qty;
     private boolean attributesCompleted;
+    private boolean GC;
 
     public OrderProduct(Product product) {
         this.setAssignedSeat(product.getAssignedSeat());
@@ -108,6 +109,7 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         if (!TextUtils.isEmpty(product.getProdPrice())) {
             this.setMixMatchOriginalPrice(new BigDecimal(product.getProdPrice()));
         }
+        this.setGC(product.isGC());
         this.setImgURL(product.getProdImgName());
         this.setProd_type(product.getProdType());
         this.setOnHand(product.getProdOnHand());
@@ -811,22 +813,22 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         return price;
     }
 
-    public BigDecimal getTaxAmountCalculated() {
-        BigDecimal taxAmount = getProductPriceTaxableAmountCalculated()
-                .multiply(Global.getBigDecimalNum(getTaxAmount()).divide(new BigDecimal("100"), 4, RoundingMode.HALF_UP))
-                .setScale(4, RoundingMode.HALF_UP);
-        setProd_taxValue(taxAmount);
-        return taxAmount;
-    }
+//    public BigDecimal getTaxAmountCalculated() {
+//        BigDecimal taxAmount = getProductPriceTaxableAmountCalculated()
+//                .multiply(Global.getBigDecimalNum(getTaxAmount()).divide(new BigDecimal("100"), 4, RoundingMode.HALF_UP))
+//                .setScale(4, RoundingMode.HALF_UP);
+//        setProd_taxValue(taxAmount);
+//        return taxAmount;
+//    }
 
     public BigDecimal getItemSubtotalCalculated() {
         BigDecimal subtotal;
         BigDecimal addonsTotalPrice = getAddonsTotalPrice();
         BigDecimal finalPrice = new BigDecimal(getFinalPrice()).multiply(new BigDecimal(getOrdprod_qty()));
         if (isVAT()) {
-            finalPrice = finalPrice.add(getTaxAmountCalculated());
+            finalPrice = finalPrice.add(getProd_taxValue());
         }
-        BigDecimal discount = Global.getBigDecimalNum(getDisTotal());
+        BigDecimal discount = getDiscountTotal();
         subtotal = finalPrice.subtract(discount).add(addonsTotalPrice).setScale(6, RoundingMode.HALF_UP);
         return subtotal;
     }
@@ -836,22 +838,40 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         BigDecimal addonsTotalPrice = getAddonsTotalPrice();
         BigDecimal finalPrice = new BigDecimal(getFinalPrice()).multiply(new BigDecimal(getOrdprod_qty()));
         if (isVAT()) {
-            finalPrice = finalPrice.add(getTaxAmountCalculated());
+            finalPrice = finalPrice.add(getProd_taxValue());
         }
         subtotal = finalPrice.add(addonsTotalPrice).setScale(6, RoundingMode.HALF_UP);
         return subtotal;
     }
 
     public BigDecimal getGranTotalCalculated() {
-        BigDecimal taxAmount = isVAT() ? new BigDecimal(0) : getTaxAmountCalculated();
+        BigDecimal taxAmount = isVAT() ? new BigDecimal(0) : getProd_taxValue();
         BigDecimal subtotalCalculated = getItemSubtotalCalculated();
         BigDecimal granTotal = subtotalCalculated.add(taxAmount)
                 .setScale(6, RoundingMode.HALF_UP);
         return granTotal;
     }
 
+//    public BigDecimal getDiscountTotal() {
+//        return Global.getBigDecimalNum(getDisTotal());
+//}
+
     public BigDecimal getDiscountTotal() {
-        return Global.getBigDecimalNum(getDisTotal());
+        if (isReturned()) {
+            return new BigDecimal(0);
+        }
+        BigDecimal calculatedDiscount;
+        BigDecimal disAmount = Global.getBigDecimalNum(getDisAmount());
+        if (isDiscountFixed()) {
+            calculatedDiscount = disAmount;
+        } else {
+            calculatedDiscount = getItemTotalCalculated().multiply(disAmount).divide(new BigDecimal(100)).setScale(6, RoundingMode.HALF_UP);
+        }
+        if (getItemTotalCalculated().compareTo(calculatedDiscount) < 1) {
+            calculatedDiscount = getItemTotalCalculated();
+        }
+        setDisTotal(String.valueOf(Global.getRoundBigDecimal(calculatedDiscount)));
+        return Global.getRoundBigDecimal(calculatedDiscount);
     }
 
     public BigDecimal getProductPriceTaxableAmountCalculated() {
@@ -901,5 +921,13 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
 
     public void setPayWithPoints(String payWithPoints) {
         this.payWithPoints = payWithPoints;
+    }
+
+    public boolean isGC() {
+        return GC;
+    }
+
+    public void setGC(boolean GC) {
+        this.GC = GC;
     }
 }

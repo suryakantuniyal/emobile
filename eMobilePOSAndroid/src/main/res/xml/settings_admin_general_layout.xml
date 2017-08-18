@@ -52,6 +52,10 @@
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_require_customer" />
         <CheckBoxPreference
+            android:key="pref_clear_customer"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_clear_customer" />
+        <CheckBoxPreference
             android:key="pref_show_confirmation_screen"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_show_confirmation_screen" />

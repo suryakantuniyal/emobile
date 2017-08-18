@@ -38,11 +38,13 @@ import com.android.dao.CustomerCustomFieldsDAO;
 import com.android.dao.OrderProductAttributeDAO;
 import com.android.database.AddressHandler;
 import com.android.database.CustomerInventoryHandler;
+import com.android.database.CustomersHandler;
 import com.android.database.OrderProductsAttr_DB;
 import com.android.database.OrderProductsHandler;
 import com.android.database.OrdersHandler;
 import com.android.database.PayMethodsHandler;
 import com.android.database.ProductsHandler;
+import com.android.database.SalesTaxCodesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.OrderProductListAdapter;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
@@ -61,10 +63,12 @@ import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.soundmanager.SoundManager;
 import com.android.support.CreditCardInfo;
+import com.android.support.Customer;
 import com.android.support.Encrypt;
 import com.android.support.GenerateNewID;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.NetworkUtils;
 import com.android.support.OrderProductUtils;
 import com.android.support.Post;
 import com.android.support.TerminalDisplay;
@@ -130,6 +134,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     private LinearLayout catalogContainer, receiptContainer;
     private Catalog_FR rightFragment;
     private Receipt_FR leftFragment;
+    private OrderLoyalty_FR loyaltyFragment;
     private MyPreferences myPref;
     private Global global;
     private boolean hasBeenCreated = false;
@@ -257,7 +262,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             total = total.add(Global.getBigDecimalNum(Global.formatNumToLocale(Global.addonTotalAmount)));
         }
         List<OrderProduct> list = Collections.singletonList(orderProduct);
-        boolean attributeCompleted = OrderingMain_FA.isRequiredAttributeCompleted(list);
+//        OrderingMain_FA.prefillRequiredAttribute(activity, list);
+        boolean attributeCompleted = OrderingMain_FA.isRequiredAttributeCompleted(activity, list);
         orderProduct.setAttributesCompleted(attributeCompleted);
         total = total.multiply(OrderingMain_FA.returnItem && OrderingMain_FA.mTransType != Global.TransactionType.RETURN ? new BigDecimal(-1) : new BigDecimal(1));
         orderProduct.setItemTotal(total.toString());
@@ -273,6 +279,16 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         UUID uuid = UUID.randomUUID();
         String randomUUIDString = uuid.toString();
         orderProduct.setOrdprod_id(randomUUIDString);
+
+        // update required product attributes
+        if (orderProduct.getRequiredProductAttributes() != null &&
+                orderProduct.getRequiredProductAttributes().size() > 0) {
+            for (ProductAttribute attribute : orderProduct.getRequiredProductAttributes()) {
+                attribute.setProductId(uuid.toString());
+            }
+            global.ordProdAttr.addAll(orderProduct.getRequiredProductAttributes());
+        }
+
         if (isFromAddon) {
             Global.addonTotalAmount = 0;
             StringBuilder sb = new StringBuilder();
@@ -312,10 +328,13 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 //        });
 //    }
 
-    public static boolean isRequiredAttributeCompleted(List<OrderProduct> products) {
+    public static boolean isRequiredAttributeCompleted(Context context, List<OrderProduct> products) {
         for (OrderProduct product : products) {
             List<ProductAttribute> attributes = OrderProductAttributeDAO.getByProdId(product.getProd_id());
             for (ProductAttribute attribute : attributes) {
+                if (fillWithCustomerAttribute(context, product, attribute)) {
+                    return true;
+                }
                 if (!product.getRequiredProductAttributes().contains(attribute)) {
                     return false;
                 }
@@ -323,6 +342,38 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
         return true;
     }
+
+    private static boolean fillWithCustomerAttribute(Context context, OrderProduct product, ProductAttribute attribute) {
+        MyPreferences preferences = new MyPreferences(context);
+        String custID = preferences.getCustID();
+        CustomerCustomField customField = CustomerCustomFieldsDAO.findEMWSCardIdByCustomerId(custID);
+        if (customField != null) {
+            if (customField.getCustFieldId().equalsIgnoreCase(attribute.getAttributeId())) {
+                attribute.setValue(customField.getCustValue());
+                product.getRequiredProductAttributes().add(attribute);
+                return true;
+            }
+        }
+        return false;
+    }
+
+//    public static void prefillRequiredAttribute(Context context, List<OrderProduct> products) {
+//        MyPreferences preferences = new MyPreferences(context);
+//        String custID = preferences.getCustID();
+//        for (OrderProduct product : products) {
+//            List<ProductAttribute> attributes = OrderProductAttributeDAO.getByProdId(product.getProd_id());
+//            for (ProductAttribute attribute : attributes) {
+//                if (!product.getRequiredProductAttributes().contains(attribute)) {
+//                    if (attribute.getAttributeId().equalsIgnoreCase("EMS_CARD_ID_NUM")) {
+//                        CustomerCustomField customField = CustomerCustomFieldsDAO.findEMWSCardIdByCustomerId(custID);
+//                        attribute.setValue(customField == null ? null : customField.getCustValue());
+//                        product.getRequiredProductAttributes().add(attribute);
+//                    }
+//                }
+//            }
+//        }
+//
+//    }
 
 //    private Handler SearchFieldHandler = new Handler() {
 //        public void handleMessage(Message msg) {
@@ -365,6 +416,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         super.onCreate(savedInstanceState);
         setContentView(R.layout.order_main_layout);
         global = (Global) getApplication();
+        Global.lockOrientation(this);
         if (savedInstanceState == null) {
             global.resetOrderDetailsValues();
             global.clearListViewData();
@@ -379,6 +431,14 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         btnCheckout = (Button) findViewById(R.id.btnCheckOut);
         btnCheckout.setOnClickListener(this);
         myPref = new MyPreferences(this);
+        if (myPref.isCustSelected()) {
+            CustomersHandler customersHandler = new CustomersHandler(this);
+            Customer customer = customersHandler.getCustomer(myPref.getCustID());
+            SalesTaxCodesHandler taxHandler = new SalesTaxCodesHandler(this);
+            SalesTaxCodesHandler.TaxableCode taxable = taxHandler.checkIfCustTaxable(customer.getCust_taxable());
+            myPref.setCustTaxCode(taxable, customer.getCust_salestaxcode());
+        }
+
         extras = getIntent().getExtras();
         mTransType = (Global.TransactionType) extras.get("option_number");
         setRestaurantSaleType((Global.RestaurantSaleType) extras.get("RestaurantSaleType"));
@@ -709,6 +769,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             if (rightFragment != null) {
                 rightFragment.loadCursor();
             }
+
+            prefetchLoyalty(true);
+
         } else if (resultCode == -1 || resultCode == 3) // Void transaction from
         // Sales Receipt
         {
@@ -743,7 +806,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
             OrderTotalDetails_FR.resetView();
             finish();
-            myPref.resetCustInfo(getString(R.string.no_customer));
+            if (myPref.isClearCustomerAfterTransaction()) {
+                myPref.resetCustInfo(getString(R.string.no_customer));
+            }
             SalesTab_FR.startDefault(MainMenu_FA.activity,
                     myPref.getPreferencesValue(MyPreferences.pref_default_transaction));
         }
@@ -784,7 +849,19 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             if (Global.btSled != null && Global.btSled.getCurrentDevice() != null)
                 Global.btSled.getCurrentDevice().loadScanner(callBackMSR);
         }
+
         super.onResume();
+    }
+
+    public void prefetchLoyalty(boolean isLoyalty) {
+        if (myPref.isCustSelected() && myPref.isGiftCardAutoBalanceRequest()) {
+            if (!TextUtils.isEmpty(myPref.getCustID())) {
+                CustomerCustomField customField = CustomerCustomFieldsDAO.findEMWSCardIdByCustomerId(myPref.getCustID());
+                if (customField != null) {
+                    processBalanceInquiry(isLoyalty, customField.getCustValue());
+                }
+            }
+        }
     }
 
     @Override
@@ -1181,9 +1258,25 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     }
 
     @Override
+    public void prefetchLoyaltyPoints() {
+        if (NetworkUtils.isConnectedToInternet(MainMenu_FA.activity)) {
+            prefetchLoyalty(true);
+            loyaltySwiped = true;
+        }
+    }
+
+    @Override
     public void startRewardSwiper() {
         showMSRprompt(false);
         loyaltySwiped = false;
+    }
+
+    @Override
+    public void prefetchRewardsBalance() {
+        if (NetworkUtils.isConnectedToInternet(MainMenu_FA.activity)) {
+            loyaltySwiped = false;
+            prefetchLoyalty(false);
+        }
     }
 
     @SuppressWarnings("deprecation")
@@ -1279,7 +1372,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
                 String temp = swiperField.getText().toString().trim();
                 if (temp.length() > 0) {
-                    processBalanceInquiry(isLoyaltyCard);
+                    processBalanceInquiry(isLoyaltyCard, temp);
                 }
             }
         });
@@ -1333,17 +1426,18 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         };
     }
 
-    private void populateCardInfo() {
+    private void populateCardInfo(String cardNumber) {
         if (!wasReadFromReader) {
+
             Encrypt encrypt = new Encrypt(this);
             cardInfoManager = new CreditCardInfo();
-            int size = swiperField.getText().toString().length();
+            int size = cardNumber.length();
             if (size > 4) {
-                String last4Digits = (String) swiperField.getText().toString().subSequence(size - 4, size);
+                String last4Digits = (String) cardNumber.subSequence(size - 4, size);
                 cardInfoManager.setCardLast4(last4Digits);
             }
-            cardInfoManager.setCardNumAESEncrypted(encrypt.encryptWithAES(swiperField.getText().toString()));
-            cardInfoManager.setCardNumUnencrypted(swiperField.getText().toString());
+            cardInfoManager.setCardNumAESEncrypted(encrypt.encryptWithAES(cardNumber));
+            cardInfoManager.setCardNumUnencrypted(cardNumber);
             cardInfoManager.setWasSwiped(false);
             if (loyaltySwiped)
                 Global.loyaltyCardInfo = cardInfoManager;
@@ -1352,9 +1446,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
     }
 
-    private void processBalanceInquiry(boolean isLoyaltyCard) {
+    private void processBalanceInquiry(boolean isLoyaltyCard, String cardNumber) {
         Payment payment = new Payment(this);
-        populateCardInfo();
+        populateCardInfo(cardNumber);
 
         if (isLoyaltyCard)
             payment.setPaymethod_id(PayMethodsHandler.getPayMethodID("LoyaltyCard"));
@@ -1390,7 +1484,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     cardInfoManager);
         }
 
-        new processAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, generatedURL);
+        new ProcessAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, generatedURL);
     }
 
     public int getSelectedSeatsAmount() {
@@ -1526,6 +1620,14 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         this.orderAttributes = orderAttributes;
     }
 
+    public OrderLoyalty_FR getLoyaltyFragment() {
+        return loyaltyFragment;
+    }
+
+    public void setLoyaltyFragment(OrderLoyalty_FR loyaltyFragment) {
+        this.loyaltyFragment = loyaltyFragment;
+    }
+
     public enum OrderingAction {
         HOLD, CHECKOUT, NONE, BACK_PRESSED
     }
@@ -1541,15 +1643,15 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
     }
 
-    private class processAsync extends AsyncTask<String, String, HashMap<String, String>> {
+    private class ProcessAsync extends AsyncTask<String, String, HashMap<String, String>> {
         private String urlToPost;
         private boolean wasProcessed = false;
         private String errorMsg = "Request could not be processed.";
 
         @Override
         protected void onPreExecute() {
-            int orientation = Global.getScreenOrientation(OrderingMain_FA.this);
-            setRequestedOrientation(orientation);
+//            int orientation = Global.getScreenOrientation(OrderingMain_FA.this);
+//            setRequestedOrientation(orientation);
             myProgressDialog = new ProgressDialog(OrderingMain_FA.this);
             myProgressDialog.setMessage("Processing Balance Inquiry...");
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -1606,8 +1708,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
         @Override
         protected void onPostExecute(HashMap<String, String> parsedMap) {
-            if (Global.isTablet(OrderingMain_FA.this))
-                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+//            if (Global.isTablet(OrderingMain_FA.this))
+//                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
 
             if (myProgressDialog != null && myProgressDialog.isShowing()) {
                 myProgressDialog.dismiss();
@@ -1616,9 +1718,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             if (wasProcessed) // payment processing succeeded
             {
                 String temp = (parsedMap.get("CardBalance") == null ? "0.0" : parsedMap.get("CardBalance"));
-                if (loyaltySwiped) {
-                    OrderLoyalty_FR.getFrag().hideTapButton();
-                    OrderLoyalty_FR.setPointBalance(temp);
+                if (loyaltySwiped && loyaltyFragment != null) {
+                    loyaltyFragment.hideTapButton();
+                    loyaltyFragment.setPointBalance(temp);
                 } else {
                     OrderRewards_FR.getFrag().hideTapButton();
                     OrderRewards_FR.setRewardBalance(temp);

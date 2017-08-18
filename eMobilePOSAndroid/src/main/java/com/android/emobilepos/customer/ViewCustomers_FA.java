@@ -28,7 +28,6 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.android.database.CustomersHandler;
-import com.android.database.DBManager;
 import com.android.database.SalesTaxCodesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.history.HistoryTransactions_FA;
@@ -50,11 +49,9 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
     private Global global;
     private boolean hasBeenCreated = false;
     private MyPreferences myPref;
-    //private SQLiteDatabase db;
-    private DBManager dbManager;
-    private ViewCustomers_FA _thisActivity;
     private int selectedCustPosition = 0;
     private Dialog dlog;
+    private EditText search;
 
 
     @Override
@@ -63,19 +60,15 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
         setContentView(R.layout.custselec_listview_layout);
 
         activity = this;
-        _thisActivity = this;
         myPref = new MyPreferences(activity);
         global = (Global) getApplication();
         myListView = (ListView) findViewById(R.id.customerSelectionLV);
-        final EditText search = (EditText) findViewById(R.id.searchCustomer);
+        search = (EditText) findViewById(R.id.searchCustomer);
 
-        dbManager = new DBManager(activity);
-        //db = dbManager.openReadableDB();
         handler = new CustomersHandler(this);
         myCursor = handler.getCursorAllCust();
         adap2 = new CustomCursorAdapter(this, myCursor, CursorAdapter.NO_SELECTION);
         myListView.setAdapter(adap2);
-
 
         Button addNewCust = (Button) findViewById(R.id.addCustButton);
         if (myPref.getPreferences(MyPreferences.pref_allow_customer_creation))
@@ -132,7 +125,8 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
 
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH ||
+                        actionId == EditorInfo.IME_ACTION_UNSPECIFIED) {
                     String text = v.getText().toString().trim();
                     InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
@@ -148,29 +142,17 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
     private void selectCustomer(int itemIndex) {
         Intent results = new Intent();
         myCursor.moveToPosition(itemIndex);
-
         String name = myCursor.getString(myCursor.getColumnIndex("cust_name"));
         results.putExtra("customer_name", name);
-
-        SalesTaxCodesHandler taxHandler = new SalesTaxCodesHandler(activity);
-        SalesTaxCodesHandler.TaxableCode taxable = taxHandler.checkIfCustTaxable(myCursor.getString(myCursor.getColumnIndex("cust_taxable")));
-        myPref.setCustTaxCode(taxable, myCursor.getString(myCursor.getColumnIndex("cust_salestaxcode")));
-//        if (taxable == SalesTaxCodesHandler.TaxableCode.TAXABLE)
-//            myPref.setCustTaxCode(myCursor.getString(myCursor.getColumnIndex("cust_salestaxcode")));
-//        else if (taxable == SalesTaxCodesHandler.TaxableCode.NON_TAXABLE)
-//            myPref.setCustTaxCode("");
-//        else
-//            myPref.setCustTaxCode(null);
-
+//        SalesTaxCodesHandler taxHandler = new SalesTaxCodesHandler(activity);
+//        SalesTaxCodesHandler.TaxableCode taxable = taxHandler.checkIfCustTaxable(myCursor.getString(myCursor.getColumnIndex("cust_taxable")));
+//        myPref.setCustTaxCode(taxable, myCursor.getString(myCursor.getColumnIndex("cust_salestaxcode")));
         myPref.setCustID(myCursor.getString(myCursor.getColumnIndex("_id")));    //getting cust_id as _id
         myPref.setCustName(name);
         myPref.setCustIDKey(myCursor.getString(myCursor.getColumnIndex("custidkey")));
         myPref.setCustSelected(true);
-
         myPref.setCustPriceLevel(myCursor.getString(myCursor.getColumnIndex("pricelevel_id")));
-
         myPref.setCustEmail(myCursor.getString(myCursor.getColumnIndex("cust_email")));
-
         setResult(1, results);
         finish();
     }
@@ -189,6 +171,16 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
             global.promptForMandatoryLogin(activity);
         }
         super.onResume();
+
+        // set focus on search
+        search.requestFocus();
+        search.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                inputMethodManager.showSoftInput(search, InputMethodManager.SHOW_IMPLICIT);
+            }
+        }, 100);
     }
 
     @Override
@@ -274,8 +266,8 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
             btnMapView.setText(R.string.cust_dlog_map);
             btnTrans.setText(R.string.cust_dlog_view_trans);
 
-            btnSelectCust.setOnClickListener(_thisActivity);
-            btnTrans.setOnClickListener(_thisActivity);
+            btnSelectCust.setOnClickListener(ViewCustomers_FA.this);
+            btnTrans.setOnClickListener(ViewCustomers_FA.this);
             dlog.show();
         }
     }
@@ -333,7 +325,7 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
 
         @Override
         public View newView(Context context, Cursor cursor, ViewGroup parent) {
-            final View retView = inflater.inflate(R.layout.custselec_lvadapter, parent, false);
+            final View retView = inflater.inflate(R.layout.custselec_lvadapter, null);
             ViewHolder holder = new ViewHolder();
             holder.cust_name = (TextView) retView.findViewById(R.id.custSelecName);
             holder.CompanyName = (TextView) retView.findViewById(R.id.custSelecCompanyName);

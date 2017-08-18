@@ -1,454 +1,655 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	xmlns:tools="http://schemas.android.com/tools"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:background="@drawable/bg_white_page"
-	android:orientation="vertical">
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_white_page"
+    android:orientation="vertical">
 
-	<TextView
-		android:id="@+id/HeaderTitle"
-		android:layout_width="0dp"
-		android:layout_height="wrap_content"
-		android:padding="10dp"
-		android:text="@string/cust_detail_title"
-		android:background="@drawable/blue_gradient_header_horizontal"
-		android:gravity="center"
-		android:textSize="@dimen/header_bar_text_size"
-		android:textAppearance="@style/white_text_appearance"
-		style="@style/text_shadow"
-		tools:layout_constraintTop_creator="1"
-		tools:layout_constraintRight_creator="1"
-		app:layout_constraintRight_toRightOf="parent"
-		tools:layout_constraintLeft_creator="1"
-		app:layout_constraintLeft_toLeftOf="parent"
-		app:layout_constraintTop_toTopOf="parent" />
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_white_page"
+        android:orientation="vertical">
 
-	<LinearLayout
-		android:layout_width="0dp"
-		android:layout_height="wrap_content"
-		android:orientation="horizontal"
-		android:layout_marginRight="8dp"
-		app:layout_constraintRight_toRightOf="parent"
-		android:layout_marginLeft="8dp"
-		app:layout_constraintLeft_toLeftOf="parent"
-		android:layout_marginTop="8dp"
-		app:layout_constraintTop_toBottomOf="@+id/HeaderTitle"
-		android:id="@+id/linearLayout4"
-		tools:layout_constraintRight_creator="1"
-		android:layout_marginStart="8dp"
-		android:layout_marginEnd="8dp"
-		tools:layout_constraintLeft_creator="1">
+        <TextView
+            android:id="@+id/HeaderTitle"
+            style="@style/text_shadow"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/blue_gradient_header_horizontal"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="@string/cust_detail_title"
+            android:textAppearance="@style/white_text_appearance"
+            android:textSize="@dimen/header_bar_text_size"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_constraintLeft_creator="1"
+            tools:layout_constraintRight_creator="1"
+            tools:layout_constraintTop_creator="1" />
 
-		<TableLayout
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:layout_marginRight="10dp"
-			android:layout_marginEnd="10dp"
-			android:layout_weight="1">
+        <LinearLayout
+            android:id="@+id/linearLayout4"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/HeaderTitle"
+            tools:layout_constraintLeft_creator="1"
+            tools:layout_constraintRight_creator="1">
 
-            <TableRow
+            <TableLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:layout_marginEnd="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_weight="1">
 
-                <TextView
-                    android:id="@+id/textView13"
-                    style="@style/white_text_appearance"
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:id="@+id/textView13"
+                        style="@style/white_text_appearance"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0dp"
+                        android:layout_weight="1"
+                        android:background="@android:color/darker_gray"
+                        android:paddingBottom="5dp"
+                        android:paddingEnd="0dp"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="0dp"
+                        android:paddingStart="10dp"
+                        android:paddingTop="5dp"
+                        android:text="@string/cust_detail_info"
+                        android:textSize="@dimen/about_main_text_size"
+                        app:layout_constraintHorizontal_bias="1.0"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/HeaderTitle"
+                        tools:layout_constraintLeft_creator="1"
+                        tools:layout_constraintRight_creator="1" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="5dp">
+
+                    <TextView
+                        android:id="@+id/textView351"
+                        style="@style/black_text_appearance_unbold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/cust_detail_name"
+                        android:textSize="@dimen/about_main_text_size" />
+
+                    <com.android.support.MyEditText
+                        android:id="@+id/customerNametextView341"
+                        style="@style/black_text_appearance_unbold"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="5dp">
+
+                    <TextView
+                        android:id="@+id/textView352"
+                        style="@style/black_text_appearance_unbold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/cust_detail_contact"
+                        android:textSize="@dimen/about_main_text_size" />
+
+                    <com.android.support.MyEditText
+                        android:id="@+id/customerContacttextView342"
+                        style="@style/black_text_appearance_unbold"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="5dp">
+
+                    <TextView
+                        android:id="@+id/textView353"
+                        style="@style/black_text_appearance_unbold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/cust_detail_phone"
+                        android:textSize="@dimen/about_main_text_size" />
+
+                    <com.android.support.MyEditText
+                        android:id="@+id/customerPhonetextView343"
+                        style="@style/black_text_appearance_unbold"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="5dp">
+
+                    <TextView
+                        android:id="@+id/textView354"
+                        style="@style/black_text_appearance_unbold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/cust_detail_email"
+                        android:textSize="@dimen/about_main_text_size" />
+
+                    <com.android.support.MyEditText
+                        android:id="@+id/customerEmailtextView344"
+                        style="@style/black_text_appearance_unbold"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="5dp">
+
+                    <TextView
+                        android:id="@+id/textView35"
+                        style="@style/black_text_appearance_unbold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/cust_detail_company"
+                        android:textSize="@dimen/about_main_text_size" />
+
+                    <com.android.support.MyEditText
+                        android:id="@+id/customerCompanytextView34"
+                        style="@style/black_text_appearance_unbold"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+                </TableRow>
+            </TableLayout>
+
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="1">
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:id="@+id/textView131"
+                        style="@style/white_text_appearance"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@android:color/darker_gray"
+                        android:paddingBottom="5dp"
+                        android:paddingEnd="0dp"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="0dp"
+                        android:paddingStart="10dp"
+                        android:paddingTop="5dp"
+                        android:text="@string/cust_detail_financial_info"
+                        android:textSize="@dimen/about_main_text_size"
+                        app:layout_constraintHorizontal_bias="1.0"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/linearLayout4"
+                        tools:layout_constraintLeft_creator="1"
+                        tools:layout_constraintRight_creator="1" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="5dp">
+
+                    <TextView
+                        android:id="@+id/textView381"
+                        style="@style/black_text_appearance_unbold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/cust_detail_balance"
+                        android:textSize="@dimen/about_main_text_size" />
+
+                    <com.android.support.MyEditText
+                        android:id="@+id/customerBalancetextView371"
+                        style="@style/black_text_appearance_unbold"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="5dp">
+
+                    <TextView
+                        android:id="@+id/textView382"
+                        style="@style/black_text_appearance_unbold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/cust_detail_limit"
+                        android:textSize="@dimen/about_main_text_size" />
+
+                    <com.android.support.MyEditText
+                        android:id="@+id/customerLimittextView372"
+                        style="@style/black_text_appearance_unbold"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="5dp">
+
+                    <TextView
+                        android:id="@+id/textView383"
+                        style="@style/black_text_appearance_unbold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/cust_detail_taxable"
+                        android:textSize="@dimen/about_main_text_size" />
+
+                    <com.android.support.MyEditText
+                        android:id="@+id/customerTaxabletextView373"
+                        style="@style/black_text_appearance_unbold"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="5dp">
+
+                    <TextView
+                        android:id="@+id/textView38"
+                        style="@style/black_text_appearance_unbold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/cust_detail_tax_id"
+                        android:textSize="@dimen/about_main_text_size" />
+
+                    <com.android.support.MyEditText
+                        android:id="@+id/customerTaxIdtextView37"
+                        style="@style/black_text_appearance_unbold"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+                </TableRow>
+            </TableLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout4">
+
+            <TableLayout
+                android:id="@+id/tableLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView40">
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:id="@+id/textView40"
+                        style="@style/white_text_appearance"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@android:color/darker_gray"
+                        android:paddingBottom="5dp"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:paddingTop="5dp"
+                        android:text="@string/cust_add_bill_addr"
+                        android:textSize="@dimen/about_main_text_size"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/linearLayout4" />
+                </TableRow>
+
+                <TableRow
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="0dp"
-                    android:layout_weight="1"
-                    android:background="@android:color/darker_gray"
-                    android:paddingBottom="5dp"
-                    android:paddingLeft="10dp"
-					android:paddingStart="10dp"
-					android:paddingRight="0dp"
-					android:paddingEnd="0dp"
-                    android:paddingTop="5dp"
-                    android:text="@string/cust_detail_info"
-                    android:textSize="@dimen/about_main_text_size"
-                    app:layout_constraintHorizontal_bias="1.0"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/HeaderTitle"
-                    tools:layout_constraintLeft_creator="1"
-                    tools:layout_constraintRight_creator="1" />
-            </TableRow>
+                    android:padding="5dp">
 
-            <TableRow
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <RadioGroup
+                            android:id="@+id/radioGroupBillingAddressType"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="end"
+                            android:layout_marginBottom="20dp"
+                            android:orientation="horizontal">
+
+                            <RadioButton
+                                android:id="@+id/radioBillingResidential"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:checked="true"
+                                android:text="@string/cust_add_address_residential" />
+
+                            <RadioButton
+                                android:id="@+id/radioBillingBusiness"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/cust_add_address_business" />
+                        </RadioGroup>
+
+                        <com.android.support.MyEditText
+                            android:id="@+id/newCustBillStr1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:hint="@string/cust_add_street1"
+                            android:imeOptions="flagNoExtractUi|actionNext"
+                            android:inputType="textCapWords"
+                            android:textAppearance="@style/black_text_appearance_unbold"
+                            android:textColor="#000000"
+                            android:textSize="@dimen/field_general_txt_size" />
+
+                        <com.android.support.MyEditText
+                            android:id="@+id/newCustBillStr2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:hint="@string/cust_add_street2"
+                            android:imeOptions="flagNoExtractUi|actionNext"
+                            android:inputType="textCapWords"
+                            android:textAppearance="@style/black_text_appearance_unbold"
+                            android:textColor="#000000"
+                            android:textSize="@dimen/field_general_txt_size" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <com.android.support.MyEditText
+                                android:id="@+id/newCustBillCity"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:layout_weight="1"
+                                android:hint="@string/cust_add_city"
+                                android:imeOptions="flagNoExtractUi|actionNext"
+                                android:inputType="textCapWords"
+                                android:textAppearance="@style/black_text_appearance_unbold"
+                                android:textColor="#000000"
+                                android:textSize="@dimen/field_general_txt_size" />
+
+                            <com.android.support.MyEditText
+                                android:id="@+id/newCustBillState"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:layout_weight="1"
+                                android:hint="@string/cust_add_state"
+                                android:imeOptions="flagNoExtractUi|actionNext"
+                                android:inputType="textCapWords"
+                                android:textAppearance="@style/black_text_appearance_unbold"
+                                android:textColor="#000000"
+                                android:textSize="@dimen/field_general_txt_size" />
+                        </LinearLayout>
+
+                        <com.android.support.MyEditText
+                            android:id="@+id/newCustBillZip"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:digits="0123456789"
+                            android:hint="@string/cust_add_zcode"
+                            android:imeOptions="flagNoExtractUi|actionNext"
+                            android:inputType="numberDecimal"
+                            android:textAppearance="@style/black_text_appearance_unbold"
+                            android:textColor="#000000"
+                            android:textSize="@dimen/field_general_txt_size" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/cust_add_country" />
+
+                            <Spinner
+                                android:id="@+id/newCustBillCountry"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="5dp"
+                                android:layout_marginRight="5dp"
+                                android:layout_weight="3"
+                                android:background="@drawable/spinner_holo_light_selector"
+                                android:paddingLeft="5dp"
+                                android:paddingRight="5dp"
+                                android:textAppearance="@style/black_text_appearance_unbold" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </TableRow>
+
+            </TableLayout>
+
+            <TableLayout
+                android:id="@+id/tableLayout1"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:padding="5dp">
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_weight="1"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView40">
 
-                <TextView
-                    android:id="@+id/textView351"
-                    style="@style/black_text_appearance_unbold"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/cust_detail_name"
-                    android:textSize="@dimen/about_main_text_size" />
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
-                <TextView
-                    android:id="@+id/textView341"
-                    style="@style/black_text_appearance_unbold"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="TextView"
-                    android:textSize="@dimen/about_main_text_size" />
-            </TableRow>
+                    <TextView
+                        android:id="@+id/textView41"
+                        style="@style/white_text_appearance"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@android:color/darker_gray"
+                        android:paddingBottom="5dp"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:paddingTop="5dp"
+                        android:text="@string/cust_add_ship_addr"
+                        android:textSize="@dimen/about_main_text_size"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/linearLayout4" />
+                </TableRow>
 
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="5dp">
-
-                <TextView
-                    android:id="@+id/textView352"
-                    style="@style/black_text_appearance_unbold"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/cust_detail_contact"
-                    android:textSize="@dimen/about_main_text_size" />
-
-                <TextView
-                    android:id="@+id/textView342"
-                    style="@style/black_text_appearance_unbold"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="TextView"
-                    android:textSize="@dimen/about_main_text_size" />
-            </TableRow>
-
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="5dp">
-
-                <TextView
-                    android:id="@+id/textView353"
-                    style="@style/black_text_appearance_unbold"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/cust_detail_phone"
-                    android:textSize="@dimen/about_main_text_size" />
-
-                <TextView
-                    android:id="@+id/textView343"
-                    style="@style/black_text_appearance_unbold"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="TextView"
-                    android:textSize="@dimen/about_main_text_size" />
-            </TableRow>
-
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="5dp">
-
-                <TextView
-                    android:id="@+id/textView354"
-                    style="@style/black_text_appearance_unbold"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/cust_detail_email"
-                    android:textSize="@dimen/about_main_text_size" />
-
-                <TextView
-                    android:id="@+id/textView344"
-                    style="@style/black_text_appearance_unbold"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="TextView"
-                    android:textSize="@dimen/about_main_text_size" />
-            </TableRow>
-
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="5dp">
-
-                <TextView
-                    android:id="@+id/textView35"
-                    style="@style/black_text_appearance_unbold"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/cust_detail_company"
-                    android:textSize="@dimen/about_main_text_size" />
-
-                <TextView
-                    android:id="@+id/textView34"
-                    style="@style/black_text_appearance_unbold"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="TextView"
-                    android:textSize="@dimen/about_main_text_size" />
-            </TableRow>
-		</TableLayout>
-
-		<TableLayout
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:layout_marginLeft="10dp"
-			android:layout_weight="1">
-
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" >
-
-                <TextView
-                    android:id="@+id/textView131"
-                    style="@style/white_text_appearance"
+                <TableRow
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@android:color/darker_gray"
-                    android:paddingBottom="5dp"
-                    android:paddingLeft="10dp"
-					android:paddingStart="10dp"
-					android:paddingRight="0dp"
-					android:paddingEnd="0dp"
-                    android:paddingTop="5dp"
-                    android:text="@string/cust_detail_financial_info"
-                    android:textSize="@dimen/about_main_text_size"
-                    app:layout_constraintHorizontal_bias="1.0"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/linearLayout4"
-                    tools:layout_constraintLeft_creator="1"
-                    tools:layout_constraintRight_creator="1"
-                    android:layout_weight="1" />
-            </TableRow>
+                    android:padding="5dp">
 
-            <TableRow
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				android:padding="5dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/textView381"
-                    style="@style/black_text_appearance_unbold"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/cust_detail_balance"
-                    android:textSize="@dimen/about_main_text_size" />
+                        <RadioGroup
+                            android:id="@+id/radioGroupShippingAddressType"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="end"
+                            android:layout_marginBottom="20dp"
+                            android:orientation="horizontal">
 
-				<TextView
-					android:id="@+id/textView371"
-					style="@style/black_text_appearance_unbold"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:text="TextView"
-					android:textSize="@dimen/about_main_text_size" />
-			</TableRow>
+                            <RadioButton
+                                android:id="@+id/radioShippingResidential"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:checked="true"
+                                android:text="@string/cust_add_address_residential" />
 
-			<TableRow
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				android:padding="5dp">
+                            <RadioButton
+                                android:id="@+id/radioShippingBusiness"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/cust_add_address_business" />
+                        </RadioGroup>
 
-                <TextView
-                    android:id="@+id/textView382"
-                    style="@style/black_text_appearance_unbold"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/cust_detail_limit"
-                    android:textSize="@dimen/about_main_text_size" />
+                        <com.android.support.MyEditText
+                            android:id="@+id/newCustShippingStr1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:hint="@string/cust_add_street1"
+                            android:imeOptions="flagNoExtractUi|actionNext"
+                            android:inputType="textCapWords"
+                            android:textAppearance="@style/black_text_appearance_unbold"
+                            android:textColor="#000000"
+                            android:textSize="@dimen/field_general_txt_size" />
 
-				<TextView
-					android:id="@+id/textView372"
-					style="@style/black_text_appearance_unbold"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:text="TextView"
-					android:textSize="@dimen/about_main_text_size" />
-			</TableRow>
+                        <com.android.support.MyEditText
+                            android:id="@+id/newCustShippingStr2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:hint="@string/cust_add_street2"
+                            android:imeOptions="flagNoExtractUi|actionNext"
+                            android:inputType="textCapWords"
+                            android:textAppearance="@style/black_text_appearance_unbold"
+                            android:textColor="#000000"
+                            android:textSize="@dimen/field_general_txt_size" />
 
-			<TableRow
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				android:padding="5dp">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/textView383"
-                    style="@style/black_text_appearance_unbold"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/cust_detail_taxable"
-                    android:textSize="@dimen/about_main_text_size" />
+                            <com.android.support.MyEditText
+                                android:id="@+id/newCustShippingCity"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:layout_weight="1"
+                                android:hint="@string/cust_add_city"
+                                android:imeOptions="flagNoExtractUi|actionNext"
+                                android:inputType="textCapWords"
+                                android:textAppearance="@style/black_text_appearance_unbold"
+                                android:textColor="#000000"
+                                android:textSize="@dimen/field_general_txt_size" />
 
-				<TextView
-					android:id="@+id/textView373"
-					style="@style/black_text_appearance_unbold"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:text="TextView"
-					android:textSize="@dimen/about_main_text_size" />
-			</TableRow>
+                            <com.android.support.MyEditText
+                                android:id="@+id/newCustShippingState"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:layout_weight="1"
+                                android:hint="@string/cust_add_state"
+                                android:imeOptions="flagNoExtractUi|actionNext"
+                                android:inputType="textCapWords"
+                                android:textAppearance="@style/black_text_appearance_unbold"
+                                android:textColor="#000000"
+                                android:textSize="@dimen/field_general_txt_size" />
+                        </LinearLayout>
 
-			<TableRow
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				android:padding="5dp">
+                        <com.android.support.MyEditText
+                            android:id="@+id/newCustShippingZip"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:digits="0123456789"
+                            android:hint="@string/cust_add_zcode"
+                            android:imeOptions="flagNoExtractUi|actionNext"
+                            android:inputType="numberDecimal"
+                            android:textAppearance="@style/black_text_appearance_unbold"
+                            android:textColor="#000000"
+                            android:textSize="@dimen/field_general_txt_size" />
 
-                <TextView
-                    android:id="@+id/textView38"
-                    style="@style/black_text_appearance_unbold"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/cust_detail_tax_id"
-                    android:textSize="@dimen/about_main_text_size" />
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:orientation="horizontal">
 
-				<TextView
-					android:id="@+id/textView37"
-					style="@style/black_text_appearance_unbold"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:text="TextView"
-					android:textSize="@dimen/about_main_text_size" />
-			</TableRow>
-		</TableLayout>
-	</LinearLayout>
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/cust_add_country" />
 
-	<LinearLayout
-		android:layout_width="0dp"
-		android:layout_height="wrap_content"
-		android:layout_marginLeft="8dp"
-		android:layout_marginRight="8dp"
-		android:layout_marginTop="8dp"
-		android:orientation="horizontal"
-		app:layout_constraintLeft_toLeftOf="parent"
-		app:layout_constraintRight_toRightOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/linearLayout4">
+                            <Spinner
+                                android:id="@+id/newCustShippingCountry"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="5dp"
+                                android:layout_marginRight="5dp"
+                                android:layout_weight="3"
+                                android:background="@drawable/spinner_holo_light_selector"
+                                android:paddingLeft="5dp"
+                                android:paddingRight="5dp"
+                                android:textAppearance="@style/black_text_appearance_unbold" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </TableRow>
 
-		<TableLayout
-			android:id="@+id/tableLayout"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:layout_marginRight="10dp"
-			android:layout_marginEnd="10dp"
-			android:layout_weight="1"
-			app:layout_constraintHorizontal_bias="0.0"
-			app:layout_constraintLeft_toLeftOf="parent"
-			app:layout_constraintRight_toRightOf="parent"
-			app:layout_constraintTop_toBottomOf="@+id/textView40">
+            </TableLayout>
 
-			<TableRow
-				android:layout_width="match_parent"
-				android:layout_height="match_parent">
+        </LinearLayout>
+    </android.support.constraint.ConstraintLayout>
 
-				<TextView
-					android:id="@+id/textView40"
-					style="@style/white_text_appearance"
-					android:layout_width="0dp"
-					android:layout_height="wrap_content"
-					android:layout_weight="1"
-					android:background="@android:color/darker_gray"
-					android:paddingBottom="5dp"
-					android:paddingLeft="10dp"
-					android:paddingRight="10dp"
-					android:paddingTop="5dp"
-					android:text="@string/cust_detail_address"
-					android:textSize="@dimen/about_main_text_size"
-					app:layout_constraintHorizontal_bias="0.0"
-					app:layout_constraintLeft_toLeftOf="parent"
-					app:layout_constraintRight_toRightOf="parent"
-					app:layout_constraintTop_toBottomOf="@+id/linearLayout4" />
-			</TableRow>
-
-			<TableRow
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:padding="5dp">
-
-				<TextView
-					android:id="@+id/textView355"
-					style="@style/black_text_appearance_unbold"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_marginRight="10dp"
-					android:layout_marginEnd="10dp"
-					android:text="@string/cust_detail_bill"
-					android:textSize="@dimen/about_main_text_size" />
-
-				<TextView
-					android:id="@+id/textView345"
-					style="@style/black_text_appearance_unbold"
-					android:layout_width="0dp"
-					android:layout_height="wrap_content"
-					android:layout_weight="1"
-					android:text="TextView"
-					android:textSize="@dimen/about_main_text_size" />
-			</TableRow>
-
-			<TableRow
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:padding="5dp">
-
-				<TextView
-					android:id="@+id/textView3"
-					style="@style/black_text_appearance_unbold"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_marginRight="10dp"
-					android:layout_marginEnd="10dp"
-					android:text="@string/cust_detail_ship"
-					android:textSize="@dimen/about_main_text_size" />
-
-				<TextView
-					android:id="@+id/textView"
-					style="@style/black_text_appearance_unbold"
-					android:layout_width="0dp"
-					android:layout_height="wrap_content"
-					android:layout_weight="1"
-					android:text="TextView"
-					android:textSize="@dimen/about_main_text_size" />
-			</TableRow>
-		</TableLayout>
-
-		<TableLayout
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:layout_marginLeft="10dp"
-			android:layout_weight="1">
-
-			<TableRow
-				android:layout_width="match_parent"
-				android:layout_height="match_parent">
-
-				<TextView
-					android:id="@+id/textView25"
-					style="@style/white_text_appearance"
-					android:layout_width="0dp"
-					android:layout_height="wrap_content"
-					android:layout_weight="1"
-					android:background="@android:color/darker_gray"
-					android:paddingBottom="5dp"
-					android:paddingLeft="10dp"
-					android:paddingStart="10dp"
-					android:paddingRight="0dp"
-					android:paddingEnd="0dp"
-					android:paddingTop="5dp"
-					android:text="@string/fingerprints"
-					android:textSize="@dimen/about_main_text_size"
-					app:layout_constraintHorizontal_bias="0.0"
-					app:layout_constraintLeft_toLeftOf="parent"
-					app:layout_constraintRight_toRightOf="parent"
-					app:layout_constraintTop_toBottomOf="@+id/linearLayout4" />
-			</TableRow>
-
-		</TableLayout>
-	</LinearLayout>
-
-
-</android.support.constraint.ConstraintLayout>
+</ScrollView>

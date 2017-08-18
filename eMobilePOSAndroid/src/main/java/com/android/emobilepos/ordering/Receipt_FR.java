@@ -706,7 +706,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     public void processPayWithLoyalty(OrderSeatProduct orderSeatProduct) {
         if (!Boolean.parseBoolean(orderSeatProduct.orderProduct.getPayWithPoints())) {
             String price = orderSeatProduct.orderProduct.getProd_price_points();
-            if (OrderLoyalty_FR.isValidPointClaim(price)) {
+            if (getOrderingMainFa().getLoyaltyFragment().isValidPointClaim(price)) {
                 orderSeatProduct.orderProduct.setOverwrite_price(null);
                 orderSeatProduct.orderProduct.setItemTotal("0.00");
                 orderSeatProduct.orderProduct.setProd_price("0.00");
@@ -746,8 +746,12 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         } else {
 
             if (myPref.getPreferences(MyPreferences.pref_skip_want_add_more_products)) {
-                if (myPref.getPreferences(MyPreferences.pref_skip_email_phone) && !myPref.getPreferences(MyPreferences.pref_ask_order_comments)) {
-                    Order order = buildOrder(getActivity(), global, "", ord_HoldName,
+                if (myPref.isSkipEmailPhone() && !myPref.getPreferences(MyPreferences.pref_ask_order_comments)) {
+                    String email = "";
+                    if (myPref.isCustSelected()) {
+                        email = myPref.getCustEmail();
+                    }
+                    Order order = buildOrder(getActivity(), global, email, ord_HoldName,
                             ((OrderingMain_FA) getActivity()).getSelectedDinningTableNumber(),
                             ((OrderingMain_FA) getActivity()).getAssociateId(), ((OrderingMain_FA) getActivity()).getOrderAttributes(),
                             ((OrderingMain_FA) getActivity()).getListOrderTaxes(), global.order.getOrderProducts());
@@ -789,7 +793,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 .findViewById(R.id.phoneNumField);
         Button done = (Button) dialog.findViewById(R.id.OKButton);
         //if skip email phone enabled then hide fields
-        if (myPref.getPreferences(MyPreferences.pref_skip_email_phone)) {
+        if (myPref.isSkipEmailPhone()) {
             emailInput.setVisibility(View.GONE);
             phoneNum.setVisibility(View.GONE);
         }
@@ -892,8 +896,12 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             @Override
             public void onClick(View v) {
                 dlog.dismiss();
-                if (myPref.getPreferences(MyPreferences.pref_skip_email_phone) && !myPref.getPreferences(MyPreferences.pref_ask_order_comments)) {
-                    Order order = buildOrder(getActivity(), global, "", ord_HoldName,
+                if (myPref.isSkipEmailPhone() && !myPref.getPreferences(MyPreferences.pref_ask_order_comments)) {
+                    String email = "";
+                    if (myPref.isCustSelected()) {
+                        email = myPref.getCustEmail();
+                    }
+                    Order order = buildOrder(getActivity(), global, email, ord_HoldName,
                             ((OrderingMain_FA) getActivity()).getSelectedDinningTableNumber(),
                             ((OrderingMain_FA) getActivity()).getAssociateId(), ((OrderingMain_FA) getActivity()).getOrderAttributes(),
                             ((OrderingMain_FA) getActivity()).getListOrderTaxes(), global.order.getOrderProducts());
@@ -973,7 +981,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 if (!voidOnHold) {
                     ordersHandler.updateFinishOnHold(Global.lastOrdID);
                     global.order.processed = "10";
-                    global.order.isOnHold = "0";
+                    global.order.isOnHold = "1";
                     ordersHandler.insert(global.order);
                     global.encodedImage = "";
                     orderProductsHandler.insert(order.getOrderProducts());
@@ -2085,7 +2093,10 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     callBackRecalculate = (RecalculateCallback) frag;
                     return frag;
                 case 1:
-                    return OrderLoyalty_FR.init(position);
+                    OrderLoyalty_FR loyaltyFr = OrderLoyalty_FR.init(position);
+                    OrderingMain_FA mainFa = (OrderingMain_FA) getActivity();
+                    mainFa.setLoyaltyFragment(loyaltyFr);
+                    return loyaltyFr;
                 default:
                     return OrderRewards_FR.init(position);
 
@@ -2233,7 +2244,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         }
     }
 
-    class SyncOnHolds extends AsyncTask<Void, Void, Boolean> {
+    private class SyncOnHolds extends AsyncTask<Void, Void, Boolean> {
         ProgressDialog dialog;
 
         @Override
@@ -2251,8 +2262,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         protected Boolean doInBackground(Void... params) {
             DBManager dbManager = new DBManager(getActivity());
             SynchMethods sm = new SynchMethods(dbManager);
-            boolean result = sm.synchSendOnHold(false, false, getActivity(), null);
-            return result;
+            return sm.synchSendOnHold(false, false, getActivity(), null);
         }
 
         @Override
@@ -2264,11 +2274,12 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         && (((OrderingMain_FA) getActivity()).orderingAction == OrderingMain_FA.OrderingAction.CHECKOUT ||
                         ((OrderingMain_FA) getActivity()).orderingAction != OrderingMain_FA.OrderingAction.BACK_PRESSED)) {
                     showSplitedOrderPreview();
-                } else {
+                } else if (getOrderingMainFa().orderingAction != OrderingMain_FA.OrderingAction.CHECKOUT) {
                     getActivity().finish();
                 }
             }
-            Global.releaseOrientation(getActivity());
+            getOrderingMainFa().buildOrderStarted = false;
+//            Global.releaseOrientation(getActivity());
         }
     }
 

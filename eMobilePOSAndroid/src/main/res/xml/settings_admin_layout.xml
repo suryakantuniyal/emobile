@@ -106,6 +106,10 @@
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_require_customer" />
         <CheckBoxPreference
+            android:key="pref_clear_customer"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_clear_customer" />
+        <CheckBoxPreference
             android:key="pref_show_confirmation_screen"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_show_confirmation_screen" />
@@ -165,6 +169,14 @@
             android:key="pref_use_loyal_patron"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_use_loyal_patron" />
+        <CheckBoxPreference
+            android:key="pref_giftcard_auto_balance_request"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_giftcard_auto_balance_request" />
+        <CheckBoxPreference
+            android:key="pref_giftcard_show_balance"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_giftcard_show_balance" />
     </PreferenceCategory>
     <PreferenceCategory
         android:layout="@layout/settings_custom_header_layout"
@@ -305,6 +317,10 @@
             android:key="pref_store_and_forward_transactions"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_store_and_forward_transactions" />
+        <CheckBoxPreference
+            android:key="pref_cash_show_change"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_cash_show_change" />
     </PreferenceCategory>
     <PreferenceCategory
         android:layout="@layout/settings_custom_header_layout"

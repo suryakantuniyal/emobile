@@ -160,130 +160,82 @@ public class CustomersHandler {
     }
 
     public void insertOneCustomer(Customer customer) {
-        // SQLiteDatabase db =
-        // SQLiteDatabase.openDatabase(myPref.getDBpath(),Global.dbPass, null,
-        // SQLiteDatabase.NO_LOCALIZED_COLLATORS|
-        // SQLiteDatabase.OPEN_READWRITE);
-        // SQLiteDatabase db = dbManager.openWritableDB();
         DBManager.getDatabase().beginTransaction();
         try {
-
-            SQLiteStatement insert = null;
+            SQLiteStatement insert;
             StringBuilder sb = new StringBuilder();
             sb.append("INSERT INTO ").append(table_name).append(" (").append(sb1.toString()).append(") ")
                     .append("VALUES (").append(sb2.toString()).append(")");
             insert = DBManager.getDatabase().compileStatement(sb.toString());
 
-            insert.bindString(index(cust_id), customer.cust_id);
-            insert.bindString(index(cust_id_ref), customer.cust_id_ref);
-            insert.bindString(index(qb_sync), customer.qb_sync);
-            insert.bindString(index(zone_id), customer.zone_id);
-            insert.bindString(index(CompanyName), customer.CompanyName);
-            insert.bindString(index(Salutation), customer.Salutation);
-            insert.bindString(index(cust_contact), customer.cust_contact);
-            insert.bindString(index(cust_name), customer.cust_name);
-            insert.bindString(index(cust_chain), customer.cust_chain);
-            insert.bindString(index(cust_balance), customer.cust_balance);
-            insert.bindString(index(cust_limit), customer.cust_limit);
-            insert.bindString(index(cust_firstName), customer.cust_firstName);
-            insert.bindString(index(cust_middleName), customer.cust_middleName);
-            insert.bindString(index(cust_lastName), customer.cust_lastName);
-            insert.bindString(index(cust_phone), customer.cust_phone);
-            insert.bindString(index(cust_email), customer.cust_email);
-            insert.bindString(index(cust_fax), customer.cust_fax);
-            insert.bindString(index(cust_update), customer.cust_update);
-            insert.bindString(index(isactive), customer.isactive);
-            insert.bindString(index(cust_ordertype), customer.cust_ordertype);
-            insert.bindString(index(cust_taxable), customer.cust_taxable);
-            insert.bindString(index(cust_salestaxcode), customer.cust_salestaxcode);
-            insert.bindString(index(pricelevel_id), customer.pricelevel_id);
-            insert.bindString(index(cust_terms), customer.cust_terms);
-            insert.bindString(index(cust_pwd), customer.cust_pwd);
-            insert.bindString(index(cust_securityquestion), customer.cust_securityquestion);
-            insert.bindString(index(cust_securityanswer), customer.cust_securityanswer);
-            insert.bindString(index(cust_points), customer.cust_points);
-            insert.bindString(index(cust_dob), customer.cust_dob);
+            insert.bindString(index(cust_id), customer.getCust_id());
+            insert.bindString(index(cust_id_ref), customer.getCust_id_ref());
+            insert.bindString(index(qb_sync), customer.getQb_sync());
+            insert.bindString(index(zone_id), customer.getZone_id());
+            insert.bindString(index(CompanyName), customer.getCompanyName());
+            insert.bindString(index(Salutation), customer.getSalutation());
+            insert.bindString(index(cust_contact), customer.getCust_contact());
+            insert.bindString(index(cust_name), customer.getCust_name());
+            insert.bindString(index(cust_chain), customer.getCust_chain());
+            insert.bindString(index(cust_balance), customer.getCust_balance());
+            insert.bindString(index(cust_limit), customer.getCust_limit());
+            insert.bindString(index(cust_firstName), customer.getCust_firstName());
+            insert.bindString(index(cust_middleName), customer.getCust_middleName());
+            insert.bindString(index(cust_lastName), customer.getCust_lastName());
+            insert.bindString(index(cust_phone), customer.getCust_phone());
+            insert.bindString(index(cust_email), customer.getCust_email());
+            insert.bindString(index(cust_fax), customer.getCust_fax());
+            insert.bindString(index(cust_update), customer.getCust_update());
+            insert.bindString(index(isactive), customer.getIsactive());
+            insert.bindString(index(cust_ordertype), customer.getCust_ordertype());
+            insert.bindString(index(cust_taxable), customer.getCust_taxable());
+            insert.bindString(index(cust_salestaxcode), customer.getCust_salestaxcode());
+            insert.bindString(index(pricelevel_id), customer.getPricelevel_id());
+            insert.bindString(index(cust_terms), customer.getCust_terms());
+            insert.bindString(index(cust_pwd), customer.getCust_pwd());
+            insert.bindString(index(cust_securityquestion), customer.getCust_securityquestion());
+            insert.bindString(index(cust_securityanswer), customer.getCust_securityanswer());
+            insert.bindString(index(cust_points), customer.getCust_points());
+            insert.bindString(index(cust_dob), customer.getCust_dob());
 
             insert.execute();
             insert.clearBindings();
             insert.close();
             DBManager.getDatabase().setTransactionSuccessful();
-
         } catch (Exception e) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(e.getMessage()).append(" [com.android.emobilepos.CustomersHandler (at Class.insertOneCustomer)]");
-
-//			Tracker tracker = EasyTracker.getInstance(activity);
-//			tracker.send(MapBuilder.createException(sb.toString(), false).build());
         } finally {
             DBManager.getDatabase().endTransaction();
         }
-        // db.close();
     }
 
     public void emptyTable() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("DELETE FROM ").append(table_name);
-        DBManager.getDatabase().execSQL(sb.toString());
+        DBManager.getDatabase().execSQL("DELETE FROM " + table_name);
     }
 
     public Cursor getUnsynchCustomers() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(
-                "SELECT cust_id,cust_name,cust_firstName,cust_lastName,CompanyName,cust_contact,cust_phone,cust_email,cust_dob FROM Customers WHERE qb_sync = '0'");
 
-        Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
-
-        // cursor.moveToFirst();
-        return cursor;
+        return DBManager.getDatabase().rawQuery("SELECT cust_id,cust_name,cust_firstName,cust_lastName,CompanyName,cust_contact,cust_phone,cust_email,cust_dob FROM Customers WHERE qb_sync = '0'", null);
     }
 
     public long getNumUnsyncCustomers() {
-        // SQLiteDatabase db =
-        // SQLiteDatabase.openDatabase(myPref.getDBpath(),Global.dbPass, null,
-        // SQLiteDatabase.NO_LOCALIZED_COLLATORS|
-        // SQLiteDatabase.OPEN_READWRITE);
-
-        // SQLiteDatabase db = dbManager.openReadableDB();
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT Count(*) FROM ").append(table_name).append(" WHERE qb_sync = '0'");
-
-        SQLiteStatement stmt = DBManager.getDatabase().compileStatement(sb.toString());
+        SQLiteStatement stmt = DBManager.getDatabase().compileStatement("SELECT Count(*) FROM " + table_name + " WHERE qb_sync = '0'");
         long count = stmt.simpleQueryForLong();
         stmt.close();
-        // db.close();
         return count;
     }
 
     public boolean unsyncCustomersLeft() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT Count(*) FROM ").append(table_name).append(" WHERE qb_sync = '0'");
-
-        SQLiteStatement stmt = DBManager.getDatabase().compileStatement(sb.toString());
+        SQLiteStatement stmt = DBManager.getDatabase().compileStatement("SELECT Count(*) FROM " + table_name + " WHERE qb_sync = '0'");
         long count = stmt.simpleQueryForLong();
-
-//		String str = "select count(*) from Products";
-//		stmt = DBManager.database.compileStatement(str);
-//		long c = stmt.simpleQueryForLong();
         stmt.close();
         return count != 0;
 
     }
 
     public void updateIsSync(List<String[]> list) {
-        // SQLiteDatabase db =
-        // SQLiteDatabase.openDatabase(myPref.getDBpath(),Global.dbPass, null,
-        // SQLiteDatabase.NO_LOCALIZED_COLLATORS|
-        // SQLiteDatabase.OPEN_READWRITE);
-
-        // SQLiteDatabase db = dbManager.openWritableDB();
-
         StringBuilder sb = new StringBuilder();
         sb.append(cust_id).append(" = ?");
-
         ContentValues args = new ContentValues();
-
         int size = list.size();
         for (int i = 0; i < size; i++) {
             if (list.get(i)[0].equals("0")) {
@@ -291,33 +243,29 @@ public class CustomersHandler {
                 DBManager.getDatabase().update(table_name, args, sb.toString(), new String[]{list.get(i)[1]});
             }
         }
-        // db.close();
+    }
+
+    public void updateSyncStatus(String customerId, boolean isSync) {
+        ContentValues args = new ContentValues();
+        args.put(qb_sync, isSync ? 1 : 0);
+        DBManager.getDatabase().update(table_name, args, cust_id + " = ?", new String[]{customerId});
     }
 
     public String getSpecificValue(String field, String param) {
-        // SQLiteDatabase db = dbManager.openReadableDB();//
-
         String data = "";
         String[] fields = new String[]{field};
         String[] arguments = new String[]{param};
-
         Cursor cursor = DBManager.getDatabase().query(true, table_name, fields, "cust_id=?", arguments, null, null, null, null);
-
         if (cursor.moveToFirst()) {
             do {
-
                 data = cursor.getString(cursor.getColumnIndex(field));
             } while (cursor.moveToNext());
         }
-
         cursor.close();
-        // db.close();
         return data;
     }
 
     public HashMap<String, String> getCustomerMap(String id) {
-        // SQLiteDatabase db = dbManager.openReadableDB();
-
         HashMap<String, String> tempMap = new HashMap<String, String>();
         String[] fields = new String[]{cust_name, cust_phone, cust_email};
         String[] arguments = new String[]{id};
@@ -333,25 +281,20 @@ public class CustomersHandler {
         }
 
         cursor.close();
-        // db.close();
         return tempMap;
     }
 
     public Cursor getCursorAllCust() {
-        // if(db==null||!db.isOpen())
-        // db = dbManager.openReadableDB();
-
-        String query = "SELECT cust_id as _id,AccountNumnber, custidkey, cust_name,c.pricelevel_id,pl.pricelevel_name,cust_taxable,cust_salestaxcode,cust_email,CompanyName,cust_phone FROM Customers c LEFT OUTER JOIN PriceLevel pl ON c.pricelevel_id = pl.pricelevel_id ORDER BY cust_name";
+        String query = "SELECT cust_id as _id,AccountNumnber, custidkey, cust_name,c.pricelevel_id,pl.pricelevel_name," +
+                "cust_taxable,cust_salestaxcode,cust_email,CompanyName,cust_phone " +
+                "FROM Customers c LEFT OUTER JOIN PriceLevel pl ON c.pricelevel_id = pl.pricelevel_id ORDER BY cust_name";
 
         Cursor cursor = DBManager.getDatabase().rawQuery(query, null);
         cursor.moveToFirst();
-        // db.close();
         return cursor;
     }
 
     public HashMap<String, String> getCustomerInfo(String custID) {
-        // SQLiteDatabase db = dbManager.openReadableDB();
-
         String query = "SELECT cust_id,cust_name,cust_taxable,cust_salestaxcode,custidkey,pricelevel_id,cust_email FROM Customers WHERE cust_id = ?";
         Cursor c = DBManager.getDatabase().rawQuery(query, new String[]{custID});
         HashMap<String, String> map = new HashMap<String, String>();
@@ -366,7 +309,6 @@ public class CustomersHandler {
         }
 
         c.close();
-        // db.close();
         return map;
     }
 
@@ -541,34 +483,39 @@ public class CustomersHandler {
     public Customer getCustomer(String customerId) {
 
         Customer customer = new Customer();
-        customer.shippingAddress = new Address();
-        customer.billingAddress = new Address();
+        customer.setShippingAddress(new Address());
+        customer.setBillingAddress(new Address());
         if (customerId != null && !customerId.isEmpty()) {
             // SQLiteDatabase db = dbManager.openReadableDB();
 
-            String sb = "SELECT c.cust_firstName,c.cust_lastName,b.addr_b_str1,b.addr_b_str2,b.addr_b_str3,b.addr_b_city,b.addr_b_state,b.addr_b_country," +
-                    "b.addr_b_zipcode,b.addr_s_str1,b.addr_s_str2,b.addr_s_str3,b.addr_s_city,b.addr_s_state,b.addr_s_country,b.addr_s_zipcode " +
-                    "FROM Customers c LEFT OUTER JOIN Address b ON c.cust_id = b.cust_id WHERE c.cust_id = ?";
+            String sb = ("SELECT c.cust_firstName,c.cust_lastName,b.addr_b_str1,b.addr_b_str2,b.addr_b_str3,b.addr_b_city," +
+                    " b.addr_b_state,b.addr_b_country,") +
+                    " b.addr_b_zipcode,b.addr_s_str1,b.addr_s_str2,b.addr_s_str3,b.addr_s_city,b.addr_s_state,b.addr_s_country," +
+                    " b.addr_s_zipcode , cust_taxable, cust_salestaxcode" +
+                    " FROM Customers c LEFT OUTER JOIN Address b ON c.cust_id = b.cust_id WHERE c.cust_id = ?";
 
             Cursor cursor = DBManager.getDatabase().rawQuery(sb, new String[]{customerId});
 
             if (cursor.moveToFirst()) {
-                customer.cust_firstName = cursor.getString(cursor.getColumnIndex(cust_firstName));
-                customer.cust_lastName = cursor.getString(cursor.getColumnIndex(cust_lastName));
-                customer.billingAddress.addr_b_str1 = cursor.getString(cursor.getColumnIndex("addr_b_str1"));
-                customer.billingAddress.addr_b_str2 = cursor.getString(cursor.getColumnIndex("addr_b_str2"));
-                customer.billingAddress.addr_b_str3 = cursor.getString(cursor.getColumnIndex("addr_b_str3"));
-                customer.billingAddress.addr_b_city = cursor.getString(cursor.getColumnIndex("addr_b_city"));
-                customer.billingAddress.addr_b_state = cursor.getString(cursor.getColumnIndex("addr_b_state"));
-                customer.billingAddress.addr_b_country = cursor.getString(cursor.getColumnIndex("addr_b_country"));
-                customer.billingAddress.addr_b_zipcode = cursor.getString(cursor.getColumnIndex("addr_b_zipcode"));
-                customer.shippingAddress.addr_s_str1 = cursor.getString(cursor.getColumnIndex("addr_s_str1"));
-                customer.shippingAddress.addr_s_str2 = cursor.getString(cursor.getColumnIndex("addr_s_str2"));
-                customer.shippingAddress.addr_s_str3 = cursor.getString(cursor.getColumnIndex("addr_s_str3"));
-                customer.shippingAddress.addr_s_city = cursor.getString(cursor.getColumnIndex("addr_s_city"));
-                customer.shippingAddress.addr_s_state = cursor.getString(cursor.getColumnIndex("addr_s_state"));
-                customer.shippingAddress.addr_s_country = cursor.getString(cursor.getColumnIndex("addr_s_country"));
-                customer.shippingAddress.addr_s_zipcode = cursor.getString(cursor.getColumnIndex("addr_s_zipcode"));
+                customer.setCust_firstName(cursor.getString(cursor.getColumnIndex(cust_firstName)));
+                customer.setCust_lastName(cursor.getString(cursor.getColumnIndex(cust_lastName)));
+                customer.getBillingAddress().setAddr_b_str1(cursor.getString(cursor.getColumnIndex("addr_b_str1")));
+                customer.getBillingAddress().setAddr_b_str2(cursor.getString(cursor.getColumnIndex("addr_b_str2")));
+                customer.getBillingAddress().setAddr_b_str3(cursor.getString(cursor.getColumnIndex("addr_b_str3")));
+                customer.getBillingAddress().setAddr_b_city(cursor.getString(cursor.getColumnIndex("addr_b_city")));
+                customer.getBillingAddress().setAddr_b_state(cursor.getString(cursor.getColumnIndex("addr_b_state")));
+                customer.getBillingAddress().setAddr_b_country(cursor.getString(cursor.getColumnIndex("addr_b_country")));
+                customer.getBillingAddress().setAddr_b_zipcode(cursor.getString(cursor.getColumnIndex("addr_b_zipcode")));
+                customer.getShippingAddress().setAddr_s_str1(cursor.getString(cursor.getColumnIndex("addr_s_str1")));
+                customer.getShippingAddress().setAddr_s_str2(cursor.getString(cursor.getColumnIndex("addr_s_str2")));
+                customer.getShippingAddress().setAddr_s_str3(cursor.getString(cursor.getColumnIndex("addr_s_str3")));
+                customer.getShippingAddress().setAddr_s_city(cursor.getString(cursor.getColumnIndex("addr_s_city")));
+                customer.getShippingAddress().setAddr_s_state(cursor.getString(cursor.getColumnIndex("addr_s_state")));
+                customer.getShippingAddress().setAddr_s_country(cursor.getString(cursor.getColumnIndex("addr_s_country")));
+                customer.getShippingAddress().setAddr_s_zipcode(cursor.getString(cursor.getColumnIndex("addr_s_zipcode")));
+                customer.setCust_taxable(cursor.getString(cursor.getColumnIndex("cust_taxable")));
+                customer.setCust_salestaxcode(cursor.getString(cursor.getColumnIndex("cust_salestaxcode")));
+
             }
 
             cursor.close();

@@ -57,6 +57,7 @@ import com.android.support.ConsignmentTransaction;
 import com.android.support.DateUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.TaxesCalculator;
 import com.crashlytics.android.Crashlytics;
 import com.miurasystems.miuralibrary.api.executor.MiuraManager;
 import com.miurasystems.miuralibrary.api.listener.MiuraDefaultListener;
@@ -236,11 +237,14 @@ public class EMSDeviceDriver {
     }
 
     private void addTaxesLine(List<DataTaxes> taxes, Order order, int lineWidth, StringBuilder sb) {
+        BigDecimal taxableAmount = new BigDecimal(0);
+        for (OrderProduct product : order.getOrderProducts()) {
+            taxableAmount = taxableAmount.add(product.getProductPriceTaxableAmountCalculated());
+        }
         for (DataTaxes tax : taxes) {
-            BigDecimal taxAmount = new BigDecimal(order.ord_subtotal)
-                    .multiply(new BigDecimal(tax.getTax_rate())
-                            .divide(new BigDecimal(100)))
-                    .setScale(2, RoundingMode.HALF_UP);
+            List<BigDecimal> rates = new ArrayList<>();
+            rates.add(new BigDecimal(tax.getTax_rate()));
+            BigDecimal taxAmount = TaxesCalculator.calculateTax(taxableAmount, rates);
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(tax.getTax_name(),
                     Global.getCurrencyFormat(String.valueOf(taxAmount)), lineWidth, 2));
         }
@@ -252,7 +256,9 @@ public class EMSDeviceDriver {
                 try {
                     StarIOPort.releasePort(port);
                     port = null;
-                } catch (StarIOPortException ignored) {
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Crashlytics.logException(e);
                 }
             }
         } else if (this instanceof EMSOneil4te) {
@@ -1041,10 +1047,15 @@ public class EMSDeviceDriver {
             printTermsNConds();
             printEnablerWebSite(lineWidth);
             cutPaper();
-        } catch (StarIOPortException ignored) {
-
+        } catch (StarIOPortException e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
         } catch (JAException e) {
             e.printStackTrace();
+            Crashlytics.logException(e);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
         }
 
     }
@@ -1503,6 +1514,7 @@ public class EMSDeviceDriver {
                 activity.getString(R.string.total_hours_worked), hours, mins), lineWidth));
         str.append(textHelper.newLines(4));
         print(str.toString());
+        cutPaper();
     }
 
     public void printFooter(int lineWidth) {
@@ -1542,6 +1554,9 @@ public class EMSDeviceDriver {
             printPref = myPref.getPrintingPreferences();
             StringBuilder sb = new StringBuilder();
             printImage(0);
+            if (myPref.isCustSelected()) {
+                sb.append(textHandler.centeredString(myPref.getCustName(), lineWidth));
+            }
             if (printPref.contains(MyPreferences.print_header))
                 printHeader(lineWidth);
             if (values.containsKey("amountAdded")) {
@@ -1549,13 +1564,13 @@ public class EMSDeviceDriver {
             } else {
                 sb.append("* ").append(getString(R.string.balance_inquiry));
             }
-            sb.append(" *\n\n\n");
+            sb.append(" *\n");
             print(textHandler.centeredString(sb.toString(), lineWidth), FORMAT);
             sb.setLength(0);
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
                     getString(R.string.receipt_time), lineWidth, 0));
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(DateUtils.getDateAsString(new Date(), "MMM/dd/yyyy"), DateUtils.getDateAsString(new Date(), "hh:mm:ss"), lineWidth, 0))
-                    .append("\n\n");
+                    .append("\n");
 
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.card_number),
                     "*" + values.get("pay_maccount"), lineWidth, 0));
@@ -2270,6 +2285,8 @@ public class EMSDeviceDriver {
         if (listOrderHolds != null && !listOrderHolds.isEmpty()) {
             onHoldAmount = new BigDecimal(listOrderHolds.get(0).ord_total);
         }
+        print(sb.toString());
+        sb.setLength(0);
         listOrder.clear();
         sb.append(textHandler.twoColumnLineWithLeftAlignedText("Return", "(" + Global.formatDoubleStrToCurrency(returnAmount.toString()) + ")", lineWidth, 0));
         sb.append(textHandler.twoColumnLineWithLeftAlignedText("Sales Receipt", Global.formatDoubleStrToCurrency(salesAmount.toString()), lineWidth, 0));
@@ -2287,6 +2304,8 @@ public class EMSDeviceDriver {
             }
             listOrder.clear();
         }
+        print(sb.toString());
+        sb.setLength(0);
         List<Shift> listShifts = ShiftDAO.getShift(new Date());
         if (listShifts.size() > 0) {
             sb.append(textHandler.newLines(2));
@@ -2304,6 +2323,8 @@ public class EMSDeviceDriver {
             }
             listShifts.clear();
         }
+        print(sb.toString());
+        sb.setLength(0);
         sb.append(textHandler.newLines(2));
         sb.append(sb_ord_types);
         List<OrderProduct> listProd = ordProdHandler.getProductsDayReport(true, null, mDate);
@@ -2332,6 +2353,8 @@ public class EMSDeviceDriver {
             }
             listProd.clear();
         }
+        print(sb.toString());
+        sb.setLength(0);
         List<Payment> listPayments = paymentHandler.getPaymentsDayReport(0, null, mDate);
         if (listPayments.size() > 0) {
             sb.append(textHandler.newLines(2));
@@ -2349,6 +2372,8 @@ public class EMSDeviceDriver {
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText("Amount", Global.formatDoubleStrToCurrency(payment.getPay_amount()), lineWidth, 4));
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText("Invoice", payment.getJob_id(), lineWidth, 4));
                     sb.append(textHandler.newLines(1));
+                    print(sb.toString());
+                    sb.setLength(0);
                 }
             }
             listPayments.clear();
@@ -2371,6 +2396,8 @@ public class EMSDeviceDriver {
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText("Amount", Global.formatDoubleStrToCurrency(payment.getPay_amount()), lineWidth, 4));
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText("Invoice", payment.getJob_id(), lineWidth, 4));
                     sb.append(textHandler.newLines(1));
+                    print(sb.toString());
+                    sb.setLength(0);
                 }
             }
             listPayments.clear();
@@ -2394,10 +2421,13 @@ public class EMSDeviceDriver {
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText("Amount", Global.formatDoubleStrToCurrency(payment.getPay_amount()), lineWidth, 4));
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText("Invoice", payment.getJob_id(), lineWidth, 4));
                     sb.append(textHandler.newLines(1));
+                    print(sb.toString());
+                    sb.setLength(0);
                 }
             }
             listPayments.clear();
         }
+
         listProd = ordProdHandler.getProductsDayReport(false, null, mDate);
         if (listProd.size() > 0) {
             sb.append(textHandler.newLines(2));
@@ -2412,6 +2442,8 @@ public class EMSDeviceDriver {
             }
             listProd.clear();
         }
+        print(sb.toString());
+        sb.setLength(0);
         listProd = ordProdHandler.getDepartmentDayReport(true, null, mDate);
         if (listProd.size() > 0) {
             sb.append(textHandler.newLines(2));
@@ -2422,6 +2454,8 @@ public class EMSDeviceDriver {
             }
             listProd.clear();
         }
+        print(sb.toString());
+        sb.setLength(0);
         listProd = ordProdHandler.getDepartmentDayReport(false, null, mDate);
         if (listProd.size() > 0) {
             sb.append(textHandler.newLines(2));
@@ -2432,6 +2466,8 @@ public class EMSDeviceDriver {
             }
             listProd.clear();
         }
+        print(sb.toString());
+        sb.setLength(0);
         sb.append(textHandler.centeredString("** End of report **", lineWidth));
         sb.append(textHandler.newLines(4));
         print(sb.toString(), FORMAT);

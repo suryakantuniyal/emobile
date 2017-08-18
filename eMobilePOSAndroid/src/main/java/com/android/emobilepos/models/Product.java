@@ -64,29 +64,21 @@ public class Product {
     @SerializedName("prod_onorder")
     private String prod_onorder;
     @SerializedName("prod_update")
-    private
-    String prod_update;
+    private String prod_update;
     @SerializedName("isactive")
-    private
-    String isactive;
+    private String isactive;
     @SerializedName("prod_showOnline")
-    private
-    String prod_showOnline;
+    private String prod_showOnline;
     @SerializedName("prod_ispromo")
-    private
-    String prod_ispromo;
+    private String prod_ispromo;
     @SerializedName("prod_expense")
-    private
-    String prod_expense;
+    private String prod_expense;
     @SerializedName("_rowversion")
-    private
-    String rowversion;
+    private String rowversion;
     @SerializedName("GC")
-    private
-    boolean GC;
+    private boolean GC;
     @SerializedName("EBT")
-    private
-    boolean EBT;
+    private boolean EBT;
     @SerializedName("PricesXGroupid")
     private String PricesXGroupid;
     @SerializedName("prod_uom")
@@ -454,11 +446,11 @@ public class Product {
         }
     }
 
-    public void setCategoryName(String categoryName) {
-        this.categoryName = categoryName;
-    }
-
     public String getCategoryName() {
         return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
     }
 }

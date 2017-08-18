@@ -18,16 +18,17 @@ public class OrderLoyalty_FR extends Fragment implements OnClickListener {
 
     private TextView tapTxtLabel;
     private ImageButton btnTap;
-    private static OrderLoyalty_FR myFrag;
+//    private OrderLoyalty_FR myFrag;
     private SwiperLoyaltyCallback callBackLoyaltySwiper;
-    private static EditText fieldPointBalance, fieldPointsSubTotal, fieldPointsInUse,
+    private EditText fieldPointBalance, fieldPointsSubTotal, fieldPointsInUse,
             fieldPointsAvailable, fieldPointsAcumulable;
-    private static TextView grandTotalValue;
-    private static String balance = "0", subTotal = "0", inUse = "0", available = "0", acumulable = "0";
+    private TextView grandTotalValue;
+    private String balance = "0";
 
 
     public interface SwiperLoyaltyCallback {
         void startLoyaltySwiper();
+        void prefetchLoyaltyPoints();
     }
 
 
@@ -36,14 +37,14 @@ public class OrderLoyalty_FR extends Fragment implements OnClickListener {
         Bundle args = new Bundle();
         args.putInt("val", val);
         frag.setArguments(args);
-        myFrag = frag;
+//        myFrag = frag;
         return frag;
     }
 
 
-    public static OrderLoyalty_FR getFrag() {
-        return myFrag;
-    }
+//    public static OrderLoyalty_FR getFrag() {
+//        return myFrag;
+//    }
 
 
     @Override
@@ -56,7 +57,7 @@ public class OrderLoyalty_FR extends Fragment implements OnClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.order_loyalty_layout, container, false);
-        myFrag = this;
+//        myFrag = this;
 
         callBackLoyaltySwiper = (SwiperLoyaltyCallback) getActivity();
         btnTap = (ImageButton) view.findViewById(R.id.btnTapLoyalty);
@@ -75,7 +76,11 @@ public class OrderLoyalty_FR extends Fragment implements OnClickListener {
             Global global = (Global) OrderLoyalty_FR.this.getActivity().getApplication();
             OrderTotalDetails_FR.getFrag().reCalculate(global.order.getOrderProducts());
         }
+
+        callBackLoyaltySwiper.prefetchLoyaltyPoints();
+
         return view;
+
     }
 
 
@@ -95,14 +100,14 @@ public class OrderLoyalty_FR extends Fragment implements OnClickListener {
     }
 
 
-    public static void setPointBalance(String value) {
+    public void setPointBalance(String value) {
         balance = value;
         fieldPointBalance.setText(balance);
         fieldPointsAvailable.setText(balance);
     }
 
 
-    public static void recalculatePoints(String pointsSubTotal, String pointsUsed, String pointsAcumulable, String grandTotal) {
+    public  void recalculatePoints(String pointsSubTotal, String pointsUsed, String pointsAcumulable, String grandTotal) {
         int temp = 0;
         if (fieldPointsSubTotal != null) {
             fieldPointsSubTotal.setText(pointsSubTotal);
@@ -120,7 +125,7 @@ public class OrderLoyalty_FR extends Fragment implements OnClickListener {
     }
 
 
-    public static boolean isValidPointClaim(String newUsedPoints) {
+    public boolean isValidPointClaim(String newUsedPoints) {
         double tempAvailable = Double.parseDouble(fieldPointsAvailable.getText().toString());
         double tempNewUsedPoints = Double.parseDouble(newUsedPoints);
         return tempAvailable >= tempNewUsedPoints;

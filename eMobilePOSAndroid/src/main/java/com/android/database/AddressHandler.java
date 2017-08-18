@@ -1,6 +1,5 @@
 package com.android.database;
 
-import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 
@@ -18,6 +17,7 @@ import util.StringUtil;
 
 public class AddressHandler {
 
+    private static final String table_name = "Address";
     private final String addr_id = "addr_id";
     private final String cust_id = "cust_id";
     private final String addr_b_str1 = "addr_b_str1";
@@ -38,14 +38,11 @@ public class AddressHandler {
     private final String qb_cust_id = "qb_cust_id";
     private final String addr_b_type = "addr_b_type";
     private final String addr_s_type = "addr_s_type";
-
     private final List<String> attr = Arrays.asList(addr_id, cust_id, addr_b_str1, addr_b_str2, addr_b_str3,
             addr_b_city, addr_b_state, addr_b_country, addr_b_zipcode, addr_s_name, addr_s_str1, addr_s_str2, addr_s_str3, addr_s_city, addr_s_state,
             addr_s_country, addr_s_zipcode, qb_cust_id, addr_b_type, addr_s_type);
-
-    private static final String table_name = "Address";
-    private StringBuilder sb1, sb2;
     private final String empStr = "";
+    private StringBuilder sb1, sb2;
     private HashMap<String, Integer> attrHash;
 
     private List<String[]> addrData;
@@ -146,26 +143,26 @@ public class AddressHandler {
                     ")";
             insert = DBManager.getDatabase().compileStatement(sb);
 
-            insert.bindString(index(addr_id), address.addr_id == null ? "" : address.addr_id);
-            insert.bindString(index(cust_id), address.cust_id == null ? "" : address.cust_id);
-            insert.bindString(index(addr_b_str1), address.addr_b_str1 == null ? "" : address.addr_b_str1);
-            insert.bindString(index(addr_b_str2), address.addr_b_str2 == null ? "" : address.addr_b_str2);
-            insert.bindString(index(addr_b_str3), address.addr_b_str3 == null ? "" : address.addr_b_str3);
-            insert.bindString(index(addr_b_city), address.addr_b_city == null ? "" : address.addr_b_city);
-            insert.bindString(index(addr_b_state), address.addr_b_state == null ? "" : address.addr_b_state);
-            insert.bindString(index(addr_b_country), address.addr_b_country == null ? "" : address.addr_b_country);
-            insert.bindString(index(addr_b_zipcode), address.addr_b_zipcode == null ? "" : address.addr_b_zipcode);
-            insert.bindString(index(addr_s_name), address.addr_s_name == null ? "" : address.addr_s_name);
-            insert.bindString(index(addr_s_str1), address.addr_s_str1 == null ? "" : address.addr_s_str1);
-            insert.bindString(index(addr_s_str2), address.addr_s_str2 == null ? "" : address.addr_s_str2);
-            insert.bindString(index(addr_s_str3), address.addr_s_str3 == null ? "" : address.addr_s_str3);
-            insert.bindString(index(addr_s_city), address.addr_s_city == null ? "" : address.addr_s_city);
-            insert.bindString(index(addr_s_state), address.addr_s_state == null ? "" : address.addr_s_state);
-            insert.bindString(index(addr_s_country), address.addr_s_country == null ? "" : address.addr_s_country);
-            insert.bindString(index(addr_s_zipcode), address.addr_s_zipcode == null ? "" : address.addr_s_zipcode);
-            insert.bindString(index(qb_cust_id), address.qb_cust_id == null ? "" : address.qb_cust_id);
-            insert.bindString(index(addr_b_type), address.addr_b_type == null ? "" : address.addr_b_type);
-            insert.bindString(index(addr_s_type), address.addr_s_type == null ? "" : address.addr_s_type);
+            insert.bindString(index(addr_id), address.getAddr_id() == null ? "" : address.getAddr_id());
+            insert.bindString(index(cust_id), address.getCust_id() == null ? "" : address.getCust_id());
+            insert.bindString(index(addr_b_str1), address.getAddr_b_str1() == null ? "" : address.getAddr_b_str1());
+            insert.bindString(index(addr_b_str2), address.getAddr_b_str2() == null ? "" : address.getAddr_b_str2());
+            insert.bindString(index(addr_b_str3), address.getAddr_b_str3() == null ? "" : address.getAddr_b_str3());
+            insert.bindString(index(addr_b_city), address.getAddr_b_city() == null ? "" : address.getAddr_b_city());
+            insert.bindString(index(addr_b_state), address.getAddr_b_state() == null ? "" : address.getAddr_b_state());
+            insert.bindString(index(addr_b_country), address.getAddr_b_country() == null ? "" : address.getAddr_b_country());
+            insert.bindString(index(addr_b_zipcode), address.getAddr_b_zipcode() == null ? "" : address.getAddr_b_zipcode());
+            insert.bindString(index(addr_s_name), address.getAddr_s_name() == null ? "" : address.getAddr_s_name());
+            insert.bindString(index(addr_s_str1), address.getAddr_s_str1() == null ? "" : address.getAddr_s_str1());
+            insert.bindString(index(addr_s_str2), address.getAddr_s_str2() == null ? "" : address.getAddr_s_str2());
+            insert.bindString(index(addr_s_str3), address.getAddr_s_str3() == null ? "" : address.getAddr_s_str3());
+            insert.bindString(index(addr_s_city), address.getAddr_s_city() == null ? "" : address.getAddr_s_city());
+            insert.bindString(index(addr_s_state), address.getAddr_s_state() == null ? "" : address.getAddr_s_state());
+            insert.bindString(index(addr_s_country), address.getAddr_s_country() == null ? "" : address.getAddr_s_country());
+            insert.bindString(index(addr_s_zipcode), address.getAddr_s_zipcode() == null ? "" : address.getAddr_s_zipcode());
+            insert.bindString(index(qb_cust_id), address.getQb_cust_id() == null ? "" : address.getQb_cust_id());
+            insert.bindString(index(addr_b_type), address.getAddr_b_type() == null ? "" : address.getAddr_b_type());
+            insert.bindString(index(addr_s_type), address.getAddr_s_type() == null ? "" : address.getAddr_s_type());
 
 
             insert.execute();
@@ -196,69 +193,52 @@ public class AddressHandler {
     }
 
 
-    public List<String[]> getSpecificAddress(String custID, int type) {
-        StringBuilder sb = new StringBuilder();
-        List<String[]> arrayList = new ArrayList<>();
-        String[] arrayValues = new String[7];
-        Cursor cursor = null;
-        switch (type) {
-            case 0:                                    //BILLING
-                sb.append("SELECT addr_b_str1,addr_b_str2,addr_b_str3,addr_b_country,addr_b_city,addr_b_state,addr_b_zipcode FROM Address WHERE cust_id= ?");
-                cursor = DBManager.getDatabase().rawQuery(sb.toString(), new String[]{custID});
-                if (cursor.moveToFirst()) {
-                    int addrSTR1Index = cursor.getColumnIndex(addr_b_str1);
-                    int addrSTR2Index = cursor.getColumnIndex(addr_b_str2);
-                    int addrSTR3Index = cursor.getColumnIndex(addr_b_str3);
-                    int addrCountryIndex = cursor.getColumnIndex(addr_b_country);
-                    int addrCityIndex = cursor.getColumnIndex(addr_b_city);
-                    int addrStateIndex = cursor.getColumnIndex(addr_b_state);
-                    int addrZipCodeIndex = cursor.getColumnIndex(addr_b_zipcode);
-                    do {
-                        arrayValues[0] = cursor.getString(addrSTR1Index);
-                        arrayValues[1] = cursor.getString(addrSTR2Index);
-                        arrayValues[2] = cursor.getString(addrSTR3Index);
-                        arrayValues[3] = cursor.getString(addrCountryIndex);
-                        arrayValues[4] = cursor.getString(addrCityIndex);
-                        arrayValues[5] = cursor.getString(addrStateIndex);
-                        arrayValues[6] = cursor.getString(addrZipCodeIndex);
+    public List<Address> getSpecificAddress(String custID) {
+        List<Address> addresses = new ArrayList<>();
+        Cursor cursor;
+        cursor = DBManager.getDatabase().rawQuery("SELECT " +
+                "addr_b_str1,addr_b_str2,addr_b_str3,addr_b_country,addr_b_city, addr_b_state,addr_b_zipcode, " +
+                "addr_s_str1,addr_s_str2,addr_s_str3,addr_s_country,addr_s_city, addr_s_state,addr_s_zipcode " +
+                "FROM Address WHERE cust_id= ?", new String[]{custID});
+        Address address;
+        if (cursor.moveToFirst()) {
+            address = new Address();
+            int addrSTR1Index = cursor.getColumnIndex(addr_b_str1);
+            int addrSTR2Index = cursor.getColumnIndex(addr_b_str2);
+            int addrSTR3Index = cursor.getColumnIndex(addr_b_str3);
+            int addrCountryIndex = cursor.getColumnIndex(addr_b_country);
+            int addrCityIndex = cursor.getColumnIndex(addr_b_city);
+            int addrStateIndex = cursor.getColumnIndex(addr_b_state);
+            int addrZipCodeIndex = cursor.getColumnIndex(addr_b_zipcode);
 
-                        arrayList.add(arrayValues);
-                        arrayValues = new String[7];
-                    } while (cursor.moveToNext());
-                }
-                break;
-            case 1:                                    //SHIPPING
+            int addr2STR1Index = cursor.getColumnIndex(addr_s_str1);
+            int addr2STR2Index = cursor.getColumnIndex(addr_s_str2);
+            int addr2STR3Index = cursor.getColumnIndex(addr_s_str3);
+            int addr2CountryIndex = cursor.getColumnIndex(addr_s_country);
+            int addr2CityIndex = cursor.getColumnIndex(addr_s_city);
+            int addr2StateIndex = cursor.getColumnIndex(addr_s_state);
+            int addr2ZipCodeIndex = cursor.getColumnIndex(addr_s_zipcode);
+            do {
+                address.setAddr_b_str1(cursor.getString(addrSTR1Index));
+                address.setAddr_b_str2(cursor.getString(addrSTR2Index));
+                address.setAddr_b_str3(cursor.getString(addrSTR3Index));
+                address.setAddr_b_country(cursor.getString(addrCountryIndex));
+                address.setAddr_b_city(cursor.getString(addrCityIndex));
+                address.setAddr_b_state(cursor.getString(addrStateIndex));
+                address.setAddr_b_zipcode(cursor.getString(addrZipCodeIndex));
 
-                sb.append("SELECT addr_s_str1,addr_s_str2,addr_s_str3,addr_s_country,addr_s_city,addr_s_state,addr_s_zipcode FROM Address WHERE cust_id=?");
-                cursor = DBManager.getDatabase().rawQuery(sb.toString(), new String[]{custID});
-                if (cursor.moveToFirst()) {
-                    int addrSTR1Index = cursor.getColumnIndex(addr_s_str1);
-                    int addrSTR2Index = cursor.getColumnIndex(addr_s_str2);
-                    int addrSTR3Index = cursor.getColumnIndex(addr_s_str3);
-                    int addrCountryIndex = cursor.getColumnIndex(addr_s_country);
-                    int addrCityIndex = cursor.getColumnIndex(addr_s_city);
-                    int addrStateIndex = cursor.getColumnIndex(addr_s_state);
-                    int addrZipCodeIndex = cursor.getColumnIndex(addr_s_zipcode);
-                    do {
-                        arrayValues[0] = cursor.getString(addrSTR1Index);
-                        arrayValues[1] = cursor.getString(addrSTR2Index);
-                        arrayValues[2] = cursor.getString(addrSTR3Index);
-                        arrayValues[3] = cursor.getString(addrCountryIndex);
-                        arrayValues[4] = cursor.getString(addrCityIndex);
-                        arrayValues[5] = cursor.getString(addrStateIndex);
-                        arrayValues[6] = cursor.getString(addrZipCodeIndex);
-
-                        arrayList.add(arrayValues);
-                        arrayValues = new String[7];
-                    } while (cursor.moveToNext());
-                }
-                break;
+                address.setAddr_s_str1(cursor.getString(addr2STR1Index));
+                address.setAddr_s_str2(cursor.getString(addr2STR2Index));
+                address.setAddr_s_str3(cursor.getString(addr2STR3Index));
+                address.setAddr_s_country(cursor.getString(addr2CountryIndex));
+                address.setAddr_s_city(cursor.getString(addr2CityIndex));
+                address.setAddr_s_state(cursor.getString(addr2StateIndex));
+                address.setAddr_s_zipcode(cursor.getString(addr2ZipCodeIndex));
+                addresses.add(address);
+            } while (cursor.moveToNext());
         }
-        if (cursor != null) {
-            cursor.close();
-        }
-        //db.close();
-        return arrayList;
+        cursor.close();
+        return addresses;
     }
 
 

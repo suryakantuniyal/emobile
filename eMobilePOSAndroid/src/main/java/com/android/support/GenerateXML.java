@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import android.util.Xml;
 
 import com.android.dao.AssignEmployeeDAO;
+import com.android.dao.CustomerCustomFieldsDAO;
 import com.android.dao.ShiftDAO;
 import com.android.dao.ShiftExpensesDAO;
 import com.android.database.AddressHandler;
@@ -27,6 +28,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
+import com.android.emobilepos.models.realms.CustomerCustomField;
 import com.android.emobilepos.models.realms.OrderAttributes;
 import com.android.emobilepos.models.realms.Shift;
 import com.android.emobilepos.models.realms.ShiftExpense;
@@ -55,6 +57,7 @@ public class GenerateXML {
     private StringBuilder ending = new StringBuilder();
     private Context thisActivity;
     private MyPreferences myPref;
+
     public GenerateXML(Context activity) {
         info = new MyPreferences(activity);
         myPref = new MyPreferences(activity);
@@ -443,6 +446,7 @@ public class GenerateXML {
                 serializer.startTag(empstr, "cust_addresses");
                 buildCustomerAddress(serializer, cursor.getString(cursor.getColumnIndex("cust_id")));
                 serializer.endTag(empstr, "cust_addresses");
+                buildCustomerCustomFields(serializer, cursor.getString(cursor.getColumnIndex("cust_id")));
 
                 serializer.endTag(empstr, "new_customer");
 
@@ -454,6 +458,29 @@ public class GenerateXML {
         }
         cursor.close();
 
+    }
+
+    private void buildCustomerCustomFields(XmlSerializer serializer, String cust_id) {
+        CustomerCustomField customField = CustomerCustomFieldsDAO.findEMWSCardIdByCustomerId(cust_id);
+        if (customField != null) {
+            try {
+                serializer.startTag(empstr, "custom_fields");
+                serializer.startTag(empstr, "custom_field");
+
+                serializer.startTag(empstr, "cust_field_id");
+                serializer.text(customField.getCustFieldId());
+                serializer.endTag(empstr, "cust_field_id");
+                serializer.startTag(empstr, "cust_value");
+                serializer.text(customField.getCustValue());
+                serializer.endTag(empstr, "cust_value");
+                serializer.endTag(empstr, "custom_field");
+
+                serializer.endTag(empstr, "custom_fields");
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void buildCustomerAddress(XmlSerializer serializer, String custID) {
