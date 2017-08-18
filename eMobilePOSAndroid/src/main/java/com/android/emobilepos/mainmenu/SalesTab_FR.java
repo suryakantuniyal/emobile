@@ -80,8 +80,8 @@ public class SalesTab_FR extends Fragment implements BCRCallbacks {
     private DinningTable selectedDinningTable;
     private int selectedSeatsAmount;
 
-    public static void startDefault(Activity activity,  Global.TransactionType type) {
-        if (activity != null) {
+    public static void startDefault(Activity activity, Global.TransactionType type) {
+        if (activity != null && type != null) {
             Intent intent = new Intent(activity, OrderingMain_FA.class);
             intent.putExtra("option_number", type);
             activity.startActivityForResult(intent, 0);
