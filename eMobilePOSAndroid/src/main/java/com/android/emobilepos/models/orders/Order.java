@@ -378,4 +378,8 @@ public class Order implements Cloneable {
     public String toString() {
         return String.format("id:%s - total:%s - hold:%b - status:%s", this.ord_id, ord_total, isOnHold(), processed);
     }
+
+    public boolean isReturn() {
+        return ord_type.equalsIgnoreCase("1");
+    }
 }
