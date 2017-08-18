@@ -944,7 +944,7 @@ public class GenerateXML {
         serializer.endTag(empstr, "total_lines_pay");
 
         serializer.startTag(empstr, "ord_total");
-        serializer.text(order.ord_total);
+        serializer.text(String.valueOf(order.isReturn()?Math.abs(Double.parseDouble(order.ord_total)):order.ord_total));
         serializer.endTag(empstr, "ord_total");
 
         serializer.startTag(empstr, "ord_comment");
@@ -1024,11 +1024,12 @@ public class GenerateXML {
         serializer.endTag(empstr, "ord_class");
 
         serializer.startTag(empstr, "ord_subtotal");
-        serializer.text(order.ord_subtotal);
+        serializer.text(String.valueOf(order.isReturn()?Math.abs(Double.parseDouble(order.ord_subtotal)):order.ord_subtotal));
         serializer.endTag(empstr, "ord_subtotal");
 
         serializer.startTag(empstr, "ord_taxamount");
-        serializer.text(order.ord_taxamount);
+        serializer.text(String.valueOf(order.isReturn() ? Math.abs(Double.parseDouble(order.ord_taxamount)) : order.ord_taxamount));
+
         serializer.endTag(empstr, "ord_taxamount");
 
         serializer.startTag(empstr, "ord_discount");
@@ -1048,7 +1049,7 @@ public class GenerateXML {
         serializer.endTag(empstr, "ord_longitude");
 
         serializer.startTag(empstr, "tipAmount");
-        serializer.text(order.tipAmount);
+        serializer.text(String.valueOf(order.isReturn() ? Math.abs(Double.parseDouble(order.tipAmount)) : order.tipAmount));
         serializer.endTag(empstr, "tipAmount");
 
         serializer.startTag(empstr, "VAT");
