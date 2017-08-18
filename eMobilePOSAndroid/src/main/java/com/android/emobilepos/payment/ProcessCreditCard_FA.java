@@ -125,7 +125,6 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
     private EditText phoneNumberField, customerEmailField;
     private EditText authIDField, transIDField;
     private EditText subtotal, tax1, tax2;
-    // private boolean timedOut = false;
     private List<GroupTax> groupTaxRate;
     private boolean isMultiInvoice = false, isOpenInvoice = false;
     private String[] inv_id_array, txnID_array;
@@ -1120,7 +1119,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             if (!TextUtils.isEmpty(orderSubTotal) && Double.parseDouble(orderSubTotal) > 0) {
                 subTotal = Double.parseDouble(orderSubTotal);
             } else {
-                subTotal = Double.parseDouble(global.order.ord_subtotal);
+                subTotal = Math.abs(Double.parseDouble(global.order.ord_subtotal));
             }
         }
 
