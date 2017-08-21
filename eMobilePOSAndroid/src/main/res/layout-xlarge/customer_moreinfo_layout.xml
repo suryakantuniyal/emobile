@@ -473,7 +473,6 @@
                                 android:layout_marginLeft="5dp"
                                 android:layout_marginRight="5dp"
                                 android:layout_weight="3"
-                                android:background="@drawable/spinner_holo_light_selector"
                                 android:paddingLeft="5dp"
                                 android:paddingRight="5dp"
                                 android:textAppearance="@style/black_text_appearance_unbold" />
@@ -639,7 +638,6 @@
                                 android:layout_marginLeft="5dp"
                                 android:layout_marginRight="5dp"
                                 android:layout_weight="3"
-                                android:background="@drawable/spinner_holo_light_selector"
                                 android:paddingLeft="5dp"
                                 android:paddingRight="5dp"
                                 android:textAppearance="@style/black_text_appearance_unbold" />

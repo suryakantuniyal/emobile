@@ -3,20 +3,29 @@ package com.android.emobilepos.customer;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.PowerManager;
+import android.view.View;
+import android.widget.AbsSpinner;
+import android.widget.AdapterView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.android.dao.CustomerCustomFieldsDAO;
 import com.android.database.CustomersHandler;
 import com.android.emobilepos.R;
+import com.android.emobilepos.adapters.CountrySpinnerAdapter;
 import com.android.emobilepos.models.Address;
+import com.android.emobilepos.models.Country;
 import com.android.emobilepos.models.realms.CustomerCustomField;
 import com.android.support.Customer;
 import com.android.support.Global;
+import com.android.support.MyPreferences;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
-public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar {
+public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implements AdapterView.OnItemSelectedListener {
 
     private Global global;
     private boolean hasBeenCreated = false;
@@ -24,6 +33,11 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar {
     private String cust_id;
     private List<CustomerCustomField> customFields;
     private Customer customer;
+    private ArrayList<Country> countries;
+    private Spinner billingCountrySpinner;
+    private Spinner shippingCountrySpinner;
+    public int billingSelectedCountry;
+    public int shippingSelectedCountry;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -38,16 +52,17 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar {
         customFields = CustomerCustomFieldsDAO.getCustomFields(cust_id);
         customer = custHandler.getCustomer(cust_id);
         setUI();
-        CreateCustomer_FA.CountrySpinnerAdapter billingAdapter = new CreateCustomer_FA.CountrySpinnerAdapter(this, android.R.layout.simple_spinner_item,
-                this.nameCountryList, this.isoCountryList, true);
-        CreateCustomer_FA.CountrySpinnerAdapter shippingAdapter = new CreateCustomer_FA.CountrySpinnerAdapter(this, android.R.layout.simple_spinner_item,
-                this.nameCountryList, this.isoCountryList, false);
-
-        bCountrySpinner.setAdapter(billingAdapter);
-        sCountrySpinner.setAdapter(shippingAdapter);
-
-        bCountrySpinner.setSelection(bSelectedCountry);
-        sCountrySpinner.setSelection(sSelectedCountry);
+        setupCountries();
+//        CountrySpinnerAdapter billingAdapter = new CountrySpinnerAdapter(this, android.R.layout.simple_spinner_item,
+//                this.nameCountryList, this.isoCountryList, true);
+//        CountrySpinnerAdapter shippingAdapter = new CountrySpinnerAdapter(this, android.R.layout.simple_spinner_item,
+//                this.nameCountryList, this.isoCountryList, false);
+//
+//        bCountrySpinner.setAdapter(billingAdapter);
+//        sCountrySpinner.setAdapter(shippingAdapter);
+//
+//        bCountrySpinner.setSelection(bSelectedCountry);
+//        sCountrySpinner.setSelection(sSelectedCountry);
         hasBeenCreated = true;
     }
 
@@ -61,7 +76,8 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar {
         ((TextView) findViewById(R.id.customerTaxabletextView373)).setText(customer.getCust_taxable());
         ((TextView) findViewById(R.id.customerTaxIdtextView37)).setText(customer.getCust_salestaxcode());
         ((TextView) findViewById(R.id.customerEmailtextView344)).setText(customer.getCust_email());
-
+        billingCountrySpinner = (Spinner) findViewById(R.id.newCustBillCountry);
+        shippingCountrySpinner = (Spinner) findViewById(R.id.newCustShippingCountry);
 
         ((TextView) findViewById(R.id.newCustBillStr1)).setText(customer.getBillingAddress().getAddr_b_str1());
         ((TextView) findViewById(R.id.newCustBillStr2)).setText(customer.getBillingAddress().getAddr_b_str2());
@@ -71,6 +87,39 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar {
 
     }
 
+    private void setupCountries() {
+        countries = new ArrayList<>();
+        String[] isoCountries = Locale.getISOCountries();
+        String[] nameCountries = new String[isoCountries.length];
+        countries.add(new Country("Select One", "", false));
+        int i = 0;
+        MyPreferences myPref = new MyPreferences(this);
+        String defaultCountry = myPref.getDefaultCountryCode();
+        for (String country : isoCountries) {
+            Country c = new Country();
+            c.setIsoCode(country);
+            Locale locale = new Locale(Locale.getDefault().getDisplayLanguage(), country);
+            nameCountries[i] = locale.getDisplayCountry();
+            c.setName(nameCountries[i]);
+            if (defaultCountry.equals(country)) {
+                billingSelectedCountry = i + 1;
+                shippingSelectedCountry = i + 1;
+                c.setDefaultCountry(true);
+            }
+            i++;
+            countries.add(c);
+        }
+
+        CountrySpinnerAdapter billingAdapter = new CountrySpinnerAdapter(this, countries);
+        CountrySpinnerAdapter shippingAdapter = new CountrySpinnerAdapter(this, countries);
+
+        billingCountrySpinner.setAdapter(billingAdapter);
+        shippingCountrySpinner.setAdapter(shippingAdapter);
+        billingCountrySpinner.setOnItemSelectedListener(this);
+        shippingCountrySpinner.setOnItemSelectedListener(this);
+        billingCountrySpinner.setSelection(billingSelectedCountry);
+        shippingCountrySpinner.setSelection(shippingSelectedCountry);
+    }
 
 //    private void promptGiftCardNumber(String currentValue) {
 //        final Dialog globalDlog = new Dialog(this, R.style.Theme_TransparentTest);
@@ -142,6 +191,25 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar {
         if (!isScreenOn)
             Global.loggedIn = false;
         global.startActivityTransitionTimer();
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        switch (parent.getId()) {
+            case R.id.newCustBillCountry:
+                billingSelectedCountry = position;
+                billingCountrySpinner.setSelection(position);
+                break;
+            case R.id.newCustShippingCountry:
+                shippingSelectedCountry = position;
+                shippingCountrySpinner.setSelection(position);
+                break;
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
     }
 
 

@@ -362,7 +362,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     break;
                 case TRANSACTION:
                     defaultCountry = prefManager.findPreference("pref_default_country");
-                    CharSequence temp = "\t\t" + myPref.defaultCountryName(true, null);
+                    CharSequence temp = "\t\t" + myPref.getDefaultCountryName();
                     defaultCountry.setSummary(temp);
                     defaultCountry.setOnPreferenceClickListener(this);
                     break;
@@ -557,8 +557,8 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
 
                         @Override
                         public void onSelectCountry(String name, String code) {
-                            myPref.defaultCountryCode(false, code);
-                            myPref.defaultCountryName(false, name);
+                            myPref.setDefaultCountryCode(code);
+                            myPref.setDefaultCountryCode(name);
                             CharSequence temp = "\t\t" + name;
                             defaultCountry.setSummary(temp);
                             newFrag.dismiss();
@@ -1217,7 +1217,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
             EMSDeviceManager edm = new EMSDeviceManager();
             try {
                 ArrayList<PortInfo> mPortList = StarIOPort.searchPrinter("USB:", getActivity());
-                if(!mPortList.isEmpty()){
+                if (!mPortList.isEmpty()) {
                     myPref.setPrinterType(Global.STAR);
                     myPref.setPrinterName(mPortList.get(0).getPortName());
                     myPref.setPrinterMACAddress(mPortList.get(0).getPortName());

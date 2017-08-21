@@ -230,26 +230,26 @@ public class MyPreferences {
         prefEditor.commit();
     }
 
-    public String defaultCountryCode(boolean isGet, String val) {
+    public String getDefaultCountryCode() {
         String key = "default_country_code";
-        if (isGet)
-            return prefs.getString(key, "-1");
-        else {
-            prefEditor.putString(key, val);
-            prefEditor.commit();
-        }
-        return "";
+        return prefs.getString(key, "-1");
     }
 
-    public String defaultCountryName(boolean isGet, String val) {
+    public void setDefaultCountryCode(String val) {
+        String key = "default_country_code";
+        prefEditor.putString(key, val);
+        prefEditor.commit();
+    }
+
+    public void setDefaultCountryName(String val) {
         String key = "default_country_name";
-        if (isGet)
-            return prefs.getString(key, "NONE");
-        else {
-            prefEditor.putString(key, val);
-            prefEditor.commit();
-        }
-        return "";
+        prefEditor.putString(key, val);
+        prefEditor.commit();
+    }
+
+    public String getDefaultCountryName() {
+        String key = "default_country_name";
+        return prefs.getString(key, "NONE");
     }
 
 //    public String getZoneID() {
@@ -1414,6 +1414,7 @@ public class MyPreferences {
     public boolean isShowCashChangeAmount() {
         return getPreferences(MyPreferences.pref_cash_show_change);
     }
+
     public boolean isCustomerRequired() {
         return getPreferences(MyPreferences.pref_require_customer);
     }

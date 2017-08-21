@@ -257,7 +257,7 @@ public class CreateCustomer_FA extends BaseFragmentActivityActionBar implements 
         isoCountryList.add("");
         int i = 0;
         MyPreferences myPref = new MyPreferences(this);
-        String defaultCountry = myPref.defaultCountryCode(true, null);
+        String defaultCountry = myPref.getDefaultCountryCode();
         for (String country : isoCountries) {
             isoCountryList.add(country);
             Locale locale = new Locale(Locale.getDefault().getDisplayLanguage(), country);
