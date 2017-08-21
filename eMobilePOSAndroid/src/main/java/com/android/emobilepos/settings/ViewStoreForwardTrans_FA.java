@@ -79,15 +79,15 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
         btnProcessAll.setEnabled(true);
         RecyclerView listView = (RecyclerView) findViewById(R.id.listView);
         storeAndForwards = realm.where(StoreAndForward.class).findAll();
-        RealmChangeListener<RealmResults<StoreAndForward>> changeListener = new RealmChangeListener<RealmResults<StoreAndForward>>() {
-
-            @Override
-            public void onChange(RealmResults<StoreAndForward> element) {
-                adapter.notifyDataSetChanged();
-                btnProcessAll.setEnabled(true);
-            }
-        };
-        storeAndForwards.addChangeListener(changeListener);
+//        RealmChangeListener<RealmResults<StoreAndForward>> changeListener = new RealmChangeListener<RealmResults<StoreAndForward>>() {
+//
+//            @Override
+//            public void onChange(RealmResults<StoreAndForward> element) {
+//                adapter.notifyDataSetChanged();
+//                btnProcessAll.setEnabled(true);
+//            }
+//        };
+//        storeAndForwards.addChangeListener(changeListener);
         adapter = new CustomCursorAdapter(storeAndForwards);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         listView.setLayoutManager(mLayoutManager);
@@ -146,9 +146,9 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
 
 
     private class ProcessLivePaymentAsync extends AsyncTask<Void, Void, Void> {
-        private HashMap<String, String> boloroHashMap = new HashMap<String, String>();
+        private HashMap<String, String> boloroHashMap = new HashMap<>();
 
-        private HashMap<String, String> parsedMap = new HashMap<String, String>();
+        private HashMap<String, String> parsedMap = new HashMap<>();
         private int _count_decline = 0, _count_conn_error = 0, _count_merch_account = 0;
 
 
@@ -297,9 +297,10 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
         @Override
         protected void onPreExecute() {
             myProgressDialog = new ProgressDialog(activity);
-            myProgressDialog.setMessage("Please wait...");
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setMessage(getString(R.string.processing_payments));
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
             myProgressDialog.setCancelable(false);
+            myProgressDialog.setProgress(0);
             myProgressDialog.show();
 
             _count_merch_account = 0;
@@ -314,8 +315,12 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
             if (NetworkUtils.isConnectedToInternet(activity) && !livePaymentRunning) {
                 realm.beginTransaction();
                 storeAndForwards = realm.where(StoreAndForward.class).findAll();
+                myProgressDialog.setMax(storeAndForwards.size());
                 realm.commitTransaction();
+                int i=0;
                 for (StoreAndForward storeAndForward : storeAndForwards) {
+                    myProgressDialog.setProgress(i);
+                    i++;
                     if (!livePaymentRunning) {
                         livePaymentRunning = true;
                         String _charge_xml = storeAndForward.getPaymentXml();
@@ -409,6 +414,7 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
             btnProcessAll.setEnabled(true);
             StoredPaymentsDAO.purgeDeletedStoredPayment();
             adapter.notifyDataSetChanged();
+            btnProcessAll.setEnabled(true);
             StringBuilder sb = new StringBuilder();
             if (_count_conn_error > 0) {
                 sb.append("\t -").append("Connection Error (").append(Integer.toString(_count_conn_error)).append("): ");
