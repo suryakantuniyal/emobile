@@ -1,6 +1,5 @@
 package com.android.emobilepos.initialization;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -22,7 +21,6 @@ import com.android.support.SynchMethods;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 public class SelectPassword_FA extends BaseFragmentActivityActionBar {
-    private Activity activity;
     private MyPreferences myPref;
 
     @Override
@@ -37,7 +35,6 @@ public class SelectPassword_FA extends BaseFragmentActivityActionBar {
         password2.setTransformationMethod(PasswordTransformationMethod.getInstance());
 
         Button submit = (Button) findViewById(R.id.setPasswordButton);
-        activity = this;
         myPref = new MyPreferences(this);
 
         submit.setOnClickListener(new View.OnClickListener() {
@@ -48,14 +45,14 @@ public class SelectPassword_FA extends BaseFragmentActivityActionBar {
                 String pass2 = password2.getText().toString().trim();
                 if (pass1.equals(pass2) && pass1.length() >= 5) {
                     myPref.setApplicationPassword(pass1);
-                    DBManager dbManager = new DBManager(activity, Global.FROM_REGISTRATION_ACTIVITY);
+                    DBManager dbManager = new DBManager(SelectPassword_FA.this, Global.FROM_REGISTRATION_ACTIVITY);
                     dbManager.updateDB();
                     new SyncReceiveTask().execute(dbManager);
 //                    SynchMethods sm = new SynchMethods(dbManager);
 //                    sm.synchReceive(Global.FROM_REGISTRATION_ACTIVITY, activity);
-                    myPref.setCacheDir(activity.getApplicationContext().getCacheDir().getAbsolutePath());
+                    myPref.setCacheDir(SelectPassword_FA.this.getApplicationContext().getCacheDir().getAbsolutePath());
                 } else {
-                    Toast.makeText(activity, R.string.wrong_password, Toast.LENGTH_LONG).show();
+                    Toast.makeText(SelectPassword_FA.this, R.string.wrong_password, Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -71,7 +68,7 @@ public class SelectPassword_FA extends BaseFragmentActivityActionBar {
         }
     }
 
-    public class SyncReceiveTask extends AsyncTask<DBManager, Void, Boolean> {
+    private class SyncReceiveTask extends AsyncTask<DBManager, Void, Boolean> {
         ProgressDialog dialog;
 
         @Override
@@ -95,11 +92,11 @@ public class SelectPassword_FA extends BaseFragmentActivityActionBar {
         protected void onPostExecute(Boolean result) {
             boolean isDestroyed = false;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                if (activity.isDestroyed()) {
+                if (SelectPassword_FA.this.isDestroyed()) {
                     isDestroyed = true;
                 }
             }
-            if (!activity.isFinishing() && !isDestroyed && dialog.isShowing()) {
+            if (!SelectPassword_FA.this.isFinishing() && !isDestroyed && dialog.isShowing()) {
                 dialog.dismiss();
             }
 
@@ -107,9 +104,9 @@ public class SelectPassword_FA extends BaseFragmentActivityActionBar {
                 Global.showPrompt(SelectPassword_FA.this, R.string.sync_title, getString(R.string.sync_fail));
             } else {
                 Intent intent = new Intent(SelectPassword_FA.this, MainMenu_FA.class);
-                activity.setResult(-1);
+                setResult(-1);
                 startActivity(intent);
-                activity.finish();
+                finish();
             }
         }
     }

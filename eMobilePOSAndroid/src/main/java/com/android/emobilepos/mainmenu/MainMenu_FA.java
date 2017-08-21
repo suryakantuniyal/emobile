@@ -2,7 +2,6 @@ package com.android.emobilepos.mainmenu;
 
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
-import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
@@ -46,13 +45,9 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.microsoft.windowsazure.notifications.NotificationsManager;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
-import android_serialport_api.SerialPort;
 import drivers.EMSsnbc;
 import main.EMSDeviceManager;
 
@@ -62,13 +57,12 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
     public static final String NOTIFICATION_RECEIVED = "NOTIFICATION_RECEIVED";
     public static final String NOTIFICATION_MESSAGE = "NOTIFICATION_MESSAGE";
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
-    public static Activity activity;
-    private static MyPreferences myPref;
 
     static {
         System.loadLibrary("serial_port");
     }
 
+    private MyPreferences myPref;
     private Global global;
     private boolean hasBeenCreated = false;
     private TextView synchTextView, tvStoreForward;
@@ -140,8 +134,6 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         NotificationsManager.handleNotifications(this, new NotificationSettings().getSenderId(), NotificationHandler.class);
         myPref = new MyPreferences(this);
         registerWithNotificationHubs();
-
-        activity = this;
         global = (Global) getApplication();
 
         setTabsAdapter(new AdapterTabs(this, viewPager));
@@ -168,7 +160,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
         forceTabs();
 
-        Bundle extras = activity.getIntent().getExtras();
+        Bundle extras = getIntent().getExtras();
         if (extras != null && extras.getBoolean("unsynched_items", false))
             myBar.setSelectedNavigationItem(1);
         new Thread(new Runnable() {
@@ -234,7 +226,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         if (myPref.isUseClerks()) {
             Clerk clerk = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()));
             if (clerk != null) {
-                Menu menu = ((MainMenu_FA) activity).menu;
+                Menu menu = this.menu;
                 if (menu != null) {
                     MenuItem menuItem = menu.findItem(R.id.logoutMenuItem);
                     if (menuItem != null) {
@@ -268,13 +260,13 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
             //            if (global.getGlobalDlog() != null && global.getGlobalDlog().isShowing()) {
 //                global.getGlobalDlog().dismiss();
 //            }
-            global.promptForMandatoryLogin(activity);
+            global.promptForMandatoryLogin(this);
         }
 
         if (myPref.isAutoSyncEnable() && hasBeenCreated) {
-            DBManager dbManager = new DBManager(activity, Global.FROM_SYNCH_ACTIVITY);
+            DBManager dbManager = new DBManager(this, Global.FROM_SYNCH_ACTIVITY);
             SynchMethods sm = new SynchMethods(dbManager);
-            sm.synchSend(Global.FROM_SYNCH_ACTIVITY, true, activity);
+            sm.synchSend(Global.FROM_SYNCH_ACTIVITY, true, this);
             getSynchTextView().setText(getString(R.string.sync_inprogress));
             getSynchTextView().setVisibility(View.VISIBLE);
         }
@@ -391,7 +383,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
         @Override
         protected void onPreExecute() {
-            activity.setRequestedOrientation(Global.getScreenOrientation(activity));
+            setRequestedOrientation(Global.getScreenOrientation(MainMenu_FA.this));
             loadMultiPrinter = (Global.multiPrinterManager == null
                     || Global.multiPrinterManager.size() == 0)
                     && (Global.mainPrinterManager == null
@@ -420,7 +412,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 //                    e.printStackTrace();
 //                }
 //            }
-            autoConnect = DeviceUtils.autoConnect(activity, loadMultiPrinter);
+            autoConnect = DeviceUtils.autoConnect(MainMenu_FA.this, loadMultiPrinter);
             if (myPref.getPrinterType() == Global.POWA || myPref.getPrinterType() == Global.MEPOS
                     || myPref.getPrinterType() == Global.ELOPAYPOINT) {
                 isUSB = true;
@@ -435,7 +427,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         @Override
         protected void onPostExecute(String result) {
             if (!isUSB && result.toString().length() > 0)
-                Toast.makeText(activity, result.toString(), Toast.LENGTH_LONG).show();
+                Toast.makeText(MainMenu_FA.this, result.toString(), Toast.LENGTH_LONG).show();
             else if (isUSB && (Global.mainPrinterManager == null ||
                     Global.mainPrinterManager.getCurrentDevice() == null)
                     || myPref.getPrinterType() == Global.MIURA) {
@@ -443,12 +435,12 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
                     global.getGlobalDlog().dismiss();
                 EMSDeviceManager edm = new EMSDeviceManager();
                 Global.mainPrinterManager = edm.getManager();
-                Global.mainPrinterManager.loadMultiDriver(activity, myPref.getPrinterType(), 0, true, "", "");
+                Global.mainPrinterManager.loadMultiDriver(MainMenu_FA.this, myPref.getPrinterType(), 0, true, "", "");
             }
-            if (!activity.isFinishing()) {
+            if (!MainMenu_FA.this.isFinishing()) {
                 dismissProgressDialog();
             }
-            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         }
     }
 
@@ -490,7 +482,10 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
             }
 
             if (myTabs.get(0) == tag && hasBeenCreated && SecurityManager.hasPermissions(myContext, SecurityManager.SecurityAction.OPEN_ORDER)) {
-                SalesTab_FR.startDefault(activity, myPref.getPreferencesValue(MyPreferences.pref_default_transaction));
+//                SalesTab_FR.startDefault(MainMenu_FA.this, myPref.getPreferencesValue(MyPreferences.pref_default_transaction));
+                String value = myPref.getPreferencesValue(MyPreferences.pref_default_transaction);
+                Global.TransactionType type = Global.TransactionType.getByCode(Integer.parseInt(value));
+                SalesTab_FR.startDefault(MainMenu_FA.this, type);
             }
         }
 

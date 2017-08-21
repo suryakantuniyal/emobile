@@ -41,7 +41,6 @@ public class MyPreferences {
     public static final String pref_show_only_group_taxes = "pref_show_only_group_taxes";
     public static final String pref_mix_match = "pref_mix_match";
     public static final String pref_holds_polling_service = "pref_holds_polling_service";
-    public static final String pref_require_customer = "pref_require_customer";
     public static final String pref_clear_customer = "pref_clear_customer";
     public static final String pref_show_confirmation_screen = "pref_show_confirmation_screen";
     public static final String pref_direct_customer_selection = "pref_direct_customer_selection";
@@ -117,6 +116,7 @@ public class MyPreferences {
     public static final String print_ivuloto_qr = "print_ivuloto_qr";
     private static final String pref_skip_email_phone = "pref_skip_email_phone";
     private static final String pref_prefill_total_amount = "pref_prefill_total_amount";
+    private static final String pref_require_customer = "pref_require_customer";
     private static final String pref_automatic_sync = "pref_automatic_sync";
     private static final String pref_restaurant_mode = "pref_restaurant_mode";
     private static final String pref_retail_taxes = "pref_retail_taxes";
@@ -1413,6 +1413,14 @@ public class MyPreferences {
 
     public boolean isShowCashChangeAmount() {
         return getPreferences(MyPreferences.pref_cash_show_change);
+    }
+    public boolean isCustomerRequired() {
+        return getPreferences(MyPreferences.pref_require_customer);
+    }
+
+    public boolean isDirectCustomerSelection() {
+        return getPreferences(MyPreferences.pref_direct_customer_selection);
+
     }
 
     public enum PrinterPreviewWidth {SMALL, MEDIUM, LARGE}

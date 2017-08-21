@@ -57,7 +57,7 @@ public class BalanceInquiry_FA extends BaseFragmentActivityActionBar implements 
     private EMSCallBack msrCallBack;
     private Global global;
     private boolean hasBeenCreated = false;
-    private static CheckBox cardSwipe;
+    private CheckBox cardSwipe;
     private CreditCardInfo cardInfoManager;
     private EMSUniMagDriver uniMagReader;
     private EMSMagtekAudioCardReader magtekReader;

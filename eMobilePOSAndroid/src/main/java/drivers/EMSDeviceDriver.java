@@ -42,7 +42,7 @@ import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.PaymentDetails;
-import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
@@ -286,7 +286,7 @@ public class EMSDeviceDriver {
 
                     @Override
                     public void onError() {
-                        Toast.makeText(activity, "Miura printing error.", Toast.LENGTH_LONG);
+                        Toast.makeText(activity, "Miura printing error.", Toast.LENGTH_LONG).show();
                     }
                 });
                 try {
@@ -625,7 +625,7 @@ public class EMSDeviceDriver {
         cutPaper();
     }
 
-    public void printReceiptPreview(SplitedOrder splitedOrder, int lineWidth) throws JAException, StarIOPortException {
+    public void printReceiptPreview(SplittedOrder splitedOrder, int lineWidth) throws JAException, StarIOPortException {
         AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee(false);
         startReceipt();
         setPaperWidth(lineWidth);
@@ -1083,6 +1083,10 @@ public class EMSDeviceDriver {
     }
 
     public void cutPaper() {
+        if (PRINT_TO_LOG) {
+            Log.d("Cut", "Paper Cut");
+            return;
+        }
         if (this instanceof EMSsnbc) {
             // ******************************************************************************************
             // print in page mode
@@ -1949,7 +1953,9 @@ public class EMSDeviceDriver {
             printEnablerWebSite(lineWidth);
             cutPaper();
         } catch (StarIOPortException e) {
+            Crashlytics.logException(e);
         } catch (JAException e) {
+            Crashlytics.logException(e);
             e.printStackTrace();
         }
     }

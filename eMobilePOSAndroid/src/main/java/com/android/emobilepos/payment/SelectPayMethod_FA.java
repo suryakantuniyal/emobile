@@ -1064,7 +1064,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             this.context = activity.getApplicationContext();
             myInflater = LayoutInflater.from(context);
 
-            PayMethodsHandler handler = new PayMethodsHandler(activity);
             payTypeList = PayMethodsDAO.getAllSortByName();
         }
 

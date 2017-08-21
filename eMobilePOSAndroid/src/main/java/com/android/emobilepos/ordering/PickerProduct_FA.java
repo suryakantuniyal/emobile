@@ -69,12 +69,10 @@ import util.json.JsonUtils;
 
 public class PickerProduct_FA extends FragmentActivity implements OnClickListener, OnItemClickListener {
 
-    public static PickerProduct_FA instance;
     private final int SEC_QTY = 3, SEC_CMT = 5, SEC_UOM = 4, SEC_PRICE_LEV = 6, SEC_DISCOUNT = 7, SEC_OTHER_TYPES = 9, SEC_ADDITIONAL_INFO = 10;
     private final int INDEX_UOM = 0, INDEX_CMT = 1, INDEX_PRICE_LEVEL = 2, INDEX_DISCOUNT = 3, OFFSET = 4, MAIN_OFFSET = 3;
     OrderProduct orderProduct = new OrderProduct();
     private boolean hasBeenCreated = false;
-    private Activity activity;
     private Global global;
     private String[] leftTitle, leftTitle2;
     private String[] rightTitle = new String[]{"ONE (Default)", "", "", "0.00 <No Discount>"};
@@ -115,6 +113,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
     private String ordProdAttr = "";
     private boolean isFromAddon = false;
     private boolean isToGo;
+    private Global.TransactionType mTransType;
 
 
     @Override
@@ -126,12 +125,8 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             super.setTheme(R.style.AppTheme);
         }
 
-
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        instance = this;
-
-
         setContentView(R.layout.catalog_picker_layout);
 
         this.setFinishOnTouchOutside(true);
@@ -141,18 +136,15 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             tvHeaderTitle.setBackgroundColor(Color.RED);
         }
 
-
-        activity = this;
         global = (Global) getApplication();
 
-
-        myPref = new MyPreferences(activity);
-        Intent intent = activity.getIntent();
+        myPref = new MyPreferences(this);
+        Intent intent = getIntent();
         extras = intent.getExtras();
         //extras = activity.getIntent().getExtras();
 
         LayoutInflater inflater = LayoutInflater.from(this);
-        View header = inflater.inflate(R.layout.catalog_picker_header, (ViewGroup) activity.findViewById(R.id.header_layout_root));
+        View header = inflater.inflate(R.layout.catalog_picker_header, (ViewGroup) findViewById(R.id.header_layout_root));
         lView = (ListView) findViewById(R.id.pickerLV);
         headerProductID = (TextView) header.findViewById(R.id.pickerHeaderID);
         headerOnHand = (TextView) header.findViewById(R.id.pickerHeaderQty);
@@ -163,7 +155,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         headerAddButton.setOnClickListener(this);
 
 
-        volPriceHandler = new VolumePricesHandler(activity);
+        volPriceHandler = new VolumePricesHandler(this);
 
         leftTitle = new String[]{getString(R.string.cat_picker_uom), getString(R.string.cat_picker_comments), getString(R.string.cat_picker_price_level),
                 getString(R.string.cat_picker_discount)};
@@ -174,9 +166,10 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
 
         imageLoader = ImageLoader.getInstance();
-        imageLoader.init(ImageLoaderConfiguration.createDefault(activity));
+        imageLoader.init(ImageLoaderConfiguration.createDefault(this));
         options = new DisplayImageOptions.Builder().showImageOnLoading(R.drawable.loading_image).cacheInMemory(false).cacheOnDisc(true)
                 .showImageForEmptyUri(R.drawable.no_image).build();
+        mTransType = (Global.TransactionType) extras.get("transType");
 
         isToGo = extras.getBoolean("isToGo", false);
         isModify = extras.getBoolean("isModify", false);
@@ -194,7 +187,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         }
 //        setupTax();
         lView.addHeaderView(header);
-        lv_adapter = new ListViewAdapter(activity);
+        lv_adapter = new ListViewAdapter(this);
         lView.setAdapter(lv_adapter);
         lView.setOnItemClickListener(this);
         hasBeenCreated = true;
@@ -211,7 +204,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         if (hasBeenCreated && !Global.loggedIn) {
             if (global.getGlobalDlog() != null)
                 global.getGlobalDlog().dismiss();
-            global.promptForMandatoryLogin(activity);
+            global.promptForMandatoryLogin(this);
         }
         super.onResume();
     }
@@ -229,7 +222,6 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
     @Override
     public void onDestroy() {
         super.onDestroy();
-        instance = null;
     }
 
 
@@ -237,7 +229,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.itemHeaderImg: //View item image
-                Intent intent = new Intent(activity, ShowProductImageActivity.class);
+                Intent intent = new Intent(this, ShowProductImageActivity.class);
                 intent.putExtra("url", imgURL);
                 startActivity(intent);
                 break;
@@ -264,12 +256,12 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             case SEC_OTHER_TYPES:
                 Intent results = new Intent();
                 results.putExtra("prod_name", extras.getString("prod_name"));
-                activity.setResult(9, results);
+                setResult(9, results);
 
-                activity.finish();
+                finish();
                 break;
             case SEC_ADDITIONAL_INFO:
-                Intent intent = new Intent(activity, OrderAttributes_FA.class);
+                Intent intent = new Intent(this, OrderAttributes_FA.class);
                 intent.putExtra("isModify", isModify);
                 intent.putExtra("prod_id", prodID);
                 if (isModify) {
@@ -331,7 +323,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                 }
             }
         }
-        prodAttrHandler = new ProductsAttrHandler(activity);
+        prodAttrHandler = new ProductsAttrHandler(this);
         attributesMap = prodAttrHandler.getAttributesMap(orderProduct.getOrdprod_name());
         attributesKey = attributesMap.keySet().toArray(new String[attributesMap.size()]);
         attributesSelected = prodAttrHandler.getDefaultAttributes(prodID);
@@ -341,35 +333,12 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         }
     }
 
-
-//    private void setupTax() {
-//        TaxesHandler taxHandler = new TaxesHandler(activity);
-//        if (myPref.isRetailTaxes()) {
-//            if (!Global.taxID.isEmpty()) {
-//                taxAmount = taxHandler.getTaxRate(Global.taxID, orderProduct.getTax_type(), Double.parseDouble(basePrice));
-//                prod_taxId = orderProduct.getTax_type();
-//            } else {
-//                taxAmount = taxHandler.getTaxRate(orderProduct.getProd_taxcode(), orderProduct.getTax_type(), Double.parseDouble(basePrice));
-//                prod_taxId = orderProduct.getProd_taxcode();
-//            }
-//        } else {
-//            if (!Global.taxID.isEmpty()) {
-//                taxAmount = taxHandler.getTaxRate(Global.taxID, "", Double.parseDouble(basePrice));
-//                prod_taxId = Global.taxID;
-//            } else {
-//                taxAmount = taxHandler.getTaxRate(orderProduct.getProd_taxcode(), "", Double.parseDouble(basePrice));
-//                prod_taxId = orderProduct.getProd_taxcode();
-//            }
-//        }
-//    }
-
-
     private void updateSavedDetails() {
         PriceLevelHandler plHandler = new PriceLevelHandler();
 
         List<PriceLevel> priceLevels = plHandler.getFixedPriceLevel(prodID);
 
-        ProductsHandler handler = new ProductsHandler(activity);
+        ProductsHandler handler = new ProductsHandler(this);
         List<Discount> discounts = handler.getDiscounts();
         ArrayList<String[]> _listDiscounts = new ArrayList<>();
         for (Discount discount : discounts) {
@@ -430,7 +399,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
     private void addAttributeButton(View header, String tag) {
 
         LinearLayout test = (LinearLayout) header.findViewById(R.id.catalog_picker_attributes_holder);
-        LayoutInflater inf = LayoutInflater.from(activity);
+        LayoutInflater inf = LayoutInflater.from(this);
 
         View vw = inf.inflate(R.layout.catalog_picker_attributes_adapter, null);
         vw.setTag(tag);
@@ -460,12 +429,12 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
         final TextView attributeValue = (TextView) view.findViewById(R.id.attribute_value);
 
-        ListView listView = new ListView(activity);
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);
+        ListView listView = new ListView(this);
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
 
         final String[] val = attributesMap.get(key).toArray(new String[attributesMap.get(key).size()]);
 
-        listView.setAdapter(new ArrayAdapter<String>(activity, android.R.layout.simple_list_item_1, val) {
+        listView.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, val) {
             @NonNull
             @Override
             public View getView(int position, View convertView, @NonNull ViewGroup parent) {
@@ -554,7 +523,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
         headerProductID.setText(prodID);
         imageLoader.displayImage(imgURL, headerImage, options);
-        lv_adapter = new ListViewAdapter(activity);
+        lv_adapter = new ListViewAdapter(this);
         lView.setAdapter(lv_adapter);
     }
 
@@ -577,11 +546,11 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         if (product != null) {
             products.add(product);
         }
-        if (!OrderingMain_FA.isRequiredAttributeCompleted(activity, products)) {
+        if (!OrderingMain_FA.isRequiredAttributeCompleted(this, products)) {
             if (product != null) {
                 product.setAttributesCompleted(false);
             }
-            Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_required_attributes) + "\n\n" + ordProdAttr);
+            Global.showPrompt(this, R.string.dlog_title_error, getString(R.string.dlog_msg_required_attributes) + "\n\n" + ordProdAttr);
         } else {
             if (product != null) {
                 product.setAttributesCompleted(true);
@@ -590,7 +559,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             if (!headerOnHand.getText().toString().isEmpty())
                 onHandQty = Double.parseDouble(headerOnHand.getText().toString());
 
-            if (OrderingMain_FA.mTransType != Global.TransactionType.RETURN) {
+            if (mTransType != Global.TransactionType.RETURN) {
                 if (OrderingMain_FA.returnItem || (isModify && global.order.getOrderProducts().get(modifyOrderPosition).isReturned())) {
                     qty_picked = new BigDecimal(qty_picked).negate().toString();
                 }
@@ -614,7 +583,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             )) || (Global.isConsignment && !prod_type.equals("Service") && !validConsignment(selectedQty, onHandQty)))
 
             {
-                Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.limit_onhand));
+                Global.showPrompt(this, R.string.dlog_title_error, getString(R.string.limit_onhand));
             } else {
                 if (!isModify)
                     preValidateSettings();
@@ -622,15 +591,15 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                     setProductInfo(OrderProductUtils.getOrderProductsByOrderProductId(global.order.getOrderProducts(), orderProduct.getOrdprod_id()).get(0));
                 }
 
-                activity.setResult(2);
-                activity.finish();
+                setResult(2);
+                finish();
             }
         }
     }
 
 
     private void showQtyDlog(View v) {
-        final Dialog dlog = new Dialog(activity, R.style.Theme_TransparentTest);
+        final Dialog dlog = new Dialog(this, R.style.Theme_TransparentTest);
         dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dlog.setCancelable(true);
         dlog.setContentView(R.layout.dlog_field_single_layout);
@@ -676,8 +645,8 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
     }
 
     private void showListViewDlog(final int type) {
-        final Dialog dlg = new Dialog(activity);
-        LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final Dialog dlg = new Dialog(this);
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         dlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
         View view = inflater.inflate(R.layout.dialog_listview_layout, null, false);
         dlg.setContentView(view);
@@ -715,13 +684,13 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
                 } else {
                     listData_LV.clear();
-                    Toast.makeText(activity, "Changing the Price Level is currently not allowed.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "Changing the Price Level is currently not allowed.", Toast.LENGTH_LONG).show();
                 }
                 break;
             }
             case SEC_DISCOUNT: // Discount
             {
-                ProductsHandler handler = new ProductsHandler(activity);
+                ProductsHandler handler = new ProductsHandler(this);
                 List<Discount> discounts = handler.getDiscounts();
                 listData_LV = new ArrayList<>();
                 for (Discount discount : discounts) {
@@ -736,7 +705,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                 break;
             }
         }
-        DialogLVAdapter dlgAdapter = new DialogLVAdapter(activity, type, listData_LV);
+        DialogLVAdapter dlgAdapter = new DialogLVAdapter(this, type, listData_LV);
         dlgListView.setAdapter(dlgAdapter);
         dlg.show();
         final List<String[]> finalListData_LV = listData_LV;
@@ -752,7 +721,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
     }
 
     private void showCMTDlog(View v) {
-        final Dialog dialog = new Dialog(activity, R.style.Theme_TransparentTest);
+        final Dialog dialog = new Dialog(this, R.style.Theme_TransparentTest);
         dialog.setContentView(R.layout.comments_dialog_layout);
         dialog.setCancelable(true);
         EditText cmt = (EditText) dialog.findViewById(R.id.commentEditText);
@@ -817,7 +786,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
     }
 
     private void preValidateSettings() {
-        MyPreferences myPref = new MyPreferences(activity);
+        MyPreferences myPref = new MyPreferences(this);
 
         if (myPref.isGroupReceiptBySku(isToGo)) {//(myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
             List<OrderProduct> orderProducts = OrderProductUtils.getOrderProducts(global.order.getOrderProducts(), prodID);
@@ -910,7 +879,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         else
             orderProduct.setDiscount_is_fixed("0");
         BigDecimal itemTotal;
-        if (OrderingMain_FA.returnItem && OrderingMain_FA.mTransType != Global.TransactionType.RETURN) {
+        if (OrderingMain_FA.returnItem && mTransType != Global.TransactionType.RETURN) {
             itemTotal = total.abs().subtract(Global.getBigDecimalNum(disTotal).abs());
             itemTotal = itemTotal.negate();
         } else {
@@ -918,7 +887,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         }
         orderProduct.setItemTotal(itemTotal.toString());
 //        orderProduct.setItemSubtotal(total.toString());
-        GenerateNewID generator = new GenerateNewID(activity);
+        GenerateNewID generator = new GenerateNewID(this);
         if (!Global.isFromOnHold && Global.lastOrdID.isEmpty()) {
             Global.lastOrdID = generator.getNextID(IdType.ORDER_ID);
 
@@ -933,7 +902,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         for (ProductAttribute attribute : orderProduct.getRequiredProductAttributes()) {
             attribute.setProductId(orderProduct.getOrdprod_id());
         }
-        orderProduct.setAttributesCompleted(OrderingMain_FA.isRequiredAttributeCompleted(activity, Collections.singletonList(orderProduct)));
+        orderProduct.setAttributesCompleted(OrderingMain_FA.isRequiredAttributeCompleted(this, Collections.singletonList(orderProduct)));
         if (isFromAddon) {
             Global.addonTotalAmount = 0;
             StringBuilder sb = new StringBuilder();
@@ -952,7 +921,6 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
         if (OrderingMain_FA.returnItem) {
             OrderingMain_FA.returnItem = !OrderingMain_FA.returnItem;
-            OrderingMain_FA.switchHeaderTitle(OrderingMain_FA.returnItem, "Return");
         }
     }
 

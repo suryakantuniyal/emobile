@@ -13,8 +13,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.SplitedOrder;
-import com.android.emobilepos.models.TimeClock;
+import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.Global;
@@ -55,6 +54,38 @@ public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrint
     private EMSDeviceManager edm;
     private String logicalName;
 
+    static String getPowerStateString(int powerState) {
+        switch (powerState) {
+            case JposConst.JPOS_PS_OFF_OFFLINE:
+                return "OFFLINE";
+
+            case JposConst.JPOS_PS_ONLINE:
+                return "ONLINE";
+
+            default:
+                return "Unknown";
+        }
+    }
+
+    static String getStatusString(int state) {
+        switch (state) {
+            case JposConst.JPOS_S_BUSY:
+                return "JPOS_S_BUSY";
+
+            case JposConst.JPOS_S_CLOSED:
+                return "JPOS_S_CLOSED";
+
+            case JposConst.JPOS_S_ERROR:
+                return "JPOS_S_ERROR";
+
+            case JposConst.JPOS_S_IDLE:
+                return "JPOS_S_IDLE";
+
+            default:
+                return "Unknown State";
+        }
+    }
+
     private void init(Context activity, int paperSize, EMSDeviceManager edm) {
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
@@ -94,10 +125,10 @@ public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrint
         init(activity, paperSize, edm);
         didConnect = connectPrinter();
         if (didConnect) {
-            this.edm.driverDidConnectToDevice(thisInstance, false);
+            this.edm.driverDidConnectToDevice(thisInstance, false, activity);
         } else {
 
-            this.edm.driverDidNotConnectToDevice(thisInstance, null, false);
+            this.edm.driverDidNotConnectToDevice(thisInstance, null, false, activity);
         }
         return didConnect;
     }
@@ -147,63 +178,6 @@ public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrint
     @Override
     public void directIOOccurred(DirectIOEvent directIOEvent) {
 
-    }
-
-    public class processConnectionAsync extends AsyncTask<Integer, String, Boolean> {
-        String msg = "";
-        boolean didConnect = false;
-
-        @Override
-        protected void onPreExecute() {
-            myProgressDialog = new ProgressDialog(activity);
-            myProgressDialog.setMessage(activity.getString(R.string.progress_connecting_printer));
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            myProgressDialog.show();
-        }
-
-        @Override
-        protected Boolean doInBackground(Integer... params) {
-            return connectPrinter();
-//            try {
-//                for (Object entry : bxlConfigLoader.getEntries()) {
-//                    JposEntry jposEntry = (JposEntry) entry;
-//                    bxlConfigLoader.removeEntry(jposEntry.getLogicalName());
-//                }
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//            logicalName = myPref.getPrinterName();
-//            String strProduce;
-//            if (setProductName(logicalName).length() == 0) {
-//                strProduce = logicalName;
-//            } else {
-//                strProduce = setProductName(logicalName);
-//            }
-//
-//            try {
-//                bxlConfigLoader.addEntry(myPref.getPrinterName(),
-//                        BXLConfigLoader.DEVICE_CATEGORY_POS_PRINTER,
-//                        strProduce,
-//                        BXLConfigLoader.DEVICE_BUS_BLUETOOTH, myPref.getPrinterMACAddress());
-//
-//                bxlConfigLoader.saveFile();
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//                return false;
-//            }
-//            return true;
-        }
-
-        @Override
-        protected void onPostExecute(Boolean didConnect) {
-            myProgressDialog.dismiss();
-            if (didConnect) {
-                edm.driverDidConnectToDevice(thisInstance, true);
-            } else {
-                edm.driverDidNotConnectToDevice(thisInstance, msg, true);
-            }
-        }
     }
 
     private String getProductName() {
@@ -366,11 +340,6 @@ public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrint
         return false;
     }
 
-    @Override
-    public void toggleBarcodeReader() {
-
-    }
-
 //    @Override
 //    public void printReceiptPreview(View view) {
 ////        setPaperWidth(LINE_WIDTH);
@@ -386,7 +355,12 @@ public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrint
 //    }
 
     @Override
-    public void printReceiptPreview(SplitedOrder splitedOrder) {
+    public void toggleBarcodeReader() {
+
+    }
+
+    @Override
+    public void printReceiptPreview(SplittedOrder splitedOrder) {
         try {
             setPaperWidth(LINE_WIDTH);
 //            Bitmap bitmap = loadBitmapFromView(view);
@@ -465,35 +439,60 @@ public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
     }
 
-    static String getPowerStateString(int powerState) {
-        switch (powerState) {
-            case JposConst.JPOS_PS_OFF_OFFLINE:
-                return "OFFLINE";
+    public class processConnectionAsync extends AsyncTask<Integer, String, Boolean> {
+        String msg = "";
+        boolean didConnect = false;
 
-            case JposConst.JPOS_PS_ONLINE:
-                return "ONLINE";
-
-            default:
-                return "Unknown";
+        @Override
+        protected void onPreExecute() {
+            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog.setMessage(activity.getString(R.string.progress_connecting_printer));
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setCancelable(false);
+            myProgressDialog.show();
         }
-    }
 
-    static String getStatusString(int state) {
-        switch (state) {
-            case JposConst.JPOS_S_BUSY:
-                return "JPOS_S_BUSY";
+        @Override
+        protected Boolean doInBackground(Integer... params) {
+            return connectPrinter();
+//            try {
+//                for (Object entry : bxlConfigLoader.getEntries()) {
+//                    JposEntry jposEntry = (JposEntry) entry;
+//                    bxlConfigLoader.removeEntry(jposEntry.getLogicalName());
+//                }
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//            logicalName = myPref.getPrinterName();
+//            String strProduce;
+//            if (setProductName(logicalName).length() == 0) {
+//                strProduce = logicalName;
+//            } else {
+//                strProduce = setProductName(logicalName);
+//            }
+//
+//            try {
+//                bxlConfigLoader.addEntry(myPref.getPrinterName(),
+//                        BXLConfigLoader.DEVICE_CATEGORY_POS_PRINTER,
+//                        strProduce,
+//                        BXLConfigLoader.DEVICE_BUS_BLUETOOTH, myPref.getPrinterMACAddress());
+//
+//                bxlConfigLoader.saveFile();
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//                return false;
+//            }
+//            return true;
+        }
 
-            case JposConst.JPOS_S_CLOSED:
-                return "JPOS_S_CLOSED";
-
-            case JposConst.JPOS_S_ERROR:
-                return "JPOS_S_ERROR";
-
-            case JposConst.JPOS_S_IDLE:
-                return "JPOS_S_IDLE";
-
-            default:
-                return "Unknown State";
+        @Override
+        protected void onPostExecute(Boolean didConnect) {
+            myProgressDialog.dismiss();
+            if (didConnect) {
+                edm.driverDidConnectToDevice(thisInstance, true, activity);
+            } else {
+                edm.driverDidNotConnectToDevice(thisInstance, msg, true, activity);
+            }
         }
     }
 }

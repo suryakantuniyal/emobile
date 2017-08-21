@@ -1,6 +1,5 @@
 package com.android.emobilepos.payment;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -67,7 +66,6 @@ import util.json.JsonUtils;
 public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements OnClickListener {
     public static final int REOPEN_PROCESS_GENIUS_SCREEN = 548;
     private String paymethod_id;
-    private Activity activity;
     private Bundle extras;
 
     private EditText invJobView, amountView;
@@ -84,7 +82,6 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.process_genius_layout);
-        activity = this;
         global = (Global) this.getApplication();
         extras = this.getIntent().getExtras();
         invJobView = (EditText) findViewById(R.id.geniusJobIDView);
@@ -96,7 +93,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
 //		Button btnExact = (Button)findViewById(R.id.btnExact);
 //		btnExact.setOnClickListener(this);
 
-        myPref = new MyPreferences(activity);
+        myPref = new MyPreferences(this);
         geniusIP = myPref.getGeniusIP();
 
         boolean isFromMainMenu = extras.getBoolean("isFromMainMenu");
@@ -129,7 +126,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
             }
         });
         hasBeenCreated = true;
-        if(extras.containsKey("isReopen")){
+        if (extras.containsKey("isReopen")) {
             finish();
         }
         if (extras.containsKey("LocalGeniusResponse")) {
@@ -149,7 +146,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
         Intent result = new Intent();
         result.putExtras(getIntent());
         if (response.getStatus().equalsIgnoreCase("DECLINED_DUPLICATE")) {
-            Global.showPrompt(activity, R.string.dlog_title_error, response.getStatus());
+            Global.showPrompt(this, R.string.dlog_title_error, response.getStatus());
         } else if (response.getStatus().equalsIgnoreCase("APPROVED")) {
             setResult(-2, result);
             finish();
@@ -202,7 +199,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
 
 
     private void processPayment() {
-        payment = new Payment(activity);
+        payment = new Payment(this);
 
         if (!this.extras.getBoolean("histinvoices"))
             payment.setJob_id(invJobView.getText().toString());
@@ -225,7 +222,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
         payment.setOriginalTotalAmount("0");
 
 
-        EMSPayGate_Default payGate = new EMSPayGate_Default(activity, payment);
+        EMSPayGate_Default payGate = new EMSPayGate_Default(this, payment);
         String generatedURL;
 
         if (isRefund) {
@@ -242,7 +239,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.processGeniusButton:
-                Toast.makeText(activity, "Processing Genius", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Processing Genius", Toast.LENGTH_LONG).show();
                 processPayment();
                 break;
             case R.id.btnExact:
@@ -272,7 +269,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
 
         @Override
         protected void onPreExecute() {
-            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog = new ProgressDialog(ProcessGenius_FA.this);
             myProgressDialog.setMessage(getString(R.string.processing_payment_msg));
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);
@@ -289,9 +286,9 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            Post post = new Post(activity);
-                            MyPreferences myPref = new MyPreferences(activity);
-                            String json = post.postData(11, "http://" + myPref.getGeniusIP() + ":8080/v1/pos?Action=InitiateKeyedSale&Format=XML");
+                            Post post = new Post(ProcessGenius_FA.this);
+                            MyPreferences myPref = new MyPreferences(ProcessGenius_FA.this);
+                            post.postData(11, "http://" + myPref.getGeniusIP() + ":8080/v1/pos?Action=InitiateKeyedSale&Format=XML");
                         }
                     }).start();
                 }
@@ -304,12 +301,12 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
             GeniusResponse geniusResponse = null;
 //            if (pingGeniusDevice()) {
             geniusConnected = true;
-            Post post = new Post(activity);
+            Post post = new Post(ProcessGenius_FA.this);
             SAXParserFactory spf = SAXParserFactory.newInstance();
-            SAXProcessGeniusHandler handler = new SAXProcessGeniusHandler(activity);
+            SAXProcessGeniusHandler handler = new SAXProcessGeniusHandler(ProcessGenius_FA.this);
 
             try {
-                String xml = post.postData(13,  params[0]);
+                String xml = post.postData(13, params[0]);
                 InputSource inSource = new InputSource(new StringReader(xml));
 
                 SAXParser sp = spf.newSAXParser();
@@ -320,8 +317,8 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
 
                 if (geniusTransportToken != null && geniusTransportToken.getStatusCode().equalsIgnoreCase("APPROVED")) {// && getData("statusCode", 0, 0).equals("APPROVED")) {
                     boProcessed = true;
-                    MyPreferences myPref = new MyPreferences(activity);
-                    String json = post.postData(11,  "http://" + myPref.getGeniusIP() + ":8080/v2/pos?TransportKey=" + geniusTransportToken.getTransportkey() + "&Format=JSON");
+                    MyPreferences myPref = new MyPreferences(ProcessGenius_FA.this);
+                    String json = post.postData(11, "http://" + myPref.getGeniusIP() + ":8080/v2/pos?TransportKey=" + geniusTransportToken.getTransportkey() + "&Format=JSON");
                     geniusResponse = gson.fromJson(json, GeniusResponse.class);
                 } else {
                     geniusResponse = new GeniusResponse();
@@ -346,9 +343,9 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
             }
 
             if (!geniusConnected) {
-                Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.failed_genius_connectivity));
+                Global.showPrompt(ProcessGenius_FA.this, R.string.dlog_title_error, getString(R.string.failed_genius_connectivity));
             } else if (!boProcessed) {
-                Global.showPrompt(activity, R.string.dlog_title_error, response.getErrorMessage());
+                Global.showPrompt(ProcessGenius_FA.this, R.string.dlog_title_error, response.getErrorMessage());
             } else if (response != null && (response.getStatus().equalsIgnoreCase("APPROVED") ||
                     response.getStatus().equalsIgnoreCase("DECLINED"))) {
                 payment.setPay_transid(response.getToken());
@@ -384,7 +381,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                 payment.setProcessed("1");
                 payment.setPaymethod_id(PayMethodsHandler.getPayMethodID(payMethodDictionary(response.getPaymentType())));
                 payment.setEmvContainer(new EMVContainer(response));
-                PaymentsHandler payHandler = new PaymentsHandler(activity);
+                PaymentsHandler payHandler = new PaymentsHandler(ProcessGenius_FA.this);
                 if (response.getStatus().equalsIgnoreCase("APPROVED")) {
                     payHandler.insert(payment);
                 } else {
@@ -443,13 +440,13 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                     finish();
                     startActivity(i);
                 } else {
-                    Global.showPrompt(activity, R.string.dlog_title_error, response != null ? response.getStatus() : getString(R.string.failed_genius_connectivity));
+                    Global.showPrompt(ProcessGenius_FA.this, R.string.dlog_title_error, response != null ? response.getStatus() : getString(R.string.failed_genius_connectivity));
                 }
             }
         }
 
         private void showPrintDlg(boolean isRetry) {
-            final Dialog dlog = new Dialog(activity, R.style.Theme_TransparentTest);
+            final Dialog dlog = new Dialog(ProcessGenius_FA.this, R.style.Theme_TransparentTest);
             dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             dlog.setCancelable(false);
             dlog.setContentView(R.layout.dlog_btn_left_right_layout);
@@ -569,7 +566,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                 }
 
                 OutputStream outStream;
-                MyPreferences myPref = new MyPreferences(activity);
+                MyPreferences myPref = new MyPreferences(ProcessGenius_FA.this);
                 File file = new File(myPref.getCacheDir(), "test.png");
 
                 try {
@@ -602,7 +599,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
 
             @Override
             protected void onPreExecute() {
-                myProgressDialog = new ProgressDialog(activity);
+                myProgressDialog = new ProgressDialog(ProcessGenius_FA.this);
                 myProgressDialog.setMessage("Printing...");
                 myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                 myProgressDialog.setCancelable(false);

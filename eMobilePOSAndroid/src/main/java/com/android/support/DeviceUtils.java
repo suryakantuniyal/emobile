@@ -77,7 +77,7 @@ public class DeviceUtils {
                 edm = new EMSDeviceManager();
                 _portName = myPref.getSwiperMACAddress();
                 _peripheralName = Global.getPeripheralName(myPref.getSwiperType());
-                Global.btSwiper = edm.getManager();
+                Global.btSwiper = edm;
                 if (_peripheralName.equalsIgnoreCase(Global.getPeripheralName(Global.NOMAD))) {
                     final String final_peripheralName = _peripheralName;
                     activity.runOnUiThread(new Runnable() {

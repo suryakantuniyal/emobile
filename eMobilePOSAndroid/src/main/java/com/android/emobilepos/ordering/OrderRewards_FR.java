@@ -31,11 +31,10 @@ import java.math.BigDecimal;
 
 public class OrderRewards_FR extends Fragment implements OnClickListener {
 
-    private static OrderRewards_FR myFrag;
-    private static EditText fieldRewardBalance;
-    private static TextView subTotalValue;
-    private static String balance = "";
-    private static String subtotal = "0";
+    private EditText fieldRewardBalance;
+    private TextView subTotalValue;
+    private String balance = "";
+    private String subtotal = "0";
     private SwiperRewardCallback callBackRewardSwiper;
     private ImageButton btnTap;
     private TextView tapTxtLabel;
@@ -46,22 +45,21 @@ public class OrderRewards_FR extends Fragment implements OnClickListener {
         Bundle args = new Bundle();
         args.putInt("val", val);
         frag.setArguments(args);
-        myFrag = frag;
         return frag;
     }
 
-    public static OrderRewards_FR getFrag() {
-        return myFrag;
-    }
+//    public static OrderRewards_FR getFrag() {
+//        return myFrag;
+//    }
 
-    public static void setRewardBalance(String value) {
+    public void setRewardBalance(String value) {
         balance = value;
         if (fieldRewardBalance != null)
             fieldRewardBalance.setText(balance);
         Global.rewardCardInfo.setOriginalTotalAmount(value);
     }
 
-    public static void setRewardSubTotal(String value) {
+    public void setRewardSubTotal(String value) {
         subtotal = value;
         if (subTotalValue != null) {
             Global.rewardAccumulableSubtotal = new BigDecimal(subtotal);
@@ -79,7 +77,6 @@ public class OrderRewards_FR extends Fragment implements OnClickListener {
         View view = inflater.inflate(R.layout.order_rewards_layout, container, false);
 
         callBackRewardSwiper = (SwiperRewardCallback) getActivity();
-        myFrag = this;
         btnTap = (ImageButton) view.findViewById(R.id.btnTapReward);
         btnTap.setOnClickListener(this);
 
@@ -91,18 +88,22 @@ public class OrderRewards_FR extends Fragment implements OnClickListener {
 
         subTotalValue = (TextView) view.findViewById(R.id.subtotalValue);
 
-        if (savedInstanceState == null && OrderTotalDetails_FR.getFrag() != null) {
-            Global global = (Global) getActivity().getApplication();
-            OrderTotalDetails_FR.getFrag().reCalculate(global.order.getOrderProducts());
-        }
+//        if (savedInstanceState == null && OrderTotalDetails_FR.getFrag() != null) {
+//            Global global = (Global) getActivity().getApplication();
+//            OrderTotalDetails_FR.getFrag().reCalculate(global.order.getOrderProducts());
+//        }
 
-        if (OrderingMain_FA.rewardsWasRead) {
+        if (getOrderingMainFa().rewardsWasRead) {
             hideTapButton();
         }
 //        else {
 //            callBackRewardSwiper.prefetchRewardsBalance();
 //        }
         return view;
+    }
+
+    private OrderingMain_FA getOrderingMainFa() {
+        return (OrderingMain_FA) getActivity();
     }
 
     @Override
@@ -210,14 +211,14 @@ public class OrderRewards_FR extends Fragment implements OnClickListener {
             OrderingMain_FA mainFa = (OrderingMain_FA) getActivity();
             if (result.getResponseStatus() == PaymentTask.Response.ResponseStatus.OK) {
 //                Global.showPrompt(getActivity(), R.string.rewards, result.getMessage());
-                Toast.makeText(getActivity(),result.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), result.getMessage(), Toast.LENGTH_LONG).show();
                 Global global = (Global) getActivity().getApplication();
                 BigDecimal rewardDiscount = mainFa.getLeftFragment()
                         .applyRewardDiscount(result.getApprovedAmount(), global.order.getOrderProducts());
 
-                if (OrderTotalDetails_FR.getFrag() != null) {
-                    OrderTotalDetails_FR.getFrag().reCalculate(global.order.getOrderProducts());
-                }
+//                if (OrderTotalDetails_FR.getFrag() != null) {
+//                    OrderTotalDetails_FR.getFrag().reCalculate(global.order.getOrderProducts());
+//                }
                 btnPayRewards.setClickable(false);
                 btnPayRewards.setEnabled(false);
                 payment.setPay_issync("1");

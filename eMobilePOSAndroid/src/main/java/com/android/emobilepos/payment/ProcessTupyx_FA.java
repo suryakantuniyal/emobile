@@ -59,7 +59,6 @@ public class ProcessTupyx_FA extends FragmentActivity implements OnClickListener
     private Payment payment;
     private Global global;
     private boolean hasBeenCreated = false;
-    private NumberUtils numberUtils = new NumberUtils();
     private AssignEmployee assignEmployee;
 
 

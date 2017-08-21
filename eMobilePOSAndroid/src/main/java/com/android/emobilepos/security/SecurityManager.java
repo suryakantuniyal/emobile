@@ -21,8 +21,8 @@ public class SecurityManager {
     public static boolean hasPermissions(Context context, SecurityAction action) {
         MyPreferences preferences = new MyPreferences(context);
         if (preferences.isUseClerks()) {
-            List<EmployeePersmission> persmissions = EmployeePermissionDAO.getEmployeePersmissions(Integer.parseInt(preferences.getClerkID()), action.code);
-            return persmissions != null && !persmissions.isEmpty();
+            List<EmployeePersmission> permissions = EmployeePermissionDAO.getEmployeePersmissions(Integer.parseInt(preferences.getClerkID()), action.code);
+            return permissions != null && !permissions.isEmpty();
         } else
             return true;
     }

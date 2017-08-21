@@ -39,7 +39,6 @@ import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.ClerkDAO;
 import com.android.dao.EmobilePOSRealmMigration;
 import com.android.dao.RealmModule;
-import com.android.database.DBManager;
 import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.R;
@@ -211,6 +210,7 @@ public class Global extends MultiDexApplication {
     public final static int FROM_REGISTRATION_ACTIVITY = 110;
     public final static int FROM_SYNCH_ACTIVITY = 111;
     public final static int FROM_ORDER_ATTRIBUTES_ACTIVITY = 112;
+    public final static int FROM_CUSTOMER_SELECTION_ACTIVITY = 113;
     public final static int BLUEBAMBOO = 0;
     public final static int BLUESTAR = 1;
     public final static String TIME_OUT = "1";
@@ -306,7 +306,7 @@ public class Global extends MultiDexApplication {
             }
         }
     };
-    private static com.android.support.LocationServices locationServices;
+    private com.android.support.LocationServices locationServices;
     private static Dialog popDlog;
     private final long MAX_ACTIVITY_TRANSITION_TIME_MS = 5000;
     public String encodedImage = "";
@@ -419,23 +419,23 @@ public class Global extends MultiDexApplication {
     }
 
     public static Location getCurrLocation(Context activity, boolean reload) {
-
-        if (locationServices == null) {
-            locationServices = new com.android.support.LocationServices(activity, new GoogleApiClient.ConnectionCallbacks() {
+        final Global global = (Global) activity.getApplicationContext();
+        if (global.locationServices == null) {
+            global.locationServices = new com.android.support.LocationServices(activity, new GoogleApiClient.ConnectionCallbacks() {
                 @Override
                 public void onConnected(@Nullable Bundle bundle) {
                     Location lastLocation = com.google.android.gms.location.LocationServices.FusedLocationApi.getLastLocation(
-                            locationServices.mGoogleApiClient);
+                            global.locationServices.mGoogleApiClient);
                     if (lastLocation == null) {
                         LocationServices.mLastLocation = new Location("");
                     } else {
                         LocationServices.mLastLocation = lastLocation;
                     }
-                    locationServices.disconnect();
-                    synchronized (locationServices)
+                    global.locationServices.disconnect();
+                    synchronized (global.locationServices)
 
                     {
-                        locationServices.notifyAll();
+                        global.locationServices.notifyAll();
                     }
                 }
 
@@ -452,13 +452,13 @@ public class Global extends MultiDexApplication {
 
         }
 
-        synchronized (locationServices)
+        synchronized (global.locationServices)
 
         {
             if (LocationServices.mLastLocation == null || reload) {
-                locationServices.connect();
+                global.locationServices.connect();
                 try {
-                    locationServices.wait(15000);
+                    global.locationServices.wait(15000);
                 } catch (InterruptedException e) {
                     Crashlytics.logException(e);
                 }

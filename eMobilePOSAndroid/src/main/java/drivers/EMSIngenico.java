@@ -13,8 +13,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.SplitedOrder;
-import com.android.emobilepos.models.TimeClock;
+import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.CardParser;
 import com.android.support.ConsignmentTransaction;
@@ -52,29 +51,45 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
     private EventHandlerInterface sdkEventHandler;
     private boolean barcodeReaderLoaded = false;
     private boolean mIsDebit = false;
+    // displays data from card swiping
+    private Runnable doUpdateViews = new Runnable() {
+        public void run() {
+            try {
+                if (callBack != null) {
 
-    public enum EncryptionType {
-        NONE(0), VOLTAGE_TEP2(5), DUKPUT(11), EPS(3);
+                    callBack.cardWasReadSuccessfully(true, cardManager);
 
-        private int code;
-
-        EncryptionType(int code) {
-            this.code = code;
-        }
-
-        public static EncryptionType getByCode(int code) {
-            switch (code) {
-                case 5:
-                    return VOLTAGE_TEP2;
-                case 11:
-                    return DUKPUT;
-                case 3:
-                    return EPS;
-                default:
-                    return NONE;
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
         }
-    }
+    };
+    private Runnable doUpdateDidConnect = new Runnable() {
+        public void run() {
+            try {
+                if (callBack != null) {
+
+                    callBack.readerConnectedSuccessfully(true);
+                }
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
+    private String scannedData = "";
+    private Runnable runnableScannedData = new Runnable() {
+        public void run() {
+            try {
+                if (_scannerCallBack != null)
+                    _scannerCallBack.scannerWasRead(scannedData);
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
 
     @Override
     public void connect(Context activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
@@ -88,7 +103,6 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
         sdkEventHandler = this;
         new processConnectionAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, 0);
     }
-
 
     @Override
     public boolean autoConnect(Activity _activity, EMSDeviceManager edm, int paperSize, boolean isPOSPrinter,
@@ -109,59 +123,14 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
                 break;
         }
         if (didConnect) {
-            edm.driverDidConnectToDevice(thisInstance, false);
+            edm.driverDidConnectToDevice(thisInstance, false, _activity);
         } else {
 
-            edm.driverDidNotConnectToDevice(thisInstance, "", false);
+            edm.driverDidNotConnectToDevice(thisInstance, "", false, _activity);
         }
 
         return didConnect;
     }
-
-    public class processConnectionAsync extends AsyncTask<Integer, String, String> {
-
-        String msg = activity.getString(R.string.fail_to_connect);
-        boolean didConnect = false;
-
-        @Override
-        protected void onPreExecute() {
-            myProgressDialog = new ProgressDialog(activity);
-            myProgressDialog.setMessage(activity.getString(R.string.connecting_bluetooth_device));
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            myProgressDialog.show();
-
-        }
-
-        @Override
-        protected String doInBackground(Integer... params) {
-            ERROR_ID error_id = initRBA();
-            switch (error_id) {
-                case RESULT_SUCCESS:
-                case RESULT_ERROR_ALREADY_CONNECTED:
-                    didConnect = true;
-                    break;
-                default:
-                    msg = getString(R.string.fail_to_connect) + ": \nError - " + error_id;
-                    break;
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String unused) {
-            myProgressDialog.dismiss();
-
-            if (didConnect) {
-                edm.driverDidConnectToDevice(thisInstance, true);
-            } else {
-
-                edm.driverDidNotConnectToDevice(thisInstance, msg, true);
-            }
-
-        }
-    }
-
 
     private ERROR_ID initRBA() {
         RBA_API.Initialize();
@@ -207,7 +176,6 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
     public boolean printPaymentDetails(String payID, int isFromMainMenu, boolean isReprint, EMVContainer emvContainer) {
         return false;
     }
-
 
     @Override
     public boolean printBalanceInquiry(HashMap<String, String> values) {
@@ -296,49 +264,6 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
         }).start();
     }
 
-    // displays data from card swiping
-    private Runnable doUpdateViews = new Runnable() {
-        public void run() {
-            try {
-                if (callBack != null) {
-
-                    callBack.cardWasReadSuccessfully(true, cardManager);
-
-                }
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-    };
-
-    private Runnable doUpdateDidConnect = new Runnable() {
-        public void run() {
-            try {
-                if (callBack != null) {
-
-                    callBack.readerConnectedSuccessfully(true);
-                }
-
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-    };
-
-    private String scannedData = "";
-
-    private Runnable runnableScannedData = new Runnable() {
-        public void run() {
-            try {
-                if (_scannerCallBack != null)
-                    _scannerCallBack.scannerWasRead(scannedData);
-
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-    };
-
     @Override
     public void loadScanner(EMSCallBack _callBack) {
         _scannerCallBack = _callBack;
@@ -396,13 +321,8 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
 
     }
 
-//    @Override
-//    public void printReceiptPreview(View view) {
-//
-//    }
-
     @Override
-    public void printReceiptPreview(SplitedOrder splitedOrder) {
+    public void printReceiptPreview(SplittedOrder splitedOrder) {
 
     }
 
@@ -410,6 +330,11 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
     public void salePayment(Payment payment) {
 
     }
+
+//    @Override
+//    public void printReceiptPreview(View view) {
+//
+//    }
 
     @Override
     public void saleReversal(Payment payment, String originalTransactionId) {
@@ -730,6 +655,73 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
     @Override
     public void printClockInOut(List<ClockInOut> clockInOuts, String clerkID) {
 
+    }
+
+    public enum EncryptionType {
+        NONE(0), VOLTAGE_TEP2(5), DUKPUT(11), EPS(3);
+
+        private int code;
+
+        EncryptionType(int code) {
+            this.code = code;
+        }
+
+        public static EncryptionType getByCode(int code) {
+            switch (code) {
+                case 5:
+                    return VOLTAGE_TEP2;
+                case 11:
+                    return DUKPUT;
+                case 3:
+                    return EPS;
+                default:
+                    return NONE;
+            }
+        }
+    }
+
+    public class processConnectionAsync extends AsyncTask<Integer, String, String> {
+
+        String msg = activity.getString(R.string.fail_to_connect);
+        boolean didConnect = false;
+
+        @Override
+        protected void onPreExecute() {
+            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog.setMessage(activity.getString(R.string.connecting_bluetooth_device));
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setCancelable(false);
+            myProgressDialog.show();
+
+        }
+
+        @Override
+        protected String doInBackground(Integer... params) {
+            ERROR_ID error_id = initRBA();
+            switch (error_id) {
+                case RESULT_SUCCESS:
+                case RESULT_ERROR_ALREADY_CONNECTED:
+                    didConnect = true;
+                    break;
+                default:
+                    msg = getString(R.string.fail_to_connect) + ": \nError - " + error_id;
+                    break;
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String unused) {
+            myProgressDialog.dismiss();
+
+            if (didConnect) {
+                edm.driverDidConnectToDevice(thisInstance, true, activity);
+            } else {
+
+                edm.driverDidNotConnectToDevice(thisInstance, msg, true, activity);
+            }
+
+        }
     }
 
 }

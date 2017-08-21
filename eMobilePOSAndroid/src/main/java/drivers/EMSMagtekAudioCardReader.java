@@ -16,8 +16,7 @@ import android.widget.Toast;
 import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.SplitedOrder;
-import com.android.emobilepos.models.TimeClock;
+import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
 import com.android.support.ConsignmentTransaction;
@@ -25,6 +24,7 @@ import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.crashlytics.android.Crashlytics;
 import com.magtek.mobile.android.scra.MTSCRAException;
 import com.magtek.mobile.android.scra.MagTekSCRA;
 
@@ -49,11 +49,36 @@ public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDevi
     private EMSDeviceDriver thisInstance;
     private MagTekSCRA mMTSCRA;
     private EMSCallBack callBack;
+    // displays data from card swiping
+    private Runnable doUpdateViews = new Runnable() {
+        public void run() {
+            try {
+                if (callBack != null) {
+                    //Toast.makeText(activity, "card was swiper calling callback..", Toast.LENGTH_LONG).show();
+                    callBack.cardWasReadSuccessfully(true, cardManager);
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
+    private Runnable doUpdateDidConnect = new Runnable() {
+        public void run() {
+            try {
+                if (callBack != null) {
+                    //Toast.makeText(activity, "update did connected..", Toast.LENGTH_LONG).show();
+                    callBack.readerConnectedSuccessfully(true);
+                }
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
 
     public EMSMagtekAudioCardReader() {
 
     }
-
 
     public EMSMagtekAudioCardReader(Activity activity) {
         this.activity = activity;
@@ -86,7 +111,6 @@ public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDevi
         }
     }
 
-
     private void openDevice() {
         if (mMTSCRA.getDeviceType() == MagTekSCRA.DEVICE_TYPE_AUDIO) {
             Thread tSetupAudioParams = new Thread() {
@@ -95,7 +119,7 @@ public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDevi
                         if (setupAudioParameters().equals("OK"))
                             mMTSCRA.openDevice();
                     } catch (Exception ex) {
-
+                        Crashlytics.logException(ex);
                     }
                 }
             };
@@ -107,11 +131,9 @@ public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDevi
         }
     }
 
-
     public void closeDevice() {
         mMTSCRA.closeDevice();
     }
-
 
     private String setupAudioParameters() throws MTSCRAException {
         //mStringLocalConfig="";
@@ -132,7 +154,6 @@ public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDevi
         }
         return strResult;
     }
-
 
     private void setAudioConfigManual() throws MTSCRAException {
         String model = android.os.Build.MODEL.toUpperCase(Locale.getDefault());
@@ -182,9 +203,300 @@ public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDevi
 
     }
 
-
     private void debugMsg(String lpstrMessage) {
         Log.i("MagTekSCRA.Demo:", lpstrMessage);
+
+    }
+
+    private void retrieveCardInfo() {
+        StringBuilder sb = new StringBuilder();
+
+        if (mMTSCRA.getResponseData() != null) {
+            cardManager.setCardOwnerName(mMTSCRA.getCardName());
+            if (mMTSCRA.getCardExpDate() != null && !mMTSCRA.getCardExpDate().isEmpty()) {
+                String year = mMTSCRA.getCardExpDate().substring(0, 2);
+                String month = mMTSCRA.getCardExpDate().substring(2, 4);
+                cardManager.setCardExpYear(year);
+                cardManager.setCardExpMonth(month);
+            }
+            cardManager.setCardType(ProcessCreditCard_FA.getCardType(mMTSCRA.getCardIIN()));
+            cardManager.setCardLast4(mMTSCRA.getCardLast4());
+            cardManager.setEncryptedBlock(sb.append(mMTSCRA.getTrack1()).append(mMTSCRA.getTrack2()).toString());
+            cardManager.setEncryptedTrack1(mMTSCRA.getTrack1());
+            cardManager.setEncryptedTrack2(mMTSCRA.getTrack2());
+            cardManager.setCardNumAESEncrypted(encrypt.encryptWithAES(mMTSCRA.getTrack2Masked().split("=")[0].replace(";", "")));
+            if (!Global.isEncryptSwipe)
+                cardManager.setCardNumUnencrypted(mMTSCRA.getTrack2Masked().split("=")[0].replace(";", "").replace("?", ""));
+            if (mMTSCRA.getTrack1Masked() != null && !mMTSCRA.getTrack1Masked().isEmpty())
+                cardManager.setEncryptedAESTrack1(encrypt.encryptWithAES(mMTSCRA.getTrack1Masked()));
+            if (mMTSCRA.getTrack2Masked() != null && !mMTSCRA.getTrack2Masked().isEmpty())
+                cardManager.setEncryptedAESTrack2(encrypt.encryptWithAES(mMTSCRA.getTrack2Masked()));
+            cardManager.setDeviceSerialNumber(mMTSCRA.getDeviceSerial());
+            cardManager.setMagnePrint(mMTSCRA.getMagnePrint());
+            cardManager.setMagnePrintStatus(mMTSCRA.getMagnePrintStatus());
+            cardManager.setTrackDataKSN(mMTSCRA.getKSN());
+        }
+    }
+
+    private void maxVolume() {
+        mAudioMgr.setStreamVolume(AudioManager.STREAM_MUSIC, mAudioMgr.getStreamMaxVolume(AudioManager.STREAM_MUSIC), AudioManager.FLAG_SHOW_UI);
+
+
+    }
+
+    @Override
+    public void connect(Context activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
+        this.edm = edm;
+        this.activity = activity;
+        thisInstance = this;
+        mMTSCRA = new MagTekSCRA(new Handler(new SCRAHandlerCallback()));
+        mAudioMgr = (AudioManager) activity.getSystemService(Context.AUDIO_SERVICE);
+        cardManager = new CreditCardInfo();
+        encrypt = new Encrypt(activity);
+        new connectAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    @Override
+    public boolean autoConnect(Activity _activity, EMSDeviceManager edm, int paperSize, boolean isPOSPrinter, final String portName, String portNumber) {
+        this.edm = edm;
+
+        thisInstance = this;
+        boolean didConnect = false;
+        this.activity = _activity;
+
+        ((Activity) activity).runOnUiThread(new Runnable() {
+            public void run() {
+                mMTSCRA = new MagTekSCRA(new Handler(new SCRAHandlerCallback()));
+
+            }
+        });
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException ignored) {
+        }
+        mAudioMgr = (AudioManager) activity.getSystemService(Context.AUDIO_SERVICE);
+        cardManager = new CreditCardInfo();
+        encrypt = new Encrypt(activity);
+        if (mMTSCRA != null) {
+            mMTSCRA.setDeviceType(MagTekSCRA.DEVICE_TYPE_BLUETOOTH);
+            mMTSCRA.setDeviceID(portName);
+            openDevice();
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException ignored) {
+            }
+            didConnect = mMTSCRA.isDeviceConnected();
+
+            if (didConnect)
+                mMTSCRA.closeDevice();
+
+
+        }
+        if (didConnect) {
+            this.edm.driverDidConnectToDevice(thisInstance, false, _activity);
+        } else {
+
+            this.edm.driverDidNotConnectToDevice(thisInstance, null, false, _activity);
+        }
+
+        return didConnect;
+    }
+
+    @Override
+    public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
+        return true;
+    }
+
+    @Override
+    public boolean printTransaction(String ordID, Global.OrderType type, boolean isFromHistory, boolean fromOnHold) {
+        return true;
+    }
+
+    @Override
+    public boolean printPaymentDetails(String payID, int isFromMainMenu, boolean isReprint, EMVContainer emvContainer) {
+        return true;
+    }
+
+    @Override
+    public boolean printBalanceInquiry(HashMap<String, String> values) {
+        return false;
+    }
+
+    @Override
+    public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSignature) {
+        return true;
+    }
+
+    @Override
+    public boolean printConsignmentPickup(List<ConsignmentTransaction> myConsignment, String encodedSignature) {
+        return true;
+    }
+
+    @Override
+    public boolean printConsignmentHistory(HashMap<String, String> map, Cursor c, boolean isPickup) {
+        return true;
+    }
+
+    @Override
+    public String printStationPrinter(List<Orders> orderProducts, String ordID, boolean cutPaper, boolean printHeader) {
+        return "";
+    }
+
+    @Override
+    public boolean printOpenInvoices(String invID) {
+        return true;
+    }
+
+    @Override
+    public boolean printOnHold(Object onHold) {
+        return true;
+    }
+
+    @Override
+    public void setBitmap(Bitmap bmp) {
+
+    }
+
+    @Override
+    public void playSound() {
+
+    }
+
+    @Override
+    public void printEndOfDayReport(String curDate, String clerk_id, boolean printDetails) {
+//		printEndOfDayReportReceipt(curDate, LINE_WIDTH, printDetails);
+    }
+
+    @Override
+    public void printShiftDetailsReport(String shiftID) {
+    }
+
+    @Override
+    public boolean printReport(String curDate) {
+        return true;
+    }
+
+    @Override
+    public void registerAll() {
+        this.registerPrinter();
+    }
+
+    @Override
+    public void registerPrinter() {
+        edm.setCurrentDevice(this);
+    }
+
+    @Override
+    public void unregisterPrinter() {
+        edm.setCurrentDevice(null);
+    }
+
+    @Override
+    public void loadCardReader(EMSCallBack _callBack, boolean isDebitCard) {
+        callBack = _callBack;
+        if (handler == null)
+            handler = new Handler();
+        if (mMTSCRA != null) {
+            new Thread(new Runnable() {
+                public void run() {
+                    mMTSCRA.openDevice();
+                }
+            }).start();
+
+        }
+
+    }
+
+    @Override
+    public void releaseCardReader() {
+        callBack = null;
+        mMTSCRA.closeDevice();
+    }
+
+    @Override
+    public void openCashDrawer() {
+    }
+
+    @Override
+    public void printHeader() {
+    }
+
+    @Override
+    public void printFooter() {
+    }
+
+    @Override
+    public void loadScanner(EMSCallBack _callBack) {
+    }
+
+    @Override
+    public boolean isUSBConnected() {
+        return false;
+    }
+
+    @Override
+    public void toggleBarcodeReader() {
+
+    }
+
+    @Override
+    public void printReceiptPreview(SplittedOrder splitedOrder) {
+
+    }
+
+    @Override
+    public void salePayment(Payment payment) {
+
+    }
+
+//    @Override
+//    public void printReceiptPreview(View view) {
+//
+//    }
+
+    @Override
+    public void saleReversal(Payment payment, String originalTransactionId) {
+
+    }
+
+    @Override
+    public void refund(Payment payment) {
+
+    }
+
+    @Override
+    public void refundReversal(Payment payment, String originalTransactionId) {
+
+    }
+
+    @Override
+    public void printEMVReceipt(String text) {
+
+    }
+
+    @Override
+    public void sendEmailLog() {
+
+    }
+
+    @Override
+    public void updateFirmware() {
+
+    }
+
+    @Override
+    public void submitSignature() {
+
+    }
+
+    @Override
+    public boolean isConnected() {
+        return true;
+    }
+
+    @Override
+    public void printClockInOut(List<ClockInOut> timeClocks, String clerkID) {
 
     }
 
@@ -234,7 +546,7 @@ public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDevi
                 }
 
             } catch (Exception ex) {
-
+                Crashlytics.logException(ex);
             }
 
             return false;
@@ -242,134 +554,6 @@ public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDevi
 
         }
     }
-
-
-    private void retrieveCardInfo() {
-        StringBuilder sb = new StringBuilder();
-
-        if (mMTSCRA.getResponseData() != null) {
-            cardManager.setCardOwnerName(mMTSCRA.getCardName());
-            if (mMTSCRA.getCardExpDate() != null && !mMTSCRA.getCardExpDate().isEmpty()) {
-                String year = mMTSCRA.getCardExpDate().substring(0, 2);
-                String month = mMTSCRA.getCardExpDate().substring(2, 4);
-                cardManager.setCardExpYear(year);
-                cardManager.setCardExpMonth(month);
-            }
-            cardManager.setCardType(ProcessCreditCard_FA.getCardType(mMTSCRA.getCardIIN()));
-            cardManager.setCardLast4(mMTSCRA.getCardLast4());
-            cardManager.setEncryptedBlock(sb.append(mMTSCRA.getTrack1()).append(mMTSCRA.getTrack2()).toString());
-            cardManager.setEncryptedTrack1(mMTSCRA.getTrack1());
-            cardManager.setEncryptedTrack2(mMTSCRA.getTrack2());
-            cardManager.setCardNumAESEncrypted(encrypt.encryptWithAES(mMTSCRA.getTrack2Masked().split("=")[0].replace(";", "")));
-            if (!Global.isEncryptSwipe)
-                cardManager.setCardNumUnencrypted(mMTSCRA.getTrack2Masked().split("=")[0].replace(";", "").replace("?", ""));
-            if (mMTSCRA.getTrack1Masked() != null && !mMTSCRA.getTrack1Masked().isEmpty())
-                cardManager.setEncryptedAESTrack1(encrypt.encryptWithAES(mMTSCRA.getTrack1Masked()));
-            if (mMTSCRA.getTrack2Masked() != null && !mMTSCRA.getTrack2Masked().isEmpty())
-                cardManager.setEncryptedAESTrack2(encrypt.encryptWithAES(mMTSCRA.getTrack2Masked()));
-            cardManager.setDeviceSerialNumber(mMTSCRA.getDeviceSerial());
-            cardManager.setMagnePrint(mMTSCRA.getMagnePrint());
-            cardManager.setMagnePrintStatus(mMTSCRA.getMagnePrintStatus());
-            cardManager.setTrackDataKSN(mMTSCRA.getKSN());
-        }
-    }
-
-
-    private void maxVolume() {
-        mAudioMgr.setStreamVolume(AudioManager.STREAM_MUSIC, mAudioMgr.getStreamMaxVolume(AudioManager.STREAM_MUSIC), AudioManager.FLAG_SHOW_UI);
-
-
-    }
-
-
-    // displays data from card swiping
-    private Runnable doUpdateViews = new Runnable() {
-        public void run() {
-            try {
-                if (callBack != null) {
-                    //Toast.makeText(activity, "card was swiper calling callback..", Toast.LENGTH_LONG).show();
-                    callBack.cardWasReadSuccessfully(true, cardManager);
-                }
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-    };
-
-    private Runnable doUpdateDidConnect = new Runnable() {
-        public void run() {
-            try {
-                if (callBack != null) {
-                    //Toast.makeText(activity, "update did connected..", Toast.LENGTH_LONG).show();
-                    callBack.readerConnectedSuccessfully(true);
-                }
-
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-    };
-
-    @Override
-    public void connect(Context activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
-        this.edm = edm;
-        this.activity = activity;
-        thisInstance = this;
-        mMTSCRA = new MagTekSCRA(new Handler(new SCRAHandlerCallback()));
-        mAudioMgr = (AudioManager) activity.getSystemService(Context.AUDIO_SERVICE);
-        cardManager = new CreditCardInfo();
-        encrypt = new Encrypt(activity);
-        new connectAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
-
-
-    @Override
-    public boolean autoConnect(Activity _activity, EMSDeviceManager edm, int paperSize, boolean isPOSPrinter, final String portName, String portNumber) {
-        this.edm = edm;
-
-        thisInstance = this;
-        boolean didConnect = false;
-        this.activity = _activity;
-
-        ((Activity)activity).runOnUiThread(new Runnable() {
-            public void run() {
-                mMTSCRA = new MagTekSCRA(new Handler(new SCRAHandlerCallback()));
-
-            }
-        });
-
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException ignored) {
-        }
-        mAudioMgr = (AudioManager) activity.getSystemService(Context.AUDIO_SERVICE);
-        cardManager = new CreditCardInfo();
-        encrypt = new Encrypt(activity);
-        if (mMTSCRA != null) {
-            mMTSCRA.setDeviceType(MagTekSCRA.DEVICE_TYPE_BLUETOOTH);
-            mMTSCRA.setDeviceID(portName);
-            openDevice();
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException ignored) {
-            }
-            didConnect = mMTSCRA.isDeviceConnected();
-
-            if (didConnect)
-                mMTSCRA.closeDevice();
-
-
-        }
-        if (didConnect) {
-            this.edm.driverDidConnectToDevice(thisInstance, false);
-        } else {
-
-            this.edm.driverDidNotConnectToDevice(thisInstance, null, false);
-        }
-
-        return didConnect;
-    }
-
 
     public class connectAsync extends AsyncTask<Integer, String, String> {
 
@@ -396,6 +580,7 @@ public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDevi
             try {
                 Thread.sleep(6000);
             } catch (InterruptedException e) {
+                Crashlytics.logException(e);
             }
             didConnect = mMTSCRA.isDeviceConnected();
 
@@ -408,224 +593,14 @@ public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDevi
 
             if (didConnect) {
                 mMTSCRA.closeDevice();
-                edm.driverDidConnectToDevice(thisInstance, true);
+                edm.driverDidConnectToDevice(thisInstance, true, activity);
 
             } else {
 
-                edm.driverDidNotConnectToDevice(thisInstance, msg, true);
+                edm.driverDidNotConnectToDevice(thisInstance, msg, true, activity);
             }
 
         }
-    }
-
-
-    @Override
-    public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
-        return true;
-    }
-
-    @Override
-    public boolean printTransaction(String ordID, Global.OrderType type, boolean isFromHistory, boolean fromOnHold) {
-        return true;
-    }
-
-    @Override
-    public boolean printPaymentDetails(String payID, int isFromMainMenu, boolean isReprint, EMVContainer emvContainer) {
-        return true;
-    }
-
-
-    @Override
-    public boolean printBalanceInquiry(HashMap<String, String> values) {
-        return false;
-    }
-
-
-    @Override
-    public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSignature) {
-        return true;
-    }
-
-
-    @Override
-    public boolean printConsignmentPickup(List<ConsignmentTransaction> myConsignment, String encodedSignature) {
-        return true;
-    }
-
-
-    @Override
-    public boolean printConsignmentHistory(HashMap<String, String> map, Cursor c, boolean isPickup) {
-        return true;
-    }
-
-
-    @Override
-    public String printStationPrinter(List<Orders> orderProducts, String ordID, boolean cutPaper, boolean printHeader) {
-        return "";
-    }
-
-
-    @Override
-    public boolean printOpenInvoices(String invID) {
-        return true;
-    }
-
-
-    @Override
-    public boolean printOnHold(Object onHold) {
-        return true;
-    }
-
-
-    @Override
-    public void setBitmap(Bitmap bmp) {
-
-    }
-
-    @Override
-    public void playSound() {
-
-    }
-
-    @Override
-    public void printEndOfDayReport(String curDate, String clerk_id, boolean printDetails) {
-//		printEndOfDayReportReceipt(curDate, LINE_WIDTH, printDetails);
-    }
-
-    @Override
-    public void printShiftDetailsReport(String shiftID) {
-    }
-
-    @Override
-    public boolean printReport(String curDate) {
-        return true;
-    }
-
-    @Override
-    public void registerAll() {
-        this.registerPrinter();
-    }
-
-    @Override
-    public void registerPrinter() {
-        edm.setCurrentDevice(this);
-    }
-
-    @Override
-    public void unregisterPrinter() {
-        edm.setCurrentDevice(null);
-    }
-
-
-    @Override
-    public void loadCardReader(EMSCallBack _callBack, boolean isDebitCard) {
-        callBack = _callBack;
-        if (handler == null)
-            handler = new Handler();
-        if (mMTSCRA != null) {
-            new Thread(new Runnable() {
-                public void run() {
-                    mMTSCRA.openDevice();
-                }
-            }).start();
-
-        }
-
-    }
-
-    @Override
-    public void releaseCardReader() {
-        callBack = null;
-        mMTSCRA.closeDevice();
-    }
-
-
-    @Override
-    public void openCashDrawer() {
-    }
-
-
-    @Override
-    public void printHeader() {
-    }
-
-
-    @Override
-    public void printFooter() {
-    }
-
-    @Override
-    public void loadScanner(EMSCallBack _callBack) {
-    }
-
-    @Override
-    public boolean isUSBConnected() {
-        return false;
-    }
-
-    @Override
-    public void toggleBarcodeReader() {
-
-    }
-
-//    @Override
-//    public void printReceiptPreview(View view) {
-//
-//    }
-
-    @Override
-    public void printReceiptPreview(SplitedOrder splitedOrder) {
-
-    }
-
-    @Override
-    public void salePayment(Payment payment) {
-
-    }
-
-    @Override
-    public void saleReversal(Payment payment, String originalTransactionId) {
-
-    }
-
-    @Override
-    public void refund(Payment payment) {
-
-    }
-
-    @Override
-    public void refundReversal(Payment payment, String originalTransactionId) {
-
-    }
-
-    @Override
-    public void printEMVReceipt(String text) {
-
-    }
-
-    @Override
-    public void sendEmailLog() {
-
-    }
-
-    @Override
-    public void updateFirmware() {
-
-    }
-
-    @Override
-    public void submitSignature() {
-
-    }
-
-    @Override
-    public boolean isConnected() {
-        return true;
-    }
-
-    @Override
-    public void printClockInOut(List<ClockInOut> timeClocks, String clerkID) {
-
     }
 
 

@@ -37,13 +37,13 @@ public class OrderProductListAdapter extends BaseAdapter {
     public List<OrderSeatProduct> orderSeatProductList;
     public List<OrderSeatProduct> orderSeatProductFullList;
     public int selectedPosition;
-    Global global;
-    List<OrderProduct> orderProducts;
+    private Global global;
+    private List<OrderProduct> orderProducts;
     Activity activity;
     private OrderingMain_FA orderingMainFa;
     private LayoutInflater mInflater;
     private MyPreferences myPref;
-    PayWithLoyalty payWithLoyalty;
+    private PayWithLoyalty payWithLoyalty;
 
     public OrderProductListAdapter(Activity activity, List<OrderProduct> orderProducts,
                                    OrderingMain_FA orderingMainFa) {
@@ -363,6 +363,8 @@ public class OrderProductListAdapter extends BaseAdapter {
                         intent.putExtra("isEditAddon", true);
                         intent.putExtra("prod_id", product.getProd_id());
                         intent.putExtra("item_position", orderProductIdx);
+                        intent.putExtra("transType",orderingMainFa.mTransType);
+
                         activity.startActivityForResult(intent, 0);
                     }
                 });

@@ -46,15 +46,15 @@ public class EMSBambooImageLoader {
 		// Bitmap scaled = Bitmap.createScaledBitmap(bitmap, dstWidth,
 		// dstHeight, filter);
 		width = new_width;
-		List<Byte> list = new ArrayList<Byte>();
+		List<Byte> list = new ArrayList<>();
 
 		int pixels[] = new int[width * height];
 		newBitmap.getPixels(pixels, 0, width, 0, 0, width, height);
 		int pixelCount = 0;
 		byte eightPixels = 0;
 
-		for (int i = 0; i < pixels.length; i++) {
-			byte channels[] = ByteBuffer.allocate(4).putInt(pixels[i]).array();
+		for (int pixel : pixels) {
+			byte channels[] = ByteBuffer.allocate(4).putInt(pixel).array();
 			int lum = (channels[1] + channels[2] + channels[3]) / 3;
 			int alpha = channels[0];
 
@@ -74,10 +74,10 @@ public class EMSBambooImageLoader {
 		list.add(eightPixels);
 
 		// dataFrames = new ArrayList<Byte>();
-		ArrayList<ArrayList<Byte>> dataFramesList = new ArrayList<ArrayList<Byte>>();
+		ArrayList<ArrayList<Byte>> dataFramesList = new ArrayList<>();
 
 		while (list.size() != 0) {
-			dataFrames = new ArrayList<Byte>();
+			dataFrames = new ArrayList<>();
 			int length = (width / 8) * 0x20;
 
 			if (list.size() < length)

@@ -16,7 +16,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.CardParser;
@@ -44,8 +44,8 @@ import main.EMSDeviceManager;
 
 public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
 
-    int connectionRetries = 0;
-    boolean isNetworkPrinter = false;
+    private int connectionRetries = 0;
+    private boolean isNetworkPrinter = false;
     private int LINE_WIDTH = 32;
     private int PAPER_WIDTH;
     private String portSettings;
@@ -92,7 +92,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
             }
         }
     };
-    StarIoExtManagerListener mStarIoExtManagerListener = new StarIoExtManagerListener() {
+    private StarIoExtManagerListener mStarIoExtManagerListener = new StarIoExtManagerListener() {
         @Override
         public void didBarcodeDataReceive(byte[] data) {
             String[] barcodeDataArray = new String(data).split("\r\n");
@@ -214,9 +214,9 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
             e.printStackTrace();
         }
         if (didConnect) {
-            this.edm.driverDidConnectToDevice(thisInstance, false);
+            this.edm.driverDidConnectToDevice(thisInstance, false, activity);
         } else {
-            this.edm.driverDidNotConnectToDevice(thisInstance, null, false);
+            this.edm.driverDidNotConnectToDevice(thisInstance, null, false, activity);
         }
 
         return didConnect;
@@ -515,7 +515,9 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
             printShiftDetailsReceipt(LINE_WIDTH, shiftID);
             releasePrinter();
         } catch (StarIOPortException e) {
+            Crashlytics.logException(e);
         } catch (InterruptedException e) {
+            Crashlytics.logException(e);
             e.printStackTrace();
         }
 
@@ -552,7 +554,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     }
 
     @Override
-    public void printReceiptPreview(SplitedOrder splitedOrder) {
+    public void printReceiptPreview(SplittedOrder splitedOrder) {
         try {
             setPaperWidth(LINE_WIDTH);
             setStartIOPort();
@@ -826,10 +828,10 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
             }
 
             if (didConnect) {
-                edm.driverDidConnectToDevice(thisInstance, true);
+                edm.driverDidConnectToDevice(thisInstance, true, activity);
             } else {
 
-                edm.driverDidNotConnectToDevice(thisInstance, msg, true);
+                edm.driverDidNotConnectToDevice(thisInstance, msg, true, activity);
             }
 
         }

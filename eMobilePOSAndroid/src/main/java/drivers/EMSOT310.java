@@ -14,8 +14,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.SplitedOrder;
-import com.android.emobilepos.models.TimeClock;
+import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.internal.misccomm.misccommManager;
 import com.android.support.ConsignmentTransaction;
@@ -40,6 +39,13 @@ import main.EMSDeviceManager;
  */
 public class EMSOT310 extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
 
+    public static final int DEVICE_MESSAGE_CARDDATA_CHANGE = 3;
+    public static final int DEVICE_STATUS_CONNECTED = 4;
+    public static final int DEVICE_STATUS_DISCONNECTED = 5;
+    public static final int DEVICE_STATUS_CONNECTED_SUCCESS = 0;
+    public static final int DEVICE_STATUS_CONNECTED_FAIL = 1;
+    public static final int DEVICE_STATUS_CONNECTED_PERMISSION_DENIED = 2;
+    String scannedData = "";
     private EMSCallBack scannerCallBack;
     private Encrypt encrypt;
     private CreditCardInfo cardManager;
@@ -47,16 +53,7 @@ public class EMSOT310 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     private EMSOT310 thisInstance;
     private MagTeklibDynamag magTeklibDynamag;
     private Handler mReaderDataHandler;
-
-    public static final int DEVICE_MESSAGE_CARDDATA_CHANGE = 3;
-    public static final int DEVICE_STATUS_CONNECTED = 4;
-    public static final int DEVICE_STATUS_DISCONNECTED = 5;
-    public static final int DEVICE_STATUS_CONNECTED_SUCCESS = 0;
-    public static final int DEVICE_STATUS_CONNECTED_FAIL = 1;
-    public static final int DEVICE_STATUS_CONNECTED_PERMISSION_DENIED = 2;
-
     private Handler handler;
-    String scannedData = "";
     private BCRAppBroadcastReceiver mBroadcastReceiver = new BCRAppBroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -78,7 +75,7 @@ public class EMSOT310 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
         this.edm = edm;
         thisInstance = this;
 
-        this.edm.driverDidConnectToDevice(thisInstance, false);
+        this.edm.driverDidConnectToDevice(thisInstance, false, activity);
     }
 
 
@@ -92,7 +89,7 @@ public class EMSOT310 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
         this.edm = edm;
         thisInstance = this;
 
-        this.edm.driverDidConnectToDevice(thisInstance, false);
+        this.edm.driverDidConnectToDevice(thisInstance, false, activity);
         return true;
     }
 
@@ -284,7 +281,7 @@ public class EMSOT310 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 //    }
 
     @Override
-    public void printReceiptPreview(SplitedOrder splitedOrder) {
+    public void printReceiptPreview(SplittedOrder splitedOrder) {
 
     }
 
@@ -352,11 +349,11 @@ public class EMSOT310 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
                 case DEVICE_STATUS_CONNECTED:
                     if (((Number) msg.obj).intValue() == DEVICE_STATUS_CONNECTED_SUCCESS) {
-                        EMSOT310.this.edm.driverDidConnectToDevice(thisInstance, false);
+                        EMSOT310.this.edm.driverDidConnectToDevice(thisInstance, false, activity);
                     } else if (((Number) msg.obj).intValue() == DEVICE_STATUS_CONNECTED_FAIL) {
-                        EMSOT310.this.edm.driverDidNotConnectToDevice(thisInstance, getString(R.string.error_reading_card), true);
+                        EMSOT310.this.edm.driverDidNotConnectToDevice(thisInstance, getString(R.string.error_reading_card), true, activity);
                     } else if (((Number) msg.obj).intValue() == DEVICE_STATUS_CONNECTED_PERMISSION_DENIED) {
-                        EMSOT310.this.edm.driverDidNotConnectToDevice(thisInstance, getString(R.string.error_reading_card), true);
+                        EMSOT310.this.edm.driverDidNotConnectToDevice(thisInstance, getString(R.string.error_reading_card), true, activity);
                     }
 
                     break;
