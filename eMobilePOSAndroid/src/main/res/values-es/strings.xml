@@ -1317,6 +1317,7 @@
     <string name="header_title_customer_custom_fields">Información Adicional</string>
     <string name="sending">Enviando…</string>
     <string name="config_cash_show_change">Mostrar el cambio a pagos realizados en efectivo</string>
+    <string name="processing_payments">Procesando pagos…</string>
 
 
 </resources>
