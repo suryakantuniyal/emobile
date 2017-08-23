@@ -1318,6 +1318,10 @@
     <string name="sending">Enviando…</string>
     <string name="config_cash_show_change">Mostrar el cambio a pagos realizados en efectivo</string>
     <string name="processing_payments">Procesando pagos…</string>
+    <string name="printSettings">Configurar Impresora</string>
+    <string name="printZReport">Reporte Z</string>
+    <string name="printXReport">Reporte X</string>
+    <string name="ncf">NCF</string>
 
 
 </resources>
