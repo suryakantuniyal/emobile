@@ -156,57 +156,7 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
         return didConnect;
     }
 
-    public class processConnectionAsync extends AsyncTask<Void, String, String> {
 
-        String msg = new String("Failed to connectTFHKA");
-        boolean didConnect = false;
-
-        @Override
-        protected void onPreExecute() {
-            myProgressDialog = new ProgressDialog(activity);
-            myProgressDialog.setMessage("Connecting Printer...");
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            myProgressDialog.show();
-
-        }
-
-        @Override
-        protected String doInBackground(Void... params) {
-
-            String macAddress = myPref.getPrinterMACAddress();
-            BluetoothDevice btDev = mBtAdapter.getRemoteDevice(macAddress);
-            try {
-                socket = btDev.createRfcommSocketToServiceRecord(UUID.fromString(SPP_UUID));
-                socket.connect();
-
-                if (socket != null) {
-                    inputStream = socket.getInputStream();
-                    outputStream = socket.getOutputStream();
-
-                    didConnect = true;
-                }
-            } catch (IOException e) {
-
-                msg = "Failed to connectTFHKA: \n" + e.getMessage();
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String unused) {
-            myProgressDialog.dismiss();
-
-            if (didConnect) {
-                edm.driverDidConnectToDevice(thisInstance, true);
-            } else {
-
-                edm.driverDidNotConnectToDevice(thisInstance, msg, true);
-            }
-
-        }
-    }
 
     public void loadCardReader(EMSCallBack _callBack, boolean isDebitCard) {
 

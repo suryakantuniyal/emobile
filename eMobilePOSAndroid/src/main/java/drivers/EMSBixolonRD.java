@@ -12,7 +12,7 @@ import com.android.database.PaymentsHandler;
 import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.Tax;
 import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.orders.OrderProduct;
@@ -74,9 +74,9 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
             setSendCommandRetry(printerTFHKA);
 //            printerTFHKA.setSendCmdRetryAttempts(5);
 //            printerTFHKA.setSendCmdRetryInterval(1000);
-            edm.driverDidConnectToDevice(this, true);
+            edm.driverDidConnectToDevice(this, true, activity);
         } else {
-            edm.driverDidNotConnectToDevice(this, msg, true);
+            edm.driverDidNotConnectToDevice(this, msg, true, activity);
         }
     }
 
@@ -110,9 +110,9 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
             setSendCommandRetry(printerTFHKA);
 //            printerTFHKA.setSendCmdRetryAttempts(5);
 //            printerTFHKA.setSendCmdRetryInterval(1000);
-            edm.driverDidConnectToDevice(this, false);
+            edm.driverDidConnectToDevice(this, false, activity);
         } else {
-            edm.driverDidNotConnectToDevice(this, msg, false);
+            edm.driverDidNotConnectToDevice(this, msg, false, activity);
         }
         return true;
     }
@@ -381,9 +381,10 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
     }
 
     @Override
-    public void printReceiptPreview(SplitedOrder splitedOrder) {
+    public void printReceiptPreview(SplittedOrder splitedOrder) {
 
     }
+
 
     @Override
     public void salePayment(Payment payment) {

@@ -51,12 +51,13 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setUserVisibleHint(false);
+        preferences = new MyPreferences(getActivity());
     }
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser) {
+        if (isVisibleToUser && preferences != null) {
             if (preferences.isBixolonRD()) {
                 new LoadBixolonInfoTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
