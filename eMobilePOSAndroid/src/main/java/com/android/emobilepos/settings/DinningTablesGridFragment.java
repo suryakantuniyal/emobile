@@ -9,12 +9,12 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.TextView;
 
-import com.android.dao.DinningTableDAO;
 import com.android.dao.ClerkDAO;
+import com.android.dao.DinningTableDAO;
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.DinningTablesAdapter;
-import com.android.emobilepos.models.realms.DinningTable;
 import com.android.emobilepos.models.realms.Clerk;
+import com.android.emobilepos.models.realms.DinningTable;
 
 import java.util.List;
 

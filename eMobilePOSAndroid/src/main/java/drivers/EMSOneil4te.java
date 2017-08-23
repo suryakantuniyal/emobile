@@ -104,7 +104,7 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
 
     public class processConnectionAsync extends AsyncTask<Integer, String, String> {
 
-        String msg = new String("Failed to connect");
+        String msg = new String("Failed to connectTFHKA");
         boolean didConnect = false;
 
         @Override

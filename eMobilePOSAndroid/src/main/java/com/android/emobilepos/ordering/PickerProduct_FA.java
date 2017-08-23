@@ -257,7 +257,6 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                 Intent results = new Intent();
                 results.putExtra("prod_name", extras.getString("prod_name"));
                 setResult(9, results);
-
                 finish();
                 break;
             case SEC_ADDITIONAL_INFO:

@@ -81,6 +81,7 @@ public class OrdersHandler {
     private final static String associateID = "associateID";
     private final static String is_stored_fwd = "is_stored_fwd";
     private final static String VAT = "VAT";
+    private final static String bixolonTransactionId = "bixolonTransactionId";
     private static String ord_timeStarted = "ord_timeStarted";
     private final static List<String> attr = Arrays.asList(ord_id, qbord_id, emp_id, cust_id, clerk_id, c_email,
             ord_signature, ord_po, total_lines, total_lines_pay, ord_total, ord_comment, ord_delivery, ord_timecreated,
@@ -88,7 +89,7 @@ public class OrdersHandler {
             ord_inventory, ord_issync, tax_id, ord_shipvia, ord_shipto, ord_terms, ord_custmsg, ord_class, ord_subtotal,
             ord_taxamount, ord_discount, ord_discount_id, ord_latitude, ord_longitude, tipAmount, isVoid, custidkey,
             isOnHold, ord_HoldName, is_stored_fwd, VAT, assignedTable, numberOfSeats, associateID,
-            ord_timeStarted, orderAttributes);
+            ord_timeStarted, orderAttributes, bixolonTransactionId);
     private static CustomersHandler custHandler;
     private static OrderTaxes_DB taxes_db;
     private static OrderProductsHandler orderProductsHandler;
@@ -172,6 +173,8 @@ public class OrdersHandler {
         order.ord_HoldName = cursor.getString(cursor.getColumnIndex(ord_HoldName));
         order.is_stored_fwd = cursor.getString(cursor.getColumnIndex(is_stored_fwd));
         order.custidkey = cursor.getString(cursor.getColumnIndex(custidkey));
+        order.setBixolonTransactionId(cursor.getString(cursor.getColumnIndex(bixolonTransactionId)));
+
         custHandler = new CustomersHandler(activity);
         order.customer = custHandler.getCustomer(order.cust_id);
         String attributes = cursor.getString(cursor.getColumnIndex(orderAttributes));
@@ -817,5 +820,11 @@ public class OrdersHandler {
         }
 //        int delete = DBManager.getDatabase().delete(table_name, "isOnHold = ?", new String[]{"1"});
         return delete;
+    }
+
+    public void updateBixolonTransactionId(Order order) {
+        ContentValues args = new ContentValues();
+        args.put(bixolonTransactionId, order.getBixolonTransactionId());
+        DBManager.getDatabase().update(table_name, args, ord_id + " = ?", new String[]{order.ord_id});
     }
 }

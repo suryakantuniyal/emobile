@@ -115,6 +115,7 @@ public class MyPreferences {
     public static final String print_emobilepos_website = "print_emobilepos_website";
     public static final String print_ivuloto_qr = "print_ivuloto_qr";
     private static final String pref_skip_email_phone = "pref_skip_email_phone";
+    private static final String pref_require_customer = "pref_require_customer";
     private static final String pref_prefill_total_amount = "pref_prefill_total_amount";
     private static final String pref_require_customer = "pref_require_customer";
     private static final String pref_automatic_sync = "pref_automatic_sync";
@@ -837,6 +838,15 @@ public class MyPreferences {
         String swiper_type = "swiper_type";
         setIsPOWA(false);
         setIsMEPOS(false);
+        setIsBixolonRD(false);
+        setIsEM70(false);
+        setIsEM100(false);
+        setIsESY13P1(false);
+        setIsHandpoint(false);
+        setIsICMPEVO(false);
+        setIsKDC425(false);
+        setIsOT310(false);
+        setIsPAT100(false);
         setPrinterName(""); //clean the printer name
         prefEditor.putInt(sled_type, -1);
         prefEditor.putInt(printer_type, -1);
@@ -976,6 +986,19 @@ public class MyPreferences {
     public boolean setIsMEPOS(boolean value) {
         String device_mepos = "device_mepos";
         prefEditor.putBoolean(device_mepos, value);
+        prefEditor.commit();
+        return false;
+    }
+
+
+    public boolean isBixolonRD() {
+        String device_bixolon = "device_bixolon_rd";
+        return prefs.getBoolean(device_bixolon, false);
+    }
+
+    public boolean setIsBixolonRD(boolean value) {
+        String device_bixolon = "device_bixolon_rd";
+        prefEditor.putBoolean(device_bixolon, value);
         prefEditor.commit();
         return false;
     }

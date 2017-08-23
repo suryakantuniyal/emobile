@@ -1122,7 +1122,7 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 			if (result.equals(PowaPOSEnums.InitializedResult.SUCCESSFUL))
 				edm.driverDidConnectToDevice(thisInstance, !isAutoConnect);
 			else
-				edm.driverDidNotConnectToDevice(thisInstance, "Failed to connect to MCU", !isAutoConnect);
+				edm.driverDidNotConnectToDevice(thisInstance, "Failed to connectTFHKA to MCU", !isAutoConnect);
 		}
 
 		@Override
@@ -1357,7 +1357,7 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 			if (initializedResult.equals(PowaPOSEnums.InitializedResult.SUCCESSFUL))
 				edm.driverDidConnectToDevice(thisInstance, !isAutoConnect);
 			else
-				edm.driverDidNotConnectToDevice(thisInstance, "Failed to connect to MCU", !isAutoConnect);
+				edm.driverDidNotConnectToDevice(thisInstance, "Failed to connectTFHKA to MCU", !isAutoConnect);
 		}
 
 		@Override

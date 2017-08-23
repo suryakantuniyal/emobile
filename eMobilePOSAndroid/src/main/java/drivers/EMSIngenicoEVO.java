@@ -59,7 +59,7 @@ public class EMSIngenicoEVO extends EMSDeviceDriver implements EMSDeviceManagerP
     protected static Device device;
     private Handler handler;
     private EMSCallBack msrCallBack;
-    String msg = "Failed to connect";
+    String msg = "Failed to connectTFHKA";
     static boolean connected = false;
     private ProgressDialog myProgressDialog;
     private ApiConfiguration apiConfig;

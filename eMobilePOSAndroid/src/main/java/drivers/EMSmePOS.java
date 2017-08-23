@@ -42,7 +42,7 @@ public class EMSmePOS extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     private static final int LINE_WIDTH = 42;
     private EMSDeviceManager edm;
     protected static Device device;
-    String msg = "Failed to connect";
+    String msg = "Failed to connectTFHKA";
     private static boolean connected = false;
 
     @Override

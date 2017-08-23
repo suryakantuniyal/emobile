@@ -141,6 +141,11 @@ public class ViewReport_FA extends BaseFragmentActivityActionBar {
                 myListview.setAdapter(mainAdapter);
             else
                 myListview.setAdapter(shiftAdapter);
+            if (isShiftReport) {
+                printBut.setVisibility(View.GONE);
+            } else {
+                printBut.setVisibility(View.VISIBLE);
+            }
             MyPreferences myPref = new MyPreferences(ViewReport_FA.this);
             if (myPref.getPreferences(MyPreferences.pref_enable_printing)) {
                 printBut.setBackgroundResource(R.drawable.tab_button_selector);

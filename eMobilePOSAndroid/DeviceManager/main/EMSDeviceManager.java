@@ -294,7 +294,7 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
 			dialog.setNegativeButton("Ok", null);
 			AlertDialog alert = dialog.create();
 			alert.setTitle(R.string.dlog_title_error);
-			alert.setMessage("Failed to connect device: \n"+err);
+			alert.setMessage("Failed to connectTFHKA device: \n"+err);
 			alert.show();
 		}
 		

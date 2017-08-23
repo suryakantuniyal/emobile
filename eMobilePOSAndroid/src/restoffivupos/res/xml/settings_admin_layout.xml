@@ -324,7 +324,10 @@
             android:key="pref_snbc_setup"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_snbc_setup" />
-
+        <Preference
+            android:key="pref_bixolon_setup"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_bixolon_setup" />
         <MultiSelectListPreference
             android:defaultValue="@array/printPrefValues"
             android:entries="@array/printPrefArray"
