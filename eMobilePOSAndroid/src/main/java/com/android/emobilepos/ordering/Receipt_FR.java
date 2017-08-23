@@ -998,7 +998,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 //                    DBManager dbManager = new DBManager(getActivity());
 //                    SynchMethods sm = new SynchMethods(dbManager);
 //                    sm.synchSendOnHold(false, true, getActivity(), global.order.ord_id);
-                    new SyncOnHolds().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    new OnHoldAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, CHECK_OUT_HOLD, voidOnHold);
                 } else {
                     ordersHandler.updateFinishOnHold(Global.lastOrdID);
                     global.order.isVoid = "1";

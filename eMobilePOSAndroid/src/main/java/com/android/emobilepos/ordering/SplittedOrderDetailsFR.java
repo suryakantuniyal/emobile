@@ -453,7 +453,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
 //                DBManager dbManager = new DBManager(getActivity());
 //                SynchMethods sm = new SynchMethods(dbManager);
 //                sm.synchSendOnHold(false, true, getActivity(), restaurantSplitedOrder.ord_id);
-                new SyncOnHolds().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                new SyncOnHolds().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
 //                getActivity().setResult(-1);
 //                getActivity().finish();
             } else {
@@ -537,7 +537,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
     }
 
 
-    private class SyncOnHolds extends AsyncTask<Void, Void, Boolean> {
+    private class SyncOnHolds extends AsyncTask<Boolean, Void, Boolean> {
         ProgressDialog dialog;
 
         @Override
@@ -551,10 +551,10 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         }
 
         @Override
-        protected Boolean doInBackground(Void... params) {
+        protected Boolean doInBackground(Boolean... isCheckout) {
             DBManager dbManager = new DBManager(getActivity());
             SynchMethods sm = new SynchMethods(dbManager);
-            return sm.synchSendOnHold(false, false, getActivity(), null);
+            return sm.synchSendOnHold(false, isCheckout[0], getActivity(), restaurantSplitedOrder.ord_id);
         }
 
         @Override
