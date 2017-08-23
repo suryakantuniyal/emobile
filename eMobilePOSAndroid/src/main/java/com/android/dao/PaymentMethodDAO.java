@@ -70,4 +70,18 @@ public class PaymentMethodDAO {
             realm.close();
         }
     }
+
+    public static List<PaymentMethod> getPaymentMethods() {
+        Realm realm = Realm.getDefaultInstance();
+        List<PaymentMethod> paymentMethods;
+        try {
+            paymentMethods = realm.where(PaymentMethod.class).findAll();
+            if (paymentMethods != null) {
+                paymentMethods = realm.copyFromRealm(paymentMethods);
+            }
+        } finally {
+            realm.close();
+        }
+        return paymentMethods;
+    }
 }

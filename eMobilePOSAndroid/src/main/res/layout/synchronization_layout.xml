@@ -1,362 +1,565 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="@drawable/bg_white_page"
-    android:gravity="center_horizontal"
-    android:orientation="vertical"
     android:paddingTop="10dp">
 
     <LinearLayout
-        android:layout_width="@dimen/sync_adapter_1"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp">
-
-        <Button
-            style="@style/tiles_text_appearance"
-            android:id="@+id/syncSendButton"
-            android:layout_width="0dip"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_weight="1"
-            android:background="@drawable/blue_btn_selector"
-            android:text="@string/sync_send_btn"
-            android:textSize="@dimen/large_button_text_size"
-            android:padding="15dp" />
-
-        <Button
-            style="@style/tiles_text_appearance"
-            android:id="@+id/syncReceiveButton"
-            android:layout_width="0dip"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_weight="1"
-            android:background="@drawable/blue_btn_selector"
-            android:text="@string/sync_receive_btn"
-            android:textSize="@dimen/large_button_text_size"
-            android:padding="15dp" />
-    </LinearLayout>
-
-
-    <LinearLayout
-        android:layout_width="@dimen/sync_adapter_1"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:background="@drawable/shadow_layer"
-        android:clickable="false"
-        android:gravity="center"
+        android:background="@drawable/bg_white_page"
+        android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:padding="10dp"
-        android:layout_marginBottom="10dp">
-
-        <TextView
-            android:id="@+id/synchStatus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="@string/sync_status"
-            android:textAppearance="@style/dark_blue_text_appearance"
-            android:textSize="@dimen/sync_connection_text_size" />
-
-        <TextView
-            android:id="@+id/synchFeedText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="@string/sync_no_connectivity"
-            android:textAppearance="@style/dark_blue_text_appearance_unbold"
-            android:textSize="@dimen/sync_connection_text_size" />
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/sync_pending"
-        style="@style/text_shadow"
-        android:textSize="@dimen/sync_pending_text_size"
-        android:textAppearance="@style/blue_text_appearance"
-        android:layout_marginBottom="10dp" />
-    <LinearLayout
-        android:layout_width="@dimen/sync_adapter_1"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:orientation="horizontal" >
-
-        <TextView
-            style="@style/text_shadow"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1.5"
-            android:gravity="left"
-            android:text="@string/sync_payments"
-            android:textAppearance="@style/blue_text_appearance_unbold"
-            android:textSize="@dimen/sync_pending_content_text_size" />
-
-        <TextView
-            android:id="@+id/syncPaymentsQty"
-            style="@style/text_shadow"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="8dp"
-            android:layout_weight="1"
-            android:gravity="right"
-            android:text="TextView"
-            android:textAppearance="@style/red_text_appearance_bold"
-            android:textSize="@dimen/sync_pending_content_text_size" />
-
-        <TextView
-            style="@style/text_shadow"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1.5"
-            android:gravity="left"
-            android:text="@string/sync_templates"
-            android:textAppearance="@style/blue_text_appearance_unbold"
-            android:textSize="@dimen/sync_pending_content_text_size" />
-
-        <TextView
-            android:id="@+id/syncTemplatesQty"
-            style="@style/text_shadow"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="right"
-            android:text="TextView"
-            android:textAppearance="@style/red_text_appearance_bold"
-            android:textSize="@dimen/sync_pending_content_text_size" />
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="@dimen/sync_adapter_1"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:orientation="horizontal" >
-
-        <TextView
-            style="@style/text_shadow"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1.5"
-            android:gravity="left"
-            android:text="@string/sync_sales"
-            android:textAppearance="@style/blue_text_appearance_unbold"
-            android:textSize="@dimen/sync_pending_content_text_size" />
-
-        <TextView
-            android:id="@+id/sync_salesQty"
-            style="@style/text_shadow"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="8dp"
-            android:layout_weight="1"
-            android:gravity="right"
-            android:text="TextView"
-            android:textAppearance="@style/red_text_appearance_bold"
-            android:textSize="@dimen/sync_pending_content_text_size" />
-
-        <TextView
-            style="@style/text_shadow"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1.5"
-            android:gravity="left"
-            android:text="@string/sync_customers"
-            android:textAppearance="@style/blue_text_appearance_unbold"
-            android:textSize="@dimen/sync_pending_content_text_size" />
-
-        <TextView
-            android:id="@+id/syncCustomersQty"
-            style="@style/text_shadow"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="right"
-            android:text="TextView"
-            android:textAppearance="@style/red_text_appearance_bold"
-            android:textSize="@dimen/sync_pending_content_text_size" />
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="@dimen/sync_adapter_1"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:orientation="horizontal" >
-
-        <TextView
-            style="@style/text_shadow"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1.5"
-            android:gravity="left"
-            android:text="@string/sync_signatures"
-            android:textAppearance="@style/blue_text_appearance_unbold"
-            android:textSize="@dimen/sync_pending_content_text_size" />
-
-        <TextView
-            android:id="@+id/syncSignaturesQty"
-            style="@style/text_shadow"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="8dp"
-            android:layout_weight="1"
-            android:gravity="right"
-            android:text="TextView"
-            android:textAppearance="@style/red_text_appearance_bold"
-            android:textSize="@dimen/sync_pending_content_text_size" />
-
-        <TextView
-            style="@style/text_shadow"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1.5"
-            android:gravity="left"
-            android:text="@string/sync_void"
-            android:textAppearance="@style/blue_text_appearance_unbold"
-            android:textSize="@dimen/sync_pending_content_text_size" />
-
-        <TextView
-            android:id="@+id/syncVoidsQty"
-            style="@style/text_shadow"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="right"
-            android:text="TextView"
-            android:textAppearance="@style/red_text_appearance_bold"
-            android:textSize="@dimen/sync_pending_content_text_size" />
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="@dimen/sync_adapter_1"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:orientation="horizontal" >
-
-        <TextView
-            style="@style/text_shadow"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1.5"
-            android:gravity="left"
-            android:text="@string/sync_consignment"
-            android:textAppearance="@style/blue_text_appearance_unbold"
-            android:textSize="@dimen/sync_pending_content_text_size" />
-
-        <TextView
-            android:id="@+id/syncConsignmentsQty"
-            style="@style/text_shadow"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="8dp"
-            android:layout_weight="1"
-            android:gravity="right"
-            android:text="TextView"
-            android:textAppearance="@style/red_text_appearance_bold"
-            android:textSize="@dimen/sync_pending_content_text_size" />
-
-        <TextView
-            style="@style/text_shadow"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1.5"
-            android:gravity="left"
-            android:text="@string/sync_transfer"
-            android:textAppearance="@style/blue_text_appearance_unbold"
-            android:textSize="@dimen/sync_pending_content_text_size" />
-
-        <TextView
-            android:id="@+id/syncTransfersQty"
-            style="@style/text_shadow"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="right"
-            android:text="TextView"
-            android:textAppearance="@style/red_text_appearance_bold"
-            android:textSize="@dimen/sync_pending_content_text_size" />
-    </LinearLayout>
-
-
-
-    <LinearLayout
-        android:layout_width="@dimen/sync_adapter_1"
-        android:layout_height="wrap_content"
-        android:background="@drawable/shadow_layer"
-        android:clickable="false"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:padding="20dp"
-        android:layout_margin="10dp">
-
-        <TextView
-            android:id="@+id/synchLastsynch"
-            android:layout_width="wrap_content"
-            android:layout_height="0dip"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:padding="5dp"
-            android:text="@string/sync_last_sync"
-            android:textAppearance="@style/dark_blue_text_appearance"
-            android:textSize="@dimen/sync_date_text_size" />
+        android:paddingTop="10dp">
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="@dimen/sync_adapter_1"
             android:layout_height="wrap_content"
-            android:orientation="horizontal" >
+            android:layout_margin="10dp">
+
+            <Button
+                android:id="@+id/syncSendButton"
+                style="@style/tiles_text_appearance"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/blue_btn_selector"
+                android:drawableLeft="@drawable/ic_cloud_upload_black_48dp"
+                android:padding="15dp"
+                android:text="@string/sync_send_btn"
+                android:textSize="@dimen/large_button_text_size" />
+
+            <Button
+                android:id="@+id/syncReceiveButton"
+                style="@style/tiles_text_appearance"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/blue_btn_selector"
+                android:drawableLeft="@drawable/ic_cloud_download_black_48dp"
+                android:padding="15dp"
+                android:text="@string/sync_receive_btn"
+                android:textSize="@dimen/large_button_text_size" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="@dimen/sync_adapter_1"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/shadow_layer"
+            android:clickable="false"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="10dp">
 
             <TextView
-                android:id="@+id/synchSend"
-                android:layout_width="0dip"
+                android:id="@+id/synchStatus"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/sync_last_sent"
-                android:textAppearance="@style/dark_blue_text_appearance_unbold"
-                android:textSize="@dimen/sync_date_text_size" />
+                android:gravity="center"
+                android:text="@string/sync_status"
+                android:textAppearance="@style/dark_blue_text_appearance"
+                android:textSize="@dimen/sync_connection_text_size" />
 
             <TextView
-                android:id="@+id/synchSendDate"
-                android:layout_width="0dip"
+                android:id="@+id/synchFeedText"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/sync_no_connectivity"
+                android:textAppearance="@style/dark_blue_text_appearance_unbold"
+                android:textSize="@dimen/sync_connection_text_size" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/textView1"
+            style="@style/text_shadow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:text="@string/sync_pending"
+            android:textAppearance="@style/blue_text_appearance"
+            android:textSize="@dimen/sync_pending_text_size" />
+
+        <LinearLayout
+            android:layout_width="@dimen/sync_adapter_1"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/text_shadow"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.5"
+                android:gravity="left"
+                android:text="@string/sync_payments"
+                android:textAppearance="@style/blue_text_appearance_unbold"
+                android:textSize="@dimen/sync_pending_content_text_size" />
+
+            <TextView
+                android:id="@+id/syncPaymentsQty"
+                style="@style/text_shadow"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="8dp"
+                android:layout_weight="1"
                 android:gravity="right"
-                android:text="Jul 16, 2012 9:22AM"
-                android:textAppearance="@style/dark_blue_text_appearance"
-                android:textSize="@dimen/sync_date_text_size" />
+                android:text="TextView"
+                android:textAppearance="@style/red_text_appearance_bold"
+                android:textSize="@dimen/sync_pending_content_text_size" />
+
+            <TextView
+                style="@style/text_shadow"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.5"
+                android:gravity="left"
+                android:text="@string/sync_templates"
+                android:textAppearance="@style/blue_text_appearance_unbold"
+                android:textSize="@dimen/sync_pending_content_text_size" />
+
+            <TextView
+                android:id="@+id/syncTemplatesQty"
+                style="@style/text_shadow"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="right"
+                android:text="TextView"
+                android:textAppearance="@style/red_text_appearance_bold"
+                android:textSize="@dimen/sync_pending_content_text_size" />
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="@dimen/sync_adapter_1"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingBottom="12dp" >
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/synchReceive"
-                android:layout_width="0dip"
+                style="@style/text_shadow"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.5"
+                android:gravity="left"
+                android:text="@string/sync_sales"
+                android:textAppearance="@style/blue_text_appearance_unbold"
+                android:textSize="@dimen/sync_pending_content_text_size" />
+
+            <TextView
+                android:id="@+id/sync_salesQty"
+                style="@style/text_shadow"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="8dp"
+                android:layout_weight="1"
+                android:gravity="right"
+                android:text="TextView"
+                android:textAppearance="@style/red_text_appearance_bold"
+                android:textSize="@dimen/sync_pending_content_text_size" />
+
+            <TextView
+                style="@style/text_shadow"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.5"
+                android:gravity="left"
+                android:text="@string/sync_customers"
+                android:textAppearance="@style/blue_text_appearance_unbold"
+                android:textSize="@dimen/sync_pending_content_text_size" />
+
+            <TextView
+                android:id="@+id/syncCustomersQty"
+                style="@style/text_shadow"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/sync_last_received"
-                android:textAppearance="@style/dark_blue_text_appearance_unbold"
-                android:textSize="@dimen/sync_date_text_size"/>
+                android:gravity="right"
+                android:text="TextView"
+                android:textAppearance="@style/red_text_appearance_bold"
+                android:textSize="@dimen/sync_pending_content_text_size" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="@dimen/sync_adapter_1"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/synchReceiveDate"
-                android:layout_width="0dip"
+                style="@style/text_shadow"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
+                android:layout_weight="1.5"
+                android:gravity="left"
+                android:text="@string/sync_signatures"
+                android:textAppearance="@style/blue_text_appearance_unbold"
+                android:textSize="@dimen/sync_pending_content_text_size" />
+
+            <TextView
+                android:id="@+id/syncSignaturesQty"
+                style="@style/text_shadow"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="8dp"
+                android:layout_weight="1"
                 android:gravity="right"
-                android:text="Jul 16, 2012 9:22AM"
-                android:textAppearance="@style/dark_blue_text_appearance"
-                android:textSize="@dimen/sync_date_text_size"/>
+                android:text="TextView"
+                android:textAppearance="@style/red_text_appearance_bold"
+                android:textSize="@dimen/sync_pending_content_text_size" />
+
+            <TextView
+                style="@style/text_shadow"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.5"
+                android:gravity="left"
+                android:text="@string/sync_void"
+                android:textAppearance="@style/blue_text_appearance_unbold"
+                android:textSize="@dimen/sync_pending_content_text_size" />
+
+            <TextView
+                android:id="@+id/syncVoidsQty"
+                style="@style/text_shadow"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="right"
+                android:text="TextView"
+                android:textAppearance="@style/red_text_appearance_bold"
+                android:textSize="@dimen/sync_pending_content_text_size" />
         </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="@dimen/sync_adapter_1"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/text_shadow"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.5"
+                android:gravity="left"
+                android:text="@string/sync_consignment"
+                android:textAppearance="@style/blue_text_appearance_unbold"
+                android:textSize="@dimen/sync_pending_content_text_size" />
+
+            <TextView
+                android:id="@+id/syncConsignmentsQty"
+                style="@style/text_shadow"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="8dp"
+                android:layout_weight="1"
+                android:gravity="right"
+                android:text="TextView"
+                android:textAppearance="@style/red_text_appearance_bold"
+                android:textSize="@dimen/sync_pending_content_text_size" />
+
+            <TextView
+                style="@style/text_shadow"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.5"
+                android:gravity="left"
+                android:text="@string/sync_transfer"
+                android:textAppearance="@style/blue_text_appearance_unbold"
+                android:textSize="@dimen/sync_pending_content_text_size" />
+
+            <TextView
+                android:id="@+id/syncTransfersQty"
+                style="@style/text_shadow"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="right"
+                android:text="TextView"
+                android:textAppearance="@style/red_text_appearance_bold"
+                android:textSize="@dimen/sync_pending_content_text_size" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="@dimen/sync_adapter_1"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/shadow_layer"
+            android:clickable="false"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <TextView
+                android:id="@+id/synchLastsynch"
+                android:layout_width="wrap_content"
+                android:layout_height="0dip"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="@string/sync_last_sync"
+                android:textAppearance="@style/dark_blue_text_appearance"
+                android:textSize="@dimen/sync_date_text_size" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/synchSend"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/sync_last_sent"
+                    android:textAppearance="@style/dark_blue_text_appearance_unbold"
+                    android:textSize="@dimen/sync_date_text_size" />
+
+                <TextView
+                    android:id="@+id/synchSendDate"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:gravity="right"
+                    android:text="Jul 16, 2012 9:22AM"
+                    android:textAppearance="@style/dark_blue_text_appearance"
+                    android:textSize="@dimen/sync_date_text_size" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingBottom="12dp">
+
+                <TextView
+                    android:id="@+id/synchReceive"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/sync_last_received"
+                    android:textAppearance="@style/dark_blue_text_appearance_unbold"
+                    android:textSize="@dimen/sync_date_text_size" />
+
+                <TextView
+                    android:id="@+id/synchReceiveDate"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:gravity="right"
+                    android:text="Jul 16, 2012 9:22AM"
+                    android:textAppearance="@style/dark_blue_text_appearance"
+                    android:textSize="@dimen/sync_date_text_size" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/bixolonContainerLinearLayout"
+            android:layout_width="@dimen/sync_adapter_1"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            android:background="@drawable/shadow_layer"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <TextView
+                android:id="@+id/textView28"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/bixolonTransactions"
+                android:textAppearance="@style/dark_blue_text_appearance"
+                android:textSize="@dimen/sync_date_text_size" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/textView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/bixolonFailedTrans"
+                        android:textAppearance="@style/dark_blue_text_appearance_unbold"
+                        android:textSize="@dimen/sync_date_text_size"
+                        android:layout_weight="1" />
+
+
+                    <Button
+                        android:id="@+id/bixolonFailedReviewbutton"
+                        style="@android:style/Widget.DeviceDefault.Button.Small"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/blue_btn_selector"
+                        android:paddingLeft="8dp"
+                        android:paddingRight="14dp"
+                        android:text="@string/review" />
+
+                    <TextView
+                        android:id="@+id/bixolonFailedTransactionsNumbertextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:gravity="right"
+                        android:text="12"
+                        android:textAppearance="@style/dark_blue_text_appearance"
+                        android:textSize="@dimen/sync_date_text_size" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/textView8"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/bixolonStatus"
+                android:textAppearance="@style/dark_blue_text_appearance"
+                android:textSize="@dimen/sync_date_text_size" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView30"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/serialNumber"
+                    android:textAppearance="@style/dark_blue_text_appearance_unbold"
+                    android:textSize="@dimen/sync_date_text_size" />
+
+                <TextView
+                    android:id="@+id/bixolonSerialNumbertextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:text="AABBCC11223344556"
+                    android:textAppearance="@style/dark_blue_text_appearance"
+                    android:textSize="@dimen/sync_date_text_size" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView301"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/lastDebiteNoteNumber"
+                    android:textAppearance="@style/dark_blue_text_appearance_unbold"
+                    android:textSize="@dimen/sync_date_text_size" />
+
+                <TextView
+                    android:id="@+id/bixolonLastDRNoteNumbertextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:text="AABBCC11223344556"
+                    android:textAppearance="@style/dark_blue_text_appearance"
+                    android:textSize="@dimen/sync_date_text_size" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/lastCreditNoteNumber"
+                    android:textAppearance="@style/dark_blue_text_appearance_unbold"
+                    android:textSize="@dimen/sync_date_text_size" />
+
+                <TextView
+                    android:id="@+id/bixolonLastCRNoteNumbertextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:text="AABBCC11223344556"
+                    android:textAppearance="@style/dark_blue_text_appearance"
+                    android:textSize="@dimen/sync_date_text_size" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView31"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/lastInvoiceNumber"
+                    android:textAppearance="@style/dark_blue_text_appearance_unbold"
+                    android:textSize="@dimen/sync_date_text_size" />
+
+                <TextView
+                    android:id="@+id/bixolonLastInvoiceNumbertextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:text="AABBCC11223344556"
+                    android:textAppearance="@style/dark_blue_text_appearance"
+                    android:textSize="@dimen/sync_date_text_size" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView302"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/lastNoFiscalDocNumber"
+                    android:textAppearance="@style/dark_blue_text_appearance_unbold"
+                    android:textSize="@dimen/sync_date_text_size" />
+
+                <TextView
+                    android:id="@+id/bixolonLastNoFiscalDocNumbertextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:text="AABBCC11223344556"
+                    android:textAppearance="@style/dark_blue_text_appearance"
+                    android:textSize="@dimen/sync_date_text_size" />
+            </LinearLayout>
+        </LinearLayout>
+
     </LinearLayout>
 
-
-</LinearLayout>
+</ScrollView>

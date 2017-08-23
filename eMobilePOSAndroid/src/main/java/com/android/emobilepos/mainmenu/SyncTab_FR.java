@@ -2,6 +2,7 @@ package com.android.emobilepos.mainmenu;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
@@ -18,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.android.dao.BixolonDAO;
 import com.android.database.ConsignmentTransactionHandler;
 import com.android.database.CustomersHandler;
 import com.android.database.DBManager;
@@ -27,14 +29,39 @@ import com.android.database.TemplateHandler;
 import com.android.database.TransferLocations_DB;
 import com.android.database.VoidTransactionsHandler;
 import com.android.emobilepos.R;
+import com.android.emobilepos.bixolon.BixolonTransactionsActivity;
+import com.android.emobilepos.models.realms.BixolonTransaction;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NetworkUtils;
 import com.android.support.SynchMethods;
+import com.thefactoryhka.android.controls.PrinterException;
+import com.thefactoryhka.android.pa.S1PrinterData;
+
+import java.util.List;
+
+import drivers.EMSBixolonRD;
 
 public class SyncTab_FR extends Fragment implements View.OnClickListener {
     public static Handler syncTabHandler;
     ProgressDialog dialog;
+    private MyPreferences preferences;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setUserVisibleHint(false);
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser) {
+            if (preferences.isBixolonRD()) {
+                new LoadBixolonInfoTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            }
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -48,9 +75,18 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
         setViewData(view);
         Button syncSendButton = (Button) view.findViewById(R.id.syncSendButton);
         Button syncReceiveButton = (Button) view.findViewById(R.id.syncReceiveButton);
+        Button bixolonFailedReviewButton = (Button) view.findViewById(R.id.bixolonFailedReviewbutton);
+        bixolonFailedReviewButton.setOnClickListener(this);
         syncSendButton.setOnClickListener(this);
         syncReceiveButton.setOnClickListener(this);
         setHandler();
+        preferences = new MyPreferences(getActivity());
+        if (preferences.isBixolonRD()) {
+            view.findViewById(R.id.bixolonContainerLinearLayout).setVisibility(View.VISIBLE);
+            new LoadBixolonInfoTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        } else {
+            view.findViewById(R.id.bixolonContainerLinearLayout).setVisibility(View.GONE);
+        }
     }
 
     private void setHandler() {
@@ -153,6 +189,10 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.bixolonFailedReviewbutton:
+                Intent intent = new Intent(getActivity(), BixolonTransactionsActivity.class);
+                startActivity(intent);
+                break;
             case R.id.syncSendButton:
                 dialog = new ProgressDialog(getActivity());
                 dialog.setIndeterminate(true);
@@ -206,4 +246,49 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
             SyncTab_FR.syncTabHandler.sendEmptyMessage(0);
         }
     }
+
+    private class LoadBixolonInfoTask extends AsyncTask<Object, Object, drivers.bixolon.S1PrinterData> {
+        ProgressDialog dialog;
+
+        @Override
+        protected void onPreExecute() {
+            dialog = new ProgressDialog(getActivity());
+            dialog.setIndeterminate(true);
+            dialog.setMessage(getString(R.string.loading));
+            dialog.show();
+        }
+
+        @Override
+        protected drivers.bixolon.S1PrinterData doInBackground(Object... params) {
+            EMSBixolonRD bixolon = null;
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null
+                    && Global.mainPrinterManager.getCurrentDevice() instanceof EMSBixolonRD) {
+                bixolon = (EMSBixolonRD) Global.mainPrinterManager.getCurrentDevice();
+            }
+            drivers.bixolon.S1PrinterData printerData = null;
+            try {
+                if (bixolon != null) {
+                    printerData = bixolon.getS1PrinterData();
+                }
+            } catch (PrinterException e) {
+                e.printStackTrace();
+            }
+            return printerData;
+        }
+
+        @Override
+        protected void onPostExecute(drivers.bixolon.S1PrinterData printerData) {
+            if (printerData != null) {
+                ((TextView) getView().findViewById(R.id.bixolonLastCRNoteNumbertextView)).setText(String.valueOf(printerData.getLastCNNumber()));
+                ((TextView) getView().findViewById(R.id.bixolonLastInvoiceNumbertextView)).setText(String.valueOf(printerData.getLastInvoiceNumber()));
+                ((TextView) getView().findViewById(R.id.bixolonLastDRNoteNumbertextView)).setText(String.valueOf(printerData.getLastDebitNoteNumber()));
+                ((TextView) getView().findViewById(R.id.bixolonLastNoFiscalDocNumbertextView)).setText(String.valueOf(printerData.getNumberNonFiscalDocuments()));
+                ((TextView) getView().findViewById(R.id.bixolonSerialNumbertextView)).setText(String.valueOf(printerData.getRegisteredMachineNumber()));
+            }
+            List<BixolonTransaction> failedTrans = BixolonDAO.getFailedTransactions();
+            ((TextView) getView().findViewById(R.id.bixolonFailedTransactionsNumbertextView)).setText(failedTrans != null ? String.valueOf(failedTrans.size()) : "0");
+            dialog.dismiss();
+        }
+    }
+
 }

@@ -507,11 +507,9 @@
         <!-- </intent-filter> -->
         <!-- </service> -->
         <activity android:name=".shifts.ShiftsActivity" />
-
-        <service
-            android:name="com.emobilepos.app.AutoSyncService"
-            android:enabled="true"
-            android:exported="true"></service>
+        <activity
+            android:name=".bixolon.BixolonTransactionsActivity"
+            android:label="@string/title_activity_bixolon_transactions"></activity>
     </application>
 
 </manifest>

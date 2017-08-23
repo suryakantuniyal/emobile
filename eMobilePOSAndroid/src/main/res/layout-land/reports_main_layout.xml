@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_white_page">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp">
+
+        <LinearLayout
+            android:id="@+id/bixolonContainerLinearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            android:background="@drawable/shadow_layer"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnReportDaySummary"
+                    style="@style/tiles_text_appearance"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="8dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/blue_btn_selector"
+                    android:drawableLeft="@drawable/ic_date_range_black_48dp"
+                    android:padding="25dp"
+                    android:text="@string/report_but_title"
+                    android:textSize="@dimen/sales_tab_lv_text_size" />
+
+                <Button
+                    android:id="@+id/btnReportPerShift"
+                    style="@style/tiles_text_appearance"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/blue_btn_selector"
+                    android:drawableLeft="@drawable/ic_monetization_on_black_48dp"
+                    android:padding="25dp"
+                    android:text="@string/report_per_shift"
+                    android:textSize="@dimen/sales_tab_lv_text_size" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/bixolonPrintReportZ"
+                    style="@style/tiles_text_appearance"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="8dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/blue_btn_selector"
+                    android:drawableLeft="@drawable/ic_print_black_48dp"
+                    android:padding="25dp"
+                    android:text="@string/print_z_report"
+                    android:textSize="@dimen/sales_tab_lv_text_size" />
+
+                <Button
+                    android:id="@+id/bixolonPrintReportX"
+                    style="@style/tiles_text_appearance"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/blue_btn_selector"
+                    android:drawableLeft="@drawable/ic_account_balance_wallet_black_48dp"
+                    android:padding="25dp"
+                    android:text="@string/print_x_report"
+                    android:textSize="@dimen/sales_tab_lv_text_size" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnEndOfDay"
+                style="@style/tiles_text_appearance"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:background="@drawable/blue_btn_selector"
+                android:drawableLeft="@drawable/ic_today_black_48dp"
+                android:padding="25dp"
+                android:text="@string/endofdayBtn"
+                android:textSize="@dimen/sales_tab_lv_text_size" />
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+</ScrollView>

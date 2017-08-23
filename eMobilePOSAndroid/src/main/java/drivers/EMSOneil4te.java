@@ -100,6 +100,53 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
 
     }
 
+    public class processConnectionAsync extends AsyncTask<Integer, String, String> {
+
+        String msg = new String("Failed to connectTFHKA");
+        boolean didConnect = false;
+
+        @Override
+        protected void onPreExecute() {
+            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog.setMessage("Connecting Printer...");
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setCancelable(false);
+            myProgressDialog.show();
+
+        }
+
+        @Override
+        protected String doInBackground(Integer... params) {
+            // TODO Auto-generated method stub
+            String macAddress = myPref.getPrinterMACAddress();
+
+            try {
+                device = Connection_Bluetooth.createClient(macAddress);
+                didConnect = true;
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                didConnect = false;
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String unused) {
+            myProgressDialog.dismiss();
+
+            if (didConnect) {
+                edm.driverDidConnectToDevice(thisInstance, true);
+            } else {
+
+                edm.driverDidNotConnectToDevice(thisInstance, msg, true);
+            }
+
+        }
+    }
+
+
     @Override
     public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
         try {

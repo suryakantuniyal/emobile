@@ -8,6 +8,7 @@ public class Tax {
     private String taxId;
     private String taxRate;
     private String taxType;
+    private String taxCodeId;
 
     public Tax() {
     }
@@ -55,5 +56,13 @@ public class Tax {
             return this.getTaxId().equalsIgnoreCase(((Tax) o).getTaxId());
         }
         return false;
+    }
+
+    public void setTaxCodeId(String taxCodeId) {
+        this.taxCodeId = taxCodeId;
+    }
+
+    public String getTaxCodeId() {
+        return taxCodeId;
     }
 }
