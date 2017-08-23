@@ -6,6 +6,7 @@ import android.database.Cursor;
 
 import com.android.emobilepos.models.Address;
 import com.android.support.Customer;
+import com.crashlytics.android.Crashlytics;
 
 import net.sqlcipher.database.SQLiteStatement;
 
@@ -61,8 +62,8 @@ public class CustomersHandler {
     private List<HashMap<String, Integer>> dictionaryListMap;
 
     public CustomersHandler(Context activity) {
-        attrHash = new HashMap<String, Integer>();
-        custData = new ArrayList<String[]>();
+        attrHash = new HashMap<>();
+        custData = new ArrayList<>();
         sb1 = new StringBuilder();
         sb2 = new StringBuilder();
         new DBManager(activity);
@@ -101,11 +102,10 @@ public class CustomersHandler {
 
             custData = data;
             dictionaryListMap = dictionary;
-            SQLiteStatement insert = null;
-            StringBuilder sb = new StringBuilder();
-            sb.append("INSERT INTO ").append(table_name).append(" (").append(sb1.toString()).append(") ")
-                    .append("VALUES (").append(sb2.toString()).append(")");
-            insert = DBManager.getDatabase().compileStatement(sb.toString());
+            SQLiteStatement insert;
+            String sb = "INSERT INTO " + table_name + " (" + sb1.toString() + ") " +
+                    "VALUES (" + sb2.toString() + ")";
+            insert = DBManager.getDatabase().compileStatement(sb);
 
             int size = custData.size();
 
@@ -149,11 +149,7 @@ public class CustomersHandler {
             insert.close();
             DBManager.getDatabase().setTransactionSuccessful();
         } catch (Exception e) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(e.getMessage()).append(" [com.android.emobilepos.CustomersHandler (at Class.insert)]");
-
-//			Tracker tracker = EasyTracker.getInstance(activity);
-//			tracker.send(MapBuilder.createException(sb.toString(), false).build());
+            Crashlytics.logException(e);
         } finally {
             DBManager.getDatabase().endTransaction();
         }
@@ -266,7 +262,7 @@ public class CustomersHandler {
     }
 
     public HashMap<String, String> getCustomerMap(String id) {
-        HashMap<String, String> tempMap = new HashMap<String, String>();
+        HashMap<String, String> tempMap = new HashMap<>();
         String[] fields = new String[]{cust_name, cust_phone, cust_email};
         String[] arguments = new String[]{id};
 
@@ -297,7 +293,7 @@ public class CustomersHandler {
     public HashMap<String, String> getCustomerInfo(String custID) {
         String query = "SELECT cust_id,cust_name,cust_taxable,cust_salestaxcode,custidkey,pricelevel_id,cust_email FROM Customers WHERE cust_id = ?";
         Cursor c = DBManager.getDatabase().rawQuery(query, new String[]{custID});
-        HashMap<String, String> map = new HashMap<String, String>();
+        HashMap<String, String> map = new HashMap<>();
         if (c.moveToFirst()) {
             map.put(cust_id, c.getString(c.getColumnIndex(cust_id)));
             map.put(cust_name, c.getString(c.getColumnIndex(cust_name)));
@@ -313,7 +309,7 @@ public class CustomersHandler {
     }
 
     public List<String> getCustDetails(String custID) {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
 
         String subquery1 = "SELECT c.cust_name,c.cust_contact,c.cust_phone,c.cust_email,c.CompanyName,c.cust_balance," +
                 "c.cust_limit,c.cust_taxable,c.cust_salestaxcode,"
@@ -410,7 +406,6 @@ public class CustomersHandler {
             } while (cursor.moveToNext());
         }
         cursor.close();
-        // db.close();
         return list;
     }
 
@@ -424,37 +419,23 @@ public class CustomersHandler {
     public Cursor getSearchCust(String search) // Transactions Receipts first
     // listview
     {
-        // if(db==null||!db.isOpen())
-        // db = dbManager.openReadableDB();
+        String sb = "SELECT cust_id as _id,c.AccountNumnber, custidkey, cust_name,c.pricelevel_id,pl.pricelevel_name,cust_taxable,cust_salestaxcode," +
+                "cust_email,CompanyName,cust_phone FROM Customers c LEFT OUTER JOIN PriceLevel pl ON c.pricelevel_id = pl.pricelevel_id " +
+                "WHERE c.cust_name LIKE ? OR c.cust_id LIKE ? OR c.AccountNumnber LIKE ? OR c.cust_email LIKE ? OR c.cust_phone LIKE ? OR c.CompanyName LIKE ? ORDER BY cust_name";
 
-        StringBuilder sb = new StringBuilder();
-        sb.append(
-                "SELECT cust_id as _id,c.AccountNumnber, custidkey, cust_name,c.pricelevel_id,pl.pricelevel_name,cust_taxable,cust_salestaxcode,");
-        sb.append(
-                "cust_email,CompanyName,cust_phone FROM Customers c LEFT OUTER JOIN PriceLevel pl ON c.pricelevel_id = pl.pricelevel_id ");
-        sb.append(
-                "WHERE c.cust_name LIKE ? OR c.cust_id LIKE ? OR c.AccountNumnber LIKE ? OR c.cust_email LIKE ? OR c.cust_phone LIKE ? OR c.CompanyName LIKE ? ORDER BY cust_name");
-
-        Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), new String[]{"%" + search + "%", "%" + search + "%",
+        Cursor cursor = DBManager.getDatabase().rawQuery(sb, new String[]{"%" + search + "%", "%" + search + "%",
                 "%" + search + "%", "%" + search + "%", "%" + search + "%", "%" + search + "%"});
         cursor.moveToFirst();
         return cursor;
     }
 
     public HashMap<String, String> getXMLCustAddr(String custID) {
-        HashMap<String, String> mapValues = new HashMap<String, String>();
+        HashMap<String, String> mapValues = new HashMap<>();
         if (custID != null && !custID.isEmpty()) {
-            // SQLiteDatabase db = dbManager.openReadableDB();
-
-            StringBuilder sb = new StringBuilder();
-            sb.append(
-                    "SELECT c.cust_firstName,c.cust_lastName,b.addr_b_str1,b.addr_b_str2,b.addr_b_str3,b.addr_b_city,b.addr_b_state,b.addr_b_country,");
-            sb.append(
-                    "b.addr_b_zipcode,b.addr_s_str1,b.addr_s_str2,b.addr_s_str3,b.addr_s_city,b.addr_s_state,b.addr_s_country,b.addr_s_zipcode ");
-            sb.append("FROM Customers c LEFT OUTER JOIN Address b ON c.cust_id = b.cust_id WHERE c.cust_id = ?");
-
-            Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), new String[]{custID});
-
+            String sb = "SELECT c.cust_firstName,c.cust_lastName,b.addr_b_str1,b.addr_b_str2,b.addr_b_str3,b.addr_b_city,b.addr_b_state,b.addr_b_country," +
+                    "b.addr_b_zipcode,b.addr_s_str1,b.addr_s_str2,b.addr_s_str3,b.addr_s_city,b.addr_s_state,b.addr_s_country,b.addr_s_zipcode " +
+                    "FROM Customers c LEFT OUTER JOIN Address b ON c.cust_id = b.cust_id WHERE c.cust_id = ?";
+            Cursor cursor = DBManager.getDatabase().rawQuery(sb, new String[]{custID});
             if (cursor.moveToFirst()) {
                 mapValues.put("cust_fname", cursor.getString(cursor.getColumnIndex(cust_firstName)));
                 mapValues.put("cust_lname", cursor.getString(cursor.getColumnIndex(cust_lastName)));
@@ -473,9 +454,7 @@ public class CustomersHandler {
                 mapValues.put("addr_s_country", cursor.getString(cursor.getColumnIndex("addr_s_country")));
                 mapValues.put("addr_s_zipcode", cursor.getString(cursor.getColumnIndex("addr_s_zipcode")));
             }
-
             cursor.close();
-            // db.close();
         }
         return mapValues;
     }
@@ -486,8 +465,6 @@ public class CustomersHandler {
         customer.setShippingAddress(new Address());
         customer.setBillingAddress(new Address());
         if (customerId != null && !customerId.isEmpty()) {
-            // SQLiteDatabase db = dbManager.openReadableDB();
-
             String sb = ("SELECT c.cust_firstName,c.cust_lastName,b.addr_b_str1,b.addr_b_str2,b.addr_b_str3,b.addr_b_city," +
                     " b.addr_b_state,b.addr_b_country,") +
                     " b.addr_b_zipcode,b.addr_s_str1,b.addr_s_str2,b.addr_s_str3,b.addr_s_city,b.addr_s_state,b.addr_s_country," +
@@ -497,6 +474,7 @@ public class CustomersHandler {
             Cursor cursor = DBManager.getDatabase().rawQuery(sb, new String[]{customerId});
 
             if (cursor.moveToFirst()) {
+                customer.setCust_id(customerId);
                 customer.setCust_firstName(cursor.getString(cursor.getColumnIndex(cust_firstName)));
                 customer.setCust_lastName(cursor.getString(cursor.getColumnIndex(cust_lastName)));
                 customer.getBillingAddress().setAddr_b_str1(cursor.getString(cursor.getColumnIndex("addr_b_str1")));
@@ -525,20 +503,13 @@ public class CustomersHandler {
     }
 
     public String[] getContactInfoBlock(String custID) {
-        // SQLiteDatabase db = dbManager.openReadableDB();
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT cust_phone,cust_email FROM Customers WHERE cust_id = ?");
-
-        Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), new String[]{custID});
+        Cursor cursor = DBManager.getDatabase().rawQuery("SELECT cust_phone,cust_email FROM Customers WHERE cust_id = ?", new String[]{custID});
         String[] data = new String[2];
-
         if (cursor.moveToFirst()) {
             data[0] = cursor.getString(cursor.getColumnIndex("cust_phone"));
             data[1] = cursor.getString(cursor.getColumnIndex("cust_email"));
         }
         cursor.close();
-        // db.close();
         return data;
     }
 }

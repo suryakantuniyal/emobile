@@ -3,18 +3,25 @@ package com.android.emobilepos.customer;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.PowerManager;
+import android.view.Menu;
 import android.view.View;
 import android.widget.AbsSpinner;
 import android.widget.AdapterView;
+import android.widget.EditText;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.TableLayout;
 import android.widget.TextView;
 
 import com.android.dao.CustomerCustomFieldsDAO;
 import com.android.database.CustomersHandler;
+import com.android.database.PriceLevelHandler;
+import com.android.database.TaxesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.CountrySpinnerAdapter;
 import com.android.emobilepos.models.Address;
 import com.android.emobilepos.models.Country;
+import com.android.emobilepos.models.Tax;
 import com.android.emobilepos.models.realms.CustomerCustomField;
 import com.android.support.Customer;
 import com.android.support.Global;
@@ -53,20 +60,12 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         customer = custHandler.getCustomer(cust_id);
         setUI();
         setupCountries();
-//        CountrySpinnerAdapter billingAdapter = new CountrySpinnerAdapter(this, android.R.layout.simple_spinner_item,
-//                this.nameCountryList, this.isoCountryList, true);
-//        CountrySpinnerAdapter shippingAdapter = new CountrySpinnerAdapter(this, android.R.layout.simple_spinner_item,
-//                this.nameCountryList, this.isoCountryList, false);
-//
-//        bCountrySpinner.setAdapter(billingAdapter);
-//        sCountrySpinner.setAdapter(shippingAdapter);
-//
-//        bCountrySpinner.setSelection(bSelectedCountry);
-//        sCountrySpinner.setSelection(sSelectedCountry);
+
         hasBeenCreated = true;
     }
 
     private void setUI() {
+        List<CustomerCustomField> customFields = CustomerCustomFieldsDAO.getCustomFields(customer.getCust_id());
         ((TextView) findViewById(R.id.customerNametextView341)).setText(String.format("%s %s %s", customer.getCust_firstName(), customer.getCust_middleName(), customer.getCust_lastName()));
         ((TextView) findViewById(R.id.customerContacttextView342)).setText(customer.getCust_contact());
         ((TextView) findViewById(R.id.customerPhonetextView343)).setText(customer.getCust_phone());
@@ -76,6 +75,15 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         ((TextView) findViewById(R.id.customerTaxabletextView373)).setText(customer.getCust_taxable());
         ((TextView) findViewById(R.id.customerTaxIdtextView37)).setText(customer.getCust_salestaxcode());
         ((TextView) findViewById(R.id.customerEmailtextView344)).setText(customer.getCust_email());
+        TableLayout tableLayout = (TableLayout) findViewById(R.id.customerFinancialInfoTableLayout);
+        for (CustomerCustomField field : customFields) {
+            View row = View.inflate(this, R.layout.customercustomfields_tablerow_layout, null);
+            row.setTag(field);
+            ((TextView) row.findViewById(R.id.customerCustomFieldLabelTextView)).setText(field.getCustFieldName());
+            ((EditText) row.findViewById(R.id.customerCustomFieldValueEditText)).setText(field.getCustValue());
+            tableLayout.addView(row);
+        }
+
         billingCountrySpinner = (Spinner) findViewById(R.id.newCustBillCountry);
         shippingCountrySpinner = (Spinner) findViewById(R.id.newCustShippingCountry);
 
@@ -87,6 +95,57 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
 
     }
 
+    private void setupSpinners() {
+        List<String> taxes = new ArrayList<>();
+        List<String> priceLevel = new ArrayList<>();
+        taxes.add("Select One");
+        priceLevel.add("Select One");
+
+        TaxesHandler handler = new TaxesHandler(this);
+        List<Tax> taxList = handler.getTaxes();
+        PriceLevelHandler handler2 = new PriceLevelHandler();
+        List<String[]> priceLevelList = handler2.getPriceLevel();
+
+        int size = taxList.size();
+        int size2 = priceLevelList.size();
+        int loopSize = size;
+        if (size2 > size)
+            loopSize = size2;
+        for (int i = 0; i < loopSize; i++) {
+            if (i < size)
+                taxes.add(taxList.get(i).getTaxName());
+            if (i < size2)
+                priceLevel.add(priceLevelList.get(i)[0]);
+        }
+
+        List<String[]> taxArr = new ArrayList<>();
+        for (Tax tax : taxList) {
+            String[] arr = new String[5];
+            arr[0] = tax.getTaxName();
+            arr[1] = tax.getTaxId();
+            arr[2] = tax.getTaxRate();
+            arr[3] = tax.getTaxType();
+            taxArr.add(arr);
+        }
+        CreateCustomer_FA.CustomAdapter taxAdapter = new CreateCustomer_FA.CustomAdapter(this, android.R.layout.simple_spinner_item, taxes, taxArr, true);
+        CreateCustomer_FA.CustomAdapter priceLevelAdapter = new CreateCustomer_FA.CustomAdapter(this, android.R.layout.simple_spinner_item, priceLevel, priceLevelList, false);
+
+        Spinner pricesList = (Spinner) findViewById(R.id.newCustList1);
+        Spinner taxesList = (Spinner) findViewById(R.id.newCustList2);
+
+        RadioGroup billingRadioGroup = (RadioGroup) findViewById(R.id.radioGroupBillingAddressType);
+        billingRadioGroup.setOnCheckedChangeListener(this);
+        RadioGroup shippingRadioGroup = (RadioGroup) findViewById(R.id.radioGroupShippingAddressType);
+        shippingRadioGroup.setOnCheckedChangeListener(this);
+
+        taxesList.setAdapter(taxAdapter);
+        taxesList.setOnItemSelectedListener(getItemSelectedListener(SPINNER_TAXES));
+
+        pricesList.setAdapter(priceLevelAdapter);
+        pricesList.setOnItemSelectedListener(getItemSelectedListener(SPINNER_PRICELEVEL));
+
+
+    }
     private void setupCountries() {
         countries = new ArrayList<>();
         String[] isoCountries = Locale.getISOCountries();
