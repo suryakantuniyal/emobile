@@ -33,14 +33,14 @@ public class AssignEmployeeDAO {
         Realm r = Realm.getDefaultInstance();
         AssignEmployee employee;
         try {
-            r.beginTransaction();
+//            r.beginTransaction();
             employee = r.where(AssignEmployee.class).findFirst();
 
             if (!returnManaged && employee != null) {
                 employee = r.copyFromRealm(employee);
             }
         } finally {
-            r.commitTransaction();
+//            r.commitTransaction();
             r.close();
         }
         return employee;
