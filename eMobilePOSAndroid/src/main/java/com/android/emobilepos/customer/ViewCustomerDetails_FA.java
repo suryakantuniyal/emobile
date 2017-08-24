@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implements AdapterView.OnItemSelectedListener, RadioGroup.OnCheckedChangeListener {
+public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implements AdapterView.OnItemSelectedListener, RadioGroup.OnCheckedChangeListener, View.OnClickListener {
 
     private final int SPINNER_PRICELEVEL = 0, SPINNER_TAXES = 1;
     private Global global;
@@ -55,6 +55,15 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
     public int shippingSelectedCountry;
     private int taxSelected;
     private int priceLevelSelected;
+    private TextView contacTextView;
+    private TextView phoneTextView;
+    private TextView companyTextView;
+    private TextView balanceTextView;
+    private TextView limitTextView;
+    private TextView taxableTextView;
+    private TextView taxidTextView;
+    private TextView emailTextView;
+    boolean isCustomerEdit = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -64,45 +73,63 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         global = (Global) getApplication();
         Bundle extras = getIntent().getExtras();
         CustomersHandler custHandler = new CustomersHandler(this);
-
-        cust_id = extras.getString("cust_id");
-        customFields = CustomerCustomFieldsDAO.getCustomFields(cust_id);
-        customer = custHandler.getCustomer(cust_id);
-        setUI();
-        setupCountries();
+        if (extras.containsKey("cust_id")) {
+            isCustomerEdit = true;
+            cust_id = extras.getString("cust_id");
+            customFields = CustomerCustomFieldsDAO.getCustomFields(cust_id);
+            customer = custHandler.getCustomer(cust_id);
+        } else {
+            isCustomerEdit = false;
+            customer = new Customer();
+        }
 
         hasBeenCreated = true;
+        contacTextView = (TextView) findViewById(R.id.customerContacttextView342);
+        phoneTextView = ((TextView) findViewById(R.id.customerPhonetextView343));
+        companyTextView = ((TextView) findViewById(R.id.customerCompanytextView34));
+        balanceTextView = ((TextView) findViewById(R.id.customerBalancetextView371));
+        limitTextView = ((TextView) findViewById(R.id.customerLimittextView372));
+        taxableTextView = ((TextView) findViewById(R.id.customerTaxabletextView373));
+        taxidTextView = ((TextView) findViewById(R.id.customerTaxIdtextView37));
+        emailTextView = ((TextView) findViewById(R.id.customerEmailtextView344));
+
+        setUI();
+        setupCountries();
+        setupSpinners();
     }
 
     private void setUI() {
-        List<CustomerCustomField> customFields = CustomerCustomFieldsDAO.getCustomFields(customer.getCust_id());
-        ((TextView) findViewById(R.id.customerNametextView341)).setText(String.format("%s %s %s", customer.getCust_firstName(), customer.getCust_middleName(), customer.getCust_lastName()));
-        ((TextView) findViewById(R.id.customerContacttextView342)).setText(customer.getCust_contact());
-        ((TextView) findViewById(R.id.customerPhonetextView343)).setText(customer.getCust_phone());
-        ((TextView) findViewById(R.id.customerCompanytextView34)).setText(customer.getCompanyName());
-        ((TextView) findViewById(R.id.customerBalancetextView371)).setText(customer.getCust_balance());
-        ((TextView) findViewById(R.id.customerLimittextView372)).setText(customer.getCust_limit());
-        ((TextView) findViewById(R.id.customerTaxabletextView373)).setText(customer.getCust_taxable());
-        ((TextView) findViewById(R.id.customerTaxIdtextView37)).setText(customer.getCust_salestaxcode());
-        ((TextView) findViewById(R.id.customerEmailtextView344)).setText(customer.getCust_email());
-        TableLayout tableLayout = (TableLayout) findViewById(R.id.customerFinancialInfoTableLayout);
-        for (CustomerCustomField field : customFields) {
-            View row = View.inflate(this, R.layout.customercustomfields_tablerow_layout, null);
-            row.setTag(field);
-            ((TextView) row.findViewById(R.id.customerCustomFieldLabelTextView)).setText(field.getCustFieldName());
-            ((EditText) row.findViewById(R.id.customerCustomFieldValueEditText)).setText(field.getCustValue());
-            tableLayout.addView(row);
+        if (isCustomerEdit) {
+            List<CustomerCustomField> customFields = CustomerCustomFieldsDAO.getCustomFields(customer.getCust_id());
+            ((TextView) findViewById(R.id.customerNametextView341)).setText(String.format("%s %s %s", customer.getCust_firstName(), customer.getCust_middleName(), customer.getCust_lastName()));
+            contacTextView.setText(customer.getCust_contact());
+            phoneTextView.setText(customer.getCust_phone());
+            companyTextView.setText(customer.getCompanyName());
+            balanceTextView.setText(customer.getCust_balance());
+            limitTextView.setText(customer.getCust_limit());
+            taxableTextView.setText(customer.getCust_taxable());
+            taxidTextView.setText(customer.getCust_salestaxcode());
+            emailTextView.setText(customer.getCust_email());
+            TableLayout tableLayout = (TableLayout) findViewById(R.id.customerFinancialInfoTableLayout);
+            for (CustomerCustomField field : customFields) {
+                View row = View.inflate(this, R.layout.customercustomfields_tablerow_layout, null);
+                row.setTag(field);
+                ((TextView) row.findViewById(R.id.customerCustomFieldLabelTextView)).setText(field.getCustFieldName());
+                ((EditText) row.findViewById(R.id.customerCustomFieldValueEditText)).setText(field.getCustValue());
+                tableLayout.addView(row);
+            }
+
+            billingCountrySpinner = (Spinner) findViewById(R.id.newCustBillCountry);
+            shippingCountrySpinner = (Spinner) findViewById(R.id.newCustShippingCountry);
+
+            ((TextView) findViewById(R.id.newCustBillStr1)).setText(customer.getBillingAddress().getAddr_b_str1());
+            ((TextView) findViewById(R.id.newCustBillStr2)).setText(customer.getBillingAddress().getAddr_b_str2());
+            ((TextView) findViewById(R.id.newCustBillCity)).setText(customer.getBillingAddress().getAddr_b_city());
+            ((TextView) findViewById(R.id.newCustBillState)).setText(customer.getBillingAddress().getAddr_b_state());
+            ((TextView) findViewById(R.id.newCustBillZip)).setText(customer.getBillingAddress().getAddr_b_zipcode());
         }
+        findViewById(R.id.btnSaveCustomer).setOnClickListener(this);
 
-        billingCountrySpinner = (Spinner) findViewById(R.id.newCustBillCountry);
-        shippingCountrySpinner = (Spinner) findViewById(R.id.newCustShippingCountry);
-
-        ((TextView) findViewById(R.id.newCustBillStr1)).setText(customer.getBillingAddress().getAddr_b_str1());
-        ((TextView) findViewById(R.id.newCustBillStr2)).setText(customer.getBillingAddress().getAddr_b_str2());
-        ((TextView) findViewById(R.id.newCustBillCity)).setText(customer.getBillingAddress().getAddr_b_city());
-        ((TextView) findViewById(R.id.newCustBillState)).setText(customer.getBillingAddress().getAddr_b_state());
-        ((TextView) findViewById(R.id.newCustBillZip)).setText(customer.getBillingAddress().getAddr_b_zipcode());
-        setupSpinners();
     }
 
     private void setupSpinners() {
@@ -153,8 +180,6 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
 
         pricesList.setAdapter(priceLevelAdapter);
         pricesList.setOnItemSelectedListener(getItemSelectedListener(SPINNER_PRICELEVEL));
-
-
     }
 
     private void setupCountries() {
@@ -269,7 +294,28 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
 
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btnSaveCustomer:
+                saveCustomer();
+                break;
+        }
+    }
+
+    private void saveCustomer() {
+        customer.setCust_phone(phoneTextView.getText().toString());
+        customer.setCust_email(emailTextView.getText().toString());
+        customer.setCust_contact(contacTextView.getText().toString());
+        customer.setCust_limit(limitTextView.getText().toString());
+        customer.setCompanyName(companyTextView.getText().toString());
+
+        CustomersHandler handler = new CustomersHandler(this);
+        handler.insertOneCustomer(customer);
+    }
+
     private class CustomAdapter extends ArrayAdapter<String> {
+
         List<String> leftData = null;
         List<String[]> rightData = null;
         boolean isTax = false;
@@ -287,11 +333,8 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             View view = super.getView(position, convertView, parent);
-
-            // we know that simple_spinner_item has android.R.id.text1 TextView:
-
             TextView text = (TextView) view.findViewById(android.R.id.text1);
-            text.setTextColor(Color.BLACK);// choose your color
+            text.setTextColor(Color.BLACK);
             text.setPadding(35, 0, 0, 0);
             return view;
         }

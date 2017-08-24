@@ -35,6 +35,9 @@ public class Customer
 	private String cust_dob = "";
 	private Address shippingAddress;
 	private Address billingAddress;
+	private String custIdKey;
+	private String custIdNumeric;
+	private String custAccountNumber;
 
 	public String getCust_id() {
 		return cust_id;
@@ -282,5 +285,30 @@ public class Customer
 
 	public void setBillingAddress(Address billingAddress) {
 		this.billingAddress = billingAddress;
+	}
+
+	public String getCustIdKey() {
+		return custIdKey;
+	}
+
+	public void setCustIdKey(String custIdKey) {
+		this.custIdKey = custIdKey;
+	}
+
+
+	public String getCustIdNumeric() {
+		return custIdNumeric;
+	}
+
+	public void setCustIdNumeric(String custIdNumeric) {
+		this.custIdNumeric = custIdNumeric;
+	}
+
+	public String getCustAccountNumber() {
+		return custAccountNumber;
+	}
+
+	public void setCustAccountNumber(String custAccountNumber) {
+		this.custAccountNumber = custAccountNumber;
 	}
 }
