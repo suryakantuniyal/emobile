@@ -61,6 +61,7 @@ public class CustomersHandler {
             cust_points, custidkey, cust_id_numeric, cust_dob, AccountNumnber);
     private StringBuilder sb1, sb2;
     private HashMap<String, Integer> attrHash;
+
 //    private List<String[]> custData;
 //    private List<HashMap<String, Integer>> dictionaryListMap;
 
@@ -423,10 +424,11 @@ public class CustomersHandler {
         customer.setShippingAddress(new Address());
         customer.setBillingAddress(new Address());
         if (customerId != null && !customerId.isEmpty()) {
-            String sb = ("SELECT c.cust_firstName,c.cust_lastName,b.addr_b_str1,b.addr_b_str2,b.addr_b_str3,b.addr_b_city," +
+            String sb = ("SELECT c.*, " +
+                    " b.addr_b_str1,b.addr_b_str2,b.addr_b_str3,b.addr_b_city,b.cust_id," +
                     " b.addr_b_state,b.addr_b_country,") +
                     " b.addr_b_zipcode,b.addr_s_str1,b.addr_s_str2,b.addr_s_str3,b.addr_s_city,b.addr_s_state,b.addr_s_country," +
-                    " b.addr_s_zipcode , cust_taxable, cust_salestaxcode" +
+                    " b.addr_s_zipcode" +
                     " FROM Customers c LEFT OUTER JOIN Address b ON c.cust_id = b.cust_id WHERE c.cust_id = ?";
 
             Cursor cursor = DBManager.getDatabase().rawQuery(sb, new String[]{customerId});
@@ -435,6 +437,29 @@ public class CustomersHandler {
                 customer.setCust_id(customerId);
                 customer.setCust_firstName(cursor.getString(cursor.getColumnIndex(cust_firstName)));
                 customer.setCust_lastName(cursor.getString(cursor.getColumnIndex(cust_lastName)));
+                customer.setCust_middleName(cursor.getString(cursor.getColumnIndex(cust_middleName)));
+                customer.setCompanyName(cursor.getString(cursor.getColumnIndex(CompanyName)));
+                customer.setCust_balance(cursor.getString(cursor.getColumnIndex(cust_balance)));
+                customer.setCust_chain(cursor.getString(cursor.getColumnIndex(cust_chain)));
+                customer.setCust_contact(cursor.getString(cursor.getColumnIndex(cust_contact)));
+                customer.setCust_dob(cursor.getString(cursor.getColumnIndex(cust_dob)));
+                customer.setCust_email(cursor.getString(cursor.getColumnIndex(cust_email)));
+                customer.setCust_fax(cursor.getString(cursor.getColumnIndex(cust_fax)));
+                customer.setCustIdNumeric(cursor.getString(cursor.getColumnIndex(cust_id_numeric)));
+                customer.setCust_id_ref(cursor.getString(cursor.getColumnIndex(cust_id_ref)));
+                customer.setPricelevel_id(cursor.getString(cursor.getColumnIndex(pricelevel_id)));
+                customer.setCust_limit(cursor.getString(cursor.getColumnIndex(cust_limit)));
+                customer.setCust_ordertype(cursor.getString(cursor.getColumnIndex(cust_ordertype)));
+                customer.setCust_phone(cursor.getString(cursor.getColumnIndex(cust_phone)));
+                customer.setCust_points(cursor.getString(cursor.getColumnIndex(cust_points)));
+                customer.setCust_pwd(cursor.getString(cursor.getColumnIndex(cust_pwd)));
+                customer.setCust_salestaxcode(cursor.getString(cursor.getColumnIndex(cust_salestaxcode)));
+                customer.setCust_securityanswer(cursor.getString(cursor.getColumnIndex(cust_securityanswer)));
+                customer.setCust_securityquestion(cursor.getString(cursor.getColumnIndex(cust_securityquestion)));
+                customer.setCust_taxable(cursor.getString(cursor.getColumnIndex(cust_taxable)));
+                customer.setCust_terms(cursor.getString(cursor.getColumnIndex(cust_terms)));
+                customer.setCust_update(cursor.getString(cursor.getColumnIndex(cust_update)));
+
                 customer.getBillingAddress().setAddr_b_str1(cursor.getString(cursor.getColumnIndex("addr_b_str1")));
                 customer.getBillingAddress().setAddr_b_str2(cursor.getString(cursor.getColumnIndex("addr_b_str2")));
                 customer.getBillingAddress().setAddr_b_str3(cursor.getString(cursor.getColumnIndex("addr_b_str3")));
