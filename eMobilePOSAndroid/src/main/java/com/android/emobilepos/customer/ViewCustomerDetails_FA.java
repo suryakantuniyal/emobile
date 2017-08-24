@@ -102,7 +102,7 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         ((TextView) findViewById(R.id.newCustBillCity)).setText(customer.getBillingAddress().getAddr_b_city());
         ((TextView) findViewById(R.id.newCustBillState)).setText(customer.getBillingAddress().getAddr_b_state());
         ((TextView) findViewById(R.id.newCustBillZip)).setText(customer.getBillingAddress().getAddr_b_zipcode());
-
+        setupSpinners();
     }
 
     private void setupSpinners() {
@@ -156,6 +156,7 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
 
 
     }
+
     private void setupCountries() {
         countries = new ArrayList<>();
         String[] isoCountries = Locale.getISOCountries();
@@ -218,6 +219,7 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
             }
         };
     }
+
     @Override
     public void onResume() {
 
