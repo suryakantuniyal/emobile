@@ -1304,10 +1304,10 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                             @Override
                             public void onClick(View v) {
                                 String val = holder.rightText.getText().toString();
-                                int qty = Integer.parseInt(val);
+                                double qty = Double.parseDouble(val);
                                 qty += 1;
-                                qty_picked = Integer.toString(qty);
-                                holder.rightText.setText(String.valueOf(qty));
+                                qty_picked = String.valueOf(qty);
+                                holder.rightText.setText(Global.getBigDecimalNum(qty_picked, 2).toString());
                                 BigDecimal newQty = Global.getBigDecimalNum(holder.rightText.getText().toString());
                                 updateVolumePrice(newQty);
                                 notifyDataSetChanged();
@@ -1318,11 +1318,11 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                             @Override
                             public void onClick(View v) {
                                 String val = holder.rightText.getText().toString();
-                                int qty = Integer.parseInt(val);
+                                double qty = Double.parseDouble(val);
                                 qty -= 1;
                                 if (qty >= 1) {
-                                    qty_picked = Integer.toString(qty);
-                                    holder.rightText.setText(String.valueOf(qty));
+                                    qty_picked = String.valueOf(qty);
+                                    holder.rightText.setText(Global.getBigDecimalNum(qty_picked, 2).toString());
                                     BigDecimal newQty = Global.getBigDecimalNum(holder.rightText.getText().toString());
 
                                     updateVolumePrice(newQty);
@@ -1379,10 +1379,10 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                             @Override
                             public void onClick(View v) {
                                 String val = holder.rightText.getText().toString();
-                                int qty = Integer.parseInt(val);
+                                double qty = Double.parseDouble(val);
                                 qty += 1;
-                                qty_picked = Integer.toString(qty);
-                                holder.rightText.setText(String.valueOf(qty));
+                                qty_picked = String.valueOf(qty);
+                                holder.rightText.setText(Global.getBigDecimalNum(qty_picked, 2).toString());
                                 BigDecimal newQty = Global.getBigDecimalNum(holder.rightText.getText().toString());
 
                                 updateVolumePrice(newQty);
@@ -1394,11 +1394,11 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                             @Override
                             public void onClick(View v) {
                                 String val = holder.rightText.getText().toString();
-                                int qty = Integer.parseInt(val);
+                                double qty = Double.parseDouble(val);
                                 qty -= 1;
                                 if (qty >= 1) {
-                                    qty_picked = Integer.toString(qty);
-                                    holder.rightText.setText(String.valueOf(qty));
+                                    qty_picked = String.valueOf(qty);
+                                    holder.rightText.setText(Global.getBigDecimalNum(qty_picked, 2).toString());
                                     BigDecimal newQty = Global.getBigDecimalNum(holder.rightText.getText().toString());
 
                                     updateVolumePrice(newQty);
