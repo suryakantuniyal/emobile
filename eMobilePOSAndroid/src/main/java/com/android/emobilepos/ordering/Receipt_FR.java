@@ -1831,6 +1831,9 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     }
 
     private void proceedToRemove(int removePos) {
+        if (removePos < 0 || global.order.getOrderProducts().isEmpty()) {
+            return;
+        }
         OrderProduct product = global.order.getOrderProducts().get(removePos);
         if (myPref
                 .getPreferences(MyPreferences.pref_show_removed_void_items_in_printout)) {

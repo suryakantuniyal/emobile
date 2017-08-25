@@ -926,6 +926,9 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
     }
 
     public void showBalancePrompt(String msg) {
+        if (Global.isActivityDestroyed(this)) {
+            return;
+        }
         final Dialog dlog = new Dialog(this, R.style.Theme_TransparentTest);
         dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dlog.setContentView(R.layout.dlog_btn_single_layout);

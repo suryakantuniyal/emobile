@@ -136,7 +136,11 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         int id = item.getItemId();
         switch (id) {
             case R.id.refreshHolds: {
-                new RefreshHolds().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                if (NetworkUtils.isConnectedToInternet(this)) {
+                    new RefreshHolds().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                } else {
+                    Global.showPrompt(this, R.string.dlog_title_error, getString(R.string.dlog_msg_no_internet_access));
+                }
                 break;
             }
         }
