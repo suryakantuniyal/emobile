@@ -521,7 +521,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     ((OrderingMain_FA) getActivity()).setRestaurantSaleType(Global.RestaurantSaleType.EAT_IN);
                     String firstSeat = mainLVAdapter.getFirstSeat();
                     ((OrderingMain_FA) getActivity()).setSelectedSeatNumber(firstSeat);
-                    ((OrderingMain_FA) getActivity()).setSelectedDinningTableNumber("1");
+//                    ((OrderingMain_FA) getActivity()).setSelectedDinningTableNumber("1");
                     mainLVAdapter.moveSeatItems(global.order.getOrderProducts(), firstSeat);
                     mainLVAdapter.notifyDataSetChanged();
                 }

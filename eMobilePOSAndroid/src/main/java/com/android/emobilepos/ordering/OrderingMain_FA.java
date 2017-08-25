@@ -469,7 +469,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             if (!myPref.getIsTablet())
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             orientation = getResources().getConfiguration().orientation;
-            rightFragment = new Catalog_FR();
+            setRightFragment(new Catalog_FR());
             if (onHoldOrder == null) {
                 leftFragment = new Receipt_FR();
             } else {
@@ -478,7 +478,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.add(R.id.order_receipt_frag_container, leftFragment);
-            ft.add(R.id.order_catalog_frag_container, rightFragment);
+            ft.add(R.id.order_catalog_frag_container, getRightFragment());
             ft.commit();
 
             msrWasLoaded = false;
@@ -605,8 +605,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         FragmentTransaction ft = fm.beginTransaction();
         if (leftFragment == null)
             leftFragment = (Receipt_FR) fm.findFragmentById(R.id.order_receipt_frag_container);
-        if (rightFragment == null)
-            rightFragment = (Catalog_FR) fm.findFragmentById(R.id.order_catalog_frag_container);
+        if (getRightFragment() == null)
+            setRightFragment((Catalog_FR) fm.findFragmentById(R.id.order_catalog_frag_container));
         if (orientation != _orientation) // screen orientation occurred
         {
             if (_orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -746,8 +746,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     public void refreshView() {
         if (leftFragment != null)
             leftFragment.refreshView();
-        if (rightFragment != null)
-            rightFragment.refreshListView();
+        if (getRightFragment() != null)
+            getRightFragment().refreshListView();
     }
 
     @Override
@@ -766,8 +766,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             Global.taxID = "";
             leftFragment.custName.setText(newName);
             OrderTotalDetails_FR.getFrag().initSpinners();
-            if (rightFragment != null) {
-                rightFragment.loadCursor();
+            if (getRightFragment() != null) {
+                getRightFragment().loadCursor();
             }
 
             prefetchLoyalty(true);
@@ -1151,8 +1151,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     @Override
     public void updateHeaderTitle(String val) {
         headerTitle.setText(val);
-        if ((Global.consignmentType == Global.OrderType.CONSIGNMENT_FILLUP || Global.consignmentType == Global.OrderType.CONSIGNMENT_RETURN) && rightFragment != null) {
-            rightFragment.loadCursor();
+        if ((Global.consignmentType == Global.OrderType.CONSIGNMENT_FILLUP || Global.consignmentType == Global.OrderType.CONSIGNMENT_RETURN) && getRightFragment() != null) {
+            getRightFragment().loadCursor();
         }
     }
 
@@ -1626,6 +1626,14 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     public void setLoyaltyFragment(OrderLoyalty_FR loyaltyFragment) {
         this.loyaltyFragment = loyaltyFragment;
+    }
+
+    public Catalog_FR getRightFragment() {
+        return rightFragment;
+    }
+
+    public void setRightFragment(Catalog_FR rightFragment) {
+        this.rightFragment = rightFragment;
     }
 
     public enum OrderingAction {
