@@ -40,6 +40,10 @@ public class Catalog_Loader extends AsyncTaskLoader<Cursor> {
         if (onRestaurantMode && category == null && TextUtils.isEmpty(searchText)) {
             return getEmptyCursor();
         }
+        if (context instanceof OrderingMain_FA && ((OrderingMain_FA) context).getCatalogFr() != null) {
+            ((OrderingMain_FA) context).getCatalogFr().closeCursor();
+        }
+
         Cursor cursor;
 
         ProductsHandler productsHandler = new ProductsHandler(context);

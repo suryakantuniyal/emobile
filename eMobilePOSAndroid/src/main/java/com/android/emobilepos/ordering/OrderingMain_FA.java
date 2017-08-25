@@ -1614,6 +1614,11 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         this.loyaltyFragment = loyaltyFragment;
     }
 
+    public Catalog_FR getCatalogFr() {
+        return catalogFr;
+    }
+
+
     public enum OrderingAction {
         HOLD, CHECKOUT, NONE, BACK_PRESSED
     }
