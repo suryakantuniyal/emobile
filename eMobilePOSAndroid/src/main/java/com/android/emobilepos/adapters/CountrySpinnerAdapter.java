@@ -61,18 +61,19 @@ public class CountrySpinnerAdapter extends BaseAdapter implements SpinnerAdapter
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+
         if (convertView == null) {
-            convertView = View.inflate(context, R.layout.spinner_layout, null);
+            convertView = View.inflate(context, android.R.layout.simple_spinner_item, null);
         }
         selectedPosition = position;
         Country country = countries.get(position);
-        TextView text = (TextView) convertView.findViewById(R.id.taxName);
+        TextView text = (TextView) convertView.findViewById(android.R.id.text1);
         text.setTextColor(Color.BLACK);// choose your color
         text.setPadding(35, 0, 0, 0);
-        TextView valueText = (TextView) convertView.findViewById(R.id.taxValue);
+//        TextView valueText = (TextView) convertView.findViewById(R.id.taxValue);
         text.setText(country.getName());
-        valueText.setText(country.getIsoCode());
-        convertView.findViewById(R.id.checkMark).setVisibility(View.INVISIBLE);
+//        valueText.setText(country.getIsoCode());
+//        convertView.findViewById(R.id.checkMark).setVisibility(View.INVISIBLE);
         return convertView;
     }
 

@@ -52,6 +52,7 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
     public int shippingSelectedCountry;
     private int taxSelected;
     private int priceLevelSelected;
+    private TextView customerNameTextView;
     private TextView contacTextView;
     private TextView phoneTextView;
     private TextView companyTextView;
@@ -112,10 +113,13 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         shippingCity = ((TextView) findViewById(R.id.newCustShippingCity));
         shippingState = (TextView) findViewById(R.id.newCustShippingState);
         shippingZip = ((TextView) findViewById(R.id.newCustShippingZip));
-
+        customerNameTextView = (TextView) findViewById(R.id.customerNametextView341);
         setUI();
         setupCountries();
         setupSpinners();
+        if (isCustomerEdit) {
+            disableFields();
+        }
     }
 
     private void setUI() {
@@ -153,13 +157,13 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
 
             billingCountrySpinner = (Spinner) findViewById(R.id.newCustBillCountry);
             shippingCountrySpinner = (Spinner) findViewById(R.id.newCustShippingCountry);
-            disableFields();
         }
         findViewById(R.id.btnSaveCustomer).setOnClickListener(this);
 
     }
 
     private void disableFields() {
+        customerNameTextView.setEnabled(!isCustomerEdit);
         contacTextView.setEnabled(!isCustomerEdit);
         phoneTextView.setEnabled(!isCustomerEdit);
         emailTextView.setEnabled(!isCustomerEdit);
@@ -181,6 +185,8 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         shippingState.setEnabled(!isCustomerEdit);
         shippingZip.setEnabled(!isCustomerEdit);
         shippingCountrySpinner.setEnabled(!isCustomerEdit);
+        taxesList.setEnabled(!isCustomerEdit);
+
     }
 
     private void setupSpinners() {
@@ -232,8 +238,8 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         CustomAdapter taxAdapter = new CustomAdapter(this, android.R.layout.simple_spinner_item, taxes, taxArr, true);
         CustomAdapter priceLevelAdapter = new CustomAdapter(this, android.R.layout.simple_spinner_item, priceLevel, priceLevelList, false);
 
-         pricesList = (Spinner) findViewById(R.id.newCustList1);
-         taxesList = (Spinner) findViewById(R.id.newCustList2);
+        pricesList = (Spinner) findViewById(R.id.newCustList1);
+        taxesList = (Spinner) findViewById(R.id.newCustList2);
 
         RadioGroup billingRadioGroup = (RadioGroup) findViewById(R.id.radioGroupBillingAddressType);
         billingRadioGroup.setOnCheckedChangeListener(this);
