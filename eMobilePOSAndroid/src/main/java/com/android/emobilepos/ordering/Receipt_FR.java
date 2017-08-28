@@ -519,7 +519,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     ((OrderingMain_FA) getActivity()).setRestaurantSaleType(Global.RestaurantSaleType.EAT_IN);
                     String firstSeat = mainLVAdapter.getFirstSeat();
                     ((OrderingMain_FA) getActivity()).setSelectedSeatNumber(firstSeat);
-                    ((OrderingMain_FA) getActivity()).setSelectedDinningTableNumber("1");
+//                    ((OrderingMain_FA) getActivity()).setSelectedDinningTableNumber("1");
                     mainLVAdapter.moveSeatItems(global.order.getOrderProducts(), firstSeat);
                     mainLVAdapter.notifyDataSetChanged();
                 }
@@ -1834,6 +1834,9 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     }
 
     private void proceedToRemove(int removePos) {
+        if (removePos < 0 || global.order.getOrderProducts().isEmpty()) {
+            return;
+        }
         OrderProduct product = global.order.getOrderProducts().get(removePos);
         if (myPref
                 .getPreferences(MyPreferences.pref_show_removed_void_items_in_printout)) {
@@ -2023,7 +2026,9 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     break;
             }
         } else {
-            getActivity().finish();
+            if (!Global.isFromOnHold) {
+                getActivity().finish();
+            }
         }
     }
 
@@ -2144,9 +2149,9 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
         @Override
         protected void onPostExecute(Boolean voidOnHold) {
-            myProgressDialog.dismiss();
-            if (voidOnHold)
-                getActivity().finish();
+            Global.dismissDialog(getActivity(), myProgressDialog);
+//            if (voidOnHold)
+            getActivity().finish();
         }
 
     }

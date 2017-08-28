@@ -658,7 +658,9 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         if (global == null) {
             return;
         }
-        new ReCalculate().execute(orderProducts);
+        if (getOrderingMainFa() != null) {
+            new ReCalculate().execute(orderProducts);
+        }
     }
 
     @Override
@@ -673,47 +675,52 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             Global.lockOrientation(getActivity());
         }
 
-        @SafeVarargs
         @Override
-        protected final OrderTotalDetails doInBackground(List<OrderProduct>... params) {
-            List<OrderProduct> orderProducts = params[0];
-            if (myPref.isMixAnMatch() && orderProducts != null && !orderProducts.isEmpty()) {
-                boolean isGroupBySKU = myPref.isGroupReceiptBySku(isToGo);//myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku) && isToGo;
-                calculateMixAndMatch(orderProducts, isGroupBySKU);
+        protected OrderTotalDetails doInBackground(List<OrderProduct>... params) {
+            OrderTotalDetails totalDetails = null;
+            try {
+                List<OrderProduct> orderProducts = params[0];
+                if (myPref.isMixAnMatch() && orderProducts != null && !orderProducts.isEmpty()) {
+                    boolean isGroupBySKU = myPref.isGroupReceiptBySku(isToGo);//myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku) && isToGo;
+                    calculateMixAndMatch(orderProducts, isGroupBySKU);
+                }
+                Discount discount = discountSelected > 0 ? discountList.get(discountSelected - 1) : null;
+                global.order.setRetailTaxes(myPref.isRetailTaxes());
+                global.order.ord_globalDiscount = String.valueOf(discount_amount);
+                global.order.setListOrderTaxes(getOrderingMainFa().getListOrderTaxes());
+                Tax tax = taxSelected > 0 ? taxList.get(taxSelected - 1) : null;
+                if (myPref.isRetailTaxes()) {
+                    global.order.setRetailTax(getActivity(), taxID);
+                }
+                totalDetails = global.order.getOrderTotalDetails(discount, tax, assignEmployee.isVAT(), getActivity());
+                gran_total = Global.getRoundBigDecimal(totalDetails.getGranTotal(), 2);
+                sub_total = totalDetails.getSubtotal();
+                tax_amount = Global.getRoundBigDecimal(totalDetails.getTax(), 2);
+                discount_amount = totalDetails.getGlobalDiscount();
+            } catch (Exception e) {
+                Crashlytics.logException(e);
             }
-            Discount discount = discountSelected > 0 ? discountList.get(discountSelected - 1) : null;
-            global.order.setRetailTaxes(myPref.isRetailTaxes());
-            global.order.ord_globalDiscount = String.valueOf(discount_amount);
-            global.order.setListOrderTaxes(getOrderingMainFa().getListOrderTaxes());
-            Tax tax = taxSelected > 0 ? taxList.get(taxSelected - 1) : null;
-            if (myPref.isRetailTaxes()) {
-                global.order.setRetailTax(getActivity(), taxID);
-            }
-            OrderTotalDetails totalDetails = global.order.getOrderTotalDetails(discount, tax, assignEmployee.isVAT(), getActivity());
-            gran_total = Global.getRoundBigDecimal(totalDetails.getGranTotal(), 2);
-            sub_total = totalDetails.getSubtotal();
-            tax_amount = Global.getRoundBigDecimal(totalDetails.getTax(), 2);
-            discount_amount = totalDetails.getGlobalDiscount();
             return totalDetails;
         }
 
         @Override
         protected synchronized void onPostExecute(OrderTotalDetails totalDetails) {
             super.onPostExecute(totalDetails);
-            subTotal.setText(Global.getCurrencyFrmt(String.valueOf(sub_total)));
-            granTotal.setText(Global.getCurrencyFrmt(String.valueOf(gran_total)));
-            globalTax.setText(Global.getCurrencyFrmt(String.valueOf(tax_amount)));
-            globalDiscount.setText(Global.getCurrencyFrmt(String.valueOf(discount_amount)));
-            getOrderingMainFa().getLoyaltyFragment().recalculatePoints(String.valueOf(totalDetails.getPointsSubTotal()), String.valueOf(totalDetails.getPointsInUse()),
-                    String.valueOf(totalDetails.getPointsAcumulable()), gran_total.toString());
-//            BigDecimal discountableAmount = totalDetails.getSubtotal();
-//            discountableAmount = discountableAmount.subtract(Global.rewardChargeAmount);
-            if (getOrderingMainFa().getLeftFragment().orderRewardsFr != null) {
+            if (totalDetails != null) {
+                subTotal.setText(Global.getCurrencyFrmt(String.valueOf(sub_total)));
+                granTotal.setText(Global.getCurrencyFrmt(String.valueOf(gran_total)));
+                globalTax.setText(Global.getCurrencyFrmt(String.valueOf(tax_amount)));
+                globalDiscount.setText(Global.getCurrencyFrmt(String.valueOf(discount_amount)));
+                if (getOrderingMainFa().getLoyaltyFragment() != null) {
+                    getOrderingMainFa().getLoyaltyFragment().recalculatePoints(String.valueOf(totalDetails.getPointsSubTotal()), String.valueOf(totalDetails.getPointsInUse()),
+                            String.valueOf(totalDetails.getPointsAcumulable()), gran_total.toString());
+                }
                 getOrderingMainFa().getLeftFragment().orderRewardsFr.setRewardSubTotal(discountable_sub_total.toString());
+                OrderingMain_FA mainFa = (OrderingMain_FA) getActivity();
+                mainFa.enableCheckoutButton();
+                mainFa.getLeftFragment().mainLVAdapter.notifyDataSetChanged();
+                getOrderingMainFa().getLeftFragment().receiptListView.setSelection(mainFa.getLeftFragment().mainLVAdapter.selectedPosition);
             }
-            getOrderingMainFa().enableCheckoutButton();
-            getOrderingMainFa().getLeftFragment().mainLVAdapter.notifyDataSetChanged();
-            getOrderingMainFa().getLeftFragment().receiptListView.setSelection(getOrderingMainFa().getLeftFragment().mainLVAdapter.selectedPosition);
         }
     }
 
