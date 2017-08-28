@@ -2022,7 +2022,9 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     break;
             }
         } else {
-            getActivity().finish();
+            if (!Global.isFromOnHold) {
+                getActivity().finish();
+            }
         }
     }
 
@@ -2140,9 +2142,9 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
         @Override
         protected void onPostExecute(Boolean voidOnHold) {
-            myProgressDialog.dismiss();
-            if (voidOnHold)
-                getActivity().finish();
+            Global.dismissDialog(getActivity(), myProgressDialog);
+//            if (voidOnHold)
+            getActivity().finish();
         }
 
     }
