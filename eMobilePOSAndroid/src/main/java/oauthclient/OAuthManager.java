@@ -38,6 +38,7 @@ public class OAuthManager {
         authClient.setClient_id(clientId);
         authClient.setClient_secret(clientSecret);
         realm.commitTransaction();
+        realm.close();
         try {
             requestToken();
         } catch (Exception e) {

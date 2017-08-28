@@ -85,59 +85,20 @@ public class StoredPaymentsDAO {
         Realm realm = Realm.getDefaultInstance();
         Payment payment = null;
         try {
-//            realm.beginTransaction();
             StoreAndForward first = realm.where(StoreAndForward.class).equalTo("payment.pay_id", payID).findFirst();
             if (first != null) {
                 payment = realm.copyFromRealm(first.getPayment());
             }
         } finally {
             realm.close();
-//            realm.commitTransaction();
         }
 
         switch (type) {
-            // May come from History>Payment>Details
-//            case 0:
-//                sb.append(
-//                        "SELECT p.inv_id,p.job_id, CASE WHEN p.paymethod_id IN ('Genius','') THEN p.card_type ELSE m.paymethod_name END AS 'paymethod_name',p.pay_date,p.pay_timecreated,IFNULL(c.cust_name,'Unknown') as 'cust_name', o.ord_total,p.pay_amount,p.pay_dueamount,"
-//                                + "CASE WHEN (m.paymethod_name = 'Cash') THEN (o.ord_total-p.pay_amount)  ELSE p.pay_tip END as 'change' ,p.pay_signature, "
-//                                + "p.pay_transid,p.ccnum_last4,p.pay_check,p.is_refund,p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
-//                                + "p.Tax1_amount, p.Tax2_amount, p.Tax1_name, p.Tax2_name, p.EMV_JSON "
-//                                + "FROM StoredPayments p,Orders o LEFT OUTER JOIN Customers c  ON c.cust_id = p.cust_id  "
-//                                + "LEFT OUTER JOIN PayMethods m ON m.paymethod_id = p.paymethod_id WHERE o.ord_id = p.job_id AND p.job_id ='");
-//
-//                break;
-            // Straight from main menu 'Payment'
             case 1:
-                sb.append(
-                        "SELECT " +
-//                                "p.inv_id,p.job_id,CASE WHEN p.paymethod_id IN ('Genius','') THEN p.card_type " +
-//                                "ELSE m.paymethod_name END AS 'paymethod_name',p.pay_date,p.pay_timecreated, " +
-                                "IFNULL(c.cust_name,'Unknown') as 'cust_name' "
-//                                "p.pay_amount AS 'ord_total',p.pay_amount,p.pay_dueamount,"
-//                                + "CASE WHEN (m.paymethod_name = 'Cash') THEN SUM(p.pay_amount-p.pay_amount) " +
-//                                "ELSE p.pay_tip END AS 'change', p.pay_signature,  "
-//                                + "p.pay_transid,p.ccnum_last4,p.pay_check,p.is_refund,p.IvuLottoDrawDate AS 'IvuLottoDrawDate',"
-//                                +  "p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
-//                                + "p.Tax1_amount, p.Tax2_amount, p.Tax1_name, p.Tax2_name, p.EMV_JSON "
-                                + "FROM Customers c where c.cust_id = '" + payment.getCust_id() + "'");
-//                                + "WHERE p.pay_id = '");
-
-
+                String custId = payment == null ? "" : payment.getCust_id();
+                sb.append("SELECT " + "IFNULL(c.cust_name,'Unknown') as 'cust_name' " + "FROM Customers c where c.cust_id = '").append(custId).append("'");
                 break;
-            // Straight from main menu 'Payment & Declined'
-//            case 2:
-//                sb.append(
-//                        "SELECT p.inv_id,p.job_id,CASE WHEN p.paymethod_id IN ('Genius','') THEN p.card_type ELSE m.paymethod_name END AS 'paymethod_name',p.pay_date,p.pay_timecreated, IFNULL(c.cust_name,'Unknown') as 'cust_name',p.pay_amount AS 'ord_total',p.pay_amount,p.pay_dueamount,"
-//                                + "CASE WHEN (m.paymethod_name = 'Cash') THEN SUM(p.pay_amount-p.pay_amount) ELSE p.pay_tip END AS 'change', p.pay_signature,  "
-//                                + "p.pay_transid,p.ccnum_last4,p.pay_check,p.is_refund,p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
-//                                + "p.Tax1_amount, p.Tax2_amount, p.Tax1_name, p.Tax2_name, p.EMV_JSON "
-//                                + "FROM PaymentsDeclined p LEFT OUTER JOIN Customers c ON c.cust_id =p.cust_id LEFT OUTER JOIN "
-//                                + "PayMethods m ON p.paymethod_id = m.paymethod_id  WHERE p.pay_id = '");
-//                sb.append(payID).append("'");
-//                break;
         }
-
 
         Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
         PaymentDetails paymentDetails = new PaymentDetails();

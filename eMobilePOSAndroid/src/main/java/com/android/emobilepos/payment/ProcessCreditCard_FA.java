@@ -448,25 +448,25 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         String paymentMethodType = extras.getString("paymentmethod_type");
         isEverpay = (paymentMethodType.equalsIgnoreCase("Everpay"));
 
-        isDebit = extras.getBoolean("isDebit");
-        requireTransID = extras.getBoolean("requireTransID");
+        isDebit = extras.getBoolean("isDebit", false);
+        requireTransID = extras.getBoolean("requireTransID", false);
 
         orderSubTotal = extras.getString("subTotal", "0");
-        if (extras.getBoolean("salespayment")) {
+        if (extras.getBoolean("salespayment", false)) {
             headerTitle.setText(getString(R.string.card_payment_title));
             isFromMainMenu = true;
-        } else if (extras.getBoolean("salesreceipt")) {
+        } else if (extras.getBoolean("salesreceipt", false)) {
             headerTitle.setText(getString(R.string.card_payment_title));
             requestCode = Global.FROM_JOB_SALES_RECEIPT;
-        } else if (extras.getBoolean("salesrefund")) {
+        } else if (extras.getBoolean("salesrefund", false)) {
             isRefund = true;
             isFromMainMenu = TextUtils.isEmpty(extras.getString("amount"))
                     || Double.parseDouble(extras.getString("amount")) == 0;
             headerTitle.setText(getString(R.string.card_refund_title));
-        } else if (extras.getBoolean("histinvoices")) {
+        } else if (extras.getBoolean("histinvoices", false)) {
             headerTitle.setText(getString(R.string.card_payment_title));
             requestCode = Global.FROM_OPEN_INVOICES;
-        } else if (extras.getBoolean("salesinvoice")) {
+        } else if (extras.getBoolean("salesinvoice", false)) {
             headerTitle.setText(R.string.card_invoice);
         }
 
@@ -552,8 +552,8 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         ownersName = (EditText) findViewById(R.id.nameOnCardEdit);
         ownersName.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
 
-        if (extras.getBoolean("histinvoices")) {
-            isMultiInvoice = extras.getBoolean("isMultipleInvoice");
+        if (extras.getBoolean("histinvoices", false)) {
+            isMultiInvoice = extras.getBoolean("isMultipleInvoice", false);
             isOpenInvoice = true;
             if (!isMultiInvoice)
                 inv_id = extras.getString("inv_id");
