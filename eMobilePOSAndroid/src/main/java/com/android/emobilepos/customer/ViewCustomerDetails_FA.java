@@ -17,6 +17,7 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.dao.CustomerCustomFieldsDAO;
 import com.android.database.CustomersHandler;
@@ -74,6 +75,7 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
     private TextView shippingZip;
     private Spinner pricesList;
     private Spinner taxesList;
+    EditText cardIdEditText;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -153,6 +155,9 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
                 ((TextView) row.findViewById(R.id.customerCustomFieldLabelTextView)).setText(field.getCustFieldName());
                 ((EditText) row.findViewById(R.id.customerCustomFieldValueEditText)).setText(field.getCustValue());
                 tableLayout.addView(row);
+                if (field.getCustFieldId().equalsIgnoreCase("EMS_CARD_ID_NUM")) {
+                    cardIdEditText = ((EditText) row.findViewById(R.id.customerCustomFieldValueEditText));
+                }
             }
 
             billingCountrySpinner = (Spinner) findViewById(R.id.newCustBillCountry);
@@ -199,18 +204,6 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         List<Tax> taxList = handler.getTaxes();
         PriceLevelHandler handler2 = new PriceLevelHandler();
         List<String[]> priceLevelList = handler2.getPriceLevel();
-
-//        int size = taxList.size();
-//        int size2 = priceLevelList.size();
-//        int loopSize = size;
-//        if (size2 > size)
-//            loopSize = size2;
-//        for (int i = 0; i < loopSize; i++) {
-////            if (i < size)
-////                taxes.add(taxList.get(i).getTaxName());
-//            if (i < size2)
-//                priceLevel.add(priceLevelList.get(i)[0]);
-//        }
 
         int i = 0;
         for (String[] strings : priceLevelList) {
@@ -378,14 +371,28 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
     }
 
     private void saveCustomer() {
-        customer.setCust_phone(phoneTextView.getText().toString());
-        customer.setCust_email(emailTextView.getText().toString());
-        customer.setCust_contact(contacTextView.getText().toString());
-        customer.setCust_limit(limitTextView.getText().toString());
-        customer.setCompanyName(companyTextView.getText().toString());
+        String cardNumber = cardIdEditText == null ? "" : cardIdEditText.getText().toString();
+        CustomerCustomField customField = CustomerCustomFieldsDAO.findEMWSCardIdByCustomerId(cust_id);
+        if (customField == null) {
+            customField = new CustomerCustomField();
+        }
+        customField.setCustId(cust_id);
+        customField.setCustFieldId("EMS_CARD_ID_NUM");
+        customField.setCustFieldName("ID");
+        customField.setCustValue(cardNumber);
+        CustomerCustomFieldsDAO.upsert(customField);
+        CustomersHandler handler = new CustomersHandler(ViewCustomerDetails_FA.this);
+        handler.updateSyncStatus(cust_id, false);
+        customFields = CustomerCustomFieldsDAO.getCustomFields(cust_id);
+        Toast.makeText(this, R.string.information_saved, Toast.LENGTH_LONG).show();
 
-        CustomersHandler handler = new CustomersHandler(this);
-        handler.insertOneCustomer(customer);
+//        customer.setCust_phone(phoneTextView.getText().toString());
+//        customer.setCust_email(emailTextView.getText().toString());
+//        customer.setCust_contact(contacTextView.getText().toString());
+//        customer.setCust_limit(limitTextView.getText().toString());
+//        customer.setCompanyName(companyTextView.getText().toString());
+//        CustomersHandler handler = new CustomersHandler(this);
+//        handler.insertOneCustomer(customer);
     }
 
     private class CustomAdapter extends ArrayAdapter<String> {

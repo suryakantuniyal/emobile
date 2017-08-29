@@ -1350,5 +1350,6 @@
     <string name="sending">Sending…</string>
     <string name="config_cash_show_change">Show cash payment change amount</string>
     <string name="processing_payments">Processing payments…</string>
+    <string name="information_saved">Information updated.</string>
 
 </resources>
