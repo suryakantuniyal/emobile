@@ -1372,7 +1372,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
         protected void onPostExecute(String s) {
             Toast.makeText(activity, s, Toast.LENGTH_LONG).show();
             activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-            dialog.dismiss();
+            Global.dismissDialog(activity, dialog);
         }
     }
 

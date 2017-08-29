@@ -263,13 +263,13 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
             global.promptForMandatoryLogin(this);
         }
 
-        if (myPref.isAutoSyncEnable() && hasBeenCreated) {
-            DBManager dbManager = new DBManager(this, Global.FROM_SYNCH_ACTIVITY);
-            SynchMethods sm = new SynchMethods(dbManager);
-            sm.synchSend(Global.FROM_SYNCH_ACTIVITY, true, this);
-            getSynchTextView().setText(getString(R.string.sync_inprogress));
-            getSynchTextView().setVisibility(View.VISIBLE);
-        }
+//        if (myPref.isAutoSyncEnable() && hasBeenCreated) {
+//            DBManager dbManager = new DBManager(activity, Global.FROM_SYNCH_ACTIVITY);
+//            SynchMethods sm = new SynchMethods(dbManager);
+//            sm.synchSend(Global.FROM_SYNCH_ACTIVITY, true, activity);
+//            getSynchTextView().setText(getString(R.string.sync_inprogress));
+//            getSynchTextView().setVisibility(View.VISIBLE);
+//        }
 
         if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward))
             tvStoreForward.setVisibility(View.VISIBLE);
