@@ -1323,5 +1323,6 @@
     <string name="printXReport">Reporte X</string>
     <string name="ncf">NCF</string>
 
+    <string name="config_multiple_prints">Habilitar múltiples impresiones</string>
 
 </resources>
