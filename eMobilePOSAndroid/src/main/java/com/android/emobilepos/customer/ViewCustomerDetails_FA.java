@@ -1,6 +1,7 @@
 package com.android.emobilepos.customer;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.PowerManager;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioGroup;
@@ -32,6 +34,11 @@ import com.android.support.Customer;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.crashlytics.android.Crashlytics;
+import com.digitalpersona.uareu.Reader;
+import com.digitalpersona.uareu.ReaderCollection;
+import com.digitalpersona.uareu.UareUException;
+import com.digitalpersona.uareu.UareUGlobal;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,7 +82,22 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
     private TextView shippingZip;
     private Spinner pricesList;
     private Spinner taxesList;
+    Button fingerLeft1;
+    Button fingerLeft2;
+    Button fingerLeft3;
+    Button fingerLeft4;
+    Button fingerRight1;
+    Button fingerRight2;
+    Button fingerRight3;
+    Button fingerRight4;
     EditText cardIdEditText;
+    private Reader reader;
+    private static final String ACTION_USB_PERMISSION = "com.digitalpersona.uareu.dpfpddusbhost.USB_PERMISSION";
+
+    public enum Finger {
+        FINGER_ONE_LEFT, FINGER_TWO_LEFT, FINGER_THREE_LEFT, FINGER_FOUR_LEFT,
+        FINGER_ONE_RIGHT, FINGER_TWO_RIGHT, FINGER_THREE_RIGHT, FINGER_FOUR_RIGHT
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -115,6 +137,23 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         shippingCity = ((TextView) findViewById(R.id.newCustShippingCity));
         shippingState = (TextView) findViewById(R.id.newCustShippingState);
         shippingZip = ((TextView) findViewById(R.id.newCustShippingZip));
+
+        fingerLeft1 = (Button) findViewById(R.id.fingerOneLeftbutton6);
+        fingerLeft2 = (Button) findViewById(R.id.fingerTwoLeftbutton5);
+        fingerLeft3 = (Button) findViewById(R.id.fingerThreeLeftbutton4);
+        fingerLeft4 = (Button) findViewById(R.id.fingerFourLeftbutton3);
+        fingerRight1 = (Button) findViewById(R.id.fingerOneRightbutton6);
+        fingerRight2 = (Button) findViewById(R.id.fingerTwoRightbutton5);
+        fingerRight3 = (Button) findViewById(R.id.fingerThreeRightbutton4);
+        fingerRight4 = (Button) findViewById(R.id.fingerFourRightbutton3);
+        fingerLeft1.setOnClickListener(this);
+        fingerLeft2.setOnClickListener(this);
+        fingerLeft3.setOnClickListener(this);
+        fingerLeft4.setOnClickListener(this);
+        fingerRight1.setOnClickListener(this);
+        fingerRight2.setOnClickListener(this);
+        fingerRight3.setOnClickListener(this);
+        fingerRight4.setOnClickListener(this);
         customerNameTextView = (TextView) findViewById(R.id.customerNametextView341);
         setUI();
         setupCountries();
@@ -122,6 +161,22 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         if (isCustomerEdit) {
             disableFields();
         }
+        loadFingerPrintReader(this);
+    }
+
+    private void loadFingerPrintReader(Context context) {
+        ReaderCollection readers;
+        try {
+            readers = UareUGlobal.GetReaderCollection(context);
+            readers.GetReaders();
+            if (readers.size() > 0) {
+                this.reader = readers.get(0);
+            }
+        } catch (UareUException e) {
+            Crashlytics.logException(e);
+            e.printStackTrace();
+        }
+
     }
 
     private void setUI() {
@@ -367,7 +422,46 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
             case R.id.btnSaveCustomer:
                 saveCustomer();
                 break;
+            case R.id.fingerOneLeftbutton6:
+                showFingerPrintScanner(Finger.FINGER_ONE_LEFT);
+                break;
+            case R.id.fingerTwoLeftbutton5:
+                showFingerPrintScanner(Finger.FINGER_TWO_LEFT);
+                break;
+            case R.id.fingerThreeLeftbutton4:
+                showFingerPrintScanner(Finger.FINGER_THREE_LEFT);
+                break;
+            case R.id.fingerFourLeftbutton3:
+                showFingerPrintScanner(Finger.FINGER_FOUR_LEFT);
+                break;
+            case R.id.fingerOneRightbutton6:
+                showFingerPrintScanner(Finger.FINGER_ONE_RIGHT);
+                break;
+            case R.id.fingerTwoRightbutton5:
+                showFingerPrintScanner(Finger.FINGER_TWO_RIGHT);
+                break;
+            case R.id.fingerThreeRightbutton4:
+                showFingerPrintScanner(Finger.FINGER_THREE_RIGHT);
+                break;
+            case R.id.fingerFourRightbutton3:
+                showFingerPrintScanner(Finger.FINGER_FOUR_RIGHT);
+                break;
+
         }
+    }
+
+    private void showFingerPrintScanner(Finger finger) {
+        try {
+            reader.Open(Reader.Priority.EXCLUSIVE);
+            int dpi = GetFirstDPI(reader);
+        } catch (UareUException e) {
+
+        }
+    }
+
+    public static int GetFirstDPI(Reader reader) {
+        Reader.Capabilities caps = reader.GetCapabilities();
+        return caps.resolutions[0];
     }
 
     private void saveCustomer() {

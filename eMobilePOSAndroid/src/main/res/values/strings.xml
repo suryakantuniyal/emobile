@@ -1351,5 +1351,12 @@
     <string name="config_cash_show_change">Show cash payment change amount</string>
     <string name="processing_payments">Processing payments…</string>
     <string name="information_saved">Information updated.</string>
+    <string name="customerBiometrics">Customer Biometrics</string>
+    <string name="leftHand">Left Hand</string>
+    <string name="rightHand">Right Hand</string>
+    <string name="fingerOne">Finger One</string>
+    <string name="fingerTwo">Finger Two</string>
+    <string name="fingerThree">Finger Three</string>
+    <string name="fingerFour">Finger Four</string>
 
 </resources>
