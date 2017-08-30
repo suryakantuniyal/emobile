@@ -1324,5 +1324,6 @@
     <string name="ncf">NCF</string>
 
     <string name="config_multiple_prints">Habilitar múltiples impresiones</string>
+    <string name="elobcr_menu">BCR</string>
 
 </resources>

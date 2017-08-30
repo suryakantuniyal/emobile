@@ -252,6 +252,7 @@
     <string-array name="navigationbarByModels">
         <item name="paypoint">"paypoint"</item>
         <item name="msm8960">"msm8960"</item>
+        <item name="Android SDK built for x86_64">Android SDK built for x86_64</item>
     </string-array>
 
 </resources>

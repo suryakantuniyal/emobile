@@ -1354,5 +1354,6 @@
     <string name="config_cash_show_change">Show cash payment change amount</string>
     <string name="processing_payments">Processing payments…</string>
     <string name="config_multiple_prints">Enable multiple prints</string>
+    <string name="elobcr_menu">BCR</string>
 
 </resources>
