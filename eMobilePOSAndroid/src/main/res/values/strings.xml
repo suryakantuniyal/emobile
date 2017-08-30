@@ -1359,5 +1359,6 @@
     <string name="fingerThree">Finger Three</string>
     <string name="fingerFour">Finger Four</string>
     <string name="config_multiple_prints">Enable multiple prints</string>
+    <string name="elobcr_menu">BCR</string>
 
 </resources>
