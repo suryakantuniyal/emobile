@@ -40,9 +40,9 @@ public class Catalog_Loader extends AsyncTaskLoader<Cursor> {
         if (onRestaurantMode && category == null && TextUtils.isEmpty(searchText)) {
             return getEmptyCursor();
         }
-        if (offset == 0 && context instanceof OrderingMain_FA && ((OrderingMain_FA) context).getRightFragment() != null) {
-            ((OrderingMain_FA) context).getRightFragment().closeCursor();
-        }
+//        if (offset == 0 && context instanceof OrderingMain_FA && ((OrderingMain_FA) context).getRightFragment() != null) {
+//            ((OrderingMain_FA) context).getRightFragment().closeCursor();
+//        }
 
         Cursor cursor;
 
