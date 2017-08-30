@@ -35,6 +35,8 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.crashlytics.android.Crashlytics;
+import com.digitalpersona.uareu.Engine;
+import com.digitalpersona.uareu.Fmd;
 import com.digitalpersona.uareu.Reader;
 import com.digitalpersona.uareu.ReaderCollection;
 import com.digitalpersona.uareu.UareUException;
@@ -44,7 +46,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implements AdapterView.OnItemSelectedListener, RadioGroup.OnCheckedChangeListener, View.OnClickListener {
+public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implements AdapterView.OnItemSelectedListener, RadioGroup.OnCheckedChangeListener, View.OnClickListener, Engine.EnrollmentCallback {
 
     private final int SPINNER_PRICELEVEL = 0, SPINNER_TAXES = 1;
     private Global global;
@@ -93,6 +95,14 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
     EditText cardIdEditText;
     private Reader reader;
     private static final String ACTION_USB_PERMISSION = "com.digitalpersona.uareu.dpfpddusbhost.USB_PERMISSION";
+    private Engine engine;
+
+    @Override
+    public Engine.PreEnrollmentFmd GetFmd(Fmd.Format format) {
+        Engine.PreEnrollmentFmd result = null;
+
+        return result;
+    }
 
     public enum Finger {
         FINGER_ONE_LEFT, FINGER_TWO_LEFT, FINGER_THREE_LEFT, FINGER_FOUR_LEFT,
@@ -454,6 +464,20 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         try {
             reader.Open(Reader.Priority.EXCLUSIVE);
             int dpi = GetFirstDPI(reader);
+            engine = UareUGlobal.GetEngine();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Fmd enrollmentFmd = engine.CreateEnrollmentFmd(Fmd.Format.ANSI_378_2004, ViewCustomerDetails_FA.this);
+                        if(enrollmentFmd==null){
+                            byte[] data = enrollmentFmd.getData();
+                        }
+                    } catch (UareUException e) {
+
+                    }
+                }
+            });
         } catch (UareUException e) {
 
         }
