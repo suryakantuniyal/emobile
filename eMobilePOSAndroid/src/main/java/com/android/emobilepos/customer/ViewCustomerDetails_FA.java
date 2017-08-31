@@ -549,6 +549,7 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
             reader.Open(Reader.Priority.EXCLUSIVE);
             dpi = GetFirstDPI(reader);
             engine = UareUGlobal.GetEngine();
+            m_reset = false;
             // loop capture on a separate thread to avoid freezing the UI
             new Thread(new Runnable() {
 
@@ -741,9 +742,9 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
                         try {
                             Fid importFid = UareUGlobal.GetImporter().ImportFid(cap_result.image.getData(), Fid.Format.ANSI_381_2004);
 
-                            Fmd fmd = m_engine.CreateFmd(m_enrollment_fmd.getData(), cap_result.image.getViews()[0].getWidth(), cap_result.image.getViews()[0].getHeight(),
-                                    cap_result.image.getViews()[0].getQuality(), cap_result.image.getViews()[0].getFingerPosition(),
-                                    cap_result.image.getCbeffId(), Fmd.Format.ANSI_378_2004);
+//                            Fmd fmd = m_engine.CreateFmd(m_enrollment_fmd.getData(), cap_result.image.getViews()[0].getWidth(), cap_result.image.getViews()[0].getHeight(),
+//                                    cap_result.image.getViews()[0].getQuality(), cap_result.image.getViews()[0].getFingerPosition(),
+//                                    cap_result.image.getCbeffId(), Fmd.Format.ANSI_378_2004);
                             m_reset = true;
                         } catch (UareUException e) {
 
