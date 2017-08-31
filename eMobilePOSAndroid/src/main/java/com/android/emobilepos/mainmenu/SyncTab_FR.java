@@ -97,7 +97,9 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
                 switch (msg.what) {
                     case 0:
                         MainMenu_FA mainMenuFa = (MainMenu_FA) getActivity();
-                        mainMenuFa.getSynchTextView().setVisibility(View.GONE);
+                        if (mainMenuFa != null && mainMenuFa.getSynchTextView() != null) {
+                            mainMenuFa.getSynchTextView().setVisibility(View.GONE);
+                        }
                         Global.dismissDialog(getActivity(), dialog);
                     default:
                         setViewData(getView());
