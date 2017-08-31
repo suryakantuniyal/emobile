@@ -446,6 +446,9 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         cardSwipe = (CheckBox) findViewById(R.id.checkBox1);
         extras = this.getIntent().getExtras();
         String paymentMethodType = extras.getString("paymentmethod_type");
+        if (paymentMethodType == null) {
+            paymentMethodType = CREDITCARD_TYPE_VISA;
+        }
         isEverpay = (paymentMethodType.equalsIgnoreCase("Everpay"));
 
         isDebit = extras.getBoolean("isDebit", false);
@@ -1989,65 +1992,6 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
     }
 
-//
-//    private class ProcessHanpointAsync extends AsyncTask<Void, Void, Void> {
-//        @Override
-//        protected Void doInBackground(Void... params) {
-//            if (Global.mainPrinterManager.currentDevice != null) {
-//                Payment p = new Payment(activity);
-//                p.setPay_amount(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
-//                Global.mainPrinterManager.currentDevice.salePayment(p);
-//            }
-//            return null;
-//        }
-//    }
-
-//    private class ProcessWalkerAsync extends AsyncTask<Void, Void, Void> {
-//        private ProcessWalkerAsync myTask;
-//        private double enteredAmount;
-//
-//        @Override
-//        protected void onPreExecute() {
-//            myTask = this;
-//            enteredAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
-//
-//            myProgressDialog = new ProgressDialog(activity);
-//            if (walkerReader.deviceConnected())
-//                myProgressDialog.setMessage(getString(R.string.swipe_insert_card));
-//            else
-//                myProgressDialog.setMessage(getString(R.string.please_wait_message));
-//            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-//            myProgressDialog.setCancelable(false);
-//            if (myProgressDialog.isShowing())
-//                myProgressDialog.dismiss();
-//
-//            myProgressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, activity.getString(R.string.button_cancel),
-//                    new DialogInterface.OnClickListener() {
-//                        @Override
-//                        public void onClick(DialogInterface dialog, int which) {
-//                            myTask.cancel(true);
-//                            walkerReader.isReadingCard = false;
-//                            myProgressDialog.dismiss();
-//                        }
-//                    });
-//
-//            myProgressDialog.show();
-//        }
-//
-//        @Override
-//        protected Void doInBackground(Void... params) {
-//            cardInfoManager.dueAmount = BigDecimal.valueOf(enteredAmount);
-//            walkerReader.startReading(cardInfoManager, myProgressDialog);
-//            return null;
-//        }
-//
-//        @Override
-//        protected void onPostExecute(Void unused) {
-//            myProgressDialog.dismiss();
-//            if (walkerReader.failedProcessing)
-//                Toast.makeText(activity, "Error", Toast.LENGTH_LONG).show();
-//        }
-//    }
 
     public enum PAYMENT_GIFT_CARDS {
         GIFTCARDS, LOYALTYCARD, REWARD
