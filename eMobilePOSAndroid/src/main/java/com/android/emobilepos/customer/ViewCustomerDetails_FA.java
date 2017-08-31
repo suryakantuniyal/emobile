@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,7 +38,9 @@ import com.android.support.MyPreferences;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.crashlytics.android.Crashlytics;
 import com.digitalpersona.uareu.Engine;
+import com.digitalpersona.uareu.Fid;
 import com.digitalpersona.uareu.Fmd;
+import com.digitalpersona.uareu.Importer;
 import com.digitalpersona.uareu.Reader;
 import com.digitalpersona.uareu.ReaderCollection;
 import com.digitalpersona.uareu.UareUException;
@@ -46,7 +50,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implements AdapterView.OnItemSelectedListener, RadioGroup.OnCheckedChangeListener, View.OnClickListener, Engine.EnrollmentCallback {
+public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implements AdapterView.OnItemSelectedListener, RadioGroup.OnCheckedChangeListener, View.OnClickListener {
 
     private final int SPINNER_PRICELEVEL = 0, SPINNER_TAXES = 1;
     private Global global;
@@ -96,12 +100,92 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
     private Reader reader;
     private static final String ACTION_USB_PERMISSION = "com.digitalpersona.uareu.dpfpddusbhost.USB_PERMISSION";
     private Engine engine;
+    private int dpi;
+    private int m_current_fmds_count;
+    private boolean m_reset;
+    private Reader.CaptureResult cap_result;
+    private String m_enginError;
+    private String m_text_conclusionString;
+    private Fmd m_enrollment_fmd;
+    private boolean m_first;
+    private boolean m_success;
+    private int m_templateSize;
+    private String m_textString;
+    private Engine.EnrollmentCallback enrollThread;
 
-    @Override
-    public Engine.PreEnrollmentFmd GetFmd(Fmd.Format format) {
-        Engine.PreEnrollmentFmd result = null;
+//    @Override
+//    public Engine.PreEnrollmentFmd GetFmd(Fmd.Format format) {
+//        Engine.PreEnrollmentFmd result = null;
+//        boolean reading = true;
+//
+//        Reader.CaptureResult capture = null;
+//        while (reading) {
+//            try {
+//                capture = reader.Capture(Fid.Format.ANSI_381_2004, Reader.ImageProcessing.IMG_PROC_DEFAULT, dpi, -1);
+//                if (capture != null && capture.image != null) {
+//                    Engine.PreEnrollmentFmd preEnrollmentFmd = new Engine.PreEnrollmentFmd();
+//                    preEnrollmentFmd.fmd = engine.CreateFmd(capture.image, Fmd.Format.ANSI_378_2004);
+//                    result = preEnrollmentFmd;
+//                    reading = false;
+//                } else {
+//                    reading = true;
+//                }
+//            } catch (UareUException e) {
+//                reading = false;
+//            }
+//        }
+//        String qualityToString = QualityToString(capture);
+//        if(TextUtils.isEmpty(qualityToString)){
+//
+//        }
+//        return result;
+//    }
 
-        return result;
+    public static final String QualityToString(Reader.CaptureResult result) {
+        if (result == null) {
+            return "";
+        }
+        if (result.quality == null) {
+            return "An error occurred";
+        }
+        switch (result.quality) {
+            case FAKE_FINGER:
+                return "Fake finger";
+            case NO_FINGER:
+                return "No finger";
+            case CANCELED:
+                return "Capture cancelled";
+            case TIMED_OUT:
+                return "Capture timed out";
+            case FINGER_TOO_LEFT:
+                return "Finger too left";
+            case FINGER_TOO_RIGHT:
+                return "Finger too right";
+            case FINGER_TOO_HIGH:
+                return "Finger too high";
+            case FINGER_TOO_LOW:
+                return "Finger too low";
+            case FINGER_OFF_CENTER:
+                return "Finger off center";
+            case SCAN_SKEWED:
+                return "Scan skewed";
+            case SCAN_TOO_SHORT:
+                return "Scan too short";
+            case SCAN_TOO_LONG:
+                return "Scan too long";
+            case SCAN_TOO_SLOW:
+                return "Scan too slow";
+            case SCAN_TOO_FAST:
+                return "Scan too fast";
+            case SCAN_WRONG_DIRECTION:
+                return "Wrong direction";
+            case READER_DIRTY:
+                return "Reader dirty";
+            case GOOD:
+                return "";
+            default:
+                return "An error occurred";
+        }
     }
 
     public enum Finger {
@@ -463,21 +547,37 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
     private void showFingerPrintScanner(Finger finger) {
         try {
             reader.Open(Reader.Priority.EXCLUSIVE);
-            int dpi = GetFirstDPI(reader);
+            dpi = GetFirstDPI(reader);
             engine = UareUGlobal.GetEngine();
+            // loop capture on a separate thread to avoid freezing the UI
             new Thread(new Runnable() {
+
                 @Override
                 public void run() {
                     try {
-                        Fmd enrollmentFmd = engine.CreateEnrollmentFmd(Fmd.Format.ANSI_378_2004, ViewCustomerDetails_FA.this);
-                        if(enrollmentFmd==null){
-                            byte[] data = enrollmentFmd.getData();
+                        m_current_fmds_count = 0;
+                        m_reset = false;
+                        enrollThread = new EnrollmentCallback(reader, engine);
+                        while (!m_reset) {
+                            try {
+                                m_enrollment_fmd = engine.CreateEnrollmentFmd(Fmd.Format.ANSI_378_2004, enrollThread);
+                                if (m_success = (m_enrollment_fmd != null)) {
+                                    m_templateSize = m_enrollment_fmd.getData().length;
+                                    m_current_fmds_count = 0;    // reset count on success
+                                }
+                            } catch (Exception e) {
+                                // template creation failed, reset count
+                                m_current_fmds_count = 0;
+                            }
                         }
-                    } catch (UareUException e) {
-
+                    } catch (Exception e) {
+                        if (!m_reset) {
+                            Log.w("UareUSampleJava", "error during capture");
+                            onBackPressed();
+                        }
                     }
                 }
-            });
+            }).start();
         } catch (UareUException e) {
 
         }
@@ -582,5 +682,91 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
 
         }
 
+    }
+
+    public class EnrollmentCallback
+            extends Thread
+            implements Engine.EnrollmentCallback {
+        public int m_current_index = 0;
+
+        private Reader m_reader = null;
+        private Engine m_engine = null;
+
+        public EnrollmentCallback(Reader reader, Engine engine) {
+            m_reader = reader;
+            m_engine = engine;
+        }
+
+        // callback function is called by dp sdk to retrieve fmds until a null is returned
+        @Override
+        public Engine.PreEnrollmentFmd GetFmd(Fmd.Format format) {
+            Engine.PreEnrollmentFmd result = null;
+            while (!m_reset) {
+                try {
+                    cap_result = m_reader.Capture(Fid.Format.ANSI_381_2004, Reader.ImageProcessing.IMG_PROC_DEFAULT, dpi, -1);
+                } catch (Exception e) {
+                    Log.w("UareUSampleJava", "error during capture: " + e.toString());
+                }
+
+                // an error occurred
+                if (cap_result == null || cap_result.image == null) continue;
+                try {
+                    m_enginError = "";
+                    Engine.PreEnrollmentFmd prefmd = new Engine.PreEnrollmentFmd();
+
+                    prefmd.fmd = m_engine.CreateFmd(cap_result.image, Fmd.Format.ANSI_378_2004);
+//                    Fmd fmd = m_engine.CreateFmd(cap_result.image.getData(), cap_result.image.getViews()[0].getWidth(), cap_result.image.getViews()[0].getHeight(),
+//                            cap_result.image.getViews()[0].getQuality(), cap_result.image.getViews()[0].getFingerPosition(), cap_result.image.getCbeffId(), Fmd.Format.ANSI_378_2004);
+                    prefmd.view_index = 0;
+                    m_current_fmds_count++;
+
+
+                    result = prefmd;
+                    break;
+                } catch (Exception e) {
+                    m_enginError = e.toString();
+                    Log.w("UareUSampleJava", "Engine error: " + e.toString());
+                }
+            }
+
+            m_text_conclusionString = QualityToString(cap_result);
+
+            if (!m_enginError.isEmpty()) {
+                m_text_conclusionString = "Engine: " + m_enginError;
+            }
+
+            if (m_enrollment_fmd != null || m_current_fmds_count == 0) {
+                if (!m_first) {
+                    if (m_text_conclusionString.length() == 0) {
+                        try {
+                            Fid importFid = UareUGlobal.GetImporter().ImportFid(cap_result.image.getData(), Fid.Format.ANSI_381_2004);
+
+                            Fmd fmd = m_engine.CreateFmd(m_enrollment_fmd.getData(), cap_result.image.getViews()[0].getWidth(), cap_result.image.getViews()[0].getHeight(),
+                                    cap_result.image.getViews()[0].getQuality(), cap_result.image.getViews()[0].getFingerPosition(),
+                                    cap_result.image.getCbeffId(), Fmd.Format.ANSI_378_2004);
+                            m_reset = true;
+                        } catch (UareUException e) {
+
+                        }
+                        m_text_conclusionString = m_success ? "Enrollment template created, size: " + m_templateSize : "Enrollment template failed. Please try again";
+                    }
+                }
+                m_textString = "Place any finger on the reader";
+                m_enrollment_fmd = null;
+            } else {
+                m_first = false;
+                m_success = false;
+                m_textString = "Continue to place the same finger on the reader";
+            }
+
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                }
+            });
+
+            return result;
+        }
     }
 }
