@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +22,7 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.dao.CustomerBiometricDAO;
 import com.android.dao.CustomerCustomFieldsDAO;
 import com.android.database.CustomersHandler;
 import com.android.database.PriceLevelHandler;
@@ -31,7 +31,9 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.CountrySpinnerAdapter;
 import com.android.emobilepos.models.Country;
 import com.android.emobilepos.models.Tax;
+import com.android.emobilepos.models.realms.CustomerBiometric;
 import com.android.emobilepos.models.realms.CustomerCustomField;
+import com.android.emobilepos.models.realms.CustomerFid;
 import com.android.support.Customer;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -40,7 +42,6 @@ import com.crashlytics.android.Crashlytics;
 import com.digitalpersona.uareu.Engine;
 import com.digitalpersona.uareu.Fid;
 import com.digitalpersona.uareu.Fmd;
-import com.digitalpersona.uareu.Importer;
 import com.digitalpersona.uareu.Reader;
 import com.digitalpersona.uareu.ReaderCollection;
 import com.digitalpersona.uareu.UareUException;
@@ -112,35 +113,7 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
     private int m_templateSize;
     private String m_textString;
     private Engine.EnrollmentCallback enrollThread;
-
-//    @Override
-//    public Engine.PreEnrollmentFmd GetFmd(Fmd.Format format) {
-//        Engine.PreEnrollmentFmd result = null;
-//        boolean reading = true;
-//
-//        Reader.CaptureResult capture = null;
-//        while (reading) {
-//            try {
-//                capture = reader.Capture(Fid.Format.ANSI_381_2004, Reader.ImageProcessing.IMG_PROC_DEFAULT, dpi, -1);
-//                if (capture != null && capture.image != null) {
-//                    Engine.PreEnrollmentFmd preEnrollmentFmd = new Engine.PreEnrollmentFmd();
-//                    preEnrollmentFmd.fmd = engine.CreateFmd(capture.image, Fmd.Format.ANSI_378_2004);
-//                    result = preEnrollmentFmd;
-//                    reading = false;
-//                } else {
-//                    reading = true;
-//                }
-//            } catch (UareUException e) {
-//                reading = false;
-//            }
-//        }
-//        String qualityToString = QualityToString(capture);
-//        if(TextUtils.isEmpty(qualityToString)){
-//
-//        }
-//        return result;
-//    }
-
+    CustomerBiometric biometric = new CustomerBiometric();
     public static final String QualityToString(Reader.CaptureResult result) {
         if (result == null) {
             return "";
@@ -189,8 +162,40 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
     }
 
     public enum Finger {
-        FINGER_ONE_LEFT, FINGER_TWO_LEFT, FINGER_THREE_LEFT, FINGER_FOUR_LEFT,
-        FINGER_ONE_RIGHT, FINGER_TWO_RIGHT, FINGER_THREE_RIGHT, FINGER_FOUR_RIGHT
+        FINGER_ONE_LEFT(0), FINGER_TWO_LEFT(1), FINGER_THREE_LEFT(2), FINGER_FOUR_LEFT(3),
+        FINGER_ONE_RIGHT(4), FINGER_TWO_RIGHT(5), FINGER_THREE_RIGHT(6), FINGER_FOUR_RIGHT(7);
+
+        private int code;
+
+        Finger(int code) {
+            this.code = code;
+        }
+
+        public static Finger getByCode(int code) {
+            switch (code) {
+                case 0:
+                    return FINGER_ONE_LEFT;
+                case 1:
+                    return FINGER_TWO_LEFT;
+                case 2:
+                    return FINGER_THREE_LEFT;
+                case 3:
+                    return FINGER_FOUR_LEFT;
+                case 4:
+                    return FINGER_ONE_RIGHT;
+                case 5:
+                    return FINGER_TWO_RIGHT;
+                case 6:
+                    return FINGER_THREE_RIGHT;
+                case 7:
+                    return FINGER_FOUR_RIGHT;
+            }
+            return null;
+        }
+
+        public int getCode() {
+            return code;
+        }
     }
 
     @Override
@@ -515,6 +520,7 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         switch (v.getId()) {
             case R.id.btnSaveCustomer:
                 saveCustomer();
+                saveBiometrics();
                 break;
             case R.id.fingerOneLeftbutton6:
                 showFingerPrintScanner(Finger.FINGER_ONE_LEFT);
@@ -544,7 +550,12 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         }
     }
 
-    private void showFingerPrintScanner(Finger finger) {
+    private void saveBiometrics() {
+        CustomerBiometricDAO.delete(cust_id);
+        CustomerBiometricDAO.upsert(biometric);
+    }
+
+    private void showFingerPrintScanner(final Finger finger) {
         try {
             reader.Open(Reader.Priority.EXCLUSIVE);
             dpi = GetFirstDPI(reader);
@@ -558,7 +569,7 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
                     try {
                         m_current_fmds_count = 0;
                         m_reset = false;
-                        enrollThread = new EnrollmentCallback(reader, engine);
+                        enrollThread = new EnrollmentCallback(reader, engine, finger);
                         while (!m_reset) {
                             try {
                                 m_enrollment_fmd = engine.CreateEnrollmentFmd(Fmd.Format.ANSI_378_2004, enrollThread);
@@ -571,6 +582,13 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
                                 m_current_fmds_count = 0;
                             }
                         }
+                        reader.Close();
+                        ViewCustomerDetails_FA.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                setFingerPrintUI();
+                            }
+                        });
                     } catch (Exception e) {
                         if (!m_reset) {
                             Log.w("UareUSampleJava", "error during capture");
@@ -580,7 +598,39 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
                 }
             }).start();
         } catch (UareUException e) {
+            e.printStackTrace();
+        }
+    }
 
+    private void setFingerPrintUI() {
+        for (CustomerFid fid : biometric.getFids()) {
+            Finger finger = Finger.getByCode(fid.getFingerCode());
+            switch (finger) {
+                case FINGER_ONE_LEFT:
+                    fingerLeft1.setBackgroundColor(Color.GREEN);
+                    break;
+                case FINGER_TWO_LEFT:
+                    fingerLeft2.setBackgroundColor(Color.GREEN);
+                    break;
+                case FINGER_THREE_LEFT:
+                    fingerLeft3.setBackgroundColor(Color.GREEN);
+                    break;
+                case FINGER_FOUR_LEFT:
+                    fingerLeft4.setBackgroundColor(Color.GREEN);
+                    break;
+                case FINGER_ONE_RIGHT:
+                    fingerRight1.setBackgroundColor(Color.GREEN);
+                    break;
+                case FINGER_TWO_RIGHT:
+                    fingerRight2.setBackgroundColor(Color.GREEN);
+                    break;
+                case FINGER_THREE_RIGHT:
+                    fingerRight3.setBackgroundColor(Color.GREEN);
+                    break;
+                case FINGER_FOUR_RIGHT:
+                    fingerRight4.setBackgroundColor(Color.GREEN);
+                    break;
+            }
         }
     }
 
@@ -692,10 +742,12 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
 
         private Reader m_reader = null;
         private Engine m_engine = null;
+        private Finger finger;
 
-        public EnrollmentCallback(Reader reader, Engine engine) {
+        public EnrollmentCallback(Reader reader, Engine engine, Finger finger) {
             m_reader = reader;
             m_engine = engine;
+            this.finger = finger;
         }
 
         // callback function is called by dp sdk to retrieve fmds until a null is returned
@@ -741,11 +793,15 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
                     if (m_text_conclusionString.length() == 0) {
                         try {
                             Fid importFid = UareUGlobal.GetImporter().ImportFid(cap_result.image.getData(), Fid.Format.ANSI_381_2004);
-
+                            Fmd importFmd = UareUGlobal.GetImporter().ImportFmd(m_enrollment_fmd.getData(), Fmd.Format.ANSI_378_2004, Fmd.Format.ANSI_378_2004);
 //                            Fmd fmd = m_engine.CreateFmd(m_enrollment_fmd.getData(), cap_result.image.getViews()[0].getWidth(), cap_result.image.getViews()[0].getHeight(),
 //                                    cap_result.image.getViews()[0].getQuality(), cap_result.image.getViews()[0].getFingerPosition(),
 //                                    cap_result.image.getCbeffId(), Fmd.Format.ANSI_378_2004);
                             m_reset = true;
+                            CustomerFid customerFid = new CustomerFid(cap_result.image, finger);
+                            biometric.setCustomerId(cust_id);
+                            biometric.getFids().add(customerFid);
+//                            biometric.setFingerFid(finger, cap_result.image);
                         } catch (UareUException e) {
 
                         }

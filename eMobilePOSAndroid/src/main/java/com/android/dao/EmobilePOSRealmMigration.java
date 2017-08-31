@@ -1,6 +1,8 @@
 package com.android.dao;
 
+import com.android.emobilepos.models.realms.CustomerBiometric;
 import com.android.emobilepos.models.realms.CustomerCustomField;
+import com.android.emobilepos.models.realms.CustomerFid;
 
 import io.realm.DynamicRealm;
 import io.realm.FieldAttribute;
@@ -11,7 +13,7 @@ import io.realm.RealmSchema;
  * Created by Guarionex on 4/13/2016.
  */
 public class EmobilePOSRealmMigration implements io.realm.RealmMigration {
-    public static int REALM_SCHEMA_VERSION = 5;
+    public static int REALM_SCHEMA_VERSION = 6;
 
     @Override
     public void migrate(DynamicRealm realm, long oldVersion, long newVersion) {
@@ -51,6 +53,18 @@ public class EmobilePOSRealmMigration implements io.realm.RealmMigration {
                         .addField("custFieldId", String.class, FieldAttribute.INDEXED)
                         .addField("custFieldName", String.class)
                         .addField("custValue", String.class);
+                oldVersion++;
+            }
+            if (oldVersion == 5) {
+                schema.create(CustomerFid.class.getSimpleName()).
+                        addField("id", String.class, FieldAttribute.PRIMARY_KEY)
+                        .addField("fid", String.class)
+                        .addField("fingerCode", int.class, FieldAttribute.INDEXED);
+
+                schema.create(CustomerBiometric.class.getSimpleName()).
+                        addField("customerId", String.class, FieldAttribute.PRIMARY_KEY)
+                        .addRealmListField("fids", schema.get(CustomerFid.class.getSimpleName()));
+                oldVersion++;
             }
         }
     }
