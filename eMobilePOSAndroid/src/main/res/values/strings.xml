@@ -1360,5 +1360,7 @@
     <string name="fingerFour">Finger Four</string>
     <string name="config_multiple_prints">Enable multiple prints</string>
     <string name="elobcr_menu">BCR</string>
+    <string name="fingerprint_enrollment">Place any finger to start enrollment.</string>
+    <string name="fingerprint_enrollment_title">Fingerprint Enrollment</string>
 
 </resources>

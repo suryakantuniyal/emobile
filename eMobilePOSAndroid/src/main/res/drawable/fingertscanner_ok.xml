@@ -1,0 +1,49 @@
+<animation-list android:id="@+id/selected"
+    android:oneshot="true"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/fingerprint_01" android:duration="50" />
+    <item android:drawable="@drawable/fingerprint_02" android:duration="50" />
+    <item android:drawable="@drawable/fingerprint_03" android:duration="50" />
+    <item android:drawable="@drawable/fingerprint_04" android:duration="50" />
+    <item android:drawable="@drawable/fingerprint_05" android:duration="50" />
+    <item android:drawable="@drawable/fingerprint_06" android:duration="50" />
+    <item android:drawable="@drawable/fingerprint_07" android:duration="50" />
+    <item android:drawable="@drawable/fingerprint_08" android:duration="50" />
+    <item android:drawable="@drawable/fingerprint_09" android:duration="50" />
+
+    <item android:drawable="@drawable/fingerprint_10" android:duration="50" />
+    <item android:drawable="@drawable/fingerprint_11" android:duration="50" />
+    <item android:drawable="@drawable/fingerprint_12" android:duration="50" />
+    <item android:drawable="@drawable/fingerprint_13" android:duration="50" />
+    <item android:drawable="@drawable/fingerprint_14" android:duration="50" />
+    <item android:drawable="@drawable/fingerprint_15" android:duration="50" />
+    <item android:drawable="@drawable/fingerprint_16" android:duration="50" />
+    <item android:drawable="@drawable/fingerprint_17" android:duration="50" />
+    <item android:drawable="@drawable/fingerprint_18" android:duration="50" />
+    <item android:drawable="@drawable/fingerprint_19" android:duration="50" />
+
+    <item android:drawable="@drawable/fingerprint_20" android:duration="50" />
+    <item android:drawable="@drawable/fingerprint_21" android:duration="50" />
+    <item android:drawable="@drawable/fingerprint_22" android:duration="50" />
+    <item android:drawable="@drawable/fingerprint_23" android:duration="50" />
+    <item android:drawable="@drawable/fingerprint_24" android:duration="50" />
+    <item android:drawable="@drawable/fingerprint_25" android:duration="50" />
+    <item android:drawable="@drawable/fingerprint_26" android:duration="50" />
+    <item android:drawable="@drawable/fingerprint_27" android:duration="50" />
+    <item android:drawable="@drawable/fingerprint_28" android:duration="50" />
+    <item android:drawable="@drawable/fingerprint_29" android:duration="50" />
+    <item android:drawable="@drawable/fingerprint_30" android:duration="50" />
+    <item android:drawable="@drawable/fingerprint_31" android:duration="50" />
+    <item android:drawable="@drawable/fingerprint_32" android:duration="50" />
+    <item android:drawable="@drawable/fingerprint_33" android:duration="50" />
+    <item android:drawable="@drawable/fingerprint_34" android:duration="50" />
+    <item android:drawable="@drawable/fingerprint_35" android:duration="50" />
+    <item android:drawable="@drawable/fingerprint_36" android:duration="50" />
+    <item android:drawable="@drawable/fingerprint_37" android:duration="50" />
+    <item android:drawable="@drawable/fingerprint_38" android:duration="50" />
+    <item android:drawable="@drawable/fingerprint_39" android:duration="50" />
+    <item android:drawable="@drawable/fingerprint_40" android:duration="50" />
+    <item android:drawable="@drawable/fingerprint_41" android:duration="50" />
+    <item android:drawable="@drawable/fingerprint_42" android:duration="50" />
+    <item android:drawable="@drawable/fingerprint_43" android:duration="50" />
+</animation-list>

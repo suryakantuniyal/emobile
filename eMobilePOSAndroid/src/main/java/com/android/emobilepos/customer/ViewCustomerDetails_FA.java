@@ -1,8 +1,10 @@
 package com.android.emobilepos.customer;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.annotation.IdRes;
@@ -11,11 +13,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TableLayout;
@@ -114,6 +118,9 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
     private String m_textString;
     private Engine.EnrollmentCallback enrollThread;
     CustomerBiometric biometric = new CustomerBiometric();
+    private ProgressBar progressBar;
+    private int progress;
+
     public static final String QualityToString(Reader.CaptureResult result) {
         if (result == null) {
             return "";
@@ -246,6 +253,11 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         fingerRight3 = (Button) findViewById(R.id.fingerThreeRightbutton4);
         fingerRight4 = (Button) findViewById(R.id.fingerFourRightbutton3);
         fingerLeft1.setOnClickListener(this);
+//        ImageButton ib = (ImageButton) findViewById(R.id.imageButton);
+//        fingerLeft1.setCompoundDrawables(null,getResources().getDrawable(R.drawable.fingertscanner_scanning),null,null);//BackgroundResource(R.drawable.fingertscanner_scanning);
+//        AnimationDrawable adb = (AnimationDrawable) fingerLeft1.getCompoundDrawables()[1];
+//        adb.start();
+
         fingerLeft2.setOnClickListener(this);
         fingerLeft3.setOnClickListener(this);
         fingerLeft4.setOnClickListener(this);
@@ -557,8 +569,24 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         CustomerBiometricDAO.upsert(biometric);
     }
 
+    private Dialog showScanningDialog() {
+        final Dialog dialog = new Dialog(activity, R.style.DialogLargeArea);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(false);
+        dialog.setContentView(R.layout.fingerprint_scanning_layout);
+        ImageView image = (ImageView) dialog.findViewById(R.id.fingerPrintimageView);
+        image.setBackgroundResource(R.drawable.fingertscanner_scanning);
+        AnimationDrawable animation = (AnimationDrawable) image.getBackground();
+        animation.start();
+        dialog.show();
+        progressBar = (ProgressBar) dialog.findViewById(R.id.fingerprintScanningprogressBar3);
+        progressBar.setMax(5);
+        progressBar.setProgress(progress);
+        return dialog;
+    }
     private void showFingerPrintScanner(final Finger finger) {
         try {
+            final Dialog scanningDialog = showScanningDialog();
             reader.Open(Reader.Priority.EXCLUSIVE);
             dpi = GetFirstDPI(reader);
             engine = UareUGlobal.GetEngine();
@@ -569,6 +597,7 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
                 @Override
                 public void run() {
                     try {
+                        int progress = 0;
                         m_current_fmds_count = 0;
                         m_reset = false;
                         enrollThread = new EnrollmentCallback(reader, engine, finger);
@@ -584,6 +613,8 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
                                 m_current_fmds_count = 0;
                             }
                         }
+                        scanningDialog.dismiss();
+
                         reader.Close();
                         ViewCustomerDetails_FA.this.runOnUiThread(new Runnable() {
                             @Override
@@ -756,6 +787,8 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         @Override
         public Engine.PreEnrollmentFmd GetFmd(Fmd.Format format) {
             Engine.PreEnrollmentFmd result = null;
+
+
             while (!m_reset) {
                 try {
                     cap_result = m_reader.Capture(Fid.Format.ANSI_381_2004, Reader.ImageProcessing.IMG_PROC_DEFAULT, dpi, -1);
@@ -774,7 +807,8 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
 //                            cap_result.image.getViews()[0].getQuality(), cap_result.image.getViews()[0].getFingerPosition(), cap_result.image.getCbeffId(), Fmd.Format.ANSI_378_2004);
                     prefmd.view_index = 0;
                     m_current_fmds_count++;
-
+                    progress++;
+                    progressBar.setProgress(progress);
 
                     result = prefmd;
                     break;
@@ -819,13 +853,6 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
                 m_success = false;
                 m_textString = "Continue to place the same finger on the reader";
             }
-
-
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                }
-            });
 
             return result;
         }

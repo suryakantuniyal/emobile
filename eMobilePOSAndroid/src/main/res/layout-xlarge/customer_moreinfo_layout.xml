@@ -749,7 +749,7 @@
                 tools:layout_constraintRight_creator="1">
 
                 <LinearLayout
-                    android:id="@+id/tableLayout"
+                    android:id="@+id/tableLayouta"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
@@ -769,7 +769,7 @@
                     <!--android:layout_height="match_parent">-->
 
                     <TextView
-                        android:id="@+id/textView40"
+                        android:id="@+id/textView40a"
                         style="@style/white_text_appearance"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -867,7 +867,7 @@
                 <!--</LinearLayout>-->
 
                 <LinearLayout
-                    android:id="@+id/tableLayout1"
+                    android:id="@+id/tableLayout1a"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
@@ -884,7 +884,7 @@
                     <!--android:layout_height="match_parent">-->
 
                     <TextView
-                        android:id="@+id/textView41"
+                        android:id="@+id/textView41a"
                         style="@style/white_text_appearance"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
