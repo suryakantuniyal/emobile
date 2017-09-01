@@ -254,6 +254,7 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         fingerRight3.setOnClickListener(this);
         fingerRight4.setOnClickListener(this);
         customerNameTextView = (TextView) findViewById(R.id.customerNametextView341);
+        biometric = CustomerBiometricDAO.getBiometrics(cust_id);
         setUI();
         setupCountries();
         setupSpinners();
@@ -261,6 +262,7 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
             disableFields();
         }
         loadFingerPrintReader(this);
+        setFingerPrintUI();
     }
 
     private void loadFingerPrintReader(Context context) {
@@ -798,9 +800,11 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
 //                                    cap_result.image.getViews()[0].getQuality(), cap_result.image.getViews()[0].getFingerPosition(),
 //                                    cap_result.image.getCbeffId(), Fmd.Format.ANSI_378_2004);
                             m_reset = true;
+                            CustomerBiometricDAO.deleteFinger(cust_id, finger);
                             CustomerFid customerFid = new CustomerFid(cap_result.image, finger);
                             biometric.setCustomerId(cust_id);
                             biometric.getFids().add(customerFid);
+                            CustomerBiometricDAO.upsert(biometric);
 //                            biometric.setFingerFid(finger, cap_result.image);
                         } catch (UareUException e) {
 
