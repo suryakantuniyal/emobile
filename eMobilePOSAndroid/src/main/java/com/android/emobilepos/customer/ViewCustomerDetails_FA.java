@@ -56,6 +56,7 @@ import java.util.List;
 import java.util.Locale;
 
 import static com.android.emobilepos.R.id.fingerPrintimageView;
+import static com.android.emobilepos.R.id.unregisterFingerprintbutton2;
 
 public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implements AdapterView.OnItemSelectedListener, RadioGroup.OnCheckedChangeListener, View.OnClickListener {
 
@@ -510,6 +511,16 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        try {
+            reader.Close();
+        } catch (UareUException e) {
+
+        }
+    }
+
+    @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         switch (parent.getId()) {
             case R.id.newCustBillCountry:
@@ -573,12 +584,42 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         CustomerBiometricDAO.upsert(biometric);
     }
 
-    private Dialog showScanningDialog() {
+    private Dialog showScanningDialog(final Finger finger) {
         final Dialog dialog = new Dialog(activity, R.style.DialogLargeArea);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCancelable(false);
         dialog.setContentView(R.layout.fingerprint_scanning_layout);
         fingerPrintimage = (ImageView) dialog.findViewById(fingerPrintimageView);
+        Button fingerPrintCancelButton = (Button) dialog.findViewById(R.id.cancelScanningButton);
+        Button unregisterButton = (Button) dialog.findViewById(unregisterFingerprintbutton2);
+        fingerPrintCancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                try {
+                    reader.Close();
+                } catch (UareUException e) {
+
+                }
+            }
+        });
+
+        unregisterButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CustomerBiometricDAO.deleteFinger(cust_id, finger);
+                biometric = CustomerBiometricDAO.getBiometrics(cust_id);
+                setFingerPrintUI();
+                dialog.dismiss();
+                try {
+                    reader.Close();
+                } catch (UareUException e) {
+
+                }
+            }
+        });
+
+
         dialog.show();
         startAnimation(fingerPrintimage, 0);
         progressBar = (ProgressBar) dialog.findViewById(R.id.fingerprintScanningprogressBar3);
@@ -622,7 +663,7 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
 
     private void startFingerPrintScanner(final Finger finger) {
         try {
-            final Dialog scanningDialog = showScanningDialog();
+            final Dialog scanningDialog = showScanningDialog(finger);
             reader.Open(Reader.Priority.EXCLUSIVE);
             dpi = GetFirstDPI(reader);
             engine = UareUGlobal.GetEngine();
@@ -671,6 +712,14 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
     }
 
     private void setFingerPrintUI() {
+        fingerLeft1.setBackgroundResource(R.color.black_transparency);
+        fingerLeft2.setBackgroundResource(R.color.black_transparency);
+        fingerLeft3.setBackgroundResource(R.color.black_transparency);
+        fingerLeft4.setBackgroundResource(R.color.black_transparency);
+        fingerRight1.setBackgroundResource(R.color.black_transparency);
+        fingerRight2.setBackgroundResource(R.color.black_transparency);
+        fingerRight3.setBackgroundResource(R.color.black_transparency);
+        fingerRight4.setBackgroundResource(R.color.black_transparency);
         for (CustomerFid fid : biometric.getFids()) {
             Finger finger = Finger.getByCode(fid.getFingerCode());
             switch (finger) {

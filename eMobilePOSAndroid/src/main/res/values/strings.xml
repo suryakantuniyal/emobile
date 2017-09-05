@@ -1363,5 +1363,6 @@
     <string name="fingerprint_enrollment">Place any finger to start enrollment.</string>
     <string name="fingerprint_enrollment_title">Fingerprint Enrollment</string>
     <string name="rescan_fingerprint">Remove the finger place the same finger on the reader</string>
+    <string name="unregister_fingerprint">Unregister</string>
 
 </resources>
