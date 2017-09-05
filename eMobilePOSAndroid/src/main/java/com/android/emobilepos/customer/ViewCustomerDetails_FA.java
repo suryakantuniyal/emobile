@@ -55,6 +55,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import static com.android.emobilepos.R.id.fingerPrintimageView;
+
 public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implements AdapterView.OnItemSelectedListener, RadioGroup.OnCheckedChangeListener, View.OnClickListener {
 
     private final int SPINNER_PRICELEVEL = 0, SPINNER_TAXES = 1;
@@ -115,11 +117,13 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
     private boolean m_first;
     private boolean m_success;
     private int m_templateSize;
-    private String m_textString;
     private Engine.EnrollmentCallback enrollThread;
     CustomerBiometric biometric = new CustomerBiometric();
     private ProgressBar progressBar;
+    TextView fingerPrintScanningNotesTextView;
     private int progress;
+    private ImageView fingerPrintimage;
+    private String m_textString;
 
     public static final String QualityToString(Reader.CaptureResult result) {
         if (result == null) {
@@ -537,28 +541,28 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
                 saveBiometrics();
                 break;
             case R.id.fingerOneLeftbutton6:
-                showFingerPrintScanner(Finger.FINGER_ONE_LEFT);
+                startFingerPrintScanner(Finger.FINGER_ONE_LEFT);
                 break;
             case R.id.fingerTwoLeftbutton5:
-                showFingerPrintScanner(Finger.FINGER_TWO_LEFT);
+                startFingerPrintScanner(Finger.FINGER_TWO_LEFT);
                 break;
             case R.id.fingerThreeLeftbutton4:
-                showFingerPrintScanner(Finger.FINGER_THREE_LEFT);
+                startFingerPrintScanner(Finger.FINGER_THREE_LEFT);
                 break;
             case R.id.fingerFourLeftbutton3:
-                showFingerPrintScanner(Finger.FINGER_FOUR_LEFT);
+                startFingerPrintScanner(Finger.FINGER_FOUR_LEFT);
                 break;
             case R.id.fingerOneRightbutton6:
-                showFingerPrintScanner(Finger.FINGER_ONE_RIGHT);
+                startFingerPrintScanner(Finger.FINGER_ONE_RIGHT);
                 break;
             case R.id.fingerTwoRightbutton5:
-                showFingerPrintScanner(Finger.FINGER_TWO_RIGHT);
+                startFingerPrintScanner(Finger.FINGER_TWO_RIGHT);
                 break;
             case R.id.fingerThreeRightbutton4:
-                showFingerPrintScanner(Finger.FINGER_THREE_RIGHT);
+                startFingerPrintScanner(Finger.FINGER_THREE_RIGHT);
                 break;
             case R.id.fingerFourRightbutton3:
-                showFingerPrintScanner(Finger.FINGER_FOUR_RIGHT);
+                startFingerPrintScanner(Finger.FINGER_FOUR_RIGHT);
                 break;
 
         }
@@ -574,17 +578,49 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCancelable(false);
         dialog.setContentView(R.layout.fingerprint_scanning_layout);
-        ImageView image = (ImageView) dialog.findViewById(R.id.fingerPrintimageView);
-        image.setBackgroundResource(R.drawable.fingertscanner_scanning);
-        AnimationDrawable animation = (AnimationDrawable) image.getBackground();
-        animation.start();
+        fingerPrintimage = (ImageView) dialog.findViewById(fingerPrintimageView);
         dialog.show();
+        startAnimation(fingerPrintimage, 0);
         progressBar = (ProgressBar) dialog.findViewById(R.id.fingerprintScanningprogressBar3);
         progressBar.setMax(5);
         progressBar.setProgress(progress);
+        fingerPrintScanningNotesTextView = (TextView) dialog.findViewById(R.id.fingerPrintNotestextView);
+        fingerPrintScanningNotesTextView.setText(R.string.fingerprint_enrollment);
         return dialog;
     }
-    private void showFingerPrintScanner(final Finger finger) {
+
+    private void startAnimation(final ImageView imageView, int step) {
+        android.os.Handler handler = new android.os.Handler();
+        switch (step) {
+            case 1:
+                fingerPrintimage.setBackgroundResource(R.drawable.fingertscanner_ok);
+                AnimationDrawable animation = (AnimationDrawable) imageView.getBackground();
+                animation.start();
+                fingerPrintScanningNotesTextView.setText(R.string.processing);
+                fingerPrintScanningNotesTextView.setTextColor(Color.RED);
+                startAnimation(imageView, 2);
+                break;
+            case 2:
+
+//                fingerPrintimage.setBackgroundResource(R.drawable.fingertscanner_scanning);
+//                animation = (AnimationDrawable) imageView.getBackground();
+//                animation.start();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        fingerPrintScanningNotesTextView.setText(R.string.rescan_fingerprint);
+                        fingerPrintScanningNotesTextView.setTextColor(Color.RED);
+                        fingerPrintimage.setBackgroundResource(R.drawable.fingertscanner_scanning);
+                        AnimationDrawable animation = (AnimationDrawable) imageView.getBackground();
+                        animation.start();
+                    }
+                }, 1000);
+                break;
+        }
+
+    }
+
+    private void startFingerPrintScanner(final Finger finger) {
         try {
             final Dialog scanningDialog = showScanningDialog();
             reader.Open(Reader.Priority.EXCLUSIVE);
@@ -597,7 +633,6 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
                 @Override
                 public void run() {
                     try {
-                        int progress = 0;
                         m_current_fmds_count = 0;
                         m_reset = false;
                         enrollThread = new EnrollmentCallback(reader, engine, finger);
@@ -613,8 +648,8 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
                                 m_current_fmds_count = 0;
                             }
                         }
+                        progress = 0;
                         scanningDialog.dismiss();
-
                         reader.Close();
                         ViewCustomerDetails_FA.this.runOnUiThread(new Runnable() {
                             @Override
@@ -846,12 +881,24 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
                         m_text_conclusionString = m_success ? "Enrollment template created, size: " + m_templateSize : "Enrollment template failed. Please try again";
                     }
                 }
-                m_textString = "Place any finger on the reader";
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        fingerPrintScanningNotesTextView.setText("Place any finger on the reader");
+//                    }
+//                });
                 m_enrollment_fmd = null;
             } else {
                 m_first = false;
                 m_success = false;
-                m_textString = "Continue to place the same finger on the reader";
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+//                        fingerPrintScanningNotesTextView.setText("Continue to place the same finger on the reader");
+                        startAnimation(fingerPrintimage, 1);
+                    }
+                });
+//                m_textString = "Continue to place the same finger on the reader";
             }
 
             return result;
