@@ -45,6 +45,7 @@ import com.android.database.OrdersHandler;
 import com.android.database.PayMethodsHandler;
 import com.android.database.ProductsHandler;
 import com.android.database.SalesTaxCodesHandler;
+import com.android.emobilepos.OnHoldActivity;
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.OrderProductListAdapter;
 import com.android.emobilepos.customer.ViewCustomers_FA;
@@ -645,6 +646,20 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 Log.d("Checkout", "Checkout clicks bypass");
             }
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id) {
+            case R.id.toggleEloBCR: {
+                if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                    Global.mainPrinterManager.getCurrentDevice().toggleBarcodeReader();
+                }
+                break;
+            }
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void showSeatHeaderPopMenu(final View v) {
@@ -1607,6 +1622,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     public void setLoyaltyFragment(OrderLoyalty_FR loyaltyFragment) {
         this.loyaltyFragment = loyaltyFragment;
     }
+
 
     public enum OrderingAction {
         HOLD, CHECKOUT, NONE, BACK_PRESSED

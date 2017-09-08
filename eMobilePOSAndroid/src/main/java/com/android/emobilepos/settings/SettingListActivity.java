@@ -1247,7 +1247,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
             EMSDeviceManager edm = new EMSDeviceManager();
             try {
                 ArrayList<PortInfo> mPortList = StarIOPort.searchPrinter("USB:", getActivity());
-                if(!mPortList.isEmpty()){
+                if (!mPortList.isEmpty()) {
                     myPref.setPrinterType(Global.STAR);
                     myPref.setPrinterName(mPortList.get(0).getPortName());
                     myPref.setPrinterMACAddress(mPortList.get(0).getPortName());
@@ -1402,7 +1402,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
         protected void onPostExecute(String s) {
             Toast.makeText(activity, s, Toast.LENGTH_LONG).show();
             activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-            dialog.dismiss();
+            Global.dismissDialog(activity, dialog);
         }
     }
 

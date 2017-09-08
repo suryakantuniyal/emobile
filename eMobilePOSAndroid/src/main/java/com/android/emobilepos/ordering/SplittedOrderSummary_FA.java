@@ -855,7 +855,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                 if (getTax() != null) {
                     TaxesCalculator taxesCalculator = new TaxesCalculator(this, product, splitedOrder.tax_id,
                             getTax(), getDiscount(), Global.getBigDecimalNum(splitedOrder.ord_subtotal),
-                            Global.getBigDecimalNum(splitedOrder.ord_discount), transType);
+                            Global.getBigDecimalNum(splitedOrder.ord_discount));
                     orderTaxes = orderTaxes.add(taxesCalculator.getTaxableAmount());
                     splitedOrder.setListOrderTaxes(taxesCalculator.getListOrderTaxes());
                 }

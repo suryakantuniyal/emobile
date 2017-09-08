@@ -198,7 +198,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
             if (orderSummaryFa.getTax() != null) {
                 TaxesCalculator taxesCalculator = new TaxesCalculator(getActivity(), product, splitedOrder.tax_id,
                         orderSummaryFa.getTax(), orderSummaryFa.getDiscount(), Global.getBigDecimalNum(splitedOrder.ord_subtotal),
-                        Global.getBigDecimalNum(splitedOrder.ord_discount), getSplittedOrderSummaryFa().transType);
+                        Global.getBigDecimalNum(splitedOrder.ord_discount));
                 orderTaxes = orderTaxes.add(taxesCalculator.getTaxableAmount());
                 splitedOrder.setListOrderTaxes(taxesCalculator.getListOrderTaxes());
 

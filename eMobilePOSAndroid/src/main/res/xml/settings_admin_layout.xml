@@ -330,6 +330,10 @@
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_enable_printing" />
         <CheckBoxPreference
+            android:key="pref_enable_multiple_prints"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_multiple_prints" />
+        <CheckBoxPreference
             android:key="pref_automatic_printing"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_automatic_printing" />

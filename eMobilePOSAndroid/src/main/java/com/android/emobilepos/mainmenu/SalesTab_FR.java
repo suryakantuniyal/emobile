@@ -1282,7 +1282,7 @@ public class SalesTab_FR extends Fragment implements BCRCallbacks {
         HashMap<String, String> map = custHandler.getCustomerInfo(hiddenField.getText().toString().replace("\n", "").trim());
         hiddenField.setText("");
         if (map.size() > 0) {
-            SalesTaxCodesHandler taxHandler = new SalesTaxCodesHandler(activity);
+            SalesTaxCodesHandler taxHandler = new SalesTaxCodesHandler(getActivity());
             SalesTaxCodesHandler.TaxableCode taxable = taxHandler.checkIfCustTaxable(map.get("cust_taxable"));
             myPref.setCustTaxCode(taxable, map.get("cust_taxable"));
             myPref.setCustID(map.get("cust_id"));    //getting cust_id as _id

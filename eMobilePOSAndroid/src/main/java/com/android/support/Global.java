@@ -1201,6 +1201,19 @@ public class Global extends MultiDexApplication {
         }
     }
 
+    public static boolean isActivityDestroyed(Activity activity) {
+        boolean isDestroyed = false;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            if (activity == null || activity.isDestroyed()) {
+                isDestroyed = true;
+            }
+        }
+        if (isDestroyed || (activity == null) || activity.isFinishing()) {
+            isDestroyed = true;
+        }
+        return isDestroyed;
+    }
+
     @Override
     public void onTerminate() {
         super.onTerminate();

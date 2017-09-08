@@ -77,6 +77,7 @@ public class MyPreferences {
     public static final String pref_invoice_require_full_payment = "pref_invoice_require_full_payment";
     public static final String pref_printek_info = "pref_printek_info";
     public static final String pref_automatic_printing = "pref_automatic_printing";
+    public static final String pref_enable_multiple_prints = "pref_enable_multiple_prints";
     public static final String pref_split_stationprint_by_categories = "pref_split_stationprint_by_categories";
     public static final String pref_enable_printing = "pref_enable_printing";
     public static final String pref_wholesale_printout = "pref_wholesale_printout";
@@ -117,7 +118,6 @@ public class MyPreferences {
     private static final String pref_skip_email_phone = "pref_skip_email_phone";
     private static final String pref_require_customer = "pref_require_customer";
     private static final String pref_prefill_total_amount = "pref_prefill_total_amount";
-    private static final String pref_require_customer = "pref_require_customer";
     private static final String pref_automatic_sync = "pref_automatic_sync";
     private static final String pref_restaurant_mode = "pref_restaurant_mode";
     private static final String pref_retail_taxes = "pref_retail_taxes";
@@ -1445,6 +1445,10 @@ public class MyPreferences {
 
     public boolean isShowCashChangeAmount() {
         return getPreferences(MyPreferences.pref_cash_show_change);
+    }
+
+    public boolean isMultiplePrints() {
+        return getPreferences(MyPreferences.pref_enable_multiple_prints);
     }
 
     public enum PrinterPreviewWidth {SMALL, MEDIUM, LARGE}

@@ -264,7 +264,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                 intent.putExtra("isModify", isModify);
                 intent.putExtra("prod_id", prodID);
                 if (isModify) {
-                    intent.putExtra("ordprod_id", global.order.getOrderProducts().get(modifyOrderPosition).getOrdprod_id());
+                    intent.putExtra("ordprod_id", orderProduct.getOrdprod_id());
                 }
                 startActivity(intent);
                 break;
@@ -295,7 +295,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             prLevTotal = Global.formatNumToLocale(Double.parseDouble(basePrice));
             updateSavedDetails();
 
-            _ordprod_comment = global.order.getOrderProducts().get(modifyOrderPosition).getOrdprod_comment();
+            _ordprod_comment = orderProduct.getOrdprod_comment();
             rightTitle[INDEX_CMT] = _ordprod_comment;
         } else {
             imgURL = orderProduct.getImgURL();
@@ -371,13 +371,13 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
         int _plIndex = 0, _disIndex = 0, _uomIndex = 0;
         for (int i = 0; i < maxSize; i++) {
-            if (i < plSize && priceLevels.get(i).getPricelevelId().equals(global.order.getOrderProducts().get(modifyOrderPosition).getPricelevel_id())) {
+            if (i < plSize && priceLevels.get(i).getPricelevelId().equals(orderProduct.getPricelevel_id())) {
                 _plIndex = i + 1;
             }
-            if (i < disSize && _listDiscounts.get(i)[4].equals(global.order.getOrderProducts().get(modifyOrderPosition).getDiscount_id())) {
+            if (i < disSize && _listDiscounts.get(i)[4].equals(orderProduct.getDiscount_id())) {
                 _disIndex = i + 1;
             }
-            if (i < uomSize && uoms.get(i).getUomId().equals(global.order.getOrderProducts().get(modifyOrderPosition).getUom_id())
+            if (i < uomSize && uoms.get(i).getUomId().equals(orderProduct.getUom_id())
                     ) {
                 _uomIndex = i + 1;
             }
@@ -559,7 +559,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                 onHandQty = Double.parseDouble(headerOnHand.getText().toString());
 
             if (mTransType != Global.TransactionType.RETURN) {
-                if (OrderingMain_FA.returnItem || (isModify && global.order.getOrderProducts().get(modifyOrderPosition).isReturned())) {
+                if (OrderingMain_FA.returnItem || (isModify && orderProduct.isReturned())) {
                     qty_picked = new BigDecimal(qty_picked).negate().toString();
                 }
             }
@@ -1169,14 +1169,14 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                 rightTitle[INDEX_PRICE_LEVEL] = Global.formatDoubleToCurrency(Double.parseDouble(basePrice)) + " <Base Price>";
             } else {
                 int pos = modifyOrderPosition;
-                itemName = global.order.getOrderProducts().get(pos).getOrdprod_name();
+                itemName = orderProduct.getOrdprod_name();
 
-                rightTitle[INDEX_PRICE_LEVEL] = global.order.getOrderProducts().get(pos).getFinalPrice();
-                taxTotal = global.order.getOrderProducts().get(pos).getTaxTotal();
-                disTotal = global.order.getOrderProducts().get(pos).getDisTotal();
+                rightTitle[INDEX_PRICE_LEVEL] = orderProduct.getFinalPrice();
+                taxTotal = orderProduct.getTaxTotal();
+                disTotal = orderProduct.getDisTotal();
 
-                disAmount = global.order.getOrderProducts().get(pos).getDisAmount();
-                taxAmount = global.order.getOrderProducts().get(pos).getTaxAmount();
+                disAmount = orderProduct.getDisAmount();
+                taxAmount = orderProduct.getTaxAmount();
                 rightTitle[INDEX_DISCOUNT] = disAmount;
             }
         }
@@ -1259,10 +1259,10 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
                         updateVolumePrice(newQty);
                         if (isModify) {
-                            if (global.order.getOrderProducts().get(modifyOrderPosition).isReturned())
-                                qty_picked = new BigDecimal(global.order.getOrderProducts().get(modifyOrderPosition).getOrdprod_qty()).negate().toString();
+                            if (orderProduct.isReturned())
+                                qty_picked = new BigDecimal(orderProduct.getOrdprod_qty()).negate().toString();
                             else
-                                qty_picked = global.order.getOrderProducts().get(modifyOrderPosition).getOrdprod_qty();
+                                qty_picked = orderProduct.getOrdprod_qty();
                             holder.rightText.setText(qty_picked);
                         }
 
@@ -1410,7 +1410,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                 if (!isModify)
                     basePrice = orderProduct.getProd_price();
                 else
-                    basePrice = global.order.getOrderProducts().get(modifyOrderPosition).getProd_price();
+                    basePrice = orderProduct.getProd_price();
 
                 if (basePrice == null || basePrice.isEmpty())
                     basePrice = "0.0";

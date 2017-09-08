@@ -111,6 +111,9 @@ public class TaxesCalculator {
         return totalTaxAmount;
     }
 
+    private OrderingMain_FA getOrderingMainFa(){
+        return (OrderingMain_FA) activity;
+    }
     public void calculateTaxes() {
         TaxesHandler taxHandler = new TaxesHandler(activity);
         String taxAmount = "0.00";
@@ -192,7 +195,7 @@ public class TaxesCalculator {
                 BigDecimal temp = new BigDecimal(taxAmount).divide(new BigDecimal("100")).setScale(6,
                         RoundingMode.HALF_UP);
 //                tempSubTotal = tempSubTotal.abs().subtract(new BigDecimal(orderProduct.getDiscount_value()).abs());
-                if (orderProduct.isReturned() && OrderingMain_FA.mTransType != Global.TransactionType.RETURN) {
+                if (orderProduct.isReturned() && getOrderingMainFa().mTransType != Global.TransactionType.RETURN) {
                     tempSubTotal = tempSubTotal.negate();
                 }
                 BigDecimal tax1 = tempSubTotal.multiply(temp);

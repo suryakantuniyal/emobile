@@ -14,6 +14,7 @@ import com.android.dao.ClerkDAO;
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.SalesAssociateListAdapter;
 import com.android.emobilepos.models.realms.Clerk;
+import com.android.support.NetworkUtils;
 import com.android.support.SynchMethods;
 import com.crashlytics.android.Crashlytics;
 
@@ -54,7 +55,9 @@ public class SalesAssociateListFragment extends Fragment implements AdapterView.
             SalesAssociateConfigurationActivity activity = (SalesAssociateConfigurationActivity) getActivity();
             activity.setSelectedClerk(associates.get(0));
         }
-        new SynchDinnindTablesConfiguration().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        if(NetworkUtils.isConnectedToInternet(getActivity())) {
+            new SynchDinnindTablesConfiguration().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }
     }
 
 
