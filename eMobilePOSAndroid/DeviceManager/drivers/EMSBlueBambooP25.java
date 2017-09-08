@@ -142,7 +142,7 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
 
 	public class processConnectionAsync extends AsyncTask<Integer, String, String> {
 
-		String msg = new String("Failed to connect");
+		String msg = new String("Failed to connectTFHKA");
 		boolean didConnect = false;
 
 		@Override
@@ -173,7 +173,7 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
 				}
 			} catch (IOException e) {
 
-				msg = "Failed to connect: \n" + e.getMessage();
+				msg = "Failed to connectTFHKA: \n" + e.getMessage();
 			}
 
 			return null;

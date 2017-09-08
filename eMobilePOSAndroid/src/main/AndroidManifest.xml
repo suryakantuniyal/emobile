@@ -508,6 +508,9 @@
         <!-- </service> -->
         <activity android:name=".shifts.ShiftsActivity" />
 
+        <activity
+            android:name=".bixolon.BixolonTransactionsActivity"
+            android:label="@string/title_activity_bixolon_transactions"></activity>
     </application>
 
 </manifest>

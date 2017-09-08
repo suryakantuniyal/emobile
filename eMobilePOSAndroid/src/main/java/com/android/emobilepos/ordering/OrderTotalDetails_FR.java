@@ -464,7 +464,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
 
         taxHandler = new TaxesHandler(activity);
         taxGroupHandler = new TaxesGroupHandler(activity);
-        taxList = taxHandler.getTaxes();
+        taxList = taxHandler.getTaxes(myPref.getPreferences(MyPreferences.pref_show_only_group_taxes));
         ProductsHandler handler2 = new ProductsHandler(activity);
         discountList = handler2.getDiscounts();
         int size = taxList.size();
@@ -715,11 +715,11 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                     getOrderingMainFa().getLoyaltyFragment().recalculatePoints(String.valueOf(totalDetails.getPointsSubTotal()), String.valueOf(totalDetails.getPointsInUse()),
                             String.valueOf(totalDetails.getPointsAcumulable()), gran_total.toString());
                 }
-                getOrderingMainFa().getLeftFragment().orderRewardsFr.setRewardSubTotal(discountable_sub_total.toString());
                 OrderingMain_FA mainFa = (OrderingMain_FA) getActivity();
+                mainFa.getLeftFragment().orderRewardsFr.setRewardSubTotal(discountable_sub_total.toString());
                 mainFa.enableCheckoutButton();
                 mainFa.getLeftFragment().mainLVAdapter.notifyDataSetChanged();
-                getOrderingMainFa().getLeftFragment().receiptListView.setSelection(mainFa.getLeftFragment().mainLVAdapter.selectedPosition);
+                mainFa.getLeftFragment().receiptListView.setSelection(mainFa.getLeftFragment().mainLVAdapter.selectedPosition);
             }
         }
     }

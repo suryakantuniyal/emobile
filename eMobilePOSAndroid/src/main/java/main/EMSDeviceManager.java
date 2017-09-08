@@ -17,6 +17,7 @@ import com.android.support.MyPreferences;
 
 import drivers.EMSAsura;
 import drivers.EMSBixolon;
+import drivers.EMSBixolonRD;
 import drivers.EMSBlueBambooP25;
 import drivers.EMSBluetoothStarPrinter;
 import drivers.EMSDeviceDriver;
@@ -66,6 +67,10 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                     promptTypeOfStarPrinter(activity);
                 else
                     promptStarPrinterSize(true, activity);
+                break;
+            case Global.BIXOLON_RD:
+                aDevice = new EMSBixolonRD(EMSBixolonRD.BixolonCountry.DOMINICAN_REPUBLIC);
+                aDevice.connect(activity, -1, true, this);
                 break;
             case Global.BAMBOO:
                 aDevice = new EMSBlueBambooP25();
@@ -161,6 +166,9 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 break;
             case Global.BIXOLON:
                 aDevice = new EMSBixolon();
+                break;
+            case Global.BIXOLON_RD:
+                aDevice = new EMSBixolonRD(EMSBixolonRD.BixolonCountry.DOMINICAN_REPUBLIC);
                 break;
             case Global.ZEBRA:
                 aDevice = new EMSZebraEM220ii();
@@ -354,7 +362,7 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 dialog.setNegativeButton("Ok", null);
                 AlertDialog alert = dialog.create();
                 alert.setTitle(R.string.dlog_title_error);
-                alert.setMessage("Failed to connect device: \n" + err);
+                alert.setMessage("Failed to connectTFHKA device: \n" + err);
                 alert.show();
             }
         }

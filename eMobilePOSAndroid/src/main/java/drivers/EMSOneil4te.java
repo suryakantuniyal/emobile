@@ -99,7 +99,7 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
         return didConnect;
 
     }
-
+    
     @Override
     public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
         try {

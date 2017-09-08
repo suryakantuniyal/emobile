@@ -36,9 +36,9 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.CountrySpinnerAdapter;
 import com.android.emobilepos.models.Country;
 import com.android.emobilepos.models.Tax;
-import com.android.emobilepos.models.realms.EmobileBiometric;
 import com.android.emobilepos.models.realms.CustomerCustomField;
 import com.android.emobilepos.models.realms.CustomerFid;
+import com.android.emobilepos.models.realms.EmobileBiometric;
 import com.android.support.Customer;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -385,9 +385,9 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         List<String> priceLevel = new ArrayList<>();
         taxes.add("Select One");
         priceLevel.add("Select One");
-
+        MyPreferences preferences = new MyPreferences(this);
         TaxesHandler handler = new TaxesHandler(this);
-        List<Tax> taxList = handler.getTaxes();
+        List<Tax> taxList = handler.getTaxes(preferences.getPreferences(MyPreferences.pref_show_only_group_taxes));
         PriceLevelHandler handler2 = new PriceLevelHandler();
         List<String[]> priceLevelList = handler2.getPriceLevel();
 

@@ -60,7 +60,7 @@ public class EMSKDC425 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     private static EMSCallBack scannerCallBack;
     private static KDCReader kdc425Reader;
     private static Handler handler;
-    String msg = "Failed to connect";
+    String msg = "Failed to connectTFHKA";
     private EMSDeviceManager edm;
     private EMSKDC425 thisInstance;
     private String scannedData = "";

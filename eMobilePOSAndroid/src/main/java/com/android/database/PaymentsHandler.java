@@ -465,7 +465,7 @@ public class PaymentsHandler {
         return paymentDetails;
     }
 
-    public Payment getPaymentForVoid(String payID) {
+    public Payment getPayment(String payID) {
         Payment payment = null;
         Cursor cursor = getDatabase().rawQuery("SELECT * FROM Payments WHERE pay_id = '" + payID + "'", null);
         if (cursor.moveToFirst()) {
