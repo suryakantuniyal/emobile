@@ -27,8 +27,8 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.dao.CustomerBiometricDAO;
 import com.android.dao.CustomerCustomFieldsDAO;
+import com.android.dao.EmobileBiometricDAO;
 import com.android.database.CustomersHandler;
 import com.android.database.PriceLevelHandler;
 import com.android.database.TaxesHandler;
@@ -269,7 +269,7 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         fingerRight3.setOnClickListener(this);
         fingerRight4.setOnClickListener(this);
         customerNameTextView = (TextView) findViewById(R.id.customerNametextView341);
-        biometric = CustomerBiometricDAO.getBiometrics(cust_id);
+        biometric = EmobileBiometricDAO.getBiometrics(cust_id, EmobileBiometric.UserType.CUSTOMER);
         setUI();
         setupCountries();
         setupSpinners();
@@ -589,8 +589,8 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
     }
 
     private void saveBiometrics() {
-        CustomerBiometricDAO.delete(cust_id);
-        CustomerBiometricDAO.upsert(biometric);
+        EmobileBiometricDAO.delete(cust_id, EmobileBiometric.UserType.CUSTOMER);
+        EmobileBiometricDAO.upsert(biometric);
     }
 
     private Dialog showScanningDialog(final Finger finger) {
@@ -620,8 +620,8 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
             @Override
             public void onClick(View v) {
                 m_reset = true;
-                CustomerBiometricDAO.deleteFinger(cust_id, finger);
-                biometric = CustomerBiometricDAO.getBiometrics(cust_id);
+                EmobileBiometricDAO.deleteFinger(cust_id, EmobileBiometric.UserType.CUSTOMER, finger);
+                biometric = EmobileBiometricDAO.getBiometrics(cust_id, EmobileBiometric.UserType.CUSTOMER);
                 setFingerPrintUI();
                 try {
                     if(reader.GetStatus().status == ReaderStatus.BUSY) {
@@ -927,11 +927,11 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
 //                                    cap_result.image.getViews()[0].getQuality(), cap_result.image.getViews()[0].getFingerPosition(),
 //                                    cap_result.image.getCbeffId(), Fmd.Format.ANSI_378_2004);
                             m_reset = true;
-                            CustomerBiometricDAO.deleteFinger(cust_id, finger);
+                            EmobileBiometricDAO.deleteFinger(cust_id, EmobileBiometric.UserType.CUSTOMER, finger);
                             CustomerFid customerFid = new CustomerFid(cap_result.image, finger);
                             biometric.setCustomerId(cust_id);
                             biometric.getFids().add(customerFid);
-                            CustomerBiometricDAO.upsert(biometric);
+                            EmobileBiometricDAO.upsert(biometric);
 //                            biometric.setFingerFid(finger, cap_result.image);
                         } catch (UareUException e) {
 

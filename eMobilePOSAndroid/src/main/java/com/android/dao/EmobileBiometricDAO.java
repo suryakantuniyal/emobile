@@ -11,7 +11,7 @@ import io.realm.RealmResults;
 /**
  * Created by Guarionex on 4/12/2016.
  */
-public class CustomerBiometricDAO {
+public class EmobileBiometricDAO {
 
     public static void upsert(EmobileBiometric biometric) {
         Realm realm = Realm.getDefaultInstance();
@@ -24,12 +24,13 @@ public class CustomerBiometricDAO {
         }
     }
 
-    public static void delete(String customerId) {
+    public static void delete(String id, EmobileBiometric.UserType userType) {
         Realm realm = Realm.getDefaultInstance();
         try{
             realm.beginTransaction();
             EmobileBiometric biometric = realm.where(EmobileBiometric.class)
-                    .equalTo("customerId", customerId, Case.INSENSITIVE)
+                    .equalTo("customerId", id, Case.INSENSITIVE)
+                    .equalTo("usereTypeCode", userType.getCode())
                     .findFirst();
             if(biometric!=null && biometric.isValid()) {
                 biometric.getFids().clear();
@@ -40,18 +41,19 @@ public class CustomerBiometricDAO {
         }
     }
 
-    public static EmobileBiometric getBiometrics(String customerId) {
+    public static EmobileBiometric getBiometrics(String id, EmobileBiometric.UserType userType) {
         Realm realm = Realm.getDefaultInstance();
         EmobileBiometric biometric;
         try {
             biometric = realm.where(EmobileBiometric.class)
-                    .equalTo("customerId", customerId, Case.INSENSITIVE)
+                    .equalTo("customerId", id, Case.INSENSITIVE)
                     .findFirst();
             if (biometric != null) {
                 biometric = realm.copyFromRealm(biometric);
             } else {
                 biometric = new EmobileBiometric();
-                biometric.setCustomerId(customerId);
+                biometric.setCustomerId(id);
+                biometric.setUserType(userType);
             }
         } finally {
             realm.close();
@@ -59,12 +61,13 @@ public class CustomerBiometricDAO {
         return biometric;
     }
 
-    public static void deleteFinger(String customerId, ViewCustomerDetails_FA.Finger finger) {
+    public static void deleteFinger(String customerId, EmobileBiometric.UserType userType, ViewCustomerDetails_FA.Finger finger) {
         Realm realm = Realm.getDefaultInstance();
         try {
             realm.beginTransaction();
             EmobileBiometric biometric = realm.where(EmobileBiometric.class)
                     .equalTo("customerId", customerId, Case.INSENSITIVE)
+                    .equalTo("userTypeCode", userType.getCode())
                     .findFirst();
             if (biometric != null) {
                 RealmResults<CustomerFid> fids = biometric.getFids().where().equalTo("fingerCode", finger.getCode()).findAll();

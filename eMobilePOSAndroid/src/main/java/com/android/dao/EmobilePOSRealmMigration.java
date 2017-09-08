@@ -21,12 +21,13 @@ import io.realm.RealmSchema;
  * Created by Guarionex on 4/13/2016.
  */
 public class EmobilePOSRealmMigration implements io.realm.RealmMigration {
-    public static int REALM_SCHEMA_VERSION = 6;
+    public static int REALM_SCHEMA_VERSION = 7;
 
     @Override
     public void migrate(DynamicRealm realm, long oldVersion, long newVersion) {
         try {
             if (oldVersion != newVersion) {
+                realm.beginTransaction();
                 RealmSchema schema = realm.getSchema();
                 if (oldVersion < 4) {
                     if (schema.contains(CustomerCustomField.class.getSimpleName())) {
@@ -100,8 +101,20 @@ public class EmobilePOSRealmMigration implements io.realm.RealmMigration {
                             .addField("merchantName", String.class);
                     oldVersion++;
                 }
+                if (oldVersion == 6) {
+                    if (schema.contains(EmobileBiometric.class.getSimpleName())) {
+                        schema.remove(EmobileBiometric.class.getSimpleName());
+                    }
+                    schema.create(EmobileBiometric.class.getSimpleName()).
+                            addField("realmId", String.class, FieldAttribute.PRIMARY_KEY)
+                            .addField("customerId", String.class, FieldAttribute.INDEXED)
+                            .addField("userTypeCode", int.class, FieldAttribute.INDEXED)
+                            .addRealmListField("fids", schema.get(CustomerFid.class.getSimpleName()));
+                }
+                realm.commitTransaction();
             }
         } catch (Exception e) {
+            realm.cancelTransaction();
             Crashlytics.logException(e);
         }
     }

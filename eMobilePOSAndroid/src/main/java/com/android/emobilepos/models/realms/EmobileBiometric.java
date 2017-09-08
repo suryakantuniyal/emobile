@@ -2,13 +2,15 @@ package com.android.emobilepos.models.realms;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
+import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by Guarionex on 5/24/2016.
  */
 public class EmobileBiometric extends RealmObject {
-    
+
     public enum UserType{
         CUSTOMER(0), CLERK(1), SYSTEM(2);
 
@@ -34,13 +36,21 @@ public class EmobileBiometric extends RealmObject {
     }
 
     @PrimaryKey
+    private String realmId;
+    @Index
     private String customerId;
+    @Index
+    private int userTypeCode;
+    @Ignore
+    private UserType userType;
     private RealmList<CustomerFid> fids;
+
     public String getCustomerId() {
         return customerId;
     }
     public void setCustomerId(String customerId) {
         this.customerId = customerId;
+        realmId = this.customerId + userTypeCode;
     }
     public RealmList<CustomerFid> getFids() {
         if (null == fids) {
@@ -53,5 +63,23 @@ public class EmobileBiometric extends RealmObject {
         this.fids = fids;
     }
 
+    public UserType getUserType() {
+        this.userType = UserType.getByCode(userTypeCode);
+        return userType;
+    }
+
+    public void setUserType(UserType userType) {
+        this.userTypeCode = userType.getCode();
+        realmId = this.customerId + userTypeCode;
+        this.userType = userType;
+    }
+
+    public String getRealmId() {
+        return realmId;
+    }
+
+    public void setRealmId(String realmId) {
+        this.realmId = realmId;
+    }
 
 }
