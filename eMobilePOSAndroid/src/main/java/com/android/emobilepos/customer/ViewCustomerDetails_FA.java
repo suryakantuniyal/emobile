@@ -929,7 +929,7 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
                             m_reset = true;
                             EmobileBiometricDAO.deleteFinger(cust_id, EmobileBiometric.UserType.CUSTOMER, finger);
                             CustomerFid customerFid = new CustomerFid(cap_result.image, finger);
-                            biometric.setCustomerId(cust_id);
+                            biometric.setId(cust_id);
                             biometric.getFids().add(customerFid);
                             EmobileBiometricDAO.upsert(biometric);
 //                            biometric.setFingerFid(finger, cap_result.image);

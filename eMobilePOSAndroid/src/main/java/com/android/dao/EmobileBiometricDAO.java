@@ -29,7 +29,7 @@ public class EmobileBiometricDAO {
         try{
             realm.beginTransaction();
             EmobileBiometric biometric = realm.where(EmobileBiometric.class)
-                    .equalTo("customerId", id, Case.INSENSITIVE)
+                    .equalTo("id", id, Case.INSENSITIVE)
                     .equalTo("usereTypeCode", userType.getCode())
                     .findFirst();
             if(biometric!=null && biometric.isValid()) {
@@ -46,13 +46,13 @@ public class EmobileBiometricDAO {
         EmobileBiometric biometric;
         try {
             biometric = realm.where(EmobileBiometric.class)
-                    .equalTo("customerId", id, Case.INSENSITIVE)
+                    .equalTo("id", id, Case.INSENSITIVE)
                     .findFirst();
             if (biometric != null) {
                 biometric = realm.copyFromRealm(biometric);
             } else {
                 biometric = new EmobileBiometric();
-                biometric.setCustomerId(id);
+                biometric.setId(id);
                 biometric.setUserType(userType);
             }
         } finally {
@@ -66,7 +66,7 @@ public class EmobileBiometricDAO {
         try {
             realm.beginTransaction();
             EmobileBiometric biometric = realm.where(EmobileBiometric.class)
-                    .equalTo("customerId", customerId, Case.INSENSITIVE)
+                    .equalTo("id", customerId, Case.INSENSITIVE)
                     .equalTo("userTypeCode", userType.getCode())
                     .findFirst();
             if (biometric != null) {

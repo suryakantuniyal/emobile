@@ -21,13 +21,12 @@ import io.realm.RealmSchema;
  * Created by Guarionex on 4/13/2016.
  */
 public class EmobilePOSRealmMigration implements io.realm.RealmMigration {
-    public static int REALM_SCHEMA_VERSION = 7;
+    public static int REALM_SCHEMA_VERSION = 8;
 
     @Override
     public void migrate(DynamicRealm realm, long oldVersion, long newVersion) {
         try {
             if (oldVersion != newVersion) {
-                realm.beginTransaction();
                 RealmSchema schema = realm.getSchema();
                 if (oldVersion < 4) {
                     if (schema.contains(CustomerCustomField.class.getSimpleName())) {
@@ -77,6 +76,19 @@ public class EmobilePOSRealmMigration implements io.realm.RealmMigration {
                     oldVersion++;
                 }
                 if (oldVersion == 6) {
+                    if (schema.contains(Bixolon.class.getSimpleName())) {
+                        schema.remove(Bixolon.class.getSimpleName());
+                    }
+                    if (schema.contains(BixolonTransaction.class.getSimpleName())) {
+                        schema.remove(BixolonTransaction.class.getSimpleName());
+                    }
+                    if (schema.contains(BixolonTax.class.getSimpleName())) {
+                        schema.remove(BixolonTax.class.getSimpleName());
+                    }
+                    if (schema.contains(BixolonPaymentMethod.class.getSimpleName())) {
+                        schema.remove(BixolonPaymentMethod.class.getSimpleName());
+                    }
+
                     schema.create(BixolonTransaction.class.getSimpleName()).
                             addField("orderId", String.class, FieldAttribute.PRIMARY_KEY)
                             .addField("bixolonTransactionId", String.class, FieldAttribute.INDEXED)
@@ -101,20 +113,28 @@ public class EmobilePOSRealmMigration implements io.realm.RealmMigration {
                             .addField("merchantName", String.class);
                     oldVersion++;
                 }
-                if (oldVersion == 6) {
+                if (oldVersion == 7) {
                     if (schema.contains(EmobileBiometric.class.getSimpleName())) {
                         schema.remove(EmobileBiometric.class.getSimpleName());
                     }
+                    if (schema.contains(CustomerFid.class.getSimpleName())) {
+                        schema.remove(CustomerFid.class.getSimpleName());
+                    }
+                    schema.create(CustomerFid.class.getSimpleName()).
+                            addField("id", long.class, FieldAttribute.PRIMARY_KEY)
+                            .addField("fid", String.class)
+                            .addField("fingerCode", int.class, FieldAttribute.INDEXED);
+
+
                     schema.create(EmobileBiometric.class.getSimpleName()).
                             addField("realmId", String.class, FieldAttribute.PRIMARY_KEY)
-                            .addField("customerId", String.class, FieldAttribute.INDEXED)
+                            .addField("id", String.class, FieldAttribute.INDEXED)
                             .addField("userTypeCode", int.class, FieldAttribute.INDEXED)
                             .addRealmListField("fids", schema.get(CustomerFid.class.getSimpleName()));
+                    oldVersion++;
                 }
-                realm.commitTransaction();
             }
         } catch (Exception e) {
-            realm.cancelTransaction();
             Crashlytics.logException(e);
         }
     }
