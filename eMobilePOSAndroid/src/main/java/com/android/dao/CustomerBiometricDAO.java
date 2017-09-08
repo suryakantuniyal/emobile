@@ -1,8 +1,8 @@
 package com.android.dao;
 
 import com.android.emobilepos.customer.ViewCustomerDetails_FA;
-import com.android.emobilepos.models.realms.EmobileBiometric;
 import com.android.emobilepos.models.realms.CustomerFid;
+import com.android.emobilepos.models.realms.EmobileBiometric;
 
 import io.realm.Case;
 import io.realm.Realm;
@@ -66,9 +66,11 @@ public class CustomerBiometricDAO {
             EmobileBiometric biometric = realm.where(EmobileBiometric.class)
                     .equalTo("customerId", customerId, Case.INSENSITIVE)
                     .findFirst();
-            RealmResults<CustomerFid> fids = biometric.getFids().where().equalTo("fingerCode", finger.getCode()).findAll();
-            if (fids != null) {
-                fids.deleteAllFromRealm();
+            if (biometric != null) {
+                RealmResults<CustomerFid> fids = biometric.getFids().where().equalTo("fingerCode", finger.getCode()).findAll();
+                if (fids != null) {
+                    fids.deleteAllFromRealm();
+                }
             }
         }finally {
             realm.commitTransaction();
