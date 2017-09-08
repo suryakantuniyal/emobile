@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,6 +48,7 @@ import com.digitalpersona.uareu.Engine;
 import com.digitalpersona.uareu.Fid;
 import com.digitalpersona.uareu.Fmd;
 import com.digitalpersona.uareu.Reader;
+import com.digitalpersona.uareu.Reader.ReaderStatus;
 import com.digitalpersona.uareu.ReaderCollection;
 import com.digitalpersona.uareu.UareUException;
 import com.digitalpersona.uareu.UareUGlobal;
@@ -126,7 +128,7 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
     private ImageView fingerPrintimage;
     private String m_textString;
 
-    public static final String QualityToString(Reader.CaptureResult result) {
+    public static String QualityToString(Reader.CaptureResult result) {
         if (result == null) {
             return "";
         }
@@ -258,10 +260,6 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         fingerRight3 = (Button) findViewById(R.id.fingerThreeRightbutton4);
         fingerRight4 = (Button) findViewById(R.id.fingerFourRightbutton3);
         fingerLeft1.setOnClickListener(this);
-//        ImageButton ib = (ImageButton) findViewById(R.id.imageButton);
-//        fingerLeft1.setCompoundDrawables(null,getResources().getDrawable(R.drawable.fingertscanner_scanning),null,null);//BackgroundResource(R.drawable.fingertscanner_scanning);
-//        AnimationDrawable adb = (AnimationDrawable) fingerLeft1.getCompoundDrawables()[1];
-//        adb.start();
 
         fingerLeft2.setOnClickListener(this);
         fingerLeft3.setOnClickListener(this);
@@ -290,13 +288,28 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
             if (readers.size() > 0) {
                 this.reader = readers.get(0);
             }
+            reader.Open(Reader.Priority.EXCLUSIVE);
+            Reader.Status status = reader.GetStatus();
+            if (status.status == ReaderStatus.BUSY) {
+                reader.CancelCapture();
+            }
+            dpi = GetFirstDPI(reader);
+            engine = UareUGlobal.GetEngine();
         } catch (UareUException e) {
             Crashlytics.logException(e);
             e.printStackTrace();
         }
-
     }
 
+    private void releaseReader() {
+        try {
+            reader.CancelCapture();
+            reader.Close();
+            reader = null;
+        } catch (UareUException e) {
+            e.printStackTrace();
+        }
+    }
     private void setUI() {
         if (isCustomerEdit) {
             List<CustomerCustomField> customFields = CustomerCustomFieldsDAO.getCustomFields(customer.getCust_id());
@@ -513,11 +526,7 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        try {
-            reader.Close();
-        } catch (UareUException e) {
-
-        }
+        releaseReader();
     }
 
     @Override
@@ -595,27 +604,33 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         fingerPrintCancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialog.dismiss();
+                m_reset = true;
                 try {
-                    reader.Close();
+                    if(reader.GetStatus().status == ReaderStatus.BUSY) {
+                        reader.CancelCapture();
+                    }
                 } catch (UareUException e) {
 
                 }
+                dialog.dismiss();
             }
         });
 
         unregisterButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                m_reset = true;
                 CustomerBiometricDAO.deleteFinger(cust_id, finger);
                 biometric = CustomerBiometricDAO.getBiometrics(cust_id);
                 setFingerPrintUI();
-                dialog.dismiss();
                 try {
-                    reader.Close();
+                    if(reader.GetStatus().status == ReaderStatus.BUSY) {
+                        reader.CancelCapture();
+                    }
                 } catch (UareUException e) {
 
                 }
+                dialog.dismiss();
             }
         });
 
@@ -642,10 +657,6 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
                 startAnimation(imageView, 2);
                 break;
             case 2:
-
-//                fingerPrintimage.setBackgroundResource(R.drawable.fingertscanner_scanning);
-//                animation = (AnimationDrawable) imageView.getBackground();
-//                animation.start();
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -655,7 +666,7 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
                         AnimationDrawable animation = (AnimationDrawable) imageView.getBackground();
                         animation.start();
                     }
-                }, 1000);
+                }, 500);
                 break;
         }
 
@@ -664,9 +675,6 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
     private void startFingerPrintScanner(final Finger finger) {
         try {
             final Dialog scanningDialog = showScanningDialog(finger);
-            reader.Open(Reader.Priority.EXCLUSIVE);
-            dpi = GetFirstDPI(reader);
-            engine = UareUGlobal.GetEngine();
             m_reset = false;
             // loop capture on a separate thread to avoid freezing the UI
             new Thread(new Runnable() {
@@ -678,6 +686,7 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
                         m_reset = false;
                         enrollThread = new EnrollmentCallback(reader, engine, finger);
                         while (!m_reset) {
+                            Log.d("Engine", "Engine Enrollment progress");
                             try {
                                 m_enrollment_fmd = engine.CreateEnrollmentFmd(Fmd.Format.ANSI_378_2004, enrollThread);
                                 if (m_success = (m_enrollment_fmd != null)) {
@@ -691,7 +700,6 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
                         }
                         progress = 0;
                         scanningDialog.dismiss();
-                        reader.Close();
                         ViewCustomerDetails_FA.this.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -706,7 +714,7 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
                     }
                 }
             }).start();
-        } catch (UareUException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -874,6 +882,7 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
 
 
             while (!m_reset) {
+                Log.d("Enrollment", "Enrollment Capture in progress");
                 try {
                     cap_result = m_reader.Capture(Fid.Format.ANSI_381_2004, Reader.ImageProcessing.IMG_PROC_DEFAULT, dpi, -1);
                 } catch (Exception e) {
@@ -904,7 +913,7 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
 
             m_text_conclusionString = QualityToString(cap_result);
 
-            if (!m_enginError.isEmpty()) {
+            if (!TextUtils.isEmpty(m_enginError)) {
                 m_text_conclusionString = "Engine: " + m_enginError;
             }
 
@@ -930,12 +939,6 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
                         m_text_conclusionString = m_success ? "Enrollment template created, size: " + m_templateSize : "Enrollment template failed. Please try again";
                     }
                 }
-//                runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        fingerPrintScanningNotesTextView.setText("Place any finger on the reader");
-//                    }
-//                });
                 m_enrollment_fmd = null;
             } else {
                 m_first = false;
@@ -943,11 +946,9 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-//                        fingerPrintScanningNotesTextView.setText("Continue to place the same finger on the reader");
                         startAnimation(fingerPrintimage, 1);
                     }
                 });
-//                m_textString = "Continue to place the same finger on the reader";
             }
 
             return result;
