@@ -36,7 +36,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.CountrySpinnerAdapter;
 import com.android.emobilepos.models.Country;
 import com.android.emobilepos.models.Tax;
-import com.android.emobilepos.models.realms.CustomerBiometric;
+import com.android.emobilepos.models.realms.EmobileBiometric;
 import com.android.emobilepos.models.realms.CustomerCustomField;
 import com.android.emobilepos.models.realms.CustomerFid;
 import com.android.support.Customer;
@@ -121,7 +121,7 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
     private boolean m_success;
     private int m_templateSize;
     private Engine.EnrollmentCallback enrollThread;
-    CustomerBiometric biometric = new CustomerBiometric();
+    EmobileBiometric biometric = new EmobileBiometric();
     private ProgressBar progressBar;
     TextView fingerPrintScanningNotesTextView;
     private int progress;

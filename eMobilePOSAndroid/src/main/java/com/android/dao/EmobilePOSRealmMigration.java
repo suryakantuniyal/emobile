@@ -1,6 +1,6 @@
 package com.android.dao;
 
-import com.android.emobilepos.models.realms.CustomerBiometric;
+import com.android.emobilepos.models.realms.EmobileBiometric;
 import com.android.emobilepos.models.realms.CustomerCustomField;
 import com.android.emobilepos.models.realms.CustomerFid;
 
@@ -61,7 +61,7 @@ public class EmobilePOSRealmMigration implements io.realm.RealmMigration {
                         .addField("fid", String.class)
                         .addField("fingerCode", int.class, FieldAttribute.INDEXED);
 
-                schema.create(CustomerBiometric.class.getSimpleName()).
+                schema.create(EmobileBiometric.class.getSimpleName()).
                         addField("customerId", String.class, FieldAttribute.PRIMARY_KEY)
                         .addRealmListField("fids", schema.get(CustomerFid.class.getSimpleName()));
                 oldVersion++;

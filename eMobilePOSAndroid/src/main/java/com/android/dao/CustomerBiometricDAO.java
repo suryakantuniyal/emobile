@@ -1,7 +1,7 @@
 package com.android.dao;
 
 import com.android.emobilepos.customer.ViewCustomerDetails_FA;
-import com.android.emobilepos.models.realms.CustomerBiometric;
+import com.android.emobilepos.models.realms.EmobileBiometric;
 import com.android.emobilepos.models.realms.CustomerFid;
 
 import io.realm.Case;
@@ -13,7 +13,7 @@ import io.realm.RealmResults;
  */
 public class CustomerBiometricDAO {
 
-    public static void upsert(CustomerBiometric biometric) {
+    public static void upsert(EmobileBiometric biometric) {
         Realm realm = Realm.getDefaultInstance();
         try {
             realm.beginTransaction();
@@ -28,7 +28,7 @@ public class CustomerBiometricDAO {
         Realm realm = Realm.getDefaultInstance();
         try{
             realm.beginTransaction();
-            CustomerBiometric biometric = realm.where(CustomerBiometric.class)
+            EmobileBiometric biometric = realm.where(EmobileBiometric.class)
                     .equalTo("customerId", customerId, Case.INSENSITIVE)
                     .findFirst();
             if(biometric!=null && biometric.isValid()) {
@@ -40,15 +40,18 @@ public class CustomerBiometricDAO {
         }
     }
 
-    public static CustomerBiometric getBiometrics(String customerId) {
+    public static EmobileBiometric getBiometrics(String customerId) {
         Realm realm = Realm.getDefaultInstance();
-        CustomerBiometric biometric;
+        EmobileBiometric biometric;
         try {
-            biometric = realm.where(CustomerBiometric.class)
+            biometric = realm.where(EmobileBiometric.class)
                     .equalTo("customerId", customerId, Case.INSENSITIVE)
                     .findFirst();
             if (biometric != null) {
                 biometric = realm.copyFromRealm(biometric);
+            } else {
+                biometric = new EmobileBiometric();
+                biometric.setCustomerId(customerId);
             }
         } finally {
             realm.close();
@@ -60,7 +63,7 @@ public class CustomerBiometricDAO {
         Realm realm = Realm.getDefaultInstance();
         try {
             realm.beginTransaction();
-            CustomerBiometric biometric = realm.where(CustomerBiometric.class)
+            EmobileBiometric biometric = realm.where(EmobileBiometric.class)
                     .equalTo("customerId", customerId, Case.INSENSITIVE)
                     .findFirst();
             RealmResults<CustomerFid> fids = biometric.getFids().where().equalTo("fingerCode", finger.getCode()).findAll();
