@@ -13,6 +13,7 @@ import com.android.emobilepos.OnHoldActivity;
 import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.models.realms.Clerk;
+import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 
@@ -44,7 +45,7 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
 
     private boolean isNavigationBarModel() {
         for (String model : navigationbarByModels) {
-            if (Build.MODEL.toLowerCase().startsWith(model)) {
+            if (Build.MODEL.toLowerCase().contains(model.toLowerCase())) {
                 return true;
             }
         }
@@ -78,8 +79,14 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
         }
         if (this instanceof MainMenu_FA && myPref.getIsPersistClerk()) {
             menu.findItem(R.id.logoutMenuItem).setVisible(true);
-        } else if (showNavigationbar)
+        } else if (showNavigationbar) {
             menu.findItem(R.id.menu_back).setVisible(true);
+        }
+        if (this instanceof OrderingMain_FA && isNavigationBarModel()) {
+            menu.findItem(R.id.toggleEloBCR).setVisible(true);
+        } else {
+            menu.findItem(R.id.toggleEloBCR).setVisible(false);
+        }
         return true;
     }
 

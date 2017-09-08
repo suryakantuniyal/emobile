@@ -293,7 +293,7 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
                 didConnect = true;
         } else if (error_code == ERR_PROCESSING) {
             int _time_out = 0;
-            while (error_code == ERR_PROCESSING || _time_out > 10) {
+            while (error_code == ERR_PROCESSING || _time_out <= 10) {
                 error_code = interface_usb.OpenDevice();
                 try {
                     Thread.sleep(1000);
@@ -313,7 +313,11 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     }
 
     public void closeUsbInterface() {
-        interface_usb.CloseDevice();
+        try {
+            interface_usb.CloseDevice();
+        } catch (Exception e) {
+            Crashlytics.logException(e);
+        }
     }
 
 
@@ -321,8 +325,6 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSig) {
         openUsbInterface();
         printConsignmentReceipt(myConsignment, encodedSig, LINE_WIDTH);
-
-
         return true;
     }
 

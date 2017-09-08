@@ -58,7 +58,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class OnHoldActivity extends BaseFragmentActivityActionBar {
-    boolean validPassword = true;
+    boolean validPassword = false;
     private Activity activity;
     private Cursor myCursor;
     private Global global;
@@ -136,7 +136,11 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         int id = item.getItemId();
         switch (id) {
             case R.id.refreshHolds: {
-                new RefreshHolds().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                if (NetworkUtils.isConnectedToInternet(this)) {
+                    new RefreshHolds().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                } else {
+                    Global.showPrompt(this, R.string.dlog_title_error, getString(R.string.dlog_msg_no_internet_access));
+                }
                 break;
             }
         }
@@ -216,7 +220,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         dlog.show();
     }
 
-    private void claimedTransactionPrompt() {
+    private void claimedTransactionPrompt(boolean isInternetConnected) {
 
         final Dialog dlog = new Dialog(activity, R.style.Theme_TransparentTest);
         dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -226,7 +230,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
         TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
         TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
-        viewTitle.setText(R.string.dlog_title_claimed_hold);
+        viewTitle.setText(isInternetConnected ? R.string.dlog_title_claimed_hold : R.string.dlog_msg_no_internet_access);
         viewMsg.setText(R.string.dlog_msg_claimed_hold);
         Button btnOpen = (Button) dlog.findViewById(R.id.btnDlogLeft);
         Button btnCancel = (Button) dlog.findViewById(R.id.btnDlogRight);
@@ -325,15 +329,16 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         });
         btnOpen.setText(R.string.button_open);
         btnPrint.setText(R.string.button_print);
-
+        OrdersHandler ordersHandler = new OrdersHandler(this);
+        final Order order = ordersHandler.getOrder(myCursor.getString(myCursor.getColumnIndex("ord_id")));
         btnOpen.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
                 dlog.dismiss();
-                if (myPref.isUseClerks()) {
+                if (myPref.isUseClerks() && !TextUtils.isEmpty(order.assignedTable)) {
 //                    Clerk associate = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()), true);
-                    boolean hasTable = ClerkDAO.hasAssignedDinningTable(Integer.parseInt(myPref.getClerkID()), myCursor.getString(myCursor.getColumnIndex("assignedTable")));
+                    boolean hasTable = ClerkDAO.hasAssignedDinningTable(Integer.parseInt(myPref.getClerkID()), order.assignedTable);
 //                    long count = associate == null ? 0 : associate.getAssignedDinningTables()
 //                            .where()
 //                            .equalTo("number", myCursor.getString(myCursor.getColumnIndex("assignedTable"))).count();
@@ -465,7 +470,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         }
     }
 
-    public class checkHoldStatus extends AsyncTask<Void, String, String> {
+    public class checkHoldStatus extends AsyncTask<Void, String, Boolean> {
         boolean wasProcessed = false;
         private ProgressDialog myProgressDialog;
 
@@ -479,7 +484,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         }
 
         @Override
-        protected String doInBackground(Void... params) {
+        protected Boolean doInBackground(Void... params) {
             myCursor.moveToPosition(selectedPos);
             myPref.setCustSelected(false);
             String ordID = myCursor.getString(myCursor.getColumnIndex("ord_id"));
@@ -499,23 +504,23 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                     e.printStackTrace();
                     Crashlytics.logException(e);
                 }
-                return null;
+                return true;
             } else {
                 OrdersHandler ordersHandler = new OrdersHandler(activity);
-                if (ordersHandler.isOrderOffline(ordID))
+                if (ordersHandler.isOrderOffline(ordID) || validPassword)
                     wasProcessed = true;
-                return null;
+                return false;
             }
         }
 
         @Override
-        protected void onPostExecute(String unused) {
+        protected void onPostExecute(Boolean isConnectedInternet) {
             myProgressDialog.dismiss();
 
             if (wasProcessed) {
                 new executeOnHoldAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
             } else {
-                claimedTransactionPrompt();
+                claimedTransactionPrompt(isConnectedInternet);
             }
         }
     }

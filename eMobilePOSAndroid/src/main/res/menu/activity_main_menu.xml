@@ -15,4 +15,9 @@
         android:icon="@drawable/ic_sync_black_48dp"
         android:showAsAction="always|withText"
         android:title="@string/refresh_menu" />
+    <item
+        android:id="@+id/toggleEloBCR"
+        android:icon="@drawable/qrcode"
+        android:showAsAction="always|withText"
+        android:title="@string/elobcr_menu" />
 </menu>

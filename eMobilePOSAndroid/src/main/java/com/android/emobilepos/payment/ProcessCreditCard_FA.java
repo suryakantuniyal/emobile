@@ -446,27 +446,30 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         cardSwipe = (CheckBox) findViewById(R.id.checkBox1);
         extras = this.getIntent().getExtras();
         String paymentMethodType = extras.getString("paymentmethod_type");
+        if (paymentMethodType == null) {
+            paymentMethodType = CREDITCARD_TYPE_VISA;
+        }
         isEverpay = (paymentMethodType.equalsIgnoreCase("Everpay"));
 
-        isDebit = extras.getBoolean("isDebit");
-        requireTransID = extras.getBoolean("requireTransID");
+        isDebit = extras.getBoolean("isDebit", false);
+        requireTransID = extras.getBoolean("requireTransID", false);
 
         orderSubTotal = extras.getString("subTotal", "0");
-        if (extras.getBoolean("salespayment")) {
+        if (extras.getBoolean("salespayment", false)) {
             headerTitle.setText(getString(R.string.card_payment_title));
             isFromMainMenu = true;
-        } else if (extras.getBoolean("salesreceipt")) {
+        } else if (extras.getBoolean("salesreceipt", false)) {
             headerTitle.setText(getString(R.string.card_payment_title));
             requestCode = Global.FROM_JOB_SALES_RECEIPT;
-        } else if (extras.getBoolean("salesrefund")) {
+        } else if (extras.getBoolean("salesrefund", false)) {
             isRefund = true;
             isFromMainMenu = TextUtils.isEmpty(extras.getString("amount"))
                     || Double.parseDouble(extras.getString("amount")) == 0;
             headerTitle.setText(getString(R.string.card_refund_title));
-        } else if (extras.getBoolean("histinvoices")) {
+        } else if (extras.getBoolean("histinvoices", false)) {
             headerTitle.setText(getString(R.string.card_payment_title));
             requestCode = Global.FROM_OPEN_INVOICES;
-        } else if (extras.getBoolean("salesinvoice")) {
+        } else if (extras.getBoolean("salesinvoice", false)) {
             headerTitle.setText(R.string.card_invoice);
         }
 
@@ -552,8 +555,8 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         ownersName = (EditText) findViewById(R.id.nameOnCardEdit);
         ownersName.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
 
-        if (extras.getBoolean("histinvoices")) {
-            isMultiInvoice = extras.getBoolean("isMultipleInvoice");
+        if (extras.getBoolean("histinvoices", false)) {
+            isMultiInvoice = extras.getBoolean("isMultipleInvoice", false);
             isOpenInvoice = true;
             if (!isMultiInvoice)
                 inv_id = extras.getString("inv_id");
@@ -1989,65 +1992,6 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
     }
 
-//
-//    private class ProcessHanpointAsync extends AsyncTask<Void, Void, Void> {
-//        @Override
-//        protected Void doInBackground(Void... params) {
-//            if (Global.mainPrinterManager.currentDevice != null) {
-//                Payment p = new Payment(activity);
-//                p.setPay_amount(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
-//                Global.mainPrinterManager.currentDevice.salePayment(p);
-//            }
-//            return null;
-//        }
-//    }
-
-//    private class ProcessWalkerAsync extends AsyncTask<Void, Void, Void> {
-//        private ProcessWalkerAsync myTask;
-//        private double enteredAmount;
-//
-//        @Override
-//        protected void onPreExecute() {
-//            myTask = this;
-//            enteredAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
-//
-//            myProgressDialog = new ProgressDialog(activity);
-//            if (walkerReader.deviceConnected())
-//                myProgressDialog.setMessage(getString(R.string.swipe_insert_card));
-//            else
-//                myProgressDialog.setMessage(getString(R.string.please_wait_message));
-//            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-//            myProgressDialog.setCancelable(false);
-//            if (myProgressDialog.isShowing())
-//                myProgressDialog.dismiss();
-//
-//            myProgressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, activity.getString(R.string.button_cancel),
-//                    new DialogInterface.OnClickListener() {
-//                        @Override
-//                        public void onClick(DialogInterface dialog, int which) {
-//                            myTask.cancel(true);
-//                            walkerReader.isReadingCard = false;
-//                            myProgressDialog.dismiss();
-//                        }
-//                    });
-//
-//            myProgressDialog.show();
-//        }
-//
-//        @Override
-//        protected Void doInBackground(Void... params) {
-//            cardInfoManager.dueAmount = BigDecimal.valueOf(enteredAmount);
-//            walkerReader.startReading(cardInfoManager, myProgressDialog);
-//            return null;
-//        }
-//
-//        @Override
-//        protected void onPostExecute(Void unused) {
-//            myProgressDialog.dismiss();
-//            if (walkerReader.failedProcessing)
-//                Toast.makeText(activity, "Error", Toast.LENGTH_LONG).show();
-//        }
-//    }
 
     public enum PAYMENT_GIFT_CARDS {
         GIFTCARDS, LOYALTYCARD, REWARD

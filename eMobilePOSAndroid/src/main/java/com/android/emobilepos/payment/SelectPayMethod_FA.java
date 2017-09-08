@@ -625,11 +625,12 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             @Override
             public void onClick(View v) {
                 dlog.dismiss();
-                if (overAllRemainingBalance <= 0 || ((typeOfProcedure == Global.FROM_JOB_INVOICE
-                        || typeOfProcedure == Integer.parseInt(Global.OrderType.INVOICE.getCodeString()))))
-                    finish();
                 if (!openGiftCardAddBalance()) {
                     resetCustomer();
+                }
+                if (overAllRemainingBalance <= 0 || ((typeOfProcedure == Global.FROM_JOB_INVOICE
+                        || typeOfProcedure == Integer.parseInt(Global.OrderType.INVOICE.getCodeString())))) {
+                    finish();
                 }
             }
         });
@@ -926,6 +927,9 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
     }
 
     public void showBalancePrompt(String msg) {
+        if (Global.isActivityDestroyed(this)) {
+            return;
+        }
         final Dialog dlog = new Dialog(this, R.style.Theme_TransparentTest);
         dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dlog.setContentView(R.layout.dlog_btn_single_layout);
@@ -1223,10 +1227,16 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                     if (!openGiftCardAddBalance()) {
                         resetCustomer();
                     }
-                    finish();
+                    if (myPref.isMultiplePrints()) {
+                        showPrintDlg(true, false, null);
+                    } else {
+                        finish();
+                    }
                 } else {
-                    showPrintDlg(wasReprint, true, null);
+                    showPrintDlg(wasReprint, false, null);
                 }
+            } else {
+                showPrintDlg(wasReprint, true, null);
             }
 
         }
