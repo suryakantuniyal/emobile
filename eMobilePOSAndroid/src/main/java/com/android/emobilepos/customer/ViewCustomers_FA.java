@@ -34,6 +34,13 @@ import com.android.emobilepos.security.SecurityManager;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.crashlytics.android.Crashlytics;
+import com.digitalpersona.uareu.Engine;
+import com.digitalpersona.uareu.Fid;
+import com.digitalpersona.uareu.Reader;
+import com.digitalpersona.uareu.ReaderCollection;
+import com.digitalpersona.uareu.UareUException;
+import com.digitalpersona.uareu.UareUGlobal;
 
 import interfaces.BCRCallbacks;
 import util.json.UIUtils;
@@ -52,6 +59,10 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
     private int selectedCustPosition = 0;
     private Dialog dlog;
     private EditText search;
+    private Reader reader;
+    private int dpi;
+    private Engine engine;
+    private boolean stopFingerReader;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -84,26 +95,55 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 isManualEntry = false;
-//                if (startTyping == 0) {
-//                    startTyping = SystemClock.currentThreadTimeMillis();
-//                    v.postDelayed(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            if (search.getText().length() > 5) {
-//                                myCursor = handler.getSearchCust(search.getText().toString());
-//                                if (myCursor.getCount() == 1) {
-//                                    selectCustomer(0);
-//                                }
-//                            }
-//                        }
-//                    }, 1000);
-//                }
                 UIUtils.startBCR(v, search, ViewCustomers_FA.this);
                 return false;
             }
         });
         myListView.setOnItemClickListener(this);
         hasBeenCreated = true;
+        loadFingerPrintReader(this);
+    }
+
+    private void loadFingerPrintReader(Context context) {
+        ReaderCollection readers;
+        try {
+            readers = UareUGlobal.GetReaderCollection(context);
+            readers.GetReaders();
+            if (readers.size() > 0) {
+                this.reader = readers.get(0);
+            }
+            reader.Open(Reader.Priority.EXCLUSIVE);
+            Reader.Status status = reader.GetStatus();
+            if (status.status == Reader.ReaderStatus.BUSY) {
+                reader.CancelCapture();
+            }
+            dpi = GetFirstDPI(reader);
+            engine = UareUGlobal.GetEngine();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    stopFingerReader = false;
+                    while (!stopFingerReader) {
+                        try {
+                            Reader.CaptureResult cap_result = reader.Capture(Fid.Format.ANSI_381_2004, Reader.ImageProcessing.IMG_PROC_DEFAULT, dpi, -1);
+
+                        } catch (UareUException e) {
+                            stopFingerReader = true;
+                        }
+
+                    }
+                }
+            }).start();
+        } catch (UareUException e) {
+            Crashlytics.logException(e);
+            e.printStackTrace();
+        }
+    }
+
+
+    public static int GetFirstDPI(Reader reader) {
+        Reader.Capabilities caps = reader.GetCapabilities();
+        return caps.resolutions[0];
     }
 
 
