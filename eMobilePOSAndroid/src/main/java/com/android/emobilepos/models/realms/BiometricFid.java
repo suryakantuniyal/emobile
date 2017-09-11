@@ -12,18 +12,18 @@ import io.realm.annotations.PrimaryKey;
 /**
  * Created by Guarionex on 5/24/2016.
  */
-public class CustomerFid extends RealmObject {
+public class BiometricFid extends RealmObject {
     @PrimaryKey
     private long id;
     private String fid;
     @Index
     private int fingerCode;
 
-    public CustomerFid() {
+    public BiometricFid() {
 
     }
 
-    public CustomerFid(Fid fid, ViewCustomerDetails_FA.Finger finger) {
+    public BiometricFid(Fid fid, ViewCustomerDetails_FA.Finger finger) {
         this.id = System.currentTimeMillis();
         String encode = Base64.encodeToString(fid.getData(), Base64.DEFAULT);
         this.fingerCode = finger.getCode();

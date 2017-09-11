@@ -1,7 +1,7 @@
 package com.android.dao;
 
 import com.android.emobilepos.customer.ViewCustomerDetails_FA;
-import com.android.emobilepos.models.realms.CustomerFid;
+import com.android.emobilepos.models.realms.BiometricFid;
 import com.android.emobilepos.models.realms.EmobileBiometric;
 
 import io.realm.Case;
@@ -70,7 +70,7 @@ public class EmobileBiometricDAO {
                     .equalTo("userTypeCode", userType.getCode())
                     .findFirst();
             if (biometric != null) {
-                RealmResults<CustomerFid> fids = biometric.getFids().where().equalTo("fingerCode", finger.getCode()).findAll();
+                RealmResults<BiometricFid> fids = biometric.getFids().where().equalTo("fingerCode", finger.getCode()).findAll();
                 if (fids != null) {
                     fids.deleteAllFromRealm();
                 }

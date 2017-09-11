@@ -36,8 +36,8 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.CountrySpinnerAdapter;
 import com.android.emobilepos.models.Country;
 import com.android.emobilepos.models.Tax;
+import com.android.emobilepos.models.realms.BiometricFid;
 import com.android.emobilepos.models.realms.CustomerCustomField;
-import com.android.emobilepos.models.realms.CustomerFid;
 import com.android.emobilepos.models.realms.EmobileBiometric;
 import com.android.support.Customer;
 import com.android.support.Global;
@@ -728,7 +728,7 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         fingerRight2.setBackgroundResource(R.color.black_transparency);
         fingerRight3.setBackgroundResource(R.color.black_transparency);
         fingerRight4.setBackgroundResource(R.color.black_transparency);
-        for (CustomerFid fid : biometric.getFids()) {
+        for (BiometricFid fid : biometric.getFids()) {
             Finger finger = Finger.getByCode(fid.getFingerCode());
             switch (finger) {
                 case FINGER_ONE_LEFT:
@@ -928,9 +928,9 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
 //                                    cap_result.image.getCbeffId(), Fmd.Format.ANSI_378_2004);
                             m_reset = true;
                             EmobileBiometricDAO.deleteFinger(cust_id, EmobileBiometric.UserType.CUSTOMER, finger);
-                            CustomerFid customerFid = new CustomerFid(cap_result.image, finger);
+                            BiometricFid biometricFid = new BiometricFid(cap_result.image, finger);
                             biometric.setId(cust_id);
-                            biometric.getFids().add(customerFid);
+                            biometric.getFids().add(biometricFid);
                             EmobileBiometricDAO.upsert(biometric);
 //                            biometric.setFingerFid(finger, cap_result.image);
                         } catch (UareUException e) {

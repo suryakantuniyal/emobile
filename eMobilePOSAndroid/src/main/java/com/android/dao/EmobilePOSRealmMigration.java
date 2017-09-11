@@ -1,11 +1,11 @@
 package com.android.dao;
 
+import com.android.emobilepos.models.realms.BiometricFid;
 import com.android.emobilepos.models.realms.Bixolon;
 import com.android.emobilepos.models.realms.BixolonPaymentMethod;
 import com.android.emobilepos.models.realms.BixolonTax;
 import com.android.emobilepos.models.realms.BixolonTransaction;
 import com.android.emobilepos.models.realms.CustomerCustomField;
-import com.android.emobilepos.models.realms.CustomerFid;
 import com.android.emobilepos.models.realms.EmobileBiometric;
 import com.android.emobilepos.models.realms.PaymentMethod;
 import com.crashlytics.android.Crashlytics;
@@ -65,14 +65,14 @@ public class EmobilePOSRealmMigration implements io.realm.RealmMigration {
                     oldVersion++;
                 }
                 if (oldVersion == 5) {
-                    schema.create(CustomerFid.class.getSimpleName()).
+                    schema.create(BiometricFid.class.getSimpleName()).
                             addField("id", String.class, FieldAttribute.PRIMARY_KEY)
                             .addField("fid", String.class)
                             .addField("fingerCode", int.class, FieldAttribute.INDEXED);
 
                     schema.create(EmobileBiometric.class.getSimpleName()).
                             addField("customerId", String.class, FieldAttribute.PRIMARY_KEY)
-                            .addRealmListField("fids", schema.get(CustomerFid.class.getSimpleName()));
+                            .addRealmListField("fids", schema.get(BiometricFid.class.getSimpleName()));
                     oldVersion++;
                 }
                 if (oldVersion == 6) {
@@ -117,10 +117,10 @@ public class EmobilePOSRealmMigration implements io.realm.RealmMigration {
                     if (schema.contains(EmobileBiometric.class.getSimpleName())) {
                         schema.remove(EmobileBiometric.class.getSimpleName());
                     }
-                    if (schema.contains(CustomerFid.class.getSimpleName())) {
-                        schema.remove(CustomerFid.class.getSimpleName());
+                    if (schema.contains(BiometricFid.class.getSimpleName())) {
+                        schema.remove(BiometricFid.class.getSimpleName());
                     }
-                    schema.create(CustomerFid.class.getSimpleName()).
+                    schema.create(BiometricFid.class.getSimpleName()).
                             addField("id", long.class, FieldAttribute.PRIMARY_KEY)
                             .addField("fid", String.class)
                             .addField("fingerCode", int.class, FieldAttribute.INDEXED);
@@ -130,7 +130,7 @@ public class EmobilePOSRealmMigration implements io.realm.RealmMigration {
                             addField("realmId", String.class, FieldAttribute.PRIMARY_KEY)
                             .addField("id", String.class, FieldAttribute.INDEXED)
                             .addField("userTypeCode", int.class, FieldAttribute.INDEXED)
-                            .addRealmListField("fids", schema.get(CustomerFid.class.getSimpleName()));
+                            .addRealmListField("fids", schema.get(BiometricFid.class.getSimpleName()));
                     oldVersion++;
                 }
             }

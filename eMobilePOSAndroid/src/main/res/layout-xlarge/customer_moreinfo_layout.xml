@@ -101,7 +101,8 @@
                         style="@style/black_text_appearance_unbold"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1" />
+                        android:layout_weight="1"
+                        android:enabled="false" />
                 </TableRow>
 
                 <TableRow
@@ -122,7 +123,8 @@
                         style="@style/black_text_appearance_unbold"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1" />
+                        android:layout_weight="1"
+                        android:enabled="false" />
                 </TableRow>
 
                 <TableRow
@@ -143,7 +145,8 @@
                         style="@style/black_text_appearance_unbold"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1" />
+                        android:layout_weight="1"
+                        android:enabled="false" />
                 </TableRow>
 
                 <TableRow
@@ -164,7 +167,8 @@
                         style="@style/black_text_appearance_unbold"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1" />
+                        android:layout_weight="1"
+                        android:enabled="false" />
                 </TableRow>
 
                 <TableRow
@@ -185,7 +189,8 @@
                         style="@style/black_text_appearance_unbold"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1" />
+                        android:layout_weight="1"
+                        android:enabled="false" />
                 </TableRow>
             </TableLayout>
 
@@ -242,7 +247,8 @@
                         style="@style/black_text_appearance_unbold"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1" />
+                        android:layout_weight="1"
+                        android:enabled="false" />
                 </TableRow>
 
                 <TableRow
@@ -263,7 +269,8 @@
                         style="@style/black_text_appearance_unbold"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1" />
+                        android:layout_weight="1"
+                        android:enabled="false" />
                 </TableRow>
 
                 <TableRow
@@ -284,7 +291,8 @@
                         style="@style/black_text_appearance_unbold"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1" />
+                        android:layout_weight="1"
+                        android:enabled="false" />
                 </TableRow>
 
                 <TableRow
@@ -305,7 +313,8 @@
                         style="@style/black_text_appearance_unbold"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1" />
+                        android:layout_weight="1"
+                        android:enabled="false" />
                 </TableRow>
 
                 <TableRow
@@ -447,6 +456,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
+                    android:enabled="false"
                     android:hint="@string/cust_add_street1"
                     android:imeOptions="flagNoExtractUi|actionNext"
                     android:inputType="textCapWords"
@@ -459,6 +469,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
+                    android:enabled="false"
                     android:hint="@string/cust_add_street2"
                     android:imeOptions="flagNoExtractUi|actionNext"
                     android:inputType="textCapWords"
@@ -477,6 +488,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_weight="1"
+                        android:enabled="false"
                         android:hint="@string/cust_add_city"
                         android:imeOptions="flagNoExtractUi|actionNext"
                         android:inputType="textCapWords"
@@ -490,6 +502,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_weight="1"
+                        android:enabled="false"
                         android:hint="@string/cust_add_state"
                         android:imeOptions="flagNoExtractUi|actionNext"
                         android:inputType="textCapWords"
@@ -504,6 +517,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:digits="0123456789"
+                    android:enabled="false"
                     android:hint="@string/cust_add_zcode"
                     android:imeOptions="flagNoExtractUi|actionNext"
                     android:inputType="numberDecimal"
@@ -612,6 +626,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
+                    android:enabled="false"
                     android:hint="@string/cust_add_street1"
                     android:imeOptions="flagNoExtractUi|actionNext"
                     android:inputType="textCapWords"
@@ -624,6 +639,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
+                    android:enabled="false"
                     android:hint="@string/cust_add_street2"
                     android:imeOptions="flagNoExtractUi|actionNext"
                     android:inputType="textCapWords"
@@ -642,6 +658,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_weight="1"
+                        android:enabled="false"
                         android:hint="@string/cust_add_city"
                         android:imeOptions="flagNoExtractUi|actionNext"
                         android:inputType="textCapWords"
@@ -655,6 +672,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_weight="1"
+                        android:enabled="false"
                         android:hint="@string/cust_add_state"
                         android:imeOptions="flagNoExtractUi|actionNext"
                         android:inputType="textCapWords"
@@ -669,6 +687,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:digits="0123456789"
+                    android:enabled="false"
                     android:hint="@string/cust_add_zcode"
                     android:imeOptions="flagNoExtractUi|actionNext"
                     android:inputType="numberDecimal"
