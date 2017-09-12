@@ -27,6 +27,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
+import com.android.dao.EmobileBiometricDAO;
 import com.android.database.CustomersHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.history.HistoryTransactions_FA;
@@ -37,6 +38,7 @@ import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.crashlytics.android.Crashlytics;
 import com.digitalpersona.uareu.Engine;
 import com.digitalpersona.uareu.Fid;
+import com.digitalpersona.uareu.Fmd;
 import com.digitalpersona.uareu.Reader;
 import com.digitalpersona.uareu.ReaderCollection;
 import com.digitalpersona.uareu.UareUException;
@@ -59,9 +61,8 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
     private int selectedCustPosition = 0;
     private Dialog dlog;
     private EditText search;
-    private Reader reader;
-    private int dpi;
-    private Engine engine;
+    Reader reader = null;
+
     private boolean stopFingerReader;
 
     @Override
@@ -101,43 +102,61 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
         });
         myListView.setOnItemClickListener(this);
         hasBeenCreated = true;
-        loadFingerPrintReader(this);
+
     }
 
-    private void loadFingerPrintReader(Context context) {
-        ReaderCollection readers;
-        try {
-            readers = UareUGlobal.GetReaderCollection(context);
-            readers.GetReaders();
-            if (readers.size() > 0) {
-                this.reader = readers.get(0);
-            }
-            reader.Open(Reader.Priority.EXCLUSIVE);
-            Reader.Status status = reader.GetStatus();
-            if (status.status == Reader.ReaderStatus.BUSY) {
-                reader.CancelCapture();
-            }
-            dpi = GetFirstDPI(reader);
-            engine = UareUGlobal.GetEngine();
+    private void loadFingerPrintReader(final Context context) {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    stopFingerReader = false;
-                    while (!stopFingerReader) {
-                        try {
-                            Reader.CaptureResult cap_result = reader.Capture(Fid.Format.ANSI_381_2004, Reader.ImageProcessing.IMG_PROC_DEFAULT, dpi, -1);
-
-                        } catch (UareUException e) {
-                            stopFingerReader = true;
+                    try {
+                        int dpi;
+                        Engine engine;
+                        ReaderCollection readers;
+                        readers = UareUGlobal.GetReaderCollection(context);
+                        readers.GetReaders();
+                        if (readers.size() > 0) {
+                            reader = readers.get(0);
                         }
-
+                        reader.Open(Reader.Priority.EXCLUSIVE);
+                        Reader.Status status = reader.GetStatus();
+                        if (status.status == Reader.ReaderStatus.BUSY) {
+                            reader.CancelCapture();
+                        }
+                        dpi = GetFirstDPI(reader);
+                        engine = UareUGlobal.GetEngine();
+                        stopFingerReader = false;
+                        Fmd[] fmds = EmobileBiometricDAO.getFmds(engine);
+                        while (!stopFingerReader) {
+                            try {
+                                Reader.CaptureResult cap_result = reader.Capture(Fid.Format.ANSI_381_2004, Reader.ImageProcessing.IMG_PROC_DEFAULT, dpi, -1);
+                                if (cap_result == null || cap_result.image == null) {
+                                    continue;
+                                }
+                                Fmd fmd = engine.CreateFmd(cap_result.image, Fmd.Format.ANSI_378_2004);
+                                Engine.Candidate[] candidates = engine.Identify(fmd, 0, fmds, 100000, 2);
+                                for (Engine.Candidate candidate : candidates) {
+                                    int fmd_index = candidate.fmd_index;
+                                }
+                            } catch (UareUException e) {
+                                stopFingerReader = true;
+                            }
+                        }
+                        try {
+                            if (reader.GetStatus().status == Reader.ReaderStatus.BUSY) {
+                                reader.CancelCapture();
+                            }
+                            reader.Close();
+                        } catch (UareUException e) {
+                            e.printStackTrace();
+                        }
+                    } catch (UareUException e) {
+                        Crashlytics.logException(e);
+                        e.printStackTrace();
                     }
                 }
             }).start();
-        } catch (UareUException e) {
-            Crashlytics.logException(e);
-            e.printStackTrace();
-        }
+
     }
 
 
@@ -149,6 +168,7 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
 
     @Override
     public void onDestroy() {
+        releaseReader();
         super.onDestroy();
     }
 
@@ -207,6 +227,17 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
         };
     }
 
+    private void releaseReader() {
+        stopFingerReader = true;
+        try {
+            if (reader.GetStatus().status == Reader.ReaderStatus.BUSY) {
+                reader.CancelCapture();
+            }
+        } catch (UareUException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void selectCustomer(int itemIndex) {
         Intent results = new Intent();
         myCursor.moveToPosition(itemIndex);
@@ -228,7 +259,7 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
 
     @Override
     public void onResume() {
-
+        loadFingerPrintReader(this);
         if (global.isApplicationSentToBackground())
             Global.loggedIn = false;
         global.stopActivityTransitionTimer();
@@ -400,6 +431,7 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
 
                 @Override
                 public void onClick(View v) {
+                    releaseReader();
                     String _cust_id = (String) v.getTag();
                     Intent intent = new Intent(thisContext, ViewCustomerDetails_FA.class);
                     intent.putExtra("cust_id", _cust_id);

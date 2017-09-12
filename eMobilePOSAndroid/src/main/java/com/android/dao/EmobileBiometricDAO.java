@@ -3,6 +3,13 @@ package com.android.dao;
 import com.android.emobilepos.customer.ViewCustomerDetails_FA;
 import com.android.emobilepos.models.realms.BiometricFid;
 import com.android.emobilepos.models.realms.EmobileBiometric;
+import com.digitalpersona.uareu.Engine;
+import com.digitalpersona.uareu.Fid;
+import com.digitalpersona.uareu.Fmd;
+import com.digitalpersona.uareu.UareUException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import io.realm.Case;
 import io.realm.Realm;
@@ -79,5 +86,31 @@ public class EmobileBiometricDAO {
             realm.commitTransaction();
             realm.close();
         }
+    }
+
+    public static Fmd[] getFmds(Engine engine) {
+        Realm realm = Realm.getDefaultInstance();
+        List<Fmd> fmds = new ArrayList<>();
+        try {
+            RealmResults<EmobileBiometric> all = realm.where(EmobileBiometric.class).findAll();
+            if (all != null) {
+                for (EmobileBiometric biometric : all) {
+                    for (BiometricFid biometricFid : biometric.getFids()) {
+                        Fid fidEntity = biometricFid.getFidEntity();
+                        Fmd fmd = engine.CreateFmd(fidEntity, Fmd.Format.ANSI_378_2004);
+//                                engine.CreateFmd(fidEntity.getData(), fidEntity.getViews()[0].getWidth(),
+//                                fidEntity.getViews()[0].getHeight(), fidEntity.getViews()[0].getQuality(),
+//                                fidEntity.getViews()[0].getFingerPosition(), fidEntity.getCbeffId(),
+//                                Fmd.Format.ANSI_378_2004);
+                        fmds.add(fmd);
+                    }
+                }
+            }
+        } catch (UareUException e) {
+            e.printStackTrace();
+        } finally {
+            realm.close();
+        }
+        return fmds.toArray(new Fmd[fmds.size()]);
     }
 }

@@ -715,11 +715,12 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                     getOrderingMainFa().getLoyaltyFragment().recalculatePoints(String.valueOf(totalDetails.getPointsSubTotal()), String.valueOf(totalDetails.getPointsInUse()),
                             String.valueOf(totalDetails.getPointsAcumulable()), gran_total.toString());
                 }
-                OrderingMain_FA mainFa = (OrderingMain_FA) getActivity();
-                mainFa.getLeftFragment().orderRewardsFr.setRewardSubTotal(discountable_sub_total.toString());
-                mainFa.enableCheckoutButton();
-                mainFa.getLeftFragment().mainLVAdapter.notifyDataSetChanged();
-                mainFa.getLeftFragment().receiptListView.setSelection(mainFa.getLeftFragment().mainLVAdapter.selectedPosition);
+                if (getOrderingMainFa().getLeftFragment().orderRewardsFr != null) {
+                    getOrderingMainFa().getLeftFragment().orderRewardsFr.setRewardSubTotal(discountable_sub_total.toString());
+                }
+                getOrderingMainFa().enableCheckoutButton();
+                getOrderingMainFa().getLeftFragment().mainLVAdapter.notifyDataSetChanged();
+                getOrderingMainFa().getLeftFragment().receiptListView.setSelection(getOrderingMainFa().getLeftFragment().mainLVAdapter.selectedPosition);
             }
         }
     }

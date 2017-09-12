@@ -4,6 +4,8 @@ import android.util.Base64;
 
 import com.android.emobilepos.customer.ViewCustomerDetails_FA;
 import com.digitalpersona.uareu.Fid;
+import com.digitalpersona.uareu.UareUException;
+import com.digitalpersona.uareu.UareUGlobal;
 
 import io.realm.RealmObject;
 import io.realm.annotations.Index;
@@ -53,4 +55,16 @@ public class BiometricFid extends RealmObject {
     public void setFingerCode(int fingerCode) {
         this.fingerCode = fingerCode;
     }
+
+    public Fid getFidEntity() {
+        byte[] fidData = Base64.decode(getFid(), Base64.DEFAULT);
+        Fid importFid = null;
+        try {
+            importFid = UareUGlobal.GetImporter().ImportFid(fidData, Fid.Format.ANSI_381_2004);
+        } catch (UareUException e) {
+            e.printStackTrace();
+        }
+        return importFid;
+    }
+
 }
