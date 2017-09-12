@@ -237,14 +237,18 @@ public class EMSDeviceDriver {
     }
 
     private void addTaxesLine(List<DataTaxes> taxes, Order order, int lineWidth, StringBuilder sb) {
-        BigDecimal taxableAmount = new BigDecimal(0);
-        for (OrderProduct product : order.getOrderProducts()) {
-            taxableAmount = taxableAmount.add(product.getProductPriceTaxableAmountCalculated());
-        }
+//        for (OrderProduct product : order.getOrderProducts()) {
+//            taxableAmount = taxableAmount.add(product.getProductPriceTaxableAmountCalculated());
+//        }
         for (DataTaxes tax : taxes) {
+//            BigDecimal taxableAmount = new BigDecimal(0);
+            BigDecimal taxAmount = new BigDecimal(0);
             List<BigDecimal> rates = new ArrayList<>();
             rates.add(new BigDecimal(tax.getTax_rate()));
-            BigDecimal taxAmount = TaxesCalculator.calculateTax(taxableAmount, rates);
+            for (OrderProduct product : order.getOrderProducts()) {
+//                taxableAmount = taxableAmount.add(product.getProductPriceTaxableAmountCalculated());
+                taxAmount = taxAmount.add(TaxesCalculator.calculateTax(product.getProductPriceTaxableAmountCalculated(), rates));
+            }
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(tax.getTax_name(),
                     Global.getCurrencyFormat(String.valueOf(taxAmount)), lineWidth, 2));
         }
