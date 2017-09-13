@@ -40,19 +40,21 @@ public class EmobileBiometric extends RealmObject {
     @PrimaryKey
     private String realmId;
     @Index
-    private String id;
+    private String entityid;
     @Index
     private int userTypeCode;
     @Ignore
     private UserType userType;
     private RealmList<BiometricFid> fids;
+    private String regid;
 
-    public String getId() {
-        return id;
+    public String getEntityid() {
+        return entityid;
     }
-    public void setId(String id) {
-        this.id = id;
-        realmId = this.id + userTypeCode;
+
+    public void setEntityid(String entityid) {
+        this.entityid = entityid;
+        realmId = this.entityid + userTypeCode;
     }
     public RealmList<BiometricFid> getFids() {
         if (null == fids) {
@@ -72,7 +74,7 @@ public class EmobileBiometric extends RealmObject {
 
     public void setUserType(UserType userType) {
         this.userTypeCode = userType.getCode();
-        realmId = this.id + userTypeCode;
+        realmId = this.entityid + userTypeCode;
         this.userType = userType;
     }
 
@@ -82,6 +84,14 @@ public class EmobileBiometric extends RealmObject {
 
     public void setRealmId(String realmId) {
         this.realmId = realmId;
+    }
+
+    public String getRegid() {
+        return regid;
+    }
+
+    public void setRegid(String regid) {
+        this.regid = regid;
     }
 
 }

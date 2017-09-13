@@ -31,6 +31,7 @@ import com.android.dao.EmobileBiometricDAO;
 import com.android.database.CustomersHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.history.HistoryTransactions_FA;
+import com.android.emobilepos.models.realms.EmobileBiometric;
 import com.android.emobilepos.security.SecurityManager;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -64,6 +65,7 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
     Reader reader = null;
 
     private boolean stopFingerReader;
+    private long spleepTime = 100;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -113,6 +115,7 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
                         int dpi;
                         Engine engine;
                         ReaderCollection readers;
+                        Thread.sleep(spleepTime);
                         readers = UareUGlobal.GetReaderCollection(context);
                         readers.GetReaders();
                         if (readers.size() > 0) {
@@ -127,19 +130,31 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
                         engine = UareUGlobal.GetEngine();
                         stopFingerReader = false;
                         Fmd[] fmds = EmobileBiometricDAO.getFmds(engine);
-                        while (!stopFingerReader) {
-                            try {
-                                Reader.CaptureResult cap_result = reader.Capture(Fid.Format.ANSI_381_2004, Reader.ImageProcessing.IMG_PROC_DEFAULT, dpi, -1);
-                                if (cap_result == null || cap_result.image == null) {
-                                    continue;
+                        if (fmds.length > 0) {
+                            while (!stopFingerReader) {
+                                try {
+                                    Reader.CaptureResult cap_result = reader.Capture(Fid.Format.ANSI_381_2004, Reader.ImageProcessing.IMG_PROC_DEFAULT, dpi, -1);
+                                    if (cap_result == null || cap_result.image == null) {
+                                        continue;
+                                    }
+                                    Fmd fmd = engine.CreateFmd(cap_result.image, Fmd.Format.ANSI_378_2004);
+                                    Engine.Candidate[] candidates = engine.Identify(fmd, 0, fmds, 100000, 2);
+                                    for (Engine.Candidate candidate : candidates) {
+                                        int fmd_index = candidate.fmd_index;
+                                        final EmobileBiometric biometric = EmobileBiometricDAO.getBiometrics(fmds[fmd_index]);
+                                        if (biometric != null) {
+                                            runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    search.setText(biometric.getEntityid());
+                                                    executeBCR();
+                                                }
+                                            });
+                                        }
+                                    }
+                                } catch (UareUException e) {
+                                    stopFingerReader = true;
                                 }
-                                Fmd fmd = engine.CreateFmd(cap_result.image, Fmd.Format.ANSI_378_2004);
-                                Engine.Candidate[] candidates = engine.Identify(fmd, 0, fmds, 100000, 2);
-                                for (Engine.Candidate candidate : candidates) {
-                                    int fmd_index = candidate.fmd_index;
-                                }
-                            } catch (UareUException e) {
-                                stopFingerReader = true;
                             }
                         }
                         try {
@@ -153,6 +168,8 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
                     } catch (UareUException e) {
                         Crashlytics.logException(e);
                         e.printStackTrace();
+                    } catch (InterruptedException e) {
+
                     }
                 }
             }).start();
@@ -233,6 +250,7 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
             if (reader.GetStatus().status == Reader.ReaderStatus.BUSY) {
                 reader.CancelCapture();
             }
+            reader.Close();
         } catch (UareUException e) {
             e.printStackTrace();
         }
@@ -315,6 +333,7 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        spleepTime = 2000;
         if (resultCode == -1) {
             finish();
         }

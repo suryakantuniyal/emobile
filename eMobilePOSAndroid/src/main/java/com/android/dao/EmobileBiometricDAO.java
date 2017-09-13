@@ -7,6 +7,7 @@ import com.digitalpersona.uareu.Engine;
 import com.digitalpersona.uareu.Fid;
 import com.digitalpersona.uareu.Fmd;
 import com.digitalpersona.uareu.UareUException;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +37,7 @@ public class EmobileBiometricDAO {
         try{
             realm.beginTransaction();
             EmobileBiometric biometric = realm.where(EmobileBiometric.class)
-                    .equalTo("id", id, Case.INSENSITIVE)
+                    .equalTo("entityid", id, Case.INSENSITIVE)
                     .equalTo("usereTypeCode", userType.getCode())
                     .findFirst();
             if(biometric!=null && biometric.isValid()) {
@@ -53,13 +54,13 @@ public class EmobileBiometricDAO {
         EmobileBiometric biometric;
         try {
             biometric = realm.where(EmobileBiometric.class)
-                    .equalTo("id", id, Case.INSENSITIVE)
+                    .equalTo("entityid", id, Case.INSENSITIVE)
                     .findFirst();
             if (biometric != null) {
                 biometric = realm.copyFromRealm(biometric);
             } else {
                 biometric = new EmobileBiometric();
-                biometric.setId(id);
+                biometric.setEntityid(id);
                 biometric.setUserType(userType);
             }
         } finally {
@@ -73,7 +74,7 @@ public class EmobileBiometricDAO {
         try {
             realm.beginTransaction();
             EmobileBiometric biometric = realm.where(EmobileBiometric.class)
-                    .equalTo("id", customerId, Case.INSENSITIVE)
+                    .equalTo("entityid", customerId, Case.INSENSITIVE)
                     .equalTo("userTypeCode", userType.getCode())
                     .findFirst();
             if (biometric != null) {
@@ -96,21 +97,32 @@ public class EmobileBiometricDAO {
             if (all != null) {
                 for (EmobileBiometric biometric : all) {
                     for (BiometricFid biometricFid : biometric.getFids()) {
-                        Fid fidEntity = biometricFid.getFidEntity();
-                        Fmd fmd = engine.CreateFmd(fidEntity, Fmd.Format.ANSI_378_2004);
-//                                engine.CreateFmd(fidEntity.getData(), fidEntity.getViews()[0].getWidth(),
-//                                fidEntity.getViews()[0].getHeight(), fidEntity.getViews()[0].getQuality(),
-//                                fidEntity.getViews()[0].getFingerPosition(), fidEntity.getCbeffId(),
-//                                Fmd.Format.ANSI_378_2004);
+//                        Fid fidEntity = biometricFid.getFidEntity();
+                        Fmd fmd = biometricFid.getFmdEntity(); //engine.CreateFmd(fidEntity, Fmd.Format.ANSI_378_2004);
                         fmds.add(fmd);
                     }
                 }
             }
-        } catch (UareUException e) {
-            e.printStackTrace();
         } finally {
             realm.close();
         }
         return fmds.toArray(new Fmd[fmds.size()]);
+    }
+
+    public static EmobileBiometric getBiometrics(Fmd fmd) {
+        Realm realm = Realm.getDefaultInstance();
+        String uuid = BiometricFid.md5(fmd.getData());
+        EmobileBiometric biometric = null;
+        try {
+            biometric = realm.where(EmobileBiometric.class)
+                    .equalTo("fids.id", uuid)
+                    .findFirst();
+            if (biometric != null) {
+                biometric = realm.copyFromRealm(biometric);
+            }
+        } finally {
+            realm.close();
+        }
+        return biometric;
     }
 }

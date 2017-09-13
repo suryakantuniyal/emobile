@@ -6,6 +6,8 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.os.PowerManager;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
@@ -127,6 +129,8 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
     private int progress;
     private ImageView fingerPrintimage;
     private String m_textString;
+    private MyPreferences preferences;
+    Handler handler;
 
     public static String QualityToString(Reader.CaptureResult result) {
         if (result == null) {
@@ -218,6 +222,8 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         setContentView(R.layout.customer_moreinfo_layout);
         activity = this;
         global = (Global) getApplication();
+        setHandler();
+        preferences = new MyPreferences(this);
         Bundle extras = getIntent().getExtras();
         CustomersHandler custHandler = new CustomersHandler(this);
         if (extras.containsKey("cust_id")) {
@@ -278,6 +284,20 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         }
         loadFingerPrintReader(this);
         setFingerPrintUI();
+    }
+
+    private void setHandler() {
+        handler = new Handler(new Handler.Callback() {
+            @Override
+            public boolean handleMessage(Message msg) {
+                switch (msg.what) {
+                    case 0:
+                        Global.showPrompt(ViewCustomerDetails_FA.this, R.string.fingerprint_enrollment_title, getString(R.string.duplicated_fingerprint));
+                        break;
+                }
+                return true;
+            }
+        });
     }
 
     private void loadFingerPrintReader(Context context) {
@@ -385,7 +405,6 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         List<String> priceLevel = new ArrayList<>();
         taxes.add("Select One");
         priceLevel.add("Select One");
-        MyPreferences preferences = new MyPreferences(this);
         TaxesHandler handler = new TaxesHandler(this);
         List<Tax> taxList = handler.getTaxes(preferences.getPreferences(MyPreferences.pref_show_only_group_taxes));
         PriceLevelHandler handler2 = new PriceLevelHandler();
@@ -921,18 +940,27 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
                 if (!m_first) {
                     if (m_text_conclusionString.length() == 0) {
                         try {
-                            Fid importFid = UareUGlobal.GetImporter().ImportFid(cap_result.image.getData(), Fid.Format.ANSI_381_2004);
-                            Fmd importFmd = UareUGlobal.GetImporter().ImportFmd(m_enrollment_fmd.getData(), Fmd.Format.ANSI_378_2004, Fmd.Format.ANSI_378_2004);
+//                            Fid importFid = UareUGlobal.GetImporter().ImportFid(cap_result.image.getData(), Fid.Format.ANSI_381_2004);
+//                            Fmd importFmd = UareUGlobal.GetImporter().ImportFmd(m_enrollment_fmd.getData(), Fmd.Format.ANSI_378_2004, Fmd.Format.ANSI_378_2004);
 //                            Fmd fmd = m_engine.CreateFmd(m_enrollment_fmd.getData(), cap_result.image.getViews()[0].getWidth(), cap_result.image.getViews()[0].getHeight(),
 //                                    cap_result.image.getViews()[0].getQuality(), cap_result.image.getViews()[0].getFingerPosition(),
 //                                    cap_result.image.getCbeffId(), Fmd.Format.ANSI_378_2004);
+                            Fmd[] fmds = EmobileBiometricDAO.getFmds(engine);
+                            Engine.Candidate[] candidates = new Engine.Candidate[0];
+                            if (fmds.length > 0) {
+                                candidates = engine.Identify(m_enrollment_fmd, 0, fmds, 100000, 2);
+                            }
                             m_reset = true;
-                            EmobileBiometricDAO.deleteFinger(cust_id, EmobileBiometric.UserType.CUSTOMER, finger);
-                            BiometricFid biometricFid = new BiometricFid(cap_result.image, finger);
-                            biometric.setId(cust_id);
-                            biometric.getFids().add(biometricFid);
-                            EmobileBiometricDAO.upsert(biometric);
-//                            biometric.setFingerFid(finger, cap_result.image);
+                            if (candidates.length == 0) {
+                                EmobileBiometricDAO.deleteFinger(cust_id, EmobileBiometric.UserType.CUSTOMER, finger);
+                                BiometricFid biometricFid = new BiometricFid(engine, cap_result.image, finger);
+                                biometric.setEntityid(cust_id);
+                                biometric.getFids().add(biometricFid);
+                                biometric.setRegid(preferences.getAcctNumber());
+                                EmobileBiometricDAO.upsert(biometric);
+                            } else {
+                                handler.sendEmptyMessage(0);
+                            }
                         } catch (UareUException e) {
 
                         }
@@ -954,4 +982,5 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
             return result;
         }
     }
+
 }

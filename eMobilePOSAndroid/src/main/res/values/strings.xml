@@ -1368,5 +1368,6 @@
     <string name="fingerprint_enrollment_title">Fingerprint Enrollment</string>
     <string name="rescan_fingerprint">Remove the finger place the same finger on the reader</string>
     <string name="unregister_fingerprint">Unregister</string>
+    <string name="duplicated_fingerprint">Fingerprint already exist.</string>
 
 </resources>
