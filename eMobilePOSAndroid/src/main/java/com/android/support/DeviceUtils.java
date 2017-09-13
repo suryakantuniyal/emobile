@@ -59,7 +59,7 @@ public class DeviceUtils {
                             "TCP:" + device.getIpAddress(), device.getTcpPort()))
                         sb.append(device.getIpAddress()).append(": ").append("Connected\n\r");
                     else
-                        sb.append(device.getIpAddress()).append(": ").append("Failed to connectTFHKA\n\r");
+                        sb.append(device.getIpAddress()).append(": ").append("Failed to connect\n\r");
 
                     i++;
                 }
@@ -87,7 +87,7 @@ public class DeviceUtils {
                                     myPref.getSwiperMACAddress(), null))
                                 sb.append(final_peripheralName).append(": ").append("Connected\n\r");
                             else
-                                sb.append(final_peripheralName).append(": ").append("Failed to connectTFHKA\n\r");
+                                sb.append(final_peripheralName).append(": ").append("Failed to connect\n\r");
                         }
                     });
                     synchronized (activity) {
@@ -102,7 +102,7 @@ public class DeviceUtils {
                             myPref.getSwiperMACAddress(), null))
                         sb.append(_peripheralName).append(": ").append("Connected\n\r");
                     else
-                        sb.append(_peripheralName).append(": ").append("Failed to connectTFHKA\n\r");
+                        sb.append(_peripheralName).append(": ").append("Failed to connect\n\r");
                 }
             }
         if ((myPref.sledType(true, -2) != -1))
@@ -114,7 +114,7 @@ public class DeviceUtils {
                 if (Global.btSled.loadMultiDriver(activity, myPref.sledType(true, -2), 0, false, null, null))
                     sb.append(_peripheralName).append(": ").append("Connected\n\r");
                 else
-                    sb.append(_peripheralName).append(": ").append("Failed to connectTFHKA\n\r");
+                    sb.append(_peripheralName).append(": ").append("Failed to connect\n\r");
             }
         if (myPref.isPAT215()) {
             if (Global.embededMSR == null || forceReload) {
@@ -123,7 +123,7 @@ public class DeviceUtils {
                 if (Global.embededMSR.loadMultiDriver(activity, Global.PAT215, 0, false, "", "")) {
                     sb.append(Global.BuildModel.PAT215.name()).append(": ").append("Connected\n\r");
                 } else {
-                    sb.append(Global.BuildModel.PAT215.name()).append(": ").append("Failed to connectTFHKA\n\r");
+                    sb.append(Global.BuildModel.PAT215.name()).append(": ").append("Failed to connect\n\r");
                 }
             }
         }
@@ -153,7 +153,7 @@ public class DeviceUtils {
                             isPOS, _portName, _portNumber))
                         sb.append(_peripheralName).append(": ").append("Connected\n\r");
                     else
-                        sb.append(_peripheralName).append(": ").append("Failed to connectTFHKA\n\r");
+                        sb.append(_peripheralName).append(": ").append("Failed to connect\n\r");
                     Global.multiPrinterManager.add(edm);
                 }
             }
@@ -166,7 +166,7 @@ public class DeviceUtils {
                         "TCP:" + myPref.getStarIPAddress(), myPref.getStarPort()))
                     sb.append(myPref.getStarIPAddress()).append(": ").append("Connected\n\r");
                 else
-                    sb.append(myPref.getStarIPAddress()).append(": ").append("Failed to connectTFHKA\n\r");
+                    sb.append(myPref.getStarIPAddress()).append(": ").append("Failed to connect\n\r");
             }
         return sb.toString();
     }

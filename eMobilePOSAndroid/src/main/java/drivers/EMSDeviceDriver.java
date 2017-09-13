@@ -270,6 +270,7 @@ public class EMSDeviceDriver {
     }
 
     protected boolean SendCmd(String cmd) {
+        Log.d("BixolonCMD", cmd);
         if (printerTFHKA instanceof TfhkaAndroid) {
             return ((TfhkaAndroid) printerTFHKA).SendCmd(cmd);
         } else {
