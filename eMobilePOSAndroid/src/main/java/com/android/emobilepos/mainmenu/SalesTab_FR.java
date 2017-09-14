@@ -44,6 +44,7 @@ import com.android.emobilepos.holders.Locations_Holder;
 import com.android.emobilepos.locations.LocationsPickerDlog_FR;
 import com.android.emobilepos.locations.LocationsPicker_Listener;
 import com.android.emobilepos.mainmenu.restaurant.DinningTablesActivity;
+import com.android.emobilepos.models.BCRMacro;
 import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.DinningTable;
 import com.android.emobilepos.models.realms.Shift;
@@ -55,18 +56,22 @@ import com.android.emobilepos.security.SecurityManager;
 import com.android.emobilepos.settings.SettingListActivity;
 import com.android.emobilepos.shifts.ShiftExpensesList_FA;
 import com.android.emobilepos.shifts.ShiftsActivity;
+import com.android.support.CreditCardInfo;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.crashlytics.android.Crashlytics;
+import com.google.gson.Gson;
 
 import java.util.HashMap;
 
 import drivers.EMSDeviceDriver;
 import drivers.EMSPowaPOS;
 import drivers.EMSmePOS;
+import interfaces.EMSCallBack;
+import util.json.JsonUtils;
 
-public class SalesTab_FR extends Fragment {
+public class SalesTab_FR extends Fragment implements EMSCallBack {
     public static Activity activity;
     //    boolean validPassword = true;
     private SalesMenuAdapter myAdapter;
@@ -207,6 +212,16 @@ public class SalesTab_FR extends Fragment {
             myListview.setOnItemClickListener(new MyListener());
         }
 
+        if (Global.deviceHasBarcodeScanner(myPref.getPrinterType()) ||
+                Global.deviceHasBarcodeScanner(myPref.getSwiperType())
+                || Global.deviceHasBarcodeScanner(myPref.sledType(true, -2))) {
+            if (Global.btSwiper != null && Global.btSwiper.getCurrentDevice() != null)
+                Global.btSwiper.getCurrentDevice().loadScanner(this);
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)
+                Global.mainPrinterManager.getCurrentDevice().loadScanner(this);
+            if (Global.btSled != null && Global.btSled.getCurrentDevice() != null)
+                Global.btSled.getCurrentDevice().loadScanner(this);
+        }
         super.onResume();
     }
 
@@ -1273,6 +1288,41 @@ public class SalesTab_FR extends Fragment {
                 }
             }
         };
+    }
+
+    @Override
+    public void cardWasReadSuccessfully(boolean read, CreditCardInfo cardManager) {
+
+    }
+
+    @Override
+    public void readerConnectedSuccessfully(boolean value) {
+
+    }
+
+    @Override
+    public void scannerWasRead(String data) {
+        if (!data.isEmpty()) {
+            if (data.contains("START_ORDER")) {
+                Gson gson = JsonUtils.getInstance();
+                BCRMacro bcrMacro = gson.fromJson(data, BCRMacro.class);
+                if (bcrMacro != null) {
+                    Intent intent = new Intent(getActivity(), OrderingMain_FA.class);
+                    intent.putExtra("BCRMacro", data);
+                    startActivityForResult(intent, 0);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void startSignature() {
+
+    }
+
+    @Override
+    public void nfcWasRead(String nfcUID) {
+
     }
 
     public class MyListener implements AdapterView.OnItemClickListener {
