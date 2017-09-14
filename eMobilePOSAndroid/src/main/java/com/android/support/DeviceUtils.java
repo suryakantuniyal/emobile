@@ -2,12 +2,14 @@ package com.android.support;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.android.dao.DeviceTableDAO;
+import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.models.realms.Device;
 import com.crashlytics.android.Crashlytics;
 import com.starmicronics.stario.PortInfo;
@@ -151,7 +153,7 @@ public class DeviceUtils {
                     Global.multiPrinterManager.add(edm);
                 }
             }
-        } else if (!TextUtils.isEmpty(myPref.getStarIPAddress()))
+        } else if (!TextUtils.isEmpty(myPref.getStarIPAddress())) {
             if (Global.mainPrinterManager == null || forceReload) {
                 edm = new EMSDeviceManager();
                 Global.mainPrinterManager = edm.getManager();
@@ -162,6 +164,8 @@ public class DeviceUtils {
                 else
                     sb.append(myPref.getStarIPAddress()).append(": ").append("Failed to connect\n\r");
             }
+        }
+        sendBroadcast(activity);
         return sb.toString();
     }
 
@@ -215,10 +219,14 @@ public class DeviceUtils {
                 EMSBluetoothStarPrinter aDevice = new EMSBluetoothStarPrinter();
                 Global.mainPrinterManager = edm.getManager();
                 aDevice.autoConnect((Activity) context, edm, 48, true, preferences.getPrinterMACAddress(), "");
-//                Global.mainPrinterManager.loadDrivers(context, Global.STAR, EMSDeviceManager.PrinterInterfase.USB);
             }
         } catch (StarIOPortException e) {
             e.printStackTrace();
         }
+    }
+
+    static void sendBroadcast(Context context) {
+        Intent intent = new Intent(MainMenu_FA.NOTIFICATION_DEVICES_LOADED);
+        context.sendBroadcast(intent);
     }
 }

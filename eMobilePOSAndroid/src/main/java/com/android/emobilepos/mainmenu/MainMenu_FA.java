@@ -61,6 +61,7 @@ import static com.android.emobilepos.models.firebase.NotificationEvent.Notificat
 public class MainMenu_FA extends BaseFragmentActivityActionBar {
     public static final String NOTIFICATION_RECEIVED = "NOTIFICATION_RECEIVED";
     public static final String NOTIFICATION_MESSAGE = "NOTIFICATION_MESSAGE";
+    public static final String NOTIFICATION_DEVICES_LOADED = "NOTIFICATION_DEVICES_LOADED";
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     public static Activity activity;
     private static MyPreferences myPref;

@@ -485,7 +485,7 @@ public class CustomersHandler {
         if (customerId != null && !customerId.isEmpty()) {
             // SQLiteDatabase db = dbManager.openReadableDB();
 
-            String sb = ("SELECT c.cust_firstName,c.cust_lastName,b.addr_b_str1,b.addr_b_str2,b.addr_b_str3,b.addr_b_city," +
+            String sb = ("SELECT c.custidkey, c.cust_firstName,c.cust_lastName,b.addr_b_str1,b.addr_b_str2,b.addr_b_str3,b.addr_b_city," +
                     " b.addr_b_state,b.addr_b_country,") +
                     " b.addr_b_zipcode,b.addr_s_str1,b.addr_s_str2,b.addr_s_str3,b.addr_s_city,b.addr_s_state,b.addr_s_country," +
                     " b.addr_s_zipcode , cust_taxable, cust_salestaxcode" +
@@ -512,7 +512,7 @@ public class CustomersHandler {
                 customer.shippingAddress.addr_s_zipcode = cursor.getString(cursor.getColumnIndex("addr_s_zipcode"));
                 customer.cust_taxable = cursor.getString(cursor.getColumnIndex("cust_taxable"));
                 customer.cust_salestaxcode = cursor.getString(cursor.getColumnIndex("cust_salestaxcode"));
-
+                customer.custidkey = cursor.getString(cursor.getColumnIndex(custidkey));
             }
 
             cursor.close();

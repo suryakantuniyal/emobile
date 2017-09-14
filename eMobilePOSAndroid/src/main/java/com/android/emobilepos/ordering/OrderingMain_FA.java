@@ -45,11 +45,11 @@ import com.android.database.OrdersHandler;
 import com.android.database.PayMethodsHandler;
 import com.android.database.ProductsHandler;
 import com.android.database.SalesTaxCodesHandler;
-import com.android.emobilepos.OnHoldActivity;
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.OrderProductListAdapter;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.mainmenu.SalesTab_FR;
+import com.android.emobilepos.models.BCRMacro;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.OrderSeatProduct;
 import com.android.emobilepos.models.Product;
@@ -137,7 +137,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     private Receipt_FR leftFragment;
     private OrderLoyalty_FR loyaltyFragment;
     private MyPreferences myPref;
-    private Global global;
+    public Global global;
     private boolean hasBeenCreated = false;
     private ProductsHandler handler;
     // Honeywell Dolphin black

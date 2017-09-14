@@ -2,8 +2,10 @@ package com.android.emobilepos.mainmenu;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
@@ -57,6 +59,7 @@ import com.android.emobilepos.settings.SettingListActivity;
 import com.android.emobilepos.shifts.ShiftExpensesList_FA;
 import com.android.emobilepos.shifts.ShiftsActivity;
 import com.android.support.CreditCardInfo;
+import com.android.support.Customer;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -79,11 +82,27 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
     private Context thisContext;
     private boolean isCustomerSelected = false;
     private TextView selectedCust;
+    EMSCallBack emsCallBack;
     private MyPreferences myPref;
     private Button salesInvoices;
     private EditText hiddenField;
     private DinningTable selectedDinningTable;
     private int selectedSeatsAmount;
+    private BroadcastReceiver messageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (Global.deviceHasBarcodeScanner(myPref.getPrinterType()) ||
+                    Global.deviceHasBarcodeScanner(myPref.getSwiperType())
+                    || Global.deviceHasBarcodeScanner(myPref.sledType(true, -2))) {
+                if (Global.btSwiper != null && Global.btSwiper.getCurrentDevice() != null)
+                    Global.btSwiper.getCurrentDevice().loadScanner(emsCallBack);
+                if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)
+                    Global.mainPrinterManager.getCurrentDevice().loadScanner(emsCallBack);
+                if (Global.btSled != null && Global.btSled.getCurrentDevice() != null)
+                    Global.btSled.getCurrentDevice().loadScanner(emsCallBack);
+            }
+        }
+    };
 
     public static void startDefault(Activity activity, String type) {
         if (activity != null) {
@@ -125,7 +144,7 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
         myPref.setLogIn(true);
         SettingListActivity.loadDefaultValues(activity);
         myListview = (GridView) view.findViewById(R.id.salesGridLayout);
-
+        emsCallBack = this;
         thisContext = getActivity();
         selectedCust = (TextView) view.findViewById(R.id.salesCustomerName);
         salesInvoices = (Button) view.findViewById(R.id.invoiceButton);
@@ -192,8 +211,15 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        getActivity().unregisterReceiver(messageReceiver);
+    }
+
+    @Override
     public void onResume() {
         Global global = (Global) activity.getApplication();
+        getActivity().registerReceiver(messageReceiver, new IntentFilter(MainMenu_FA.NOTIFICATION_DEVICES_LOADED));
         global.resetOrderDetailsValues();
         global.clearListViewData();
         if (myPref.isCustSelected()) {
@@ -216,11 +242,11 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
                 Global.deviceHasBarcodeScanner(myPref.getSwiperType())
                 || Global.deviceHasBarcodeScanner(myPref.sledType(true, -2))) {
             if (Global.btSwiper != null && Global.btSwiper.getCurrentDevice() != null)
-                Global.btSwiper.getCurrentDevice().loadScanner(this);
+                Global.btSwiper.getCurrentDevice().loadScanner(emsCallBack);
             if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)
-                Global.mainPrinterManager.getCurrentDevice().loadScanner(this);
+                Global.mainPrinterManager.getCurrentDevice().loadScanner(emsCallBack);
             if (Global.btSled != null && Global.btSled.getCurrentDevice() != null)
-                Global.btSled.getCurrentDevice().loadScanner(this);
+                Global.btSled.getCurrentDevice().loadScanner(emsCallBack);
         }
         super.onResume();
     }
@@ -1307,8 +1333,27 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
                 Gson gson = JsonUtils.getInstance();
                 BCRMacro bcrMacro = gson.fromJson(data, BCRMacro.class);
                 if (bcrMacro != null) {
+                    CustomersHandler customersHandler = new CustomersHandler(getActivity());
+                    Customer customer = customersHandler.getCustomer(bcrMacro.getBcrMacroParams().getCustId());
+                    SalesTaxCodesHandler taxHandler = new SalesTaxCodesHandler(getActivity());
+                    SalesTaxCodesHandler.TaxableCode taxable = taxHandler.checkIfCustTaxable(customer.cust_taxable);
+
+                    myPref.setCustTaxCode(taxable, customer.cust_taxable);
+                    myPref.setCustID(customer.cust_id);
+                    myPref.setCustName(customer.cust_name);
+                    myPref.setCustIDKey(customer.custidkey);
+                    myPref.setCustSelected(true);
+                    myPref.setCustPriceLevel(customer.pricelevel_id);
+                    myPref.setCustEmail(customer.cust_email);
+                    selectedCust.setText(customer.cust_name);
+                    salesInvoices.setVisibility(View.VISIBLE);
+                    isCustomerSelected = true;
+                    myAdapter = new SalesMenuAdapter(getActivity(), true);
+                    myListview.setAdapter(myAdapter);
+                    myListview.setOnItemClickListener(new MyListener());
                     Intent intent = new Intent(getActivity(), OrderingMain_FA.class);
                     intent.putExtra("BCRMacro", data);
+                    intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
                     startActivityForResult(intent, 0);
                 }
             }
