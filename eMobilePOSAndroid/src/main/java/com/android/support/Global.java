@@ -1343,8 +1343,30 @@ public class Global extends MultiDexApplication {
                 .modules(Realm.getDefaultModule(), new RealmModule())
                 .schemaVersion(EmobilePOSRealmMigration.REALM_SCHEMA_VERSION)
                 .build();
+        boolean compactRealm = Realm.compactRealm(config);
+        if (!compactRealm) {
+            Crashlytics.log("Realm compact fail. All realm instance must be closed before compactrealm. EmobilePOS Logger.");
+        }
         Realm.setDefaultConfiguration(config);
-//        Realm.compactRealm(config);
+
+//        for (int i = 0; i < 10; i++) {
+//            Log.d("Creating realm thread #", String.valueOf(i));
+//            try {
+//                Thread.sleep(100);
+//            } catch (InterruptedException e) {
+//
+//            }
+//            new Thread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    Realm realm = Realm.getDefaultInstance();
+//                    AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+//                    RealmResults<StoreAndForward> all = realm.where(StoreAndForward.class).findAll();
+//                    RealmResults<PaymentMethod> all1 = realm.where(PaymentMethod.class).findAll();
+//                    Log.d("Realm thread finishing", "");
+//                }
+//            }).start();
+//        }
         AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
         if (assignEmployee == null) {
             assignEmployee = new AssignEmployee();

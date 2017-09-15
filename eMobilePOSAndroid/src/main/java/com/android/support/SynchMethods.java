@@ -78,6 +78,7 @@ import com.android.saxhandler.SAXSyncVoidTransHandler;
 import com.android.saxhandler.SAXSynchHandler;
 import com.android.saxhandler.SAXSynchOrdPostHandler;
 import com.android.saxhandler.SaxLoginHandler;
+import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 
@@ -112,6 +113,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import io.realm.Realm;
 import oauthclient.OAuthClient;
 import oauthclient.OAuthManager;
 import util.json.JsonUtils;
@@ -413,7 +415,12 @@ public class SynchMethods {
             }
             synchUpdateSyncTime();
             preferences.setLastReceiveSync(DateUtils.getDateAsString(new Date(), DateUtils.DATE_MMM_dd_yyyy_h_mm_a));
-
+            int count = Realm.getGlobalInstanceCount(Realm.getDefaultConfiguration());
+            if(count==0){
+                Realm.compactRealm(Realm.getDefaultConfiguration());
+            }else{
+                Crashlytics.log("Realm compact fail. All realm instance must be closed before compactrealm. EmobilePOS Logger.");
+            }
         } catch (Exception e) {
             preferences.setLastReceiveSync("Sync Fail");
             e.printStackTrace();
