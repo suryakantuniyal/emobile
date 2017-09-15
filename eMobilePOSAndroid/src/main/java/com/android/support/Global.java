@@ -1328,6 +1328,8 @@ public class Global extends MultiDexApplication {
     @Override
     public void onCreate() {
         super.onCreate();
+        DBManager dbManager = new DBManager(this);
+        dbManager.exportDBFile();
         Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
         Crashlytics crashlyticsKit = new Crashlytics.Builder()
                 .core(new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build())
@@ -1342,7 +1344,7 @@ public class Global extends MultiDexApplication {
                 .schemaVersion(EmobilePOSRealmMigration.REALM_SCHEMA_VERSION)
                 .build();
         Realm.setDefaultConfiguration(config);
-        Realm.compactRealm(config);
+//        Realm.compactRealm(config);
         AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
         if (assignEmployee == null) {
             assignEmployee = new AssignEmployee();

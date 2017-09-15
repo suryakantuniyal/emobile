@@ -165,7 +165,7 @@ public class DeviceUtils {
                     sb.append(myPref.getStarIPAddress()).append(": ").append("Failed to connect\n\r");
             }
         }
-        sendBroadcast(activity);
+//        sendBroadcast(activity);
         return sb.toString();
     }
 
@@ -225,7 +225,7 @@ public class DeviceUtils {
         }
     }
 
-    static void sendBroadcast(Context context) {
+   public static void sendBroadcastDeviceConnected(Context context) {
         Intent intent = new Intent(MainMenu_FA.NOTIFICATION_DEVICES_LOADED);
         context.sendBroadcast(intent);
     }
