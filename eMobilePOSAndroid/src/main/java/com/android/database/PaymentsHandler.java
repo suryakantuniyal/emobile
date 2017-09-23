@@ -112,7 +112,9 @@ public class PaymentsHandler {
 
     public static void setLastPaymentInserted(Payment payment) {
         if (payment != null && payment.isManaged()) {
-            lastPaymentInserted = Realm.getDefaultInstance().copyFromRealm(payment);
+            Realm realm = Realm.getDefaultInstance();
+            lastPaymentInserted = realm.copyFromRealm(payment);
+            realm.close();
         } else {
             lastPaymentInserted = payment;
         }

@@ -820,9 +820,11 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                         && !myPref.getPreferences(MyPreferences.pref_automatic_printing)) {
                     showPrintDlg(false, false, emvContainer);
                 } else if (overAllRemainingBalance <= 0) {
-                    openGiftCardAddBalance();
+                    boolean addBalance = openGiftCardAddBalance();
                     finish();
-                    resetCustomer();
+                    if (!addBalance) {
+                        resetCustomer();
+                    }
                 }
             }
         } else if (overAllRemainingBalance <= 0) {

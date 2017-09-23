@@ -135,7 +135,7 @@ android {
     buildTypes {
         debug {
             // Disable fabric build ID generation for debug builds
-            ext.enableCrashlytics = false
+            ext.enableCrashlytics = true
 //            buildConfigField "boolean", "REPORT_CRASHLITYCS", "true"
             buildConfigField "String", "OS", "\"Android\""
             buildConfigField "int", "POLLING_PERIOD", "10000"
@@ -250,7 +250,7 @@ dependencies {
     compile files('libs/jpos114-controls.jar')
     compile files('libs/xerces.jar')
     compile 'io.realm:android-adapters:1.3.0'
-    compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
+    compile('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
         transitive = true;
     }
     compile files('libs/PAT215Cashdrawer1.0.0.jar')
