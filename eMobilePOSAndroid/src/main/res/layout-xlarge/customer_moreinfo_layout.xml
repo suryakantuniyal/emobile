@@ -93,7 +93,7 @@
                         style="@style/black_text_appearance_unbold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/cust_detail_name"
+                        android:text="@string/cust_add_first_name"
                         android:textSize="@dimen/about_main_text_size" />
 
                     <com.android.support.MyEditText
@@ -104,7 +104,27 @@
                         android:layout_weight="1"
                         android:enabled="false" />
                 </TableRow>
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="5dp">
 
+                    <TextView
+                        android:id="@+id/textView31"
+                        style="@style/black_text_appearance_unbold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/cust_detail_lastname"
+                        android:textSize="@dimen/about_main_text_size" />
+
+                    <com.android.support.MyEditText
+                        android:id="@+id/customerLastNametextView341"
+                        style="@style/black_text_appearance_unbold"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:enabled="false" />
+                </TableRow>
                 <TableRow
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -148,7 +168,27 @@
                         android:layout_weight="1"
                         android:enabled="false" />
                 </TableRow>
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="5dp">
 
+                    <TextView
+                        android:id="@+id/textView313"
+                        style="@style/black_text_appearance_unbold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/cust_add_date_of_birth"
+                        android:textSize="@dimen/about_main_text_size" />
+
+                    <com.android.support.MyEditText
+                        android:id="@+id/customerDOBtextView371"
+                        style="@style/black_text_appearance_unbold"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:enabled="false" />
+                </TableRow>
                 <TableRow
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -250,6 +290,7 @@
                         android:layout_weight="1"
                         android:enabled="false" />
                 </TableRow>
+
 
                 <TableRow
                     android:layout_width="match_parent"

@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.hardware.usb.UsbDevice;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v4.widget.CursorAdapter;
@@ -33,6 +34,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.history.HistoryTransactions_FA;
 import com.android.emobilepos.models.realms.EmobileBiometric;
 import com.android.emobilepos.security.SecurityManager;
+import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
@@ -44,6 +46,8 @@ import com.digitalpersona.uareu.Reader;
 import com.digitalpersona.uareu.ReaderCollection;
 import com.digitalpersona.uareu.UareUException;
 import com.digitalpersona.uareu.UareUGlobal;
+
+import java.util.Collection;
 
 import interfaces.BCRCallbacks;
 import util.json.UIUtils;
@@ -66,6 +70,7 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
 
     private boolean stopFingerReader;
     private long spleepTime = 100;
+    private boolean isReaderConnected;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -77,7 +82,8 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
         global = (Global) getApplication();
         myListView = (ListView) findViewById(R.id.customerSelectionLV);
         search = (EditText) findViewById(R.id.searchCustomer);
-
+        Collection<UsbDevice> usbDevices = DeviceUtils.getUSBDevices(this);
+        isReaderConnected = usbDevices != null && usbDevices.size() > 0;
         handler = new CustomersHandler(this);
         myCursor = handler.getCursorAllCust();
         adap2 = new CustomCursorAdapter(this, myCursor, CursorAdapter.NO_SELECTION);
@@ -245,14 +251,16 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
     }
 
     private void releaseReader() {
-        stopFingerReader = true;
-        try {
-            if (reader.GetStatus().status == Reader.ReaderStatus.BUSY) {
-                reader.CancelCapture();
+        if(isReaderConnected) {
+            stopFingerReader = true;
+            try {
+                if (reader.GetStatus().status == Reader.ReaderStatus.BUSY) {
+                    reader.CancelCapture();
+                }
+                reader.Close();
+            } catch (UareUException e) {
+                e.printStackTrace();
             }
-            reader.Close();
-        } catch (UareUException e) {
-            e.printStackTrace();
         }
     }
 
@@ -277,7 +285,9 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
 
     @Override
     public void onResume() {
-        loadFingerPrintReader(this);
+        if (isReaderConnected) {
+            loadFingerPrintReader(this);
+        }
         if (global.isApplicationSentToBackground())
             Global.loggedIn = false;
         global.stopActivityTransitionTimer();
@@ -345,8 +355,8 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
             case R.id.addCustButton:
                 boolean hasPermissions = SecurityManager.hasPermissions(this, SecurityManager.SecurityAction.CREATE_CUSTOMERS);
                 if (hasPermissions) {
-                    Intent intent2 = new Intent(thisContext, CreateCustomer_FA.class);
-                    startActivityForResult(intent2, 0);
+                    Intent intent = new Intent(thisContext, ViewCustomerDetails_FA.class);
+                    startActivityForResult(intent, 0);
                 } else {
                     Global.showPrompt(this, R.string.security_alert, getString(R.string.permission_denied));
                 }

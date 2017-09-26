@@ -7,6 +7,8 @@ import android.os.Environment;
 import android.provider.Settings.Secure;
 import android.text.TextUtils;
 
+import com.android.dao.AssignEmployeeDAO;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.SynchMethods;
@@ -22,8 +24,10 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import io.realm.Realm;
+
 public class DBManager {
-    public static final int VERSION = 57;
+    public static final int VERSION = 41;
     private static final String DB_NAME_OLD = "emobilepos.sqlite";
     private static final String CIPHER_DB_NAME = "emobilepos.sqlcipher";
     private static final String PASSWORD = "em0b1l3p05";
@@ -469,18 +473,21 @@ public class DBManager {
         File dbPath = null;
         try {
             dbPath = context.getDatabasePath(DB_NAME_OLD);
-//            dbPath = new File(Environment.getExternalStorageDirectory() + "/emobileposRUM.db");
-//            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
-//            assignEmployee.setEmpId(1);
-//            Realm realm = Realm.getDefaultInstance();
-//            realm.beginTransaction();
-//            realm.where(AssignEmployee.class).findAll().deleteAllFromRealm();
-//            realm.copyToRealm(assignEmployee);
-//            realm.commitTransaction();
-//            myPref.setDeviceID("21e2243f5be84a18");
-//            myPref.setAcctNumber("150872170602");
-//            myPref.setAcctPassword("rum123");
-//            myPref.setActivKey("31295R1401263065748Y79004A");
+            dbPath = new File(Environment.getExternalStorageDirectory() + "/emobilepos.sqlite");
+            AssignEmployee assignEmployee = new AssignEmployee();//AssignEmployeeDAO.getAssignEmployee(false);
+            assignEmployee.setEmpId(1);
+            Realm realm = Realm.getDefaultInstance();
+            realm.beginTransaction();
+            realm.where(AssignEmployee.class).findAll().deleteAllFromRealm();
+            realm.copyToRealm(assignEmployee);
+            realm.commitTransaction();
+            myPref.setDeviceID("21e2243f5be84a18");
+            myPref.setAcctNumber("150023120409");
+            myPref.setAcctPassword("wwwww");
+            myPref.setActivKey("31295R1401263065748Y79004A");
+            myPref.setApplicationPassword("wwwww");
+            myPref.setPOSAdminPass("admin");
+            myPref.setLogIn(true);
         } catch (Exception e1) {
             e1.printStackTrace();
         }

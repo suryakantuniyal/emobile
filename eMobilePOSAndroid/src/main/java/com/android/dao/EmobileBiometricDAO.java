@@ -38,7 +38,7 @@ public class EmobileBiometricDAO {
             realm.beginTransaction();
             EmobileBiometric biometric = realm.where(EmobileBiometric.class)
                     .equalTo("entityid", id, Case.INSENSITIVE)
-                    .equalTo("usereTypeCode", userType.getCode())
+                    .equalTo("userTypeCode", userType.getCode())
                     .findFirst();
             if(biometric!=null && biometric.isValid()) {
                 biometric.getFids().clear();

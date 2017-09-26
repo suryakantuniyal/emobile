@@ -1,28 +1,33 @@
 package com.android.emobilepos.customer;
 
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
+import android.hardware.usb.UsbDevice;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.PowerManager;
-import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TableLayout;
@@ -31,17 +36,21 @@ import android.widget.Toast;
 
 import com.android.dao.CustomerCustomFieldsDAO;
 import com.android.dao.EmobileBiometricDAO;
+import com.android.database.AddressHandler;
 import com.android.database.CustomersHandler;
 import com.android.database.PriceLevelHandler;
+import com.android.database.SalesTaxCodesHandler;
 import com.android.database.TaxesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.CountrySpinnerAdapter;
+import com.android.emobilepos.models.Address;
 import com.android.emobilepos.models.Country;
 import com.android.emobilepos.models.Tax;
 import com.android.emobilepos.models.realms.BiometricFid;
 import com.android.emobilepos.models.realms.CustomerCustomField;
 import com.android.emobilepos.models.realms.EmobileBiometric;
 import com.android.support.Customer;
+import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
@@ -55,9 +64,15 @@ import com.digitalpersona.uareu.ReaderCollection;
 import com.digitalpersona.uareu.UareUException;
 import com.digitalpersona.uareu.UareUGlobal;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
+import java.util.UUID;
 
 import static com.android.emobilepos.R.id.fingerPrintimageView;
 import static com.android.emobilepos.R.id.unregisterFingerprintbutton2;
@@ -79,6 +94,8 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
     private int taxSelected;
     private int priceLevelSelected;
     private TextView customerNameTextView;
+    private TextView customerLastNameTextView;
+    private TextView customerDOBTextView;
     private TextView contacTextView;
     private TextView phoneTextView;
     private TextView companyTextView;
@@ -131,6 +148,22 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
     private String m_textString;
     private MyPreferences preferences;
     Handler handler;
+    private boolean isReaderConnected;
+    private boolean isCreateCustomer;
+    List<String> taxes = new ArrayList<>();
+    List<String> priceLevel = new ArrayList<>();
+    private List<String[]> priceLevelList;
+    private List<Tax> taxList;
+    private String[] isoCountries;
+    private String addr_b_type = "Business";
+    private String addr_s_type = "Residential";
+    private DateDialog newFrag;
+    private RadioGroup billingRadioGroup;
+    private RadioGroup shippingRadioGroup;
+    RadioButton radioBillingResidential;
+    RadioButton radioBillingBusiness;
+    RadioButton radioShippingResidential;
+    RadioButton radioShippingBusiness;
 
     public static String QualityToString(Reader.CaptureResult result) {
         if (result == null) {
@@ -224,16 +257,20 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         global = (Global) getApplication();
         setHandler();
         preferences = new MyPreferences(this);
+        Collection<UsbDevice> usbDevices = DeviceUtils.getUSBDevices(this);
+        isReaderConnected = usbDevices.size() > 0;
         Bundle extras = getIntent().getExtras();
         CustomersHandler custHandler = new CustomersHandler(this);
-        if (extras.containsKey("cust_id")) {
+        if (extras != null && extras.containsKey("cust_id")) {
             isCustomerEdit = true;
             cust_id = extras.getString("cust_id");
             customFields = CustomerCustomFieldsDAO.getCustomFields(cust_id);
             customer = custHandler.getCustomer(cust_id);
         } else {
             isCustomerEdit = false;
+            cust_id = UUID.randomUUID().toString().toUpperCase(Locale.getDefault());
             customer = new Customer();
+            customer.setCust_id(cust_id);
         }
 
         hasBeenCreated = true;
@@ -245,6 +282,10 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         taxableTextView = ((TextView) findViewById(R.id.customerTaxabletextView373));
         taxidTextView = ((TextView) findViewById(R.id.customerTaxIdtextView37));
         emailTextView = ((TextView) findViewById(R.id.customerEmailtextView344));
+        radioBillingBusiness = (RadioButton) findViewById(R.id.radioBillingBusiness);
+        radioBillingResidential = (RadioButton) findViewById(R.id.radioBillingResidential);
+        radioShippingBusiness = (RadioButton) findViewById(R.id.radioShippingBusiness);
+        radioShippingResidential = (RadioButton) findViewById(R.id.radioShippingResidential);
 
         billingStr1 = (TextView) findViewById(R.id.newCustBillStr1);
         billingStr2 = ((TextView) findViewById(R.id.newCustBillStr2));
@@ -256,7 +297,10 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         shippingCity = ((TextView) findViewById(R.id.newCustShippingCity));
         shippingState = (TextView) findViewById(R.id.newCustShippingState);
         shippingZip = ((TextView) findViewById(R.id.newCustShippingZip));
-
+        billingRadioGroup = (RadioGroup) findViewById(R.id.radioGroupBillingAddressType);
+        billingRadioGroup.setOnCheckedChangeListener(this);
+        shippingRadioGroup = (RadioGroup) findViewById(R.id.radioGroupShippingAddressType);
+        shippingRadioGroup.setOnCheckedChangeListener(this);
         fingerLeft1 = (Button) findViewById(R.id.fingerOneLeftbutton6);
         fingerLeft2 = (Button) findViewById(R.id.fingerTwoLeftbutton5);
         fingerLeft3 = (Button) findViewById(R.id.fingerThreeLeftbutton4);
@@ -265,6 +309,10 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         fingerRight2 = (Button) findViewById(R.id.fingerTwoRightbutton5);
         fingerRight3 = (Button) findViewById(R.id.fingerThreeRightbutton4);
         fingerRight4 = (Button) findViewById(R.id.fingerFourRightbutton3);
+        pricesList = (Spinner) findViewById(R.id.newCustList1);
+        taxesList = (Spinner) findViewById(R.id.newCustList2);
+        billingCountrySpinner = (Spinner) findViewById(R.id.newCustBillCountry);
+        shippingCountrySpinner = (Spinner) findViewById(R.id.newCustShippingCountry);
         fingerLeft1.setOnClickListener(this);
 
         fingerLeft2.setOnClickListener(this);
@@ -275,13 +323,13 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         fingerRight3.setOnClickListener(this);
         fingerRight4.setOnClickListener(this);
         customerNameTextView = (TextView) findViewById(R.id.customerNametextView341);
+        customerLastNameTextView = (TextView) findViewById(R.id.customerLastNametextView341);
+        customerDOBTextView = (TextView) findViewById(R.id.customerDOBtextView371);
+
         biometric = EmobileBiometricDAO.getBiometrics(cust_id, EmobileBiometric.UserType.CUSTOMER);
         setUI();
         setupCountries();
         setupSpinners();
-        if (isCustomerEdit) {
-            disableFields();
-        }
         loadFingerPrintReader(this);
         setFingerPrintUI();
     }
@@ -301,39 +349,46 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
     }
 
     private void loadFingerPrintReader(Context context) {
-        ReaderCollection readers;
-        try {
-            readers = UareUGlobal.GetReaderCollection(context);
-            readers.GetReaders();
-            if (readers.size() > 0) {
-                this.reader = readers.get(0);
+        if (isReaderConnected) {
+            ReaderCollection readers;
+            try {
+                readers = UareUGlobal.GetReaderCollection(context);
+                readers.GetReaders();
+                if (readers.size() > 0) {
+                    this.reader = readers.get(0);
+                }
+                reader.Open(Reader.Priority.EXCLUSIVE);
+                Reader.Status status = reader.GetStatus();
+                if (status.status == ReaderStatus.BUSY) {
+                    reader.CancelCapture();
+                }
+                dpi = GetFirstDPI(reader);
+                engine = UareUGlobal.GetEngine();
+            } catch (UareUException e) {
+                Crashlytics.logException(e);
+                e.printStackTrace();
             }
-            reader.Open(Reader.Priority.EXCLUSIVE);
-            Reader.Status status = reader.GetStatus();
-            if (status.status == ReaderStatus.BUSY) {
-                reader.CancelCapture();
-            }
-            dpi = GetFirstDPI(reader);
-            engine = UareUGlobal.GetEngine();
-        } catch (UareUException e) {
-            Crashlytics.logException(e);
-            e.printStackTrace();
         }
     }
 
     private void releaseReader() {
-        try {
-            reader.CancelCapture();
-            reader.Close();
-            reader = null;
-        } catch (UareUException e) {
-            e.printStackTrace();
+        if (isReaderConnected) {
+            try {
+                reader.CancelCapture();
+                reader.Close();
+                reader = null;
+            } catch (UareUException e) {
+                e.printStackTrace();
+            }
         }
     }
     private void setUI() {
+        disableFields();
         if (isCustomerEdit) {
             List<CustomerCustomField> customFields = CustomerCustomFieldsDAO.getCustomFields(customer.getCust_id());
-            ((TextView) findViewById(R.id.customerNametextView341)).setText(String.format("%s %s %s", customer.getCust_firstName(), customer.getCust_middleName(), customer.getCust_lastName()));
+            customerNameTextView.setText(customer.getCust_firstName());
+            customerLastNameTextView.setText(customer.getCust_lastName());
+            customerDOBTextView.setText(customer.getCust_dob());
             contacTextView.setText(customer.getCust_contact());
             phoneTextView.setText(customer.getCust_phone());
             companyTextView.setText(customer.getCompanyName());
@@ -348,11 +403,11 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
             billingState.setText(customer.getBillingAddress().getAddr_b_state());
             billingZip.setText(customer.getBillingAddress().getAddr_b_zipcode());
 
-            shippingStr1.setText(customer.getBillingAddress().getAddr_s_str1());
-            shippingStr2.setText(customer.getBillingAddress().getAddr_s_str2());
-            shippingCity.setText(customer.getBillingAddress().getAddr_s_city());
-            shippingState.setText(customer.getBillingAddress().getAddr_s_state());
-            shippingZip.setText(customer.getBillingAddress().getAddr_s_zipcode());
+            shippingStr1.setText(customer.getShippingAddress().getAddr_s_str1());
+            shippingStr2.setText(customer.getShippingAddress().getAddr_s_str2());
+            shippingCity.setText(customer.getShippingAddress().getAddr_s_city());
+            shippingState.setText(customer.getShippingAddress().getAddr_s_state());
+            shippingZip.setText(customer.getShippingAddress().getAddr_s_zipcode());
 
             TableLayout tableLayout = (TableLayout) findViewById(R.id.customerFinancialInfoTableLayout);
             for (CustomerCustomField field : customFields) {
@@ -366,8 +421,19 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
                 }
             }
 
-            billingCountrySpinner = (Spinner) findViewById(R.id.newCustBillCountry);
-            shippingCountrySpinner = (Spinner) findViewById(R.id.newCustShippingCountry);
+
+        } else {
+            ((EditText) findViewById(R.id.customerDOBtextView371)).setOnTouchListener(new View.OnTouchListener() {
+
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    if (newFrag == null) {
+                        newFrag = new DateDialog();
+                        newFrag.show(getSupportFragmentManager(), "dialog");
+                    }
+                    return false;
+                }
+            });
         }
         findViewById(R.id.btnSaveCustomer).setOnClickListener(this);
 
@@ -375,20 +441,26 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
 
     private void disableFields() {
         customerNameTextView.setEnabled(!isCustomerEdit);
+        customerLastNameTextView.setEnabled(!isCustomerEdit);
         contacTextView.setEnabled(!isCustomerEdit);
         phoneTextView.setEnabled(!isCustomerEdit);
+        customerDOBTextView.setEnabled(!isCustomerEdit);
         emailTextView.setEnabled(!isCustomerEdit);
         companyTextView.setEnabled(!isCustomerEdit);
         balanceTextView.setEnabled(!isCustomerEdit);
         limitTextView.setEnabled(!isCustomerEdit);
-        taxableTextView.setEnabled(!isCustomerEdit);
-        taxidTextView.setEnabled(!isCustomerEdit);
+        taxableTextView.setEnabled(false);
+        taxidTextView.setEnabled(false);
         pricesList.setEnabled(!isCustomerEdit);
         billingStr1.setEnabled(!isCustomerEdit);
         billingStr2.setEnabled(!isCustomerEdit);
         billingCity.setEnabled(!isCustomerEdit);
         billingState.setEnabled(!isCustomerEdit);
         billingZip.setEnabled(!isCustomerEdit);
+        radioBillingBusiness.setEnabled(!isCustomerEdit);
+        radioBillingResidential.setEnabled(!isCustomerEdit);
+        radioShippingBusiness.setEnabled(!isCustomerEdit);
+        radioShippingResidential.setEnabled(!isCustomerEdit);
         billingCountrySpinner.setEnabled(!isCustomerEdit);
         shippingStr1.setEnabled(!isCustomerEdit);
         shippingStr2.setEnabled(!isCustomerEdit);
@@ -397,18 +469,15 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         shippingZip.setEnabled(!isCustomerEdit);
         shippingCountrySpinner.setEnabled(!isCustomerEdit);
         taxesList.setEnabled(!isCustomerEdit);
-
     }
 
     private void setupSpinners() {
-        List<String> taxes = new ArrayList<>();
-        List<String> priceLevel = new ArrayList<>();
         taxes.add("Select One");
         priceLevel.add("Select One");
         TaxesHandler handler = new TaxesHandler(this);
-        List<Tax> taxList = handler.getTaxes(preferences.getPreferences(MyPreferences.pref_show_only_group_taxes));
+        taxList = handler.getTaxes(preferences.getPreferences(MyPreferences.pref_show_only_group_taxes));
         PriceLevelHandler handler2 = new PriceLevelHandler();
-        List<String[]> priceLevelList = handler2.getPriceLevel();
+        priceLevelList = handler2.getPriceLevel();
 
         int i = 0;
         for (String[] strings : priceLevelList) {
@@ -436,14 +505,6 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         CustomAdapter taxAdapter = new CustomAdapter(this, android.R.layout.simple_spinner_item, taxes, taxArr, true);
         CustomAdapter priceLevelAdapter = new CustomAdapter(this, android.R.layout.simple_spinner_item, priceLevel, priceLevelList, false);
 
-        pricesList = (Spinner) findViewById(R.id.newCustList1);
-        taxesList = (Spinner) findViewById(R.id.newCustList2);
-
-        RadioGroup billingRadioGroup = (RadioGroup) findViewById(R.id.radioGroupBillingAddressType);
-        billingRadioGroup.setOnCheckedChangeListener(this);
-        RadioGroup shippingRadioGroup = (RadioGroup) findViewById(R.id.radioGroupShippingAddressType);
-        shippingRadioGroup.setOnCheckedChangeListener(this);
-
         taxesList.setAdapter(taxAdapter);
         taxesList.setOnItemSelectedListener(getItemSelectedListener(SPINNER_TAXES));
 
@@ -456,7 +517,7 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
 
     private void setupCountries() {
         countries = new ArrayList<>();
-        String[] isoCountries = Locale.getISOCountries();
+        isoCountries = Locale.getISOCountries();
         String[] nameCountries = new String[isoCountries.length];
         countries.add(new Country("Select One", "", false));
         int i = 0;
@@ -568,15 +629,32 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
     }
 
     @Override
-    public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
-
+    public void onCheckedChanged(RadioGroup group, int checkedId) {
+        switch (checkedId) {
+            case R.id.radioBillingResidential:
+                addr_b_type = "Residential";
+                break;
+            case R.id.radioBillingBusiness:
+                addr_b_type = "Business";
+                break;
+            case R.id.radioShippingResidential:
+                addr_s_type = "Residential";
+                break;
+            case R.id.radioShippingBusiness:
+                addr_s_type = "Business";
+                break;
+        }
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btnSaveCustomer:
-                saveCustomer();
+                if (isCustomerEdit) {
+                    saveCustomer();
+                } else {
+                    insertCustomer();
+                }
                 saveBiometrics();
                 break;
             case R.id.fingerOneLeftbutton6:
@@ -605,6 +683,91 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
                 break;
 
         }
+    }
+
+    private void insertCustomer() {
+        CustomersHandler custHandler = new CustomersHandler(this);
+        AddressHandler addressHandler = new AddressHandler(this);
+        SalesTaxCodesHandler taxCodeHandler = new SalesTaxCodesHandler(this);
+        Address addrData = new Address();
+        MyPreferences myPref = new MyPreferences(this);
+        customer.setCust_name(getEditText(R.id.customerNametextView341).getText().toString());
+        customer.setCust_firstName(getEditText(R.id.customerNametextView341).getText().toString());
+        customer.setCust_lastName(getEditText(R.id.customerLastNametextView341).getText().toString());
+        customer.setCompanyName(getEditText(R.id.customerCompanytextView34).getText().toString());
+        customer.setCust_email(getEditText(R.id.customerEmailtextView344).getText().toString());
+        customer.setCust_phone(getEditText(R.id.customerPhonetextView343).getText().toString());
+        customer.setCust_contact(getEditText(R.id.customerContacttextView342).getText().toString());
+        customer.setCust_balance(getEditText(R.id.customerBalancetextView371).getText().toString());
+        customer.setCust_limit(getEditText(R.id.customerLimittextView372).getText().toString());
+
+        customer.setQb_sync("0");
+        customer.setCust_dob(getEditText(R.id.customerDOBtextView371).getText().toString());
+        if (priceLevelSelected > 0)
+            customer.setPricelevel_id(priceLevelList.get(priceLevelSelected - 1)[1]);
+
+        if (taxSelected > 0) {
+            customer.setCust_salestaxcode(taxList.get(taxSelected - 1).getTaxId());
+            customer.setCust_taxable(taxCodeHandler.getTaxableTaxCode());
+            myPref.setCustTaxCode(customer.getCust_salestaxcode());
+        }
+
+        addrData.setAddr_id(UUID.randomUUID().toString());
+        addrData.setCust_id(customer.getCust_id());
+        // add zone id
+
+        // add addr_type
+        addrData.setAddr_b_str1(getEditText(R.id.newCustBillStr1).getText().toString());
+        addrData.setAddr_b_str2(getEditText(R.id.newCustBillStr2).getText().toString());
+        // add addr_b_str3
+        addrData.setAddr_b_city(getEditText(R.id.newCustBillCity).getText().toString());
+        addrData.setAddr_b_state(getEditText(R.id.newCustBillState).getText().toString());
+        if (billingSelectedCountry > 0)
+            addrData.setAddr_b_country(isoCountries[billingSelectedCountry]);
+        addrData.setAddr_b_zipcode(getEditText(R.id.newCustBillZip).getText().toString());
+
+        // add addr_s_name
+        addrData.setAddr_s_str1(getEditText(R.id.newCustShippingStr1).getText().toString());
+        addrData.setAddr_s_str2(getEditText(R.id.newCustShippingStr2).getText().toString());
+        // add addr_s_str3
+        addrData.setAddr_s_city(getEditText(R.id.newCustShippingCity).getText().toString());
+        addrData.setAddr_s_state(getEditText(R.id.newCustShippingState).getText().toString());
+        if (shippingSelectedCountry > 0)
+            addrData.setAddr_s_country(isoCountries[shippingSelectedCountry]);
+        addrData.setAddr_s_zipcode(getEditText(R.id.newCustShippingZip).getText().toString());
+
+        addrData.setAddr_b_type(addr_b_type);
+        addrData.setAddr_s_type(addr_s_type);
+        // add qb_cust_id
+
+        addressHandler.insertOneAddress(addrData);
+        // }
+        custHandler.insertOneCustomer(customer);
+
+        String cardNumber = cardIdEditText == null ? "" : cardIdEditText.getText().toString();
+
+        CustomerCustomField customField = new CustomerCustomField();
+        customField.setCustId(customer.getCust_id());
+        customField.setCustFieldId("EMS_CARD_ID_NUM");
+        customField.setCustFieldName("ID");
+        customField.setCustValue(cardNumber);
+        CustomerCustomFieldsDAO.upsert(customField);
+
+        // Set-up data for default selection of this newly created customer
+//        HashMap<String, String> custMap = custHandler.getCustomerInfo(lastCustID);
+
+        myPref.setCustID(customer.getCust_id());
+        myPref.setCustName(customer.getCust_name());
+        myPref.setCustPriceLevel(customer.getPricelevel_id());
+        myPref.setCustSelected(true);
+        myPref.setCustIDKey(customer.getCust_id());
+        myPref.setCustEmail(customer.getCust_email());
+        setResult(-1);
+        finish();
+    }
+
+    private EditText getEditText(int id) {
+        return (EditText) findViewById(id);
     }
 
     private void saveBiometrics() {
@@ -983,4 +1146,49 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         }
     }
 
+    public static class DateDialog extends DialogFragment implements DatePickerDialog.OnDateSetListener {
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+        }
+
+        @NonNull
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            final Calendar c = Calendar.getInstance();
+            int year = c.get(Calendar.YEAR);
+            int month = c.get(Calendar.MONTH);
+            int day = c.get(Calendar.DAY_OF_MONTH);
+
+            return new DatePickerDialog(getActivity(), this, year, month, day);
+
+        }
+
+        @Override
+        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+
+            // Do something after user selects the date...
+            StringBuilder sb = new StringBuilder();
+            sb.append(Integer.toString(year)).append(Integer.toString(monthOfYear + 1)).append(Integer.toString(dayOfMonth));
+            Calendar cal = Calendar.getInstance();
+            cal.set(year, monthOfYear, dayOfMonth);
+            TimeZone tz = cal.getTimeZone();
+
+            SimpleDateFormat sdf1 = new SimpleDateFormat("yyyyMd", Locale.getDefault());
+            sdf1.setTimeZone(tz);
+            SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
+
+            String dobDate = "";
+            try {
+
+                dobDate = sdf2.format(sdf1.parse(sb.toString()));
+            } catch (ParseException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
+            }
+            ((EditText) getActivity().findViewById(R.id.customerDOBtextView371)).setText(Global.formatToDisplayDate(dobDate, 1));
+
+        }
+    }
 }
