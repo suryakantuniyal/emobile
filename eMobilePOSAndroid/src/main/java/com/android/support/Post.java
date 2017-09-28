@@ -302,11 +302,11 @@ public class Post {
         HttpsURLConnection urlConnection;
         try {
             if (sslContext == null) {
-                initSSL();
+//                initSSL();
             }
             HttpsURLConnection.setFollowRedirects(false);
             urlConnection = (HttpsURLConnection) url.openConnection();
-            urlConnection.setSSLSocketFactory(sslContext.getSocketFactory());
+//            urlConnection.setSSLSocketFactory(sslContext.getSocketFactory());
             urlConnection.setRequestMethod("GET");
             if (isJsonContentType) {
                 urlConnection.setRequestProperty("Content-Type", "application/json");
@@ -379,10 +379,10 @@ public class Post {
 
             try {
                 if (sslContext == null) {
-                    initSSL();
+//                    initSSL();
                 }
                 urlConnection = (HttpsURLConnection) url.openConnection();
-                urlConnection.setSSLSocketFactory(sslContext.getSocketFactory());
+//                urlConnection.setSSLSocketFactory(sslContext.getSocketFactory());
                 urlConnection.setRequestMethod("POST");
                 HttpURLConnection.setFollowRedirects(true);
 
