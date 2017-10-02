@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.android.dao.DeviceTableDAO;
+import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.models.realms.Device;
 import com.crashlytics.android.Crashlytics;

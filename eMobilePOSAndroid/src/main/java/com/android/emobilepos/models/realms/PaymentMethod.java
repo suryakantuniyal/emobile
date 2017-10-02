@@ -117,5 +117,13 @@ public class PaymentMethod extends RealmObject {
         method.setOriginalTransid("0");
         return method;
     }
-
+    public static PaymentMethod getCardOnFilePaymentMethod() {
+        PaymentMethod method = new PaymentMethod();
+        method.setPaymethod_id("CardOnFile");
+        method.setPaymethod_name("Card on File");
+        method.setPaymentmethod_type("CardOnFile");
+        method.setImage_url("");
+        method.setOriginalTransid("0");
+        return method;
+    }
 }

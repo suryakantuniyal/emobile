@@ -20,7 +20,7 @@
             android:src="@drawable/logo"
             android:layout_centerVertical="true"
             android:layout_alignParentLeft="true" />
-        
+
         <TextView
             android:id="@+id/add_main_title"
             android:layout_width="wrap_content"
@@ -42,7 +42,7 @@
             android:background="@drawable/action_button_selector"
             android:paddingLeft="5dp"
             android:paddingRight="14dp"
-            android:text="Process"
+            android:text="@string/button_process"
             android:textSize="@dimen/large_button_text_size" />
     </RelativeLayout>
 
@@ -55,50 +55,44 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
 
                 <ImageView
-                    android:id="@+id/imageView1"
+                    android:id="@+id/cayanimageView1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignLeft="@+id/geniusJobIDView"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignRight="@+id/geniusJobIDView"
                     android:adjustViewBounds="true"
                     android:src="@drawable/logo_cayan" />
 
-                <com.android.support.MyEditText
-                    android:id="@+id/geniusJobIDView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignWithParentIfMissing="false"
-                    android:layout_below="@+id/geniusTitle"
-                    android:layout_centerHorizontal="true"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/text_field_selector"
-                    android:ems="10"
-                    android:gravity="center"
-                    android:hint="Invoice/Job ID"
-                    android:inputType="textNoSuggestions"
-                    android:textColor="#000000"
-                    android:textSize="@dimen/field_text_size">
-
-                </com.android.support.MyEditText>
 
                 <TextView
                     android:id="@+id/geniusTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/imageView1"
-                    android:layout_centerHorizontal="true"
-                    android:layout_centerVertical="true"
                     android:layout_gravity="center_horizontal"
-                    android:text="Genius"
+                    android:text="@string/genius"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textSize="40sp" />
+
+                <com.android.support.MyEditText
+                    android:id="@+id/geniusJobIDView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/text_field_selector"
+                    android:ems="10"
+                    android:gravity="center"
+                    android:hint="@string/invoice_job_id"
+                    android:inputType="textNoSuggestions"
+                    android:textColor="#000000"
+                    android:textSize="@dimen/field_text_size">
+
+                </com.android.support.MyEditText>
 
                 <com.android.support.MyEditText
                     android:id="@+id/geniusAmountView"
@@ -119,7 +113,7 @@
                     android:textAppearance="@style/black_text_appearance_unbold"
                     android:textColor="#000000"
                     android:textSize="@dimen/field_text_size"></com.android.support.MyEditText>
-            </RelativeLayout>
+            </LinearLayout>
         </ScrollView>
 
     </LinearLayout>

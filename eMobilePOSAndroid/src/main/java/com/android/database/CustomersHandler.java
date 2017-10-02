@@ -485,7 +485,7 @@ public class CustomersHandler {
         if (customerId != null && !customerId.isEmpty()) {
             // SQLiteDatabase db = dbManager.openReadableDB();
 
-            String sb = ("SELECT c.custidkey, c.cust_firstName,c.cust_lastName,b.addr_b_str1,b.addr_b_str2,b.addr_b_str3,b.addr_b_city," +
+            String sb = ("SELECT c.cust_id, c.custidkey,c.cust_name, c.cust_firstName,c.cust_lastName,b.addr_b_str1,b.addr_b_str2,b.addr_b_str3,b.addr_b_city," +
                     " b.addr_b_state,b.addr_b_country,") +
                     " b.addr_b_zipcode,b.addr_s_str1,b.addr_s_str2,b.addr_s_str3,b.addr_s_city,b.addr_s_state,b.addr_s_country," +
                     " b.addr_s_zipcode , cust_taxable, cust_salestaxcode" +
@@ -494,8 +494,11 @@ public class CustomersHandler {
             Cursor cursor = DBManager.getDatabase().rawQuery(sb, new String[]{customerId});
 
             if (cursor.moveToFirst()) {
+
                 customer.cust_firstName = cursor.getString(cursor.getColumnIndex(cust_firstName));
                 customer.cust_lastName = cursor.getString(cursor.getColumnIndex(cust_lastName));
+                customer.cust_id = cursor.getString(cursor.getColumnIndex(cust_id));
+                customer.cust_name = cursor.getString(cursor.getColumnIndex(cust_name));
                 customer.billingAddress.addr_b_str1 = cursor.getString(cursor.getColumnIndex("addr_b_str1"));
                 customer.billingAddress.addr_b_str2 = cursor.getString(cursor.getColumnIndex("addr_b_str2"));
                 customer.billingAddress.addr_b_str3 = cursor.getString(cursor.getColumnIndex("addr_b_str3"));

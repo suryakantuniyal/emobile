@@ -1009,6 +1009,12 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());
             intent.putExtras(extras);
             initIntents(extras, intent);
+        } else if (payTypeList.get(position).getPaymentmethod_type().equals("CardOnFile")) {
+            Intent intent = new Intent(this, ProcessGenius_FA.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());
+            intent.putExtras(extras);
+            initIntents(extras, intent);
         } else if (payTypeList.get(position).getPaymentmethod_type().equals("Wallet")) {
             Intent intent = new Intent(this, ProcessTupyx_FA.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);

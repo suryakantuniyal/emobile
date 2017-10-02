@@ -311,6 +311,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                 case PAYMENT_METHODS:
                     prefManager.findPreference("pref_mw_with_genius").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_pay_with_tupyx").setOnPreferenceClickListener(this);
+                    prefManager.findPreference("pref_pay_with_card_on_file").setOnPreferenceClickListener(this);
                     prefManager.findPreference(MyPreferences.pref_config_genius_peripheral)
                             .setOnPreferenceClickListener(this);
 
@@ -465,6 +466,14 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                         PayMethodsDAO.insert(PaymentMethod.getTupyxPaymentMethod());
                     } else {
                         PayMethodsDAO.delete("Wallet");
+                    }
+                    break;
+                case R.string.config_pay_with_card_on_file:
+                    checkBoxPreference = (CheckBoxPreference) preference;
+                    if (checkBoxPreference.isChecked()) {
+                        PayMethodsDAO.insert(PaymentMethod.getCardOnFilePaymentMethod());
+                    } else {
+                        PayMethodsDAO.delete("CardOnFile");
                     }
                     break;
                 case R.string.config_use_clerks:
