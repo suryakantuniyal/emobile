@@ -270,7 +270,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.processGeniusButton:
-                Toast.makeText(activity, "Processing Genius", Toast.LENGTH_LONG).show();
+                Toast.makeText(activity, getString(R.string.processing_payment_msg), Toast.LENGTH_LONG).show();
                 processPayment();
                 break;
             case R.id.btnExact:
@@ -727,6 +727,8 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
         protected void onPostExecute(Void response) {
             Global.dismissDialog(ProcessGenius_FA.this, myProgressDialog);
             if (wasProcessed) {
+                payment.setCard_type(parsedMap.get("CardType"));
+                payment.setCcnum_last4(parsedMap.get("CCLast4"));
                 saveApprovedPayment(parsedMap, payment);
                 showPrintDlg(false);
             } else {
@@ -743,7 +745,11 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
             payment.setIs_refund("1");
             payment.setPay_type("2");
         }
-        payment.setProcessed("1");
+        if(myPref.isPayWithCardOnFile()){
+            payment.setProcessed("9");
+        }else {
+            payment.setProcessed("1");
+        }
 
         PaymentsHandler paymentsHandler = new PaymentsHandler(this);
         paymentsHandler.insert(payment);

@@ -113,7 +113,7 @@ public class TemplateHandler {
                 insert.bindString(index(price_level_id), prod.getPricelevel_id() == null ? "" : prod.getPricelevel_id());
                 insert.bindString(index(price_level), prod.getPriceLevelName() == null ? "" : prod.getPriceLevelName());
                 insert.bindString(index(name), prod.getOrdprod_name() == null ? "" : prod.getOrdprod_name());
-                insert.bindString(index(overwrite_price), prod.getOverwrite_price() == null ? "" : prod.getOverwrite_price().toString());
+                insert.bindString(index(overwrite_price), prod.getOverwrite_price() == null ? prod.getProd_price() : prod.getOverwrite_price().toString());
                 insert.bindString(index(_update), "");
 				insert.bindString(index(isactive), "true");
 				insert.bindString(index(isSync), "0");
