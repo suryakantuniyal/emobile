@@ -727,6 +727,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
         protected void onPostExecute(Void response) {
             Global.dismissDialog(ProcessGenius_FA.this, myProgressDialog);
             if (wasProcessed) {
+                payment.setPaymethod_id(PayMethodsHandler.getPayMethodID(parsedMap.get("CardType")));
                 payment.setCard_type(parsedMap.get("CardType"));
                 payment.setCcnum_last4(parsedMap.get("CCLast4"));
                 saveApprovedPayment(parsedMap, payment);

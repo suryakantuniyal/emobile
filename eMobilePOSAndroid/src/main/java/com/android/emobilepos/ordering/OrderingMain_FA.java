@@ -1329,8 +1329,12 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 Global.btSwiper.getCurrentDevice().loadCardReader(callBackMSR, false);
             } else if (_printer_type != -1 && Global.deviceHasMSR(_printer_type)) {
                 if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null
-                        && !cardReaderConnected)
+                        && !cardReaderConnected) {
                     Global.mainPrinterManager.getCurrentDevice().loadCardReader(callBackMSR, false);
+                    swiperLabel.setText(R.string.connected);
+                    swiperLabel.setTextColor(Color.BLUE);
+                    msrWasLoaded = true;
+                }
             } else {
                 swiperLabel.setText(R.string.disconnected);
                 swiperLabel.setTextColor(Color.RED);
