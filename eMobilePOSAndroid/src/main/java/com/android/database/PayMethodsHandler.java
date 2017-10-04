@@ -92,6 +92,9 @@ public class PayMethodsHandler {
             if (myPref.getPreferences(MyPreferences.pref_pay_with_tupyx)) {
                 paymentMethods.add(PaymentMethod.getTupyxPaymentMethod());
             }
+            if (myPref.getPreferences(MyPreferences.pref_pay_with_card_on_file)) {
+                paymentMethods.add(PaymentMethod.getCardOnFilePaymentMethod());
+            }
             PaymentMethodDAO.insert(paymentMethods);
             insert.close();
             DBManager.getDatabase().setTransactionSuccessful();

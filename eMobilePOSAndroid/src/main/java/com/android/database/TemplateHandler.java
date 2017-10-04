@@ -139,11 +139,10 @@ public class TemplateHandler {
 
 			addrData = data;
 			dictionaryListMap = dictionary;
-			SQLiteStatement insert = null;
-			StringBuilder sb = new StringBuilder();
-			sb.append("INSERT INTO ").append(table_name).append(" (").append(sb1.toString()).append(") ")
-					.append("VALUES (").append(sb2.toString()).append(")");
-			insert = DBManager.getDatabase().compileStatement(sb.toString());
+			SQLiteStatement insert;
+			String sb = "INSERT INTO " + table_name + " (" + sb1.toString() + ") " +
+					"VALUES (" + sb2.toString() + ")";
+			insert = DBManager.getDatabase().compileStatement(sb);
 
 			int size = addrData.size();
 
