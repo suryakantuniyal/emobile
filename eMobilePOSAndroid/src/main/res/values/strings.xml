@@ -373,9 +373,10 @@
     <string name="admin_hardcoded_configure">Configure hard-coded payment methods</string>
     <string name="admin_paymethod_tupyx">Pay with Tupyx</string>
     <string name="admin_paymethod_genius">MW with Genius</string>
+    <!--<string name="admin_paymethod_cardonfile">Pay with Card on File</string>-->
 
     <string name="admin_process_payment">Process Payments</string>
-    <string name="admin_process_live_cash">Process Cash Online</string>
+    <!--<string name="admin_process_live_cash">Process Cash Online</string>-->
     <string name="admin_process_live_check">Process Check Online</string>
     <string name="admin_process_show_tip">Show tip for Cash</string>
 
@@ -896,6 +897,7 @@
 
 
     <string name="config_pay_with_tupyx">Pay with Tupyx</string>
+    <string name="config_pay_with_card_on_file">Pay with Card on File</string>
     <string name="config_mw_with_genius">Cayan Genius</string>
     <string name="config_genius_peripheral">Configure Genius Peripheral</string>
     <string name="config_pay_with_boloro">Pay with Boloro</string>
@@ -1355,5 +1357,9 @@
     <string name="processing_payments">Processing payments…</string>
     <string name="config_multiple_prints">Enable multiple prints</string>
     <string name="elobcr_menu">BCR</string>
+    <string name="admin_process_live_cash">"Process cash on line"</string>
+    <string name="card_on_file">Card on File</string>
+    <string name="genius">Genius</string>
+    <string name="invoice_job_id">Invoice/Job ID</string>
 
 </resources>

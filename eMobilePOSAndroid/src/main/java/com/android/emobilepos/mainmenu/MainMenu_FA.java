@@ -27,7 +27,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.dao.ClerkDAO;
-import com.android.database.DBManager;
 import com.android.emobilepos.R;
 import com.android.emobilepos.firebase.NotificationHandler;
 import com.android.emobilepos.firebase.NotificationSettings;
@@ -38,7 +37,6 @@ import com.android.emobilepos.security.SecurityManager;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
-import com.android.support.SynchMethods;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.common.ConnectionResult;
@@ -56,6 +54,7 @@ import static com.android.emobilepos.models.firebase.NotificationEvent.Notificat
 public class MainMenu_FA extends BaseFragmentActivityActionBar {
     public static final String NOTIFICATION_RECEIVED = "NOTIFICATION_RECEIVED";
     public static final String NOTIFICATION_MESSAGE = "NOTIFICATION_MESSAGE";
+    public static final String NOTIFICATION_DEVICES_LOADED = "NOTIFICATION_DEVICES_LOADED";
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
     static {

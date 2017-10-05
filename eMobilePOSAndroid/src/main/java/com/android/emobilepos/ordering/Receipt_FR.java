@@ -11,6 +11,7 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -63,6 +64,8 @@ import com.android.emobilepos.consignment.ConsignmentCheckout_FA;
 import com.android.emobilepos.customer.ViewCustomers_FA;
 import com.android.emobilepos.holders.TransferInventory_Holder;
 import com.android.emobilepos.holders.TransferLocations_Holder;
+import com.android.emobilepos.mainmenu.SalesTab_FR;
+import com.android.emobilepos.models.BCRMacro;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.OrderSeatProduct;
 import com.android.emobilepos.models.Orders;
@@ -71,6 +74,7 @@ import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.OrderAttributes;
+import com.android.emobilepos.models.salesassociates.Template;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.emobilepos.security.SecurityManager;
 import com.android.support.CustomerInventory;
@@ -118,7 +122,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     private Global.TransactionType caseSelected = Global.TransactionType.SALE_RECEIPT;
     private boolean custSelected;
     private Global.OrderType consignmentType;
-    private Global global;
     private Global.TransactionType typeOfProcedure = Global.TransactionType.SALE_RECEIPT;
     private MyPreferences myPref;
     private int orientation = 0;
@@ -138,6 +141,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     private RecalculateCallback callBackRecalculate;
     private UpdateHeaderTitleCallback callBackUpdateHeaderTitle;
     private String order_email = "";
+    private Bundle extras;
 
     public Receipt_FR() {
 
@@ -230,21 +234,20 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                              ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.order_receipt_main_layout,
                 container, false);
-        global = (Global) getActivity().getApplication();
 
         myPref = new MyPreferences(getActivity());
         if (savedInstanceState == null) {
             if (onHoldOrder == null) {
-                global.order = new Order(getActivity());
+                getOrderingMainFa().global.order = new Order(getActivity());
             } else {
-                global.order = onHoldOrder;
+                getOrderingMainFa().global.order = onHoldOrder;
             }
-        } else if (global.order == null) {
+        } else if (getOrderingMainFa().global.order == null) {
             Log.d("Ordering Main", "Restore OrderingMain NULL order global. Activity finished.");
             getActivity().finish();
             return null;
         }
-        final Bundle extras = getActivity().getIntent().getExtras();
+        extras = getActivity().getIntent().getExtras();
         typeOfProcedure = (Global.TransactionType) extras.get("option_number");
         isToGo = ((OrderingMain_FA) getActivity()).isToGo;
         prodHandler = new ProductsHandler(getActivity());
@@ -438,9 +441,22 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         return view;
     }
 
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        if (extras.containsKey("BCRMacro")) {
+            String json = extras.getString("BCRMacro");
+            Gson gson = JsonUtils.getInstance();
+            BCRMacro bcrMacro = gson.fromJson(json, BCRMacro.class);
+            if (bcrMacro.getBcrMacroParams().isLoadTemplate()) {
+                loadCustomerTemplate();
+            }
+        }
+
+    }
+
     private void setupListView() {
         OrderingMain_FA orderingMain_fa = (OrderingMain_FA) getActivity();
-        mainLVAdapter = new OrderProductListAdapter(getActivity(), global.order.getOrderProducts(), orderingMain_fa);
+        mainLVAdapter = new OrderProductListAdapter(getActivity(), getOrderingMainFa().global.order.getOrderProducts(), orderingMain_fa);
         receiptListView.setAdapter(mainLVAdapter);
         if (orderingMain_fa.openFromHold && !orderingMain_fa.isToGo) {
             addHoldOrderSeats();
@@ -449,7 +465,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     }
 
     private void addHoldOrderSeats() {
-        for (OrderProduct product : global.order.getOrderProducts()) {
+        for (OrderProduct product : getOrderingMainFa().global.order.getOrderProducts()) {
             mainLVAdapter.addSeat(product);
         }
     }
@@ -484,7 +500,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                                 int which) {
                                 String value = NumberUtils.cleanCurrencyFormatedNumber(input);
                                 if (!value.isEmpty()) {
-                                    global.order.getOrderProducts().get(position).setOverwritePrice(Global.getBigDecimalNum(value), getActivity());
+                                    getOrderingMainFa().global.order.getOrderProducts().get(position).setOverwritePrice(Global.getBigDecimalNum(value), getActivity());
 
                                     receiptListView.invalidateViews();
                                     reCalculate();
@@ -520,7 +536,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     String firstSeat = mainLVAdapter.getFirstSeat();
                     ((OrderingMain_FA) getActivity()).setSelectedSeatNumber(firstSeat);
 //                    ((OrderingMain_FA) getActivity()).setSelectedDinningTableNumber("1");
-                    mainLVAdapter.moveSeatItems(global.order.getOrderProducts(), firstSeat);
+                    mainLVAdapter.moveSeatItems(getOrderingMainFa().global.order.getOrderProducts(), firstSeat);
                     mainLVAdapter.notifyDataSetChanged();
                 }
                 break;
@@ -536,11 +552,11 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 break;
             case R.id.holdButton:
                 ((OrderingMain_FA) getActivity()).orderingAction = OrderingMain_FA.OrderingAction.HOLD;
-                if (global.order.getOrderProducts() != null && global.order.getOrderProducts().size() > 0) {
-                    Order order = buildOrder(getActivity(), global, "", ord_HoldName,
+                if (getOrderingMainFa().global.order.getOrderProducts() != null && getOrderingMainFa().global.order.getOrderProducts().size() > 0) {
+                    Order order = buildOrder(getActivity(), getOrderingMainFa().global, "", ord_HoldName,
                             ((OrderingMain_FA) getActivity()).getSelectedDinningTableNumber(),
                             ((OrderingMain_FA) getActivity()).getAssociateId(), ((OrderingMain_FA) getActivity()).getOrderAttributes(),
-                            ((OrderingMain_FA) getActivity()).getListOrderTaxes(), global.order.getOrderProducts());
+                            ((OrderingMain_FA) getActivity()).getListOrderTaxes(), getOrderingMainFa().global.order.getOrderProducts());
                     processOrder(order, "", OrderingMain_FA.OrderingAction.HOLD, Global.isFromOnHold, false);
 
                 } else
@@ -602,7 +618,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     public void onItemClick(AdapterView<?> parent, View view, int position,
                             long id) {
         final OrderSeatProduct orderSeatProduct = (OrderSeatProduct) mainLVAdapter.getItem(position);
-        final int orderProductIdx = orderSeatProduct.rowType == OrderProductListAdapter.RowType.TYPE_ITEM ? global.order.getOrderProducts().indexOf(orderSeatProduct.orderProduct) : 0;
+        final int orderProductIdx = orderSeatProduct.rowType == OrderProductListAdapter.RowType.TYPE_ITEM ? getOrderingMainFa().global.order.getOrderProducts().indexOf(orderSeatProduct.orderProduct) : 0;
         if (orderSeatProduct.rowType == OrderProductListAdapter.RowType.TYPE_HEADER) {
             ((OrderingMain_FA) getActivity()).setSelectedSeatNumber(orderSeatProduct.seatNumber);
             mainLVAdapter.notifyDataSetChanged();
@@ -724,7 +740,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     }
 
     public void checkoutOrder() {
-        if (!global.order.isAllProductsRequiredAttrsCompleted()) {
+        if (!getOrderingMainFa().global.order.isAllProductsRequiredAttrsCompleted()) {
             Global.showPrompt(getActivity(), R.string.dlog_title_error, getActivity().getString(R.string.dlog_msg_required_attributes));
         } else if (receiptListView.getCount() == 0 &&
                 (caseSelected != Global.TransactionType.CONSIGNMENT ||
@@ -736,11 +752,11 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             processInventoryTransfer();
         } else if (myPref
                 .getPreferences(MyPreferences.pref_signature_required_mode)
-                && global.encodedImage.isEmpty()) {
+                && getOrderingMainFa().global.encodedImage.isEmpty()) {
             Toast.makeText(getActivity(), R.string.warning_signature_required,
                     Toast.LENGTH_LONG).show();
         } else if (myPref.getPreferences(MyPreferences.pref_require_address)
-                && global.getSelectedAddressString().isEmpty()) {
+                && getOrderingMainFa().global.getSelectedAddressString().isEmpty()) {
             Toast.makeText(getActivity(), R.string.warning_ship_address_required,
                     Toast.LENGTH_LONG).show();
         } else {
@@ -751,14 +767,14 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     if (myPref.isCustSelected()) {
                         email = myPref.getCustEmail();
                     }
-                    Order order = buildOrder(getActivity(), global, email, ord_HoldName,
+                    Order order = buildOrder(getActivity(), getOrderingMainFa().global, email, ord_HoldName,
                             ((OrderingMain_FA) getActivity()).getSelectedDinningTableNumber(),
                             ((OrderingMain_FA) getActivity()).getAssociateId(), ((OrderingMain_FA) getActivity()).getOrderAttributes(),
-                            ((OrderingMain_FA) getActivity()).getListOrderTaxes(), global.order.getOrderProducts());
+                            ((OrderingMain_FA) getActivity()).getListOrderTaxes(), getOrderingMainFa().global.order.getOrderProducts());
                     if (isToGo) {
                         processOrder(order, "", OrderingMain_FA.OrderingAction.CHECKOUT, Global.isFromOnHold, false);
                     } else {
-                        if (global.order.getOrderProducts() != null && global.order.getOrderProducts().size() > 0) {
+                        if (getOrderingMainFa().global.order.getOrderProducts() != null && getOrderingMainFa().global.order.getOrderProducts().size() > 0) {
                             processOrder(order, "", OrderingMain_FA.OrderingAction.HOLD, Global.isFromOnHold, false);
                         } else {
                             getOrderingMainFa().buildOrderStarted = false;
@@ -785,8 +801,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         //edit text comments of dialog box
         final EditText editTextDialogComments = (EditText) dialog.findViewById(R.id.fieldComments);
         //set the comments to previously entered comments in details section
-        if (!global.getSelectedComments().isEmpty()) {
-            editTextDialogComments.setText(global.getSelectedComments());
+        if (!getOrderingMainFa().global.getSelectedComments().isEmpty()) {
+            editTextDialogComments.setText(getOrderingMainFa().global.getSelectedComments());
         }
         final EditText emailInput = (EditText) dialog.findViewById(R.id.emailTxt);
         final EditText phoneNum = (EditText) dialog
@@ -810,23 +826,23 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 dialog.dismiss();
                 //if we have comments set the global comments field
                 if (!editTextDialogComments.getText().toString().isEmpty()) {
-                    global.setSelectedComments(editTextDialogComments.getText().toString());
+                    getOrderingMainFa().global.setSelectedComments(editTextDialogComments.getText().toString());
                 }
                 if (!emailInput.getText().toString().isEmpty()) {
                     if (checkEmail(emailInput.getText().toString())) {
                         if (isToGo) {
-                            Order order = buildOrder(getActivity(), global, emailInput.getText().toString(), ord_HoldName,
+                            Order order = buildOrder(getActivity(), getOrderingMainFa().global, emailInput.getText().toString(), ord_HoldName,
                                     ((OrderingMain_FA) getActivity()).getSelectedDinningTableNumber(),
                                     ((OrderingMain_FA) getActivity()).getAssociateId(), ((OrderingMain_FA) getActivity()).getOrderAttributes(),
-                                    ((OrderingMain_FA) getActivity()).getListOrderTaxes(), global.order.getOrderProducts());
+                                    ((OrderingMain_FA) getActivity()).getListOrderTaxes(), getOrderingMainFa().global.order.getOrderProducts());
                             processOrder(order, emailInput.getText().toString(), OrderingMain_FA.OrderingAction.CHECKOUT,
                                     Global.isFromOnHold, false);
                         } else {
-                            if (global.order.getOrderProducts() != null && global.order.getOrderProducts().size() > 0) {
-                                Order order = buildOrder(getActivity(), global, emailInput.getText().toString(), ord_HoldName,
+                            if (getOrderingMainFa().global.order.getOrderProducts() != null && getOrderingMainFa().global.order.getOrderProducts().size() > 0) {
+                                Order order = buildOrder(getActivity(), getOrderingMainFa().global, emailInput.getText().toString(), ord_HoldName,
                                         ((OrderingMain_FA) getActivity()).getSelectedDinningTableNumber(),
                                         ((OrderingMain_FA) getActivity()).getAssociateId(), ((OrderingMain_FA) getActivity()).getOrderAttributes(),
-                                        ((OrderingMain_FA) getActivity()).getListOrderTaxes(), global.order.getOrderProducts());
+                                        ((OrderingMain_FA) getActivity()).getListOrderTaxes(), getOrderingMainFa().global.order.getOrderProducts());
                                 processOrder(order, emailInput.getText().toString(), OrderingMain_FA.OrderingAction.HOLD,
                                         Global.isFromOnHold, false);
 
@@ -843,17 +859,17 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                 Toast.LENGTH_LONG).show();
                 } else {
                     if (isToGo) {
-                        Order order = buildOrder(getActivity(), global, emailInput.getText().toString(), ord_HoldName,
+                        Order order = buildOrder(getActivity(), getOrderingMainFa().global, emailInput.getText().toString(), ord_HoldName,
                                 ((OrderingMain_FA) getActivity()).getSelectedDinningTableNumber(),
                                 ((OrderingMain_FA) getActivity()).getAssociateId(), ((OrderingMain_FA) getActivity()).getOrderAttributes(),
-                                ((OrderingMain_FA) getActivity()).getListOrderTaxes(), global.order.getOrderProducts());
+                                ((OrderingMain_FA) getActivity()).getListOrderTaxes(), getOrderingMainFa().global.order.getOrderProducts());
                         processOrder(order, emailInput.getText().toString(), OrderingMain_FA.OrderingAction.CHECKOUT, Global.isFromOnHold, false);
                     } else {
-                        if (global.order.getOrderProducts() != null && global.order.getOrderProducts().size() > 0) {
-                            Order order = buildOrder(getActivity(), global, "", ord_HoldName,
+                        if (getOrderingMainFa().global.order.getOrderProducts() != null && getOrderingMainFa().global.order.getOrderProducts().size() > 0) {
+                            Order order = buildOrder(getActivity(), getOrderingMainFa().global, "", ord_HoldName,
                                     ((OrderingMain_FA) getActivity()).getSelectedDinningTableNumber(),
                                     ((OrderingMain_FA) getActivity()).getAssociateId(), ((OrderingMain_FA) getActivity()).getOrderAttributes(),
-                                    ((OrderingMain_FA) getActivity()).getListOrderTaxes(), global.order.getOrderProducts());
+                                    ((OrderingMain_FA) getActivity()).getListOrderTaxes(), getOrderingMainFa().global.order.getOrderProducts());
                             processOrder(order, "", OrderingMain_FA.OrderingAction.HOLD, Global.isFromOnHold, false);
 
                         } else {
@@ -901,14 +917,14 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     if (myPref.isCustSelected()) {
                         email = myPref.getCustEmail();
                     }
-                    Order order = buildOrder(getActivity(), global, email, ord_HoldName,
+                    Order order = buildOrder(getActivity(), getOrderingMainFa().global, email, ord_HoldName,
                             ((OrderingMain_FA) getActivity()).getSelectedDinningTableNumber(),
                             ((OrderingMain_FA) getActivity()).getAssociateId(), ((OrderingMain_FA) getActivity()).getOrderAttributes(),
-                            ((OrderingMain_FA) getActivity()).getListOrderTaxes(), global.order.getOrderProducts());
+                            ((OrderingMain_FA) getActivity()).getListOrderTaxes(), getOrderingMainFa().global.order.getOrderProducts());
                     if (isToGo) {
                         processOrder(order, "", OrderingMain_FA.OrderingAction.CHECKOUT, Global.isFromOnHold, false);
                     } else {
-                        if (global.order.getOrderProducts() != null && global.order.getOrderProducts().size() > 0) {
+                        if (getOrderingMainFa().global.order.getOrderProducts() != null && getOrderingMainFa().global.order.getOrderProducts().size() > 0) {
                             processOrder(order, "", OrderingMain_FA.OrderingAction.HOLD, Global.isFromOnHold, false);
                         } else {
                             getOrderingMainFa().buildOrderStarted = false;
@@ -940,7 +956,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
         OrdersHandler ordersHandler = new OrdersHandler(getActivity());
         OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB();
-        global.order = order;
+        getOrderingMainFa().global.order = order;
         order_email = emailHolder;
         OrderProductsHandler orderProductsHandler = new OrderProductsHandler(getActivity());
         OrderProductsAttr_DB productsAttrDb = new OrderProductsAttr_DB(getActivity());
@@ -953,16 +969,16 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 }
             }
             if (orderingAction == OrderingMain_FA.OrderingAction.HOLD) {
-                global.order.isOnHold = "1";
+                getOrderingMainFa().global.order.isOnHold = "1";
 
                 if (isFromOnHold && isToGo) {
                     ordersHandler.updateFinishOnHold(Global.lastOrdID);
-                    global.order.ord_HoldName = ord_HoldName;
-                    global.order.processed = "10";
-                    ordersHandler.insert(global.order);
-                    global.encodedImage = "";
+                    getOrderingMainFa().global.order.ord_HoldName = ord_HoldName;
+                    getOrderingMainFa().global.order.processed = "10";
+                    ordersHandler.insert(getOrderingMainFa().global.order);
+                    getOrderingMainFa().global.encodedImage = "";
                     orderProductsHandler.insert(order.getOrderProducts());
-                    productsAttrDb.insert(global.ordProdAttr);
+                    productsAttrDb.insert(getOrderingMainFa().global.ordProdAttr);
                     if (myPref.isRestaurantMode()) {
                         new PrintAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
                     }
@@ -971,27 +987,27 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 //                    SynchMethods sm = new SynchMethods(dbManager);
 //                    sm.synchSendOnHold(false, false, getActivity(), null);
                 } else {
-                    if (global.order.ord_HoldName == null || global.order.ord_HoldName.isEmpty()) {
+                    if (getOrderingMainFa().global.order.ord_HoldName == null || getOrderingMainFa().global.order.ord_HoldName.isEmpty()) {
                         showOnHoldPromptName(ordersHandler, orderProductsHandler);
                     } else {
-                        setOrderAsHold(global.order.ord_HoldName, ordersHandler, orderProductsHandler);
+                        setOrderAsHold(getOrderingMainFa().global.order.ord_HoldName, ordersHandler, orderProductsHandler);
                     }
                 }
             } else if (Global.isFromOnHold) {
                 if (!voidOnHold) {
                     ordersHandler.updateFinishOnHold(Global.lastOrdID);
-                    global.order.processed = "10";
-                    global.order.isOnHold = "1";
-                    ordersHandler.insert(global.order);
-                    global.encodedImage = "";
+                    getOrderingMainFa().global.order.processed = "10";
+                    getOrderingMainFa().global.order.isOnHold = "1";
+                    ordersHandler.insert(getOrderingMainFa().global.order);
+                    getOrderingMainFa().global.encodedImage = "";
                     orderProductsHandler.insert(order.getOrderProducts());
-                    productsAttrDb.insert(global.ordProdAttr);
+                    productsAttrDb.insert(getOrderingMainFa().global.ordProdAttr);
 
-                    if (global.order.getListOrderTaxes() != null
-                            && global.order.getListOrderTaxes().size() > 0
+                    if (getOrderingMainFa().global.order.getListOrderTaxes() != null
+                            && getOrderingMainFa().global.order.getListOrderTaxes().size() > 0
                             && typeOfProcedure != Global.TransactionType.REFUND)
-                        ordTaxesDB.insert(global.order.getListOrderTaxes(),
-                                global.order.ord_id);
+                        ordTaxesDB.insert(getOrderingMainFa().global.order.getListOrderTaxes(),
+                                getOrderingMainFa().global.order.ord_id);
                     if (myPref.isRestaurantMode())
                         new PrintAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
 //                    DBManager dbManager = new DBManager(getActivity());
@@ -1000,42 +1016,42 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     new OnHoldAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, CHECK_OUT_HOLD, voidOnHold);
                 } else {
                     ordersHandler.updateFinishOnHold(Global.lastOrdID);
-                    global.order.isVoid = "1";
-                    global.order.processed = "9";
-                    ordersHandler.insert(global.order);
-                    global.encodedImage = "";
+                    getOrderingMainFa().global.order.isVoid = "1";
+                    getOrderingMainFa().global.order.processed = "9";
+                    ordersHandler.insert(getOrderingMainFa().global.order);
+                    getOrderingMainFa().global.encodedImage = "";
                     orderProductsHandler.insert(order.getOrderProducts());
-                    productsAttrDb.insert(global.ordProdAttr);
+                    productsAttrDb.insert(getOrderingMainFa().global.ordProdAttr);
 
-                    if (global.order.getListOrderTaxes() != null
-                            && global.order.getListOrderTaxes().size() > 0
+                    if (getOrderingMainFa().global.order.getListOrderTaxes() != null
+                            && getOrderingMainFa().global.order.getListOrderTaxes().size() > 0
                             && typeOfProcedure != Global.TransactionType.REFUND)
-                        ordTaxesDB.insert(global.order.getListOrderTaxes(),
-                                global.order.ord_id);
+                        ordTaxesDB.insert(getOrderingMainFa().global.order.getListOrderTaxes(),
+                                getOrderingMainFa().global.order.ord_id);
                     new OnHoldAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, CHECK_OUT_HOLD, voidOnHold);
                 }
             } else {
-                if (global.order.getOrderProducts().size() > 0 ||
-                        !global.order.ord_type.equalsIgnoreCase(Global.OrderType.CONSIGNMENT_RETURN.getCodeString())) {
-                    if (!global.order.ord_type.equalsIgnoreCase(Global.OrderType.CONSIGNMENT_INVOICE.getCodeString()) &&
-                            !global.order.ord_type.equalsIgnoreCase(Global.OrderType.CONSIGNMENT_RETURN.getCodeString()) &&
-                            !global.order.ord_type.equalsIgnoreCase(Global.OrderType.CONSIGNMENT_FILLUP.getCodeString())) {
-                        ordersHandler.insert(global.order);
+                if (getOrderingMainFa().global.order.getOrderProducts().size() > 0 ||
+                        !getOrderingMainFa().global.order.ord_type.equalsIgnoreCase(Global.OrderType.CONSIGNMENT_RETURN.getCodeString())) {
+                    if (!getOrderingMainFa().global.order.ord_type.equalsIgnoreCase(Global.OrderType.CONSIGNMENT_INVOICE.getCodeString()) &&
+                            !getOrderingMainFa().global.order.ord_type.equalsIgnoreCase(Global.OrderType.CONSIGNMENT_RETURN.getCodeString()) &&
+                            !getOrderingMainFa().global.order.ord_type.equalsIgnoreCase(Global.OrderType.CONSIGNMENT_FILLUP.getCodeString())) {
+                        ordersHandler.insert(getOrderingMainFa().global.order);
                     }
                 }
-                if (global.order.getOrderProducts().size() > 0) {
-                    if (!global.order.ord_type.equalsIgnoreCase(Global.OrderType.CONSIGNMENT_INVOICE.getCodeString())) {
-                        if (!global.order.ord_type.equalsIgnoreCase(Global.OrderType.CONSIGNMENT_INVOICE.getCodeString()) &&
-                                !global.order.ord_type.equalsIgnoreCase(Global.OrderType.CONSIGNMENT_RETURN.getCodeString()) &&
-                                !global.order.ord_type.equalsIgnoreCase(Global.OrderType.CONSIGNMENT_FILLUP.getCodeString())) {
-                            orderProductsHandler.insert(global.order.getOrderProducts());
+                if (getOrderingMainFa().global.order.getOrderProducts().size() > 0) {
+                    if (!getOrderingMainFa().global.order.ord_type.equalsIgnoreCase(Global.OrderType.CONSIGNMENT_INVOICE.getCodeString())) {
+                        if (!getOrderingMainFa().global.order.ord_type.equalsIgnoreCase(Global.OrderType.CONSIGNMENT_INVOICE.getCodeString()) &&
+                                !getOrderingMainFa().global.order.ord_type.equalsIgnoreCase(Global.OrderType.CONSIGNMENT_RETURN.getCodeString()) &&
+                                !getOrderingMainFa().global.order.ord_type.equalsIgnoreCase(Global.OrderType.CONSIGNMENT_FILLUP.getCodeString())) {
+                            orderProductsHandler.insert(getOrderingMainFa().global.order.getOrderProducts());
                         }
-                        productsAttrDb.insert(global.ordProdAttr);
-                        if (global.order.getListOrderTaxes() != null
-                                && global.order.getListOrderTaxes().size() > 0
+                        productsAttrDb.insert(getOrderingMainFa().global.ordProdAttr);
+                        if (getOrderingMainFa().global.order.getListOrderTaxes() != null
+                                && getOrderingMainFa().global.order.getListOrderTaxes().size() > 0
                                 && typeOfProcedure != Global.TransactionType.REFUND) {
-                            ordTaxesDB.insert(global.order.getListOrderTaxes(),
-                                    global.order.ord_id);
+                            ordTaxesDB.insert(getOrderingMainFa().global.order.getListOrderTaxes(),
+                                    getOrderingMainFa().global.order.ord_id);
                         }
                     }
                 }
@@ -1049,7 +1065,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             switch (caseSelected) {
                 case SALE_RECEIPT: // is Sales Receipt
                 {
-                    updateLocalInventory(getActivity(), global.order.getOrderProducts(), false);
+                    updateLocalInventory(getActivity(), getOrderingMainFa().global.order.getOrderProducts(), false);
                     typeOfProcedure = Global.TransactionType.PAYMENT;
                     if (OrderTotalDetails_FR.gran_total
                             .compareTo(new BigDecimal(0)) == -1) {
@@ -1078,7 +1094,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         }
                     } else// is Return
                     {
-                        updateLocalInventory(getActivity(), global.order.getOrderProducts(), true);
+                        updateLocalInventory(getActivity(), getOrderingMainFa().global.order.getOrderProducts(), true);
                         typeOfProcedure = Global.TransactionType.RETURN;
                         if (myPref
                                 .getPreferences(MyPreferences.pref_return_require_refund))
@@ -1093,7 +1109,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 case RETURN: {
                     if (custSelected) // Return
                     {
-                        updateLocalInventory(getActivity(), global.order.getOrderProducts(), true);
+                        updateLocalInventory(getActivity(), getOrderingMainFa().global.order.getOrderProducts(), true);
                         typeOfProcedure = Global.TransactionType.ORDERS;
                         if (myPref
                                 .getPreferences(MyPreferences.pref_return_require_refund))
@@ -1111,7 +1127,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     if (custSelected) // Invoice
                     {
                         ordersHandler.updateIsProcessed(Global.lastOrdID, "1");
-                        updateLocalInventory(getActivity(), global.order.getOrderProducts(), false);
+                        updateLocalInventory(getActivity(), getOrderingMainFa().global.order.getOrderProducts(), false);
                         typeOfProcedure = Global.TransactionType.RETURN;
                         if (myPref.isInvoiceRequirePayment()) {
                             openInvoicePaymentSelection();
@@ -1143,12 +1159,12 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 {
                     if (consignmentType == Global.OrderType.CONSIGNMENT_PICKUP || consignmentType == Global.OrderType.CONSIGNMENT_FILLUP) {
                         processConsignment();
-                        global.order.setOrderProducts(new ArrayList<OrderProduct>());
+                        getOrderingMainFa().global.order.setOrderProducts(new ArrayList<OrderProduct>());
                         Intent intent = new Intent(getActivity(),
                                 ConsignmentCheckout_FA.class);
                         intent.putExtra("consignmentType", consignmentType);
-                        intent.putExtra("ord_signature", global.encodedImage);
-                        global.encodedImage = "";
+                        intent.putExtra("ord_signature", getOrderingMainFa().global.encodedImage);
+                        getOrderingMainFa().global.encodedImage = "";
                         startActivity(intent);
                         getActivity().finish();
                     } else {
@@ -1170,11 +1186,11 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         Global.transferLocation.setTrans_id(_temp_id);
         Global.transferLocation.setLoc_key_from(Global.locationFrom.getLoc_key());
         Global.transferLocation.setLoc_key_to(Global.locationTo.getLoc_key());
-        int size = global.order.getOrderProducts().size();
+        int size = getOrderingMainFa().global.order.getOrderProducts().size();
         for (int i = 0; i < size; i++) {
             TransferInventory_Holder inventory = new TransferInventory_Holder();
-            inventory.setProd_id(global.order.getOrderProducts().get(i).getProd_id());
-            inventory.setProd_qty(global.order.getOrderProducts().get(i).getOrdprod_qty());
+            inventory.setProd_id(getOrderingMainFa().global.order.getOrderProducts().get(i).getProd_id());
+            inventory.setProd_qty(getOrderingMainFa().global.order.getOrderProducts().get(i).getOrdprod_qty());
             inventory.setTrans_id(Global.transferLocation.getTrans_id());
             Global.transferInventory.add(inventory);
         }
@@ -1191,9 +1207,9 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         String[] temp;
         switch (consignmentType) {
             case ORDER:// Rack
-                Global.consignment_order = global.order;
-                Global.consignment_products = global.order.getOrderProducts();
-                Global.consignment_qtyCounter = OrderProductUtils.getProductQtyHashMap(global.order.getOrderProducts());//new HashMap<String, String>(global.qtyCounter);
+                Global.consignment_order = getOrderingMainFa().global.order;
+                Global.consignment_products = getOrderingMainFa().global.order.getOrderProducts();
+                Global.consignment_qtyCounter = OrderProductUtils.getProductQtyHashMap(getOrderingMainFa().global.order.getOrderProducts());//new HashMap<String, String>(global.qtyCounter);
                 size2 = Global.custInventoryKey.size();
                 size = Global.consignment_products.size();
 
@@ -1258,9 +1274,9 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 break;
 
             case CONSIGNMENT_RETURN:// Returns
-                Global.cons_return_order = global.order;
-                Global.cons_return_products = global.order.getOrderProducts();
-                Global.cons_return_qtyCounter = OrderProductUtils.getProductQtyHashMap(global.order.getOrderProducts());//global.qtyCounter;
+                Global.cons_return_order = getOrderingMainFa().global.order;
+                Global.cons_return_products = getOrderingMainFa().global.order.getOrderProducts();
+                Global.cons_return_qtyCounter = OrderProductUtils.getProductQtyHashMap(getOrderingMainFa().global.order.getOrderProducts());//global.qtyCounter;
                 size = Global.cons_return_products.size();
                 double invoiceTotal,
                         invoiceQty;
@@ -1302,9 +1318,9 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 break;
 
             case CONSIGNMENT_FILLUP:// Fill-up
-                Global.cons_fillup_order = global.order;
-                Global.cons_fillup_products = global.order.getOrderProducts();
-                Global.cons_fillup_qtyCounter = OrderProductUtils.getProductQtyHashMap(global.order.getOrderProducts());//global.qtyCounter;
+                Global.cons_fillup_order = getOrderingMainFa().global.order;
+                Global.cons_fillup_products = getOrderingMainFa().global.order.getOrderProducts();
+                Global.cons_fillup_qtyCounter = OrderProductUtils.getProductQtyHashMap(getOrderingMainFa().global.order.getOrderProducts());//global.qtyCounter;
 
                 Global.custInventoryList = new ArrayList<>();
                 custInventory = new CustomerInventory();
@@ -1374,9 +1390,9 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 break;
 
             case CONSIGNMENT_PICKUP:// pickup
-                Global.consignment_order = global.order;
-                Global.consignment_products = global.order.getOrderProducts();
-                Global.consignment_qtyCounter = OrderProductUtils.getProductQtyHashMap(global.order.getOrderProducts());//global.qtyCounter;
+                Global.consignment_order = getOrderingMainFa().global.order;
+                Global.consignment_products = getOrderingMainFa().global.order.getOrderProducts();
+                Global.consignment_qtyCounter = OrderProductUtils.getProductQtyHashMap(getOrderingMainFa().global.order.getOrderProducts());//global.qtyCounter;
                 size = Global.consignment_products.size();
                 Global.custInventoryList = new ArrayList<>();
                 custInventory = new CustomerInventory();
@@ -1457,7 +1473,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 break;
         }
 
-        global.order.setOrderProducts(new ArrayList<OrderProduct>());
+        getOrderingMainFa().global.order.setOrderProducts(new ArrayList<OrderProduct>());
         if (mainLVAdapter != null)
             mainLVAdapter.notifyDataSetChanged();
         callBackUpdateHeaderTitle.updateHeaderTitle(title);
@@ -1475,7 +1491,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         b.putString("orderSeatProductList", json);
         b.putString("tableNumber", ((OrderingMain_FA) getActivity()).getSelectedDinningTableNumber());
         b.putString("taxID", Global.taxID);
-        b.putString("orderTaxId", global.order.tax_id);
+        b.putString("orderTaxId", getOrderingMainFa().global.order.tax_id);
         b.putInt("discountSelected", Global.discountPosition - 1);
 
         intent.putExtras(b);
@@ -1497,8 +1513,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         .negate() : OrderTotalDetails_FR.gran_total, 2)));
         intent.putExtra("paid", "0.00");
         intent.putExtra("is_receipt", true);
-        intent.putExtra("job_id", global.order.ord_id);
-        intent.putExtra("ord_subtotal", global.order.ord_subtotal);
+        intent.putExtra("job_id", getOrderingMainFa().global.order.ord_id);
+        intent.putExtra("ord_subtotal", getOrderingMainFa().global.order.ord_subtotal);
         intent.putExtra("ord_taxID", OrderTotalDetails_FR.taxID);
         intent.putExtra("ord_type", Global.ord_type);
         intent.putExtra("ord_email", order_email);
@@ -1611,18 +1627,18 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     }
 
     private void setOrderAsHold(String holdName, OrdersHandler ordersHandler, OrderProductsHandler orderProductsHandler) {
-        global.order.ord_HoldName = holdName;
-        global.order.processed = "10";
-        global.order.isOnHold = "1";
-        global.order.numberOfSeats = mainLVAdapter.getSeatsAmount();
-        ordersHandler.insert(global.order);
-        global.encodedImage = "";
-        orderProductsHandler.insert(global.order.getOrderProducts());
+        getOrderingMainFa().global.order.ord_HoldName = holdName;
+        getOrderingMainFa().global.order.processed = "10";
+        getOrderingMainFa().global.order.isOnHold = "1";
+        getOrderingMainFa().global.order.numberOfSeats = mainLVAdapter.getSeatsAmount();
+        ordersHandler.insert(getOrderingMainFa().global.order);
+        getOrderingMainFa().global.encodedImage = "";
+        orderProductsHandler.insert(getOrderingMainFa().global.order.getOrderProducts());
         new PrintAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
         if (((OrderingMain_FA) getActivity()).orderingAction != OrderingMain_FA.OrderingAction.CHECKOUT
                 || ((OrderingMain_FA) getActivity()).orderingAction == OrderingMain_FA.OrderingAction.BACK_PRESSED) {
-            global.order.setOrderProducts(new ArrayList<OrderProduct>());
-            global.resetOrderDetailsValues();
+            getOrderingMainFa().global.order.setOrderProducts(new ArrayList<OrderProduct>());
+            getOrderingMainFa().global.resetOrderDetailsValues();
         }
         new SyncOnHolds().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 //        DBManager dbManager = new DBManager(getActivity());
@@ -1641,11 +1657,11 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     public void voidCancelOnHold(int type) {
         switch (type) {
             case 1:// void hold
-                processOrder(global.order, "", OrderingMain_FA.OrderingAction.NONE, Global.isFromOnHold, true);
+                processOrder(getOrderingMainFa().global.order, "", OrderingMain_FA.OrderingAction.NONE, Global.isFromOnHold, true);
                 DinningTableOrderDAO.deleteByNumber(((OrderingMain_FA) getActivity()).getSelectedDinningTableNumber());
                 break;
             case 2:// cancel hold
-                processOrder(global.order, "", OrderingMain_FA.OrderingAction.HOLD, Global.isFromOnHold, false);
+                processOrder(getOrderingMainFa().global.order, "", OrderingMain_FA.OrderingAction.HOLD, Global.isFromOnHold, false);
                 break;
         }
     }
@@ -1702,7 +1718,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         .compareTo(new BigDecimal(0)) == -1 ? OrderTotalDetails_FR.gran_total
                         .negate() : OrderTotalDetails_FR.gran_total)));
         intent.putExtra("paid", "0.00");
-        intent.putExtra("job_id", global.order.ord_id);
+        intent.putExtra("job_id", getOrderingMainFa().global.order.ord_id);
         intent.putExtra("ord_type", Global.ord_type);
         intent.putExtra("ord_email", order_email);
 
@@ -1763,11 +1779,11 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         Intent intent = new Intent(getActivity(), SelectPayMethod_FA.class);
         intent.putExtra("typeOfProcedure", typeOfProcedure);
         intent.putExtra("salesinvoice", true);
-        intent.putExtra("ord_subtotal", global.order.ord_subtotal);
+        intent.putExtra("ord_subtotal", getOrderingMainFa().global.order.ord_subtotal);
         intent.putExtra("ord_taxID", OrderTotalDetails_FR.taxID);
-        intent.putExtra("amount", global.order.ord_total);
+        intent.putExtra("amount", getOrderingMainFa().global.order.ord_total);
         intent.putExtra("paid", "0.00");
-        intent.putExtra("job_id", global.order.ord_id);
+        intent.putExtra("job_id", getOrderingMainFa().global.order.ord_id);
         intent.putExtra("ord_type", Global.ord_type);
         intent.putExtra("ord_email", order_email);
         if (myPref.isCustSelected()) {
@@ -1819,10 +1835,10 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     }
 
     private void proceedToRemove(int removePos) {
-        if (removePos < 0 || global.order.getOrderProducts().isEmpty()) {
+        if (removePos < 0 || getOrderingMainFa().global.order.getOrderProducts().isEmpty()) {
             return;
         }
-        OrderProduct product = global.order.getOrderProducts().get(removePos);
+        OrderProduct product = getOrderingMainFa().global.order.getOrderProducts().get(removePos);
         if (myPref
                 .getPreferences(MyPreferences.pref_show_removed_void_items_in_printout)) {
             product.setItem_void("1");
@@ -1833,7 +1849,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         } else {
             OrderProductsHandler ordProdDB = new OrderProductsHandler(getActivity());
             ordProdDB.deleteOrderProduct(product.getOrdprod_id());
-            global.order.getOrderProducts().remove(product);
+            getOrderingMainFa().global.order.getOrderProducts().remove(product);
         }
         receiptListView.invalidateViews();
         reCalculate();
@@ -1881,7 +1897,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
                 @Override
                 public void onClick(View v) {
-                    handleTemplate.insert(myPref.getCustID(), global.order.getOrderProducts());
+                    handleTemplate.insert(myPref.getCustID(), getOrderingMainFa().global.order.getOrderProducts());
                     dlog.dismiss();
                     Global.showPrompt(
                             getActivity(),
@@ -1893,41 +1909,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
                 @Override
                 public void onClick(View v) {
-                    List<HashMap<String, String>> mapList = handleTemplate
-                            .getTemplate(myPref.getCustID());
-                    int size = mapList.size();
-                    global.order.setOrderProducts(new ArrayList<OrderProduct>());
-                    OrderProduct ordProd = new OrderProduct();
-                    Orders anOrder = new Orders();
-                    for (int i = 0; i < size; i++) {
-                        ordProd.setOrdprod_id(mapList.get(i).get("ordprod_id"));
-                        ordProd.setProd_id(mapList.get(i).get("prod_id"));
-                        ordProd.setOrdprod_name(mapList.get(i).get("prod_name"));
-                        ordProd.setOverwrite_price(new BigDecimal(mapList.get(i).get(
-                                "overwrite_price")));
-                        ordProd.setOrdprod_qty(mapList.get(i).get("ordprod_qty"));
-                        ordProd.setItemTotal(mapList.get(i).get("itemTotal"));
-//                        ordProd.setItemSubtotal(mapList.get(i).get(
-//                                "itemSubtotal"));
-                        ordProd.setOrd_id(mapList.get(i).get("ord_id"));
-                        ordProd.setOrdprod_desc(mapList.get(i).get(
-                                "ordprod_desc"));
-                        ordProd.setProd_istaxable(mapList.get(i).get(
-                                "prod_istaxable"));
-
-                        anOrder.setValue(mapList.get(i).get("prod_price"));
-                        anOrder.setQty(mapList.get(i).get("ordprod_qty"));
-
-                        ordProd.setTax_position("0");
-                        ordProd.setDiscount_position("0");
-                        ordProd.setPricelevel_position("0");
-                        ordProd.setUom_position("0");
-                        global.order.getOrderProducts().add(ordProd);
-                        ordProd = new OrderProduct();
-                        anOrder = new Orders();
-                    }
-                    setupListView();
-                    reCalculate();
+                    loadCustomerTemplate();
                     dlog.dismiss();
                 }
             });
@@ -1936,6 +1918,39 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             Toast.makeText(getActivity(),
                     getString(R.string.warning_no_customer_selected),
                     Toast.LENGTH_LONG).show();
+    }
+
+    private void loadCustomerTemplate() {
+        TemplateHandler handleTemplate = new TemplateHandler(getActivity());
+        List<Template> templates = handleTemplate
+                .getTemplate(myPref.getCustID());
+        getOrderingMainFa().global.order.setOrderProducts(new ArrayList<OrderProduct>());
+        OrderProduct ordProd = new OrderProduct();
+        Orders anOrder = new Orders();
+        for (Template template : templates) {
+            ordProd.setOrdprod_id(template.getOrdProductId());
+            ordProd.setProd_id(template.getProductId());
+            ordProd.setProd_price(template.getProductPrice());
+            ordProd.setOrdprod_name(template.getProductName());
+            ordProd.setOverwrite_price(TextUtils.isEmpty(template.getOveritePrice()) ? null : new BigDecimal(template.getOveritePrice()));
+            ordProd.setOrdprod_qty(template.getOrdProductQty());
+            ordProd.setItemTotal(String.valueOf(template.getItemTotal()));
+            ordProd.setOrd_id(template.getOrderId());
+            ordProd.setOrdprod_desc(template.getOrdProductDescription());
+            ordProd.setProd_istaxable(template.getProductIsTaxable());
+            anOrder.setValue(template.getProductPrice());
+            anOrder.setQty(template.getOrdProductQty());
+            ordProd.setTax_position("0");
+            ordProd.setDiscount_position("0");
+            ordProd.setPricelevel_position("0");
+            ordProd.setUom_position("0");
+            ordProd.setAttributesCompleted(true);
+            getOrderingMainFa().global.order.getOrderProducts().add(ordProd);
+            ordProd = new OrderProduct();
+            anOrder = new Orders();
+        }
+        setupListView();
+//        reCalculate();
     }
 
     @Override
@@ -1984,7 +1999,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         String type = myPref
                 .getPreferencesValue(MyPreferences.pref_default_transaction);
         int transType;
-        global.order = new Order(getActivity());
+        getOrderingMainFa().global.order = new Order(getActivity());
         if (type == null || type.isEmpty())
             type = "-1";
         transType = Integer.parseInt(type);
@@ -2178,14 +2193,14 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 if (Global.mainPrinterManager != null
                         && Global.mainPrinterManager.getCurrentDevice() != null) {
                     printSuccessful = Global.mainPrinterManager.getCurrentDevice()
-                            .printTransaction(global.order.ord_id, type, false,
+                            .printTransaction(getOrderingMainFa().global.order.ord_id, type, false,
                                     false);
                 }
             } else {
                 OrderProductsHandler orderProductsHandler = new OrderProductsHandler(
                         getActivity());
                 HashMap<String, List<Orders>> temp = orderProductsHandler
-                        .getStationPrinterProducts(global.order.ord_id);
+                        .getStationPrinterProducts(getOrderingMainFa().global.order.ord_id);
 
                 String[] sArr = temp.keySet().toArray(
                         new String[temp.keySet().size()]);
@@ -2211,7 +2226,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                             }
                             currentDevice = (EMSBluetoothStarPrinter) Global.multiPrinterManager.get(printMap).getCurrentDevice();
                             receipt.append(currentDevice.printStationPrinter(temp.get(aSArr),
-                                    global.order.ord_id, splitByCat, printHeader));
+                                    getOrderingMainFa().global.order.ord_id, splitByCat, printHeader));
                             printHeader = splitByCat;
                             currentPrinterName = currentDevice.getPortName();
                             if (splitByCat) {

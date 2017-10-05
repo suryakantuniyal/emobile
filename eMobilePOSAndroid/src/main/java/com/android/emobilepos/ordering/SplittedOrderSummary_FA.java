@@ -186,7 +186,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
         global = (Global) getApplication();
         setOrderSummaryFR(new SplittedOrderSummaryFR());
         setOrderDetailsFR(new SplittedOrderDetailsFR());
-        if (global.order.ord_discount != null && !global.order.ord_discount.isEmpty()) {
+        if (global.order != null && global.order.ord_discount != null && !global.order.ord_discount.isEmpty()) {
             globalDiscountAmount = Global.getBigDecimalNum(global.order.ord_discount);
             if (Double.parseDouble(global.order.ord_subtotal) == 0) {
                 setGlobalDiscountPercentge(new BigDecimal(0));

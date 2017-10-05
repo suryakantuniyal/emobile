@@ -820,9 +820,11 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                         && !myPref.getPreferences(MyPreferences.pref_automatic_printing)) {
                     showPrintDlg(false, false, emvContainer);
                 } else if (overAllRemainingBalance <= 0) {
-                    openGiftCardAddBalance();
+                    boolean addBalance = openGiftCardAddBalance();
                     finish();
-                    resetCustomer();
+                    if (!addBalance) {
+                        resetCustomer();
+                    }
                 }
             }
         } else if (overAllRemainingBalance <= 0) {
@@ -1002,6 +1004,12 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             intent.putExtras(extras);
             initIntents(extras, intent);
         } else if (payTypeList.get(position).getPaymentmethod_type().equals("Genius")) {
+            Intent intent = new Intent(this, ProcessGenius_FA.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());
+            intent.putExtras(extras);
+            initIntents(extras, intent);
+        } else if (payTypeList.get(position).getPaymentmethod_type().equals("CardOnFile")) {
             Intent intent = new Intent(this, ProcessGenius_FA.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());

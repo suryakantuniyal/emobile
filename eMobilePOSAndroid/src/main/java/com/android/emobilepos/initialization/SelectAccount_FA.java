@@ -33,6 +33,7 @@ import com.android.support.SynchMethods;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.crashlytics.android.Crashlytics;
 
+import io.fabric.sdk.android.Fabric;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 

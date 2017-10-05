@@ -109,6 +109,7 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
                                 cardInfo.setEncryptedAESTrack2(encrypt.encryptWithAES(m_scra.getTrack2Masked()));
                             cardInfo.setDeviceSerialNumber(m_scra.getDeviceSerial());
                             cardInfo.setMagnePrint(m_scra.getMagnePrint());
+                            cardInfo.setCardNumUnencrypted(m_scra.getCardPAN());
                             cardInfo.setMagnePrintStatus(m_scra.getMagnePrintStatus());
                             cardInfo.setTrackDataKSN(m_scra.getKSN());
                             scannerCallBack.cardWasReadSuccessfully(true, cardInfo);

@@ -22,7 +22,6 @@ import io.realm.RealmObject;
  */
 
 public class OrderAttributeRealmListConverter implements JsonSerializer<RealmList<OrderAttributes>> {
-    private Realm realm = Realm.getDefaultInstance();
     private Gson gson = new GsonBuilder()
             .setExclusionStrategies(new ExclusionStrategy() {
                 @Override
@@ -40,6 +39,7 @@ public class OrderAttributeRealmListConverter implements JsonSerializer<RealmLis
     @Override
     public JsonElement serialize(RealmList<OrderAttributes> orderAttributes, Type type, JsonSerializationContext jsonSerializationContext) {
         JsonArray ja = new JsonArray();
+        Realm realm = Realm.getDefaultInstance();
         for (OrderAttributes attributes : orderAttributes) {
             if (attributes.isValid() && attributes.isManaged()) {
                 ja.add(gson.toJsonTree(realm.copyFromRealm(attributes), OrderAttributes.class));
@@ -47,6 +47,7 @@ public class OrderAttributeRealmListConverter implements JsonSerializer<RealmLis
                 ja.add(gson.toJsonTree(attributes, OrderAttributes.class));
             }
         }
+        realm.close();
         return ja;
     }
 }

@@ -45,12 +45,12 @@ import com.android.database.OrdersHandler;
 import com.android.database.PayMethodsHandler;
 import com.android.database.ProductsHandler;
 import com.android.database.SalesTaxCodesHandler;
-import com.android.emobilepos.OnHoldActivity;
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.OrderProductListAdapter;
 import com.android.emobilepos.customer.ViewCustomers_FA;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.mainmenu.SalesTab_FR;
+import com.android.emobilepos.models.BCRMacro;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.OrderSeatProduct;
 import com.android.emobilepos.models.Product;
@@ -137,7 +137,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     private Receipt_FR leftFragment;
     private OrderLoyalty_FR loyaltyFragment;
     private MyPreferences myPref;
-    private Global global;
+    public Global global;
     private boolean hasBeenCreated = false;
     private ProductsHandler handler;
     // Honeywell Dolphin black
@@ -1315,8 +1315,12 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 Global.btSwiper.getCurrentDevice().loadCardReader(callBackMSR, false);
             } else if (_printer_type != -1 && Global.deviceHasMSR(_printer_type)) {
                 if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null
-                        && !cardReaderConnected)
+                        && !cardReaderConnected) {
                     Global.mainPrinterManager.getCurrentDevice().loadCardReader(callBackMSR, false);
+                    swiperLabel.setText(R.string.connected);
+                    swiperLabel.setTextColor(Color.BLUE);
+                    msrWasLoaded = true;
+                }
             } else {
                 swiperLabel.setText(R.string.disconnected);
                 swiperLabel.setTextColor(Color.RED);
