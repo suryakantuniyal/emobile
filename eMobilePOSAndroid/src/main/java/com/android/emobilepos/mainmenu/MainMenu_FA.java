@@ -246,6 +246,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
             startPollingService();
         }
         registerReceiver(messageReceiver, new IntentFilter(NOTIFICATION_RECEIVED));
+        DeviceUtils.registerFingerPrintReader(this);
         if (global.isApplicationSentToBackground()) {
             Global.loggedIn = false;
         }
@@ -339,6 +340,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
     public void onPause() {
         super.onPause();
         unregisterReceiver(messageReceiver);
+        DeviceUtils.unregisterFingerPrintReader(this);
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         boolean isScreenOn = powerManager.isScreenOn();
         if (!isScreenOn)

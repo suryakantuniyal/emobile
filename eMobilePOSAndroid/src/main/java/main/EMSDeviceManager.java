@@ -169,7 +169,7 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 aDevice = new EMSBixolon();
                 break;
             case Global.BIXOLON_RD:
-                aDevice = new EMSBixolonRD(EMSBixolonRD.BixolonCountry.DOMINICAN_REPUBLIC);
+                aDevice = new EMSBixolonRD(EMSBixolonRD.BixolonCountry.PANAMA);
                 break;
             case Global.ZEBRA:
                 aDevice = new EMSZebraEM220ii();
@@ -363,7 +363,7 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 dialog.setNegativeButton("Ok", null);
                 AlertDialog alert = dialog.create();
                 alert.setTitle(R.string.dlog_title_error);
-                alert.setMessage("Failed to connectTFHKA device: \n" + err);
+                alert.setMessage("Failed to connect device: \n" + err);
                 alert.show();
             }
         }

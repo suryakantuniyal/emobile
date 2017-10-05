@@ -296,6 +296,7 @@
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".customer.ViewCustomerDetails_FA"
+            android:windowSoftInputMode="stateAlwaysHidden"
             android:exported="false" />
         <activity
             android:name=".ShowProductImageActivity"
@@ -507,6 +508,7 @@
         <!-- </intent-filter> -->
         <!-- </service> -->
         <activity android:name=".shifts.ShiftsActivity" />
+
         <activity
             android:name=".bixolon.BixolonTransactionsActivity"
             android:label="@string/title_activity_bixolon_transactions"></activity>

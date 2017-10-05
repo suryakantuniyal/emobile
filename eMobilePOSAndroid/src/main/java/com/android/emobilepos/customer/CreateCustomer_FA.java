@@ -257,7 +257,7 @@ public class CreateCustomer_FA extends BaseFragmentActivityActionBar implements 
         isoCountryList.add("");
         int i = 0;
         MyPreferences myPref = new MyPreferences(this);
-        String defaultCountry = myPref.defaultCountryCode(true, null);
+        String defaultCountry = myPref.getDefaultCountryCode();
         for (String country : isoCountries) {
             isoCountryList.add(country);
             Locale locale = new Locale(Locale.getDefault().getDisplayLanguage(), country);
@@ -296,52 +296,52 @@ public class CreateCustomer_FA extends BaseFragmentActivityActionBar implements 
         MyPreferences myPref = new MyPreferences(this);
 
         String lastCustID = UUID.randomUUID().toString().toUpperCase(Locale.getDefault());
-        custData.cust_id = lastCustID;
-        custData.cust_name = String.format("%s %s", getEditText(R.id.newCustfName).getText().toString(),
-                getEditText(R.id.newCustlName).getText().toString());//field[CUST_ALIAS].getText().toString();
-        custData.cust_firstName = getEditText(R.id.newCustfName).getText().toString();
-        custData.cust_lastName = getEditText(R.id.newCustlName).getText().toString();
-        custData.CompanyName = getEditText(R.id.newCustCompany).getText().toString();
-        custData.cust_email = getEditText(R.id.newCustEmail).getText().toString();
-        custData.cust_phone = getEditText(R.id.newCustPhone).getText().toString();
-        custData.cust_contact = getEditText(R.id.newCustContact).getText().toString();
-        custData.qb_sync = "0";
-        custData.cust_dob = getEditText(R.id.newCustDOB).getText().toString();
+        custData.setCust_id(lastCustID);
+        custData.setCust_name(String.format("%s %s", getEditText(R.id.newCustfName).getText().toString(),
+                getEditText(R.id.newCustlName).getText().toString()));//field[CUST_ALIAS].getText().toString();
+        custData.setCust_firstName(getEditText(R.id.newCustfName).getText().toString());
+        custData.setCust_lastName(getEditText(R.id.newCustlName).getText().toString());
+        custData.setCompanyName(getEditText(R.id.newCustCompany).getText().toString());
+        custData.setCust_email(getEditText(R.id.newCustEmail).getText().toString());
+        custData.setCust_phone(getEditText(R.id.newCustPhone).getText().toString());
+        custData.setCust_contact(getEditText(R.id.newCustContact).getText().toString());
+        custData.setQb_sync("0");
+        custData.setCust_dob(getEditText(R.id.newCustDOB).getText().toString());
         if (priceLevelSelected > 0)
-            custData.pricelevel_id = priceLevelList.get(priceLevelSelected - 1)[1];
+            custData.setPricelevel_id(priceLevelList.get(priceLevelSelected - 1)[1]);
 
         if (taxSelected > 0) {
-            custData.cust_salestaxcode = taxList.get(taxSelected - 1).getTaxId();
-            custData.cust_taxable = taxCodeHandler.getTaxableTaxCode();
-            myPref.setCustTaxCode(custData.cust_salestaxcode);
+            custData.setCust_salestaxcode(taxList.get(taxSelected - 1).getTaxId());
+            custData.setCust_taxable(taxCodeHandler.getTaxableTaxCode());
+            myPref.setCustTaxCode(custData.getCust_salestaxcode());
         }
 
-        addrData.addr_id = UUID.randomUUID().toString();
-        addrData.cust_id = lastCustID;
+        addrData.setAddr_id(UUID.randomUUID().toString());
+        addrData.setCust_id(lastCustID);
         // add zone id
 
         // add addr_type
-        addrData.addr_b_str1 = getEditText(R.id.newCustBillStr1).getText().toString();
-        addrData.addr_b_str2 = getEditText(R.id.newCustBillStr2).getText().toString();
+        addrData.setAddr_b_str1(getEditText(R.id.newCustBillStr1).getText().toString());
+        addrData.setAddr_b_str2(getEditText(R.id.newCustBillStr2).getText().toString());
         // add addr_b_str3
-        addrData.addr_b_city = getEditText(R.id.newCustBillCity).getText().toString();
-        addrData.addr_b_state = getEditText(R.id.newCustBillState).getText().toString();
+        addrData.setAddr_b_city(getEditText(R.id.newCustBillCity).getText().toString());
+        addrData.setAddr_b_state(getEditText(R.id.newCustBillState).getText().toString());
         if (bSelectedCountry > 0)
-            addrData.addr_b_country = isoCountryList.get(bSelectedCountry);
-        addrData.addr_b_zipcode = getEditText(R.id.newCustBillZip).getText().toString();
+            addrData.setAddr_b_country(isoCountryList.get(bSelectedCountry));
+        addrData.setAddr_b_zipcode(getEditText(R.id.newCustBillZip).getText().toString());
 
         // add addr_s_name
-        addrData.addr_s_str1 = getEditText(R.id.newCustShipStr1).getText().toString();
-        addrData.addr_s_str2 = getEditText(R.id.newCustShipStr2).getText().toString();
+        addrData.setAddr_s_str1(getEditText(R.id.newCustShipStr1).getText().toString());
+        addrData.setAddr_s_str2(getEditText(R.id.newCustShipStr2).getText().toString());
         // add addr_s_str3
-        addrData.addr_s_city = getEditText(R.id.newCustShipCity).getText().toString();
-        addrData.addr_s_state = getEditText(R.id.newCustShipState).getText().toString();
+        addrData.setAddr_s_city(getEditText(R.id.newCustShipCity).getText().toString());
+        addrData.setAddr_s_state(getEditText(R.id.newCustShipState).getText().toString());
         if (sSelectedCountry > 0)
-            addrData.addr_s_country = isoCountryList.get(sSelectedCountry);
-        addrData.addr_s_zipcode = getEditText(R.id.newCustShipZip).getText().toString();
+            addrData.setAddr_s_country(isoCountryList.get(sSelectedCountry));
+        addrData.setAddr_s_zipcode(getEditText(R.id.newCustShipZip).getText().toString());
 
-        addrData.addr_b_type = addr_b_type;
-        addrData.addr_s_type = addr_s_type;
+        addrData.setAddr_b_type(addr_b_type);
+        addrData.setAddr_s_type(addr_s_type);
         // add qb_cust_id
 
         addressHandler.insertOneAddress(addrData);
@@ -360,7 +360,7 @@ public class CreateCustomer_FA extends BaseFragmentActivityActionBar implements 
 
         myPref.setCustID(custMap.get("cust_id"));
         myPref.setCustName(custMap.get("cust_name"));
-        myPref.setCustPriceLevel(custData.pricelevel_id);
+        myPref.setCustPriceLevel(custData.getPricelevel_id());
         myPref.setCustSelected(true);
         myPref.setCustIDKey(custMap.get("custidkey"));
         myPref.setCustEmail(custMap.get("cust_email"));

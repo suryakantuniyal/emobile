@@ -1363,16 +1363,16 @@ public class SalesTab_FR extends Fragment implements BCRCallbacks, EMSCallBack {
                     CustomersHandler customersHandler = new CustomersHandler(getActivity());
                     Customer customer = customersHandler.getCustomer(bcrMacro.getBcrMacroParams().getCustId());
                     SalesTaxCodesHandler taxHandler = new SalesTaxCodesHandler(getActivity());
-                    SalesTaxCodesHandler.TaxableCode taxable = taxHandler.checkIfCustTaxable(customer.cust_taxable);
+                    SalesTaxCodesHandler.TaxableCode taxable = taxHandler.checkIfCustTaxable(customer.getCust_taxable());
 
-                    myPref.setCustTaxCode(taxable, customer.cust_taxable);
-                    myPref.setCustID(customer.cust_id);
-                    myPref.setCustName(customer.cust_name);
-                    myPref.setCustIDKey(customer.custidkey);
+                    myPref.setCustTaxCode(taxable, customer.getCust_taxable());
+                    myPref.setCustID(customer.getCust_id());
+                    myPref.setCustName(customer.getCust_name());
+                    myPref.setCustIDKey(customer.getCustIdKey());
                     myPref.setCustSelected(true);
-                    myPref.setCustPriceLevel(customer.pricelevel_id);
-                    myPref.setCustEmail(customer.cust_email);
-                    selectedCust.setText(customer.cust_name);
+                    myPref.setCustPriceLevel(customer.getPricelevel_id());
+                    myPref.setCustEmail(customer.getCust_email());
+                    selectedCust.setText(customer.getCust_name());
                     salesInvoices.setVisibility(View.VISIBLE);
                     isCustomerSelected = true;
                     myAdapter = new SalesMenuAdapter(getActivity(), true);

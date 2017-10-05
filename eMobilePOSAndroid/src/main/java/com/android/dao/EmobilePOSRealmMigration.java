@@ -1,10 +1,12 @@
 package com.android.dao;
 
+import com.android.emobilepos.models.realms.BiometricFid;
 import com.android.emobilepos.models.realms.Bixolon;
 import com.android.emobilepos.models.realms.BixolonPaymentMethod;
 import com.android.emobilepos.models.realms.BixolonTax;
 import com.android.emobilepos.models.realms.BixolonTransaction;
 import com.android.emobilepos.models.realms.CustomerCustomField;
+import com.android.emobilepos.models.realms.EmobileBiometric;
 import com.android.emobilepos.models.realms.PaymentMethod;
 import com.crashlytics.android.Crashlytics;
 
@@ -19,7 +21,7 @@ import io.realm.RealmSchema;
  * Created by Guarionex on 4/13/2016.
  */
 public class EmobilePOSRealmMigration implements io.realm.RealmMigration {
-    public static int REALM_SCHEMA_VERSION = 6;
+    public static int REALM_SCHEMA_VERSION = 8;
 
     @Override
     public void migrate(DynamicRealm realm, long oldVersion, long newVersion) {
@@ -51,6 +53,7 @@ public class EmobilePOSRealmMigration implements io.realm.RealmMigration {
                     }
                     oldVersion = 4;
                 }
+
                 if (oldVersion == 4) {
                     schema.remove(CustomerCustomField.class.getSimpleName());
                     schema.create(CustomerCustomField.class.getSimpleName()).
@@ -61,8 +64,31 @@ public class EmobilePOSRealmMigration implements io.realm.RealmMigration {
                             .addField("custValue", String.class);
                     oldVersion++;
                 }
-
                 if (oldVersion == 5) {
+                    schema.create(BiometricFid.class.getSimpleName()).
+                            addField("id", String.class, FieldAttribute.PRIMARY_KEY)
+                            .addField("fid", String.class)
+                            .addField("fingerCode", int.class, FieldAttribute.INDEXED);
+
+                    schema.create(EmobileBiometric.class.getSimpleName()).
+                            addField("customerId", String.class, FieldAttribute.PRIMARY_KEY)
+                            .addRealmListField("fids", schema.get(BiometricFid.class.getSimpleName()));
+                    oldVersion++;
+                }
+                if (oldVersion == 6) {
+                    if (schema.contains(Bixolon.class.getSimpleName())) {
+                        schema.remove(Bixolon.class.getSimpleName());
+                    }
+                    if (schema.contains(BixolonTransaction.class.getSimpleName())) {
+                        schema.remove(BixolonTransaction.class.getSimpleName());
+                    }
+                    if (schema.contains(BixolonTax.class.getSimpleName())) {
+                        schema.remove(BixolonTax.class.getSimpleName());
+                    }
+                    if (schema.contains(BixolonPaymentMethod.class.getSimpleName())) {
+                        schema.remove(BixolonPaymentMethod.class.getSimpleName());
+                    }
+
                     schema.create(BixolonTransaction.class.getSimpleName()).
                             addField("orderId", String.class, FieldAttribute.PRIMARY_KEY)
                             .addField("bixolonTransactionId", String.class, FieldAttribute.INDEXED)
@@ -85,6 +111,27 @@ public class EmobilePOSRealmMigration implements io.realm.RealmMigration {
                             .addRealmListField("bixolontaxes", schema.get(BixolonTax.class.getSimpleName()))
                             .addRealmListField("paymentMethods", schema.get(BixolonPaymentMethod.class.getSimpleName()))
                             .addField("merchantName", String.class);
+                    oldVersion++;
+                }
+                if (oldVersion == 7) {
+                    if (schema.contains(EmobileBiometric.class.getSimpleName())) {
+                        schema.remove(EmobileBiometric.class.getSimpleName());
+                    }
+                    if (schema.contains(BiometricFid.class.getSimpleName())) {
+                        schema.remove(BiometricFid.class.getSimpleName());
+                    }
+                    schema.create(BiometricFid.class.getSimpleName()).
+                            addField("id", String.class, FieldAttribute.PRIMARY_KEY)
+                            .addField("fid", String.class)
+                            .addField("fidData", byte[].class)
+                            .addField("fingerCode", int.class, FieldAttribute.INDEXED);
+
+
+                    schema.create(EmobileBiometric.class.getSimpleName()).
+                            addField("realmId", String.class, FieldAttribute.PRIMARY_KEY)
+                            .addField("id", String.class, FieldAttribute.INDEXED)
+                            .addField("userTypeCode", int.class, FieldAttribute.INDEXED)
+                            .addRealmListField("fids", schema.get(BiometricFid.class.getSimpleName()));
                     oldVersion++;
                 }
             }

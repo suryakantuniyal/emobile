@@ -1,12 +1,16 @@
 package com.android.support;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.Intent;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.android.dao.DeviceTableDAO;
 import com.android.emobilepos.BuildConfig;
@@ -33,6 +37,8 @@ import main.EMSDeviceManager;
  */
 public class DeviceUtils {
 
+    private static BroadcastReceiver fingerPrintbroadcastReceiver = null;
+
     public static String autoConnect(final Activity activity, boolean forceReload) {
         final MyPreferences myPref = new MyPreferences(activity);
         final StringBuilder sb = new StringBuilder();
@@ -56,7 +62,7 @@ public class DeviceUtils {
                             "TCP:" + device.getIpAddress(), device.getTcpPort()))
                         sb.append(device.getIpAddress()).append(": ").append("Connected\n\r");
                     else
-                        sb.append(device.getIpAddress()).append(": ").append("Failed to connectTFHKA\n\r");
+                        sb.append(device.getIpAddress()).append(": ").append("Failed to connect\n\r");
 
                     i++;
                 }
@@ -84,7 +90,7 @@ public class DeviceUtils {
                                     myPref.getSwiperMACAddress(), null))
                                 sb.append(final_peripheralName).append(": ").append("Connected\n\r");
                             else
-                                sb.append(final_peripheralName).append(": ").append("Failed to connectTFHKA\n\r");
+                                sb.append(final_peripheralName).append(": ").append("Failed to connect\n\r");
                         }
                     });
                     synchronized (activity) {
@@ -99,7 +105,7 @@ public class DeviceUtils {
                             myPref.getSwiperMACAddress(), null))
                         sb.append(_peripheralName).append(": ").append("Connected\n\r");
                     else
-                        sb.append(_peripheralName).append(": ").append("Failed to connectTFHKA\n\r");
+                        sb.append(_peripheralName).append(": ").append("Failed to connect\n\r");
                 }
             }
         if ((myPref.sledType(true, -2) != -1))
@@ -111,7 +117,7 @@ public class DeviceUtils {
                 if (Global.btSled.loadMultiDriver(activity, myPref.sledType(true, -2), 0, false, null, null))
                     sb.append(_peripheralName).append(": ").append("Connected\n\r");
                 else
-                    sb.append(_peripheralName).append(": ").append("Failed to connectTFHKA\n\r");
+                    sb.append(_peripheralName).append(": ").append("Failed to connect\n\r");
             }
         if (myPref.isPAT215()) {
             if (Global.embededMSR == null || forceReload) {
@@ -120,7 +126,7 @@ public class DeviceUtils {
                 if (Global.embededMSR.loadMultiDriver(activity, Global.PAT215, 0, false, "", "")) {
                     sb.append(Global.BuildModel.PAT215.name()).append(": ").append("Connected\n\r");
                 } else {
-                    sb.append(Global.BuildModel.PAT215.name()).append(": ").append("Failed to connectTFHKA\n\r");
+                    sb.append(Global.BuildModel.PAT215.name()).append(": ").append("Failed to connect\n\r");
                 }
             }
         }
@@ -150,7 +156,7 @@ public class DeviceUtils {
                             isPOS, _portName, _portNumber))
                         sb.append(_peripheralName).append(": ").append("Connected\n\r");
                     else
-                        sb.append(_peripheralName).append(": ").append("Failed to connectTFHKA\n\r");
+                        sb.append(_peripheralName).append(": ").append("Failed to connect\n\r");
                     Global.multiPrinterManager.add(edm);
                 }
             }
@@ -163,7 +169,7 @@ public class DeviceUtils {
                         "TCP:" + myPref.getStarIPAddress(), myPref.getStarPort()))
                     sb.append(myPref.getStarIPAddress()).append(": ").append("Connected\n\r");
                 else
-                    sb.append(myPref.getStarIPAddress()).append(": ").append("Failed to connectTFHKA\n\r");
+                    sb.append(myPref.getStarIPAddress()).append(": ").append("Failed to connect\n\r");
             }
         }
 //        sendBroadcast(activity);
@@ -201,6 +207,33 @@ public class DeviceUtils {
         }
         return null;
     }
+
+
+    public static void unregisterFingerPrintReader(Context context) {
+        context.getApplicationContext().unregisterReceiver(fingerPrintbroadcastReceiver);
+    }
+
+    public static void registerFingerPrintReader(Context context) {
+        final IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("android.hardware.usb.action.USB_DEVICE_ATTACHED");
+        intentFilter.addAction("android.hardware.usb.action.USB_DEVICE_DETACHED");
+
+         fingerPrintbroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                boolean connected;
+                if (intent.getAction().contains("ATTACHED")) {
+                    Toast.makeText(context, "USB connected", Toast.LENGTH_SHORT).show();
+                    connected = true;
+                } else if (intent.getAction().contains("DETACHED")) {
+                    Toast.makeText(context, "USB disconnected", Toast.LENGTH_SHORT).show();
+                    connected = false;
+                }
+            }
+        };
+        context.getApplicationContext().registerReceiver(fingerPrintbroadcastReceiver, intentFilter);
+    }
+
 
     public static void connectStarTS650BT(Context context) {
         try {

@@ -251,6 +251,7 @@
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name="com.android.emobilepos.customer.ViewCustomerDetails_FA"
+            android:windowSoftInputMode="stateAlwaysHidden"
             android:exported="false" />
 
         <activity

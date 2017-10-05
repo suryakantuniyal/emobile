@@ -861,14 +861,39 @@ public class SynchMethods {
         tempFile.delete();
     }
 
-    private void synchCustomers() throws IOException, SAXException {
-        post.postData(7, "Customers");
-        SAXSynchHandler synchHandler = new SAXSynchHandler(context, Global.S_CUSTOMERS);
-        File tempFile = new File(tempFilePath);
-        sp.parse(tempFile, synchHandler);
-        tempFile.delete();
-    }
+//    private void synchCustomers() throws IOException, SAXException {
+//        post.postData(7, "Customers");
+//        SAXSynchHandler synchHandler = new SAXSynchHandler(context, Global.S_CUSTOMERS);
+//        File tempFile = new File(tempFilePath);
+//        sp.parse(tempFile, synchHandler);
+//        tempFile.delete();
+//    }
 
+    private void synchCustomers() throws IOException, SAXException {
+        Gson gson = JsonUtils.getInstance();
+        GenerateXML xml = new GenerateXML(context);
+        InputStream inputStream = client.httpInputStreamRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                xml.downloadAll("Customers"));
+        JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
+        List<Customer> customers = new ArrayList<>();
+        CustomersHandler handler = new CustomersHandler(context);
+        handler.emptyTable();
+        reader.beginArray();
+        int i = 0;
+        while (reader.hasNext()) {
+            Customer customer = gson.fromJson(reader, Customer.class);
+            customers.add(customer);
+            i++;
+            if (i == 1000) {
+                handler.insert(customers);
+                customers.clear();
+                i = 0;
+            }
+        }
+        handler.insert(customers);
+        reader.endArray();
+        reader.close();
+    }
     private void synchEmpInv() throws IOException, SAXException {
         post.postData(7, "EmpInv");
         SAXSynchHandler synchHandler = new SAXSynchHandler(context, Global.S_EMPLOYEE_INVOICES);

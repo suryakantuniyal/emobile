@@ -55,11 +55,11 @@ import main.EMSDeviceManager;
 public class EMSIngenicoEVO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate, TransactionCallbacks {
 
     protected static Device device;
-    static boolean connected = false;
     String msg = "Failed to connect";
     private EMSDeviceManager edm;
     private Handler handler;
     private EMSCallBack msrCallBack;
+    static boolean connected = false;
     private ProgressDialog myProgressDialog;
     private ApiConfiguration apiConfig;
     private boolean deviceFound;

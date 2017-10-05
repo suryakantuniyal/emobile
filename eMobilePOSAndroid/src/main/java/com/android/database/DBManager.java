@@ -7,6 +7,8 @@ import android.os.Environment;
 import android.provider.Settings.Secure;
 import android.text.TextUtils;
 
+import com.android.dao.AssignEmployeeDAO;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.SynchMethods;
@@ -21,6 +23,8 @@ import java.io.File;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
+import io.realm.Realm;
 
 public class DBManager {
     public static final int VERSION = 58;

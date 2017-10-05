@@ -48,7 +48,6 @@ import com.android.database.SalesTaxCodesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.OrderProductListAdapter;
 import com.android.emobilepos.customer.ViewCustomers_FA;
-import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.mainmenu.SalesTab_FR;
 import com.android.emobilepos.models.BCRMacro;
 import com.android.emobilepos.models.DataTaxes;
@@ -407,8 +406,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             CustomersHandler customersHandler = new CustomersHandler(this);
             Customer customer = customersHandler.getCustomer(myPref.getCustID());
             SalesTaxCodesHandler taxHandler = new SalesTaxCodesHandler(this);
-            SalesTaxCodesHandler.TaxableCode taxable = taxHandler.checkIfCustTaxable(customer.cust_taxable);
-            myPref.setCustTaxCode(taxable, customer.cust_salestaxcode);
+            SalesTaxCodesHandler.TaxableCode taxable = taxHandler.checkIfCustTaxable(customer.getCust_taxable());
+            myPref.setCustTaxCode(taxable, customer.getCust_salestaxcode());
         }
 
         extras = getIntent().getExtras();
@@ -441,7 +440,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             if (!myPref.getIsTablet())
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             orientation = getResources().getConfiguration().orientation;
-            catalogFr = new Catalog_FR();
+            setCatalogFr(new Catalog_FR());
             if (onHoldOrder == null) {
                 leftFragment = new Receipt_FR();
             } else {
@@ -450,7 +449,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.add(R.id.order_receipt_frag_container, leftFragment);
-            ft.add(R.id.order_catalog_frag_container, catalogFr);
+            ft.add(R.id.order_catalog_frag_container, getCatalogFr());
             ft.commit();
 
             msrWasLoaded = false;
@@ -581,8 +580,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         FragmentTransaction ft = fm.beginTransaction();
         if (leftFragment == null)
             leftFragment = (Receipt_FR) fm.findFragmentById(R.id.order_receipt_frag_container);
-        if (catalogFr == null)
-            catalogFr = (Catalog_FR) fm.findFragmentById(R.id.order_catalog_frag_container);
+        if (getCatalogFr() == null)
+            setCatalogFr((Catalog_FR) fm.findFragmentById(R.id.order_catalog_frag_container));
         if (orientation != _orientation) // screen orientation occurred
         {
             if (_orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -736,8 +735,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     public void refreshView() {
         if (leftFragment != null)
             leftFragment.refreshView();
-        if (catalogFr != null)
-            catalogFr.refreshListView();
+        if (getCatalogFr() != null)
+            getCatalogFr().refreshListView();
     }
 
     @Override
@@ -758,8 +757,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             if(leftFragment.orderTotalDetailsFr!=null) {
                 leftFragment.orderTotalDetailsFr.initSpinners();
             }
-            if (catalogFr != null) {
-                catalogFr.loadCursor();
+            if (getCatalogFr() != null) {
+                getCatalogFr().loadCursor();
             }
 
             prefetchLoyalty(true);
@@ -991,16 +990,16 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                                 {
                                     global.refreshParticularOrder(OrderingMain_FA.this, foundPosition, product);
                                 } else
-                                    catalogFr.automaticAddOrder(product);// temp.automaticAddOrder(listData);
+                                    getCatalogFr().automaticAddOrder(product);// temp.automaticAddOrder(listData);
                             } else
-                                catalogFr.automaticAddOrder(product);
+                                getCatalogFr().automaticAddOrder(product);
                             refreshView();
                         } else {
                             Global.showPrompt(this, R.string.dlog_title_error,
                                     this.getString(R.string.limit_onhand));
                         }
                     } else {
-                        catalogFr.searchUPC(data);
+                        getCatalogFr().searchUPC(data);
                     }
                 }
             }
@@ -1114,9 +1113,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                                     {
                                         global.refreshParticularOrder(OrderingMain_FA.this, foundPosition, product);
                                     } else
-                                        catalogFr.automaticAddOrder(product);// temp.automaticAddOrder(listData);
+                                        getCatalogFr().automaticAddOrder(product);// temp.automaticAddOrder(listData);
                                 } else
-                                    catalogFr.automaticAddOrder(product);
+                                    getCatalogFr().automaticAddOrder(product);
                                 refreshView();
                                 if (OrderingMain_FA.returnItem) {
                                     OrderingMain_FA.returnItem = !OrderingMain_FA.returnItem;
@@ -1127,7 +1126,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                                         OrderingMain_FA.this.getString(R.string.limit_onhand));
                             }
                         } else {
-                            catalogFr.searchUPC(upc);
+                            getCatalogFr().searchUPC(upc);
                         }
                     } else {
                         Global.showPrompt(OrderingMain_FA.this, R.string.dlog_title_error,
@@ -1152,8 +1151,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     @Override
     public void updateHeaderTitle(String val) {
         headerTitle.setText(val);
-        if ((Global.consignmentType == Global.OrderType.CONSIGNMENT_FILLUP || Global.consignmentType == Global.OrderType.CONSIGNMENT_RETURN) && catalogFr != null) {
-            catalogFr.loadCursor();
+        if ((Global.consignmentType == Global.OrderType.CONSIGNMENT_FILLUP || Global.consignmentType == Global.OrderType.CONSIGNMENT_RETURN) && getCatalogFr() != null) {
+            getCatalogFr().loadCursor();
         }
     }
 
@@ -1198,16 +1197,16 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                         {
                             global.refreshParticularOrder(OrderingMain_FA.this, foundPosition, product);
                         } else
-                            catalogFr.automaticAddOrder(product);// temp.automaticAddOrder(listData);
+                            getCatalogFr().automaticAddOrder(product);// temp.automaticAddOrder(listData);
                     } else
-                        catalogFr.automaticAddOrder(product);
+                        getCatalogFr().automaticAddOrder(product);
                     refreshView();
                 } else {
                     Global.showPrompt(this, R.string.dlog_title_error, this.getString(R.string.limit_onhand));
                 }
 
             } else {
-                catalogFr.searchUPC(upc);
+                getCatalogFr().searchUPC(upc);
             }
         }
     }
@@ -1637,6 +1636,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         return catalogFr;
     }
 
+    public void setCatalogFr(Catalog_FR catalogFr) {
+        this.catalogFr = catalogFr;
+    }
 
     public enum OrderingAction {
         HOLD, CHECKOUT, NONE, BACK_PRESSED
