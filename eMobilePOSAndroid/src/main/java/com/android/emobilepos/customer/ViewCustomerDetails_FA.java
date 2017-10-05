@@ -3,7 +3,10 @@ package com.android.emobilepos.customer;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
 import android.hardware.usb.UsbDevice;
@@ -63,6 +66,8 @@ import com.digitalpersona.uareu.Reader.ReaderStatus;
 import com.digitalpersona.uareu.ReaderCollection;
 import com.digitalpersona.uareu.UareUException;
 import com.digitalpersona.uareu.UareUGlobal;
+import com.digitalpersona.uareu.dpfpddusbhost.DPFPDDUsbException;
+import com.digitalpersona.uareu.dpfpddusbhost.DPFPDDUsbHost;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -127,7 +132,7 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
     Button fingerRight4;
     EditText cardIdEditText;
     private Reader reader;
-    private static final String ACTION_USB_PERMISSION = "com.digitalpersona.uareu.dpfpddusbhost.USB_PERMISSION";
+    public static final String ACTION_USB_PERMISSION = "com.digitalpersona.uareu.dpfpddusbhost.USB_PERMISSION";
     private Engine engine;
     private int dpi;
     private int m_current_fmds_count;
@@ -148,7 +153,7 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
     private String m_textString;
     private MyPreferences preferences;
     Handler handler;
-    private boolean isReaderConnected;
+    private boolean isReaderConnected=false;
     private boolean isCreateCustomer;
     List<String> taxes = new ArrayList<>();
     List<String> priceLevel = new ArrayList<>();
@@ -357,6 +362,13 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
                 if (readers.size() > 0) {
                     this.reader = readers.get(0);
                 }
+                PendingIntent mPermissionIntent;
+                Context applContext = getApplicationContext();
+                mPermissionIntent = PendingIntent.getBroadcast(applContext, 0, new Intent(ViewCustomerDetails_FA.ACTION_USB_PERMISSION), 0);
+                IntentFilter filter = new IntentFilter(ViewCustomerDetails_FA.ACTION_USB_PERMISSION);
+//                registerReceiver(mUsbReceiver, filter);
+
+                DPFPDDUsbHost.DPFPDDUsbCheckAndRequestPermissions(applContext, mPermissionIntent, reader.GetDescription().name);
                 reader.Open(Reader.Priority.EXCLUSIVE);
                 Reader.Status status = reader.GetStatus();
                 if (status.status == ReaderStatus.BUSY) {
@@ -367,6 +379,8 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
             } catch (UareUException e) {
                 Crashlytics.logException(e);
                 e.printStackTrace();
+            } catch (DPFPDDUsbException e) {
+
             }
         }
     }

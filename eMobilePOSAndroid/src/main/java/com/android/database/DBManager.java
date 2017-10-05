@@ -473,21 +473,18 @@ public class DBManager {
         File dbPath = null;
         try {
             dbPath = context.getDatabasePath(DB_NAME_OLD);
-            dbPath = new File(Environment.getExternalStorageDirectory() + "/emobilepos.sqlite");
-            AssignEmployee assignEmployee = new AssignEmployee();//AssignEmployeeDAO.getAssignEmployee(false);
-            assignEmployee.setEmpId(1);
-            Realm realm = Realm.getDefaultInstance();
-            realm.beginTransaction();
-            realm.where(AssignEmployee.class).findAll().deleteAllFromRealm();
-            realm.copyToRealm(assignEmployee);
-            realm.commitTransaction();
-            myPref.setDeviceID("21e2243f5be84a18");
-            myPref.setAcctNumber("150023120409");
-            myPref.setAcctPassword("wwwww");
-            myPref.setActivKey("31295R1401263065748Y79004A");
-            myPref.setApplicationPassword("wwwww");
-            myPref.setPOSAdminPass("admin");
-            myPref.setLogIn(true);
+//            dbPath = new File(Environment.getExternalStorageDirectory() + "/emobileposRUM.db");
+//            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+//            assignEmployee.setEmpId(1);
+//            Realm realm = Realm.getDefaultInstance();
+//            realm.beginTransaction();
+//            realm.where(AssignEmployee.class).findAll().deleteAllFromRealm();
+//            realm.copyToRealm(assignEmployee);
+//            realm.commitTransaction();
+//            myPref.setDeviceID("21e2243f5be84a18");
+//            myPref.setAcctNumber("150872170602");
+//            myPref.setAcctPassword("rum123");
+//            myPref.setActivKey("31295R1401263065748Y79004A");
         } catch (Exception e1) {
             e1.printStackTrace();
         }

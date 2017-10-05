@@ -2,10 +2,14 @@ package com.android.emobilepos.customer;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.hardware.usb.UsbDevice;
+import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v4.widget.CursorAdapter;
@@ -46,6 +50,8 @@ import com.digitalpersona.uareu.Reader;
 import com.digitalpersona.uareu.ReaderCollection;
 import com.digitalpersona.uareu.UareUException;
 import com.digitalpersona.uareu.UareUGlobal;
+import com.digitalpersona.uareu.dpfpddusbhost.DPFPDDUsbException;
+import com.digitalpersona.uareu.dpfpddusbhost.DPFPDDUsbHost;
 
 import java.util.Collection;
 
@@ -71,6 +77,21 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
     private boolean stopFingerReader;
     private long spleepTime = 100;
     private boolean isReaderConnected;
+    private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (ViewCustomerDetails_FA.ACTION_USB_PERMISSION.equals(action)) {
+                synchronized (this) {
+                    UsbDevice device = (UsbDevice) intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+                    if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
+                        if (device != null) {
+                            //call method to set up device communication
+                        }
+                    }
+                }
+            }
+        }
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -127,6 +148,13 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
                         if (readers.size() > 0) {
                             reader = readers.get(0);
                         }
+                        PendingIntent mPermissionIntent;
+                        Context applContext = getApplicationContext();
+                        mPermissionIntent = PendingIntent.getBroadcast(applContext, 0, new Intent(ViewCustomerDetails_FA.ACTION_USB_PERMISSION), 0);
+                        IntentFilter filter = new IntentFilter(ViewCustomerDetails_FA.ACTION_USB_PERMISSION);
+//                        registerReceiver(mUsbReceiver, filter);
+
+                        DPFPDDUsbHost.DPFPDDUsbCheckAndRequestPermissions(applContext, mPermissionIntent, reader.GetDescription().name);
                         reader.Open(Reader.Priority.EXCLUSIVE);
                         Reader.Status status = reader.GetStatus();
                         if (status.status == Reader.ReaderStatus.BUSY) {
@@ -175,7 +203,11 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
                         Crashlytics.logException(e);
                         e.printStackTrace();
                     } catch (InterruptedException e) {
-
+                        Crashlytics.logException(e);
+                        e.printStackTrace();
+                    } catch (DPFPDDUsbException e) {
+                        Crashlytics.logException(e);
+                        e.printStackTrace();
                     }
                 }
             }).start();
@@ -285,6 +317,7 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
 
     @Override
     public void onResume() {
+
         if (isReaderConnected) {
             loadFingerPrintReader(this);
         }
@@ -355,6 +388,7 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
             case R.id.addCustButton:
                 boolean hasPermissions = SecurityManager.hasPermissions(this, SecurityManager.SecurityAction.CREATE_CUSTOMERS);
                 if (hasPermissions) {
+                    releaseReader();
                     Intent intent = new Intent(thisContext, ViewCustomerDetails_FA.class);
                     startActivityForResult(intent, 0);
                 } else {

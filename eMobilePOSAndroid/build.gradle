@@ -170,6 +170,9 @@ android {
     }
 }
 configurations {
+    configurations.all {
+        resolutionStrategy.force 'com.google.code.findbugs:jsr305:3.0.2'
+    }
 //    all*.exclude group: 'com.google.firebase', module: 'firebase-common'
 }
 dependencies {
@@ -241,8 +244,8 @@ dependencies {
     compile files('libs/hapi-android-3.2.5.jar')
     compile 'com.google.guava:guava:20.0'
     compile 'com.android.support:multidex:1.0.1'
-//    compile 'com.android.support:support-v4:24.0.0'
-    compile 'com.android.support:support-v13:25.3.1'
+    //    compile 'com.android.support:support-v4:24.0.0'
+    compile 'com.android.support:support-v13:25.2.0'
     compile files('libs/bixolon_printer.jar')
     compile files('libs/jpos114-controls.jar')
     compile files('libs/xerces.jar')
@@ -269,13 +272,13 @@ dependencies {
 
 dependencies {
 //    compile 'com.google.firebase:firebase-core:9.2.1'
-    compile 'com.google.android.gms:play-services:10.2.6'
+    compile 'com.google.android.gms:play-services:10.2.0'
 }
 
 
 dependencies {
-    compile 'com.android.support:support-v4:25.3.1'
-    compile 'com.android.support:recyclerview-v7:25.3.1'
+    compile 'com.android.support:support-v4:25.2.0'
+    compile 'com.android.support:recyclerview-v7:25.2.0'
     compile files('libs/UniMag_SDK_v5.0.jar')
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
@@ -298,11 +301,5 @@ dependencies {
 dependencies {
     compile 'com.android.support:support-v4:25.+'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
-}
-dependencies {
-    compile 'com.android.support:support-v4:25.+'
-}
-dependencies {
-    compile 'com.android.support:support-v4:25.+'
 }
 apply plugin: 'com.google.gms.google-services'
