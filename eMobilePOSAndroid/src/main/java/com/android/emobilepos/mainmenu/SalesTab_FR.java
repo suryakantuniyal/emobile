@@ -5,14 +5,15 @@ import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.res.Configuration;
+import android.hardware.usb.UsbDevice;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,6 +50,7 @@ import com.android.emobilepos.mainmenu.restaurant.DinningTablesActivity;
 import com.android.emobilepos.models.BCRMacro;
 import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.DinningTable;
+import com.android.emobilepos.models.realms.EmobileBiometric;
 import com.android.emobilepos.models.realms.Shift;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.emobilepos.ordering.SplittedOrderSummary_FA;
@@ -63,19 +65,22 @@ import com.android.support.Customer;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
-import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 
+import java.util.Collection;
 import java.util.HashMap;
 
 import drivers.EMSDeviceDriver;
 import drivers.EMSPowaPOS;
 import drivers.EMSmePOS;
+import drivers.digitalpersona.DigitalPersona;
+import interfaces.BCRCallbacks;
+import interfaces.BiometricCallbacks;
 import interfaces.EMSCallBack;
 import util.json.JsonUtils;
+import util.json.UIUtils;
 
-public class SalesTab_FR extends Fragment implements EMSCallBack {
-    public static Activity activity;
+public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCallbacks, EMSCallBack {
     //    boolean validPassword = true;
     private SalesMenuAdapter myAdapter;
     private GridView myListview;
@@ -88,6 +93,8 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
     private EditText hiddenField;
     private DinningTable selectedDinningTable;
     private int selectedSeatsAmount;
+    private DigitalPersona digitalPersona;
+    private boolean isReaderConnected;
     private BroadcastReceiver messageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -104,33 +111,37 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
         }
     };
 
-    public static void startDefault(Activity activity, String type) {
-        if (activity != null) {
-            int transType;
-            try {
-                if (type == null || type.isEmpty())
-                    type = "-1";
-                transType = Integer.parseInt(type);
-            } catch (NumberFormatException e) {
-                Crashlytics.logException(e);
-                transType = -1;
-            }
 
-            Intent intent;
-            if (transType != -1) {
-                switch (transType) {
-                    case 0:
-                        intent = new Intent(activity, OrderingMain_FA.class);
-                        intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
-                        activity.startActivityForResult(intent, 0);
-                        break;
-                    case 2:
-                        intent = new Intent(activity, OrderingMain_FA.class);
-                        intent.putExtra("option_number", Global.TransactionType.RETURN);
-                        activity.startActivityForResult(intent, 0);
-                        break;
-                }
-            }
+    public static void startDefault(Activity activity, Global.TransactionType type) {
+        if (activity != null && type != null) {
+            Intent intent = new Intent(activity, OrderingMain_FA.class);
+            intent.putExtra("option_number", type);
+            activity.startActivityForResult(intent, 0);
+//            int transType;
+//            try {
+////                if (type == null)
+////                    type = "-1";
+//                transType = Integer.parseInt(type);
+//            } catch (NumberFormatException e) {
+//                Crashlytics.logException(e);
+//                transType = -1;
+//            }
+
+
+//            if (transType != -1) {
+//                switch (type) {
+//                    case SALE_RECEIPT:
+//                        intent = new Intent(activity, OrderingMain_FA.class);
+//                        intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
+//                        activity.startActivityForResult(intent, 0);
+//                        break;
+//                    case 2:
+//                        intent = new Intent(activity, OrderingMain_FA.class);
+//                        intent.putExtra("option_number", Global.TransactionType.RETURN);
+//                        activity.startActivityForResult(intent, 0);
+//                        break;
+//                }
+//            }
         }
 
     }
@@ -139,10 +150,9 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.sales_layout, container, false);
-        activity = getActivity();
-        myPref = new MyPreferences(activity);
+        myPref = new MyPreferences(getActivity());
         myPref.setLogIn(true);
-        SettingListActivity.loadDefaultValues(activity);
+        SettingListActivity.loadDefaultValues(getActivity());
         myListview = (GridView) view.findViewById(R.id.salesGridLayout);
         emsCallBack = this;
         thisContext = getActivity();
@@ -150,7 +160,9 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
         salesInvoices = (Button) view.findViewById(R.id.invoiceButton);
         hiddenField = (EditText) view.findViewById(R.id.hiddenField);
         hiddenField.addTextChangedListener(textWatcher());
-
+        Collection<UsbDevice> usbDevices = DeviceUtils.getUSBDevices(getActivity());
+        isReaderConnected = usbDevices != null && usbDevices.size() > 0;
+        digitalPersona = new DigitalPersona(getActivity().getApplicationContext(), this);
         if (isTablet())
             myPref.setIsTablet(true);
         else
@@ -217,11 +229,21 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        digitalPersona.releaseReader();
+
+    }
+
+    @Override
     public void onResume() {
-        Global global = (Global) activity.getApplication();
-        getActivity().registerReceiver(messageReceiver, new IntentFilter(MainMenu_FA.NOTIFICATION_DEVICES_LOADED));
+        Global global = (Global) getActivity().getApplication();
         global.resetOrderDetailsValues();
         global.clearListViewData();
+
+        if (isReaderConnected) {
+            digitalPersona.loadForScan();
+        }
         if (myPref.isCustSelected()) {
             isCustomerSelected = true;
             selectedCust.setText(myPref.getCustName());
@@ -297,7 +319,7 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
                 case TIP_ADJUSTMENT: {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.TIP_ADJUSTMENT);
                     if (hasPermissions) {
-                        intent = new Intent(activity, TipAdjustmentFA.class);
+                        intent = new Intent(getActivity(), TipAdjustmentFA.class);
                         startActivity(intent);
                     } else {
                         promptWithCustomer();
@@ -308,12 +330,12 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
-                        if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
+                        if (myPref.isCustomerRequired()) {
                             if (myPref.isRestaurantMode() &&
                                     myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
                                 askEatInToGo();
                             } else {
-                                intent = new Intent(activity, OrderingMain_FA.class);
+                                intent = new Intent(getActivity(), OrderingMain_FA.class);
                                 intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.TO_GO);
                                 intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
                                 startActivityForResult(intent, 0);
@@ -335,7 +357,7 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
-                        intent = new Intent(activity, OrderingMain_FA.class);
+                        intent = new Intent(getActivity(), OrderingMain_FA.class);
                         intent.putExtra("option_number", Global.TransactionType.ORDERS);
                         startActivityForResult(intent, 0);
 //                        } else {
@@ -350,7 +372,7 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
-                        intent = new Intent(activity, OrderingMain_FA.class);
+                        intent = new Intent(getActivity(), OrderingMain_FA.class);
                         intent.putExtra("option_number", Global.TransactionType.RETURN);
                         startActivityForResult(intent, 0);
 //                        } else {
@@ -365,7 +387,7 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
-                        intent = new Intent(activity, OrderingMain_FA.class);
+                        intent = new Intent(getActivity(), OrderingMain_FA.class);
                         intent.putExtra("option_number", Global.TransactionType.INVOICE);
                         startActivityForResult(intent, 0);
 //                        } else {
@@ -380,7 +402,7 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
-                        intent = new Intent(activity, OrderingMain_FA.class);
+                        intent = new Intent(getActivity(), OrderingMain_FA.class);
                         intent.putExtra("option_number", Global.TransactionType.ESTIMATE);
                         startActivityForResult(intent, 0);
 //                        } else {
@@ -396,7 +418,7 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
                             SecurityManager.SecurityAction.TAKE_PAYMENT);
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
-                        intent = new Intent(activity, SelectPayMethod_FA.class);
+                        intent = new Intent(getActivity(), SelectPayMethod_FA.class);
                         intent.putExtra("salespayment", true);
                         intent.putExtra("amount", "0.00");
                         intent.putExtra("paid", "0.00");
@@ -421,7 +443,7 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
                             SecurityManager.SecurityAction.TAKE_PAYMENT);
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
-                        intent = new Intent(activity, GiftCard_FA.class);
+                        intent = new Intent(getActivity(), GiftCard_FA.class);
                         startActivity(intent);
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
@@ -436,7 +458,7 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
                             SecurityManager.SecurityAction.TAKE_PAYMENT);
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
-                        intent = new Intent(activity, LoyaltyCard_FA.class);
+                        intent = new Intent(getActivity(), LoyaltyCard_FA.class);
                         startActivity(intent);
                     } else {
                         Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
@@ -451,7 +473,7 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
                             SecurityManager.SecurityAction.TAKE_PAYMENT);
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
-                        intent = new Intent(activity, RewardCard_FA.class);
+                        intent = new Intent(getActivity(), RewardCard_FA.class);
                         startActivity(intent);
                     } else {
                         Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
@@ -467,7 +489,7 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                         //EasyTracker.getTracker().sendEvent("ui_action", "button_press", "Refund", null);
-                        intent = new Intent(activity, SelectPayMethod_FA.class);
+                        intent = new Intent(getActivity(), SelectPayMethod_FA.class);
                         intent.putExtra("salesrefund", true);
                         intent.putExtra("amount", "0.00");
                         intent.putExtra("paid", "0.00");
@@ -506,7 +528,7 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
-                        intent = new Intent(activity, ConsignmentMain_FA.class);
+                        intent = new Intent(getActivity(), ConsignmentMain_FA.class);
                         startActivity(intent);
                     } else {
                         Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
@@ -523,7 +545,7 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
                     boolean hasPermissions = myPref.isUseClerks() && SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.SHIFT_CLERK);
                     if (hasPermissions) {
-                        intent = new Intent(activity, ShiftsActivity.class);
+                        intent = new Intent(getActivity(), ShiftsActivity.class);
                         startActivity(intent);
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
@@ -535,7 +557,7 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
                             SecurityManager.SecurityAction.NO_SALE);
                     if (hasPermissions) {
                         if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen()) {
-                            intent = new Intent(activity, ShiftExpensesList_FA.class);
+                            intent = new Intent(getActivity(), ShiftExpensesList_FA.class);
                             startActivity(intent);
                         } else {
                             Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
@@ -554,14 +576,14 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
                             SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
                         if (validateClerkShift(Global.TransactionType.getByCode(pos))) {
-                            if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
-                                Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_select_customer));
+                            if (myPref.isCustomerRequired()) {
+                                Global.showPrompt(getActivity(), R.string.dlog_title_error, getString(R.string.dlog_msg_select_customer));
                             } else {
                                 if (myPref.isRestaurantMode() &&
                                         myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
                                     askEatInToGo();
                                 } else {
-                                    intent = new Intent(activity, OrderingMain_FA.class);
+                                    intent = new Intent(getActivity(), OrderingMain_FA.class);
                                     intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
                                     startActivityForResult(intent, 0);
                                 }
@@ -581,10 +603,10 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                         if (validateClerkShift(Global.TransactionType.getByCode(pos))) {
-                            if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
-                                Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_select_customer));
+                            if (myPref.isCustomerRequired()) {
+                                Global.showPrompt(getActivity(), R.string.dlog_title_error, getString(R.string.dlog_msg_select_customer));
                             } else {
-                                intent = new Intent(activity, OrderingMain_FA.class);
+                                intent = new Intent(getActivity(), OrderingMain_FA.class);
                                 intent.putExtra("option_number", Global.TransactionType.RETURN);
                                 startActivityForResult(intent, 0);
                             }
@@ -603,10 +625,10 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                         if (validateClerkShift(Global.TransactionType.getByCode(pos))) {
-                            if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
-                                Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_select_customer));
+                            if (myPref.isCustomerRequired()) {
+                                Global.showPrompt(getActivity(), R.string.dlog_title_error, getString(R.string.dlog_msg_select_customer));
                             } else {
-                                intent = new Intent(activity, SelectPayMethod_FA.class);
+                                intent = new Intent(getActivity(), SelectPayMethod_FA.class);
                                 intent.putExtra("salespayment", true);
                                 intent.putExtra("amount", "0.00");
                                 intent.putExtra("paid", "0.00");
@@ -628,7 +650,7 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                         if (validateClerkShift(Global.TransactionType.getByCode(pos))) {
-                            intent = new Intent(activity, GiftCard_FA.class);
+                            intent = new Intent(getActivity(), GiftCard_FA.class);
                             startActivity(intent);
                         }
                     } else {
@@ -645,7 +667,7 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                         if (validateClerkShift(Global.TransactionType.getByCode(pos))) {
-                            intent = new Intent(activity, LoyaltyCard_FA.class);
+                            intent = new Intent(getActivity(), LoyaltyCard_FA.class);
                             startActivity(intent);
                         }
                     } else {
@@ -662,7 +684,7 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                         if (validateClerkShift(Global.TransactionType.getByCode(pos))) {
-                            intent = new Intent(activity, RewardCard_FA.class);
+                            intent = new Intent(getActivity(), RewardCard_FA.class);
                             startActivity(intent);
                         }
                     } else {
@@ -680,7 +702,7 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                         if (validateClerkShift(Global.TransactionType.getByCode(pos))) {
 
-                            intent = new Intent(activity, SelectPayMethod_FA.class);
+                            intent = new Intent(getActivity(), SelectPayMethod_FA.class);
                             intent.putExtra("salesrefund", true);
                             intent.putExtra("amount", "0.00");
                             intent.putExtra("paid", "0.00");
@@ -724,7 +746,7 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                         if (validateClerkShift(Global.TransactionType.getByCode(pos))) {
-                            intent = new Intent(activity, TipAdjustmentFA.class);
+                            intent = new Intent(getActivity(), TipAdjustmentFA.class);
                             startActivity(intent);
                         }
                     } else {
@@ -755,7 +777,7 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
                             SecurityManager.SecurityAction.NO_SALE);
                     if (hasPermissions) {
                         if (myPref.isUseClerks() && validateClerkShift(Global.TransactionType.getByCode(pos))) {
-                            intent = new Intent(activity, ShiftExpensesList_FA.class);
+                            intent = new Intent(getActivity(), ShiftExpensesList_FA.class);
                             startActivity(intent);
                         } else if (!myPref.isUseClerks()) {
                             promptClerkLogin(Global.TransactionType.getByCode(pos));
@@ -814,7 +836,7 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
                                 break;
                             }
                             case SHIFT_EXPENSES: {
-                                Intent intent = new Intent(activity, ShiftExpensesList_FA.class);
+                                Intent intent = new Intent(getActivity(), ShiftExpensesList_FA.class);
                                 startActivity(intent);
                                 break;
                             }
@@ -852,7 +874,7 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
     }
 
     private void askEatInToGo() {
-        final Dialog popDlog = new Dialog(activity, R.style.TransparentDialog);
+        final Dialog popDlog = new Dialog(getActivity(), R.style.TransparentDialog);
         popDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         popDlog.setCancelable(true);
         popDlog.setCanceledOnTouchOutside(true);
@@ -863,7 +885,7 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
             @Override
             public void onClick(View v) {
                 popDlog.dismiss();
-                Intent intent = new Intent(activity, OrderingMain_FA.class);
+                Intent intent = new Intent(getActivity(), OrderingMain_FA.class);
                 intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
                 intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.TO_GO);
                 startActivityForResult(intent, 0);
@@ -1031,7 +1053,7 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
     }
 
     private void confirmSelectedLocations() {
-        final Dialog globalDlog = new Dialog(activity, R.style.Theme_TransparentTest);
+        final Dialog globalDlog = new Dialog(getActivity(), R.style.Theme_TransparentTest);
         globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         globalDlog.setCancelable(true);
         globalDlog.setCanceledOnTouchOutside(false);
@@ -1064,7 +1086,7 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
             public void onClick(View v) {
                 globalDlog.dismiss();
                 Global.isInventoryTransfer = true;
-                Intent intent = new Intent(activity, OrderingMain_FA.class);
+                Intent intent = new Intent(getActivity(), OrderingMain_FA.class);
                 intent.putExtra("option_number", Global.TransactionType.LOCATION);
                 startActivityForResult(intent, 0);
             }
@@ -1116,7 +1138,7 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
 //    }
 
     private void startSaleRceipt(Global.RestaurantSaleType restaurantSaleType, int selectedSeatsAmount, String tableNumber) {
-        Intent intent = new Intent(activity, OrderingMain_FA.class);
+        Intent intent = new Intent(getActivity(), OrderingMain_FA.class);
         intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
         intent.putExtra("RestaurantSaleType", restaurantSaleType);
 
@@ -1138,7 +1160,7 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
     private void promptWithCustomer() {
         if (!myPref.getPreferences(MyPreferences.pref_direct_customer_selection)) {
             //final Intent intent = new Intent(activity, SalesReceiptSplitActivity.class);
-            final Dialog dialog = new Dialog(activity, R.style.Theme_TransparentTest);
+            final Dialog dialog = new Dialog(getActivity(), R.style.Theme_TransparentTest);
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             dialog.setCancelable(true);
             dialog.setCanceledOnTouchOutside(true);
@@ -1186,7 +1208,7 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
                 myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
             askEatInToGo();
         } else {
-            Intent intent = new Intent(activity, OrderingMain_FA.class);
+            Intent intent = new Intent(getActivity(), OrderingMain_FA.class);
             intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
             intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.TO_GO);
             startActivityForResult(intent, 0);
@@ -1238,7 +1260,7 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
             myPref.setIsESY13P1(true);
             return true;
         } else {
-            return (activity.getResources().getConfiguration().screenLayout
+            return (getActivity().getResources().getConfiguration().screenLayout
                     & Configuration.SCREENLAYOUT_SIZE_MASK)
                     >= Configuration.SCREENLAYOUT_SIZE_LARGE;
         }
@@ -1249,7 +1271,7 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
         return new TextWatcher() {
             private boolean doneScanning = false;
             private String val = "";
-            private CustomersHandler custHandler = new CustomersHandler(activity);
+            private CustomersHandler custHandler = new CustomersHandler(getActivity());
             private HashMap<String, String> map = new HashMap<String, String>();
 
             @Override
@@ -1260,7 +1282,7 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
                     map = custHandler.getCustomerInfo(val.replace("\n", "").trim());
 
                     if (map.size() > 0) {
-                        SalesTaxCodesHandler taxHandler = new SalesTaxCodesHandler(activity);
+                        SalesTaxCodesHandler taxHandler = new SalesTaxCodesHandler(getActivity());
                         SalesTaxCodesHandler.TaxableCode taxable = taxHandler.checkIfCustTaxable(map.get("cust_taxable"));
                         myPref.setCustTaxCode(taxable, map.get("cust_taxable"));
 
@@ -1308,12 +1330,37 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                UIUtils.startBCR(getView(), hiddenField, SalesTab_FR.this);
                 if (s.toString().contains("\n")) {
                     val = s.toString();
                     doneScanning = true;
                 }
             }
         };
+    }
+
+    @Override
+    public void executeBCR() {
+        CustomersHandler custHandler = new CustomersHandler(getActivity());
+        HashMap<String, String> map = custHandler.getCustomerInfo(hiddenField.getText().toString().replace("\n", "").trim());
+        hiddenField.setText("");
+        if (map.size() > 0) {
+            SalesTaxCodesHandler taxHandler = new SalesTaxCodesHandler(getActivity());
+            SalesTaxCodesHandler.TaxableCode taxable = taxHandler.checkIfCustTaxable(map.get("cust_taxable"));
+            myPref.setCustTaxCode(taxable, map.get("cust_taxable"));
+            myPref.setCustID(map.get("cust_id"));    //getting cust_id as _id
+            myPref.setCustName(map.get("cust_name"));
+            myPref.setCustIDKey(map.get("custidkey"));
+            myPref.setCustSelected(true);
+            myPref.setCustPriceLevel(map.get("pricelevel_id"));
+            myPref.setCustEmail(map.get("cust_email"));
+            selectedCust.setText(map.get("cust_name"));
+            salesInvoices.setVisibility(View.VISIBLE);
+            isCustomerSelected = true;
+            myAdapter = new SalesMenuAdapter(getActivity(), true);
+            myListview.setAdapter(myAdapter);
+            myListview.setOnItemClickListener(new MyListener());
+        }
     }
 
     @Override
@@ -1326,6 +1373,31 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
 
     }
 
+    private void startOrderWithCustomer(String customerId, String data) {
+        CustomersHandler customersHandler = new CustomersHandler(getActivity());
+        Customer customer = customersHandler.getCustomer(customerId);
+        SalesTaxCodesHandler taxHandler = new SalesTaxCodesHandler(getActivity());
+        SalesTaxCodesHandler.TaxableCode taxable = taxHandler.checkIfCustTaxable(customer.getCust_taxable());
+        myPref.setCustTaxCode(taxable, customer.getCust_taxable());
+        myPref.setCustID(customer.getCust_id());
+        myPref.setCustName(customer.getCust_name());
+        myPref.setCustIDKey(customer.getCustIdKey());
+        myPref.setCustSelected(true);
+        myPref.setCustPriceLevel(customer.getPricelevel_id());
+        myPref.setCustEmail(customer.getCust_email());
+        selectedCust.setText(customer.getCust_name());
+        salesInvoices.setVisibility(View.VISIBLE);
+        isCustomerSelected = true;
+        myAdapter = new SalesMenuAdapter(getActivity(), true);
+        myListview.setAdapter(myAdapter);
+        myListview.setOnItemClickListener(new MyListener());
+        Intent intent = new Intent(getActivity(), OrderingMain_FA.class);
+        if (!TextUtils.isEmpty(data)) {
+            intent.putExtra("BCRMacro", data);
+        }
+        intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
+        startActivityForResult(intent, 0);
+    }
     @Override
     public void scannerWasRead(String data) {
         if (!data.isEmpty()) {
@@ -1333,28 +1405,29 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
                 Gson gson = JsonUtils.getInstance();
                 BCRMacro bcrMacro = gson.fromJson(data, BCRMacro.class);
                 if (bcrMacro != null) {
-                    CustomersHandler customersHandler = new CustomersHandler(getActivity());
-                    Customer customer = customersHandler.getCustomer(bcrMacro.getBcrMacroParams().getCustId());
-                    SalesTaxCodesHandler taxHandler = new SalesTaxCodesHandler(getActivity());
-                    SalesTaxCodesHandler.TaxableCode taxable = taxHandler.checkIfCustTaxable(customer.cust_taxable);
-
-                    myPref.setCustTaxCode(taxable, customer.cust_taxable);
-                    myPref.setCustID(customer.cust_id);
-                    myPref.setCustName(customer.cust_name);
-                    myPref.setCustIDKey(customer.custidkey);
-                    myPref.setCustSelected(true);
-                    myPref.setCustPriceLevel(customer.pricelevel_id);
-                    myPref.setCustEmail(customer.cust_email);
-                    selectedCust.setText(customer.cust_name);
-                    salesInvoices.setVisibility(View.VISIBLE);
-                    isCustomerSelected = true;
-                    myAdapter = new SalesMenuAdapter(getActivity(), true);
-                    myListview.setAdapter(myAdapter);
-                    myListview.setOnItemClickListener(new MyListener());
-                    Intent intent = new Intent(getActivity(), OrderingMain_FA.class);
-                    intent.putExtra("BCRMacro", data);
-                    intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
-                    startActivityForResult(intent, 0);
+                    startOrderWithCustomer(bcrMacro.getBcrMacroParams().getCustId(), data);
+//                    CustomersHandler customersHandler = new CustomersHandler(getActivity());
+//                    Customer customer = customersHandler.getCustomer(bcrMacro.getBcrMacroParams().getCustId());
+//                    SalesTaxCodesHandler taxHandler = new SalesTaxCodesHandler(getActivity());
+//                    SalesTaxCodesHandler.TaxableCode taxable = taxHandler.checkIfCustTaxable(customer.getCust_taxable());
+//
+//                    myPref.setCustTaxCode(taxable, customer.getCust_taxable());
+//                    myPref.setCustID(customer.getCust_id());
+//                    myPref.setCustName(customer.getCust_name());
+//                    myPref.setCustIDKey(customer.getCustIdKey());
+//                    myPref.setCustSelected(true);
+//                    myPref.setCustPriceLevel(customer.getPricelevel_id());
+//                    myPref.setCustEmail(customer.getCust_email());
+//                    selectedCust.setText(customer.getCust_name());
+//                    salesInvoices.setVisibility(View.VISIBLE);
+//                    isCustomerSelected = true;
+//                    myAdapter = new SalesMenuAdapter(getActivity(), true);
+//                    myListview.setAdapter(myAdapter);
+//                    myListview.setOnItemClickListener(new MyListener());
+//                    Intent intent = new Intent(getActivity(), OrderingMain_FA.class);
+//                    intent.putExtra("BCRMacro", data);
+//                    intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
+//                    startActivityForResult(intent, 0);
                 }
             }
         }
@@ -1370,20 +1443,23 @@ public class SalesTab_FR extends Fragment implements EMSCallBack {
 
     }
 
+    @Override
+    public void biometricsWasRead(final EmobileBiometric emobileBiometric) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                startOrderWithCustomer(emobileBiometric.getEntityid(), null);
+
+            }
+        });
+    }
+
     public class MyListener implements AdapterView.OnItemClickListener {
 
         @Override
         public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
             final int adapterPos = (Integer) myAdapter.getItem(position);
-
-//            if (myPref.isUseClerks()) {
-//                promptClerkPassword(adapterPos);
-//            } else
-//            if (myPref.getPreferences(MyPreferences.pref_require_shift_transactions) && myPref.getShiftIsOpen()) {
-//                Global.showPrompt(activity, R.string.dlog_title_error, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
-//            } else {
             performListViewClick(adapterPos);
-//            }
         }
     }
 

@@ -41,7 +41,6 @@ public class MyPreferences {
     public static final String pref_show_only_group_taxes = "pref_show_only_group_taxes";
     public static final String pref_mix_match = "pref_mix_match";
     public static final String pref_holds_polling_service = "pref_holds_polling_service";
-    public static final String pref_require_customer = "pref_require_customer";
     public static final String pref_clear_customer = "pref_clear_customer";
     public static final String pref_show_confirmation_screen = "pref_show_confirmation_screen";
     public static final String pref_direct_customer_selection = "pref_direct_customer_selection";
@@ -117,6 +116,7 @@ public class MyPreferences {
     public static final String print_terms_conditions = "print_terms_conditions";
     public static final String print_emobilepos_website = "print_emobilepos_website";
     public static final String print_ivuloto_qr = "print_ivuloto_qr";
+    private static final String pref_require_customer = "pref_require_customer";
     private static final String pref_skip_email_phone = "pref_skip_email_phone";
     private static final String pref_prefill_total_amount = "pref_prefill_total_amount";
     private static final String pref_automatic_sync = "pref_automatic_sync";
@@ -232,26 +232,26 @@ public class MyPreferences {
         prefEditor.commit();
     }
 
-    public String defaultCountryCode(boolean isGet, String val) {
+    public String getDefaultCountryCode() {
         String key = "default_country_code";
-        if (isGet)
-            return prefs.getString(key, "-1");
-        else {
-            prefEditor.putString(key, val);
-            prefEditor.commit();
-        }
-        return "";
+        return prefs.getString(key, "-1");
     }
 
-    public String defaultCountryName(boolean isGet, String val) {
+    public void setDefaultCountryCode(String val) {
+        String key = "default_country_code";
+        prefEditor.putString(key, val);
+        prefEditor.commit();
+    }
+
+    public void setDefaultCountryName(String val) {
         String key = "default_country_name";
-        if (isGet)
-            return prefs.getString(key, "NONE");
-        else {
-            prefEditor.putString(key, val);
-            prefEditor.commit();
-        }
-        return "";
+        prefEditor.putString(key, val);
+        prefEditor.commit();
+    }
+
+    public String getDefaultCountryName() {
+        String key = "default_country_name";
+        return prefs.getString(key, "NONE");
     }
 
 //    public String getZoneID() {
@@ -839,6 +839,15 @@ public class MyPreferences {
         String swiper_type = "swiper_type";
         setIsPOWA(false);
         setIsMEPOS(false);
+        setIsBixolonRD(false);
+        setIsEM70(false);
+        setIsEM100(false);
+        setIsESY13P1(false);
+        setIsHandpoint(false);
+        setIsICMPEVO(false);
+        setIsKDC425(false);
+        setIsOT310(false);
+        setIsPAT100(false);
         setPrinterName(""); //clean the printer name
         prefEditor.putInt(sled_type, -1);
         prefEditor.putInt(printer_type, -1);
@@ -978,6 +987,19 @@ public class MyPreferences {
     public boolean setIsMEPOS(boolean value) {
         String device_mepos = "device_mepos";
         prefEditor.putBoolean(device_mepos, value);
+        prefEditor.commit();
+        return false;
+    }
+
+
+    public boolean isBixolonRD() {
+        String device_bixolon = "device_bixolon_rd";
+        return prefs.getBoolean(device_bixolon, false);
+    }
+
+    public boolean setIsBixolonRD(boolean value) {
+        String device_bixolon = "device_bixolon_rd";
+        prefEditor.putBoolean(device_bixolon, value);
         prefEditor.commit();
         return false;
     }
@@ -1409,12 +1431,22 @@ public class MyPreferences {
         prefEditor.commit();
     }
 
+
     public boolean isSkipEmailPhone() {
         return getPreferences(MyPreferences.pref_skip_email_phone);
     }
 
     public boolean isShowCashChangeAmount() {
         return getPreferences(MyPreferences.pref_cash_show_change);
+    }
+
+    public boolean isCustomerRequired() {
+        return getPreferences(MyPreferences.pref_require_customer);
+    }
+
+    public boolean isDirectCustomerSelection() {
+        return getPreferences(MyPreferences.pref_direct_customer_selection);
+
     }
 
     public boolean isMultiplePrints() {

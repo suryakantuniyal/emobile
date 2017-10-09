@@ -7,6 +7,8 @@ import android.os.Environment;
 import android.provider.Settings.Secure;
 import android.text.TextUtils;
 
+import com.android.dao.AssignEmployeeDAO;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.SynchMethods;
@@ -22,8 +24,10 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import io.realm.Realm;
+
 public class DBManager {
-    public static final int VERSION = 57;
+    public static final int VERSION = 58;
     private static final String DB_NAME_OLD = "emobilepos.sqlite";
     private static final String CIPHER_DB_NAME = "emobilepos.sqlcipher";
     private static final String PASSWORD = "em0b1l3p05";
@@ -135,7 +139,7 @@ public class DBManager {
             + "[addr_s_country] [varchar](31) NULL, [addr_s_zipcode] [varchar](13) NULL, [c_email] [varchar](100) NULL, [loc_id] [varchar](50) NULL, "
             + "[ord_HoldName] [varchar](50) NULL,[isOnHold] [tinyint] NULL, [clerk_id][varchar](50) NULL, [ord_discount_id][varchar](50) NULL, [ord_latitude][varchar](50) NULL, "
             + "[ord_longitude][varchar](50) NULL, [tipAmount][varchar](50) NULL , isVoid tinyint, [is_stored_fwd] BOOL DEFAULT (0), VAT tinyint," +
-            " [assignedTable] [varchar](10) NULL, [numberOfSeats] [int] NULL, associateID [varchar](10) NULL, [ord_timeStarted] [datetime] NULL,[orderAttributes] [varchar](1000) NULL)";
+            " [bixolonTransactionId] [varchar](50) NULL, [assignedTable] [varchar](10) NULL, [numberOfSeats] [int] NULL, associateID [varchar](10) NULL, [ord_timeStarted] [datetime] NULL,[orderAttributes] [varchar](1000) NULL)";
     private final String CREATE_PAYMETHODS = "CREATE TABLE [PayMethods]( [paymethod_id] [varchar](50) PRIMARY KEY NOT NULL, "
             + "[paymethod_name] [varchar](255) NOT NULL, [paymentmethod_type] [varchar](50) NULL, [paymethod_update] [datetime] NOT NULL, "
             + "[isactive] [tinyint] NOT NULL, [paymethod_showOnline] [tinyint] NULL, [image_url] [varchar] NULL, [OriginalTransid] [BOOL] DEFAULT (0))";
@@ -553,6 +557,10 @@ public class DBManager {
         exist = cursor.getColumnIndex("prod_prices_group_id") > -1;
         if (!exist) {
             getDatabase().execSQL("ALTER TABLE [Orders] ADD COLUMN [prod_prices_group_id] [varchar](50) NULL");
+        }
+        exist = cursor.getColumnIndex("bixolonTransactionId") > -1;
+        if (!exist) {
+            getDatabase().execSQL("ALTER TABLE [Orders] ADD COLUMN [bixolonTransactionId] [varchar](50) NULL");
         }
 
         for (String sql : CREATE_INDEX) {

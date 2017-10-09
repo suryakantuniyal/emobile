@@ -13,6 +13,6 @@
     <color name = "gray_flat_tiles">#cccbcb</color>
     <color name="blue_dark">#165bf6</color>
     <color name = "white_flat_bg">#f5f5f5</color>
-
+    <color name = "black_transparency">#20000000</color>
 
 </resources>

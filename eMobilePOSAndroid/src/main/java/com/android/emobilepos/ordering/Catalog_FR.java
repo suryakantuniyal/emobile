@@ -73,7 +73,11 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         MenuProdGV_Adapter.ProductClickedCallback, CatalogCategories_Adapter.CategoriesCallback {
 
     private static final int CURSOR_LOADER_ID = 0x01;
-    public static Catalog_FR instance;
+    private static String BUNDLE_CATEGORY_STACK = "BUNDLE_CATEGORY_STACK";
+    private static String BUNDLE_SELECTED_CATEGORY = "BUNDLE_SELECTED_CATEGORY";
+    private static String BUNDLE_SEARCH_TEXT = "BUNDLE_SEARCH_TEXT";
+    private static String BUNDLE_SEARCH_TYPE = "BUNDLE_SEARCH_TYPE";
+    private static String BUNDLE_SEARCH_TYPE_ENUM = "BUNDLE_SEARCH_TYPE_ENUM";
     private String search_text = "", search_type = "";
     private AbsListView catalogList;
     private ImageLoader imageLoader;
@@ -81,12 +85,10 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     private MyPreferences myPref;
     private Global global;
     private boolean onRestaurantMode = false;
-
     private VolumePricesHandler volPriceHandler;
     private MenuProdGV_Adapter prodListAdapter;
     private RefreshReceiptViewCallback callBackRefreshView;
     private MyEditText searchField;
-
     private ListViewAdapter tempLVAdapter;
     private Dialog dialog;
     private boolean isSubcategory = false;
@@ -100,7 +102,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     //    private long lastClickTime = 0;
     private int page = 1;
     private boolean isToGo;
-
     private LinearLayout categoriesInnerWrapLayout;
     private RecyclerView catalogRecyclerView;
     private CatalogCategories_Adapter categoriesAdapter;
@@ -110,19 +111,13 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     private EMSCategory selectedSubcategory;
     private SearchType searchType = SearchType.NAME;
     private boolean isRestoringSelectedCategory = false;
-    private static String BUNDLE_CATEGORY_STACK = "BUNDLE_CATEGORY_STACK";
-    private static String BUNDLE_SELECTED_CATEGORY = "BUNDLE_SELECTED_CATEGORY";
-    private static String BUNDLE_SEARCH_TEXT = "BUNDLE_SEARCH_TEXT";
-    private static String BUNDLE_SEARCH_TYPE = "BUNDLE_SEARCH_TYPE";
-    private static String BUNDLE_SEARCH_TYPE_ENUM = "BUNDLE_SEARCH_TYPE_ENUM";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.order_catalog_layout, container, false);
-        instance = this;
         isToGo = ((OrderingMain_FA) getActivity()).isToGo;
         searchField = (MyEditText) view.findViewById(R.id.catalogSearchField);
-        searchField.setIsForSearching(getActivity(), OrderingMain_FA.invisibleSearchMain);
+        searchField.setIsForSearching(getActivity(), getOrderingMainFa().invisibleSearchMain);
         catalogList = (AbsListView) view.findViewById(R.id.catalogListview);
         catalogList.setOnItemClickListener(this);
         catalogIsPortrait = Global.isPortrait(getActivity());
@@ -261,6 +256,10 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         return view;
     }
 
+    private OrderingMain_FA getOrderingMainFa() {
+        return (OrderingMain_FA) getActivity();
+    }
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putParcelableArrayList(BUNDLE_CATEGORY_STACK, (ArrayList<? extends Parcelable>) categoryStack);
@@ -269,34 +268,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         outState.putString(BUNDLE_SEARCH_TYPE, search_type);
         outState.putSerializable(BUNDLE_SEARCH_TYPE_ENUM, searchType);
         super.onSaveInstanceState(outState);
-    }
-
-    private enum SearchType {
-        NAME(0), DESCRIPTION(1), TYPE(2), UPC(3), SKU(4);
-
-        public int id;
-
-        SearchType(int id) {
-            this.id = id;
-        }
-
-        public static SearchType valueOf(int code) {
-            switch (code) {
-                case 0:
-                    return NAME;
-                case 1:
-                    return DESCRIPTION;
-                case 2:
-                    return TYPE;
-                case 3:
-                    return UPC;
-                case 4:
-                    return SKU;
-                default:
-                    return UPC;
-            }
-        }
-
     }
 
     @Override
@@ -369,37 +340,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         }
 
         categoriesBannerTextView.setText(sb.toString());
-    }
-
-    public class CatalogProductLoader extends AsyncTask<Integer, Void, Catalog_Loader> {
-
-        private ProgressDialog progressDialog;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            progressDialog = new ProgressDialog(Catalog_FR.this.getActivity());
-            progressDialog.setMessage("Loading...");
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            progressDialog.setCancelable(false);
-            progressDialog.show();
-        }
-
-        @Override
-        protected Catalog_Loader doInBackground(Integer... params) {
-            return new Catalog_Loader(getActivity(), params[0] + Integer.parseInt(getString(R.string.sqlLimit)), 1, selectedSubcategory, search_text, search_type, onRestaurantMode);
-        }
-
-        @Override
-        protected void onPostExecute(Catalog_Loader catalog_loader) {
-            if (myCursor != null && !myCursor.isClosed()) {
-                myCursor.close();
-            }
-            myCursor = catalog_loader.loadInBackground();
-            prodListAdapter.swapCursor(myCursor);
-            prodListAdapter.notifyDataSetChanged();
-            progressDialog.dismiss();
-        }
     }
 
     @Override
@@ -619,11 +559,11 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         }
 
         loadCursor();
-        OrderingMain_FA.invisibleSearchMain.requestFocus();
+        getOrderingMainFa().invisibleSearchMain.requestFocus();
     }
 
     public void automaticAddOrder(Product product) {
-        OrderingMain_FA.automaticAddOrder(getActivity(), false, global, new OrderProduct(product), ((OrderingMain_FA) getActivity()).getSelectedSeatNumber());
+        OrderingMain_FA.automaticAddOrder(getActivity(), false, global, new OrderProduct(product), ((OrderingMain_FA) getActivity()).getSelectedSeatNumber(),((OrderingMain_FA) getActivity()).mTransType);
         refreshListView();
         callBackRefreshView.refreshView();
     }
@@ -696,6 +636,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             String json = gson.toJson(new OrderProduct(product));
             intent.putExtra("orderProduct", json);
             intent.putExtra("isToGo", isToGo);
+            intent.putExtra("transType",getOrderingMainFa().mTransType);
 
             if (Global.isConsignment)
                 intent.putExtra("consignment_qty", myCursor.getString(myCursor.getColumnIndex("consignment_qty")));
@@ -720,8 +661,8 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             }
 
             if (OrderingMain_FA.returnItem) {
-                OrderingMain_FA.returnItem = OrderingMain_FA.mTransType == Global.TransactionType.RETURN || !OrderingMain_FA.returnItem;
-                OrderingMain_FA.switchHeaderTitle(OrderingMain_FA.returnItem, "Return");
+                OrderingMain_FA.returnItem = getOrderingMainFa().mTransType == Global.TransactionType.RETURN || !OrderingMain_FA.returnItem;
+                getOrderingMainFa().switchHeaderTitle(OrderingMain_FA.returnItem, "Return", getOrderingMainFa().mTransType);
             }
         }
     }
@@ -766,6 +707,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                 intent.putExtra("prod_upc", product.getProd_upc());
                 intent.putExtra("prod_price_points", product.getProdPricePoints());
                 intent.putExtra("prod_value_points", product.getProdValuePoints());
+                intent.putExtra("transType",getOrderingMainFa().mTransType);
 
                 startActivityForResult(intent, 0);
             } else {
@@ -811,6 +753,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                         intent.putExtra("prod_upc", product.getProd_upc());
                         intent.putExtra("prod_price_points", product.getProdPricePoints());
                         intent.putExtra("prod_value_points", product.getProdValuePoints());
+                        intent.putExtra("transType",getOrderingMainFa().mTransType);
 
                         startActivityForResult(intent, 0);
                     } else {
@@ -841,8 +784,67 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         dialog.show();
     }
 
+    private enum SearchType {
+        NAME(0), DESCRIPTION(1), TYPE(2), UPC(3), SKU(4);
+
+        public int id;
+
+        SearchType(int id) {
+            this.id = id;
+        }
+
+        public static SearchType valueOf(int code) {
+            switch (code) {
+                case 0:
+                    return NAME;
+                case 1:
+                    return DESCRIPTION;
+                case 2:
+                    return TYPE;
+                case 3:
+                    return UPC;
+                case 4:
+                    return SKU;
+                default:
+                    return UPC;
+            }
+        }
+
+    }
+
     public interface RefreshReceiptViewCallback {
         void refreshView();
+    }
+
+    public class CatalogProductLoader extends AsyncTask<Integer, Void, Catalog_Loader> {
+
+        private ProgressDialog progressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(Catalog_FR.this.getActivity());
+            progressDialog.setMessage("Loading...");
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected Catalog_Loader doInBackground(Integer... params) {
+            return new Catalog_Loader(getActivity(), params[0] + Integer.parseInt(getString(R.string.sqlLimit)), 1, selectedSubcategory, search_text, search_type, onRestaurantMode);
+        }
+
+        @Override
+        protected void onPostExecute(Catalog_Loader catalog_loader) {
+            if (myCursor != null && !myCursor.isClosed()) {
+                myCursor.close();
+            }
+            myCursor = catalog_loader.loadInBackground();
+            prodListAdapter.swapCursor(myCursor);
+            prodListAdapter.notifyDataSetChanged();
+            progressDialog.dismiss();
+        }
     }
 
     private class CustomSpinnerAdapter extends ArrayAdapter<String> {

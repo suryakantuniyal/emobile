@@ -2,7 +2,9 @@ package com.android.emobilepos.ordering;
 
 import android.app.Activity;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.TypedValue;
@@ -57,13 +59,12 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             discount_rate = new BigDecimal("0"), discountable_sub_total = new BigDecimal("0"),
             sub_total = new BigDecimal("0"), gran_total = new BigDecimal("0");
     public static BigDecimal itemsDiscountTotal = new BigDecimal(0);
-    private static OrderTotalDetails_FR myFrag;
     private Spinner taxSpinner, discountSpinner;
     private List<Tax> taxList;
     private List<Discount> discountList;
     private int taxSelected, discountSelected;
     private EditText globalDiscount, globalTax, subTotal;
-    private TextView granTotal, itemCount;
+    private TextView granTotal;
     private List<HashMap<String, String>> listMapTaxes = new ArrayList<>();
     private Activity activity;
     private MyPreferences myPref;
@@ -71,7 +72,6 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
     private TaxesGroupHandler taxGroupHandler;
     private AssignEmployee assignEmployee;
     private boolean isToGo;
-    private BigDecimal tempTaxableAmount = new BigDecimal("0");
 
     public static OrderTotalDetails_FR init(int val) {
         OrderTotalDetails_FR frag = new OrderTotalDetails_FR();
@@ -79,16 +79,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         Bundle args = new Bundle();
         args.putInt("val", val);
         frag.setArguments(args);
-        myFrag = frag;
         return frag;
-    }
-
-    public static OrderTotalDetails_FR getFrag() {
-        return myFrag;
-    }
-
-    public static void resetView() {
-        myFrag = null;
     }
 
     private static void calculateMixAndMatch(List<OrderProduct> orderProducts, boolean isGroupBySKU) {
@@ -147,6 +138,10 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         orderProducts.addAll(noMixMatchProducts);
     }
 
+//    public static void resetView() {
+//        myFrag = null;
+//    }
+
     private static List<OrderProduct> applyXYZMixMatchToGroup(MixMatchProductGroup group, RealmResults<MixMatch> mixMatches, boolean isGroupBySKU) {
 
         List<OrderProduct> orderProducts = new ArrayList<>();
@@ -161,18 +156,18 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         }
 
         int qtyAtRegularPrice;
-        int qtyAtDiscountPrice;
+//        int qtyAtDiscountPrice;
         int groupQty = group.getQuantity();
         int completeGroupSize = qtyRequired + qtyDiscounted;
         int numberOfCompletedGroups = groupQty / completeGroupSize;
         int remainingItems = groupQty % completeGroupSize;
 
         qtyAtRegularPrice = numberOfCompletedGroups * qtyRequired;
-        qtyAtDiscountPrice = numberOfCompletedGroups * qtyDiscounted;
+//        qtyAtDiscountPrice = numberOfCompletedGroups * qtyDiscounted;
 
         if (remainingItems > qtyRequired) {
             qtyAtRegularPrice += qtyRequired;
-            qtyAtDiscountPrice += (remainingItems - qtyRequired);
+//            qtyAtDiscountPrice += (remainingItems - qtyRequired);
         } else {
             qtyAtRegularPrice += remainingItems;
         }
@@ -329,7 +324,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                         }
 
                     }
-                    qtyAtDiscountPrice -= discountPriced;
+//                    qtyAtDiscountPrice -= discountPriced;
                 }
 
             }
@@ -414,6 +409,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         return group.getOrderProducts();
     }
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -424,7 +420,6 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         View view = inflater.inflate(R.layout.order_total_details_layout, container, false);
         assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
         isToGo = ((OrderingMain_FA) getActivity()).isToGo;
-        myFrag = this;
         taxSelected = 0;
         discountSelected = 0;
         subTotal = (EditText) view.findViewById(R.id.subtotalField);
@@ -439,8 +434,9 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
 
         if (!myPref.getIsTablet() && leftHolder != null) {
             leftHolder.setVisibility(View.GONE);
-        } else if (myPref.getIsTablet() && leftHolder != null)
-            itemCount = (TextView) view.findViewById(R.id.itemCount);
+        }
+//        else if (myPref.getIsTablet() && leftHolder != null)
+//            itemCount = (TextView) view.findViewById(R.id.itemCount);
         initSpinners();
         return view;
     }
@@ -466,7 +462,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
 
         taxHandler = new TaxesHandler(activity);
         taxGroupHandler = new TaxesGroupHandler(activity);
-        taxList = taxHandler.getTaxes();
+        taxList = taxHandler.getTaxes(myPref.getPreferences(MyPreferences.pref_show_only_group_taxes));
         ProductsHandler handler2 = new ProductsHandler(activity);
         discountList = handler2.getDiscounts();
         int size = taxList.size();
@@ -656,7 +652,6 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
     }
 
     public synchronized void reCalculate(List<OrderProduct> orderProducts) {
-        //TODO Temporary fix. Need verify why SDK 5.0 calls with null global and why sdk 4.3 not
 
         if (getOrderingMainFa().global == null) {
             return;
@@ -718,13 +713,12 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                     getOrderingMainFa().getLoyaltyFragment().recalculatePoints(String.valueOf(totalDetails.getPointsSubTotal()), String.valueOf(totalDetails.getPointsInUse()),
                             String.valueOf(totalDetails.getPointsAcumulable()), gran_total.toString());
                 }
-                BigDecimal discountableAmount = totalDetails.getSubtotal();
-                discountableAmount = discountableAmount.subtract(Global.rewardChargeAmount);
-                OrderRewards_FR.setRewardSubTotal(discountable_sub_total.toString());
-                OrderingMain_FA mainFa = (OrderingMain_FA) getActivity();
-                mainFa.enableCheckoutButton();
-                mainFa.getLeftFragment().mainLVAdapter.notifyDataSetChanged();
-                Receipt_FR.receiptListView.setSelection(mainFa.getLeftFragment().mainLVAdapter.selectedPosition);
+                if (getOrderingMainFa().getLeftFragment().orderRewardsFr != null) {
+                    getOrderingMainFa().getLeftFragment().orderRewardsFr.setRewardSubTotal(discountable_sub_total.toString());
+                }
+                getOrderingMainFa().enableCheckoutButton();
+                getOrderingMainFa().getLeftFragment().mainLVAdapter.notifyDataSetChanged();
+                getOrderingMainFa().getLeftFragment().receiptListView.setSelection(getOrderingMainFa().getLeftFragment().mainLVAdapter.selectedPosition);
             }
         }
     }
@@ -753,8 +747,9 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             return -1;
         }
 
+        @NonNull
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(int position, View convertView, @NonNull ViewGroup parent) {
             View view = super.getView(position, convertView, parent);
 
             // we know that simple_spinner_item has android.R.id.text1 TextView:
@@ -766,7 +761,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         }
 
         @Override
-        public View getDropDownView(int position, View convertView, ViewGroup parent) {
+        public View getDropDownView(int position, View convertView, @NonNull ViewGroup parent) {
             View row = convertView;
             if (row == null) {
                 LayoutInflater inflater = context.getLayoutInflater();

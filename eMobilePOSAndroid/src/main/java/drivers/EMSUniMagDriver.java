@@ -10,7 +10,6 @@ import com.android.support.Encrypt;
 import com.android.support.Global;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 

@@ -4,8 +4,8 @@ import com.android.emobilepos.models.realms.CustomerCustomField;
 
 import java.util.List;
 
+import io.realm.Case;
 import io.realm.Realm;
-import io.realm.RealmResults;
 
 /**
  * Created by guarionex on 7/10/17.
@@ -42,7 +42,7 @@ public class CustomerCustomFieldsDAO {
         CustomerCustomField customField;
         try {
             customField = realm.where(CustomerCustomField.class)
-                    .equalTo("id", String.format("%sEMS_CARD_ID_NUM", custID))
+                    .equalTo("id", String.format("%sEMS_CARD_ID_NUM", custID), Case.INSENSITIVE)
                     .findFirst();
             if (customField != null) {
                 customField = realm.copyFromRealm(customField);
@@ -70,7 +70,7 @@ public class CustomerCustomFieldsDAO {
         List<CustomerCustomField> customFields;
         try {
             customFields = realm.where(CustomerCustomField.class)
-                    .equalTo("custId", custID)
+                    .equalTo("custId", custID, Case.INSENSITIVE)
                     .findAll();
             if (customFields != null) {
                 customFields = realm.copyFromRealm(customFields);

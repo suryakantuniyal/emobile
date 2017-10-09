@@ -1338,23 +1338,43 @@
     <string name="login_system_instructions">Login with your System password.</string>
     <string name="ivupos_apk_name" translatable="false">/emobileivupos.apk</string>
     <string name="emobile_apk_name" translatable="false">/emobilepos.apk</string>
+    <string name="fingerprints">Finger Prints</string>
     <string name="clockReceipt">Clock IN/OUT</string>
     <string name="hours">Hours</string>
     <string name="total_hours_worked">Total Hours</string>
     <string name="date">Date</string>
+    <string name="printSettings">Print Settings</string>
+    <string name="printZReport">Z Report</string>
+    <string name="printXReport">X Report</string>
+    <string name="ncf">NCF</string>
     <string name="dlog_title_enter_giftcard_number">Enter gift card number</string>
     <string name="giftcard_number">Gift Card Number:</string>
     <string name="config_giftcard_auto_balance_request">Gift/Reward auto balance request</string>
     <string name="config_clear_customer">Clear customer after transaction</string>
     <string name="config_giftcard_show_balance">Show gift card balance after payment</string>
     <string name="header_title_customer_custom_fields">Custom Fields</string>
+    <string name="sending">Sending…</string>
     <string name="config_cash_show_change">Show cash payment change amount</string>
     <string name="processing_payments">Processing payments…</string>
+    <string name="information_saved">Information updated.</string>
+    <string name="customerBiometrics">Customer Biometrics</string>
+    <string name="leftHand">Left Hand</string>
+    <string name="rightHand">Right Hand</string>
+    <string name="fingerOne">Finger One</string>
+    <string name="fingerTwo">Finger Two</string>
+    <string name="fingerThree">Finger Three</string>
+    <string name="fingerFour">Finger Four</string>
     <string name="config_multiple_prints">Enable multiple prints</string>
     <string name="elobcr_menu">BCR</string>
     <string name="admin_process_live_cash">"Process cash on line"</string>
     <string name="card_on_file">Card on File</string>
     <string name="genius">Genius</string>
     <string name="invoice_job_id">Invoice/Job ID</string>
+    <string name="fingerprint_enrollment">Place any finger to start enrollment.</string>
+    <string name="fingerprint_enrollment_title">Fingerprint Enrollment</string>
+    <string name="rescan_fingerprint">Remove the finger place the same finger on the reader</string>
+    <string name="unregister_fingerprint">Unregister</string>
+    <string name="duplicated_fingerprint">Fingerprint already exist.</string>
+    <string name="cust_detail_lastname">Last Name</string>
 
 </resources>

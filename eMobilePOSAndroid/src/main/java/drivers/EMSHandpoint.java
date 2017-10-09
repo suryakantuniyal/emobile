@@ -18,8 +18,7 @@ import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMSEpayLoginInfo;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.SplitedOrder;
-import com.android.emobilepos.models.TimeClock;
+import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
@@ -165,7 +164,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
                 discoverDevices(myPref.getPrinterName(), myPref.getSwiperMACAddress());
             } else {
                 dismissDialog();
-                edm.driverDidNotConnectToDevice(EMSHandpoint.this, msg, true);
+                edm.driverDidNotConnectToDevice(EMSHandpoint.this, msg, true, activity);
             }
         }
     }
@@ -333,7 +332,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
 //    }
 
     @Override
-    public void printReceiptPreview(SplitedOrder splitedOrder) {
+    public void printReceiptPreview(SplittedOrder splitedOrder) {
 
     }
 
@@ -346,23 +345,23 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
                 dismissDialog();
 //                Looper.prepare();
                 if (connected) {
-                    this.edm.driverDidConnectToDevice(this, true);
+                    this.edm.driverDidConnectToDevice(this, true, activity);
                 } else {
-                    this.edm.driverDidNotConnectToDevice(this, msg, true);
+                    this.edm.driverDidNotConnectToDevice(this, msg, true, activity);
                 }
 //                Looper.loop();
             } else {
                 synchronized (hapi) {
                     hapi.notifyAll();
                     if (connected) {
-                        this.edm.driverDidConnectToDevice(this, false);
+                        this.edm.driverDidConnectToDevice(this, false, activity);
                     } else {
-                        this.edm.driverDidNotConnectToDevice(this, msg, false);
+                        this.edm.driverDidNotConnectToDevice(this, msg, false, activity);
                     }
                 }
             }
         } else {
-            this.edm.driverDidNotConnectToDevice(this, msg, false);
+            this.edm.driverDidNotConnectToDevice(this, msg, false, activity);
         }
 //        hapi.listDevices(ConnectionMethod.BLUETOOTH);
     }
@@ -430,18 +429,18 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
             dismissDialog();
             Looper.prepare();
             if (connected) {
-                this.edm.driverDidConnectToDevice(this, true);
+                this.edm.driverDidConnectToDevice(this, true, activity);
             } else {
-                this.edm.driverDidNotConnectToDevice(this, msg, true);
+                this.edm.driverDidNotConnectToDevice(this, msg, true, activity);
             }
             Looper.loop();
         } else {
             synchronized (hapi) {
                 hapi.notifyAll();
                 if (connected) {
-                    this.edm.driverDidConnectToDevice(this, false);
+                    this.edm.driverDidConnectToDevice(this, false, activity);
                 } else {
-                    this.edm.driverDidNotConnectToDevice(this, msg, false);
+                    this.edm.driverDidNotConnectToDevice(this, msg, false, activity);
                 }
             }
         }
@@ -551,7 +550,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
 
     @Override
     public void onMessageLogged(LogLevel logLevel, String s) {
-        Toast.makeText(activity, s, Toast.LENGTH_LONG);
+        Toast.makeText(activity, s, Toast.LENGTH_LONG).show();
     }
 
     @Override

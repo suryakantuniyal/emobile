@@ -11,7 +11,6 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -107,13 +106,14 @@ import util.json.JsonUtils;
 public class Receipt_FR extends Fragment implements OnClickListener,
         OnItemClickListener, OnDrawerOpenListener, OnDrawerCloseListener, PayWithLoyalty {
 
-    public static ListView receiptListView;
-    public static Receipt_FR fragInstance;
     public static long lastClickTime = 0;
     private final int REMOVE_ITEM = 0, OVERWRITE_PRICE = 1,
             UPDATE_HOLD_STATUS = 1, CHECK_OUT_HOLD = 2;
+    public ListView receiptListView;
     public TextView custName;
     public OrderProductListAdapter mainLVAdapter;
+    public OrderTotalDetails_FR orderTotalDetailsFr;
+    public OrderRewards_FR orderRewardsFr;
     private AddProductBtnCallback callBackAddProd;
     private boolean isToGo;
     private Order onHoldOrder;
@@ -233,8 +233,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                              ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.order_receipt_main_layout,
                 container, false);
-
-        fragInstance = this;
 
         myPref = new MyPreferences(getActivity());
         if (savedInstanceState == null) {
@@ -443,7 +441,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(View view, Bundle savedInstanceState) {
         if (extras.containsKey("BCRMacro")) {
             String json = extras.getString("BCRMacro");
             Gson gson = JsonUtils.getInstance();
@@ -586,8 +584,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 break;
             case R.id.btnReturn:
                 OrderingMain_FA.returnItem = !OrderingMain_FA.returnItem;
-                OrderingMain_FA.switchHeaderTitle(OrderingMain_FA.returnItem,
-                        getString(R.string.return_title));
+                getOrderingMainFa().switchHeaderTitle(OrderingMain_FA.returnItem,
+                        getString(R.string.return_title), getOrderingMainFa().mTransType);
                 break;
             case R.id.btnScrollLeft:
                 btnScrollLeft.setVisibility(View.GONE);
@@ -648,6 +646,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                 intent.putExtra("isModify", true);
                                 intent.putExtra("isFromAddon", onHoldOrder != null);
                                 intent.putExtra("modify_position", orderProductIdx);
+                                intent.putExtra("transType", getOrderingMainFa().mTransType);
+
                                 startActivityForResult(intent, 0);
                                 break;
                             case R.id.removeProduct:
@@ -979,7 +979,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     orderProductsHandler.insert(order.getOrderProducts());
                     productsAttrDb.insert(getOrderingMainFa().global.ordProdAttr);
                     if (myPref.isRestaurantMode()) {
-                        new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
+                        new PrintAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
                     }
                     new SyncOnHolds().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 //                    DBManager dbManager = new DBManager(getActivity());
@@ -1008,7 +1008,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         ordTaxesDB.insert(getOrderingMainFa().global.order.getListOrderTaxes(),
                                 getOrderingMainFa().global.order.ord_id);
                     if (myPref.isRestaurantMode())
-                        new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
+                        new PrintAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
 //                    DBManager dbManager = new DBManager(getActivity());
 //                    SynchMethods sm = new SynchMethods(dbManager);
 //                    sm.synchSendOnHold(false, true, getActivity(), global.order.ord_id);
@@ -1055,7 +1055,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     }
                 }
                 if (myPref.isRestaurantMode())
-                    new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
+                    new PrintAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
 
             }
         }
@@ -1085,7 +1085,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                 .getPreferences(MyPreferences.pref_enable_printing)) {
                             if (myPref
                                     .getPreferences(MyPreferences.pref_automatic_printing)) {
-                                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
+                                new PrintAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
                             } else
                                 showPrintDlg(false);
                         } else {
@@ -1145,7 +1145,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                 .getPreferences(MyPreferences.pref_enable_printing)) {
                             if (myPref
                                     .getPreferences(MyPreferences.pref_automatic_printing)) {
-                                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
+                                new PrintAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
                             } else
                                 showPrintDlg(false);
                         } else
@@ -1492,7 +1492,10 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         b.putString("taxID", Global.taxID);
         b.putString("orderTaxId", getOrderingMainFa().global.order.tax_id);
         b.putInt("discountSelected", Global.discountPosition - 1);
+
         intent.putExtras(b);
+        intent.putExtra("transType", getOrderingMainFa().mTransType);
+
         startActivityForResult(intent, 0);
     }
 
@@ -1630,7 +1633,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         ordersHandler.insert(getOrderingMainFa().global.order);
         getOrderingMainFa().global.encodedImage = "";
         orderProductsHandler.insert(getOrderingMainFa().global.order.getOrderProducts());
-        new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
+        new PrintAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
         if (((OrderingMain_FA) getActivity()).orderingAction != OrderingMain_FA.OrderingAction.CHECKOUT
                 || ((OrderingMain_FA) getActivity()).orderingAction == OrderingMain_FA.OrderingAction.BACK_PRESSED) {
             getOrderingMainFa().global.order.setOrderProducts(new ArrayList<OrderProduct>());
@@ -1686,7 +1689,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             @Override
             public void onClick(View v) {
                 dlog.dismiss();
-                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
+                new PrintAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
 
             }
         });
@@ -1760,7 +1763,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 if (myPref.getPreferences(MyPreferences.pref_enable_printing)) {
                     if (myPref
                             .getPreferences(MyPreferences.pref_automatic_printing)) {
-                        new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
+                        new PrintAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
                     } else
                         showPrintDlg(false);
                 } else {
@@ -1820,7 +1823,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 if (myPref.getPreferences(MyPreferences.pref_enable_printing)) {
                     if (myPref
                             .getPreferences(MyPreferences.pref_automatic_printing)) {
-                        new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
+                        new PrintAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
                     } else
                         showPrintDlg(false);
                 } else
@@ -1863,6 +1866,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             pagerAdapter.notifyDataSetChanged();
         }
     }
+
 
     private void loadSaveTemplate() {
         if (myPref.isCustSelected()) {
@@ -2002,18 +2006,18 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             Intent intent;
             switch (transType) {
                 case 0:// sales receipt
-                    intent = new Intent(SalesTab_FR.activity, OrderingMain_FA.class);
+                    intent = new Intent(getActivity(), OrderingMain_FA.class);
                     intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
-                    OrderTotalDetails_FR.resetView();
+//                    orderTotalDetailsFr.resetView();
                     getActivity().finish();
-                    SalesTab_FR.activity.startActivityForResult(intent, 0);
+                    getActivity().startActivityForResult(intent, 0);
                     break;
                 case 2:// return
-                    intent = new Intent(SalesTab_FR.activity, OrderingMain_FA.class);
+                    intent = new Intent(getActivity(), OrderingMain_FA.class);
                     intent.putExtra("option_number", Global.TransactionType.RETURN);
-                    OrderTotalDetails_FR.resetView();
+//                    OrderTotalDetails_FR.resetView();
                     getActivity().finish();
-                    SalesTab_FR.activity.startActivityForResult(intent, 0);
+                    getActivity().startActivityForResult(intent, 0);
                     break;
 
                 default:
@@ -2088,13 +2092,15 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         @Override
         public Fragment getItem(int position) {
             Fragment frag;
+
             switch (position) {
                 case 0:
-                    if (OrderTotalDetails_FR.getFrag() == null) {
+                    if (orderTotalDetailsFr == null) {
                         frag = OrderTotalDetails_FR.init(position);
                     } else
-                        frag = OrderTotalDetails_FR.getFrag();
+                        frag = orderTotalDetailsFr;
                     callBackRecalculate = (RecalculateCallback) frag;
+                    orderTotalDetailsFr = (OrderTotalDetails_FR) frag;
                     return frag;
                 case 1:
                     OrderLoyalty_FR loyaltyFr = OrderLoyalty_FR.init(position);
@@ -2102,7 +2108,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     mainFa.setLoyaltyFragment(loyaltyFr);
                     return loyaltyFr;
                 default:
-                    return OrderRewards_FR.init(position);
+                    orderRewardsFr = OrderRewards_FR.init(position);
+                    return orderRewardsFr;
 
             }
         }
@@ -2112,7 +2119,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         @Override
         protected void onPreExecute() {
             myProgressDialog = new ProgressDialog(getActivity());
-            myProgressDialog.setMessage("Sending...");
+            myProgressDialog.setMessage(getString(R.string.sending));
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);
             if (myProgressDialog.isShowing())
@@ -2150,7 +2157,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
     }
 
-    private class printAsync extends AsyncTask<Boolean, Integer, String> {
+    private class PrintAsync extends AsyncTask<Boolean, Integer, String> {
         boolean isPrintStationPrinter = false;
         boolean printSuccessful = true;
 
@@ -2163,9 +2170,9 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             if (myProgressDialog.isShowing())
                 myProgressDialog.dismiss();
 
-            if (OrderingMain_FA.instance._msrUsbSams != null
-                    && OrderingMain_FA.instance._msrUsbSams.isDeviceOpen()) {
-                OrderingMain_FA.instance._msrUsbSams.CloseTheDevice();
+            if (getOrderingMainFa()._msrUsbSams != null
+                    && getOrderingMainFa()._msrUsbSams.isDeviceOpen()) {
+                getOrderingMainFa()._msrUsbSams.CloseTheDevice();
             }
 
         }

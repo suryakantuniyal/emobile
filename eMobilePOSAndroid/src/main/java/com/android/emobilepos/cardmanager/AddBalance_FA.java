@@ -59,7 +59,7 @@ public class AddBalance_FA extends BaseFragmentActivityActionBar implements EMSC
     private EMSCallBack msrCallBack;
     private Global global;
     private boolean hasBeenCreated = false;
-    private static CheckBox cardSwipe;
+    private CheckBox cardSwipe;
     private CreditCardInfo cardInfoManager;
     private EMSUniMagDriver uniMagReader;
     private EMSMagtekAudioCardReader magtekReader;
@@ -73,7 +73,7 @@ public class AddBalance_FA extends BaseFragmentActivityActionBar implements EMSC
     private Activity activity;
     private ProgressDialog myProgressDialog;
     private OrderProductsHandler ordProdDB;
-    private HashMap<String, String> giftCardMap = new HashMap<String, String>();
+    private HashMap<String, String> giftCardMap = new HashMap<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

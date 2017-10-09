@@ -1,12 +1,16 @@
 package com.android.support;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.Intent;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.android.dao.DeviceTableDAO;
 import com.android.emobilepos.BuildConfig;
@@ -32,6 +36,8 @@ import main.EMSDeviceManager;
  * Created by Guarionex on 6/14/2016.
  */
 public class DeviceUtils {
+
+    private static BroadcastReceiver fingerPrintbroadcastReceiver = null;
 
     public static String autoConnect(final Activity activity, boolean forceReload) {
         final MyPreferences myPref = new MyPreferences(activity);
@@ -74,7 +80,7 @@ public class DeviceUtils {
                 edm = new EMSDeviceManager();
                 _portName = myPref.getSwiperMACAddress();
                 _peripheralName = Global.getPeripheralName(myPref.getSwiperType());
-                Global.btSwiper = edm.getManager();
+                Global.btSwiper = edm;
                 if (_peripheralName.equalsIgnoreCase(Global.getPeripheralName(Global.NOMAD))) {
                     final String final_peripheralName = _peripheralName;
                     activity.runOnUiThread(new Runnable() {
@@ -201,6 +207,33 @@ public class DeviceUtils {
         }
         return null;
     }
+
+
+    public static void unregisterFingerPrintReader(Context context) {
+        context.getApplicationContext().unregisterReceiver(fingerPrintbroadcastReceiver);
+    }
+
+    public static void registerFingerPrintReader(Context context) {
+        final IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("android.hardware.usb.action.USB_DEVICE_ATTACHED");
+        intentFilter.addAction("android.hardware.usb.action.USB_DEVICE_DETACHED");
+
+         fingerPrintbroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                boolean connected;
+                if (intent.getAction().contains("ATTACHED")) {
+                    Toast.makeText(context, "USB connected", Toast.LENGTH_SHORT).show();
+                    connected = true;
+                } else if (intent.getAction().contains("DETACHED")) {
+                    Toast.makeText(context, "USB disconnected", Toast.LENGTH_SHORT).show();
+                    connected = false;
+                }
+            }
+        };
+        context.getApplicationContext().registerReceiver(fingerPrintbroadcastReceiver, intentFilter);
+    }
+
 
     public static void connectStarTS650BT(Context context) {
         try {

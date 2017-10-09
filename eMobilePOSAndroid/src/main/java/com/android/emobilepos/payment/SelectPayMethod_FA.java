@@ -1076,7 +1076,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             this.context = activity.getApplicationContext();
             myInflater = LayoutInflater.from(context);
 
-            PayMethodsHandler handler = new PayMethodsHandler(activity);
             payTypeList = PayMethodsDAO.getAllSortByName();
         }
 
@@ -1198,7 +1197,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 Global.mainPrinterManager.getCurrentDevice().loadScanner(null);
             }
             myProgressDialog = new ProgressDialog(SelectPayMethod_FA.this);
-            myProgressDialog.setMessage("Printing...");
+            myProgressDialog.setMessage(getString(R.string.printing_message));
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);
             myProgressDialog.show();

@@ -18,8 +18,7 @@ import com.StarMicronics.jasura.JAException;
 import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.SplitedOrder;
-import com.android.emobilepos.models.TimeClock;
+import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
 import com.android.support.ConsignmentTransaction;
@@ -27,6 +26,7 @@ import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.crashlytics.android.Crashlytics;
 import com.starmicronics.stario.StarIOPortException;
 
 import java.io.IOException;
@@ -47,27 +47,21 @@ import util.StringUtil;
 
 public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
 
-    public EMSPrintingDelegate printingDelegate;
-    private BluetoothAdapter mBtAdapter;
-
-
-    private final int LINE_WIDTH = 32;
-
-    public static BluetoothSocket socket;
     public static final String SPP_UUID = "00001101-0000-1000-8000-00805F9B34FB";
     public static final String LOAD_CARD_P25 = "C0 48 32 30 30 30 32 20 20 20 20 C1"; // 20
     // second
     // time-out
     public static final int START_FRAME = -64;
     public static final int END_FRAME = -63;
-
-    private String[] cardValues = new String[3];
-
-    public byte[] btBuf;
-    public Vector<Byte> packdata = new Vector<Byte>(2048);
+    public static BluetoothSocket socket;
     public static boolean isreceive = false;
+    private final int LINE_WIDTH = 32;
+    public EMSPrintingDelegate printingDelegate;
+    public byte[] btBuf;
+    public Vector<Byte> packdata = new Vector<>(2048);
     public ReceiveThread receivethread;
-
+    private BluetoothAdapter mBtAdapter;
+    private String[] cardValues = new String[3];
     private Bitmap bitmap;
 
     private Handler handler;// = new Handler();
@@ -80,6 +74,28 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
 
 
     private EMSCallBack callBack;
+    // displays data from card swiping
+    private Runnable doUpdateViews = new Runnable() {
+        public void run() {
+            try {
+                if (callBack != null)
+                    callBack.cardWasReadSuccessfully(true, cardManager);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
+    private Runnable doUpdateDidConnect = new Runnable() {
+        public void run() {
+            try {
+                if (callBack != null)
+                    callBack.readerConnectedSuccessfully(true);
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
 
     public EMSBlueBambooP25() {
 
@@ -127,68 +143,17 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
                 didConnect = true;
             }
         } catch (Exception e) {
+            Crashlytics.logException(e);
         }
 
         if (didConnect) {
-            edm.driverDidConnectToDevice(thisInstance, false);
+            edm.driverDidConnectToDevice(thisInstance, false, _activity);
         } else {
 
-            edm.driverDidNotConnectToDevice(thisInstance, "", false);
+            edm.driverDidNotConnectToDevice(thisInstance, "", false, _activity);
         }
 
         return didConnect;
-    }
-
-    public class processConnectionAsync extends AsyncTask<Void, String, String> {
-
-        String msg = new String("Failed to connect");
-        boolean didConnect = false;
-
-        @Override
-        protected void onPreExecute() {
-            myProgressDialog = new ProgressDialog(activity);
-            myProgressDialog.setMessage("Connecting Printer...");
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            myProgressDialog.show();
-
-        }
-
-        @Override
-        protected String doInBackground(Void... params) {
-
-            String macAddress = myPref.getPrinterMACAddress();
-            BluetoothDevice btDev = mBtAdapter.getRemoteDevice(macAddress);
-            try {
-                socket = btDev.createRfcommSocketToServiceRecord(UUID.fromString(SPP_UUID));
-                socket.connect();
-
-                if (socket != null) {
-                    inputStream = socket.getInputStream();
-                    outputStream = socket.getOutputStream();
-
-                    didConnect = true;
-                }
-            } catch (IOException e) {
-
-                msg = "Failed to connect: \n" + e.getMessage();
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String unused) {
-            myProgressDialog.dismiss();
-
-            if (didConnect) {
-                edm.driverDidConnectToDevice(thisInstance, true);
-            } else {
-
-                edm.driverDidNotConnectToDevice(thisInstance, msg, true);
-            }
-
-        }
     }
 
     public void loadCardReader(EMSCallBack _callBack, boolean isDebitCard) {
@@ -235,12 +200,10 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
         return true;
     }
 
-
     @Override
     public void printShiftDetailsReport(String shiftID) {
         printShiftDetailsReceipt(LINE_WIDTH, shiftID);
     }
-
 
     @Override
 
@@ -251,12 +214,10 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
         return true;
     }
 
-
     @Override
     public boolean printBalanceInquiry(HashMap<String, String> values) {
         return printBalanceInquiry(values, LINE_WIDTH);
     }
-
 
     public boolean printOnHold(Object onHold) {
         EMSBambooImageLoader loader = new EMSBambooImageLoader();
@@ -287,7 +248,6 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
 
         return true;
     }
-
 
     @Override
     public void printEndOfDayReport(String curDate, String clerk_id, boolean printDetails) {
@@ -329,6 +289,198 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
     public void releaseCardReader() {
         isreceive = false;
         callBack = null;
+    }
+
+    @Override
+    public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSig) {
+
+        printConsignmentReceipt(myConsignment, encodedSig, LINE_WIDTH);
+
+
+        return true;
+    }
+
+    @Override
+    public boolean printConsignmentPickup(List<ConsignmentTransaction> myConsignment, String encodedSig) {
+        printConsignmentPickupReceipt(myConsignment, encodedSig, LINE_WIDTH);
+
+        return true;
+    }
+
+    @Override
+    public boolean printOpenInvoices(String invID) {
+        printOpenInvoicesReceipt(invID, LINE_WIDTH);
+
+        return true;
+    }
+
+    @Override
+    public String printStationPrinter(List<Orders> orders, String ordID, boolean cutPaper, boolean printHeader) {
+        return printStationPrinterReceipt(orders, ordID, LINE_WIDTH, cutPaper, printHeader);
+
+    }
+
+    @Override
+    public void openCashDrawer() {
+
+    }
+
+    @Override
+    public boolean printConsignmentHistory(HashMap<String, String> map, Cursor c, boolean isPickup) {
+        printConsignmentHistoryReceipt(map, c, isPickup, LINE_WIDTH);
+
+        return true;
+    }
+
+    @Override
+    public void loadScanner(EMSCallBack _callBack) {
+    }
+
+    @Override
+    public boolean isUSBConnected() {
+        return false;
+    }
+
+    @Override
+    public void toggleBarcodeReader() {
+
+    }
+
+    @Override
+    public void printReceiptPreview(SplittedOrder splitedOrder) {
+        try {
+            setPaperWidth(LINE_WIDTH);
+//            Bitmap bitmap = loadBitmapFromView(view);
+            super.printReceiptPreview(splitedOrder, LINE_WIDTH);
+        } catch (JAException e) {
+            e.printStackTrace();
+        } catch (StarIOPortException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void salePayment(Payment payment) {
+
+    }
+
+    @Override
+    public void saleReversal(Payment payment, String originalTransactionId) {
+
+    }
+
+//    @Override
+//    public void printReceiptPreview(View view) {
+//        try {
+//            Bitmap bitmap = loadBitmapFromView(view);
+//            super.printReceiptPreview(bitmap, LINE_WIDTH);
+//        } catch (JAException e) {
+//            e.printStackTrace();
+//        } catch (StarIOPortException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
+    @Override
+    public void refund(Payment payment) {
+
+    }
+
+    @Override
+    public void refundReversal(Payment payment, String originalTransactionId) {
+
+    }
+
+    @Override
+    public void printEMVReceipt(String text) {
+
+    }
+
+    @Override
+    public void sendEmailLog() {
+
+    }
+
+    @Override
+    public void updateFirmware() {
+
+    }
+
+    @Override
+    public void submitSignature() {
+
+    }
+
+    @Override
+    public boolean isConnected() {
+        return true;
+    }
+
+    @Override
+    public void printClockInOut(List<ClockInOut> timeClocks, String clerkID) {
+        super.printClockInOut(timeClocks, LINE_WIDTH, clerkID);
+    }
+
+    @Override
+    public void printHeader() {
+        super.printHeader(LINE_WIDTH);
+    }
+
+    @Override
+    public void printFooter() {
+        super.printFooter(LINE_WIDTH);
+    }
+
+    public class processConnectionAsync extends AsyncTask<Void, String, String> {
+
+        String msg = new String("Failed to connect");
+        boolean didConnect = false;
+
+        @Override
+        protected void onPreExecute() {
+            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog.setMessage("Connecting Printer...");
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setCancelable(false);
+            myProgressDialog.show();
+
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+
+            String macAddress = myPref.getPrinterMACAddress();
+            BluetoothDevice btDev = mBtAdapter.getRemoteDevice(macAddress);
+            try {
+                socket = btDev.createRfcommSocketToServiceRecord(UUID.fromString(SPP_UUID));
+                socket.connect();
+
+                if (socket != null) {
+                    inputStream = socket.getInputStream();
+                    outputStream = socket.getOutputStream();
+
+                    didConnect = true;
+                }
+            } catch (IOException e) {
+
+                msg = "Failed to connect: \n" + e.getMessage();
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String unused) {
+            myProgressDialog.dismiss();
+
+            if (didConnect) {
+                edm.driverDidConnectToDevice(thisInstance, true, activity);
+            } else {
+
+                edm.driverDidNotConnectToDevice(thisInstance, msg, true, activity);
+            }
+
+        }
     }
 
     private class BambooHandlerCallback implements Callback {
@@ -605,169 +757,5 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
                 }
             }
         }
-    }
-
-    @Override
-    public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSig) {
-
-        printConsignmentReceipt(myConsignment, encodedSig, LINE_WIDTH);
-
-
-        return true;
-    }
-
-    // displays data from card swiping
-    private Runnable doUpdateViews = new Runnable() {
-        public void run() {
-            try {
-                if (callBack != null)
-                    callBack.cardWasReadSuccessfully(true, cardManager);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-    };
-
-    private Runnable doUpdateDidConnect = new Runnable() {
-        public void run() {
-            try {
-                if (callBack != null)
-                    callBack.readerConnectedSuccessfully(true);
-
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-    };
-
-    @Override
-    public boolean printConsignmentPickup(List<ConsignmentTransaction> myConsignment, String encodedSig) {
-        printConsignmentPickupReceipt(myConsignment, encodedSig, LINE_WIDTH);
-
-        return true;
-    }
-
-    @Override
-    public boolean printOpenInvoices(String invID) {
-        printOpenInvoicesReceipt(invID, LINE_WIDTH);
-
-        return true;
-    }
-
-    @Override
-    public String printStationPrinter(List<Orders> orders, String ordID, boolean cutPaper, boolean printHeader) {
-        return printStationPrinterReceipt(orders, ordID, LINE_WIDTH, cutPaper, printHeader);
-
-    }
-
-    @Override
-    public void openCashDrawer() {
-
-    }
-
-    @Override
-    public boolean printConsignmentHistory(HashMap<String, String> map, Cursor c, boolean isPickup) {
-        printConsignmentHistoryReceipt(map, c, isPickup, LINE_WIDTH);
-
-        return true;
-    }
-
-    @Override
-    public void loadScanner(EMSCallBack _callBack) {
-    }
-
-    @Override
-    public boolean isUSBConnected() {
-        return false;
-    }
-
-    @Override
-    public void toggleBarcodeReader() {
-
-    }
-
-//    @Override
-//    public void printReceiptPreview(View view) {
-//        try {
-//            Bitmap bitmap = loadBitmapFromView(view);
-//            super.printReceiptPreview(bitmap, LINE_WIDTH);
-//        } catch (JAException e) {
-//            e.printStackTrace();
-//        } catch (StarIOPortException e) {
-//            e.printStackTrace();
-//        }
-//    }
-
-    @Override
-    public void printReceiptPreview(SplitedOrder splitedOrder) {
-        try {
-            setPaperWidth(LINE_WIDTH);
-//            Bitmap bitmap = loadBitmapFromView(view);
-            super.printReceiptPreview(splitedOrder, LINE_WIDTH);
-        } catch (JAException e) {
-            e.printStackTrace();
-        } catch (StarIOPortException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void salePayment(Payment payment) {
-
-    }
-
-    @Override
-    public void saleReversal(Payment payment, String originalTransactionId) {
-
-    }
-
-    @Override
-    public void refund(Payment payment) {
-
-    }
-
-    @Override
-    public void refundReversal(Payment payment, String originalTransactionId) {
-
-    }
-
-    @Override
-    public void printEMVReceipt(String text) {
-
-    }
-
-    @Override
-    public void sendEmailLog() {
-
-    }
-
-    @Override
-    public void updateFirmware() {
-
-    }
-
-    @Override
-    public void submitSignature() {
-
-    }
-
-    @Override
-    public boolean isConnected() {
-        return true;
-    }
-
-    @Override
-    public void printClockInOut(List<ClockInOut> timeClocks, String clerkID) {
-        super.printClockInOut(timeClocks, LINE_WIDTH, clerkID);
-    }
-
-    @Override
-    public void printHeader() {
-        super.printHeader(LINE_WIDTH);
-    }
-
-    @Override
-    public void printFooter() {
-        super.printFooter(LINE_WIDTH);
     }
 }

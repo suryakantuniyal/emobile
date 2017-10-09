@@ -296,6 +296,7 @@
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".customer.ViewCustomerDetails_FA"
+            android:windowSoftInputMode="stateAlwaysHidden"
             android:exported="false" />
         <activity
             android:name=".ShowProductImageActivity"
@@ -508,10 +509,9 @@
         <!-- </service> -->
         <activity android:name=".shifts.ShiftsActivity" />
 
-        <service
-            android:name="com.emobilepos.app.AutoSyncService"
-            android:enabled="true"
-            android:exported="true"></service>
+        <activity
+            android:name=".bixolon.BixolonTransactionsActivity"
+            android:label="@string/title_activity_bixolon_transactions"></activity>
     </application>
 
 </manifest>

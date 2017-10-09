@@ -84,7 +84,7 @@ import util.json.UIUtils;
 public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener {
 
     private static final String DATA_STRING_TAG = "com.motorolasolutions.emdk.datawedge.data_string";
-    private static CheckBox cardSwipe, redeemAll;
+    private CheckBox cardSwipe, redeemAll;
     private static boolean cardReaderConnected = false;
     private static String ourIntentAction = "";
     private EditText fieldAmountDue, fieldAmountTendered, fieldCardNum, fieldHidden;
@@ -105,7 +105,6 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
     private boolean hasBeenCreated = false;
     private EMSCallBack callBack;
     private EMSIDTechUSB _msrUsbSams;
-    private NumberUtils numberUtils = new NumberUtils();
     private GiftCardTextWatcher msrTextWatcher;
     private AssignEmployee assignEmployee;
 

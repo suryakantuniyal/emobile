@@ -7,6 +7,7 @@ import com.starmicronics.stario.StarIOPort;
 import com.starmicronics.stario.StarIOPortException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class StarBitmap
 {
@@ -43,8 +44,7 @@ public class StarBitmap
 	
 	private int pixelBrightness(int red, int green, int blue)
 	{
-		int level = (red + green + blue) / 3;
-		return level;
+		return (red + green + blue) / 3;
 	}
 	
 	private int PixelIndex(int x, int y)
@@ -174,7 +174,7 @@ public class StarBitmap
 		}
 		
 		//Converts the image to a Monochrome image using a Steinbert Dithering algorithm.  This call can be removed but it that will also remove any dithering.
-		if(dithering == true)
+		if(dithering)
 		{
 			ConvertToMonochromeSteinbertDithering((float)1.5);
 		}
@@ -185,7 +185,7 @@ public class StarBitmap
 			mWidth++;
 		}
 		
-		ArrayList<Byte> data = new ArrayList<Byte>();
+		ArrayList<Byte> data = new ArrayList<>();
 		
 	    Byte[] constructedBytes = new Byte[3 + mWidth];
 		
@@ -244,10 +244,9 @@ public class StarBitmap
 	            {
 	                byte[] blankBytes = {0x1b, '*', 'r', 'Y', '1', '0', '0', '0', 0x00};
 
-	                for (int i = 0; i < blankBytes.length; i++)
-	                {
-	                    data.add(blankBytes[i]);
-	                }
+					for (byte blankByte : blankBytes) {
+						data.add(blankByte);
+					}
 	                
 	                blank -= 1000;
 	            }
@@ -260,10 +259,9 @@ public class StarBitmap
 	                blankBytes[5] += blank / 10;  blank %= 10;
 	                blankBytes[6] += blank;
 
-	                for (int i = 0; i < blankBytes.length; i++)
-	                {
-	                    data.add(blankBytes[i]);
-	                }
+					for (byte blankByte : blankBytes) {
+						data.add(blankByte);
+					}
 	            }
 
 	            blank = 0;
@@ -271,10 +269,7 @@ public class StarBitmap
 	            constructedBytes[1] = (byte) (work % 256);
 	            constructedBytes[2] = (byte) (work / 256);
 
-	            for (int i = 0; i < constructedBytes.length; i++)
-                {
-                    data.add(constructedBytes[i]);
-                }
+				Collections.addAll(data, constructedBytes);
 	        }
 	        else
 	        {
@@ -287,10 +282,9 @@ public class StarBitmap
 	    {
 	        byte[] blankBytes = {0x1b, '*', 'r', 'Y', '1', '0', '0', '0', 0x00};
 
-            for (int i = 0; i < blankBytes.length; i++)
-            {
-                data.add(blankBytes[i]);
-            }
+			for (byte blankByte : blankBytes) {
+				data.add(blankByte);
+			}
 
 	        blank -= 1000;
 	    }
@@ -303,10 +297,9 @@ public class StarBitmap
 	        blankBytes[5] += blank / 10;  blank %= 10;
 	        blankBytes[6] += blank;
 
-            for (int i = 0; i < blankBytes.length; i++)
-            {
-                data.add(blankBytes[i]);
-            }
+			for (byte blankByte : blankBytes) {
+				data.add(blankByte);
+			}
 	    }
 		//The real algorithm for converting an image to star data is below
 //		for(int y = 0; y < height; y++)
@@ -366,7 +359,7 @@ public class StarBitmap
 		}
 		
 		//Converts the image to a Monochrome image using a Steinbert Dithering algorithm.  This call can be removed but it that will also remove any dithering.
-		if(dithering == true)
+		if(dithering)
 		{
 			ConvertToMonochromeSteinbertDithering((float)1.5);
 		}
@@ -377,7 +370,7 @@ public class StarBitmap
 			mWidth++;
 		}
 		
-		ArrayList<Byte> data = new ArrayList<Byte>();
+		ArrayList<Byte> data = new ArrayList<>();
 		
 		//The real algorithm for converting an image to escpos data is below
 	    int commandSize = mWidth * height;
@@ -398,10 +391,9 @@ public class StarBitmap
 	    byte yH = (byte) (height / 256);
 	    
 	    byte[] rasterCommand = new byte[]{0x1d, 0x38, 0x4c, p1, p2, p3, p4, m, fn, a, bx, by, c, xL, xH, yL, yH};
-		
-		for(int count = 0; count < rasterCommand.length; count++)
-		{
-			data.add(rasterCommand[count]);
+
+		for (byte aRasterCommand : rasterCommand) {
+			data.add(aRasterCommand);
 		}
 	    
 		for(int y = 0; y < height; y++)
@@ -450,7 +442,7 @@ public class StarBitmap
 			return imageData;
 		}
 		
-		if(dithering == true)
+		if(dithering)
 		{
 			ConvertToMonochromeSteinbertDithering((float)1.5);
 		}
@@ -466,10 +458,10 @@ public class StarBitmap
 		//u_int8_t n2 = (u_int8_t)(byteWidth / 256);
 		
 		byte[] data;
-		ArrayList<Byte> someData = new ArrayList<Byte>();
+		ArrayList<Byte> someData = new ArrayList<>();
 		
 		Byte[] beginingBytes;
-		if (true == pageModeEnable)
+		if (pageModeEnable)
 		{
 		    beginingBytes = new Byte[] {0x1b, 0x40,    // ESC @
 		    	    	                0x1b, 0x4c,    // ESC L (Start Page mode) 		/* for smooth printing by Portable printer */
@@ -483,11 +475,8 @@ public class StarBitmap
 		{
 			beginingBytes = new Byte[] {0x1b, 0x40};
 		}
-		
-		for(int count=0;count<beginingBytes.length; count++)
-		{
-			someData.add(beginingBytes[count]);
-		}
+
+		Collections.addAll(someData, beginingBytes);
 
 		int totalRowCount = 0;
 		
@@ -532,7 +521,7 @@ public class StarBitmap
 			
 			byte[] command = null;
 			
-			if (true == compressionEnable)
+			if (compressionEnable)
 			{   
                 String portSettings = "mini";
                 
@@ -549,9 +538,8 @@ public class StarBitmap
 			
 			if (null != command)
 			{
-				for(int count = 0; count < command.length; count++)
-				{
-					someData.add(command[count]);
+				for (byte aCommand : command) {
+					someData.add(aCommand);
 				}
 			}
 			else
@@ -559,21 +547,16 @@ public class StarBitmap
 				Byte[] imagestarting = new Byte[]{ 0x1b, 0x58, 0x34, 0, 24 };
 			    imagestarting[3] = (byte)byteWidth;
 
-				for(int count = 0; count < imagestarting.length; count++)
-				{
-					someData.add(imagestarting[count]);
-				}
-				
-				for(int count = 0; count < data.length; count++)
-				{
-					someData.add(data[count]);
+				Collections.addAll(someData, imagestarting);
+
+				for (byte aData : data) {
+					someData.add(aData);
 				}
 				
 				byte[] imageData4 = {0x1b, 0x58, 0x32, 0x18};
-				
-				for(int count=0;count<imageData4.length;count++)
-				{
-					someData.add(imageData4[count]);
+
+				for (byte anImageData4 : imageData4) {
+					someData.add(anImageData4);
 				}
 			}
 			
@@ -582,9 +565,8 @@ public class StarBitmap
 		byte imageData5[] = {0x0c,    // FF (printing of page mode and return printing of standard mode) /* for smooth printing by Portable printer */
 				             0x1b, 0x4A, 0x28};
 
-		for(int count=0;count<imageData5.length;count++)
-		{
-			someData.add(imageData5[count]);
+		for (byte anImageData5 : imageData5) {
+			someData.add(anImageData5);
 		}
 		
 		imageData = new byte[someData.size()];
@@ -603,7 +585,7 @@ public class StarBitmap
 			return imageData;
 		}
 		
-		if(dithering == true)
+		if(dithering)
 		{
 			ConvertToMonochromeSteinbertDithering((float)1.5);
 		}
@@ -615,7 +597,7 @@ public class StarBitmap
 			mHeight++;
 		}
 		
-		ArrayList<Byte> data = new ArrayList<Byte>();
+		ArrayList<Byte> data = new ArrayList<>();
 		int heightLocation = 0;
 		int bitLocation = 0;
 		byte nextByte = 0;
@@ -627,17 +609,15 @@ public class StarBitmap
 		}
 		
 		byte[] cancelColor = new byte[] {0x1b, 0x1e, 'C', 48};
-		for(int count=0;count<cancelColor.length;count++)
-		{
-			data.add(cancelColor[count]);
+		for (byte aCancelColor : cancelColor) {
+			data.add(aCancelColor);
 		}
 		
 		for(int x=0; x<mHeight; x++)
 		{
 			byte[] imageCommand = new byte[] {0x1b, 'K', (byte)cwidth, 0};
-			for(int count=0;count<imageCommand.length;count++)
-			{
-				data.add(imageCommand[count]);
+			for (byte anImageCommand : imageCommand) {
+				data.add(anImageCommand);
 			}
 			
 			for(int w=0;w<cwidth; w++)
@@ -669,9 +649,8 @@ public class StarBitmap
 			}
 			heightLocation++;
 			byte[] lineFeed = new byte[] {0x1b, 0x49, 0x10};
-			for(int count=0;count<lineFeed.length;count++)
-			{
-				data.add(lineFeed[count]);
+			for (byte aLineFeed : lineFeed) {
+				data.add(aLineFeed);
 			}
 		}		
 		

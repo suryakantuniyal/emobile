@@ -47,8 +47,6 @@ import util.json.JsonUtils;
 public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
     private List<String> empName = new ArrayList<>();
     private List<String> empID = new ArrayList<>();
-    private Context thisContext;
-    private Activity activity;
     private ProgressDialog myProgressDialog;
     MyPreferences preferences;
     private int error_msg_id = 0;
@@ -58,8 +56,6 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.initialization_select_employee);
-        thisContext = this;
-        activity = this;
         preferences = new MyPreferences(this);
         new validateEmployeesAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
     }
@@ -70,7 +66,7 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
 
         @Override
         protected void onPreExecute() {
-            myProgressDialog = new ProgressDialog(thisContext);
+            myProgressDialog = new ProgressDialog(SelectEmployee_FA.this);
             myProgressDialog.setMessage(getString(R.string.loading));
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);
@@ -79,7 +75,7 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
 
         @Override
         protected String doInBackground(String... params) {
-            Post post = new Post(activity);
+            Post post = new Post(SelectEmployee_FA.this);
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SaxLoginHandler handler = new SaxLoginHandler();
 
@@ -115,7 +111,7 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
             myProgressDialog.dismiss();
             if (succeeded) {
                 ListView myListView = (ListView) findViewById(R.id.employeeListView);
-                ListViewAdapter myAdapter = new ListViewAdapter(thisContext);
+                ListViewAdapter myAdapter = new ListViewAdapter(SelectEmployee_FA.this);
                 myListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
                     @Override
@@ -136,7 +132,7 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
 
                 myListView.setAdapter(myAdapter);
             } else {
-                AlertDialog.Builder dialog = new AlertDialog.Builder(thisContext);
+                AlertDialog.Builder dialog = new AlertDialog.Builder(SelectEmployee_FA.this);
                 dialog.setTitle(getString(R.string.dlog_title_error));
                 dialog.setMessage(errorMsg);
                 dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -152,12 +148,12 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
         }
     }
 
-    public class selectEmployeesAsync extends AsyncTask<String, String, String> {
+    private class selectEmployeesAsync extends AsyncTask<String, String, String> {
         boolean succeeded = false;
 
         @Override
         protected void onPreExecute() {
-            myProgressDialog = new ProgressDialog(thisContext);
+            myProgressDialog = new ProgressDialog(SelectEmployee_FA.this);
             myProgressDialog.setMessage(getString(R.string.loading));
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);
@@ -177,10 +173,10 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
         protected void onPostExecute(String unused) {
             myProgressDialog.dismiss();
             if (succeeded) {
-                Intent intent = new Intent(thisContext, SelectPassword_FA.class);
+                Intent intent = new Intent(SelectEmployee_FA.this, SelectPassword_FA.class);
                 startActivityForResult(intent, 0);
             } else {
-                AlertDialog.Builder dialog = new AlertDialog.Builder(thisContext);
+                AlertDialog.Builder dialog = new AlertDialog.Builder(SelectEmployee_FA.this);
                 dialog.setTitle("Error");
                 dialog.setMessage(error_msg_id);
                 dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -198,7 +194,7 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
     String _license = "";
 
     public boolean AssignEmployees() {
-        Post post = new Post(activity);
+        Post post = new Post(this);
         try {
             String xml = post.postData(Global.S_GET_ASSIGN_EMPLOYEES, "");
             Gson gson = JsonUtils.getInstance();
@@ -216,7 +212,7 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
     }
 
     private boolean getFirstAvailLicense() {
-        Post post = new Post(activity);
+        Post post = new Post(this);
         SAXParserFactory spf = SAXParserFactory.newInstance();
         SaxLoginHandler handler = new SaxLoginHandler();
         try {
@@ -230,7 +226,7 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
             xr.parse(inSource);
             if (!handler.getData().isEmpty() && !handler.getData().equals("0")) {
                 _license = handler.getData();
-                MyPreferences myPref = new MyPreferences(activity);
+                MyPreferences myPref = new MyPreferences(this);
                 myPref.setActivKey(handler.getData());
                 return true;
             } else {
@@ -246,7 +242,7 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
     }
 
     public boolean DisableEmployee() {
-        Post post = new Post(activity);
+        Post post = new Post(this);
         SAXParserFactory spf = SAXParserFactory.newInstance();
         SaxLoginHandler handler = new SaxLoginHandler();
         try {
@@ -266,7 +262,7 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
     }
 
     public boolean DownloadPayID() {
-        Post post = new Post(activity);
+        Post post = new Post(this);
         SAXParserFactory spf = SAXParserFactory.newInstance();
         SaxLoginHandler handler = new SaxLoginHandler();
         try {
@@ -278,7 +274,7 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
             xr.parse(inSource);
 
             if (!handler.getData().isEmpty()) {
-                MyPreferences myPref = new MyPreferences(activity);
+                MyPreferences myPref = new MyPreferences(this);
                 myPref.setLastPayID(handler.getData());
                 return true;
             }
@@ -337,7 +333,7 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
     }
 
     private void promptValidate(final int position) {
-        AlertDialog.Builder dialog = new AlertDialog.Builder(activity);
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         dialog.setTitle(getString(R.string.login_select_this_employee));
         dialog.setMessage(empName.get(position));
         dialog.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {

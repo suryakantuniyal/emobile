@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.hardware.usb.UsbDevice;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v4.widget.CursorAdapter;
@@ -28,24 +29,30 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.android.database.CustomersHandler;
-import com.android.database.SalesTaxCodesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.history.HistoryTransactions_FA;
+import com.android.emobilepos.models.realms.EmobileBiometric;
 import com.android.emobilepos.security.SecurityManager;
+import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
-public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements OnClickListener, OnItemClickListener {
-    private ListView myListView;
+import java.util.Collection;
 
+import drivers.digitalpersona.DigitalPersona;
+import interfaces.BCRCallbacks;
+import interfaces.BiometricCallbacks;
+import util.json.UIUtils;
+
+public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements BiometricCallbacks, OnClickListener, OnItemClickListener, BCRCallbacks {
+    boolean isManualEntry = true;
+    private ListView myListView;
     private Context thisContext = this;
     private Activity activity;
-
     private Cursor myCursor;
     private CustomCursorAdapter adap2;
     private CustomersHandler handler;
-
     private Global global;
     private boolean hasBeenCreated = false;
     private MyPreferences myPref;
@@ -53,18 +60,22 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
     private Dialog dlog;
     private EditText search;
 
+    private boolean isReaderConnected;
+    private DigitalPersona digitalPersona;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.custselec_listview_layout);
+        digitalPersona = new DigitalPersona(getApplicationContext(), this);
 
         activity = this;
         myPref = new MyPreferences(activity);
         global = (Global) getApplication();
         myListView = (ListView) findViewById(R.id.customerSelectionLV);
         search = (EditText) findViewById(R.id.searchCustomer);
-
+        Collection<UsbDevice> usbDevices = DeviceUtils.getUSBDevices(this);
+        isReaderConnected = usbDevices != null && usbDevices.size() > 0;
         handler = new CustomersHandler(this);
         myCursor = handler.getCursorAllCust();
         adap2 = new CustomCursorAdapter(this, myCursor, CursorAdapter.NO_SELECTION);
@@ -78,14 +89,26 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
 
         search.setOnEditorActionListener(getSearchActionListener());
         search.addTextChangedListener(getSearchTextWatcher());
+        search.setOnKeyListener(new View.OnKeyListener() {
+            public long startTyping;
+            public long stopTyping;
 
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                isManualEntry = false;
+                UIUtils.startBCR(v, search, ViewCustomers_FA.this);
+                return false;
+            }
+        });
         myListView.setOnItemClickListener(this);
         hasBeenCreated = true;
+
     }
 
 
     @Override
     public void onDestroy() {
+        releaseReader();
         super.onDestroy();
     }
 
@@ -96,7 +119,7 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
 
             @Override
             public void afterTextChanged(Editable arg0) {
-
+                String s = arg0.toString();
             }
 
             @Override
@@ -114,6 +137,11 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
 
                     adap2 = new CustomCursorAdapter(thisContext, myCursor, CursorAdapter.NO_SELECTION);
                     myListView.setAdapter(adap2);
+                    if (!isManualEntry) {
+                        if (adap2.getCount() == 1) {
+                            selectCustomer(0);
+                        }
+                    }
                 }
             }
         };
@@ -139,6 +167,12 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
         };
     }
 
+    private void releaseReader() {
+        if(isReaderConnected) {
+            digitalPersona.releaseReader();
+        }
+    }
+
     private void selectCustomer(int itemIndex) {
         Intent results = new Intent();
         myCursor.moveToPosition(itemIndex);
@@ -160,7 +194,9 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
 
     @Override
     public void onResume() {
-
+        if (isReaderConnected) {
+            digitalPersona.loadForScan();
+        }
         if (global.isApplicationSentToBackground())
             Global.loggedIn = false;
         global.stopActivityTransitionTimer();
@@ -181,6 +217,16 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
                 inputMethodManager.showSoftInput(search, InputMethodManager.SHOW_IMPLICIT);
             }
         }, 100);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (!myPref.isCustSelected()) {
+            Intent data = getIntent();
+            data.putExtra("GOTO_MAIN", true);
+            setResult(Global.FROM_CUSTOMER_SELECTION_ACTIVITY, data);
+        }
+        finish();
     }
 
     @Override
@@ -217,8 +263,9 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
             case R.id.addCustButton:
                 boolean hasPermissions = SecurityManager.hasPermissions(this, SecurityManager.SecurityAction.CREATE_CUSTOMERS);
                 if (hasPermissions) {
-                    Intent intent2 = new Intent(thisContext, CreateCustomer_FA.class);
-                    startActivityForResult(intent2, 0);
+                    releaseReader();
+                    Intent intent = new Intent(thisContext, ViewCustomerDetails_FA.class);
+                    startActivityForResult(intent, 0);
                 } else {
                     Global.showPrompt(this, R.string.security_alert, getString(R.string.permission_denied));
                 }
@@ -243,7 +290,7 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        if (myPref.getPreferences(MyPreferences.pref_direct_customer_selection)) {
+        if (myPref.isDirectCustomerSelection()) {
             selectCustomer(position);
         } else {
             selectedCustPosition = position;
@@ -271,6 +318,26 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
             dlog.show();
         }
     }
+
+    @Override
+    public void executeBCR() {
+        myCursor = handler.getSearchCust(search.getText().toString());
+        if (myCursor.getCount() == 1) {
+            selectCustomer(0);
+        }
+    }
+
+    @Override
+    public void biometricsWasRead(final EmobileBiometric biometric) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                search.setText(biometric.getEntityid());
+                executeBCR();
+            }
+        });
+    }
+
 
     public class CustomCursorAdapter extends CursorAdapter {
         private LayoutInflater inflater;
@@ -313,6 +380,7 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
 
                 @Override
                 public void onClick(View v) {
+                    releaseReader();
                     String _cust_id = (String) v.getTag();
                     Intent intent = new Intent(thisContext, ViewCustomerDetails_FA.class);
                     intent.putExtra("cust_id", _cust_id);

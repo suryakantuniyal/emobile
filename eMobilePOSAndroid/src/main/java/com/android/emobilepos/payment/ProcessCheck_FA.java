@@ -94,7 +94,6 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
     private TextView tvCheckChange;
     private EditText subtotal, tax1, tax2, amountField;//,tipAmount,promptTipField
     private List<GroupTax> groupTaxRate;
-    private NumberUtils numberUtils = new NumberUtils();
     private AssignEmployee assignEmployee;
 
 

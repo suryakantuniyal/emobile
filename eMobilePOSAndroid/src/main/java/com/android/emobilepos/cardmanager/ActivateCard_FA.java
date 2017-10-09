@@ -55,9 +55,9 @@ public class ActivateCard_FA extends BaseFragmentActivityActionBar implements EM
 
     public static final int CASE_GIFT = 0, CASE_LOYALTY = 1, CASE_REWARD = 2;
     private static final String DATA_STRING_TAG = "com.motorolasolutions.emdk.datawedge.data_string";
-    private static CheckBox cardSwipe;
     private static boolean cardReaderConnected = false;
     private static String ourIntentAction = "";
+    private CheckBox cardSwipe;
     private int typeCase;
     private EMSCallBack msrCallBack;
     private Global global;
@@ -72,7 +72,7 @@ public class ActivateCard_FA extends BaseFragmentActivityActionBar implements EM
     private EMSRover roverReader;
     private ProgressDialog myProgressDialog;
     private OrderProductsHandler ordProdDB;
-    private HashMap<String, String> giftCardMap = new HashMap<String, String>();
+    private HashMap<String, String> giftCardMap = new HashMap<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

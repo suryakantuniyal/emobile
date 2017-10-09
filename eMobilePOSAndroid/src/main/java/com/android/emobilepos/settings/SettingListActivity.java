@@ -3,6 +3,8 @@ package com.android.emobilepos.settings;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -336,6 +338,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                         prefManager.findPreference("pref_printek_info").setOnPreferenceClickListener(this);
                         prefManager.findPreference("pref_star_info").setOnPreferenceClickListener(this);
                         prefManager.findPreference("pref_snbc_setup").setOnPreferenceClickListener(this);
+                        prefManager.findPreference("pref_bixolon_setup").setOnPreferenceClickListener(this);
                         prefManager.findPreference("pref_configure_ingenico_settings").setOnPreferenceClickListener(this);
                     }
                     prefManager.findPreference("pref_connect_to_bluetooth_peripheral").setOnPreferenceClickListener(this);
@@ -363,7 +366,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     break;
                 case TRANSACTION:
                     defaultCountry = prefManager.findPreference("pref_default_country");
-                    CharSequence temp = "\t\t" + myPref.defaultCountryName(true, null);
+                    CharSequence temp = "\t\t" + myPref.getDefaultCountryName();
                     defaultCountry.setSummary(temp);
                     defaultCountry.setOnPreferenceClickListener(this);
                     break;
@@ -518,6 +521,9 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                 case R.string.config_snbc_setup:
                     promptSNBCSetup();
                     break;
+                case R.string.config_bixolon_setup:
+                    openBixolonSetting();
+                    break;
                 case R.string.config_configure_ingenico_settings:
                     break;
                 case R.string.config_connect_to_bluetooth_peripheral:
@@ -566,8 +572,8 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
 
                         @Override
                         public void onSelectCountry(String name, String code) {
-                            myPref.defaultCountryCode(false, code);
-                            myPref.defaultCountryName(false, name);
+                            myPref.setDefaultCountryCode(code);
+                            myPref.setDefaultCountryCode(name);
                             CharSequence temp = "\t\t" + name;
                             defaultCountry.setSummary(temp);
                             newFrag.dismiss();
@@ -613,6 +619,22 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     break;
             }
             return false;
+        }
+
+        private void openBixolonSetting() {
+            if (getActivity().findViewById(R.id.setting_detail_container) != null) {
+                Fragment fragment = new BixolonFragment();
+                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                transaction.replace(R.id.setting_detail_container, fragment);
+                transaction.addToBackStack(null);
+                transaction.commit();
+            } else {
+//                Context context = v.getContext();
+//                Intent intent = new Intent(context, SettingDetailActivity.class);
+//                intent.putExtra("section", SettingSection.getInstance(position).getCode());
+//
+//                context.startActivity(intent);
+            }
         }
 
 
@@ -1125,6 +1147,14 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                                 Global.mainPrinterManager = edm.getManager();
                                 Global.mainPrinterManager.loadDrivers(getActivity(), Global.STAR, EMSDeviceManager.PrinterInterfase.BLUETOOTH);
 
+                            } else if (val[pos].toUpperCase(Locale.getDefault()).contains("SERIAL ADAPTOR")) {
+                                myPref.setPrinterType(Global.BIXOLON_RD);
+                                myPref.setPrinterMACAddress(macAddressList.get(pos));
+                                myPref.setPrinterName(strDeviceName);
+                                myPref.setIsBixolonRD(true);
+                                EMSDeviceManager edm = new EMSDeviceManager();
+                                Global.mainPrinterManager = edm.getManager();
+                                Global.mainPrinterManager.loadDrivers(getActivity(), Global.BIXOLON_RD, EMSDeviceManager.PrinterInterfase.BLUETOOTH);
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("SPP-R")) {
                                 myPref.setPrinterType(Global.BIXOLON);
                                 myPref.setPrinterMACAddress("BT:" + macAddressList.get(pos));
