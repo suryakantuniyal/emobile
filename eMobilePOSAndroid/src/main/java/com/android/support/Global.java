@@ -3,6 +3,7 @@ package com.android.support;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -1514,6 +1515,8 @@ public class Global extends MultiDexApplication {
 
     public void promptForMandatoryLogin(final Context activity) {
         if (!loggedIn) {
+            Intent intent = new Intent(MainMenu_FA.NOTIFICATION_LOGIN_STATECHANGE);
+            activity.sendBroadcast(intent);
             globalDlog = new Dialog(activity, R.style.FullscreenTheme);
             globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             globalDlog.setCancelable(false);
@@ -1576,6 +1579,10 @@ public class Global extends MultiDexApplication {
                     } else {
                         viewField.setText("");
                         viewMsg.setText(R.string.invalid_password);
+                    }
+                    if (loggedIn) {
+                        Intent intent = new Intent(MainMenu_FA.NOTIFICATION_LOGIN_STATECHANGE);
+                        activity.sendBroadcast(intent);
                     }
                 }
             });

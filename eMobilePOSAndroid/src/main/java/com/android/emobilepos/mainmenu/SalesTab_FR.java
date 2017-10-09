@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.hardware.usb.UsbDevice;
 import android.os.Build;
@@ -98,6 +99,11 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
     private BroadcastReceiver messageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            if (Global.loggedIn) {
+                digitalPersona.loadForScan();
+            } else {
+                digitalPersona.releaseReader();
+            }
             if (Global.deviceHasBarcodeScanner(myPref.getPrinterType()) ||
                     Global.deviceHasBarcodeScanner(myPref.getSwiperType())
                     || Global.deviceHasBarcodeScanner(myPref.sledType(true, -2))) {
@@ -232,7 +238,6 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
     public void onPause() {
         super.onPause();
         digitalPersona.releaseReader();
-
     }
 
     @Override
@@ -240,6 +245,7 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
         Global global = (Global) getActivity().getApplication();
         global.resetOrderDetailsValues();
         global.clearListViewData();
+        getActivity().registerReceiver(messageReceiver, new IntentFilter(MainMenu_FA.NOTIFICATION_LOGIN_STATECHANGE));
 
         if (isReaderConnected) {
             digitalPersona.loadForScan();

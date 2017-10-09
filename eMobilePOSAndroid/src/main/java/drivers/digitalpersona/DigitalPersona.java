@@ -116,10 +116,13 @@ public class DigitalPersona {
     public void releaseReader() {
         stopFingerReader = true;
         try {
-            if (reader.GetStatus().status == Reader.ReaderStatus.BUSY) {
-                reader.CancelCapture();
+            if (reader != null) {
+                if (reader.GetStatus().status == Reader.ReaderStatus.BUSY) {
+                    reader.CancelCapture();
+                }
+                reader.Close();
             }
-            reader.Close();
+
         } catch (UareUException e) {
             e.printStackTrace();
         }

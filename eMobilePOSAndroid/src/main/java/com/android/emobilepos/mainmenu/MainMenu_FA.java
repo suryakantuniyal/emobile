@@ -55,6 +55,8 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
     public static final String NOTIFICATION_RECEIVED = "NOTIFICATION_RECEIVED";
     public static final String NOTIFICATION_MESSAGE = "NOTIFICATION_MESSAGE";
     public static final String NOTIFICATION_DEVICES_LOADED = "NOTIFICATION_DEVICES_LOADED";
+    public static final String NOTIFICATION_LOGIN_STATECHANGE = "NOTIFICATION_LOGIN_STATECHANGE";
+
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
     static {
@@ -256,19 +258,8 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
                 && (myPref.getPrinterType() != Global.POWA || (myPref.getPrinterType() == Global.POWA
                 && (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)))) {
             Global.dismissDialog(this, global.getGlobalDlog());
-            //            if (global.getGlobalDlog() != null && global.getGlobalDlog().isShowing()) {
-//                global.getGlobalDlog().dismiss();
-//            }
             global.promptForMandatoryLogin(this);
         }
-
-//        if (myPref.isAutoSyncEnable() && hasBeenCreated) {
-//            DBManager dbManager = new DBManager(activity, Global.FROM_SYNCH_ACTIVITY);
-//            SynchMethods sm = new SynchMethods(dbManager);
-//            sm.synchSend(Global.FROM_SYNCH_ACTIVITY, true, activity);
-//            getSynchTextView().setText(getString(R.string.sync_inprogress));
-//            getSynchTextView().setVisibility(View.VISIBLE);
-//        }
 
         if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward))
             tvStoreForward.setVisibility(View.VISIBLE);

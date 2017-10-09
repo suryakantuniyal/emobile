@@ -435,6 +435,7 @@ public class CustomersHandler {
 
             if (cursor.moveToFirst()) {
                 customer.setCust_id(customerId);
+                customer.setCust_name(cursor.getString(cursor.getColumnIndex(cust_name)));
                 customer.setCust_firstName(cursor.getString(cursor.getColumnIndex(cust_firstName)));
                 customer.setCust_lastName(cursor.getString(cursor.getColumnIndex(cust_lastName)));
                 customer.setCust_middleName(cursor.getString(cursor.getColumnIndex(cust_middleName)));
