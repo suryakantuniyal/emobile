@@ -361,6 +361,8 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
                 readers.GetReaders();
                 if (readers.size() > 0) {
                     this.reader = readers.get(0);
+                } else {
+                    return;
                 }
                 PendingIntent mPermissionIntent;
                 Context applContext = getApplicationContext();
@@ -386,7 +388,7 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
     }
 
     private void releaseReader() {
-        if (isReaderConnected) {
+        if (isReaderConnected && reader != null) {
             try {
                 reader.CancelCapture();
                 reader.Close();
@@ -870,49 +872,54 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
 
     private void startFingerPrintScanner(final Finger finger) {
         try {
-            final Dialog scanningDialog = showScanningDialog(finger);
-            m_reset = false;
-            // loop capture on a separate thread to avoid freezing the UI
-            new Thread(new Runnable() {
+            if (reader != null) {
+                final Dialog scanningDialog = showScanningDialog(finger);
+                m_reset = false;
+                // loop capture on a separate thread to avoid freezing the UI
+                new Thread(new Runnable() {
 
-                @Override
-                public void run() {
-                    try {
-                        m_current_fmds_count = 0;
-                        m_reset = false;
-                        enrollThread = new EnrollmentCallback(reader, engine, finger);
-                        while (!m_reset) {
-                            Log.d("Engine", "Engine Enrollment progress");
-                            try {
-                                m_enrollment_fmd = engine.CreateEnrollmentFmd(Fmd.Format.ANSI_378_2004, enrollThread);
-                                if (m_success = (m_enrollment_fmd != null)) {
-                                    m_templateSize = m_enrollment_fmd.getData().length;
-                                    m_current_fmds_count = 0;    // reset count on success
+                    @Override
+                    public void run() {
+                        try {
+                            m_current_fmds_count = 0;
+                            m_reset = false;
+                            enrollThread = new EnrollmentCallback(reader, engine, finger);
+                            while (!m_reset) {
+                                Log.d("Engine", "Engine Enrollment progress");
+                                try {
+                                    m_enrollment_fmd = engine.CreateEnrollmentFmd(Fmd.Format.ANSI_378_2004, enrollThread);
+                                    if (m_success = (m_enrollment_fmd != null)) {
+                                        m_templateSize = m_enrollment_fmd.getData().length;
+                                        m_current_fmds_count = 0;    // reset count on success
+                                    }
+                                } catch (Exception e) {
+                                    // template creation failed, reset count
+                                    m_current_fmds_count = 0;
                                 }
-                            } catch (Exception e) {
-                                // template creation failed, reset count
-                                m_current_fmds_count = 0;
                             }
-                        }
-                        progress = 0;
-                        scanningDialog.dismiss();
-                        ViewCustomerDetails_FA.this.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                setFingerPrintUI();
+                            progress = 0;
+                            scanningDialog.dismiss();
+                            ViewCustomerDetails_FA.this.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    setFingerPrintUI();
+                                }
+                            });
+                        } catch (Exception e) {
+                            if (!m_reset) {
+                                Log.w("UareUSampleJava", "error during capture");
+                                onBackPressed();
                             }
-                        });
-                    } catch (Exception e) {
-                        if (!m_reset) {
-                            Log.w("UareUSampleJava", "error during capture");
-                            onBackPressed();
                         }
                     }
-                }
-            }).start();
+                }).start();
+            } else {
+                Toast.makeText(this, getString(R.string.fingerreadernotfound), Toast.LENGTH_LONG).show();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 
     private void setFingerPrintUI() {

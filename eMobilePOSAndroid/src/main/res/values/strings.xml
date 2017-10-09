@@ -1376,5 +1376,6 @@
     <string name="unregister_fingerprint">Unregister</string>
     <string name="duplicated_fingerprint">Fingerprint already exist.</string>
     <string name="cust_detail_lastname">Last Name</string>
+    <string name="fingerreadernotfound">Finger print reader not found.</string>
 
 </resources>

@@ -48,6 +48,8 @@ public class DigitalPersona {
                     readers.GetReaders();
                     if (readers.size() > 0) {
                         reader = readers.get(0);
+                    }else{
+                        return;
                     }
                     PendingIntent mPermissionIntent;
                     mPermissionIntent = PendingIntent.getBroadcast(context, 0, new Intent(ViewCustomerDetails_FA.ACTION_USB_PERMISSION), 0);
