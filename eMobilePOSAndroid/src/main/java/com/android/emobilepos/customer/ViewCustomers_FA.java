@@ -2,14 +2,10 @@ package com.android.emobilepos.customer;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.database.Cursor;
 import android.hardware.usb.UsbDevice;
-import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v4.widget.CursorAdapter;
@@ -32,7 +28,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
-import com.android.dao.EmobileBiometricDAO;
 import com.android.database.CustomersHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.history.HistoryTransactions_FA;
@@ -42,23 +37,15 @@ import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
-import com.crashlytics.android.Crashlytics;
-import com.digitalpersona.uareu.Engine;
-import com.digitalpersona.uareu.Fid;
-import com.digitalpersona.uareu.Fmd;
-import com.digitalpersona.uareu.Reader;
-import com.digitalpersona.uareu.ReaderCollection;
-import com.digitalpersona.uareu.UareUException;
-import com.digitalpersona.uareu.UareUGlobal;
-import com.digitalpersona.uareu.dpfpddusbhost.DPFPDDUsbException;
-import com.digitalpersona.uareu.dpfpddusbhost.DPFPDDUsbHost;
 
 import java.util.Collection;
 
+import drivers.digitalpersona.DigitalPersona;
 import interfaces.BCRCallbacks;
+import interfaces.BiometricCallbacks;
 import util.json.UIUtils;
 
-public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements OnClickListener, OnItemClickListener, BCRCallbacks {
+public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements BiometricCallbacks, OnClickListener, OnItemClickListener, BCRCallbacks {
     boolean isManualEntry = true;
     private ListView myListView;
     private Context thisContext = this;
@@ -72,31 +59,15 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
     private int selectedCustPosition = 0;
     private Dialog dlog;
     private EditText search;
-    Reader reader = null;
 
-    private boolean stopFingerReader;
-    private long spleepTime = 100;
     private boolean isReaderConnected;
-    private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (ViewCustomerDetails_FA.ACTION_USB_PERMISSION.equals(action)) {
-                synchronized (this) {
-                    UsbDevice device = (UsbDevice) intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-                    if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
-                        if (device != null) {
-                            //call method to set up device communication
-                        }
-                    }
-                }
-            }
-        }
-    };
+    private DigitalPersona digitalPersona;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.custselec_listview_layout);
+        digitalPersona = new DigitalPersona(getApplicationContext(), this);
 
         activity = this;
         myPref = new MyPreferences(activity);
@@ -132,92 +103,6 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
         myListView.setOnItemClickListener(this);
         hasBeenCreated = true;
 
-    }
-
-    private void loadFingerPrintReader(final Context context) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        int dpi;
-                        Engine engine;
-                        ReaderCollection readers;
-                        Thread.sleep(spleepTime);
-                        readers = UareUGlobal.GetReaderCollection(context);
-                        readers.GetReaders();
-                        if (readers.size() > 0) {
-                            reader = readers.get(0);
-                        }
-                        PendingIntent mPermissionIntent;
-                        Context applContext = getApplicationContext();
-                        mPermissionIntent = PendingIntent.getBroadcast(applContext, 0, new Intent(ViewCustomerDetails_FA.ACTION_USB_PERMISSION), 0);
-                        IntentFilter filter = new IntentFilter(ViewCustomerDetails_FA.ACTION_USB_PERMISSION);
-//                        registerReceiver(mUsbReceiver, filter);
-
-                        DPFPDDUsbHost.DPFPDDUsbCheckAndRequestPermissions(applContext, mPermissionIntent, reader.GetDescription().name);
-                        reader.Open(Reader.Priority.EXCLUSIVE);
-                        Reader.Status status = reader.GetStatus();
-                        if (status.status == Reader.ReaderStatus.BUSY) {
-                            reader.CancelCapture();
-                        }
-                        dpi = GetFirstDPI(reader);
-                        engine = UareUGlobal.GetEngine();
-                        stopFingerReader = false;
-                        Fmd[] fmds = EmobileBiometricDAO.getFmds(engine);
-                        if (fmds.length > 0) {
-                            while (!stopFingerReader) {
-                                try {
-                                    Reader.CaptureResult cap_result = reader.Capture(Fid.Format.ANSI_381_2004, Reader.ImageProcessing.IMG_PROC_DEFAULT, dpi, -1);
-                                    if (cap_result == null || cap_result.image == null) {
-                                        continue;
-                                    }
-                                    Fmd fmd = engine.CreateFmd(cap_result.image, Fmd.Format.ANSI_378_2004);
-                                    Engine.Candidate[] candidates = engine.Identify(fmd, 0, fmds, 100000, 2);
-                                    for (Engine.Candidate candidate : candidates) {
-                                        int fmd_index = candidate.fmd_index;
-                                        final EmobileBiometric biometric = EmobileBiometricDAO.getBiometrics(fmds[fmd_index]);
-                                        if (biometric != null) {
-                                            runOnUiThread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    search.setText(biometric.getEntityid());
-                                                    executeBCR();
-                                                }
-                                            });
-                                        }
-                                    }
-                                } catch (UareUException e) {
-                                    stopFingerReader = true;
-                                }
-                            }
-                        }
-                        try {
-                            if (reader.GetStatus().status == Reader.ReaderStatus.BUSY) {
-                                reader.CancelCapture();
-                            }
-                            reader.Close();
-                        } catch (UareUException e) {
-                            e.printStackTrace();
-                        }
-                    } catch (UareUException e) {
-                        Crashlytics.logException(e);
-                        e.printStackTrace();
-                    } catch (InterruptedException e) {
-                        Crashlytics.logException(e);
-                        e.printStackTrace();
-                    } catch (DPFPDDUsbException e) {
-                        Crashlytics.logException(e);
-                        e.printStackTrace();
-                    }
-                }
-            }).start();
-
-    }
-
-
-    public static int GetFirstDPI(Reader reader) {
-        Reader.Capabilities caps = reader.GetCapabilities();
-        return caps.resolutions[0];
     }
 
 
@@ -284,15 +169,7 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
 
     private void releaseReader() {
         if(isReaderConnected) {
-            stopFingerReader = true;
-            try {
-                if (reader.GetStatus().status == Reader.ReaderStatus.BUSY) {
-                    reader.CancelCapture();
-                }
-                reader.Close();
-            } catch (UareUException e) {
-                e.printStackTrace();
-            }
+            digitalPersona.releaseReader();
         }
     }
 
@@ -317,9 +194,8 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
 
     @Override
     public void onResume() {
-
         if (isReaderConnected) {
-            loadFingerPrintReader(this);
+            digitalPersona.loadForScan();
         }
         if (global.isApplicationSentToBackground())
             Global.loggedIn = false;
@@ -376,7 +252,6 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        spleepTime = 2000;
         if (resultCode == -1) {
             finish();
         }
@@ -450,6 +325,17 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
         if (myCursor.getCount() == 1) {
             selectCustomer(0);
         }
+    }
+
+    @Override
+    public void biometricsWasRead(final EmobileBiometric biometric) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                search.setText(biometric.getEntityid());
+                executeBCR();
+            }
+        });
     }
 
 

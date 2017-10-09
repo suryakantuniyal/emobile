@@ -449,7 +449,6 @@ public class SynchMethods {
         this.isFromMainMenu = isFromMainMenu;
         if (!isSending)
             new SendAsync(activity).execute("");
-
     }
 
     public void synchForceSend(Activity activity) {
