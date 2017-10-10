@@ -126,4 +126,13 @@ public class PaymentMethod extends RealmObject {
         method.setOriginalTransid("0");
         return method;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof PaymentMethod) {
+            PaymentMethod paymentMethod = (PaymentMethod) obj;
+            return this.getPaymethod_id().equalsIgnoreCase(paymentMethod.getPaymethod_id());
+        } else
+            return false;
+    }
 }
