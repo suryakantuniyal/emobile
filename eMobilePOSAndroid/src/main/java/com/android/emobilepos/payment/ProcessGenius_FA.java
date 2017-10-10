@@ -617,6 +617,11 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
             @Override
             public void onClick(View v) {
                 dlog.dismiss();
+                Intent result = new Intent();
+                String paid_amount = NumberUtils.cleanCurrencyFormatedNumber(amountView.getText().toString());
+                result.putExtras(extras);
+                result.putExtra("total_amount", paid_amount);
+                setResult(-2, result);
                 finish();
             }
         });
