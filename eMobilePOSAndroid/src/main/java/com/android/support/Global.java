@@ -1517,7 +1517,7 @@ public class Global extends MultiDexApplication {
     }
 
     public void promptForMandatoryLogin(final Context activity) {
-        final DigitalPersona digitalPersona = new DigitalPersona(activity.getApplicationContext(), new BiometricCallbacks() {
+        final DigitalPersona digitalPersona = new DigitalPersona(activity, new BiometricCallbacks() {
             @Override
             public void biometricsWasRead(EmobileBiometric emobileBiometric) {
                 String entityid = emobileBiometric.getEntityid();

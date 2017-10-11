@@ -296,8 +296,8 @@
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".customer.ViewCustomerDetails_FA"
-            android:windowSoftInputMode="stateAlwaysHidden"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
             android:name=".ShowProductImageActivity"
             android:configChanges="orientation|screenSize"
@@ -508,10 +508,15 @@
         <!-- </intent-filter> -->
         <!-- </service> -->
         <activity android:name=".shifts.ShiftsActivity" />
-
         <activity
             android:name=".bixolon.BixolonTransactionsActivity"
-            android:label="@string/title_activity_bixolon_transactions"></activity>
+            android:label="@string/title_activity_bixolon_transactions" />
+        <activity
+            android:name=".security.ClerkManagementActivity"
+            android:label="@string/title_activity_clerk_management" />
+        <activity
+            android:name=".security.ClerkManagementDetailActivity"
+            android:label="@string/title_activity_clerk_management_detail"></activity>
     </application>
 
 </manifest>

@@ -1377,5 +1377,8 @@
     <string name="duplicated_fingerprint">Fingerprint already exist.</string>
     <string name="cust_detail_lastname">Last Name</string>
     <string name="fingerreadernotfound">Finger print reader not found.</string>
+    <string name="config_clerk_management">Clerk Management</string>
+    <string name="title_activity_clerk_management">ClerkManagementActivity</string>
+    <string name="title_activity_clerk_management_detail">ClerkManagementDetailActivity</string>
 
 </resources>

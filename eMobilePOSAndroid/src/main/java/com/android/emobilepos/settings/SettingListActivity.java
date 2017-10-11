@@ -54,6 +54,7 @@ import com.android.emobilepos.country.CountryPicker;
 import com.android.emobilepos.country.CountryPickerListener;
 import com.android.emobilepos.mainmenu.SettingsTab_FR;
 import com.android.emobilepos.models.realms.PaymentMethod;
+import com.android.emobilepos.security.ClerkManagementActivity;
 import com.android.emobilepos.security.SecurityManager;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
@@ -298,6 +299,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
         private void setPrefManager(SettingListActivity.SettingSection section, PreferenceManager prefManager) {
             switch (section) {
                 case GENERAL:
+                    prefManager.findPreference("pref_clerk_management").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_use_clerks").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_transaction_num_prefix").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_require_shift_transactions").setOnPreferenceClickListener(this);
@@ -482,6 +484,11 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                 case R.string.config_use_clerks:
                     Global.loggedIn = false;
                     myPref.setIsPersistClerk(myPref.isUseClerks());
+                    break;
+                case R.string.config_clerk_management:
+                    intent = new Intent(getActivity(), ClerkManagementActivity.class);
+                    startActivity(intent);
+                    break;
                 case R.string.config_use_navigationbar:
                     getActivity().finish();
                     getActivity().startActivity(getActivity().getIntent());
