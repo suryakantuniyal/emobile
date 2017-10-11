@@ -52,6 +52,7 @@ import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Clerk;
+import com.android.emobilepos.models.realms.EmobileBiometric;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.ProductAttribute;
 import com.android.emobilepos.ordering.OrderingMain_FA;
@@ -93,6 +94,8 @@ import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import drivers.digitalpersona.DigitalPersona;
+import interfaces.BiometricCallbacks;
 import io.fabric.sdk.android.Fabric;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -1514,7 +1517,14 @@ public class Global extends MultiDexApplication {
     }
 
     public void promptForMandatoryLogin(final Context activity) {
+        final DigitalPersona digitalPersona = new DigitalPersona(activity.getApplicationContext(), new BiometricCallbacks() {
+            @Override
+            public void biometricsWasRead(EmobileBiometric emobileBiometric) {
+                String entityid = emobileBiometric.getEntityid();
+            }
+        });
         if (!loggedIn) {
+            digitalPersona.loadForScan();
             Intent intent = new Intent(MainMenu_FA.NOTIFICATION_LOGIN_STATECHANGE);
             activity.sendBroadcast(intent);
             globalDlog = new Dialog(activity, R.style.FullscreenTheme);
@@ -1569,9 +1579,11 @@ public class Global extends MultiDexApplication {
                             }
                             globalDlog.dismiss();
                             loggedIn = true;
+                            digitalPersona.releaseReader();
                         }
                     } else if (enteredPass.equals(myPref.getApplicationPassword())) {
                         globalDlog.dismiss();
+                        digitalPersona.releaseReader();
                         loggedIn = true;
                         if (activity instanceof MainMenu_FA) {
                             ((MainMenu_FA) activity).hideLogoutButton();

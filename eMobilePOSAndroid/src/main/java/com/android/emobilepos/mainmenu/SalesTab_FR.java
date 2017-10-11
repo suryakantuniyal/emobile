@@ -247,7 +247,7 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
         global.clearListViewData();
         getActivity().registerReceiver(messageReceiver, new IntentFilter(MainMenu_FA.NOTIFICATION_LOGIN_STATECHANGE));
 
-        if (isReaderConnected) {
+        if (isReaderConnected && Global.loggedIn) {
             digitalPersona.loadForScan();
         }
         if (myPref.isCustSelected()) {
