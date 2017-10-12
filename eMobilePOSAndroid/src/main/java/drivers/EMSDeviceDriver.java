@@ -82,7 +82,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.nio.ByteBuffer;
 import java.text.Normalizer;
 import java.text.ParseException;
@@ -218,17 +217,17 @@ public class EMSDeviceDriver {
     }
 
     private void addTotalLines(Context context, Order anOrder, List<OrderProduct> orderProducts, StringBuilder sb, int lineWidth) {
-        double itemDiscTotal = 0;
+        BigDecimal itemDiscTotal = new BigDecimal(0);
         for (OrderProduct orderProduct : orderProducts) {
             try {
-                itemDiscTotal += Double.parseDouble(orderProduct.getDiscount_value());
+                itemDiscTotal = itemDiscTotal.add(Global.getBigDecimalNum(orderProduct.getDiscount_value()));
             } catch (NumberFormatException e) {
-                itemDiscTotal = 0;
+                itemDiscTotal = new BigDecimal(0);
             }
         }
-        saveAmount = itemDiscTotal + (anOrder.ord_discount.isEmpty() ? 0.0 : Double.parseDouble(anOrder.ord_discount));
+        saveAmount = itemDiscTotal.add(anOrder.ord_discount.isEmpty() ? new BigDecimal(0) : new BigDecimal(anOrder.ord_discount)).doubleValue();
         sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.receipt_subtotal),
-                Global.formatDoubleStrToCurrency(anOrder.ord_subtotal), lineWidth, 0));
+                Global.formatDoubleStrToCurrency(Global.getBigDecimalNum(anOrder.ord_subtotal).add(itemDiscTotal).toString()), lineWidth, 0));
         sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.receipt_discount_line_item),
                 Global.formatDoubleStrToCurrency(String.valueOf(itemDiscTotal)), lineWidth, 0));
         sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.receipt_global_discount),
@@ -873,6 +872,7 @@ public class EMSDeviceDriver {
                     sb.append(orderProducts.get(i).getOrdprod_name()).append("-").append(orderProducts.get(i).getOrdprod_desc())
                             .append("\n");
 
+                    sb.append(String.format("Discount %s\n", Global.getCurrencyFormat(orderProducts.get(i).getDiscountTotal().toString())));
                     sb.append(String.format(tempSB.toString(), "   ", orderProducts.get(i).getOrdprod_qty(),
                             Global.getCurrencyFormat(orderProducts.get(i).getFinalPrice()),
                             Global.getCurrencyFormat(orderProducts.get(i).getItemTotal()))).append("\n");
@@ -2384,8 +2384,8 @@ public class EMSDeviceDriver {
             for (OrderProduct prod : listProd) {
                 String calc;
                 if (new BigDecimal(prod.getOrdprod_qty()).compareTo(new BigDecimal(0)) != 0) {
-                    calc = Global.formatDoubleStrToCurrency(String.valueOf(new BigDecimal(prod.getItemTotal())
-                            .divide(new BigDecimal(prod.getOrdprod_qty()), 2, RoundingMode.HALF_UP)));
+                    calc = prod.getItemTotal();//Global.formatDoubleStrToCurrency(String.valueOf(new BigDecimal(prod.getItemTotal())
+//                            .divide(new BigDecimal(prod.getOrdprod_qty()), 2, RoundingMode.HALF_UP)));
                 } else {
                     calc = Global.formatDoubleToCurrency(0);
                 }

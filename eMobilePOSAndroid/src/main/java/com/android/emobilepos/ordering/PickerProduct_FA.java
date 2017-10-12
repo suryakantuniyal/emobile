@@ -850,7 +850,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         BigDecimal finalPrice = new BigDecimal(orderProduct.getFinalPrice()).multiply(new BigDecimal(qty_picked));
         if (finalPrice.doubleValue() >= 0
                 && finalPrice.doubleValue() <= Double.parseDouble(disTotal)) {
-            disTotal = orderProduct.getFinalPrice();
+            disTotal = String.valueOf(Global.getBigDecimalNum(orderProduct.getFinalPrice()).multiply(Global.getBigDecimalNum(orderProduct.getOrdprod_qty())));
         }
         orderProduct.setDiscount_value(disTotal);
 //        orderProduct.setProd_taxId(prod_taxId);
