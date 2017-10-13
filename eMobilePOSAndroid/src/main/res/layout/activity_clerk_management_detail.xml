@@ -7,34 +7,6 @@
     tools:context="com.android.emobilepos.security.ClerkManagementDetailActivity">
 
     <TextView
-        android:id="@+id/textView28"
-        style="@style/white_text_appearance"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_weight="1"
-        android:background="@android:color/darker_gray"
-        android:gravity="center_horizontal"
-        android:paddingBottom="5dp"
-        android:paddingEnd="0dp"
-        android:paddingLeft="10dp"
-        android:paddingRight="0dp"
-        android:paddingStart="10dp"
-        android:paddingTop="5dp"
-        android:text="@string/cust_detail_info"
-        android:textSize="@dimen/about_main_text_size"
-        app:layout_constraintHorizontal_bias="0.496"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView43"
-        tools:layout_constraintLeft_creator="1"
-        tools:layout_constraintRight_creator="1" />
-
-    <TextView
         android:id="@+id/textView43"
         style="@style/text_shadow"
         android:layout_width="0dp"
@@ -65,61 +37,86 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView28"
+        app:layout_constraintTop_toBottomOf="@+id/textView43"
         app:layout_constraintVertical_bias="0.0"
         android:id="@+id/linearLayout5"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp">
 
-        <TableLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginRight="10dp"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:orientation="vertical">
 
-            <TableRow
+            <TextView
+                android:id="@+id/textView28"
+                style="@style/white_text_appearance"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content"
+                android:background="@android:color/darker_gray"
+                android:gravity="center_horizontal"
+                android:paddingBottom="5dp"
+                android:paddingEnd="0dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="0dp"
+                android:paddingStart="10dp"
+                android:paddingTop="5dp"
+                android:text="@string/cust_detail_info"
+                android:textSize="@dimen/about_main_text_size"
+               />
 
-                <TextView
-                    android:id="@+id/textView37"
-                    style="@style/black_text_appearance_unbold"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/pay_details_clerk_id"
-                    android:textSize="@dimen/about_main_text_size" />
-
-                <TextView
-                    android:id="@+id/clerkIdtextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="123" />
-
-            </TableRow>
-
-            <TableRow
+            <TableLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_marginEnd="10dp"
+                android:layout_marginRight="10dp"
                 android:layout_weight="1">
 
-                <TextView
-                    android:id="@+id/textView38"
-                    style="@style/black_text_appearance_unbold"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/clerk_name"
-                    android:textSize="@dimen/about_main_text_size" />
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
-                <TextView
-                    android:id="@+id/textView41"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Pepo" />
-            </TableRow>
+                    <TextView
+                        android:id="@+id/textView37"
+                        style="@style/black_text_appearance_unbold"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/pay_details_clerk_id"
+                        android:textSize="@dimen/about_main_text_size" />
 
-        </TableLayout>
+                    <TextView
+                        android:id="@+id/clerkIdtextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="123" />
+
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:id="@+id/textView38"
+                        style="@style/black_text_appearance_unbold"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/clerk_name"
+                        android:textSize="@dimen/about_main_text_size" />
+
+                    <TextView
+                        android:id="@+id/clerkNametextView41"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Pepo" />
+                </TableRow>
+
+            </TableLayout>
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/tableLayouta"

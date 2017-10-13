@@ -31,6 +31,7 @@ import android.widget.TextView;
 import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.ClerkDAO;
 import com.android.dao.DinningTableDAO;
+import com.android.dao.EmobileBiometricDAO;
 import com.android.dao.ShiftDAO;
 import com.android.database.CustomersHandler;
 import com.android.database.SalesTaxCodesHandler;
@@ -42,6 +43,7 @@ import com.android.emobilepos.cardmanager.GiftCard_FA;
 import com.android.emobilepos.cardmanager.LoyaltyCard_FA;
 import com.android.emobilepos.cardmanager.RewardCard_FA;
 import com.android.emobilepos.consignment.ConsignmentMain_FA;
+import com.android.emobilepos.customer.ViewCustomerDetails_FA;
 import com.android.emobilepos.customer.ViewCustomers_FA;
 import com.android.emobilepos.history.HistoryOpenInvoices_FA;
 import com.android.emobilepos.holders.Locations_Holder;
@@ -49,6 +51,7 @@ import com.android.emobilepos.locations.LocationsPickerDlog_FR;
 import com.android.emobilepos.locations.LocationsPicker_Listener;
 import com.android.emobilepos.mainmenu.restaurant.DinningTablesActivity;
 import com.android.emobilepos.models.BCRMacro;
+import com.android.emobilepos.models.realms.BiometricFid;
 import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.DinningTable;
 import com.android.emobilepos.models.realms.EmobileBiometric;
@@ -1459,6 +1462,22 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
             }
         });
     }
+
+    @Override
+    public void biometricsWasEnrolled(BiometricFid biometricFid) {
+
+    }
+
+    @Override
+    public void biometricsDuplicatedEnroll(BiometricFid biometricFid) {
+
+    }
+
+    @Override
+    public void biometricsUnregister(ViewCustomerDetails_FA.Finger finger) {
+
+    }
+
 
     public class MyListener implements AdapterView.OnItemClickListener {
 

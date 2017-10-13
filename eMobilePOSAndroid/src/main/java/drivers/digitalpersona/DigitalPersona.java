@@ -1,5 +1,6 @@
 package drivers.digitalpersona;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -21,6 +22,7 @@ import android.widget.Toast;
 import com.android.dao.EmobileBiometricDAO;
 import com.android.emobilepos.R;
 import com.android.emobilepos.customer.ViewCustomerDetails_FA;
+import com.android.emobilepos.models.realms.BiometricFid;
 import com.android.emobilepos.models.realms.EmobileBiometric;
 import com.android.support.DeviceUtils;
 import com.crashlytics.android.Crashlytics;
@@ -202,7 +204,7 @@ public class DigitalPersona {
     }
 
 
-    private void startFingerPrintEnrollment(final ViewCustomerDetails_FA.Finger finger) {
+    public void startFingerPrintEnrollment(final ViewCustomerDetails_FA.Finger finger) {
         try {
             if (reader != null) {
                 final Dialog scanningDialog = showScanningDialog(finger);
@@ -281,9 +283,6 @@ public class DigitalPersona {
             @Override
             public void onClick(View v) {
                 m_reset = true;
-//                EmobileBiometricDAO.deleteFinger(cust_id, EmobileBiometric.UserType.CUSTOMER, finger);
-//                biometric = EmobileBiometricDAO.getBiometrics(cust_id, EmobileBiometric.UserType.CUSTOMER);
-//                setFingerPrintUI();
                 try {
                     if (reader.GetStatus().status == Reader.ReaderStatus.BUSY) {
                         reader.CancelCapture();
@@ -369,8 +368,6 @@ public class DigitalPersona {
                     Engine.PreEnrollmentFmd prefmd = new Engine.PreEnrollmentFmd();
 
                     prefmd.fmd = m_engine.CreateFmd(cap_result.image, Fmd.Format.ANSI_378_2004);
-//                    Fmd fmd = m_engine.CreateFmd(cap_result.image.getData(), cap_result.image.getViews()[0].getWidth(), cap_result.image.getViews()[0].getHeight(),
-//                            cap_result.image.getViews()[0].getQuality(), cap_result.image.getViews()[0].getFingerPosition(), cap_result.image.getCbeffId(), Fmd.Format.ANSI_378_2004);
                     prefmd.view_index = 0;
                     m_current_fmds_count++;
                     progress++;
@@ -400,18 +397,14 @@ public class DigitalPersona {
                                 candidates = engine.Identify(m_enrollment_fmd, 0, fmds, 100000, 2);
                             }
                             m_reset = true;
+                            BiometricFid biometricFid = new BiometricFid(engine, cap_result.image, finger);
                             if (candidates.length == 0) {
-//                                EmobileBiometricDAO.deleteFinger(cust_id, EmobileBiometric.UserType.CUSTOMER, finger);
-//                                BiometricFid biometricFid = new BiometricFid(engine, cap_result.image, finger);
-//                                biometric.setEntityid(cust_id);
-//                                biometric.getFids().add(biometricFid);
-//                                biometric.setRegid(preferences.getAcctNumber());
-//                                EmobileBiometricDAO.upsert(biometric);
+                                callbacks.biometricsWasEnrolled(biometricFid);
                             } else {
-//                                handler.sendEmptyMessage(0);
+                                callbacks.biometricsDuplicatedEnroll(biometricFid);
                             }
                         } catch (UareUException e) {
-
+                            e.printStackTrace();
                         }
                         m_text_conclusionString = m_success ? "Enrollment template created, size: " + m_templateSize : "Enrollment template failed. Please try again";
                     }
@@ -420,12 +413,15 @@ public class DigitalPersona {
             } else {
                 m_first = false;
                 m_success = false;
-//                runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        startAnimation(fingerPrintimage, 1);
-//                    }
-//                });
+                if (context instanceof Activity) {
+                    Activity activity = (Activity) context;
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            startAnimation(fingerPrintimage, 1);
+                        }
+                    });
+                }
             }
 
             return result;

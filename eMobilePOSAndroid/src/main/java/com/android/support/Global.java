@@ -38,11 +38,13 @@ import android.widget.TextView;
 import com.android.crashreport.ExceptionHandler;
 import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.ClerkDAO;
+import com.android.dao.EmobileBiometricDAO;
 import com.android.dao.EmobilePOSRealmMigration;
 import com.android.dao.RealmModule;
 import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.R;
+import com.android.emobilepos.customer.ViewCustomerDetails_FA;
 import com.android.emobilepos.holders.Locations_Holder;
 import com.android.emobilepos.holders.TransferInventory_Holder;
 import com.android.emobilepos.holders.TransferLocations_Holder;
@@ -51,6 +53,7 @@ import com.android.emobilepos.models.Product;
 import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
+import com.android.emobilepos.models.realms.BiometricFid;
 import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.EmobileBiometric;
 import com.android.emobilepos.models.realms.Payment;
@@ -1521,6 +1524,21 @@ public class Global extends MultiDexApplication {
             @Override
             public void biometricsWasRead(EmobileBiometric emobileBiometric) {
                 String entityid = emobileBiometric.getEntityid();
+            }
+
+            @Override
+            public void biometricsWasEnrolled(BiometricFid biometricFid) {
+
+            }
+
+            @Override
+            public void biometricsDuplicatedEnroll(BiometricFid biometricFid) {
+
+            }
+
+            @Override
+            public void biometricsUnregister(ViewCustomerDetails_FA.Finger finger) {
+
             }
         });
         if (!loggedIn) {

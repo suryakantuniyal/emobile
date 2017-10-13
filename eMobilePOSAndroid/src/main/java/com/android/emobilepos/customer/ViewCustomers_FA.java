@@ -28,9 +28,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
+import com.android.dao.EmobileBiometricDAO;
 import com.android.database.CustomersHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.history.HistoryTransactions_FA;
+import com.android.emobilepos.models.realms.BiometricFid;
 import com.android.emobilepos.models.realms.EmobileBiometric;
 import com.android.emobilepos.security.SecurityManager;
 import com.android.support.DeviceUtils;
@@ -336,6 +338,21 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
                 executeBCR();
             }
         });
+    }
+
+    @Override
+    public void biometricsWasEnrolled(BiometricFid biometricFid) {
+
+    }
+
+    @Override
+    public void biometricsDuplicatedEnroll(BiometricFid biometricFid) {
+
+    }
+
+    @Override
+    public void biometricsUnregister(ViewCustomerDetails_FA.Finger finger) {
+
     }
 
 
