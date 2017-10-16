@@ -33,9 +33,9 @@ public class ShiftReportDetails_FA extends BaseFragmentActivityActionBar impleme
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         activity = this;
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.shift_details_layout);
         global = (Global) getApplication();
         Button btnPrint = (Button) findViewById(R.id.btnPrint);
