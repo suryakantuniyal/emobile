@@ -45,7 +45,7 @@ import static com.android.emobilepos.R.id.unregisterFingerprintbutton2;
 
 public class DigitalPersona {
 
-    private int spleepTime = 100;
+    private int spleepTime = 500;
     private Reader reader;
     private boolean stopFingerReader;
     private Context context;

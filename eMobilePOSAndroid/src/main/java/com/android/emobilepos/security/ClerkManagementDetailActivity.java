@@ -108,7 +108,7 @@ public class ClerkManagementDetailActivity extends Activity implements Biometric
 
     @Override
     public void biometricsDuplicatedEnroll(BiometricFid biometricFid) {
-
+        
     }
 
     @Override
