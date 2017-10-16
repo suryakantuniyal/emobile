@@ -14,6 +14,7 @@ import com.android.emobilepos.customer.ViewCustomerDetails_FA;
 import com.android.emobilepos.models.realms.BiometricFid;
 import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.EmobileBiometric;
+import com.android.support.Global;
 import com.android.support.MyPreferences;
 
 import drivers.digitalpersona.DigitalPersona;
@@ -40,7 +41,6 @@ public class ClerkManagementDetailActivity extends Activity implements Biometric
         clerkId = extras.getInt("clerkId", 0);
         clerk = ClerkDAO.getByEmpId(clerkId);
         digitalPersona = new DigitalPersona(this, this);
-        digitalPersona.loadForEnrollment();
         biometric = EmobileBiometricDAO.getBiometrics(String.valueOf(clerkId), EmobileBiometric.UserType.CLERK);
         setUI();
     }
@@ -58,6 +58,7 @@ public class ClerkManagementDetailActivity extends Activity implements Biometric
         TextView clerkName = (TextView) findViewById(R.id.clerkNametextView41);
         clerkId.setText(String.valueOf(clerk.getEmpId()));
         clerkName.setText(clerk.getEmpName());
+        setFingerPrintUI();
     }
 
     @Override
@@ -87,30 +88,71 @@ public class ClerkManagementDetailActivity extends Activity implements Biometric
         fingerLeft2.setBackgroundResource(R.color.black_transparency);
         fingerLeft3.setBackgroundResource(R.color.black_transparency);
         fingerLeft4.setBackgroundResource(R.color.black_transparency);
-        for (BiometricFid fid : biometric.getFids()) {
-            ViewCustomerDetails_FA.Finger finger = ViewCustomerDetails_FA.Finger.getByCode(fid.getFingerCode());
-            switch (finger) {
-                case FINGER_ONE_LEFT:
-                    fingerLeft1.setBackgroundColor(Color.GREEN);
-                    break;
-                case FINGER_TWO_LEFT:
-                    fingerLeft2.setBackgroundColor(Color.GREEN);
-                    break;
-                case FINGER_THREE_LEFT:
-                    fingerLeft3.setBackgroundColor(Color.GREEN);
-                    break;
-                case FINGER_FOUR_LEFT:
-                    fingerLeft4.setBackgroundColor(Color.GREEN);
-                    break;
+        if (biometric != null) {
+            for (BiometricFid fid : biometric.getFids()) {
+                ViewCustomerDetails_FA.Finger finger = ViewCustomerDetails_FA.Finger.getByCode(fid.getFingerCode());
+                switch (finger) {
+                    case FINGER_ONE_LEFT:
+                        fingerLeft1.setBackgroundColor(Color.GREEN);
+                        break;
+                    case FINGER_TWO_LEFT:
+                        fingerLeft2.setBackgroundColor(Color.GREEN);
+                        break;
+                    case FINGER_THREE_LEFT:
+                        fingerLeft3.setBackgroundColor(Color.GREEN);
+                        break;
+                    case FINGER_FOUR_LEFT:
+                        fingerLeft4.setBackgroundColor(Color.GREEN);
+                        break;
+                }
             }
         }
     }
 
     @Override
-    public void biometricsDuplicatedEnroll(BiometricFid biometricFid) {
-        
+    public void biometricsDuplicatedEnroll(EmobileBiometric emobileBiometric, BiometricFid biometricFid) {
+        if ((emobileBiometric.getUserType() == EmobileBiometric.UserType.CLERK
+                && emobileBiometric.getEntityid().equalsIgnoreCase(String.valueOf(clerkId)))
+                || emobileBiometric.getUserType() != EmobileBiometric.UserType.CLERK) {
+            boolean alreadyRegistered=false;
+            for (BiometricFid fid : emobileBiometric.getFids()) {
+                if(fid.getFingerCode()!=biometricFid.getFingerCode()){
+                    alreadyRegistered=true;
+                    break;
+                }
+            }
+            if(!alreadyRegistered) {
+                EmobileBiometricDAO.deleteFinger(String.valueOf(clerkId), EmobileBiometric.UserType.CLERK,
+                        ViewCustomerDetails_FA.Finger.getByCode(biometricFid.getFingerCode()));
+                biometric.setUserType(EmobileBiometric.UserType.CLERK);
+                biometric.setEntityid(String.valueOf(clerkId));
+                biometric.getFids().add(biometricFid);
+                biometric.setRegid(preferences.getAcctNumber());
+                EmobileBiometricDAO.upsert(biometric);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        setFingerPrintUI();
+                    }
+                });
+            }else{
+                showDuplicateMesage();
+            }
+        } else {
+            if (!emobileBiometric.getEntityid().equalsIgnoreCase(String.valueOf(clerkId))) {
+               showDuplicateMesage();
+            }
+        }
     }
 
+    private void showDuplicateMesage(){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Global.showPrompt(ClerkManagementDetailActivity.this, R.string.fingerprint_enrollment_title, getString(R.string.duplicated_fingerprint));
+            }
+        });
+    }
     @Override
     public void biometricsUnregister(ViewCustomerDetails_FA.Finger finger) {
         EmobileBiometricDAO.deleteFinger(String.valueOf(clerkId), EmobileBiometric.UserType.CLERK, finger);

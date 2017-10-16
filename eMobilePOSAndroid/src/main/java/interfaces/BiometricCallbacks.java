@@ -7,7 +7,7 @@ import com.android.emobilepos.models.realms.EmobileBiometric;
 public interface BiometricCallbacks {
     void biometricsWasRead(EmobileBiometric emobileBiometric);
     void biometricsWasEnrolled(BiometricFid biometricFid);
-    void biometricsDuplicatedEnroll(BiometricFid biometricFid);
+    void biometricsDuplicatedEnroll(EmobileBiometric emobileBiometric, BiometricFid biometricFid);
     void biometricsUnregister(ViewCustomerDetails_FA.Finger finger);
 
 }

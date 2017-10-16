@@ -206,6 +206,7 @@ public class DigitalPersona {
 
     public void startFingerPrintEnrollment(final ViewCustomerDetails_FA.Finger finger) {
         try {
+            loadForEnrollment();
             if (reader != null) {
                 final Dialog scanningDialog = showScanningDialog(finger);
                 m_reset = false;
@@ -232,6 +233,7 @@ public class DigitalPersona {
                                 }
                             }
                             progress = 0;
+                            releaseReader();
                             scanningDialog.dismiss();
 //                            ViewCustomerDetails_FA.this.runOnUiThread(new Runnable() {
 //                                @Override
@@ -291,6 +293,7 @@ public class DigitalPersona {
 
                 }
                 dialog.dismiss();
+                callbacks.biometricsUnregister(finger);
             }
         });
 
@@ -401,7 +404,13 @@ public class DigitalPersona {
                             if (candidates.length == 0) {
                                 callbacks.biometricsWasEnrolled(biometricFid);
                             } else {
-                                callbacks.biometricsDuplicatedEnroll(biometricFid);
+                                for (Engine.Candidate candidate : candidates) {
+                                    int fmd_index = candidate.fmd_index;
+                                    final EmobileBiometric biometric = EmobileBiometricDAO.getBiometrics(fmds[fmd_index]);
+                                    callbacks.biometricsDuplicatedEnroll(biometric, biometricFid);
+//                                    if (biometric != null) {
+//                                        callbacks.biometricsWasRead(biometric);
+                                }
                             }
                         } catch (UareUException e) {
                             e.printStackTrace();

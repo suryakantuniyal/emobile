@@ -346,9 +346,10 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
     }
 
     @Override
-    public void biometricsDuplicatedEnroll(BiometricFid biometricFid) {
+    public void biometricsDuplicatedEnroll(EmobileBiometric emobileBiometric, BiometricFid biometricFid) {
 
     }
+
 
     @Override
     public void biometricsUnregister(ViewCustomerDetails_FA.Finger finger) {

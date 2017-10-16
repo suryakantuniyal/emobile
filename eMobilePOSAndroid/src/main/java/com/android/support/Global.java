@@ -38,7 +38,6 @@ import android.widget.TextView;
 import com.android.crashreport.ExceptionHandler;
 import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.ClerkDAO;
-import com.android.dao.EmobileBiometricDAO;
 import com.android.dao.EmobilePOSRealmMigration;
 import com.android.dao.RealmModule;
 import com.android.database.VolumePricesHandler;
@@ -1520,52 +1519,62 @@ public class Global extends MultiDexApplication {
     }
 
     public void promptForMandatoryLogin(final Context activity) {
-        final DigitalPersona digitalPersona = new DigitalPersona(activity, new BiometricCallbacks() {
-            @Override
-            public void biometricsWasRead(EmobileBiometric emobileBiometric) {
-                String entityid = emobileBiometric.getEntityid();
-            }
-
-            @Override
-            public void biometricsWasEnrolled(BiometricFid biometricFid) {
-
-            }
-
-            @Override
-            public void biometricsDuplicatedEnroll(BiometricFid biometricFid) {
-
-            }
-
-            @Override
-            public void biometricsUnregister(ViewCustomerDetails_FA.Finger finger) {
-
-            }
-        });
+        Intent intent = new Intent(MainMenu_FA.NOTIFICATION_LOGIN_STATECHANGE);
+        activity.sendBroadcast(intent);
+        globalDlog = new Dialog(activity, R.style.FullscreenTheme);
+        globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        globalDlog.setCancelable(false);
+        globalDlog.setContentView(R.layout.dlog_login_layout);
+        if (globalDlog.findViewById(R.id.versionNumbertextView) != null) {
+            ((TextView) globalDlog.findViewById(R.id.versionNumbertextView)).setText(BuildConfig.VERSION_NAME);
+        }
+        final MyPreferences myPref = new MyPreferences(activity);
+        final EditText viewField = (EditText) globalDlog.findViewById(R.id.dlogFieldSingle);
+        viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        final TextView viewMsg = (TextView) globalDlog.findViewById(R.id.dlogMessage);
+        final TextView loginInstructionTextView = (TextView) globalDlog.findViewById(R.id.loginInstructionstextView28);
+        Button systemLoginButton = (Button) globalDlog.findViewById(R.id.systemLoginbutton2);
+        if (myPref.isUseClerks()) {
+            systemLoginButton.setVisibility(View.VISIBLE);
+            loginInstructionTextView.setText(getString(R.string.login_clerk_instructions));
+        } else {
+            systemLoginButton.setVisibility(View.GONE);
+            loginInstructionTextView.setText(getString(R.string.login_system_instructions));
+        }
+        viewMsg.setText(R.string.password);
         if (!loggedIn) {
+            final DigitalPersona digitalPersona = new DigitalPersona(activity, new BiometricCallbacks() {
+                @Override
+                public void biometricsWasRead(EmobileBiometric emobileBiometric) {
+                    if (emobileBiometric.getUserType() == EmobileBiometric.UserType.CLERK) {
+                        final Clerk clerk = ClerkDAO.getByEmpId(Integer.parseInt(emobileBiometric.getEntityid()));
+                        ((Activity) activity).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                validateLogin(activity, myPref, clerk.getEmpPwd(), viewField, viewMsg);
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void biometricsWasEnrolled(BiometricFid biometricFid) {
+
+                }
+
+                @Override
+                public void biometricsDuplicatedEnroll(EmobileBiometric emobileBiometric, BiometricFid biometricFid) {
+
+                }
+
+
+                @Override
+                public void biometricsUnregister(ViewCustomerDetails_FA.Finger finger) {
+
+                }
+            });
             digitalPersona.loadForScan();
-            Intent intent = new Intent(MainMenu_FA.NOTIFICATION_LOGIN_STATECHANGE);
-            activity.sendBroadcast(intent);
-            globalDlog = new Dialog(activity, R.style.FullscreenTheme);
-            globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            globalDlog.setCancelable(false);
-            globalDlog.setContentView(R.layout.dlog_login_layout);
-            if (globalDlog.findViewById(R.id.versionNumbertextView) != null) {
-                ((TextView) globalDlog.findViewById(R.id.versionNumbertextView)).setText(BuildConfig.VERSION_NAME);
-            }
-            final MyPreferences myPref = new MyPreferences(activity);
-            final EditText viewField = (EditText) globalDlog.findViewById(R.id.dlogFieldSingle);
-            viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-            final TextView viewMsg = (TextView) globalDlog.findViewById(R.id.dlogMessage);
-            final TextView loginInstructionTextView = (TextView) globalDlog.findViewById(R.id.loginInstructionstextView28);
-            Button systemLoginButton = (Button) globalDlog.findViewById(R.id.systemLoginbutton2);
-            if (myPref.isUseClerks()) {
-                systemLoginButton.setVisibility(View.VISIBLE);
-                loginInstructionTextView.setText(getString(R.string.login_clerk_instructions));
-            } else {
-                systemLoginButton.setVisibility(View.GONE);
-                loginInstructionTextView.setText(getString(R.string.login_system_instructions));
-            }
-            viewMsg.setText(R.string.password);
+
             systemLoginButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -1584,42 +1593,73 @@ public class Global extends MultiDexApplication {
                 @Override
                 public void onClick(View v) {
                     String enteredPass = viewField.getText().toString().trim();
-                    if (myPref.isUseClerks()) {
-                        Clerk clerk = ClerkDAO.login(enteredPass, myPref, true);
-                        if (clerk == null) {
-                            viewField.setText("");
-                            viewMsg.setText(R.string.invalid_password);
-                        } else {
-                            myPref.setClerkID(String.valueOf(clerk.getEmpId()));
-                            myPref.setClerkName(clerk.getEmpName());
-                            if (activity instanceof MainMenu_FA) {
-                                ((MainMenu_FA) activity).setLogoutButtonClerkname();
-                            }
-                            globalDlog.dismiss();
-                            loggedIn = true;
-                            digitalPersona.releaseReader();
-                        }
-                    } else if (enteredPass.equals(myPref.getApplicationPassword())) {
-                        globalDlog.dismiss();
-                        digitalPersona.releaseReader();
-                        loggedIn = true;
-                        if (activity instanceof MainMenu_FA) {
-                            ((MainMenu_FA) activity).hideLogoutButton();
-                        }
-                    } else {
-                        viewField.setText("");
-                        viewMsg.setText(R.string.invalid_password);
-                    }
-                    if (loggedIn) {
-                        Intent intent = new Intent(MainMenu_FA.NOTIFICATION_LOGIN_STATECHANGE);
-                        activity.sendBroadcast(intent);
-                    }
+                    validateLogin(activity, myPref, enteredPass, viewField, viewMsg);
+//                    if (myPref.isUseClerks()) {
+//                        Clerk clerk = ClerkDAO.login(enteredPass, myPref, true);
+//                        if (clerk == null) {
+//                            viewField.setText("");
+//                            viewMsg.setText(R.string.invalid_password);
+//                        } else {
+//                            myPref.setClerkID(String.valueOf(clerk.getEmpId()));
+//                            myPref.setClerkName(clerk.getEmpName());
+//                            if (activity instanceof MainMenu_FA) {
+//                                ((MainMenu_FA) activity).setLogoutButtonClerkname();
+//                            }
+//                            globalDlog.dismiss();
+//                            loggedIn = true;
+//                            digitalPersona.releaseReader();
+//                        }
+//                    } else if (enteredPass.equals(myPref.getApplicationPassword())) {
+//                        globalDlog.dismiss();
+//                        digitalPersona.releaseReader();
+//                        loggedIn = true;
+//                        if (activity instanceof MainMenu_FA) {
+//                            ((MainMenu_FA) activity).hideLogoutButton();
+//                        }
+//                    } else {
+//                        viewField.setText("");
+//                        viewMsg.setText(R.string.invalid_password);
+//                    }
+//                    if (loggedIn) {
+//                        Intent intent = new Intent(MainMenu_FA.NOTIFICATION_LOGIN_STATECHANGE);
+//                        activity.sendBroadcast(intent);
+//                    }
                 }
             });
             globalDlog.show();
         }
     }
 
+    private void validateLogin(Context context, MyPreferences myPref, String enteredPass, EditText viewField, TextView viewMsg) {
+        if (myPref.isUseClerks()) {
+            Clerk clerk = ClerkDAO.login(enteredPass, myPref, true);
+            if (clerk == null) {
+                viewField.setText("");
+                viewMsg.setText(R.string.invalid_password);
+            } else {
+                myPref.setClerkID(String.valueOf(clerk.getEmpId()));
+                myPref.setClerkName(clerk.getEmpName());
+                if (context instanceof MainMenu_FA) {
+                    ((MainMenu_FA) context).setLogoutButtonClerkname();
+                }
+                globalDlog.dismiss();
+                loggedIn = true;
+            }
+        } else if (enteredPass.equals(myPref.getApplicationPassword())) {
+            globalDlog.dismiss();
+            loggedIn = true;
+            if (context instanceof MainMenu_FA) {
+                ((MainMenu_FA) context).hideLogoutButton();
+            }
+        } else {
+            viewField.setText("");
+            viewMsg.setText(R.string.invalid_password);
+        }
+        if (loggedIn) {
+            Intent intent = new Intent(MainMenu_FA.NOTIFICATION_LOGIN_STATECHANGE);
+            context.sendBroadcast(intent);
+        }
+    }
     public boolean isApplicationSentToBackground() {
         return wasInBackground;
     }
