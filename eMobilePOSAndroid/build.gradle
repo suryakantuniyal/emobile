@@ -50,8 +50,8 @@ android {
         ems {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.2.2.80"
-            versionCode 145
+            versionName "1.2.2.88"
+            versionCode 146
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -64,8 +64,8 @@ android {
         icmpevo {
             minSdkVersion 15
             applicationId 'com.emobilepos.icmpevo.app'
-            versionName "1.2.2.80"
-            versionCode 145
+            versionName "1.2.2.88"
+            versionCode 146
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -92,8 +92,8 @@ android {
         ivupos {
             minSdkVersion 15
             applicationId 'com.emobilepos.ivupos.app'
-            versionName "1.2.2.80"
-            versionCode 145
+            versionName "1.2.2.88"
+            versionCode 146
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -135,13 +135,14 @@ android {
     buildTypes {
         debug {
             // Disable fabric build ID generation for debug builds
-            ext.enableCrashlytics = false
+            ext.enableCrashlytics = true
 //            buildConfigField "boolean", "REPORT_CRASHLITYCS", "true"
             buildConfigField "String", "OS", "\"Android\""
             buildConfigField "int", "POLLING_PERIOD", "10000"
             buildConfigField "int", "AUTOSYNC_PERIOD", "60000"
             buildConfigField "boolean", "PRINT_TO_LOG", "true"
             buildConfigField "boolean", "DEBUG_NOMAD", "true"
+            buildConfigField "boolean", "USE_DUMMY_START_PRINTER", "true"
             buildConfigField "boolean", "DELETE_INVALID_HOLDS", "true"
             minifyEnabled false
             multiDexEnabled true
@@ -156,6 +157,7 @@ android {
             buildConfigField "int", "POLLING_PERIOD", "5000"
             buildConfigField "int", "AUTOSYNC_PERIOD", "60000"
             buildConfigField "boolean", "DEBUG_NOMAD", "true"
+            buildConfigField "boolean", "USE_DUMMY_START_PRINTER", "false"
             buildConfigField "boolean", "DELETE_INVALID_HOLDS", "false"
             minifyEnabled false
             multiDexEnabled true
@@ -170,6 +172,9 @@ android {
     }
 }
 configurations {
+    configurations.all {
+        resolutionStrategy.force 'com.google.code.findbugs:jsr305:3.0.2'
+    }
 //    all*.exclude group: 'com.google.firebase', module: 'firebase-common'
 }
 dependencies {

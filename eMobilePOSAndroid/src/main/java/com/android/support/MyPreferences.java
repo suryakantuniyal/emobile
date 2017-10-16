@@ -57,6 +57,7 @@ public class MyPreferences {
     public static final String pref_giftcard_show_balance = "pref_giftcard_show_balance";
     public static final String pref_cash_show_change = "pref_cash_show_change";
     public static final String pref_pay_with_tupyx = "pref_pay_with_tupyx";
+    public static final String pref_pay_with_card_on_file = "pref_pay_with_card_on_file";
     public static final String pref_mw_with_genius = "pref_mw_with_genius";
     public static final String pref_config_genius_peripheral = "pref_config_genius_peripheral";
     public static final String pref_enable_location_inventory = "pref_enable_location_inventory";
@@ -1451,6 +1452,9 @@ public class MyPreferences {
         return getPreferences(MyPreferences.pref_enable_multiple_prints);
     }
 
+    public boolean isPayWithCardOnFile() {
+        return getPreferences(MyPreferences.pref_pay_with_card_on_file);
+    }
     public enum PrinterPreviewWidth {SMALL, MEDIUM, LARGE}
 
 }

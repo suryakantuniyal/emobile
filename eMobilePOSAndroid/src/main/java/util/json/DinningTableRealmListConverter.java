@@ -22,7 +22,7 @@ import io.realm.RealmObject;
  */
 
 public class DinningTableRealmListConverter implements JsonSerializer<RealmList<DinningTable>> {
-    private Realm realm = Realm.getDefaultInstance();
+
     private Gson gson = new GsonBuilder()
             .setExclusionStrategies(new ExclusionStrategy() {
                 @Override
@@ -39,15 +39,19 @@ public class DinningTableRealmListConverter implements JsonSerializer<RealmList<
 
     @Override
     public JsonElement serialize(RealmList<DinningTable> dinningTables, Type type, JsonSerializationContext jsonSerializationContext) {
-        JsonArray ja = new JsonArray();
-        for (DinningTable table : dinningTables) {
-            if (table.isValid() && table.isManaged()) {
-                ja.add(gson.toJsonTree(realm.copyFromRealm(table), DinningTable.class));
-            } else {
-                ja.add(gson.toJsonTree(table, DinningTable.class));
+        Realm realm = Realm.getDefaultInstance();
+        try {
+            JsonArray ja = new JsonArray();
+            for (DinningTable table : dinningTables) {
+                if (table.isValid() && table.isManaged()) {
+                    ja.add(gson.toJsonTree(realm.copyFromRealm(table), DinningTable.class));
+                } else {
+                    ja.add(gson.toJsonTree(table, DinningTable.class));
+                }
             }
+            return ja;
+        }finally {
+            realm.close();
         }
-        realm.close();
-        return ja;
     }
 }

@@ -5,12 +5,14 @@ import android.content.Context;
 import android.database.Cursor;
 
 import com.android.emobilepos.models.orders.OrderProduct;
+import com.android.emobilepos.models.salesassociates.Template;
 import com.android.support.GenerateNewID;
 import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
 
 import net.sqlcipher.database.SQLiteStatement;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -88,62 +90,47 @@ public class TemplateHandler {
 	}
 
 	public void insert(String custID, List<OrderProduct> orderProducts) {
-		// SQLiteDatabase db =
-		// SQLiteDatabase.openDatabase(myPref.getDBpath(),Global.dbPass, null,
-		// SQLiteDatabase.NO_LOCALIZED_COLLATORS|
-		// SQLiteDatabase.OPEN_READWRITE);
 
-		// SQLiteDatabase db = dbManager.openWritableDB();
 		DBManager.getDatabase().beginTransaction();
 		try {
 
-			SQLiteStatement insert = null;
-			StringBuilder sb = new StringBuilder();
-			sb.append("INSERT INTO ").append(table_name).append(" (").append(sb1.toString()).append(") ")
-					.append("VALUES (").append(sb2.toString()).append(")");
+            SQLiteStatement insert;
+            String sb = "INSERT INTO " + table_name + " (" + sb1.toString() + ") " +
+                    "VALUES (" + sb2.toString() + ")";
 
 			DBManager.getDatabase().execSQL("DELETE FROM Templates WHERE cust_id='" + custID + "'");
-			insert = DBManager.getDatabase().compileStatement(sb.toString());
+            insert = DBManager.getDatabase().compileStatement(sb);
 
 			int size = orderProducts.size();
 			for (int i = 0; i < size; i++) {
 				OrderProduct prod = orderProducts.get(i);
 				insert.bindString(index(_id), empStr); // _id
 				insert.bindString(index(cust_id), custID); // cust_id
-                insert.bindString(index(product_id), prod.getProd_id() == null ? "" : prod.getProd_id()); // product_id
-                insert.bindString(index(prod_sku), prod.getProd_sku() == null ? "" : prod.getProd_sku()); // product_sku
-                insert.bindString(index(prod_upc), prod.getProd_upc() == null ? "" : prod.getProd_upc()); // product_upc
-				insert.bindString(index(quantity), prod.getOrdprod_qty() == null ? "0" : prod.getOrdprod_qty()); // quantity
-				insert.bindString(index(price_level_id), prod.getPricelevel_id() == null ? "" : prod.getPricelevel_id()); // price_level_id
-				insert.bindString(index(price_level), prod.getPriceLevelName() == null ? "" : prod.getPriceLevelName()); // price_level
-
-				insert.bindString(index(name), prod.getOrdprod_name() == null ? "" : prod.getOrdprod_name()); // name
-				// insert.bindString(index(price),
-				// global.cur_orders.get(i).getValue());
-				insert.bindString(index(overwrite_price), prod.getOverwrite_price() == null ? "0" : prod.getOverwrite_price().toString()); // cust_id
-				// insert.bindString(index(itemTotal),
-				// global.orderProducts.get(i).getSetData(itemTotal, true,
-				// empStr));
-				insert.bindString(index(_update), "");
+                insert.bindString(index(product_id), prod.getProd_id() == null ? "" : prod.getProd_id());
+                insert.bindString(index(prod_sku), prod.getProd_sku() == null ? "" : prod.getProd_sku());
+                insert.bindString(index(prod_upc), prod.getProd_upc() == null ? "" : prod.getProd_upc());
+                insert.bindString(index(quantity), prod.getOrdprod_qty() == null ? "0" : prod.getOrdprod_qty());
+                insert.bindString(index(price_level_id), prod.getPricelevel_id() == null ? "" : prod.getPricelevel_id());
+                insert.bindString(index(price_level), prod.getPriceLevelName() == null ? "" : prod.getPriceLevelName());
+                insert.bindString(index(name), prod.getOrdprod_name() == null ? "" : prod.getOrdprod_name());
+                insert.bindString(index(overwrite_price), prod.getOverwrite_price() == null ? prod.getProd_price() : prod.getOverwrite_price().toString());
+                insert.bindString(index(_update), "");
 				insert.bindString(index(isactive), "true");
 				insert.bindString(index(isSync), "0");
+                insert.bindString(index(price),  prod.getProd_price() == null ? "0" : prod.getProd_price());
 
-				insert.execute();
-				insert.clearBindings();
+
+                insert.execute();
+                insert.clearBindings();
 			}
 			insert.close();
 			DBManager.getDatabase().setTransactionSuccessful();
 
 		} catch (Exception e) {
-			StringBuilder sb = new StringBuilder();
-			sb.append(e.getMessage()).append(" [com.android.emobilepos.OrdersHandler (at Class.insert)]");
 
-//			Tracker tracker = EasyTracker.getInstance(activity);
-//			tracker.send(MapBuilder.createException(sb.toString(), false).build());
 		} finally {
 			DBManager.getDatabase().endTransaction();
 		}
-		// db.close();
 	}
 
 	public void insert(List<String[]> data, List<HashMap<String, Integer>> dictionary) {
@@ -152,11 +139,10 @@ public class TemplateHandler {
 
 			addrData = data;
 			dictionaryListMap = dictionary;
-			SQLiteStatement insert = null;
-			StringBuilder sb = new StringBuilder();
-			sb.append("INSERT INTO ").append(table_name).append(" (").append(sb1.toString()).append(") ")
-					.append("VALUES (").append(sb2.toString()).append(")");
-			insert = DBManager.getDatabase().compileStatement(sb.toString());
+			SQLiteStatement insert;
+			String sb = "INSERT INTO " + table_name + " (" + sb1.toString() + ") " +
+					"VALUES (" + sb2.toString() + ")";
+			insert = DBManager.getDatabase().compileStatement(sb);
 
 			int size = addrData.size();
 
@@ -186,52 +172,25 @@ public class TemplateHandler {
 			insert.close();
 			DBManager.getDatabase().setTransactionSuccessful();
 		} catch (Exception e) {
-			StringBuilder sb = new StringBuilder();
-			sb.append(e.getMessage()).append(" [com.android.emobilepos.ProductsHandler (at Class.insert)]");
-
-//			Tracker tracker = EasyTracker.getInstance(activity);
-//			tracker.send(MapBuilder.createException(sb.toString(), false).build());
 		} finally {
 			DBManager.getDatabase().endTransaction();
 		}
 	}
 
-	public List<HashMap<String, String>> getTemplate(String custID) {
-		// SQLiteDatabase db =
-		// SQLiteDatabase.openDatabase(myPref.getDBpath(),Global.dbPass, null,
-		// SQLiteDatabase.NO_LOCALIZED_COLLATORS |
-		// SQLiteDatabase.OPEN_READWRITE);
-
-		// SQLiteDatabase db = dbManager.openReadableDB();
-
-		List<HashMap<String, String>> orderList = new ArrayList<HashMap<String, String>>();
-		// OrderProduct anOrder = new OrderProduct();
-		HashMap<String, String> map = new HashMap<String, String>();
-
-		GenerateNewID generator = new GenerateNewID(activity);
+    public List<Template> getTemplate(String custID) {
+        List<Template> orderList = new ArrayList<>();
+        GenerateNewID generator = new GenerateNewID(activity);
 		StringBuilder sb = new StringBuilder();
-
 		Global.lastOrdID = generator.getNextID(IdType.ORDER_ID);
-
-		/*
-		 * sb.append(
-		 * "SELECT ord_id,ord_timecreated,ord_total,ord_subtotal,ord_discount,ord_taxamount, (ord_subtotal+ord_taxamount-ord_discount) AS 'gran_total',tipAmount FROM Orders WHERE ord_id = '"
-		 * ); sb.append(ordID).append("'");
-		 */
-
 		sb.append(
-				"SELECT t.product_id,t.name,t.overwrite_price,t.price,t.quantity,p.prod_desc, p.prod_sku, p.prod_upc,IFNULL(s.taxcode_istaxable,'1') as 'prod_istaxable'  FROM Templates t ");
-		sb.append(
-				"LEFT JOIN Products p ON t.product_id = p.prod_id LEFT JOIN SalesTaxCodes s ON p.prod_taxcode = s.taxcode_id  WHERE cust_id = ?");
-
-		// SELECT
-		// o.ord_id,o.ord_timecreated,o.ord_total,o.ord_subtotal,o.ord_discount,o.ord_taxamount,c.cust_name,
-		// (o.ord_subtotal+o.ord_taxamount-o.ord_discount) AS 'gran_total' FROM
-		// Orders o LEFT OUTER JOIN Customers c ON o.cust_id = c.cust_id WHERE
-		// o.ord_id = '50-00000-2012'
-
-		Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), new String[] { custID });
-
+                "SELECT t.product_id,t.name,t.overwrite_price,t.price,t.quantity,p.prod_desc, p.prod_sku, " +
+                        "p.prod_upc,IFNULL(s.taxcode_istaxable,'1') as 'prod_istaxable'  " +
+                        "FROM Templates t ");
+        sb.append(
+                "LEFT JOIN Products p ON t.product_id = p.prod_id " +
+                        "LEFT JOIN SalesTaxCodes s ON p.prod_taxcode = s.taxcode_id  " +
+                        "WHERE cust_id = ?");
+        Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), new String[] { custID });
 		if (cursor.moveToFirst()) {
 			int i_prod_id = cursor.getColumnIndex(product_id);
 			int i_prod_sku = cursor.getColumnIndex(prod_sku);
@@ -243,96 +202,63 @@ public class TemplateHandler {
 			int i_prod_price = cursor.getColumnIndex(price);
 			int i_prod_desc = cursor.getColumnIndex("prod_desc");
 			int i_prod_istaxable = cursor.getColumnIndex("prod_istaxable");
-			do {
-				map.put("prod_id", cursor.getString(i_prod_id));
-				map.put("prod_sku", cursor.getString(i_prod_sku));
-				map.put("prod_upc", cursor.getString(i_prod_upc));
-				map.put("prod_name", cursor.getString(i_prod_name));
-				map.put(overwrite_price, cursor.getString(i_overwrite_price));
-				map.put("ordprod_qty", cursor.getString(i_ordprod_qty));
-				map.put("prod_price", cursor.getString(i_prod_price));
-				map.put("prod_istaxable", cursor.getString(i_prod_istaxable));
-				map.put("ord_id", Global.lastOrdID);
-				map.put("ordprod_id", UUID.randomUUID().toString());
-
-				double total = Double.parseDouble(map.get("ordprod_qty"))
-						* Double.parseDouble(map.get(overwrite_price));
-				map.put("itemTotal", Double.toString(total));
-				map.put("itemSubtotal", Double.toString(total));
-				map.put("ordprod_desc", cursor.getString(i_prod_desc));
-
-				orderList.add(map);
-				map = new HashMap<String, String>();
-
-			} while (cursor.moveToNext());
+            Template template;
+            do {
+                template = new Template();
+                template.setProductId(cursor.getString(i_prod_id));
+                template.setProductSku(cursor.getString(i_prod_sku));
+                template.setProductUpc(cursor.getString(i_prod_upc));
+                template.setProductName(cursor.getString(i_prod_name));
+                template.setOveritePrice(cursor.getString(i_overwrite_price));
+                template.setOrdProductQty(cursor.getString(i_ordprod_qty));
+                template.setProductPrice(cursor.getString(i_prod_price));
+                template.setProductIsTaxable(cursor.getString(i_prod_istaxable));
+                template.setOrderId(Global.lastOrdID);
+                template.setOrdProductId(UUID.randomUUID().toString());
+                BigDecimal total = Global.getBigDecimalNum(template.getOrdProductQty())
+                        .multiply(Global.getBigDecimalNum(template.getOveritePrice()));
+                template.setItemTotal(total);
+                template.setItemSubtotal(total);
+                template.setOrdProductDescription(cursor.getString(i_prod_desc));
+                orderList.add(template);
+            } while (cursor.moveToNext());
 		}
 		cursor.close();
-		// db.close();
 		return orderList;
 	}
 
 	public Cursor getUnsyncTemplates() {
-		// SQLiteDatabase db = myDB;
-		StringBuilder sb = new StringBuilder();
-
-		sb.append("SELECT * FROM Templates WHERE isSync = '0'");
-
-		Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
-		return cursor;
+        return DBManager.getDatabase().rawQuery("SELECT * FROM Templates WHERE isSync = '0'", null);
 
 	}
 
 	public long getNumUnsyncTemplates() {
-		// SQLiteDatabase db =
-		// SQLiteDatabase.openDatabase(myPref.getDBpath(),Global.dbPass, null,
-		// SQLiteDatabase.NO_LOCALIZED_COLLATORS |
-		// SQLiteDatabase.OPEN_READWRITE);
-
-		// SQLiteDatabase db = dbManager.openReadableDB();
-
-		StringBuilder sb = new StringBuilder();
-		sb.append("SELECT Count(*) FROM ").append(table_name).append(" WHERE isSync = '0'");
-
-		SQLiteStatement stmt = DBManager.getDatabase().compileStatement(sb.toString());
-		long count = stmt.simpleQueryForLong();
+        SQLiteStatement stmt = DBManager.getDatabase().compileStatement("SELECT Count(*) FROM " + table_name + " WHERE isSync = '0'");
+        long count = stmt.simpleQueryForLong();
 		stmt.close();
-		// db.close();
 		return count;
 	}
 
 	public boolean unsyncTemplatesLeft() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("SELECT Count(*) FROM ").append(table_name).append(" WHERE isSync = '0'");
 
-		SQLiteStatement stmt = DBManager.getDatabase().compileStatement(sb.toString());
-		long count = stmt.simpleQueryForLong();
+        SQLiteStatement stmt = DBManager.getDatabase().compileStatement("SELECT Count(*) FROM " + table_name + " WHERE isSync = '0'");
+        long count = stmt.simpleQueryForLong();
 		stmt.close();
 		return count != 0;
 	}
 
 	public void emptyTable() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("DELETE FROM ").append(table_name);
-		DBManager.getDatabase().execSQL(sb.toString());
-	}
+        DBManager.getDatabase().execSQL("DELETE FROM " + table_name);
+    }
 
 	public void updateIsSync(List<String[]> list) {
-		// SQLiteDatabase db =
-		// SQLiteDatabase.openDatabase(myPref.getDBpath(),Global.dbPass, null,
-		// SQLiteDatabase.NO_LOCALIZED_COLLATORS|
-		// SQLiteDatabase.OPEN_READWRITE);
-		// SQLiteDatabase db = dbManager.openWritableDB();
-
 		StringBuilder sb = new StringBuilder();
 		sb.append(cust_id).append(" = ? AND ").append(product_id).append(" = ?");
-
 		ContentValues args = new ContentValues();
-
 		int size = list.size();
 		for (int i = 0; i < size; i++) {
 			args.put("isSync", list.get(i)[0]);
 			DBManager.getDatabase().update(table_name, args, sb.toString(), new String[] { list.get(i)[1], list.get(i)[2] });
 		}
-		// db.close();
 	}
 }

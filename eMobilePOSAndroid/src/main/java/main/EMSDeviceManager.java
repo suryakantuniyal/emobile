@@ -12,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.android.emobilepos.R;
+import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 
@@ -348,7 +349,7 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 alert.show();
             }
         }
-
+        DeviceUtils.sendBroadcastDeviceConnected(activity);
         theDevice.registerAll();
     }
 

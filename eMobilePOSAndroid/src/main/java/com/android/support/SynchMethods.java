@@ -78,6 +78,7 @@ import com.android.saxhandler.SAXSyncVoidTransHandler;
 import com.android.saxhandler.SAXSynchHandler;
 import com.android.saxhandler.SAXSynchOrdPostHandler;
 import com.android.saxhandler.SaxLoginHandler;
+import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 
@@ -112,6 +113,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import io.realm.Realm;
 import oauthclient.OAuthClient;
 import oauthclient.OAuthManager;
 import util.json.JsonUtils;
@@ -413,13 +415,28 @@ public class SynchMethods {
             }
             synchUpdateSyncTime();
             preferences.setLastReceiveSync(DateUtils.getDateAsString(new Date(), DateUtils.DATE_MMM_dd_yyyy_h_mm_a));
-
+            compactRealm();
         } catch (Exception e) {
             preferences.setLastReceiveSync("Sync Fail");
             e.printStackTrace();
             return false;
         }
         return true;
+    }
+
+    private void compactRealm() {
+        int count = Realm.getGlobalInstanceCount(Realm.getDefaultConfiguration());
+        if (count == 0) {
+            boolean compactRealm = Realm.compactRealm(Realm.getDefaultConfiguration());
+            if(!compactRealm){
+                Crashlytics.log("Realm compact fail.");
+            }
+        } else {
+            Crashlytics.log("Realm compact fail. All realm instance must be closed before compactrealm. EmobilePOS Logger.");
+        }
+        File realmFile = new File(Realm.getDefaultConfiguration().getPath());
+        Crashlytics.log(String.format(Locale.getDefault(), "Account: %s. Realm database file size:%d", preferences.getAcctNumber(), realmFile.length()));
+
     }
 
     public void getLocationsInventory(Activity activity) {
@@ -1727,7 +1744,7 @@ public class SynchMethods {
             SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy h:mm a", Locale.getDefault());
             String date = sdf.format(new Date());
             myPref.setLastSendSync(date);
-
+            compactRealm();
             isSending = false;
 //            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
 //                if (!activity.isDestroyed()) {

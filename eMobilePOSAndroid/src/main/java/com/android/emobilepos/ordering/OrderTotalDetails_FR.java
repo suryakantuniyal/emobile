@@ -68,7 +68,6 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
     private List<HashMap<String, String>> listMapTaxes = new ArrayList<>();
     private Activity activity;
     private MyPreferences myPref;
-    private Global global;
     private TaxesHandler taxHandler;
     private TaxesGroupHandler taxGroupHandler;
     private AssignEmployee assignEmployee;
@@ -431,7 +430,6 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         granTotal = (TextView) view.findViewById(R.id.grandTotalValue);
         LinearLayout leftHolder = (LinearLayout) view.findViewById(R.id.leftColumnHolder);
         activity = getActivity();
-        global = (Global) activity.getApplication();
         myPref = new MyPreferences(activity);
 
         if (!myPref.getIsTablet() && leftHolder != null) {
@@ -533,8 +531,8 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                     taxSelected = pos;
                     setTaxValue(pos);
                 }
-                if (global.order != null && global.order.getOrderProducts() != null) {
-                    reCalculate(global.order.getOrderProducts());
+                if (getOrderingMainFa().global.order != null && getOrderingMainFa().global.order.getOrderProducts() != null) {
+                    reCalculate(getOrderingMainFa().global.order.getOrderProducts());
                 }
             }
 
@@ -583,12 +581,12 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
     public void setDiscountValue(int position) {
         DecimalFormat frmt = new DecimalFormat("0.00");
         if (position == 0) {
-            if (global.order == null || global.order.ord_discount_id.isEmpty()) {
+            if (getOrderingMainFa().global.order == null || getOrderingMainFa().global.order.ord_discount_id.isEmpty()) {
                 discount_rate = new BigDecimal("0");
                 discount_amount = new BigDecimal("0");
                 discountID = "";
             } else {
-                discountSelected = ((MySpinnerAdapter) discountSpinner.getAdapter()).getDiscountIdPosition(global.order.ord_discount_id) + 1;
+                discountSelected = ((MySpinnerAdapter) discountSpinner.getAdapter()).getDiscountIdPosition(getOrderingMainFa().global.order.ord_discount_id) + 1;
                 discountID = discountList.get(discountSelected - 1).getProductId();
                 if (discountList.get(discountSelected - 1).getProductDiscountType().equals("Fixed")) {
                     discount_rate = Global.getBigDecimalNum(discountList.get(discountSelected - 1).getProductPrice());
@@ -655,7 +653,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
 
     public synchronized void reCalculate(List<OrderProduct> orderProducts) {
 
-        if (global == null) {
+        if (getOrderingMainFa().global == null) {
             return;
         }
         if (getOrderingMainFa() != null) {
@@ -665,7 +663,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
 
     @Override
     public void recalculateTotal() {
-        reCalculate(global.order.getOrderProducts());
+        reCalculate(getOrderingMainFa().global.order.getOrderProducts());
     }
 
     private class ReCalculate extends AsyncTask<List<OrderProduct>, Void, OrderTotalDetails> {
@@ -685,14 +683,14 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                     calculateMixAndMatch(orderProducts, isGroupBySKU);
                 }
                 Discount discount = discountSelected > 0 ? discountList.get(discountSelected - 1) : null;
-                global.order.setRetailTaxes(myPref.isRetailTaxes());
-                global.order.ord_globalDiscount = String.valueOf(discount_amount);
-                global.order.setListOrderTaxes(getOrderingMainFa().getListOrderTaxes());
+                getOrderingMainFa().global.order.setRetailTaxes(myPref.isRetailTaxes());
+                getOrderingMainFa().global.order.ord_globalDiscount = String.valueOf(discount_amount);
+                getOrderingMainFa().global.order.setListOrderTaxes(getOrderingMainFa().getListOrderTaxes());
                 Tax tax = taxSelected > 0 ? taxList.get(taxSelected - 1) : null;
                 if (myPref.isRetailTaxes()) {
-                    global.order.setRetailTax(getActivity(), taxID);
+                    getOrderingMainFa().global.order.setRetailTax(getActivity(), taxID);
                 }
-                totalDetails = global.order.getOrderTotalDetails(discount, tax, assignEmployee.isVAT(), getActivity());
+                totalDetails = getOrderingMainFa().global.order.getOrderTotalDetails(discount, tax, assignEmployee.isVAT(), getActivity());
                 gran_total = Global.getRoundBigDecimal(totalDetails.getGranTotal(), 2);
                 sub_total = totalDetails.getSubtotal();
                 tax_amount = Global.getRoundBigDecimal(totalDetails.getTax(), 2);
