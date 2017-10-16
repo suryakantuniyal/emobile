@@ -12,6 +12,7 @@ import android.os.Handler;
 
 import com.StarMicronics.jasura.JAException;
 import com.android.dao.DeviceTableDAO;
+import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
@@ -213,13 +214,13 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (didConnect) {
+        if (didConnect || BuildConfig.USE_DUMMY_START_PRINTER) {
             this.edm.driverDidConnectToDevice(thisInstance, false);
         } else {
             this.edm.driverDidNotConnectToDevice(thisInstance, null, false);
         }
 
-        return didConnect;
+        return didConnect || BuildConfig.USE_DUMMY_START_PRINTER;
     }
 
     public String getPortName() {
@@ -272,9 +273,11 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
         try {
             setPaperWidth(LINE_WIDTH);
-            setStartIOPort();
-            if (port == null) {
-                verifyConnectivity();
+            if (!BuildConfig.USE_DUMMY_START_PRINTER) {
+                setStartIOPort();
+                if (port == null) {
+                    verifyConnectivity();
+                }
             }
             Thread.sleep(1000);
             printReceipt(ordID, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, emvContainer);
@@ -301,7 +304,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     public boolean printPaymentDetails(String payID, int type, boolean isReprint, EMVContainer emvContainer) {
         setPaperWidth(LINE_WIDTH);
         setStartIOPort();
-        if (port != null) {
+        if (port != null || BuildConfig.USE_DUMMY_START_PRINTER) {
             printPaymentDetailsReceipt(payID, type, isReprint, LINE_WIDTH, emvContainer);
         }
         releasePrinter();
@@ -310,7 +313,9 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
     private void setStartIOPort() {
         try {
-            port = getStarIOPort();
+            if (!BuildConfig.USE_DUMMY_START_PRINTER) {
+                port = getStarIOPort();
+            }
         } catch (StarIOPortException e) {
             e.printStackTrace();
         }

@@ -112,7 +112,9 @@ public class PaymentsHandler {
 
     public static void setLastPaymentInserted(Payment payment) {
         if (payment != null && payment.isManaged()) {
-            lastPaymentInserted = Realm.getDefaultInstance().copyFromRealm(payment);
+            Realm realm = Realm.getDefaultInstance();
+            lastPaymentInserted = realm.copyFromRealm(payment);
+            realm.close();
         } else {
             lastPaymentInserted = payment;
         }
@@ -616,7 +618,7 @@ public class PaymentsHandler {
         String is_refund = "0";
         if (isRefund)
             is_refund = "1";
-        String sb = ("SELECT 'FALSE' as DECLINED,p.pay_id as _id,p.pay_amount as pay_amount,c.cust_name as cust_name," +
+        String sb = ("SELECT * FROM (SELECT 'FALSE' as DECLINED,p.pay_id as _id,p.pay_amount as pay_amount,c.cust_name as cust_name," +
                 "p.job_id as job_id,p.isVoid as isVoid,p.pay_issync as pay_issync,p.pay_tip as pay_tip " +
                 "FROM " + table_name +
                 " p, PayMethods m LEFT OUTER JOIN Customers c ON p.cust_id = c.cust_id " +
@@ -631,7 +633,8 @@ public class PaymentsHandler {
                 "WHERE p.paymethod_id = m.paymethod_id AND " +
                 "(m.paymentmethod_type = 'AmericanExpress' OR m.paymentmethod_type = 'Discover' OR " +
                 "m.paymentmethod_type = 'MasterCard' OR m.paymentmethod_type = 'Visa') " +
-                "AND pay_type !='1'  AND is_refund='" + is_refund + "' ");
+                "AND pay_type !='1'  AND is_refund='" + is_refund + "' )" +
+                " ORDER BY substr(_id,10,4) desc, _id DESC");
 
         return getDatabase().rawQuery(sb, null);
     }

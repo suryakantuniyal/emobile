@@ -12,6 +12,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Message;
 import android.os.PowerManager;
 import android.text.Editable;
 import android.text.Selection;
@@ -22,10 +23,13 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.dao.ShiftDAO;
+import com.android.dao.StoredPaymentsDAO;
+import com.android.database.OrdersHandler;
 import com.android.database.PayMethodsHandler;
 import com.android.database.PaymentsHandler;
 import com.android.emobilepos.R;
@@ -33,11 +37,14 @@ import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.genius.GeniusResponse;
 import com.android.emobilepos.models.genius.GeniusTransportToken;
 import com.android.emobilepos.models.realms.Payment;
+import com.android.emobilepos.models.realms.PaymentMethod;
 import com.android.payments.EMSPayGate_Default;
+import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.saxhandler.SAXProcessGeniusHandler;
 import com.android.support.DateUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.NetworkUtils;
 import com.android.support.NumberUtils;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
@@ -57,6 +64,7 @@ import java.io.StringReader;
 import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.regex.Pattern;
 
 import javax.xml.parsers.SAXParser;
@@ -106,7 +114,13 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
 
 
         paymethod_id = extras.getString("paymethod_id");
+        if (paymethod_id.equalsIgnoreCase(PaymentMethod.getCardOnFilePaymentMethod().getPaymethod_id())) {
+            ImageView imageView = (ImageView) findViewById(R.id.cayanimageView1);
+            imageView.setImageResource(R.drawable.debitcard);
+            ((TextView) findViewById(R.id.geniusTitle)).setText(R.string.card_on_file);
+            ((TextView) findViewById(R.id.add_main_title)).setText(R.string.payment);
 
+        }
         String inv_id;
         if (extras.getBoolean("histinvoices"))
             inv_id = extras.getString("inv_id");
@@ -211,10 +225,14 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
 
         if (myPref.isUseClerks()) {
             payment.setClerk_id(myPref.getClerkID());
-        } else if (ShiftDAO.isShiftOpen()) {
-            payment.setClerk_id(String.valueOf(ShiftDAO.getOpenShift().getClerkId()));
+        } else {
+            if (ShiftDAO.isShiftOpen()) {
+                payment.setClerk_id(String.valueOf(ShiftDAO.getOpenShift().getClerkId()));
+            }
         }
-
+        if (myPref.isCustSelected()) {
+            payment.setCust_id(myPref.getCustID());
+        }
         payment.setPay_id(extras.getString("pay_id"));
         payment.setPaymethod_id(paymethod_id);
         payment.setPay_expmonth("0");// dummy
@@ -231,18 +249,28 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
         if (isRefund) {
             payment.setIs_refund("1");
             payment.setPay_type("2");
-            generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ReturnGeniusAction, false, "", null);
-        } else
+            if (myPref.isPayWithCardOnFile()) {
+                generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.CardOnFileRefund, false, "", null);
+            } else {
+                generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ReturnGeniusAction, false, "", null);
+            }
+        } else if (myPref.isPayWithCardOnFile()) {
+            generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.CardOnFileCharge, false, "", null);
+        } else {
             generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ChargeGeniusAction, false, "", null);
-
-        new processLivePaymentAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, generatedURL);
+        }
+        if (myPref.isPayWithCardOnFile()) {
+            new ProcessCardOnFileLivePayments().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, generatedURL);
+        } else {
+            new ProcessLivePaymentAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, generatedURL);
+        }
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.processGeniusButton:
-                Toast.makeText(activity, "Processing Genius", Toast.LENGTH_LONG).show();
+                Toast.makeText(activity, getString(R.string.processing_payment_msg), Toast.LENGTH_LONG).show();
                 processPayment();
                 break;
             case R.id.btnExact:
@@ -264,7 +292,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
         }
     }
 
-    private class processLivePaymentAsync extends AsyncTask<String, String, GeniusResponse> {
+    private class ProcessLivePaymentAsync extends AsyncTask<String, String, GeniusResponse> {
 
         private boolean boProcessed = false;
         private boolean geniusConnected = false;
@@ -407,17 +435,11 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                 else {
                     if (myPref.getGeniusIP().equalsIgnoreCase("127.0.0.1")) {
                         Intent i = new Intent(ProcessGenius_FA.this, ProcessGenius_FA.class);
-//            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         i.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-//                i.setAction("com.emobilepos.app.VIEW_RESPONSE");
                         Gson gson = JsonUtils.getInstance();
                         String json = gson.toJson(response);
-//            ComponentName.createRelative(ProcessGenius_FA.this,".payment.ProcessGenius_FA");
-//                i.setComponent(new ComponentName(ProcessGenius_FA.this, ProcessGenius_FA.class));
-//            i.setComponent(ComponentName.unflattenFromString("com.emobilepos.app/com.android.emobilepos.payment.ProcessGenius_FA"));
                         i.putExtras(extras);
                         i.putExtra("LocalGeniusResponse", json);
-//                        i.putExtra("Payment", gson.toJson(payment));
                         result.putExtra("LocalGeniusResponse", json);
                         finish();
                         startActivity(i);
@@ -448,49 +470,6 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
             }
         }
 
-        private void showPrintDlg(boolean isRetry) {
-            final Dialog dlog = new Dialog(activity, R.style.Theme_TransparentTest);
-            dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            dlog.setCancelable(false);
-            dlog.setContentView(R.layout.dlog_btn_left_right_layout);
-
-            TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
-            TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
-            viewTitle.setText(R.string.dlog_title_confirm);
-
-            if (isRetry) {
-                viewTitle.setText(R.string.dlog_title_error);
-                viewMsg.setText(R.string.dlog_msg_failed_print);
-            } else {
-                viewMsg.setText(R.string.dlog_msg_print_cust_copy);
-            }
-            dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
-
-            Button btnYes = (Button) dlog.findViewById(R.id.btnDlogLeft);
-            Button btnNo = (Button) dlog.findViewById(R.id.btnDlogRight);
-            Button btnCancel = (Button) dlog.findViewById(R.id.btnDlogCancel);
-            btnCancel.setVisibility(View.GONE);
-            btnYes.setText(R.string.button_yes);
-            btnNo.setText(R.string.button_no);
-
-            btnYes.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    dlog.dismiss();
-                    new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                }
-            });
-            btnNo.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    dlog.dismiss();
-                    finish();
-                }
-            });
-            dlog.show();
-        }
 
         private boolean pingGeniusDevice() {
             boolean isReachable = true;
@@ -597,38 +576,197 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
             }
         }
 
-        private class printAsync extends AsyncTask<Void, Void, Void> {
-            private boolean printSuccessful = true;
+
+    }
+
+    private void showPrintDlg(boolean isRetry) {
+        final Dialog dlog = new Dialog(activity, R.style.Theme_TransparentTest);
+        dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dlog.setCancelable(false);
+        dlog.setContentView(R.layout.dlog_btn_left_right_layout);
+
+        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+        viewTitle.setText(R.string.dlog_title_confirm);
+
+        if (isRetry) {
+            viewTitle.setText(R.string.dlog_title_error);
+            viewMsg.setText(R.string.dlog_msg_failed_print);
+        } else {
+            viewMsg.setText(R.string.dlog_msg_print_cust_copy);
+        }
+        dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
+
+        Button btnYes = (Button) dlog.findViewById(R.id.btnDlogLeft);
+        Button btnNo = (Button) dlog.findViewById(R.id.btnDlogRight);
+        Button btnCancel = (Button) dlog.findViewById(R.id.btnDlogCancel);
+        btnCancel.setVisibility(View.GONE);
+        btnYes.setText(R.string.button_yes);
+        btnNo.setText(R.string.button_no);
+
+        btnYes.setOnClickListener(new View.OnClickListener() {
 
             @Override
-            protected void onPreExecute() {
-                myProgressDialog = new ProgressDialog(activity);
-                myProgressDialog.setMessage("Printing...");
-                myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                myProgressDialog.setCancelable(false);
-                myProgressDialog.show();
-
+            public void onClick(View v) {
+                dlog.dismiss();
+                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
+        });
+        btnNo.setOnClickListener(new View.OnClickListener() {
 
             @Override
-            protected Void doInBackground(Void... params) {
-
-                if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
-                    printSuccessful = Global.mainPrinterManager.getCurrentDevice().printPaymentDetails(payment.getPay_id(), 1, true, payment.getEmvContainer());
-                }
-                return null;
+            public void onClick(View v) {
+                dlog.dismiss();
+                Intent result = new Intent();
+                String paid_amount = NumberUtils.cleanCurrencyFormatedNumber(amountView.getText().toString());
+                result.putExtras(extras);
+                result.putExtra("total_amount", paid_amount);
+                setResult(-2, result);
+                finish();
             }
+        });
+        dlog.show();
+    }
 
-            @Override
-            protected void onPostExecute(Void unused) {
-                myProgressDialog.dismiss();
-                if (printSuccessful)
-                    finish();
-                else {
-                    showPrintDlg(true);
-                }
+    private class printAsync extends AsyncTask<Void, Void, Void> {
+        private boolean printSuccessful = true;
+
+        @Override
+        protected void onPreExecute() {
+            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog.setMessage("Printing...");
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setCancelable(false);
+            myProgressDialog.show();
+
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                printSuccessful = Global.mainPrinterManager.getCurrentDevice().printPaymentDetails(payment.getPay_id(), 1, true, payment.getEmvContainer());
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void unused) {
+            myProgressDialog.dismiss();
+            if (printSuccessful)
+                finish();
+            else {
+                showPrintDlg(true);
             }
         }
     }
 
+    private class ProcessCardOnFileLivePayments extends AsyncTask<String, Void, Void> {
+
+        private boolean connectionFailed;
+        private String errorMsg;
+        private HashMap<String, String> parsedMap;
+        private boolean wasProcessed;
+        private String chargeXml;
+        private HashMap<String, String> reverseXMLMap;
+
+        @Override
+        protected void onPreExecute() {
+            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog.setMessage(getString(R.string.please_wait_message));
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setCancelable(false);
+            myProgressDialog.show();
+        }
+
+
+        @Override
+        protected Void doInBackground(String... params) {
+            chargeXml = params[0];
+            if (NetworkUtils.isConnectedToInternet(activity)) {
+                Post httpClient = new Post(activity);
+                SAXParserFactory spf = SAXParserFactory.newInstance();
+                SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
+
+                try {
+                    String xml = httpClient.postData(13, chargeXml);
+
+                    if (xml.equals(Global.TIME_OUT) || xml.equals(Global.NOT_VALID_URL) || xml.isEmpty()) {
+                        connectionFailed = true;
+                        errorMsg = getString(R.string.dlog_msg_established_connection_failed);
+                    } else {
+                        InputSource inSource = new InputSource(new StringReader(xml));
+
+                        SAXParser sp = spf.newSAXParser();
+                        XMLReader xr = sp.getXMLReader();
+                        xr.setContentHandler(handler);
+                        xr.parse(inSource);
+                        parsedMap = handler.getData();
+
+                        if (parsedMap != null && parsedMap.size() > 0
+                                && parsedMap.get("epayStatusCode").equals("APPROVED")) {
+                            wasProcessed = true;
+                            String paid_amount = NumberUtils.cleanCurrencyFormatedNumber(payment.getPay_amount());
+                            Intent result = new Intent();
+                            Global.amountPaid = payment.getPay_amount();
+                            setResult(-2, result);
+                        }
+                        else if (parsedMap != null && parsedMap.size() > 0) {
+                            errorMsg = "statusCode = " + parsedMap.get("statusCode") + "\n" + parsedMap.get("statusMessage");
+                        } else
+                            errorMsg = xml;
+                    }
+
+                } catch (Exception e) {
+                    connectionFailed = true;
+                    Crashlytics.logException(e);
+                }
+            } else {
+                connectionFailed = true;
+                errorMsg = getString(R.string.dlog_msg_no_internet_access);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void response) {
+            Global.dismissDialog(ProcessGenius_FA.this, myProgressDialog);
+            if (wasProcessed) {
+                payment.setPaymethod_id(PayMethodsHandler.getPayMethodID(parsedMap.get("CardType")));
+                payment.setCard_type(parsedMap.get("CardType"));
+                payment.setCcnum_last4(parsedMap.get("CCLast4"));
+                saveApprovedPayment(parsedMap, payment);
+                showPrintDlg(false);
+            } else {
+                if (connectionFailed) {
+//                    reverseXMLMap = ProcessCreditCard_FA.generateReverseXML(activity, chargeXml);
+                }
+                Global.showPrompt(ProcessGenius_FA.this, R.string.dlog_title_transaction_failed_to_process, errorMsg);
+            }
+        }
+    }
+
+    private void saveApprovedPayment(HashMap<String, String> parsedMap, Payment payment) {
+        if (isRefund) {
+            payment.setIs_refund("1");
+            payment.setPay_type("2");
+        }
+        if(myPref.isPayWithCardOnFile()){
+            payment.setProcessed("9");
+        }else {
+            payment.setProcessed("1");
+        }
+
+        PaymentsHandler paymentsHandler = new PaymentsHandler(this);
+        paymentsHandler.insert(payment);
+        if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
+            Global.amountPaid = StoredPaymentsDAO.getStoreAndForward(payment.getPay_uuid()).getPayment().getPay_amount();
+            Message msg = Global.handler.obtainMessage();
+            msg.what = 0;
+            msg.obj = PaymentsHandler.getLastPaymentInserted();
+            Global.handler.sendMessage(msg);
+            OrdersHandler dbOrders = new OrdersHandler(this);
+            dbOrders.updateOrderStoredFwd(payment.getJob_id(), "1");
+        }
+    }
 }

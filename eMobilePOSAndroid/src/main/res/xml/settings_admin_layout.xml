@@ -253,6 +253,10 @@
             android:key="pref_mw_with_genius"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_mw_with_genius" />
+        <CheckBoxPreference
+            android:key="pref_pay_with_card_on_file"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_pay_with_card_on_file" />
         <Preference
             android:key="pref_config_genius_peripheral"
             android:layout="@layout/settings_custom_layout"

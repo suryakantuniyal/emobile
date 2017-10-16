@@ -31,6 +31,7 @@ import com.android.support.SynchMethods;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.crashlytics.android.Crashlytics;
 
+import io.fabric.sdk.android.Fabric;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
@@ -88,6 +89,7 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
     public void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
         activity = this;
         new DBManager(activity);
         final MyPreferences myPref = new MyPreferences(this);

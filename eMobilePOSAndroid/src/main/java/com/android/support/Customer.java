@@ -5,7 +5,8 @@ import com.android.emobilepos.models.Address;
 public class Customer 
 {
 	private String empStr = "";
-	
+
+	public String custidkey;
 	public String cust_id = empStr;
 	public String cust_id_ref = empStr;
 	public String qb_sync = empStr;
@@ -37,4 +38,5 @@ public class Customer
 	public String cust_dob = empStr;
 	public Address shippingAddress;
 	public Address billingAddress;
+
 }

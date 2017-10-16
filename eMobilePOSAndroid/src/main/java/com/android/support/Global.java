@@ -39,7 +39,6 @@ import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.ClerkDAO;
 import com.android.dao.EmobilePOSRealmMigration;
 import com.android.dao.RealmModule;
-import com.android.database.DBManager;
 import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.R;
@@ -57,6 +56,8 @@ import com.android.emobilepos.models.realms.ProductAttribute;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
 import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.CustomEvent;
 import com.crashlytics.android.core.CrashlyticsCore;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -297,10 +298,14 @@ public class Global extends MultiDexApplication {
             switch (msg.what) {
                 case 0: {
                     Realm realm = Realm.getDefaultInstance();
-                    realm.beginTransaction();
-                    Payment payment = (Payment) msg.obj;
-                    realm.insertOrUpdate(payment);
-                    realm.commitTransaction();
+                    try {
+                        realm.beginTransaction();
+                        Payment payment = (Payment) msg.obj;
+                        realm.insertOrUpdate(payment);
+                        realm.commitTransaction();
+                    } finally {
+                        realm.close();
+                    }
                     break;
                 }
             }
@@ -1328,6 +1333,7 @@ public class Global extends MultiDexApplication {
     @Override
     public void onCreate() {
         super.onCreate();
+
         Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
         Crashlytics crashlyticsKit = new Crashlytics.Builder()
                 .core(new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build())
@@ -1341,12 +1347,21 @@ public class Global extends MultiDexApplication {
                 .modules(Realm.getDefaultModule(), new RealmModule())
                 .schemaVersion(EmobilePOSRealmMigration.REALM_SCHEMA_VERSION)
                 .build();
+        boolean compactRealm = Realm.compactRealm(config);
+        if (!compactRealm) {
+            Crashlytics.log("Realm compact fail. All realm instance must be closed before compactrealm. EmobilePOS Logger.");
+        }
+        MyPreferences preferences = new MyPreferences(this);
+        File realmFile = new File(Realm.getDefaultConfiguration().getPath());
+        Crashlytics.log(String.format(Locale.getDefault(), "Account: %s. Realm database file size:%d", preferences.getAcctNumber(), realmFile.length()));
+
+        Answers.getInstance().logCustom(new CustomEvent("Realm DB File Monitoring")
+                .putCustomAttribute("filesize",realmFile.length()));
+
         Realm.setDefaultConfiguration(config);
-        Realm.compactRealm(config);
         AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
         if (assignEmployee == null) {
             assignEmployee = new AssignEmployee();
-            MyPreferences preferences = new MyPreferences(this);
             if (!TextUtils.isEmpty(preferences.getEmpIdFromPreferences())) {
                 assignEmployee.setEmpId(Integer.parseInt(preferences.getEmpIdFromPreferences()));
                 List<AssignEmployee> employees = new ArrayList<>();

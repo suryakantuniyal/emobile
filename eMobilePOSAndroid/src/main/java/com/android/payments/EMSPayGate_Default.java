@@ -1,6 +1,5 @@
 package com.android.payments;
 
-import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
 import android.util.Xml;
@@ -69,7 +68,8 @@ public class EMSPayGate_Default {
         GiftCardReverseAction(9995), LoyaltyCardReverseAction(9996), RewardCardReverseAction(9997),
         ReverseCheckAction(9992), ReverseCreditCardAction(9993), ReverseDebitCardAction(9994),
         ProcessBoloroCheckout(10000), CancelBoloroTransaction(10001), GetTelcoInfoByTag(10002),
-        GetMarketTelcos(10003), BoloroPolling(10004), HandpointWorkingKey(7001);
+        GetMarketTelcos(10003), BoloroPolling(10004), HandpointWorkingKey(7001),
+        CardOnFileCharge(1023), CardOnFileRefund(3023);
 
         private int code;
 
@@ -209,6 +209,8 @@ public class EMSPayGate_Default {
                     generateOrderBlock(payment.getJob_id());
 
                     break;
+                case CardOnFileCharge:
+                case CardOnFileRefund:
                 case ChargeGeniusAction:
                 case ReturnGeniusAction:
                     generateERP();

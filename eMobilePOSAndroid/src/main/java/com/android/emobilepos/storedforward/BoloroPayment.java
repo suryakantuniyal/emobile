@@ -55,10 +55,15 @@ public class BoloroPayment {
         HashMap<String, String> response = myParser.getData();
 
         if (response != null && !response.isEmpty() && Boolean.parseBoolean(response.get("success"))) {
-            Realm.getDefaultInstance().beginTransaction();
-            payment.setPay_transid(response.get("transaction_id"));
-            Realm.getDefaultInstance().commitTransaction();
-            return executeBoloroPolling(activity, payment, isPolling);
+            Realm realm = Realm.getDefaultInstance();
+            try {
+                realm.beginTransaction();
+                payment.setPay_transid(response.get("transaction_id"));
+                realm.commitTransaction();
+                return executeBoloroPolling(activity, payment, isPolling);
+            } finally {
+                realm.close();
+            }
         }
         return response;
     }
@@ -102,20 +107,21 @@ public class BoloroPayment {
                             Crashlytics.logException(e);
                         }
                     } else if (response.containsKey("next_action") && response.get("next_action").equals("SUCCESS")) {
-                        Realm.getDefaultInstance().beginTransaction();
-                        PaymentsHandler payHandler = new PaymentsHandler(activity);
-                        payment.setProcessed("1");
-                        GenerateNewID newID = new GenerateNewID(activity);
-                        String nextID = newID.getNextID(GenerateNewID.IdType.PAYMENT_ID);
-                        payment.setPay_id(nextID);
-//                        BigDecimal bg = new BigDecimal(Global.amountPaid);
-//                        Global.amountPaid = bg.setScale(2, RoundingMode.HALF_UP).toString();
-//                        payment.setPay_dueamount(Global.amountPaid);
-//                        payment.setPay_amount(Global.amountPaid);
-                        payHandler.insert(payment);
-                        Realm.getDefaultInstance().commitTransaction();
-                        isPolling = false;
-                        transCompleted = true;
+                        Realm realm = Realm.getDefaultInstance();
+                        try {
+                            realm.beginTransaction();
+                            PaymentsHandler payHandler = new PaymentsHandler(activity);
+                            payment.setProcessed("1");
+                            GenerateNewID newID = new GenerateNewID(activity);
+                            String nextID = newID.getNextID(GenerateNewID.IdType.PAYMENT_ID);
+                            payment.setPay_id(nextID);
+                            payHandler.insert(payment);
+                            realm.commitTransaction();
+                            isPolling = false;
+                            transCompleted = true;
+                        } finally {
+                            realm.close();
+                        }
                     } else if (response.containsKey("next_action") && response.get("next_action").equals("FAILED"))
                         failed = true;
                 } else {
@@ -125,8 +131,13 @@ public class BoloroPayment {
         } catch (Exception e) {
             e.printStackTrace();
             Crashlytics.logException(e);
-            if (Realm.getDefaultInstance().isInTransaction()) {
-                Realm.getDefaultInstance().cancelTransaction();
+            Realm realm = Realm.getDefaultInstance();
+            try {
+                if (realm.isInTransaction()) {
+                    realm.cancelTransaction();
+                }
+            } finally {
+                realm.close();
             }
         }
         return response;

@@ -10,19 +10,16 @@ import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewOutlineProvider;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.DinningTableOrderDAO;
-import com.android.database.DBManager;
 import com.android.database.OrderProductsAttr_DB;
 import com.android.database.OrderProductsHandler;
 import com.android.database.OrderTaxes_DB;
@@ -45,7 +42,6 @@ import com.android.support.GenerateNewID;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
-import com.android.support.SynchMethods;
 import com.android.support.TaxesCalculator;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.crashlytics.android.Crashlytics;
@@ -58,11 +54,8 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import util.json.JsonUtils;
-
-import static org.bouncycastle.asn1.ua.DSTU4145NamedCurves.params;
 
 /**
  * Created by Guarionex on 2/8/2016.
@@ -195,7 +188,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
         global = (Global) getApplication();
         setOrderSummaryFR(new SplittedOrderSummaryFR());
         setOrderDetailsFR(new SplittedOrderDetailsFR());
-        if (global.order.ord_discount != null && !global.order.ord_discount.isEmpty()) {
+        if (global.order != null && global.order.ord_discount != null && !global.order.ord_discount.isEmpty()) {
             globalDiscountAmount = Global.getBigDecimalNum(global.order.ord_discount);
             if (Double.parseDouble(global.order.ord_subtotal) == 0) {
                 setGlobalDiscountPercentge(new BigDecimal(0));
