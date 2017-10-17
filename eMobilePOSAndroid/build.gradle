@@ -282,15 +282,15 @@ dependencies {
     compile 'com.android.support:support-v4:25.2.0'
     compile 'com.android.support:recyclerview-v7:25.2.0'
     compile files('libs/UniMag_SDK_v5.0.jar')
-    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    }
-    androidTestCompile 'com.android.support.test.espresso:espresso-contrib:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-        exclude group: 'com.android.support', module: 'support-v4'
-        exclude group: 'com.android.support', module: 'design'
-        exclude group: 'com.android.support', module: 'recyclerview-v7'
-    }
+//    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2', {
+//        exclude group: 'com.android.support', module: 'support-annotations'
+//    }
+//    androidTestCompile 'com.android.support.test.espresso:espresso-contrib:2.2.2', {
+//        exclude group: 'com.android.support', module: 'support-annotations'
+//        exclude group: 'com.android.support', module: 'support-v4'
+//        exclude group: 'com.android.support', module: 'design'
+//        exclude group: 'com.android.support', module: 'recyclerview-v7'
+//    }
     compile 'net.zetetic:android-database-sqlcipher:3.5.4@aar'
 }
 dependencies {
