@@ -69,7 +69,7 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.custselec_listview_layout);
-        digitalPersona = new DigitalPersona(getApplicationContext(), this);
+        digitalPersona = new DigitalPersona(getApplicationContext(), this, EmobileBiometric.UserType.CUSTOMER);
 
         activity = this;
         myPref = new MyPreferences(activity);
@@ -338,6 +338,11 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
                 executeBCR();
             }
         });
+    }
+
+    @Override
+    public void biometricsReadNotFound() {
+
     }
 
     @Override

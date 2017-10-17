@@ -171,7 +171,7 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
         hiddenField.addTextChangedListener(textWatcher());
         Collection<UsbDevice> usbDevices = DeviceUtils.getUSBDevices(getActivity());
         isReaderConnected = usbDevices != null && usbDevices.size() > 0;
-        digitalPersona = new DigitalPersona(getActivity().getApplicationContext(), this);
+        digitalPersona = new DigitalPersona(getActivity().getApplicationContext(), this, EmobileBiometric.UserType.CUSTOMER);
         if (isTablet())
             myPref.setIsTablet(true);
         else
@@ -1461,6 +1461,11 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
 
             }
         });
+    }
+
+    @Override
+    public void biometricsReadNotFound() {
+
     }
 
     @Override

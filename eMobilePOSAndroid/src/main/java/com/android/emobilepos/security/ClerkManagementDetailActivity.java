@@ -40,7 +40,7 @@ public class ClerkManagementDetailActivity extends Activity implements Biometric
         Bundle extras = getIntent().getExtras();
         clerkId = extras.getInt("clerkId", 0);
         clerk = ClerkDAO.getByEmpId(clerkId);
-        digitalPersona = new DigitalPersona(this, this);
+        digitalPersona = new DigitalPersona(this, this, EmobileBiometric.UserType.CLERK);
         biometric = EmobileBiometricDAO.getBiometrics(String.valueOf(clerkId), EmobileBiometric.UserType.CLERK);
         setUI();
     }
@@ -63,6 +63,11 @@ public class ClerkManagementDetailActivity extends Activity implements Biometric
 
     @Override
     public void biometricsWasRead(EmobileBiometric emobileBiometric) {
+
+    }
+
+    @Override
+    public void biometricsReadNotFound() {
 
     }
 

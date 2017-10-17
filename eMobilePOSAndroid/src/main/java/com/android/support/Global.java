@@ -3,6 +3,7 @@ package com.android.support;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
@@ -1558,6 +1559,17 @@ public class Global extends MultiDexApplication {
                 }
 
                 @Override
+                public void biometricsReadNotFound() {
+                    ((Activity) activity).runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            viewField.setText("");
+                            viewMsg.setText(R.string.invalid_password);
+                        }
+                    });
+                }
+
+                @Override
                 public void biometricsWasEnrolled(BiometricFid biometricFid) {
 
                 }
@@ -1572,9 +1584,16 @@ public class Global extends MultiDexApplication {
                 public void biometricsUnregister(ViewCustomerDetails_FA.Finger finger) {
 
                 }
-            });
+            }, EmobileBiometric.UserType.CLERK);
             digitalPersona.loadForScan();
-
+            globalDlog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialog) {
+                    if (loggedIn) {
+                        digitalPersona.releaseReader();
+                    }
+                }
+            });
             systemLoginButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -1594,36 +1613,6 @@ public class Global extends MultiDexApplication {
                 public void onClick(View v) {
                     String enteredPass = viewField.getText().toString().trim();
                     validateLogin(activity, myPref, enteredPass, viewField, viewMsg);
-//                    if (myPref.isUseClerks()) {
-//                        Clerk clerk = ClerkDAO.login(enteredPass, myPref, true);
-//                        if (clerk == null) {
-//                            viewField.setText("");
-//                            viewMsg.setText(R.string.invalid_password);
-//                        } else {
-//                            myPref.setClerkID(String.valueOf(clerk.getEmpId()));
-//                            myPref.setClerkName(clerk.getEmpName());
-//                            if (activity instanceof MainMenu_FA) {
-//                                ((MainMenu_FA) activity).setLogoutButtonClerkname();
-//                            }
-//                            globalDlog.dismiss();
-//                            loggedIn = true;
-//                            digitalPersona.releaseReader();
-//                        }
-//                    } else if (enteredPass.equals(myPref.getApplicationPassword())) {
-//                        globalDlog.dismiss();
-//                        digitalPersona.releaseReader();
-//                        loggedIn = true;
-//                        if (activity instanceof MainMenu_FA) {
-//                            ((MainMenu_FA) activity).hideLogoutButton();
-//                        }
-//                    } else {
-//                        viewField.setText("");
-//                        viewMsg.setText(R.string.invalid_password);
-//                    }
-//                    if (loggedIn) {
-//                        Intent intent = new Intent(MainMenu_FA.NOTIFICATION_LOGIN_STATECHANGE);
-//                        activity.sendBroadcast(intent);
-//                    }
                 }
             });
             globalDlog.show();
@@ -1642,12 +1631,12 @@ public class Global extends MultiDexApplication {
                 if (context instanceof MainMenu_FA) {
                     ((MainMenu_FA) context).setLogoutButtonClerkname();
                 }
-                globalDlog.dismiss();
                 loggedIn = true;
+                globalDlog.dismiss();
             }
         } else if (enteredPass.equals(myPref.getApplicationPassword())) {
-            globalDlog.dismiss();
             loggedIn = true;
+            globalDlog.dismiss();
             if (context instanceof MainMenu_FA) {
                 ((MainMenu_FA) context).hideLogoutButton();
             }

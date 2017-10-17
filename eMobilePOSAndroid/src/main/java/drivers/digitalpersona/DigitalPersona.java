@@ -50,6 +50,7 @@ public class DigitalPersona {
     private boolean stopFingerReader;
     private Context context;
     private BiometricCallbacks callbacks;
+    private EmobileBiometric.UserType userType;
     private int dpi;
     private Engine engine;
     private boolean m_reset;
@@ -67,10 +68,11 @@ public class DigitalPersona {
     private ProgressBar progressBar;
     private TextView fingerPrintScanningNotesTextView;
 
-    public DigitalPersona(Context context, BiometricCallbacks callbacks) {
+    public DigitalPersona(Context context, BiometricCallbacks callbacks, EmobileBiometric.UserType userType) {
 
         this.context = context;
         this.callbacks = callbacks;
+        this.userType = userType;
     }
 
     public void loadForEnrollment() {
@@ -137,7 +139,7 @@ public class DigitalPersona {
                         dpi = GetFirstDPI(reader);
                         engine = UareUGlobal.GetEngine();
                         stopFingerReader = false;
-                        Fmd[] fmds = EmobileBiometricDAO.getFmds(engine);
+                        Fmd[] fmds = EmobileBiometricDAO.getFmds(userType);
                         if (fmds.length > 0) {
                             while (!stopFingerReader) {
                                 try {
@@ -147,12 +149,16 @@ public class DigitalPersona {
                                     }
                                     Fmd fmd = engine.CreateFmd(cap_result.image, Fmd.Format.ANSI_378_2004);
                                     Engine.Candidate[] candidates = engine.Identify(fmd, 0, fmds, 100000, 2);
-                                    for (Engine.Candidate candidate : candidates) {
-                                        int fmd_index = candidate.fmd_index;
-                                        final EmobileBiometric biometric = EmobileBiometricDAO.getBiometrics(fmds[fmd_index]);
-                                        if (biometric != null) {
-                                            callbacks.biometricsWasRead(biometric);
+                                    if(candidates.length>0) {
+                                        for (Engine.Candidate candidate : candidates) {
+                                            int fmd_index = candidate.fmd_index;
+                                            final EmobileBiometric biometric = EmobileBiometricDAO.getBiometrics(fmds[fmd_index]);
+                                            if (biometric != null) {
+                                                callbacks.biometricsWasRead(biometric);
+                                            }
                                         }
+                                    }else {
+                                        callbacks.biometricsReadNotFound();
                                     }
                                 } catch (UareUException e) {
                                     stopFingerReader = true;
@@ -394,7 +400,7 @@ public class DigitalPersona {
                 if (!m_first) {
                     if (m_text_conclusionString.length() == 0) {
                         try {
-                            Fmd[] fmds = EmobileBiometricDAO.getFmds(engine);
+                            Fmd[] fmds = EmobileBiometricDAO.getFmds(userType);
                             Engine.Candidate[] candidates = new Engine.Candidate[0];
                             if (fmds.length > 0) {
                                 candidates = engine.Identify(m_enrollment_fmd, 0, fmds, 100000, 2);

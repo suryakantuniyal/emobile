@@ -1129,7 +1129,7 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
 //                            Fmd fmd = m_engine.CreateFmd(m_enrollment_fmd.getData(), cap_result.image.getViews()[0].getWidth(), cap_result.image.getViews()[0].getHeight(),
 //                                    cap_result.image.getViews()[0].getQuality(), cap_result.image.getViews()[0].getFingerPosition(),
 //                                    cap_result.image.getCbeffId(), Fmd.Format.ANSI_378_2004);
-                            Fmd[] fmds = EmobileBiometricDAO.getFmds(engine);
+                            Fmd[] fmds = EmobileBiometricDAO.getFmds(EmobileBiometric.UserType.CUSTOMER);
                             Engine.Candidate[] candidates = new Engine.Candidate[0];
                             if (fmds.length > 0) {
                                 candidates = engine.Identify(m_enrollment_fmd, 0, fmds, 100000, 2);

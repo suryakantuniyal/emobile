@@ -3,11 +3,7 @@ package com.android.dao;
 import com.android.emobilepos.customer.ViewCustomerDetails_FA;
 import com.android.emobilepos.models.realms.BiometricFid;
 import com.android.emobilepos.models.realms.EmobileBiometric;
-import com.digitalpersona.uareu.Engine;
-import com.digitalpersona.uareu.Fid;
 import com.digitalpersona.uareu.Fmd;
-import com.digitalpersona.uareu.UareUException;
-import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,11 +85,13 @@ public class EmobileBiometricDAO {
         }
     }
 
-    public static Fmd[] getFmds(Engine engine) {
+    public static Fmd[] getFmds(EmobileBiometric.UserType userType) {
         Realm realm = Realm.getDefaultInstance();
         List<Fmd> fmds = new ArrayList<>();
         try {
-            RealmResults<EmobileBiometric> all = realm.where(EmobileBiometric.class).findAll();
+            RealmResults<EmobileBiometric> all = realm.where(EmobileBiometric.class)
+                    .equalTo("userTypeCode", userType.getCode())
+                    .findAll();
             if (all != null) {
                 for (EmobileBiometric biometric : all) {
                     for (BiometricFid biometricFid : biometric.getFids()) {
