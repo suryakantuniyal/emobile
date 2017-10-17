@@ -481,14 +481,13 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                         PayMethodsDAO.delete("CardOnFile");
                     }
                     break;
-                case R.string.config_use_clerks:
-                    Global.loggedIn = false;
-                    myPref.setIsPersistClerk(myPref.isUseClerks());
-                    break;
                 case R.string.config_clerk_management:
                     intent = new Intent(getActivity(), ClerkManagementActivity.class);
                     startActivity(intent);
                     break;
+                case R.string.config_use_clerks:
+                    Global.loggedIn = false;
+                    myPref.setIsPersistClerk(myPref.isUseClerks());
                 case R.string.config_use_navigationbar:
                     getActivity().finish();
                     getActivity().startActivity(getActivity().getIntent());

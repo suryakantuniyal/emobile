@@ -123,15 +123,16 @@ public class EmobilePOSRealmMigration implements io.realm.RealmMigration {
                     schema.create(BiometricFid.class.getSimpleName()).
                             addField("id", String.class, FieldAttribute.PRIMARY_KEY)
                             .addField("fid", String.class)
-                            .addField("fidData", byte[].class)
+                            .addField("fmdData", byte[].class)
                             .addField("fingerCode", int.class, FieldAttribute.INDEXED);
 
 
                     schema.create(EmobileBiometric.class.getSimpleName()).
                             addField("realmId", String.class, FieldAttribute.PRIMARY_KEY)
-                            .addField("id", String.class, FieldAttribute.INDEXED)
+                            .addField("entityid", String.class, FieldAttribute.INDEXED)
                             .addField("userTypeCode", int.class, FieldAttribute.INDEXED)
-                            .addRealmListField("fids", schema.get(BiometricFid.class.getSimpleName()));
+                            .addRealmListField("fids", schema.get(BiometricFid.class.getSimpleName()))
+                            .addField("regid", String.class, FieldAttribute.INDEXED);
                     oldVersion++;
                 }
             }

@@ -1143,7 +1143,33 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
                                 biometric.setRegid(preferences.getAcctNumber());
                                 EmobileBiometricDAO.upsert(biometric);
                             } else {
-                                handler.sendEmptyMessage(0);
+                                BiometricFid biometricFid = new BiometricFid(engine, cap_result.image, finger);
+                                int fmd_index = candidates[0].fmd_index;
+                                final EmobileBiometric emobileBiometric = EmobileBiometricDAO.getBiometrics(fmds[fmd_index]);
+                                if ((emobileBiometric.getUserType() == EmobileBiometric.UserType.CUSTOMER
+                                        && emobileBiometric.getEntityid().equalsIgnoreCase(String.valueOf(cust_id)))
+                                        || emobileBiometric.getUserType() != EmobileBiometric.UserType.CUSTOMER) {
+                                    boolean alreadyRegistered = false;
+                                    for (BiometricFid fid : emobileBiometric.getFids()) {
+                                        if (fid.getFingerCode() != biometricFid.getFingerCode()) {
+                                            alreadyRegistered = true;
+                                            break;
+                                        }
+                                    }
+                                    if (!alreadyRegistered) {
+                                        EmobileBiometricDAO.deleteFinger(cust_id, EmobileBiometric.UserType.CUSTOMER, finger);
+                                        biometric.setEntityid(cust_id);
+                                        biometric.getFids().add(biometricFid);
+                                        biometric.setRegid(preferences.getAcctNumber());
+                                        EmobileBiometricDAO.upsert(biometric);
+                                    } else {
+                                        handler.sendEmptyMessage(0);
+                                    }
+                                } else {
+                                    if (!emobileBiometric.getEntityid().equalsIgnoreCase(String.valueOf(cust_id))) {
+                                        handler.sendEmptyMessage(0);
+                                    }
+                                }
                             }
                         } catch (UareUException e) {
 
