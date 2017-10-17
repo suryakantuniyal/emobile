@@ -34,7 +34,6 @@ import com.android.database.TaxesHandler;
 import com.android.emobilepos.DrawReceiptActivity;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.DataTaxes;
-import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
@@ -336,8 +335,11 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
         global.order.ord_longitude = String.valueOf(location.getLongitude());
         global.order.processed = "1";
         ordersHandler.insert(global.order);
-
-        orderProductsHandler.insert(global.order.getOrderProducts());
+        for (OrderProduct product : Global.consignment_products) {
+            HashMap<String, String> hash = Global.consignSummaryMap.get(product.getProd_id());
+            product.setOrdprod_qty(hash.get("invoice"));
+        }
+        orderProductsHandler.insert(Global.consignment_products);
         if (global.order.getListOrderTaxes() != null
                 && global.order.getListOrderTaxes().size() > 0
                 ) {
