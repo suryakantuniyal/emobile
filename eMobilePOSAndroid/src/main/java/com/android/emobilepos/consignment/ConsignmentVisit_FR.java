@@ -287,7 +287,7 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
 
     private void processOrder() {
 //        List<DataTaxes> listOrderTaxes = global.order.getListOrderTaxes();
-//        global.order = new Order(activity);
+        global.order = Global.consignment_order;
 //        global.order.setListOrderTaxes(listOrderTaxes);
         TaxesHandler taxHandler = new TaxesHandler(activity);
         BigDecimal _order_total = BigDecimal.valueOf(ordTotal);
