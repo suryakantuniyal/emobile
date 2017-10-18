@@ -50,7 +50,7 @@ android {
         ems {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.2.2.88"
+            versionName "1.2.2.89"
             versionCode 146
             targetSdkVersion 23
             multiDexEnabled = true
@@ -64,7 +64,7 @@ android {
         icmpevo {
             minSdkVersion 15
             applicationId 'com.emobilepos.icmpevo.app'
-            versionName "1.2.2.88"
+            versionName "1.2.2.89"
             versionCode 146
             targetSdkVersion 23
             multiDexEnabled = true
@@ -92,7 +92,7 @@ android {
         ivupos {
             minSdkVersion 15
             applicationId 'com.emobilepos.ivupos.app'
-            versionName "1.2.2.88"
+            versionName "1.2.2.89"
             versionCode 146
             targetSdkVersion 23
             multiDexEnabled = true
@@ -142,7 +142,7 @@ android {
             buildConfigField "int", "AUTOSYNC_PERIOD", "60000"
             buildConfigField "boolean", "PRINT_TO_LOG", "true"
             buildConfigField "boolean", "DEBUG_NOMAD", "true"
-            buildConfigField "boolean", "USE_DUMMY_START_PRINTER", "true"
+            buildConfigField "boolean", "USE_DUMMY_START_PRINTER", "false"
             buildConfigField "boolean", "DELETE_INVALID_HOLDS", "true"
             minifyEnabled false
             multiDexEnabled true
