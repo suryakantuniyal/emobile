@@ -1396,7 +1396,8 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                                 String val = holder.rightText.getText().toString();
                                 double qty = Double.parseDouble(val);
                                 qty -= 1;
-                                if (qty >= 1) {
+                                int mixQty = Global.isConsignment ? 0 : 1;
+                                if (qty >= mixQty) {
                                     qty_picked = String.valueOf(qty);
                                     holder.rightText.setText(Global.getBigDecimalNum(qty_picked, 2).toString());
                                     BigDecimal newQty = Global.getBigDecimalNum(holder.rightText.getText().toString());

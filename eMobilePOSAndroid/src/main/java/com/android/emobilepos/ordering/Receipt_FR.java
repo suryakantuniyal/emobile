@@ -1206,7 +1206,11 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         String[] temp;
         switch (consignmentType) {
             case ORDER:// Rack
-                Global.consignment_order = getOrderingMainFa().global.order;
+                try {
+                    Global.consignment_order = (Order) getOrderingMainFa().global.order.clone();
+                } catch (CloneNotSupportedException e) {
+
+                }
                 Global.consignment_products = getOrderingMainFa().global.order.getOrderProducts();
                 Global.consignment_qtyCounter = OrderProductUtils.getProductQtyHashMap(getOrderingMainFa().global.order.getOrderProducts());//new HashMap<String, String>(global.qtyCounter);
                 size2 = Global.custInventoryKey.size();
