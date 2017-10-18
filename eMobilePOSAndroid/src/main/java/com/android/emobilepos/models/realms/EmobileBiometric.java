@@ -39,13 +39,17 @@ public class EmobileBiometric extends RealmObject {
     @Expose(serialize = false, deserialize = false)
     @PrimaryKey
     private String realmId;
+    @Expose
     @Index
     private String entityid;
+    @Expose
     @Index
     private int userTypeCode;
     @Ignore
     private UserType userType;
+    @Expose
     private RealmList<BiometricFid> fids;
+    @Expose
     private String regid;
 
     public String getEntityid() {

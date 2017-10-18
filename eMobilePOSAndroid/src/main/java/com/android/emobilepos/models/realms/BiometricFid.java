@@ -8,6 +8,7 @@ import com.digitalpersona.uareu.Fid;
 import com.digitalpersona.uareu.Fmd;
 import com.digitalpersona.uareu.UareUException;
 import com.digitalpersona.uareu.UareUGlobal;
+import com.google.gson.annotations.Expose;
 
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
@@ -15,6 +16,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
 import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 
@@ -22,10 +24,16 @@ import io.realm.annotations.PrimaryKey;
  * Created by Guarionex on 5/24/2016.
  */
 public class BiometricFid extends RealmObject {
+    @Expose
     @PrimaryKey
     private String id;
+    @Expose(serialize = false, deserialize = false)
     private String fid;
+    @Expose(serialize = false, deserialize = false)
     private byte[] fmdData;
+    @Expose
+    private String fmdBase64;
+    @Expose
     @Index
     private int fingerCode;
 
@@ -40,6 +48,7 @@ public class BiometricFid extends RealmObject {
         this.fingerCode = finger.getCode();
         this.fid = encode;
         this.fmdData = fmd.getData();
+        this.fmdBase64 = Base64.encodeToString(getFmdData(), Base64.DEFAULT);
     }
 
     public static String md5(byte[] data) {
@@ -122,5 +131,6 @@ public class BiometricFid extends RealmObject {
 
     public void setFmdData(byte[] fidData) {
         this.fmdData = fidData;
+        this.fmdBase64 = Base64.encodeToString(getFmdData(), Base64.DEFAULT);
     }
 }

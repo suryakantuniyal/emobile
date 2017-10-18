@@ -21,7 +21,7 @@ import io.realm.RealmSchema;
  * Created by Guarionex on 4/13/2016.
  */
 public class EmobilePOSRealmMigration implements io.realm.RealmMigration {
-    public static int REALM_SCHEMA_VERSION = 8;
+    public static int REALM_SCHEMA_VERSION = 9;
 
     @Override
     public void migrate(DynamicRealm realm, long oldVersion, long newVersion) {
@@ -124,6 +124,7 @@ public class EmobilePOSRealmMigration implements io.realm.RealmMigration {
                             addField("id", String.class, FieldAttribute.PRIMARY_KEY)
                             .addField("fid", String.class)
                             .addField("fmdData", byte[].class)
+                            .addField("fmdBase64", String.class)
                             .addField("fingerCode", int.class, FieldAttribute.INDEXED);
 
 
@@ -133,6 +134,13 @@ public class EmobilePOSRealmMigration implements io.realm.RealmMigration {
                             .addField("userTypeCode", int.class, FieldAttribute.INDEXED)
                             .addRealmListField("fids", schema.get(BiometricFid.class.getSimpleName()))
                             .addField("regid", String.class, FieldAttribute.INDEXED);
+                    oldVersion++;
+                }
+                if (oldVersion == 8) {
+                    if (!schema.get(BiometricFid.class.getSimpleName()).hasField("fmdBase64")) {
+                        schema.get(BiometricFid.class.getSimpleName())
+                                .addField("fmdBase64", String.class);
+                    }
                     oldVersion++;
                 }
             }

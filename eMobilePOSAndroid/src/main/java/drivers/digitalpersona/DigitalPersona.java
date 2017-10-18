@@ -35,10 +35,16 @@ import com.digitalpersona.uareu.UareUException;
 import com.digitalpersona.uareu.UareUGlobal;
 import com.digitalpersona.uareu.dpfpddusbhost.DPFPDDUsbException;
 import com.digitalpersona.uareu.dpfpddusbhost.DPFPDDUsbHost;
+import com.google.gson.Gson;
 
 import java.util.Collection;
+import java.util.List;
 
 import interfaces.BiometricCallbacks;
+import io.realm.Realm;
+import io.realm.RealmList;
+import io.realm.RealmResults;
+import util.json.JsonUtils;
 
 import static com.android.emobilepos.R.id.fingerPrintimageView;
 import static com.android.emobilepos.R.id.unregisterFingerprintbutton2;
@@ -140,6 +146,17 @@ public class DigitalPersona {
                         engine = UareUGlobal.GetEngine();
                         stopFingerReader = false;
                         Fmd[] fmds = EmobileBiometricDAO.getFmds(userType);
+                        Realm r = Realm.getDefaultInstance();
+                        RealmResults<EmobileBiometric> all = r.where(EmobileBiometric.class).findAll();
+                        List<EmobileBiometric> emobileBiometrics = r.copyFromRealm(all);
+                        for (EmobileBiometric biometric : emobileBiometrics) {
+                            RealmList<BiometricFid> fids = biometric.getFids();
+                            for (BiometricFid fid : fids) {
+                                fid.setFmdData(fid.getFmdData());
+                            }
+                        }
+                        Gson g = JsonUtils.getInstance();
+                        String json = g.toJson(emobileBiometrics);
                         if (fmds.length > 0) {
                             while (!stopFingerReader) {
                                 try {
