@@ -31,8 +31,8 @@ public class ConsignmentMain_FA extends BaseFragmentActivityActionBar implements
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		super.onCreate(savedInstanceState);
 		setContentView(R.layout.consignment_main_fragment);
 
 		this.activity = this;
