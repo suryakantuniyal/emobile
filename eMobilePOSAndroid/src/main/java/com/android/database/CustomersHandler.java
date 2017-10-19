@@ -3,6 +3,7 @@ package com.android.database;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 
 import com.android.emobilepos.models.Address;
 import com.android.support.Customer;
@@ -505,6 +506,7 @@ public class CustomersHandler {
                     "VALUES (" + sb2.toString() + ")";
             insert = DBManager.getDatabase().compileStatement(sb);
             for (Customer customer : customers) {
+                Log.d("Insert Customer:", customer.toString());
                 insert.bindString(index(cust_id), customer.getCust_id());
                 insert.bindString(index(cust_id_ref), customer.getCust_id_ref());
                 insert.bindString(index(qb_sync), customer.getQb_sync());
