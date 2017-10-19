@@ -294,7 +294,7 @@ public class DBManager {
     private final String CREATE_PAYMENTS_XML = "CREATE TABLE [PaymentsXML]([app_id] [varchar](100) PRIMARY KEY NOT NULL, [payment_xml] [varchar] NOT NULL)";
     private final String[] TABLE_NAME = new String[]{"Address", "Categories", "Clerk", "Customers", "DrawDateInfo", "EmpInv",
             "Employees", "InvProducts", "InvoicePayments", "Invoices", "OrderProduct", "Orders", "PayMethods",
-            "Payments", "PaymentsDeclined", "PriceLevel", "PriceLevelItems", "Printers", "Printers_Locations", "ProdCatXRef",
+            "Payments", "PaymentsDeclined", "PriceLevel", "PriceLevelItems", "Printers", "Printers_Locations", "ProdCatXref",
             "ProductChainXRef", "Product_addons", "Products", "Products_Images", "PublicVariables", "Reasons",
             "Refunds", "SalesTaxCodes", "ShipMethod", "Taxes", "Taxes_Group", "Templates", "Terms", "UOM",
             "VoidTransactions", "VolumePrices", "deviceDefaultValues", "memotext", "products_attrs",
@@ -545,6 +545,15 @@ public class DBManager {
     }
 
     public void alterTables() {
+        int i = 0;
+        for (String table : TABLE_NAME) {
+            Cursor cursor = getDatabase().rawQuery("SELECT name FROM sqlite_master WHERE type='table' AND name='" + table + "'", new String[]{});
+            if (cursor.getCount() == 0) {
+                getDatabase().execSQL(CREATE_TABLE[i]);
+            }
+            i++;
+        }
+
         Cursor cursor = getDatabase().rawQuery("select * from  [Orders] limit 1", new String[]{});
         boolean exist = cursor.getColumnIndex("ord_timeStarted") > -1;
         if (!exist) {
@@ -553,6 +562,81 @@ public class DBManager {
         exist = cursor.getColumnIndex("prod_prices_group_id") > -1;
         if (!exist) {
             getDatabase().execSQL("ALTER TABLE [Orders] ADD COLUMN [prod_prices_group_id] [varchar](50) NULL");
+        }
+        exist = cursor.getColumnIndex("assignedTable") > -1;
+        if (!exist) {
+            getDatabase().execSQL("ALTER TABLE [Orders] ADD COLUMN [assignedTable] [varchar](10) NULL");
+        }
+        exist = cursor.getColumnIndex("numberOfSeats") > -1;
+        if (!exist) {
+            getDatabase().execSQL("ALTER TABLE [Orders] ADD COLUMN  [numberOfSeats] [int] NULL");
+        }
+        exist = cursor.getColumnIndex("associateID") > -1;
+        if (!exist) {
+            getDatabase().execSQL("ALTER TABLE [Orders] ADD COLUMN  associateID [varchar](10) NULL");
+        }
+        exist = cursor.getColumnIndex("orderAttributes") > -1;
+        if (!exist) {
+            getDatabase().execSQL("ALTER TABLE [Orders] ADD COLUMN [orderAttributes] [varchar](1000) NULL");
+        }
+
+        cursor = getDatabase().rawQuery("select * from  [OrderProduct] limit 1", new String[]{});
+        exist = cursor.getColumnIndex("prod_sku") > -1;
+        if (!exist) {
+            getDatabase().execSQL("ALTER TABLE [OrderProduct] ADD COLUMN [prod_sku] [varchar](255) NULL");
+        }
+        exist = cursor.getColumnIndex("prod_upc") > -1;
+        if (!exist) {
+            getDatabase().execSQL("ALTER TABLE [OrderProduct] ADD COLUMN [prod_upc] [varchar](50) NULL");
+        }
+        exist = cursor.getColumnIndex("assignedSeat") > -1;
+        if (!exist) {
+            getDatabase().execSQL("ALTER TABLE [OrderProduct] ADD COLUMN [assignedSeat] [varchar](10)");
+        }
+        exist = cursor.getColumnIndex("seatGroupId") > -1;
+        if (!exist) {
+            getDatabase().execSQL("ALTER TABLE [OrderProduct] ADD COLUMN [seatGroupId][int] NULL");
+        }
+        exist = cursor.getColumnIndex("addon_ordprod_id") > -1;
+        if (!exist) {
+            getDatabase().execSQL("ALTER TABLE [OrderProduct] ADD COLUMN  [addon_ordprod_id] [varchar](50)");
+        }
+        exist = cursor.getColumnIndex("prod_price_points") > -1;
+        if (!exist) {
+            getDatabase().execSQL("ALTER TABLE [OrderProduct] ADD COLUMN [prod_price_points] [int] NULL");
+        }
+        exist = cursor.getColumnIndex("isGC") > -1;
+        if (!exist) {
+            getDatabase().execSQL("ALTER TABLE [OrderProduct] ADD COLUMN [isGC] [bit] NULL");
+        }
+
+
+        cursor = getDatabase().rawQuery("select * from  [Payments] limit 1", new String[]{});
+        exist = cursor.getColumnIndex("EMV_JSON") > -1;
+        if (!exist) {
+            getDatabase().execSQL("ALTER TABLE [Payments] ADD COLUMN [EMV_JSON] VARCHAR");
+        }
+        exist = cursor.getColumnIndex("amount_tender") > -1;
+        if (!exist) {
+            getDatabase().execSQL("ALTER TABLE [Payments] ADD COLUMN [amount_tender] money");
+        }
+        cursor = getDatabase().rawQuery("select * from  [PaymentsDeclined] limit 1", new String[]{});
+        exist = cursor.getColumnIndex("EMV_JSON") > -1;
+        if (!exist) {
+            getDatabase().execSQL("ALTER TABLE [PaymentsDeclined] ADD COLUMN [EMV_JSON] VARCHAR");
+        }
+        exist = cursor.getColumnIndex("amount_tender") > -1;
+        if (!exist) {
+            getDatabase().execSQL("ALTER TABLE [PaymentsDeclined] ADD COLUMN [amount_tender] money");
+        }
+        cursor = getDatabase().rawQuery("select * from  [StoredPayments] limit 1", new String[]{});
+        exist = cursor.getColumnIndex("EMV_JSON") > -1;
+        if (!exist) {
+            getDatabase().execSQL("ALTER TABLE [StoredPayments] ADD COLUMN [EMV_JSON] VARCHAR");
+        }
+        exist = cursor.getColumnIndex("amount_tender") > -1;
+        if (!exist) {
+            getDatabase().execSQL("ALTER TABLE [StoredPayments] ADD COLUMN [amount_tender] money");
         }
 
         for (String sql : CREATE_INDEX) {
