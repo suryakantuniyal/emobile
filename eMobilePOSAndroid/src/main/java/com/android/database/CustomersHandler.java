@@ -545,6 +545,7 @@ public class CustomersHandler {
             DBManager.getDatabase().setTransactionSuccessful();
         } catch (Exception e) {
             Crashlytics.logException(e);
+            e.printStackTrace();
             throw e;
         } finally {
             DBManager.getDatabase().endTransaction();

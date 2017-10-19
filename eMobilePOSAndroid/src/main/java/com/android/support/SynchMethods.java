@@ -170,6 +170,19 @@ public class SynchMethods {
     }
 
 
+    public static void getFingerprintData(Context context) {
+        if (OAuthManager.isExpired(context)) {
+            getOAuthManager(context);
+        }
+        StringBuilder url = new StringBuilder(context.getString(R.string.sync_enablermobile_fingerprintdata));
+        OAuthClient authClient = OAuthManager.getOAuthClient(context);
+        oauthclient.HttpClient httpClient = new oauthclient.HttpClient();
+        try {
+            String response = httpClient.getString(url.toString(), authClient);
+        } catch (IOException e) {
+
+        }
+    }
     public static void postSalesAssociatesConfiguration(Activity activity, List<Clerk> clerks) throws Exception {
         List<DinningLocationConfiguration> configurations = new ArrayList<>();
 
@@ -409,6 +422,7 @@ public class SynchMethods {
             synchSalesAssociateDinnindTablesConfiguration(context);
             synchDownloadMixMatch();
             synchDownloadTermsAndConditions();
+            getFingerprintData(context);
             if (preferences.getPreferences(MyPreferences.pref_enable_location_inventory)) {
                 synchLocations();
                 synchLocationsInventory();
