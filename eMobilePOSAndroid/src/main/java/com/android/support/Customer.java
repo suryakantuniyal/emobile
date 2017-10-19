@@ -311,4 +311,9 @@ public class Customer
 	public void setCustAccountNumber(String custAccountNumber) {
 		this.custAccountNumber = custAccountNumber;
 	}
+
+	@Override
+	public String toString() {
+		return String.format("%s(%s)", this.cust_name, this.cust_id);
+	}
 }
