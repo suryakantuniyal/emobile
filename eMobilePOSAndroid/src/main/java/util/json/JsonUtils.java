@@ -9,6 +9,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
+import java.text.Annotation;
+
 import io.realm.RealmList;
 import io.realm.RealmObject;
 
@@ -35,7 +37,7 @@ public class JsonUtils {
                 .registerTypeAdapter(new TypeToken<RealmList<EmobileBiometric>>() {
                         }.getType(),
                         new EmobileBiometricsRealmListConverter())
-                .excludeFieldsWithoutExposeAnnotation()
+//                .excludeFieldsWithoutExposeAnnotation()
                 .create();
     }
 }

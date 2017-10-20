@@ -36,9 +36,10 @@ public class EmobileBiometric extends RealmObject {
             return null;
         }
     }
+
     @Expose(serialize = false, deserialize = false)
     @PrimaryKey
-    private String realmId;
+    transient private String realmId;
     @Expose
     @Index
     private String entityid;

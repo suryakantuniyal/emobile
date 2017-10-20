@@ -1,42 +1,76 @@
 package com.android.support;
 
 import com.android.emobilepos.models.Address;
+import com.google.gson.annotations.Expose;
 
 public class Customer 
 {
+	@Expose
 	private String cust_id = "";
-	private String cust_id_ref = "";
+	@Expose private String cust_id_ref = "";
+	@Expose
 	private String qb_sync = "";
+	@Expose
 	private String zone_id = "";
+	@Expose
 	private String CompanyName = "";
+	@Expose
 	private String Salutation = "";
+	@Expose
 	private String cust_contact = "";
+	@Expose
 	private String cust_name = "";
+	@Expose
 	private String cust_chain = "";
+	@Expose
 	private String cust_balance = "";
+	@Expose
 	private String cust_limit = "";
+	@Expose
 	private String cust_firstName = "";
+	@Expose
 	private String cust_middleName = "";
+	@Expose
 	private String cust_lastName = "";
+	@Expose
 	private String cust_phone = "";
+	@Expose
 	private String cust_email = "";
+	@Expose
 	private String cust_fax = "";
+	@Expose
 	private String cust_update = "";
+	@Expose
 	private String isactive = "";
+	@Expose
 	private String cust_ordertype = "";
+	@Expose
 	private String cust_taxable = "";
+	@Expose
 	private String cust_salestaxcode = "";
+	@Expose
 	private String pricelevel_id = "";
+	@Expose
 	private String cust_terms = "";
+	@Expose
 	private String cust_pwd = "";
+	@Expose
 	private String cust_securityquestion = "";
+	@Expose
 	private String cust_securityanswer = "";
+	@Expose
 	private String cust_points = "";
+	@Expose
 	private String cust_dob = "";
+	@Expose
 	private Address shippingAddress;
+	@Expose
 	private Address billingAddress;
+	@Expose
 	private String custIdKey;
+	@Expose
 	private String custIdNumeric;
+	@Expose
 	private String custAccountNumber;
 
 	public String getCust_id() {

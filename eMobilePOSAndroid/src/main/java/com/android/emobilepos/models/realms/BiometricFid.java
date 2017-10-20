@@ -28,7 +28,7 @@ public class BiometricFid extends RealmObject {
     @PrimaryKey
     private String id;
     @Expose(serialize = false, deserialize = false)
-    private String fid;
+    transient private String fid;
     @Expose(serialize = false, deserialize = false)
     private byte[] fmdData;
     @Expose
