@@ -453,7 +453,7 @@
 				android:padding="5dp">
 
 				<TextView
-					android:id="@+id/textView355"
+					android:id="@+id/textView355a"
 					style="@style/black_text_appearance_unbold"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"

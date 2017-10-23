@@ -123,4 +123,18 @@ public class EmobileBiometricDAO {
         }
         return biometric;
     }
+
+    public static List<EmobileBiometric> getBiometrics() {
+        Realm realm = Realm.getDefaultInstance();
+        List<EmobileBiometric> all = null;
+        try {
+            all = realm.where(EmobileBiometric.class).findAll();
+            if (all != null) {
+                all = realm.copyFromRealm(all);
+            }
+        } finally {
+            realm.close();
+            return all;
+        }
+    }
 }

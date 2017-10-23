@@ -109,6 +109,7 @@ public class HttpClient {
         out.write(rawData.getBytes());
         out.flush();
         out.close();
+        int responseCode = httpURLConnection.getResponseCode();
         return convertStreamToString(httpURLConnection.getInputStream());
 
     }

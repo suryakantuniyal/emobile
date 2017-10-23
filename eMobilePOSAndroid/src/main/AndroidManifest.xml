@@ -513,10 +513,10 @@
             android:label="@string/title_activity_bixolon_transactions" />
         <activity
             android:name=".security.ClerkManagementActivity"
-            android:label="@string/title_activity_clerk_management" />
+            android:label="@string/config_clerk_management" />
         <activity
             android:name=".security.ClerkManagementDetailActivity"
-            android:label="@string/title_activity_clerk_management_detail"></activity>
+            android:label="@string/config_clerk_management"></activity>
     </application>
 
 </manifest>

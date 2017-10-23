@@ -1329,5 +1329,22 @@
     <string name="card_on_file">Card on File</string>
     <string name="genius">Genius</string>
     <string name="invoice_job_id">Invoice/Job ID</string>
-
+    <string name="fingerprints">Huellas dactilares</string>
+    <string name="information_saved">Informacion grabada.</string>
+    <string name="customerBiometrics">Biometría del cliente</string>
+    <string name="leftHand">Mano izquierda</string>
+    <string name="rightHand">Mano derecha</string>
+    <string name="fingerOne">Dedo uno</string>
+    <string name="fingerTwo">Dedo dos</string>
+    <string name="fingerThree">Dedo tres</string>
+    <string name="fingerFour">Dedo cuatro</string>
+    <string name="fingerprint_enrollment">Coloca cualquier dedo para iniciar el registro.</string>
+    <string name="fingerprint_enrollment_title">Registro de huella dactilar</string>
+    <string name="rescan_fingerprint">Retira el dedo y coloca nuevamente el mismo dedo en el lector</string>
+    <string name="unregister_fingerprint">Remover</string>
+    <string name="duplicated_fingerprint">La huella dactila esta registrada.</string>
+    <string name="cust_detail_lastname">Apellido</string>
+    <string name="fingerreadernotfound">No se encuentra la huella dactilar.</string>
+    <string name="config_clerk_management">Manejo de empleados</string>
+    <string name="biometrics">Biometría</string>
 </resources>
