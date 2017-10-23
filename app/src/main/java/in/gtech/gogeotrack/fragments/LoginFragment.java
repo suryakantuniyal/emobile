@@ -4,9 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
@@ -20,31 +18,15 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.NetworkResponse;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.google.gson.Gson;
-
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-
 import in.gtech.gogeotrack.FCM.SendRegistrationTokentoServer;
 import in.gtech.gogeotrack.R;
-import in.gtech.gogeotrack.activity.SessionHandler;
-import in.gtech.gogeotrack.activity.SplashActivity;
+import in.gtech.gogeotrack.activity.CircularActivity;
 import in.gtech.gogeotrack.api.APIServices;
-import in.gtech.gogeotrack.model.VehicleList;
-import in.gtech.gogeotrack.network.DetailResponseCallback;
-import in.gtech.gogeotrack.network.ResponseCallbackEvents;
-import in.gtech.gogeotrack.network.ResponseOfflineVehicle;
-import in.gtech.gogeotrack.network.ResponseOnlineVehicle;
 import in.gtech.gogeotrack.network.ResponseStringCallback;
 import in.gtech.gogeotrack.utils.URLContstant;
-
-import in.gtech.gogeotrack.activity.Main2Activity;
 
 /**
  * Created by silence12 on 19/6/17.
@@ -99,6 +81,7 @@ public class LoginFragment extends Fragment {
                             progressDialog.dismiss();
                             if (Response != null) {
                                 try {
+                                   // allOnlineVehicle(user, pass);
                                     JSONObject jsonObject = new JSONObject(Response);
                                     mEditor = mSharedPreferences.edit();
                                     mEditor.putString(URLContstant.KEY_USERNAME, user);
@@ -108,7 +91,11 @@ public class LoginFragment extends Fragment {
                                     mEditor.apply();
                                     Intent sendTokenservice = new Intent(getActivity(), SendRegistrationTokentoServer.class);
                                     getActivity().startService(sendTokenservice);
-                                    allOnlineVehicle(user, pass);
+
+                                    Intent  intent = new Intent(getActivity(),CircularActivity.class);
+                                    intent.putExtra("logged",true);
+                                    startActivity(intent);
+                                    getActivity().finish();
 
                                 } catch (JSONException e) {
                                     e.printStackTrace();
@@ -116,8 +103,6 @@ public class LoginFragment extends Fragment {
                             } else {
                                 Toast.makeText(getActivity(), "Server Error. Try again Later", Toast.LENGTH_SHORT).show();
                             }
-
-
                         }
 
                         @Override
@@ -130,9 +115,6 @@ public class LoginFragment extends Fragment {
                         }
 
                     });
-
-
-
 
                 }
             }
@@ -160,20 +142,17 @@ public class LoginFragment extends Fragment {
             }
         });
 
-
-
-
-
         return rootView;
     }
 
-    public void allOnlineVehicle(String userName, String password) {
+ /*   public void allOnlineVehicle(String userName, String password) {
 
         APIServices.GetAllOnlineVehicleList(getActivity(),userName,password, new ResponseOnlineVehicle() {
             @Override
             public void onSuccessOnline(JSONArray result) {
                 SessionHandler.updateSnessionHandler(getContext(), result, mSharedPreferences);
-                Intent  intent = new Intent(getActivity(),Main2Activity.class);
+                Intent  intent = new Intent(getActivity(),CircularActivity.class);
+                intent.putExtra("logged",true);
                 startActivity(intent);
                 getActivity().finish();
 
@@ -181,12 +160,7 @@ public class LoginFragment extends Fragment {
         });
 
     };
-
-
-
-
-
-
+*/
     @Override
     public void onResume() {
         super.onResume();

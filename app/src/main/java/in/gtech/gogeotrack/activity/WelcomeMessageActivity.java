@@ -17,11 +17,11 @@ import android.widget.TextView;
 
 import com.viewpagerindicator.CirclePageIndicator;
 
-import in.gtech.gogeotrack.R;
-import in.gtech.gogeotrack.adapter.ViewPagerAdapter;
-
 import java.util.Timer;
 import java.util.TimerTask;
+
+import in.gtech.gogeotrack.R;
+import in.gtech.gogeotrack.adapter.ViewPagerAdapter;
 
 /**
  * Created by silence12 on 4/7/17.
@@ -54,12 +54,12 @@ public class WelcomeMessageActivity extends AppCompatActivity implements View.On
         viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), WelcomeMessageActivity.this);
         circleviewPager = (ViewPager) findViewById(R.id.pager);
         totalDevices = (TextView) findViewById(R.id.alldevices_tv);
-        onlineDevices = (TextView) findViewById(R.id.allonline_tv);
-        offlineDevices = (TextView) findViewById(R.id.alloffline_tv);
-        listView_button = (Button) findViewById(R.id.listview_button);
-        alldevice_iv = (ImageView) findViewById(R.id.all_img_summary);
-        online_iv = (ImageView) findViewById(R.id.online_img);
-        offline_iv = (ImageView) findViewById(R.id.offline_img);
+        onlineDevices = (TextView) findViewById(R.id.alldevices);
+        offlineDevices = (TextView) findViewById(R.id.online_tv);
+        listView_button = (Button) findViewById(R.id.listview_bb);
+        alldevice_iv = (ImageView) findViewById(R.id.alldevices_iv);
+        online_iv = (ImageView) findViewById(R.id.online_iv);
+        offline_iv = (ImageView) findViewById(R.id.offline_iv);
         listView_button.setOnClickListener(this);
         circleviewPager.setAdapter(viewPagerAdapter);
         circleviewPager.setCurrentItem(0);
@@ -132,7 +132,7 @@ public class WelcomeMessageActivity extends AppCompatActivity implements View.On
 
     @Override
     public void onClick(View view) {
-        if (view.getId() == R.id.listview_button || view.getId() == R.id.all_img_summary) {
+        if (view.getId() == R.id.listview_bb || view.getId() == R.id.alldevices_iv) {
             Intent intent = new Intent(WelcomeMessageActivity.this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(intent);

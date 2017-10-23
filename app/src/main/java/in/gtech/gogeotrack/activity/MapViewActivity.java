@@ -123,7 +123,7 @@ public class MapViewActivity extends AppCompatActivity {
                         } else {
                             address = jsonObject.getString("address");
                         }
-                        drawMarker(new LatLng(lat, lng),jsonObject.getString("status"),address);
+                        drawMarker(new LatLng(lat, lng),jsonObject.getString("status"),address,jsonObject.getString("category"));
                     }
 
                 } catch (JSONException e) {
@@ -133,16 +133,20 @@ public class MapViewActivity extends AppCompatActivity {
 
     }
 
-    private void drawMarker(LatLng point, String str,String add) {
+    private void drawMarker(LatLng point, String str,String add,String category) {
 
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(point).title(add);
-        if (str.equals("online")) {
-            markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.greentruck));
-        } else if (str.equals("offline")) {
-            markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.redtruck));
-        } else {
-            markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_truck_med));
+        if(category.equals("person")){
+            markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_punch_person));
+        }else {
+            if (str.equals("online")) {
+                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.greentruck));
+            } else if (str.equals("offline")) {
+                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.redtruck));
+            } else {
+                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_truck_med));
+            }
         }
         googleMap.addMarker(markerOptions);
     }

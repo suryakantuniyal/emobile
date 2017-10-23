@@ -34,8 +34,7 @@
         android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="300dp"
-        android:id="@+id/relativeLayout">
+        android:layout_marginTop="300dp">
         <Button
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"

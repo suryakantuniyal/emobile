@@ -10,7 +10,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
@@ -30,22 +29,21 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.rampo.updatechecker.UpdateChecker;
 import com.viewpagerindicator.CirclePageIndicator;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import in.gtech.gogeotrack.R;
-import in.gtech.gogeotrack.adapter.ViewPagerAdapter;
-import in.gtech.gogeotrack.model.VehicleList;
-import in.gtech.gogeotrack.network.ResponseOnlineVehicle;
-import in.gtech.gogeotrack.utils.URLContstant;
-
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import in.gtech.gogeotrack.R;
+import in.gtech.gogeotrack.activity.Reports.ReportsActivity;
+import in.gtech.gogeotrack.adapter.ViewPagerAdapter;
+import in.gtech.gogeotrack.model.VehicleList;
+import in.gtech.gogeotrack.utils.URLContstant;
 
 public class  Main2Activity  extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
@@ -57,6 +55,7 @@ public class  Main2Activity  extends AppCompatActivity
     SharedPreferences mSharedPreferences;
     SharedPreferences.Editor mEditor, editor;
     SharedPreferences sharedPrefs;
+    private static Boolean log = false;
     private int currentPage;
     private Button mapview_bb, listview_bb;
     private ViewPager circleviewPager;
@@ -69,6 +68,11 @@ public class  Main2Activity  extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
+
+       /* WindowManager.LayoutParams lp = getWindow().getAttributes();
+        lp.screenBrightness = 100 / 100.0f;
+        getWindow().setAttributes(lp);
+*/
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setIcon(R.mipmap.luncher_icon);
@@ -77,17 +81,36 @@ public class  Main2Activity  extends AppCompatActivity
         progressDialog.setCancelable(false);
         progressDialog.show();
         mSharedPreferences = getSharedPreferences(URLContstant.PREFERENCE_NAME, MODE_PRIVATE);
-        try {
-            JSONObject  deviceData=new JSONObject(mSharedPreferences.getString("deviceData","{}"));
-            Log.d("Out",String.valueOf(deviceData));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        Intent intent = getIntent();
+        boolean b = intent.getBooleanExtra("logged",false);
         setSupportActionBar(toolbar);
         CheckGPS();
         init();
-        parseView();
 
+        if(b) {
+            (new Thread(new Runnable() {
+
+                @Override
+                public void run() {
+                    while (!Thread.interrupted())
+                        try {
+                            Thread.sleep(2000);
+                            runOnUiThread(new Runnable() // start actions in UI thread
+                            {
+
+                                @Override
+                                public void run() {
+                                    parseView(); // this action have to be in UI thread
+                                }
+                            });
+                        } catch (InterruptedException e) {
+                            // ooops
+                        }
+                }
+            })).start();
+        } else if(b == false){
+            parseView();
+        }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -168,16 +191,29 @@ public class  Main2Activity  extends AppCompatActivity
     }
     private void parseView() {
         JSONObject previousData = null;
-        progressDialog.dismiss();
         try {
+            progressDialog.dismiss();
             previousData = new JSONObject( mSharedPreferences.getString("deviceData","{}"));
             Log.d("inside",String.valueOf(previousData));
-            JSONArray vehicleList = previousData.getJSONArray("totalLst");
-            JSONArray onlineList = previousData.getJSONArray("onlineLst");
-            JSONArray offlineList = previousData.getJSONArray("offlineLst");
-            totalDevices.setText(String.valueOf(vehicleList.length()));
-            onlineDevices.setText(String.valueOf(onlineList.length()));
-            offlineDevices.setText(String.valueOf(offlineList.length()));
+            if(previousData.has("totalLst")){
+                JSONArray vehicleList = previousData.getJSONArray("totalLst");
+                totalDevices.setText(String.valueOf(vehicleList.length()));
+            }else {
+                totalDevices.setText("0");
+            }
+            if(previousData.has("onlineLst")) {
+                JSONArray onlineList = previousData.getJSONArray("onlineLst");
+                onlineDevices.setText(String.valueOf(onlineList.length()));
+            }else {
+                onlineDevices.setText("0");
+            }
+            if(previousData.has("offlineLst")) {
+                JSONArray offlineList = previousData.getJSONArray("offlineLst");
+                offlineDevices.setText(String.valueOf(offlineList.length()));
+            } else {
+                offlineDevices.setText("0");
+            }
+
         } catch (JSONException e) {
             e.printStackTrace();
         }

@@ -1,0 +1,494 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="4dp"
+    android:layout_marginLeft="4dp"
+    android:layout_marginRight="4dp"
+    android:layout_marginBottom="2dp"
+    card_view:cardBackgroundColor="#FFFFFF"
+    card_view:cardCornerRadius="4dp"
+    card_view:cardElevation="3dp"
+    card_view:cardUseCompatPadding="false">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="2dp"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            card_view:cardCornerRadius="4dp"
+            card_view:cardBackgroundColor="@color/colorPrimary">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp">
+                <ImageView
+                    android:id="@+id/date_iv"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="8dp"
+                    android:src="@drawable/truckicon2" />
+
+                <TextView
+                    android:id="@+id/lastupdate_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="5dp"
+                    android:layout_toRightOf="@+id/date_iv"
+                    android:drawablePadding="0dp"
+                    android:gravity="center"
+                    android:text="Trip report"
+                    android:textAllCaps="true"
+                    android:textColor="@color/white"
+                    android:textSize="13dp" />
+
+                <TextView
+                    android:id="@+id/onlinet_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="8dp"
+                    android:layout_toLeftOf="@+id/status_iv"
+                    android:drawablePadding="0dp"
+                    android:gravity="center_vertical"
+                    android:text=""
+                    android:textColor="@color/white"
+                    android:textSize="13dp" />
+                <ImageView
+                    android:id="@+id/status_iv"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="15dp"
+                    android:drawablePadding="0dp"
+                    android:gravity="center_vertical" />
+
+            </RelativeLayout>
+        </android.support.v7.widget.CardView>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="#EFF5F1"/>
+        <!--<FrameLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="50dp">-->
+
+        <!--<LinearLayout-->
+        <!--android:layout_width="40dp"-->
+        <!--android:layout_height="40dp"-->
+        <!--android:layout_marginLeft="10dp"-->
+        <!--android:layout_gravity="center_vertical"-->
+        <!--android:background="@drawable/circle">-->
+        <!--<ImageView-->
+        <!--android:id="@+id/vehicle_image"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:src="@drawable/truckicon2"-->
+        <!--android:padding="5dp"/>-->
+        <!--</LinearLayout>-->
+
+        <!--<RelativeLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:paddingBottom="4dp"-->
+        <!--android:layout_marginLeft="85dp"-->
+        <!--android:layout_marginRight="10dp"-->
+        <!--android:paddingLeft="1dp"-->
+        <!--android:paddingRight="6dp"-->
+        <!--android:paddingTop="6dp">-->
+
+        <!--<TextView-->
+        <!--android:id="@+id/vehicle_name"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_margin="10dp"-->
+        <!--android:text=""-->
+        <!--android:textColor="@color/colorPrimary"-->
+        <!--android:textSize="15dp" />-->
+
+        <!--</RelativeLayout>-->
+        <!--</FrameLayout>-->
+
+        <LinearLayout
+            android:id="@+id/main_ll"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="0dp"
+            android:orientation="horizontal"
+            android:weightSum="2"
+
+            >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:background="@drawable/full_rounded_white"
+                >
+
+                <LinearLayout
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginLeft="40dp"
+                    android:gravity="center"
+                    android:background="@drawable/circle">
+                    <ImageView
+                        android:id="@+id/vehicleListIcn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/truckicon2"
+                        android:padding="5dp"/>
+                </LinearLayout>
+
+                <RelativeLayout
+                    android:id="@+id/dvcename"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingBottom="4dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:paddingLeft="1dp"
+                    android:paddingRight="6dp"
+                    android:paddingTop="6dp">
+
+                    <TextView
+                        android:id="@+id/tripDeviceName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginLeft="4dp"
+                        android:text=""
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="13dp" />
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="#EFF5F1"/>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/cv_driver_performance"
+            android:background="@color/card_bg"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8.0dip"
+            android:layout_marginRight="8.0dip"
+            card_view:cardCornerRadius="2.0dip"
+            xmlns:card_view="http://schemas.android.com/apk/res-auto">
+            <RelativeLayout
+                android:id="@+id/rl_driver_performance"
+                android:clickable="true"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:id="@+id/ll_driver_performance_first_row"
+                    android:paddingTop="@dimen/dashboard_items_padding"
+                    android:paddingBottom="@dimen/dashboard_items_padding"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                   >
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:id="@+id/ll_driver_login_hrs"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="44.0dip"
+                        android:layout_weight="1.0">
+                        <TextView
+                            android:textSize="@dimen/text10"
+                            android:textColor="@color/black"
+                            android:id="@+id/tv_drivers_logged_in_label"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:layout_marginBottom="@dimen/tiny"
+                            android:textAllCaps="true"
+                            android:text="start time"
+                            android:fontFamily="@string/roboto_medium" />
+                        <TextView
+                            android:textSize="@dimen/text14"
+                            android:textColor="@color/txt_black_87"
+                            android:id="@+id/tripStrtTime"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:maxLines="1" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:id="@+id/ll_bookings_per_driver"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="30.0dip"
+                        android:layout_weight="1.0">
+                        <TextView
+                            android:textSize="@dimen/text10"
+                            android:textColor="@color/black"
+                            android:id="@+id/tv_bookings_per_driver_label"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:layout_marginBottom="@dimen/tiny"
+                            android:text="end time"
+                            android:textAllCaps="true"
+                            android:fontFamily="@string/roboto_medium" />
+                        <TextView
+                            android:textSize="@dimen/text14"
+                            android:textColor="@color/txt_black_87"
+                            android:id="@+id/tripEndTime"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:maxLines="1" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:id="@+id/ll_ola_score"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="30.0dip"
+                        android:layout_weight="1.0">
+                        <TextView
+                            android:textSize="@dimen/text10"
+                            android:textColor="@color/black"
+                            android:id="@+id/tv_ola_score_label"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:layout_marginBottom="@dimen/tiny"
+                            android:text="duration"
+                            android:textAllCaps="true"
+                            android:fontFamily="@string/roboto_medium" />
+                        <TextView
+                            android:textSize="@dimen/text14"
+                            android:textColor="@color/txt_black_87"
+                            android:id="@+id/tripDuration"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:maxLines="1" />
+                    </LinearLayout>
+                </LinearLayout>
+                <View
+                    android:id="@+id/vw_v_separator_11"
+                    android:background="@color/bg_separator"
+                    android:layout_width="fill_parent"
+                    android:layout_height="1.0dip"
+                    android:layout_marginLeft="44.0dip"
+                    android:layout_marginTop="8.0dip"
+                    android:layout_marginBottom="8.0dip"
+                    android:layout_below="@+id/ll_driver_performance_first_row" />
+
+                <LinearLayout
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:id="@+id/ll_driver_performance_second_row"
+                    android:paddingTop="@dimen/dashboard_items_padding"
+                    android:paddingBottom="@dimen/dashboard_items_padding"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/vw_v_separator_11">
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:id="@+id/ll_driver_login_hrs_per_driver"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="44.0dip"
+                        android:layout_weight="1.0">
+                        <TextView
+                            android:textSize="@dimen/text10"
+                            android:textColor="@color/black"
+                            android:id="@+id/tv_driver_login_hrs_per_driver_label"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:layout_marginBottom="@dimen/tiny"
+                            android:text="start address"
+                            android:textAllCaps="true"
+                            android:fontFamily="@string/roboto_medium" />
+                        <TextView
+                            android:textSize="@dimen/text14"
+                            android:textColor="@color/txt_black_87"
+                            android:id="@+id/tripStartAddrs"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:maxLines="1" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:id="@+id/ll_cancellations_per_driver"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="30.0dip"
+                        android:layout_weight="1.0">
+                        <TextView
+                            android:textSize="@dimen/text10"
+                            android:textColor="@color/black"
+                            android:id="@+id/tv_cancellations_per_driver_label"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:layout_marginBottom="@dimen/tiny"
+                            android:text="end address"
+                            android:textAllCaps="true"
+                            android:fontFamily="@string/roboto_medium" />
+                        <TextView
+                            android:textSize="@dimen/text14"
+                            android:textColor="@color/txt_black_87"
+                            android:id="@+id/tripEndAddrs"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:maxLines="1" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:id="@+id/ll_drivers_under_warning"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="30.0dip"
+                        android:layout_weight="1.0">
+                        <TextView
+                            android:textSize="@dimen/text10"
+                            android:textColor="@color/black"
+                            android:id="@+id/tv_drivers_under_warning_label"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:layout_marginBottom="@dimen/tiny"
+                            android:text="spent fuel"
+                            android:textAllCaps="true"
+                            android:fontFamily="@string/roboto_medium" />
+                        <TextView
+                            android:textSize="@dimen/text14"
+                            android:textColor="@color/txt_black_87"
+                            android:id="@+id/tripSpntFuel"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:maxLines="1" />
+                    </LinearLayout>
+                </LinearLayout>
+
+
+                <View
+                    android:id="@+id/vw_v_separator_111"
+                    android:background="@color/bg_separator"
+                    android:layout_width="fill_parent"
+                    android:layout_height="1.0dip"
+                    android:layout_marginLeft="44.0dip"
+                    android:layout_marginTop="8.0dip"
+                    android:layout_marginBottom="8.0dip"
+                    android:layout_below="@+id/ll_driver_performance_second_row" />
+
+
+                <LinearLayout
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:id="@+id/ll_driver_performance_third_row"
+                    android:paddingTop="@dimen/dashboard_items_padding"
+                    android:paddingBottom="@dimen/dashboard_items_padding"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/vw_v_separator_111">
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:id="@+id/freightInfoBox"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="44.0dip"
+                        android:layout_weight="1.0">
+                        <TextView
+                            android:textSize="@dimen/text10"
+                            android:textColor="@color/black"
+                            android:id="@+id/actualWeightDetails"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:layout_marginBottom="@dimen/tiny"
+                            android:text="distance"
+                            android:textAllCaps="true"
+                            android:fontFamily="@string/roboto_medium" />
+                        <TextView
+                            android:textSize="@dimen/text14"
+                            android:textColor="@color/txt_black_87"
+                            android:id="@+id/tripDistnce"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:maxLines="1" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:id="@+id/ll_cancellations_per_driver_23"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="30.0dip"
+                        android:layout_weight="1.0">
+                        <TextView
+                            android:textSize="@dimen/text10"
+                            android:textColor="@color/black"
+                            android:id="@+id/tv_cancellations_per_3_driver_label"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:layout_marginBottom="@dimen/tiny"
+                            android:text="average speed"
+                            android:textAllCaps="true"
+                            android:fontFamily="@string/roboto_medium" />
+                        <TextView
+                            android:textSize="@dimen/text14"
+                            android:textColor="@color/txt_black_87"
+                            android:id="@+id/tripAvgSpeed"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:maxLines="1" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:id="@+id/extraChatgeLayout"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="30.0dip"
+                        android:layout_weight="1.0">
+                        <TextView
+                            android:textSize="@dimen/text10"
+                            android:textColor="@color/black"
+                            android:id="@+id/extraChargeData"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:layout_marginBottom="@dimen/tiny"
+                            android:text="maximum speed"
+                            android:textAllCaps="true"
+                            android:fontFamily="@string/roboto_medium" />
+                        <TextView
+                            android:textSize="@dimen/text14"
+                            android:textColor="@color/txt_black_87"
+                            android:id="@+id/tripMaxSpeed"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:maxLines="1" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View
+                    android:id="@+id/vw_v_separator_1111"
+                    android:background="@color/bg_separator"
+                    android:layout_width="fill_parent"
+                    android:layout_height="1.0dip"
+                    android:layout_marginLeft="44.0dip"
+                    android:layout_marginTop="8.0dip"
+                    android:layout_marginBottom="8.0dip"
+                    android:layout_below="@+id/ll_driver_performance_third_row" />
+
+
+
+            </RelativeLayout>
+        </android.support.v7.widget.CardView>
+
+
+
+    </LinearLayout>
+</android.support.v7.widget.CardView>

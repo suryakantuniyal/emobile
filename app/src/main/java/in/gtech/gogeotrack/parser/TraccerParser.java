@@ -3,14 +3,18 @@ package in.gtech.gogeotrack.parser;
 import android.util.Log;
 
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import in.gtech.gogeotrack.model.VehicleList;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
+
+import in.gtech.gogeotrack.model.VehicleList;
 
 /**
  * Created by silence12 on 19/6/17.
@@ -127,15 +131,19 @@ public final class TraccerParser {
     }
 
     public static String datetime(String str) {
+        DateTimeFormatter parser = ISODateTimeFormat.dateTime();
+        DateTime dt = parser.parseDateTime(str);
+        DateTimeFormatter formatter = DateTimeFormat.mediumTime();
+        Log.d("Dateformat",formatter.print(dt));
         String[] datesplit = str.split("\\.");
         String date = datesplit[0];
         String[] tim = date.split("T", 2);
-        String result;
-        if (tim.length > 1) {
-            result = tim[1];
-
-        } else
-            result = tim[0];
+        String result = formatter.print(dt);
+//        if (tim.length > 1) {
+//            result = tim[1];
+//
+//        } else
+//            result = tim[0];
         return result;
     }
 

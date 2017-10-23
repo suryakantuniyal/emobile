@@ -3,66 +3,22 @@
     <color name="colorPrimary">#016096</color>
     <color name="colorPrimaryDark">#004C78</color>
     <color name="colorAccent">#CC3EB6B5</color>
-    <color name="primaryColor">#3EB6B5</color>
     <color name="white">#FFFFFF</color>
-    <color name="PrimaryColor">#d54e4e</color>
-    <color name="secondaryColor">#3EB6B5</color>
-    <color name="transparent">#00000000</color>
-    <color name="primaryPressed">#b6b6b6</color>
     <color name="primaryFocused">#b6b6b6</color>
     <color name="black">#000000</color>
-    <color name="headerbackground">#CCE8E8E8</color>
-    <color name="green">#009900</color>
     <color name="red">#cc0000</color>
-    <color name="half_black">#808080</color>
-    <color name="light_black">#40000000</color>
-    <color name="blacktransparency">#A0000000</color>
-    <color name="fab">#CC3EB6B5</color>
-    <color name="fab_pressed">#3EB6B5</color>
-    <color name="half_primary">#80384248</color>
-    <color name="theFillColorInCheckedState">#FFFFFF</color>
-    <color name="theBackgroundColorWhenFocusingTheCheckBox">#FFFFFF</color>
+    <color name="card_bg">#FFFFFF</color>
+    <color name="txt_black_87">#de000000</color>
+    <color name="txt_black_54">#86000000</color>
+    <color name="bg_separator">#1f000000</color>
 
-    <color name="app_body_text_1">#de000000</color>
     <color name="app_body_text_2">#8a000000</color>
-    <color name="app_body_text_disabled">#44000000</color>
-    <color name="app_body_text_1_inverse">#deffffff</color>
-    <color name="app_body_text_2_inverse">#8affffff</color>
-    <color name="flat_button_text">#ff008094</color>
-    <color name="text_on_primary">#ff004446</color>
 
     <!-- start deprecated -->
-    <color name="body_text_1">#de000000</color>
-    <color name="body_text_2">#8a000000</color>
-    <color name="body_text_3">#60000000</color>
-    <color name="body_text_disabled">#44000000</color>
 
-    <color name="body_text_1_inverse">#deffffff</color>
-    <color name="body_text_2_inverse">#8affffff</color>
     <!-- end deprecated -->
 
-    <color name="grey_background">#f5f5f5</color>
-    <color name="dark_divider">#32000000</color>
-
-    <color name="more_button_background">#ffcfd8dc</color>
-    <color name="more_button_text">@color/cyan_a700_plus</color>
-
-    <color name="navdrawer_background">#ffffffff</color>
-    <color name="navdrawer_text_color">@color/body_text_1</color>
-    <color name="navdrawer_text_color_selected">@color/cyan_a700_plus</color>
-    <color name="navdrawer_icon_tint">#444</color>
-    <color name="navdrawer_icon_tint_selected">@color/cyan_a700_plus</color>
     <color name="navdrawer_selected_item_background">#1a000000</color>
-
-    <color name="io15_dark_grey">#FF455A64</color>
-    <color name="io15_grey">#FF607D8B</color>
-    <color name="io15_light_grey">#FF90A4AE</color>
-    <color name="io15_aqua_dark">#FF4DD0E1</color>
-    <color name="io15_aqua_light">#FF80DEEA</color>
-    <color name="io15_blue_grey_100">#ffcfd8dc</color>
-    <color name="io15_white">#FFFFFFFF</color>
-    <color name="card">#fff</color>
-    <color name="cyan_a700_plus">#ff006574</color>
 
 
 </resources>

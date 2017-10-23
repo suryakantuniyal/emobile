@@ -7,6 +7,7 @@ package in.gtech.gogeotrack.model;
 public class VehicleList {
 
     public int id;
+    public int groupId;
     public String name;
     public String uniqueId;
     public String status;
@@ -19,8 +20,19 @@ public class VehicleList {
     public String address;
     public Double speed;
     public Double distance_travelled;
+    //public int deviceId;
     public String time;
     public String timeDiff;
+
+   /* public int getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(int deviceId) {
+        this.deviceId = deviceId;
+    }
+
+*/
 
     public VehicleList() {
 
@@ -33,6 +45,7 @@ public class VehicleList {
         this.longitute = longitute;
         this.name = name;
 
+       // this.deviceId = deviceId;
     }
 
 
@@ -47,6 +60,7 @@ public class VehicleList {
         this.address = address;
         this.time = time;
         this.timeDiff = timeDiff;
+//        this.deviceId= deviceId;
 
 
     }
@@ -67,10 +81,22 @@ public class VehicleList {
         this.latitute = latitute;
         this.longitute = longitute;
         this.distance_travelled = distance_travelled;
+//        this.deviceId = deviceId;
 
 
     }
 
+    public int getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(int groupId) {
+        this.groupId = groupId;
+    }
+
+    public VehicleList(int groupId){
+        this.groupId = groupId;
+    }
     public int getId() {
         return id;
     }

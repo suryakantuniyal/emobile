@@ -8,22 +8,18 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+    <style name="ThemeSpinner">
+        <!-- Color when pressed -->
+        <item name="colorAccent">#ffa000</item>
+        <!-- Default color for the dropdown arrow and line -->
+        <item name="colorControlNormal">#ffc107</item>
+    </style>
 
     <style name="TextAppearance.Body2" parent="TextAppearance.AppCompat.Body2">
         <item name="android:textSize">14sp
         </item> <!-- bug in AppCompat, can remove this when it's fixed -->
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:textColor">?android:textColorSecondary</item>
-    </style>
-
-    <style name="Body2Text">
-        <item name="android:textAppearance">@style/TextAppearance.Body2</item>
-        <item name="android:lineSpacingMultiplier">@dimen/body_1_spacing</item>
-    </style>
-
-    <style name="HeaderBar">
-        <item name="android:background">?colorPrimary</item>
-        <item name="android:elevation">@dimen/headerbar_elevation</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">

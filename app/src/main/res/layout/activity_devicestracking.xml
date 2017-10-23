@@ -69,8 +69,7 @@
     <android.support.v7.widget.CardView
         xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:card_view="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/vehicle_card"
-            android:layout_width="match_parent"
+        android:layout_width="match_parent"
             android:layout_height="wrap_content"
         android:layout_gravity="bottom"
             card_view:cardBackgroundColor="#FFFFFF"
@@ -212,6 +211,7 @@
                             android:layout_gravity="center_vertical"
                             android:background="@drawable/circle">
                             <ImageView
+                                android:id="@+id/trackDeviceIcn"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:src="@drawable/truckicon2"
@@ -251,7 +251,6 @@
                         >
 
                         <LinearLayout
-                            android:id="@+id/speed_ll"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"

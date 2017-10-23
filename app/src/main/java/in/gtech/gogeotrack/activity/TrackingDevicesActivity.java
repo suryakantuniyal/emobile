@@ -17,22 +17,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.text.DecimalFormat;
-
 import in.gtech.gogeotrack.R;
-import in.gtech.gogeotrack.api.APIServices;
-import in.gtech.gogeotrack.model.VehicleList;
-import in.gtech.gogeotrack.network.DetailResponseCallback;
 import in.gtech.gogeotrack.services.GPSTracker;
 
 /**
@@ -45,13 +38,13 @@ public class   TrackingDevicesActivity extends AppCompatActivity {
     private static ProgressDialog progressDialog;
     String mPermission = Manifest.permission.ACCESS_FINE_LOCATION;
     GPSTracker gps;
-    String statsString,address;
+    String statsString,address,categoryString,uniqId;
     Double latitute,longitute,speed;
     private GoogleMap googleMap;
     private MarkerOptions markerOptions;
     private CameraPosition cameraPosition;
     private TextView address_tv, speed_tv, vehicleName_tv, lastupdate_tv, travelled_tv;
-    private ImageView imageView, currentLocation;
+    private ImageView imageView, currentLocation,trackDeviceIcn;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -97,8 +90,6 @@ public class   TrackingDevicesActivity extends AppCompatActivity {
         }
 
     }
-
-
     private void initView() {
 
         address_tv = (TextView) findViewById(R.id.vehicle_location);
@@ -107,10 +98,10 @@ public class   TrackingDevicesActivity extends AppCompatActivity {
         lastupdate_tv = (TextView) findViewById(R.id.update_tv);
         travelled_tv = (TextView) findViewById(R.id.travelled_tv);
         currentLocation = (ImageView) findViewById(R.id.location);
+        trackDeviceIcn = (ImageView)findViewById(R.id.trackDeviceIcn);
         trackOnMap();
 
     }
-
     private void trackOnMap() {
         if (googleMap == null) {
             googleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
@@ -121,7 +112,9 @@ public class   TrackingDevicesActivity extends AppCompatActivity {
             String update = getIntent.getStringExtra("tupdate");
             String name = getIntent.getStringExtra("tname");
             String time = getIntent.getStringExtra("ttimer");
+            uniqId = getIntent.getStringExtra("uid");
             statsString = getIntent.getStringExtra("status");
+            categoryString = getIntent.getStringExtra("category");
             address = getIntent.getStringExtra("address");
             latitute = getIntent.getDoubleExtra("lat",0.0);
             longitute = getIntent.getDoubleExtra("long",0.0);
@@ -134,7 +127,6 @@ public class   TrackingDevicesActivity extends AppCompatActivity {
             } else {
                 address_tv.setText(address);
             }
-
             double d = speed;
             String formattedData = String.format("%.02f", d);
             speed_tv.setText(formattedData);
@@ -162,8 +154,6 @@ public class   TrackingDevicesActivity extends AppCompatActivity {
         }
     }
 
-
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -179,12 +169,23 @@ public class   TrackingDevicesActivity extends AppCompatActivity {
         }
         Log.d("Latlong", latitute + "  " + longitute);
         markerOptions = new MarkerOptions().position(new LatLng(latitute, longitute)).title(address);
-        if (statsString.equals("online")) {
-            markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.greentruck));
-        } else if (statsString.equals("offline")) {
-            markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.redtruck));
-        } else {
-            markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_truck_med));
+
+        if(categoryString.equals("person")){
+            markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_punch_person));
+            trackDeviceIcn.setImageResource(R.drawable.ic_punch_person);
+        }
+        if (uniqId.equals("007835051035")){
+            markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.motobikes));
+            trackDeviceIcn.setImageResource(R.drawable.motobikes);
+        }
+        else {
+            if (statsString.equals("online")) {
+                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.greentruck));
+            } else if (statsString.equals("offline")) {
+                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.redtruck));
+            } else {
+                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_truck_med));
+            }
         }
         googleMap.addMarker(markerOptions);
         cameraPosition = new CameraPosition.Builder().target(new LatLng(latitute,longitute)).zoom(14).build();

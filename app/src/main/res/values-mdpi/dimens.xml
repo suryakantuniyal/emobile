@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="textview_width">130dp</dimen>
+    <dimen name="report_txtvw_wdth">100dp</dimen>
+    <dimen name="margin_top">70dp</dimen>
+    <dimen name="margin_left">50dp</dimen>
+
+</resources>

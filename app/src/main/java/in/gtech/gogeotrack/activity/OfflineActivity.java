@@ -19,19 +19,19 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
+import android.widget.LinearLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import in.gtech.gogeotrack.R;
 import in.gtech.gogeotrack.adapter.VehicleslistAdapter;
 import in.gtech.gogeotrack.model.VehicleList;
 import in.gtech.gogeotrack.utils.URLContstant;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by silence12 on 11/7/17.
@@ -45,6 +45,7 @@ public class OfflineActivity extends AppCompatActivity implements SwipeRefreshLa
     private RecyclerView recyclerView;
     private List<VehicleList> listArrayList;
     SharedPreferences mSharedPreferences;
+    private LinearLayout  no_data_ll ;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -64,25 +65,28 @@ public class OfflineActivity extends AppCompatActivity implements SwipeRefreshLa
         swipeRefreshLayout.setRefreshing(false);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
         swipeRefreshLayout.setOnRefreshListener(this);
+        no_data_ll = (LinearLayout) findViewById(R.id.no_vehicle_ll);
         recyclerView = (RecyclerView) findViewById(R.id.onlineoffline_rv);
         listArrayList = new ArrayList<VehicleList>();
         listArrayList = parseView();
         if(listArrayList.size() == 0){
             progressDialog.dismiss();
-            Toast.makeText(getApplicationContext(),"No offline Devices",Toast.LENGTH_SHORT).show();
+            no_data_ll.setVisibility(View.VISIBLE);
+        }else {
+            no_data_ll.setVisibility(View.GONE);
         }
         vehiclesAdapter = new VehicleslistAdapter(getBaseContext(), listArrayList, this);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(vehiclesAdapter);
-        swipeRefreshLayout.post(new Runnable() {
-            @Override
-            public void run() {
-                swipeRefreshLayout.setRefreshing(true);
-                parseView();
-            }
-        });
+//        swipeRefreshLayout.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                swipeRefreshLayout.setRefreshing(true);
+//                parseView();
+//            }
+//        });
         vehiclesAdapter.setOnItemClickListener(this);
     }
 
@@ -149,6 +153,7 @@ public class OfflineActivity extends AppCompatActivity implements SwipeRefreshLa
             trackIntent.putExtra("tname", mFilteredList.get(position).getName());
             trackIntent.putExtra("status", mFilteredList.get(position).getStatus());
             trackIntent.putExtra("tupdate", mFilteredList.get(position).getLastUpdates());
+            trackIntent.putExtra("category", mFilteredList.get(position).getCategory());
             trackIntent.putExtra("ttimer", mFilteredList.get(position).getTime());
             trackIntent.putExtra("address",mFilteredList.get(position).getAddress());
             trackIntent.putExtra("speed",mFilteredList.get(position).getSpeed());

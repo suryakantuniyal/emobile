@@ -1,83 +1,32 @@
 <resources>
     <string name="app_name">GoGeoTrack</string>
     <string name="email">Email</string>
-    <string name="name">Name</string>
     <string name="password">Password</string>
-    <string name="verifyotp">Verify OTP</string>
-    <string name="sign_up">SIGN UP</string>
-    <string name="noNetwork">No Network Connection</string>
-    <string name="mobil">Mobile Number</string>
     <string name="forgot"><u>Forgot Password</u></string>
     <string name="show_pwd">Show Password</string>
     <string name="login">LOG IN</string>
-    <string name="wrongPwOrUserName">Wrong Username Or Password</string>
-    <string name="invalidPassword">Invalid Password</string>
-    <string name="invalidUsername">Invalid Username</string>
-    <string name="LoginRequest">Login Request</string>
     <string name="phone">Phone Number</string>
-    <string name="numberVerification">Verifying Number</string>
-    <string name="chage_password">Change Password</string>
-    <string name="newpassword">New Password</string>
-    <string name="confirm_password">Confirm Password</string>
-    <string name="verify">PROCEED</string>
-    <string name="placeholder_lorem_ipsum" />
 
-
-    <string name="navdrawer_item_home">Home</string>
-    <string name="navdrawer_item_addition">Add Fleet</string>
-    <string name="navdrawer_item_update">Update</string>
-    <string name="navdrawer_item_about">About</string>
-    <string name="navdrawer_item_Notifications">My Orders</string>
-    <string name="navdrawer_item_logout">Logout</string>
-    <string name="navdrawer_item_neworders">New Orders</string>
-
-    <string name="navdrawer_status_attending_remotely">Attending I/O remotely</string>
 
     <!-- String used to wrap navigation item descriptions for a11y users to indicate the user
          interface element is a menu item. -->
-    <string name="navdrawer_menu_item_a11y_wrapper">%1$s  menu item</string>
 
     <!-- String used to wrap navigation item descriptions for a11y users to indicate the user
          interface element is a menu item. This string indicates a selected menu item -->
-    <string name="navdrawer_selected_menu_item_a11y_wrapper">%1$s selected menu item</string>
 
-    <string name="navdrawer_description_a11y">Navigation Drawer used to switch between major
-        features of the application</string>
     <string name="live_available">Live</string>
     <string name="unknown_room">Unknown</string>
-    <string name="title_activity_navigation_drawer">NavigationDrawerActivity</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="action_settings">Settings</string>
-
 
     <!-- card Strings   -->
 
-    <string name="cars_active">ACTIVE</string>
-    <string name="cars_inactive">INACTIVE</string>
     <string name="total_rides">TOTAL BOOKINGS</string>
-    <string name="payments_due">VIEW PAYMENT DUE</string>
     <string name="roboto_medium">sans-serif</string>
-    <string name="view_current_balance">View Current Balance</string>
-    <string name="rides">BOOKINGS</string>
-    <string name="incentive_booking">Bookings counted for incentive</string>
-    <string name="total_earnings_txt">Total Earnings</string>
-    <string name="cash_collected">CASH COLLECTED</string>
-    <string name="cash_deposited">CASH DEPOSITED</string>
-    <string name="total_devices">Total Devices</string>
-    <string name="payments_made">PAYMENTS MADE</string>
-    <string name="view_incentives">VIEW INCENTIVES</string>
-    <string name="driver_performance_label">DRIVER PERFORMANCE</string>
-    <string name="book_type_reversal_of_recomplete">REVERSAL OF RECOMPLETED BOOKING</string>
 
-    <string name="Bilty_Brief_Details">CNote Brief Details</string>
-
-    <string name="advance">ADVANCE PAYMENT(\u20B9)</string>
-    <string name="vehicleRate">VEHICLE RATE(\u20B9)</string>
-
-    <string name="no_data_available">YOU HAVE NOT ANY OPEN ENTRY!!</string>
-    <string name="title_activity_main2">Main2Activity</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

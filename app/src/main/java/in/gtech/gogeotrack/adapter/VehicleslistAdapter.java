@@ -14,11 +14,11 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
-import in.gtech.gogeotrack.R;
-import in.gtech.gogeotrack.model.VehicleList;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import in.gtech.gogeotrack.R;
+import in.gtech.gogeotrack.model.VehicleList;
 
 /**
  * Created by silence12 on 28/6/17.
@@ -55,8 +55,12 @@ public class VehicleslistAdapter extends RecyclerView.Adapter<VehicleslistAdapte
 
         VehicleList vehicle = mFilteredList.get(position);
         holder.name_tv.setText(vehicle.getName());
-        holder.lastupdated_tv.setText(vehicle.getLastUpdates());
+       // holder.lastupdated_tv.setText(vehicle.getLastUpdates());
+        holder.lastupdated_tv.setText(vehicle.getTime());
         holder.timediff_tv.setText(vehicle.getTimeDiff());
+        if (vehicle.uniqueId.equals("007835051035")){
+            holder.vehicleLstIcn.setImageResource(R.drawable.motobikes);
+        }
         if (vehicle.address.equals("null")) {
             holder.positionId_tv.setText("Loading...");
         } else {
@@ -151,15 +155,17 @@ public class VehicleslistAdapter extends RecyclerView.Adapter<VehicleslistAdapte
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnFocusChangeListener {
 
         private TextView name_tv, positionId_tv, lastupdated_tv, timediff_tv, online_tv;
-        private ImageView  status_iv;
+        private ImageView  status_iv,vehicleLstIcn;
         private LinearLayout detail, track;
         private View v;
 
         public MyViewHolder(View itemView) {
             super(itemView);
             v = itemView;
+
             track = (LinearLayout) itemView.findViewById(R.id.track_ll);
             detail = (LinearLayout) itemView.findViewById(R.id.detail_ll);
+            vehicleLstIcn = (ImageView)itemView.findViewById(R.id.vehicleListIcn);
             name_tv = (TextView) itemView.findViewById(R.id.vehicle_name);
             lastupdated_tv = (TextView) itemView.findViewById(R.id.lastupdate_tv);
             status_iv = (ImageView) itemView.findViewById(R.id.status_iv);

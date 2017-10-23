@@ -45,7 +45,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="in.gtech.gogeotrack.activity.SplashActivity"
+            android:name=".activity.SplashActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -54,57 +54,62 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="in.gtech.gogeotrack.activity.MainActivity"
+            android:name=".activity.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="in.gtech.gogeotrack.activity.SignUpAccount"
-            android:screenOrientation="portrait"></activity>
-        <activity
-            android:name="in.gtech.gogeotrack.activity.VehicleDetailActivity"
-            android:screenOrientation="portrait"></activity>
-        <activity
-            android:name="in.gtech.gogeotrack.activity.TrackingDevicesActivity"
+            android:name=".activity.SignUpAccount"
             android:screenOrientation="portrait" />
         <activity
-            android:name="in.gtech.gogeotrack.activity.WelcomeMessageActivity"
-            android:screenOrientation="portrait"></activity>
-        <activity
-            android:name="in.gtech.gogeotrack.activity.ReportsActivity"
-            android:screenOrientation="portrait"></activity>
-        <activity
-            android:name="in.gtech.gogeotrack.activity.OnLineOffLineActivity"
+            android:name=".activity.VehicleDetailActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="in.gtech.gogeotrack.activity.MapViewActivity"
-            android:screenOrientation="portrait">
-        </activity>
-        <service android:name="in.gtech.gogeotrack.FCM.MessagingHandler">
+            android:name=".activity.TrackingDevicesActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.WelcomeMessageActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.Reports.ReportsActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.OnLineOffLineActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.MapViewActivity"
+            android:screenOrientation="portrait" />
+
+        <service android:name=".FCM.MessagingHandler">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-        <service android:name="in.gtech.gogeotrack.FCM.RegistrationTokenHandler">
+        <service android:name=".FCM.RegistrationTokenHandler">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
-        <service android:name="in.gtech.gogeotrack.FCM.SendRegistrationTokentoServer" />
+        <service android:name=".FCM.SendRegistrationTokentoServer" />
 
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
             android:value=" AIzaSyCW1DQ2a04jdkNaflkD363mliOSfpPsZE4 " />
 
         <activity
-            android:name="in.gtech.gogeotrack.activity.Main2Activity"
+            android:name=".activity.Main2Activity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme">
-        </activity>
-        <activity android:name="in.gtech.gogeotrack.activity.OfflineActivity"/>
-        <service android:name="in.gtech.gogeotrack.services.LocationService"
-            android:screenOrientation="portrait"/>
+            android:theme="@style/AppTheme" />
+        <activity android:name=".activity.OfflineActivity" />
+        <activity android:name=".activity.CircularActivity" />
+
+        <service android:name=".services.UpdateListViewService" />
+
+        <activity android:name=".activity.Reports.RouteReportActivity" />
+        <activity android:name=".activity.Reports.EventesReportActivity" />
+        <activity android:name=".activity.Reports.TripsReportActiviy" />
+        <activity android:name=".activity.Reports.SummaryReportActivity"></activity>
     </application>
 
 </manifest>

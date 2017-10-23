@@ -4,13 +4,13 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Base64;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.Response.Listener;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -18,24 +18,23 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
-import in.gtech.gogeotrack.model.VehicleList;
-import in.gtech.gogeotrack.network.DetailResponseCallback;
-import in.gtech.gogeotrack.network.ResponseCallback;
-import in.gtech.gogeotrack.network.ResponseCallbackEvents;
-import in.gtech.gogeotrack.network.ResponseOfflineVehicle;
-import in.gtech.gogeotrack.network.ResponseOnlineVehicle;
-import in.gtech.gogeotrack.network.ResponseStringCallback;
-import in.gtech.gogeotrack.parser.TraccerParser;
-import in.gtech.gogeotrack.utils.URLContstant;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import static android.content.Context.MODE_PRIVATE;
+import in.gtech.gogeotrack.model.VehicleList;
+import in.gtech.gogeotrack.network.DetailResponseCallback;
+import in.gtech.gogeotrack.network.ReportResponseCallBack;
+import in.gtech.gogeotrack.network.ResponseCallback;
+import in.gtech.gogeotrack.network.ResponseCallbackEvents;
+import in.gtech.gogeotrack.network.ResponseOnlineVehicle;
+import in.gtech.gogeotrack.network.ResponseStringCallback;
+import in.gtech.gogeotrack.parser.TraccerParser;
+import in.gtech.gogeotrack.utils.URLContstant;
+
 import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
 
 /**
@@ -59,6 +58,7 @@ public final class APIServices {
     Context context;
 
     private APIServices() {
+
     }
 
     public static APIServices getInstance() {
@@ -72,7 +72,7 @@ public final class APIServices {
         String BaseUser= userName +":"+password;
         base = Base64.encodeToString(BaseUser.toString().getBytes(),Base64.DEFAULT);
         JsonArrayRequest jsObjRequest = new JsonArrayRequest
-                (requestedUrl, new Response.Listener<JSONArray>() {
+                (requestedUrl, new Listener<JSONArray>() {
 
                     @Override
                     public void onResponse(JSONArray response) {
@@ -103,15 +103,28 @@ public final class APIServices {
                 BACKOFF_MULT));
         RestapiCall.getInstance(context).addToRequestQueue(jsObjRequest);
     }
+/*
+    public static void AllReport(final Context context, String url, final ResponseAllReport ResponseCallback){
+        final String reqstedUrl = mUrl+ url;
+        final JsonArrayRequest jsObjectRequest = new JsonArrayRequest(reqstedUrl, new Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+               if (response!= null){
+                   ResponseCallback.onSuccessOnline(response);
+               }
+            }
+        });
+    }
+*/
 
     public static void GetAllOnlineVehicleList(final Context context,String userName,String password, final ResponseOnlineVehicle ResponseCallback) {
 //        final String requestedUrl = URLContstant.BASE_URL + "/" + URLContstant.ALL_VEHICLES + "/?" + "email=yash.bhat94%40gmail.com&password=admin";
-        final String requestedUrl = URLContstant.BASE_URL + "/" + URLContstant.ALL_VEHICLES + "/?" + "email="+userName +"&password=" +password;
+        final String requestedUrl = URLContstant.BASE_URL + "/" + URLContstant.ALL_VEHICLES + "/?" + "email="+userName +"&password=" + password;
         String BaseUser= userName +":"+password;
         base = Base64.encodeToString(BaseUser.toString().getBytes(),Base64.DEFAULT);
         Log.d("API", ":: request url :: " + requestedUrl);
         JsonArrayRequest jsObjRequest = new JsonArrayRequest
-                (requestedUrl, new Response.Listener<JSONArray>() {
+                (requestedUrl, new Listener<JSONArray>() {
 
                     @Override
                     public void onResponse(JSONArray response) {
@@ -144,28 +157,123 @@ public final class APIServices {
         RestapiCall.getInstance(context).addToRequestQueue(jsObjRequest);
     }
 
+   // final String requestedUrl = URLContstant.BASE_URL+"/"+URLContstant.SUMMARY_REPORT+"/?"+"deviceId="+divId+"&from="+startTime + "&to="+endTime;
+/*
+        public static void GetSummaryReport(final Context context, int divId, String startTime, String endTime, final ReportResponseCallBack ResponseCallBack ){
+            final String requestedUrl = URLContstant.BASE_URL + "/" + URLContstant.SUMMARY_REPORT +"/?"+"deviceId=" + divId + "&from="+startTime + "&to="+endTime;
+            Log.d("sumryUrl",requestedUrl);
 
+            JsonArrayRequest jsObjRequest = new JsonArrayRequest
+                    (requestedUrl, new Listener<JSONArray>() {
 
-    public static void GetVehicleDetailById(final Context context, int id, final DetailResponseCallback ResponseCallback) {
-        final String requestedUrl = URLContstant.BASE_URL + "/" + "api" + "/" + "positions" + "/?" + "id=" + id;
+                        @Override
+                        public void onResponse(JSONArray response) {
+                            if (response != null){
+                                Log.d("EventREsponse", response.toString());
+                                ResponseCallBack.onSuccessOnline(response);
+                            }
+                        }
+                    }, new Response.ErrorListener() {
 
-        final JsonArrayRequest jsObjRequest = new JsonArrayRequest
-                (requestedUrl, new Response.Listener<JSONArray>() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Log.e("Error", ":: Volley Error :: " + error);
+                        }
+                    }) {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    HashMap<String, String> headers = new HashMap<>();
+                    headers.put("Authorization", "Basic "+base);
+                    return headers;
+                }
+            };
+            jsObjRequest.setRetryPolicy(new DefaultRetryPolicy(
+                    TIMEOUT_IN_SECONDS,
+                    MAX_RETRIES,
+                    BACKOFF_MULT));
+            RestapiCall.getInstance(context).addToRequestQueue(jsObjRequest);
+        }
+*/
+
+        public static void GetReport(final Context context, String url, final ReportResponseCallBack ResponseCallBack ) {
+            // final String requestedUrl = URLContstant.BASE_URL + "/" + URLContstant.EVENT_REPORT + "/?" + "deviceId=" + divId + "&from="+startTime + "&to="+endTime;
+            final String reqstedUrl = mUrl + "/" + url;
+            Log.d("req_url", reqstedUrl);
+
+            JsonArrayRequest jsObjREquest = new JsonArrayRequest(reqstedUrl, new Listener<JSONArray>() {
+                @Override
+                public void onResponse(JSONArray response) {
+                    if (response != null) {
+                        Log.d("ReportResponse",response.toString());
+                        ResponseCallBack.onGetReport(response);
+                    }
+                }
+
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                 //ResponseCallBack.onGetReport(null);
+                }
+            }) {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    HashMap<String, String> headers = new HashMap<>();
+                    headers.put("Authorization", "Basic " + base);
+                    return headers;
+                }
+            };
+            jsObjREquest.setRetryPolicy(new DefaultRetryPolicy(
+                    TIMEOUT_IN_SECONDS,
+                    MAX_RETRIES,
+                    BACKOFF_MULT));
+            RestapiCall.getInstance(context).addToRequestQueue(jsObjREquest);
+        }
+        /*JsonArrayRequest jsObjRequest = new JsonArrayRequest
+                (reqstedUrl, new Listener<JSONArray>() {
 
                     @Override
                     public void onResponse(JSONArray response) {
                         if (response != null){
-                            ResponseCallback.OnResponse(response);
+                            Log.d("EventREsponse", response.toString());
+                            ResponseCallBack.onSuccessOnline(response);
                         }
-
                     }
                 }, new Response.ErrorListener() {
 
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.e("Error", ":: Volley Error :: " + error);
-                        Toast.makeText(context, "Unable to reach our servers. Please check your internet connection.", Toast.LENGTH_SHORT).show();
+                    }
+                }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<>();
+                headers.put("Authorization", "Basic "+base);
+                return headers;
+            }
+        };
 
+    }
+*/
+    public static void GetVehicleDetailById(final Context context, int id, final DetailResponseCallback ResponseCallback) {
+        final String requestedUrl = URLContstant.BASE_URL + "/" + URLContstant.DEVICE_ID + "/?" + "id=" + id;
+        Log.d("req_url",requestedUrl);
+        final JsonArrayRequest jsObjRequest = new JsonArrayRequest
+                (requestedUrl, new Listener<JSONArray>() {
+
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        if (response != null){
+                            Log.d("GetVehicleId_response", response.toString());
+                            ResponseCallback.OnResponse(response);
+
+                        }
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("Error", ":: Volley Error :: " + error);
                     }
                 }) {
             @Override
@@ -191,12 +299,12 @@ public final class APIServices {
     }
 
     public void PostCall(Context context, String Url, JSONObject Data, final ResponseCallback ResponseCallback) {
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(mUrl + Url, Data, new Response.Listener<JSONObject>() {
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(mUrl + Url, Data, new Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 if (response != null)
                     Log.d("Restful response", response.toString());
+
                 ResponseCallback.OnResponse(response);
             }
         }, new Response.ErrorListener() {
@@ -224,18 +332,25 @@ public final class APIServices {
         RestapiCall.getInstance(context).addToRequestQueue(jsonObjectRequest);
     }
 
+/*
     public void PostCallUrl(Context context, String Url, final ResponseCallback ResponseCallback) {
         Log.d("Response", "Inside");
+        String newUrl = mUrl+"/"+Url;
+        Log.d("NEWURLFOREVENT",newUrl);
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(mUrl + Url, null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Log.d("Restful response", response.toString());
-                        if (response != null)
-                            Log.d("Restful response", response.toString());
-                        ResponseCallback.OnResponse(response);
-                    }
+        final JsonArrayRequest jsObjRequest = new JsonArrayRequest
+                (mUrl+"/"+Url,null, new Response.Listener<JSONArray>()
+
+          {
+              @Override
+              public void onResponse(JSONArray response) {
+                  Log.d("Restful response", response.toString());
+                  if (response != null)
+                      Log.d("Restful response", response.toString());
+                  ResponseCallback.OnResponse(response);
+
+              }
+
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
@@ -265,12 +380,13 @@ public final class APIServices {
 
         RestapiCall.getInstance(context).addToRequestQueue(jsonObjectRequest);
     }
+*/
 
     public void PostProblem(Context context, String url, final ResponseStringCallback responseCallback) {
         RequestQueue queue = Volley.newRequestQueue(context);
 
         StringRequest postRequest = new StringRequest(Request.Method.POST, url,
-                new Response.Listener<String>() {
+                new Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         // response
@@ -288,8 +404,6 @@ public final class APIServices {
                     }
                 }
         ) {
-
-
             @Override
             public String getBodyContentType() {
                 return "application/x-www-form-urlencoded; charset=UTF-8";
@@ -304,5 +418,42 @@ public final class APIServices {
         };
         queue.add(postRequest);
     }
+
+
+    public void PostReport(Context context, String url, final ResponseCallback responseCallback) {
+        RequestQueue queue = Volley.newRequestQueue(context);
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(mUrl + url, null,
+                new Listener<JSONObject>(){
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d("Response", String.valueOf(response));
+                        responseCallback.OnResponse(response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // error
+                       // responseCallback.OnFial(error.networkResponse.statusCode);
+                        Log.d("Error.Response", String.valueOf(error));
+                    }
+                }
+        ) {
+            @Override
+            public String getBodyContentType() {
+                return "application/x-www-form-urlencoded; charset=UTF-8";
+            }
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/x-www-form-urlencoded");
+                return headers;
+            }
+        };
+       // queue.add(postRequest);
+    }
+
 
 }

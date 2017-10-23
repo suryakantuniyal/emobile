@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+
+    android:layout_gravity="center"
+    tools:context="in.gtech.gogeotrack.activity.CircularActivity">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_top"
+        android:gravity="center"
+        android:text="Please Wait..."
+        android:textSize="25sp"
+        android:layout_alignParentTop="true"
+        />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_below="@+id/textView" >
+
+        <io.netopen.hotbitmapgg.library.view.RingProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="200dp"
+            android:layout_height="401dp"
+            android:layout_marginTop="@dimen/margin_top"
+            app:max="100"
+            app:ringColor="@color/primaryFocused"
+            app:ringProgressColor="@color/colorPrimary"
+            app:ringWidth="10dp"
+            app:textColor="@color/colorPrimary"
+            app:textIsShow="true"
+            app:textSize="12sp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="150dp"
+            android:text="Loading data...." />
+    </RelativeLayout>
+
+</RelativeLayout>

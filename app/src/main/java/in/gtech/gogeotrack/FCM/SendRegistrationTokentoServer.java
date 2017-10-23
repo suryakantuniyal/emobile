@@ -43,18 +43,18 @@ public class  SendRegistrationTokentoServer extends IntentService {
         String username = mSharedPreferences.getString(URLContstant.KEY_USERNAME, "");
         String phone = mSharedPreferences.getString(URLContstant.KEY_USER_PHONE, "");
         String tokenUrl = URLContstant.BASE_URL + "/api/customer/addtoken/";
-        APIServices.getInstance().PostCall(getApplicationContext(), "/api/customer/addtoken/", jsonObject, new ResponseCallback() {
-            @Override
-            public void OnResponse(JSONObject Response) {
-
-                if (Response != null) {
-                    try {
-                        Log.d("Registration FCM Token ", Response.getJSONObject("response").getString("message"));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
+//        APIServices.getInstance().PostCall(getApplicationContext(), "/api/customer/addtoken/", jsonObject, new ResponseCallback() {
+//            @Override
+//            public void OnResponse(JSONObject Response) {
+//
+//                if (Response != null) {
+//                    try {
+//                        Log.d("Registration FCM Token ", Response.getJSONObject("response").getString("message"));
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//        });
     }
 }

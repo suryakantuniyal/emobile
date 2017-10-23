@@ -1,5 +1,7 @@
 package in.gtech.gogeotrack.activity;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -19,20 +21,23 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
+import android.widget.LinearLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
 import in.gtech.gogeotrack.R;
 import in.gtech.gogeotrack.adapter.VehicleslistAdapter;
+import in.gtech.gogeotrack.api.APIServices;
 import in.gtech.gogeotrack.model.VehicleList;
-import in.gtech.gogeotrack.parser.TraccerParser;
+import in.gtech.gogeotrack.network.ResponseOnlineVehicle;
+import in.gtech.gogeotrack.services.UpdateListViewService;
 import in.gtech.gogeotrack.utils.URLContstant;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by silence12 on 5/7/17.
@@ -48,17 +53,38 @@ public class OnLineOffLineActivity extends AppCompatActivity implements SwipeRef
     private RecyclerView recyclerView;
     private List<VehicleList> listArrayList;
     SharedPreferences mSharedPreferences;
+    private LinearLayout no_data_ll;
     private String onnOff;
+
+    public static OnLineOffLineActivity onLineInstance;
+
+    PendingIntent pintent;
+    AlarmManager alarm;
+    private boolean bound = false;
+
+    // private LocalService mBoundService;
+    Intent updateListViewService;
+
+    String userName,password;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_onlineoffline);
+
+        onLineInstance = this;
+        updateListViewService = new Intent(getBaseContext(), UpdateListViewService.class);
+        startService(updateListViewService);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setIcon(R.mipmap.luncher_icon);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         mSharedPreferences = getSharedPreferences(URLContstant.PREFERENCE_NAME, Context.MODE_PRIVATE);
+        userName = mSharedPreferences.getString(URLContstant.KEY_USERNAME, "");
+        password = mSharedPreferences.getString(URLContstant.KEY_PASSWORD,"");
+
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Wait a moment...");
         progressDialog.setCancelable(false);
@@ -68,12 +94,15 @@ public class OnLineOffLineActivity extends AppCompatActivity implements SwipeRef
         swipeRefreshLayout.setRefreshing(false);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
         swipeRefreshLayout.setOnRefreshListener(this);
+        no_data_ll = (LinearLayout) findViewById(R.id.no_vehicle_ll);
         listArrayList = new ArrayList<VehicleList>();
         recyclerView = (RecyclerView) findViewById(R.id.onlineoffline_rv);
         listArrayList = parseView();
         if(listArrayList.size() == 0){
             progressDialog.dismiss();
-            Toast.makeText(getApplicationContext(),"No online Devices",Toast.LENGTH_SHORT).show();
+            no_data_ll.setVisibility(View.VISIBLE);
+        }else {
+            no_data_ll.setVisibility(View.GONE);
         }
         vehiclesAdapter = new VehicleslistAdapter(getBaseContext(), listArrayList, this);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
@@ -81,6 +110,31 @@ public class OnLineOffLineActivity extends AppCompatActivity implements SwipeRef
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(vehiclesAdapter);
         vehiclesAdapter.setOnItemClickListener(this);
+
+        /*-----------------------Call Service----------------------------*/
+        pintent = PendingIntent.getService(OnLineOffLineActivity.this, 0, updateListViewService,0);
+        alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Calendar cal = Calendar.getInstance();
+        alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), 30 * 1000, pintent);
+    }
+
+    public void uploadNewData() {
+       // Toast.makeText(getBaseContext(), "OnLineOfLine", Toast.LENGTH_LONG).show();
+
+        // swipeRefreshLayout.setRefreshing(true);
+        listArrayList.clear();
+        APIServices.GetAllOnlineVehicleList(OnLineOffLineActivity.this,userName,password, new ResponseOnlineVehicle() {
+            @Override
+            public void onSuccessOnline(JSONArray result) {
+                Log.d("Result", String.valueOf(result));
+                SessionHandler.updateSnessionHandler(getBaseContext(), result, mSharedPreferences);
+                // recyclerView.getRecycledViewPool().clear();
+                vehiclesAdapter.notifyDataSetChanged();
+                //8189 1.8.23
+                //6958 1.6.27
+            }
+        });
+        parseView();
     }
 
 
@@ -146,10 +200,12 @@ public class OnLineOffLineActivity extends AppCompatActivity implements SwipeRef
         } else if (view.getId() == R.id.track_ll) {
             Intent trackIntent = new Intent(OnLineOffLineActivity.this, TrackingDevicesActivity.class);
             trackIntent.putExtra("device_id", mFilteredList.get(position).getPositionId());
+            trackIntent.putExtra("uid",mFilteredList.get(position).getUniqueId());
             trackIntent.putExtra("tname", mFilteredList.get(position).getName());
             trackIntent.putExtra("status", mFilteredList.get(position).getStatus());
             trackIntent.putExtra("tupdate", mFilteredList.get(position).getLastUpdates());
             trackIntent.putExtra("ttimer", mFilteredList.get(position).getTime());
+            trackIntent.putExtra("category", mFilteredList.get(position).getCategory());
             trackIntent.putExtra("address",mFilteredList.get(position).getAddress());
             trackIntent.putExtra("speed",mFilteredList.get(position).getSpeed());
             trackIntent.putExtra("lat",mFilteredList.get(position).getLatitute());
@@ -211,6 +267,8 @@ public class OnLineOffLineActivity extends AppCompatActivity implements SwipeRef
 
     @Override
     public void onBackPressed() {
+        getBaseContext().stopService(updateListViewService);
+        pintent.cancel();
         super.onBackPressed();
     }
 

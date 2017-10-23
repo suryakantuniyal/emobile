@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activity.OnLineOffLineActivity">
-<RelativeLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+
         <android.support.design.widget.AppBarLayout
             android:id="@id/appbar"
             android:layout_width="match_parent"
@@ -20,17 +24,72 @@
                 android:layout_height="?attr/actionBarSize"
                 android:background="?attr/colorPrimary"
                 app:popupTheme="@style/AppTheme.PopupOverlay">
-
             </android.support.v7.widget.Toolbar>
         </android.support.design.widget.AppBarLayout>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:textAlignment="center"
-        android:gravity="center"
-        android:text="Comming Soon !"
-        android:textColor="@color/colorPrimary"
-        android:textSize="25dp"/>
+
+        <RelativeLayout
+            android:id="@+id/report_rl"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_below="@+id/appbar"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true">
+
+            <LinearLayout
+                android:layout_width="112dp"
+                android:layout_height="100dp"
+                android:layout_marginLeft="16dp">
+
+                <com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner
+                    android:id="@+id/reportSpinner"
+                    android:theme="@style/ThemeSpinner"
+                    android:layout_width="fill_parent"
+                    android:text="--Type--"
+                    android:layout_height="match_parent"
+                    android:spinnerMode="dialog"
+                    android:textAlignment="center"/>
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/configureReportBtn"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:layout_width="120dp"
+                android:text="Configure"
+                android:textColor="@color/white"
+                android:background="@color/colorPrimary"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true" />
+        </RelativeLayout>
+
+        <FrameLayout
+            android:id="@+id/reportFrame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_below="@+id/report_rl"
+            android:layout_above="@+id/genrateReport_btn">
+        </FrameLayout>
+
+        <Button
+            android:id="@+id/genrateReport_btn"
+            android:background="@color/colorPrimary"
+            android:textColor="@color/white"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:text="Generate report"
+            android:visibility="gone"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="30dp" />
     </RelativeLayout>
 
-</android.support.constraint.ConstraintLayout>
+
+
+
+</RelativeLayout>
