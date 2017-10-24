@@ -181,6 +181,13 @@ public class SynchMethods {
         oauthclient.HttpClient httpClient = new oauthclient.HttpClient();
         try {
             String response = httpClient.getString(url.toString(), authClient);
+            Type listType = new com.google.gson.reflect.TypeToken<List<EmobileBiometric>>() {
+            }.getType();
+            Gson gson = JsonUtils.getInstance();
+            List<EmobileBiometric> emobileBiometrics = gson.fromJson(response, listType);
+            EmobileBiometricDAO.truncate();
+            EmobileBiometricDAO.upsert(emobileBiometrics);
+
         } catch (IOException e) {
             e.printStackTrace();
             Crashlytics.logException(e);
@@ -222,7 +229,7 @@ public class SynchMethods {
         url.append("/").append(URLEncoder.encode(String.valueOf(assignEmployee.getEmpId()), GenerateXML.UTF_8));
         url.append("/").append(URLEncoder.encode(preferences.getDeviceID(), GenerateXML.UTF_8));
         url.append("/").append(URLEncoder.encode(preferences.getActivKey(), GenerateXML.UTF_8));
-//        url.append("/").append(URLEncoder.encode(preferences.getBundleVersion(), GenerateXML.UTF_8));
+        url.append("/").append(URLEncoder.encode(preferences.getBundleVersion(), GenerateXML.UTF_8));
 
         if (OAuthManager.isExpired(context)) {
             getOAuthManager(context);
@@ -272,26 +279,6 @@ public class SynchMethods {
         return xml.split("<" + tagName + ">")[1].split("</" + tagName + ">")[0];
     }
 
-//    private void showProgressDialog() {
-//        if (myProgressDialog == null) {
-//            myProgressDialog = new ProgressDialog(context);
-//            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-//            myProgressDialog.setCancelable(false);
-//        }
-//        myProgressDialog.show();
-//    }
-//
-//    private void dismissProgressDialog() {
-//        if (myProgressDialog != null && myProgressDialog.isShowing()) {
-//            myProgressDialog.dismiss();
-//        }
-//    }
-
-//    public void synchReceive(int type, Activity activity) {
-//        this.type = type;
-//        isReceive = true;
-//        new ResynchAsync(activity).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-//    }
 
     public static void synchOrdersOnHoldList(Context context) throws SAXException, IOException {
         Gson gson = JsonUtils.getInstance();

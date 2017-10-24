@@ -137,4 +137,25 @@ public class EmobileBiometricDAO {
             return all;
         }
     }
+public static void truncate(){
+    Realm realm = Realm.getDefaultInstance();
+    try {
+        realm.beginTransaction();
+        RealmResults<EmobileBiometric> all = realm.where(EmobileBiometric.class).findAll();
+        all.deleteAllFromRealm();
+        realm.commitTransaction();
+    } finally {
+        realm.close();
+    }
+}
+    public static void upsert(List<EmobileBiometric> emobileBiometrics) {
+        Realm realm = Realm.getDefaultInstance();
+        try {
+            realm.beginTransaction();
+            realm.insertOrUpdate(emobileBiometrics);
+            realm.commitTransaction();
+        } finally {
+            realm.close();
+        }
+    }
 }
