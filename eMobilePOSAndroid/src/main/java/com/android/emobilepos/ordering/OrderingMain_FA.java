@@ -49,7 +49,6 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.OrderProductListAdapter;
 import com.android.emobilepos.customer.ViewCustomers_FA;
 import com.android.emobilepos.mainmenu.SalesTab_FR;
-import com.android.emobilepos.models.BCRMacro;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.OrderSeatProduct;
 import com.android.emobilepos.models.Product;
@@ -1259,9 +1258,11 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     @Override
     public void prefetchLoyaltyPoints() {
-        if (NetworkUtils.isConnectedToInternet(this)) {
-            prefetchLoyalty(true);
-            loyaltySwiped = true;
+        if (myPref.isCustSelected() && myPref.isGiftCardAutoBalanceRequest()) {
+            if (NetworkUtils.isConnectedToInternet(MainMenu_FA.activity)) {
+                prefetchLoyalty(true);
+                loyaltySwiped = true;
+            }
         }
     }
 
