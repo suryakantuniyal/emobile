@@ -1,6 +1,5 @@
 package com.android.support;
 
-import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -26,6 +25,7 @@ public class NetworkUtils {
                 connectedNetworks.add(networkInfo);
             }
         }
+
         return connectedNetworks;
     }
 
@@ -73,7 +73,7 @@ public class NetworkUtils {
                         }
                     }).start();
                     try {
-                        connManager.wait();
+                        connManager.wait(5000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }

@@ -1,5 +1,6 @@
 package com.android.emobilepos.ordering;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 
 import com.android.emobilepos.R;
 import com.android.support.Global;
+import com.android.support.NetworkUtils;
 
 
 public class OrderLoyalty_FR extends Fragment implements OnClickListener {
@@ -76,8 +78,8 @@ public class OrderLoyalty_FR extends Fragment implements OnClickListener {
             Global global = (Global) OrderLoyalty_FR.this.getActivity().getApplication();
             OrderTotalDetails_FR.getFrag().reCalculate(global.order.getOrderProducts());
         }
-
-        callBackLoyaltySwiper.prefetchLoyaltyPoints();
+        new PrefetchLoyaltyPointTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+//        callBackLoyaltySwiper.prefetchLoyaltyPoints();
 
         return view;
 
@@ -131,5 +133,19 @@ public class OrderLoyalty_FR extends Fragment implements OnClickListener {
         return tempAvailable >= tempNewUsedPoints;
     }
 
+    private class PrefetchLoyaltyPointTask extends AsyncTask<Void, Void, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            return NetworkUtils.isConnectedToInternet(getActivity());
+        }
+
+        @Override
+        protected void onPostExecute(Boolean isConnected) {
+            if (isConnected) {
+                callBackLoyaltySwiper.prefetchLoyaltyPoints();
+            }
+        }
+    }
 
 }
