@@ -54,7 +54,7 @@ public class ClerkManagementActivity extends Activity {
         public void onBindViewHolder(ClerksCursorAdapter.ViewHolder holder, int position) {
             Clerk clerk = clerks.get(position);
             holder.clerk = clerk;
-            holder.title.setText(String.format("%s %s", getString(R.string.clerk_name), clerk.getEmpName()));
+            holder.title.setText(clerk.getEmpName());
             holder.subtitle.setText(String.format("%s %s", getString(R.string.pay_details_clerk_id), String.valueOf(clerk.getEmpId())));
         }
 

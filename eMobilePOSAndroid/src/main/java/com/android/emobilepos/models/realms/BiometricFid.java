@@ -1,5 +1,6 @@
 package com.android.emobilepos.models.realms;
 
+import android.text.TextUtils;
 import android.util.Base64;
 
 import com.android.emobilepos.customer.ViewCustomerDetails_FA;
@@ -16,7 +17,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
 import io.realm.RealmObject;
-import io.realm.annotations.Ignore;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 
@@ -126,11 +126,20 @@ public class BiometricFid extends RealmObject {
     }
 
     public byte[] getFmdData() {
+        if (fmdData == null && !TextUtils.isEmpty(fmdBase64)) {
+            fmdData = Base64.decode(fmdBase64, Base64.DEFAULT);
+        }
         return fmdData;
     }
 
     public void setFmdData(byte[] fidData) {
         this.fmdData = fidData;
         this.fmdBase64 = Base64.encodeToString(getFmdData(), Base64.DEFAULT);
+    }
+
+    public void decodeFmdBase64() {
+        if (fmdData == null && !TextUtils.isEmpty(fmdBase64)) {
+            fmdData = Base64.decode(fmdBase64, Base64.DEFAULT);
+        }
     }
 }

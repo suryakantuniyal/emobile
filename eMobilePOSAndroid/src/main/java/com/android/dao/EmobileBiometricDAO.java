@@ -10,6 +10,7 @@ import java.util.List;
 
 import io.realm.Case;
 import io.realm.Realm;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 
 /**
@@ -151,6 +152,12 @@ public static void truncate(){
     public static void upsert(List<EmobileBiometric> emobileBiometrics) {
         Realm realm = Realm.getDefaultInstance();
         try {
+            for (EmobileBiometric biometric : emobileBiometrics) {
+                RealmList<BiometricFid> fids = biometric.getFids();
+                for (BiometricFid fid : fids) {
+                    fid.decodeFmdBase64();
+                }
+            }
             realm.beginTransaction();
             realm.insertOrUpdate(emobileBiometrics);
             realm.commitTransaction();
