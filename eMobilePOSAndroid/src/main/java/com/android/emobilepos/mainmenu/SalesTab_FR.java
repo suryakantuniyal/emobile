@@ -82,7 +82,10 @@ import interfaces.BCRCallbacks;
 import interfaces.BiometricCallbacks;
 import interfaces.EMSCallBack;
 import util.json.JsonUtils;
+import interfaces.BCRCallbacks;
 import util.json.UIUtils;
+import interfaces.EMSCallBack;
+import util.json.JsonUtils;
 
 public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCallbacks, EMSCallBack {
     //    boolean validPassword = true;

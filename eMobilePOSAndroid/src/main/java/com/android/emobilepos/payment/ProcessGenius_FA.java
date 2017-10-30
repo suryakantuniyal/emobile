@@ -267,7 +267,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.processGeniusButton:
-                Toast.makeText(this, "Processing Genius", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, getString(R.string.processing_payment_msg), Toast.LENGTH_LONG).show();
                 processPayment();
                 break;
             case R.id.btnExact:

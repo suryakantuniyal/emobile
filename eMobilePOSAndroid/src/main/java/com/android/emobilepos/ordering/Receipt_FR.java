@@ -141,6 +141,9 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     private UpdateHeaderTitleCallback callBackUpdateHeaderTitle;
     private String order_email = "";
     private Bundle extras;
+    public OrderTotalDetails_FR orderTotalDetailsFr;
+    public OrderRewards_FR orderRewardsFr;
+    private Bundle extras;
 
     public Receipt_FR() {
 

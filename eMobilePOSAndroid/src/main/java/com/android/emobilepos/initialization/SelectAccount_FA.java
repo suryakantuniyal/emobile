@@ -91,7 +91,7 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
     public void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
-        new DBManager(this);
+        Fabric.with(this, new Crashlytics());
         final MyPreferences myPref = new MyPreferences(this);
         if (myPref.getLogIn()) {
             dbManager = new DBManager(this, Global.FROM_LOGIN_ACTIVITTY);
