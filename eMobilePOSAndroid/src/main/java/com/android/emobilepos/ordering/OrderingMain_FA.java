@@ -1254,7 +1254,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     @Override
     public void prefetchLoyaltyPoints() {
         if (myPref.isCustSelected() && myPref.isGiftCardAutoBalanceRequest()) {
-            if (NetworkUtils.isConnectedToInternet(MainMenu_FA.activity)) {
+            if (NetworkUtils.isConnectedToInternet(this)) {
                 prefetchLoyalty(true);
                 loyaltySwiped = true;
             }

@@ -11,6 +11,7 @@ import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -65,7 +66,8 @@ import com.mpowa.android.sdk.powapos.PowaPOS;
 import com.partner.pt100.printer.PrinterApiContext;
 import com.starmicronics.stario.StarIOPort;
 import com.starmicronics.stario.StarIOPortException;
-import com.starmicronics.starioextension.commandbuilder.Bitmap.SCBBitmapConverter;
+import com.starmicronics.starioextension.ICommandBuilder;
+import com.starmicronics.starioextension.StarIoExt;
 import com.thefactoryhka.android.pa.TfhkaAndroid;
 import com.uniquesecure.meposconnect.MePOS;
 import com.uniquesecure.meposconnect.MePOSConnectionType;
@@ -101,12 +103,15 @@ import drivers.elo.utils.PrinterAPI;
 import drivers.star.utils.Communication;
 import drivers.star.utils.MiniPrinterFunctions;
 import drivers.star.utils.PrinterFunctions;
+import drivers.star.utils.sdk31.starprntsdk.PrinterSetting;
 import jpos.JposException;
 import jpos.POSPrinter;
 import jpos.POSPrinterConst;
 import main.EMSDeviceManager;
 import plaintext.EMSPlainTextHelper;
 import util.StringUtil;
+
+import static drivers.star.utils.PrinterFunctions.emulation;
 
 public class EMSDeviceDriver {
     private static final boolean PRINT_TO_LOG = BuildConfig.PRINT_TO_LOG;
@@ -134,6 +139,8 @@ public class EMSDeviceDriver {
     InputStream inputStream;
     OutputStream outputStream;
     private double saveAmount;
+    Typeface typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
+
 
     private static byte[] convertFromListbyteArrayTobyteArray(List<byte[]> ByteArray) {
         int dataLength = 0;
@@ -536,19 +543,36 @@ public class EMSDeviceDriver {
             byte[] commandToSendToPrinter = convertFromListbyteArrayTobyteArray(commands);
             port.writePort(commandToSendToPrinter, 0, commandToSendToPrinter.length);
         } else {
-            ArrayList<byte[]> commands = new ArrayList<>();
-            commands.add(new byte[]{0x1b, 0x40}); // Initialization
-            byte[] characterheightExpansion = new byte[]{0x1b, 0x68, 0x00};
-            characterheightExpansion[2] = 48;
-            commands.add(characterheightExpansion);
-            byte[] characterwidthExpansion = new byte[]{0x1b, 0x57, 0x00};
-            characterwidthExpansion[2] = 48;
-            commands.add(characterwidthExpansion);
-//            commands.add(str.getBytes());
-            commands.add(new byte[]{0x0a});
-            byte[] commandToSendToPrinter = convertFromListbyteArrayTobyteArray(commands);
-            port.writePort(commandToSendToPrinter, 0, commandToSendToPrinter.length);
-            port.writePort(str.getBytes(FORMAT), 0, str.length());
+            Bitmap bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(str, 20
+                    , PAPER_WIDTH, typeface);
+            ICommandBuilder builder = StarIoExt.createCommandBuilder(emulation);
+            builder.beginDocument();
+            builder.appendBitmap(bitmapFromText, false);
+
+//            Charset encoding = Charset.forName("UTF-8");
+//            builder.appendCodePage(ICommandBuilder.CodePageType.UTF8);
+//            builder.appendInternational(ICommandBuilder.InternationalType.USA);
+//            builder.appendCharacterSpace(0);
+//            builder.appendAlignment(ICommandBuilder.AlignmentPosition.Left);
+//            builder.append(str.getBytes(encoding));
+
+            //            builder.appendCutPaper(ICommandBuilder.CutPaperAction.PartialCutWithFeed);
+            builder.endDocument();
+            byte[] cmds = builder.getCommands();
+            port.writePort(cmds, 0, cmds.length);
+//            ArrayList<byte[]> commands = new ArrayList<>();
+//            commands.add(new byte[]{0x1b, 0x40}); // Initialization
+//            byte[] characterheightExpansion = new byte[]{0x1b, 0x68, 0x00};
+//            characterheightExpansion[2] = 48;
+//            commands.add(characterheightExpansion);
+//            byte[] characterwidthExpansion = new byte[]{0x1b, 0x57, 0x00};
+//            characterwidthExpansion[2] = 48;
+//            commands.add(characterwidthExpansion);
+////            commands.add(str.getBytes());
+//            commands.add(new byte[]{0x0a});
+//            byte[] commandToSendToPrinter = convertFromListbyteArrayTobyteArray(commands);
+//            port.writePort(commandToSendToPrinter, 0, commandToSendToPrinter.length);
+//            port.writePort(str.getBytes(FORMAT), 0, str.length());
         }
     }
 
@@ -1152,7 +1176,18 @@ public class EMSDeviceDriver {
                 }
             });
         } else if (isPOSPrinter) {
-            print(new byte[]{0x1b, 0x64, 0x02}); // Cut
+            ICommandBuilder builder = StarIoExt.createCommandBuilder(emulation);
+            builder.beginDocument();
+            builder.appendCutPaper(ICommandBuilder.CutPaperAction.PartialCutWithFeed);
+            builder.endDocument();
+            byte[] cmds = builder.getCommands();
+            try {
+                port.writePort(cmds, 0, cmds.length);
+            } catch (StarIOPortException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
+            }
+//            print(new byte[]{0x1b, 0x64, 0x02}); // Cut
         } else if (this instanceof EMSmePOS) {
             finishReceipt();
         }
@@ -1194,7 +1229,8 @@ public class EMSDeviceDriver {
             if (this instanceof EMSBluetoothStarPrinter) {
                 byte[] data;
                 if (isPOSPrinter) {
-                    data = PrinterFunctions.createCommandsEnglishRasterModeCoupon(PAPER_WIDTH, SCBBitmapConverter.Rotation.Normal,
+                    data = PrinterFunctions.createCommandsEnglishRasterModeCoupon(PAPER_WIDTH,
+                            ICommandBuilder.BitmapConverterRotation.Normal,
                             myBitmap);
                     Communication.sendCommands(data, port, this.activity); // 10000mS!!!
                 } else {
@@ -1368,12 +1404,16 @@ public class EMSDeviceDriver {
         if (bitmap != null) {
 
             if (this instanceof EMSBluetoothStarPrinter) {
-
+                PrinterSetting setting = new PrinterSetting(activity);
+                StarIoExt.Emulation emulation = setting.getEmulation();
                 byte[] data;
 
                 if (isPOSPrinter) {
-                    data = PrinterFunctions.createCommandsEnglishRasterModeCoupon(PAPER_WIDTH, SCBBitmapConverter.Rotation.Normal,
-                            bitmap);
+                    data = drivers.star.utils.sdk31.starprntsdk.functions.PrinterFunctions
+                            .createRasterData(emulation, bitmap, PAPER_WIDTH, true);
+
+//                    data = PrinterFunctions.createCommandsEnglishRasterModeCoupon(PAPER_WIDTH, SCBBitmapConverter.Rotation.Normal,
+//                            bitmap);
                     Communication.sendCommands(data, port, this.activity); // 10000mS!!!
 
                 } else {
