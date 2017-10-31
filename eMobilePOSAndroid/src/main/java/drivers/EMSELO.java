@@ -202,25 +202,25 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
 
         @Override
         protected Boolean doInBackground(Boolean... params) {
-            SerialPort port;
-            try {
-                port = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
-                OutputStream stream = port.getOutputStream();
-                InputStream iStream = port.getInputStream();
-                SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
-                eloPrinterApi = new PrinterAPI(eloPrinterPort);
-                if (!eloPrinterApi.isPaperAvailable()) {
-//                    Toast.makeText(activity, "Printer out of paper!", Toast.LENGTH_LONG).show();
-                }
-                eloPrinterPort.getInputStream().close();
-                eloPrinterPort.getOutputStream().close();
-                eloPrinterPort.close();
-
+//            SerialPort port;
+//            try {
+//                port = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
+//                OutputStream stream = port.getOutputStream();
+//                InputStream iStream = port.getInputStream();
+//                SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
+//                eloPrinterApi = new PrinterAPI(eloPrinterPort);
+//                if (!eloPrinterApi.isPaperAvailable()) {
+////                    Toast.makeText(activity, "Printer out of paper!", Toast.LENGTH_LONG).show();
+//                }
+//                eloPrinterPort.getInputStream().close();
+//                eloPrinterPort.getOutputStream().close();
+//                eloPrinterPort.close();
+//
                 didConnect = true;
-            } catch (IOException e) {
-                didConnect = false;
-                e.printStackTrace();
-            }
+//            } catch (IOException e) {
+//                didConnect = false;
+//                e.printStackTrace();
+//            }
             return params[0];
         }
 
