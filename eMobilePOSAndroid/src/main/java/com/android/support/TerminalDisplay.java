@@ -1,5 +1,9 @@
 package com.android.support;
 
+import com.elo.device.DeviceManager;
+import com.elo.device.enums.EloPlatform;
+import com.elo.device.exceptions.UnsupportedEloPlatform;
+import com.elo.device.peripherals.CFD;
 import com.elotouch.paypoint.register.printer.SerialPort;
 import com.zzzapi.uart.uart;
 
@@ -27,7 +31,7 @@ public class TerminalDisplay {
             EMSPAT100.getTerminalDisp().clearText();
             EMSPAT100.getTerminalDisp().displayText(Global.formatSam4sCDT(row1, row2));
         } else if (myPref.isESY13P1()) {
-            EMSELO.printTextOnCFD(row1, row2);
+            EMSELO.printTextOnCFD(row1, row2, myPref.context);
         } else if (myPref.isPAT215()) {
             EMSPAT215.getTerminalDisp().clearText();
             EMSPAT215.getTerminalDisp().displayText(Global.formatSam4sCDT(row1, row2));

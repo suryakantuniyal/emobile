@@ -24,6 +24,9 @@ import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.elo.device.DeviceManager;
+import com.elo.device.enums.EloPlatform;
+import com.elo.device.exceptions.UnsupportedEloPlatform;
 import com.elotouch.paypoint.register.barcodereader.BarcodeReader;
 import com.elotouch.paypoint.register.cd.CashDrawer;
 import com.elotouch.paypoint.register.cfd.CFD;
@@ -162,11 +165,26 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
  * Prints/Displays Text on Customer Facing Display.
  *
  * */
-    public static void printTextOnCFD(String Line1, String Line2) {
-        getTerminalDisp().setBacklight(true);
-        getTerminalDisp().clearDisplay();
-        getTerminalDisp().setLine1(Line1);
-        getTerminalDisp().setLine2(Line2);
+    public static void printTextOnCFD(String Line1, String Line2, Context context) {
+        DeviceManager deviceManager;
+        try {
+            deviceManager = DeviceManager.getInstance(EloPlatform.PAYPOINT_2, context);
+            if (deviceManager != null) {
+                com.elo.device.peripherals.CFD cfd = deviceManager.getCfd();
+                if (cfd != null) {
+                    cfd.setBacklight(true);
+                    cfd.clear();
+                    cfd.setLine(1, Line1);
+                    cfd.setLine(2, Line2);
+                }
+            }
+        } catch (UnsupportedEloPlatform unsupportedEloPlatform) {
+
+        }
+//        getTerminalDisp().setBacklight(true);
+//        getTerminalDisp().clearDisplay();
+//        getTerminalDisp().setLine1(Line1);
+//        getTerminalDisp().setLine2(Line2);
     }
 
     @Override

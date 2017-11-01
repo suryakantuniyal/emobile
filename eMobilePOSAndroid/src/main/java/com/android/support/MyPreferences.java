@@ -173,7 +173,7 @@ public class MyPreferences {
     private final String aes_iv = "aes_iv";
     private SharedPreferences.Editor prefEditor;
     private SharedPreferences prefs;
-    private Context context;
+    public Context context;
     private SharedPreferences sharedPref;
     private String defaultUnitsName;
 
