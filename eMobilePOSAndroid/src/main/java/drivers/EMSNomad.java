@@ -203,6 +203,16 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
     }
 
     @Override
+    public void turnOnBCR() {
+
+    }
+
+    @Override
+    public void turnOffBCR() {
+
+    }
+
+    @Override
     public boolean printReport(String curDate) {
         return false;
     }

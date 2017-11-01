@@ -7,7 +7,6 @@ import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplitedOrder;
-import com.android.emobilepos.models.TimeClock;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.Global;
@@ -40,6 +39,10 @@ public interface EMSDeviceManagerPrinterDelegate {
     void setBitmap(Bitmap bmp);
 
     void playSound();
+
+    void turnOnBCR();
+
+    void turnOffBCR();
 
     void cutPaper();
 

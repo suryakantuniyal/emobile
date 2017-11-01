@@ -173,6 +173,16 @@ public class EMSRP600 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     }
 
     @Override
+    public void turnOnBCR() {
+
+    }
+
+    @Override
+    public void turnOffBCR() {
+
+    }
+
+    @Override
     public boolean printReport(String curDate) {
         return true;
     }

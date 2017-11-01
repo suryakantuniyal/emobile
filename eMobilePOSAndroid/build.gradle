@@ -190,6 +190,8 @@ dependencies {
     compile(name: 'gridHeaderLibrary-release', ext: 'aar')
     compile(name: 'nostraLoader-release', ext: 'aar')
     compile(name: 'viewPagerIndicator-release', ext: 'aar')
+    compile(name: 'elo-peripherals-refresh-sdk-release', ext: 'aar')
+
     ivuposCompile files('libs/Android_Platform_Adapter.jar')
     ivuposCompile files('libs/RBA_SDK.jar')
     ivuposCompile files('libs/evoSnapSDK.jar')

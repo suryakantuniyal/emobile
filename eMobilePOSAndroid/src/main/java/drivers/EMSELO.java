@@ -17,7 +17,6 @@ import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplitedOrder;
-import com.android.emobilepos.models.TimeClock;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
 import com.android.support.ConsignmentTransaction;
@@ -178,7 +177,9 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
         this.edm = edm;
         thisInstance = this;
         playSound();
-        new processConnectionAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
+        if (Global.mainPrinterManager == null || Global.mainPrinterManager.getCurrentDevice() == null) {
+            new processConnectionAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
+        }
     }
 
     @Override
@@ -190,7 +191,9 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
         this.edm = edm;
         thisInstance = this;
         playSound();
-        new processConnectionAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
+        if (Global.mainPrinterManager == null || Global.mainPrinterManager.getCurrentDevice() == null) {
+            new processConnectionAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
+        }
         return true;
     }
 
@@ -202,25 +205,25 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
 
         @Override
         protected Boolean doInBackground(Boolean... params) {
-//            SerialPort port;
-//            try {
-//                port = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
-//                OutputStream stream = port.getOutputStream();
-//                InputStream iStream = port.getInputStream();
-//                SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
-//                eloPrinterApi = new PrinterAPI(eloPrinterPort);
-//                if (!eloPrinterApi.isPaperAvailable()) {
-////                    Toast.makeText(activity, "Printer out of paper!", Toast.LENGTH_LONG).show();
-//                }
-//                eloPrinterPort.getInputStream().close();
-//                eloPrinterPort.getOutputStream().close();
-//                eloPrinterPort.close();
-//
+            SerialPort port;
+            try {
+                port = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
+                OutputStream stream = port.getOutputStream();
+                InputStream iStream = port.getInputStream();
+                SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
+                eloPrinterApi = new PrinterAPI(eloPrinterPort);
+                if (!eloPrinterApi.isPaperAvailable()) {
+//                    Toast.makeText(activity, "Printer out of paper!", Toast.LENGTH_LONG).show();
+                }
+                eloPrinterPort.getInputStream().close();
+                eloPrinterPort.getOutputStream().close();
+                eloPrinterPort.close();
+
                 didConnect = true;
-//            } catch (IOException e) {
-//                didConnect = false;
-//                e.printStackTrace();
-//            }
+            } catch (IOException e) {
+                didConnect = false;
+                e.printStackTrace();
+            }
             return params[0];
         }
 
@@ -433,7 +436,7 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
 
     public void unregisterPrinter() {
         edm.setCurrentDevice(null);
-        TurnOffBCR();
+        turnOffBCR();
     }
 
     @Override
@@ -478,9 +481,9 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
         if (handler == null)
             handler = new Handler();
         if (callBack != null) {
-            TurnOnBCR();
+            turnOnBCR();
         } else {
-            TurnOffBCR();
+            turnOffBCR();
         }
     }
 
@@ -630,16 +633,16 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
          *
          * */
     private void readBarcode() {
-        TurnOnBCR();
+        turnOnBCR();
     }
 
-    public void TurnOnBCR() {
+    public void turnOnBCR() {
         if (!barcodereader.isBcrOn()) {
             barcodereader.turnOnLaser();
         }
     }
 
-    public void TurnOffBCR() {
+    public void turnOffBCR() {
         if (barcodereader.isBcrOn()) {
             barcodereader.turnOnLaser();
         }

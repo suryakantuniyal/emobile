@@ -300,6 +300,16 @@ public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrint
     }
 
     @Override
+    public void turnOnBCR() {
+
+    }
+
+    @Override
+    public void turnOffBCR() {
+
+    }
+
+    @Override
     public boolean printReport(String curDate) {
         printReportReceipt(curDate, LINE_WIDTH);
         return true;

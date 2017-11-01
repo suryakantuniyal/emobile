@@ -262,6 +262,16 @@ public class SalesTab_FR extends Fragment implements EMSCallBack , BCRCallbacks{
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+            Global.mainPrinterManager.getCurrentDevice().releaseCardReader();
+            Global.mainPrinterManager.getCurrentDevice().turnOffBCR();
+            Global.mainPrinterManager.getCurrentDevice().loadScanner(null);
+        }
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 

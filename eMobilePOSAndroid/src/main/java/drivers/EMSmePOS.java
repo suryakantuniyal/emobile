@@ -191,6 +191,16 @@ public class EMSmePOS extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     }
 
     @Override
+    public void turnOnBCR() {
+
+    }
+
+    @Override
+    public void turnOffBCR() {
+
+    }
+
+    @Override
     public boolean printReport(String curDate) {
         setPaperWidth(LINE_WIDTH);
         printReportReceipt(curDate, LINE_WIDTH);
