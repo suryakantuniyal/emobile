@@ -14,7 +14,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.Global;
@@ -34,21 +34,18 @@ import interfaces.EMSDeviceManagerPrinterDelegate;
 import main.EMSDeviceManager;
 
 public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
+    private static POSSDK pos_usb;
+    private static POSInterfaceAPI interface_usb;
     private final int LINE_WIDTH = 42;
+    //Returned Value Statement
+    private final int POS_SUCCESS = 1000;        //success
+    private final int ERR_PROCESSING = 1001;    //processing error
+    private final int ERR_PARAM = 1002;        //parameter error
     private String encodedSignature;
     private String encodedQRCode = "";
     private ProgressDialog myProgressDialog;
     private EMSDeviceDriver thisInstance;
     private EMSDeviceManager edm;
-
-    //Returned Value Statement
-    private final int POS_SUCCESS = 1000;        //success
-    private final int ERR_PROCESSING = 1001;    //processing error
-    private final int ERR_PARAM = 1002;        //parameter error
-
-
-    private static POSSDK pos_usb;
-    private static POSInterfaceAPI interface_usb;
     private int error_code = 0;
 
     @Override
@@ -97,6 +94,7 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
+                    Crashlytics.logException(e);
                 }
                 _time_out++;
             }
@@ -109,70 +107,20 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
             }
         }
         if (didConnect) {
-            this.edm.driverDidConnectToDevice(thisInstance, false);
+            this.edm.driverDidConnectToDevice(thisInstance, false, activity);
         } else {
 
-            this.edm.driverDidNotConnectToDevice(thisInstance, null, false);
+            this.edm.driverDidNotConnectToDevice(thisInstance, null, false, activity);
         }
 
 
         return didConnect;
     }
 
-
-    public class processConnectionAsync extends
-            AsyncTask<Integer, String, String> {
-
-        String msg = "";
-        boolean didConnect = false;
-
-        @Override
-        protected void onPreExecute() {
-            myProgressDialog = new ProgressDialog(activity);
-            myProgressDialog.setMessage(activity.getString(R.string.progress_connecting_printer));
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            myProgressDialog.show();
-
-        }
-
-        @Override
-        protected String doInBackground(Integer... params) {
-
-
-            error_code = interface_usb.OpenDevice();
-            if (error_code == POS_SUCCESS) {
-                if (pos_usb == null) {
-                    pos_usb = new POSSDK(interface_usb);
-                }
-                pos_sdk = pos_usb;
-
-                if (setupPrinter())
-                    didConnect = true;
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String unused) {
-            myProgressDialog.dismiss();
-            if (didConnect) {
-                edm.driverDidConnectToDevice(thisInstance, true);
-            } else {
-
-                edm.driverDidNotConnectToDevice(thisInstance, msg, true);
-            }
-
-        }
-    }
-
-
     @Override
     public void registerAll() {
         this.registerPrinter();
     }
-
 
     private boolean setupPrinter() {
         error_code = pos_sdk.textStandardModeAlignment(0);
@@ -195,7 +143,6 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
         return true;
     }
 
-
     @Override
     public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
         openUsbInterface();
@@ -210,14 +157,12 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
         return true;
     }
 
-
     @Override
     public boolean printPaymentDetails(String payID, int type, boolean isReprint, EMVContainer emvContainer) {
         openUsbInterface();
         printPaymentDetailsReceipt(payID, type, isReprint, LINE_WIDTH, emvContainer);
         return true;
     }
-
 
     @Override
     public boolean printBalanceInquiry(HashMap<String, String> values) {
@@ -229,7 +174,6 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     public boolean printOnHold(Object onHold) {
         return true;
     }
-
 
     @Override
     public void setBitmap(Bitmap bmp) {
@@ -264,7 +208,6 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
         printShiftDetailsReceipt(LINE_WIDTH, shiftID);
     }
 
-
     @Override
     public boolean printReport(String curDate) {
         openUsbInterface();
@@ -282,7 +225,6 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
         interface_usb.CloseDevice();
         edm.setCurrentDevice(null);
     }
-
 
     public boolean openUsbInterface() {
         boolean didConnect = false;
@@ -308,6 +250,7 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
+                    Crashlytics.logException(e);
                 }
                 _time_out++;
             }
@@ -330,14 +273,12 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
         }
     }
 
-
     @Override
     public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSig) {
         openUsbInterface();
         printConsignmentReceipt(myConsignment, encodedSig, LINE_WIDTH);
         return true;
     }
-
 
     @Override
     public void releaseCardReader() {
@@ -346,7 +287,6 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     @Override
     public void loadCardReader(EMSCallBack _callBack, boolean isDebitCard) {
     }
-
 
     @Override
     public boolean printConsignmentPickup(
@@ -364,7 +304,6 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 
         return true;
     }
-
 
     @Override
     public String printStationPrinter(List<Orders> orders, String ordID, boolean cutPaper, boolean printHeader) {
@@ -393,7 +332,6 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     public void printFooter() {
         super.printFooter(LINE_WIDTH);
     }
-
 
     @Override
     public boolean printConsignmentHistory(HashMap<String, String> map, Cursor c, boolean isPickup) {
@@ -429,6 +367,19 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 
     }
 
+    @Override
+    public void printReceiptPreview(SplittedOrder splittedOrder) {
+        try {
+            setPaperWidth(LINE_WIDTH);
+//            Bitmap bitmap = loadBitmapFromView(view);
+            super.printReceiptPreview(splittedOrder, LINE_WIDTH);
+        } catch (JAException e) {
+            e.printStackTrace();
+        } catch (StarIOPortException e) {
+            e.printStackTrace();
+        }
+    }
+
 //    @Override
 //    public void printReceiptPreview(View view) {
 //        openUsbInterface();
@@ -442,19 +393,6 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 //            e.printStackTrace();
 //        }
 //    }
-
-    @Override
-    public void printReceiptPreview(SplitedOrder splitedOrder) {
-        try {
-            setPaperWidth(LINE_WIDTH);
-//            Bitmap bitmap = loadBitmapFromView(view);
-            super.printReceiptPreview(splitedOrder, LINE_WIDTH);
-        } catch (JAException e) {
-            e.printStackTrace();
-        } catch (StarIOPortException e) {
-            e.printStackTrace();
-        }
-    }
 
     @Override
     public void salePayment(Payment payment) {
@@ -505,5 +443,52 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     public void printClockInOut(List<ClockInOut> timeClocks, String clerkID) {
         openUsbInterface();
         super.printClockInOut(timeClocks, LINE_WIDTH, clerkID);
+    }
+
+    public class processConnectionAsync extends
+            AsyncTask<Integer, String, String> {
+
+        String msg = "";
+        boolean didConnect = false;
+
+        @Override
+        protected void onPreExecute() {
+            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog.setMessage(activity.getString(R.string.progress_connecting_printer));
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setCancelable(false);
+            myProgressDialog.show();
+
+        }
+
+        @Override
+        protected String doInBackground(Integer... params) {
+
+
+            error_code = interface_usb.OpenDevice();
+            if (error_code == POS_SUCCESS) {
+                if (pos_usb == null) {
+                    pos_usb = new POSSDK(interface_usb);
+                }
+                pos_sdk = pos_usb;
+
+                if (setupPrinter())
+                    didConnect = true;
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String unused) {
+            myProgressDialog.dismiss();
+            if (didConnect) {
+                edm.driverDidConnectToDevice(thisInstance, true, activity);
+            } else {
+
+                edm.driverDidNotConnectToDevice(thisInstance, msg, true, activity);
+            }
+
+        }
     }
 }

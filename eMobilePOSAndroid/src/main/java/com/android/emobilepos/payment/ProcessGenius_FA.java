@@ -620,7 +620,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
     }
 
     private void showPrintDlg(boolean isRetry) {
-        final Dialog dlog = new Dialog(ProcessGenius_FA.this, R.style.Theme_TransparentTest);
+        final Dialog dlog = new Dialog(this, R.style.Theme_TransparentTest);
         dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dlog.setCancelable(false);
         dlog.setContentView(R.layout.dlog_btn_left_right_layout);

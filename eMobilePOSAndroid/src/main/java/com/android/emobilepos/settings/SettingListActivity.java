@@ -54,6 +54,7 @@ import com.android.emobilepos.country.CountryPicker;
 import com.android.emobilepos.country.CountryPickerListener;
 import com.android.emobilepos.mainmenu.SettingsTab_FR;
 import com.android.emobilepos.models.realms.PaymentMethod;
+import com.android.emobilepos.security.ClerkManagementActivity;
 import com.android.emobilepos.security.SecurityManager;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
@@ -298,6 +299,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
         private void setPrefManager(SettingListActivity.SettingSection section, PreferenceManager prefManager) {
             switch (section) {
                 case GENERAL:
+                    prefManager.findPreference("pref_clerk_management").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_use_clerks").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_transaction_num_prefix").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_require_shift_transactions").setOnPreferenceClickListener(this);
@@ -366,7 +368,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     break;
                 case TRANSACTION:
                     defaultCountry = prefManager.findPreference("pref_default_country");
-                    CharSequence temp = "\t\t" + myPref.defaultCountryName(true, null);
+                    CharSequence temp = "\t\t" + myPref.getDefaultCountryName();
                     defaultCountry.setSummary(temp);
                     defaultCountry.setOnPreferenceClickListener(this);
                     break;
@@ -479,6 +481,10 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                         PayMethodsDAO.delete("CardOnFile");
                     }
                     break;
+                case R.string.config_clerk_management:
+                    intent = new Intent(getActivity(), ClerkManagementActivity.class);
+                    startActivity(intent);
+                    break;
                 case R.string.config_use_clerks:
                     Global.loggedIn = false;
                     myPref.setIsPersistClerk(myPref.isUseClerks());
@@ -572,8 +578,8 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
 
                         @Override
                         public void onSelectCountry(String name, String code) {
-                            myPref.defaultCountryCode(false, code);
-                            myPref.defaultCountryName(false, name);
+                            myPref.setDefaultCountryCode(code);
+                            myPref.setDefaultCountryCode(name);
                             CharSequence temp = "\t\t" + name;
                             defaultCountry.setSummary(temp);
                             newFrag.dismiss();

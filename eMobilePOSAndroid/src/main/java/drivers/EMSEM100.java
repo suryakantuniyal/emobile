@@ -9,8 +9,7 @@ import android.os.Handler;
 import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.SplitedOrder;
-import com.android.emobilepos.models.TimeClock;
+import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
@@ -46,7 +45,7 @@ public class EMSEM100 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
         encrypt = new Encrypt(activity);
         this.edm = edm;
         thisInstance = this;
-        this.edm.driverDidConnectToDevice(thisInstance, true);
+        this.edm.driverDidConnectToDevice(thisInstance, true, activity);
     }
 
 
@@ -208,7 +207,7 @@ public class EMSEM100 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 //    }
 
     @Override
-    public void printReceiptPreview(SplitedOrder splitedOrder) {
+    public void printReceiptPreview(SplittedOrder splitedOrder) {
 
     }
 

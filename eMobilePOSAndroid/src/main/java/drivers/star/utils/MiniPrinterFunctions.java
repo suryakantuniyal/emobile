@@ -14,11 +14,9 @@ import com.starmicronics.stario.StarPrinterStatus;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import util.*;
-import util.RasterDocument;
 
 public class MiniPrinterFunctions 
 {
@@ -30,10 +28,7 @@ public class MiniPrinterFunctions
 	
 	public static void AddRange(ArrayList<Byte> array, Byte[] newData)
 	{
-		for(int index=0; index<newData.length; index++)
-		{
-			array.add(newData[index]);
-		}
+		Collections.addAll(array, newData);
 	}
 	
 	/**
@@ -105,7 +100,7 @@ public class MiniPrinterFunctions
     		dialog.setNegativeButton("Ok", null);
     		AlertDialog alert = dialog.create();
     		alert.setTitle("Failure");
-    		alert.setMessage("Failed to connectTFHKA to printer");
+    		alert.setMessage("Failed to connect to printer");
     		alert.setCancelable(false);
     		alert.show();
     	}
@@ -151,7 +146,7 @@ public class MiniPrinterFunctions
 			
 			StarPrinterStatus status = port.retreiveStatus();
 			
-			if(status.offline == false)
+			if(!status.offline)
 			{
 				Builder dialog = new AlertDialog.Builder(context);
 	    		dialog.setNegativeButton("Ok", null);
@@ -164,11 +159,11 @@ public class MiniPrinterFunctions
 			else
 			{
 				String message = "Printer is offline";
-				if(status.receiptPaperEmpty == true)
+				if(status.receiptPaperEmpty)
 				{
 					message += "\nPaper is Empty";
 				}
-				if(status.coverOpen == true)
+				if(status.coverOpen)
 				{
 					message += "\nCover is Open";
 				}
@@ -187,7 +182,7 @@ public class MiniPrinterFunctions
     		dialog.setNegativeButton("Ok", null);
     		AlertDialog alert = dialog.create();
     		alert.setTitle("Failure");
-    		alert.setMessage("Failed to connectTFHKA to printer");
+    		alert.setMessage("Failed to connect to printer");
     		alert.setCancelable(false);
     		alert.show();
     	}
@@ -215,7 +210,7 @@ public class MiniPrinterFunctions
 	 */
 	public static void PrintBarcode(Context context, String portName, String portSettings, byte height, BarcodeWidth width, BarcodeType type, byte[] barcodeData)
 	{
-		ArrayList<Byte> commands = new ArrayList<Byte>();
+		ArrayList<Byte> commands = new ArrayList<>();
 		
 		Byte[] height_Commands = new Byte[] {0x1d, 0x68, 0x00};
 		height_Commands[2] = height;
@@ -294,7 +289,7 @@ public class MiniPrinterFunctions
 	 */
 	public static void PrintQrcode(Context context, String portName, String portSettings, PrinterFunctions.CorrectionLevelOption correctionLevel, byte sizeByECLevel, byte moduleSize, byte[] barcodeData)
 	{
-		ArrayList<Byte> commands = new ArrayList<Byte>();
+		ArrayList<Byte> commands = new ArrayList<>();
 		
 		//The printer supports 3 2d bar code types, this one selects qrcode
 		Byte[] selectedBarcodeType = new Byte[] {0x1d, 0x5a, 0x02};
@@ -350,7 +345,7 @@ public class MiniPrinterFunctions
 	 */
 	public static void PrintPDF417(Context context, String portName, String portSettings, BarcodeWidth width, byte columnNumber, byte securityLevel, byte ratio, byte[] barcodeData)
 	{
-		ArrayList<Byte> commands = new ArrayList<Byte>();
+		ArrayList<Byte> commands = new ArrayList<>();
 		
 		Byte[] barcodeWidthCommand = new Byte[] {0x1d, 'w', 0x00};
 		switch(width)
@@ -431,7 +426,7 @@ public class MiniPrinterFunctions
 	 */
 	public static void PrintBitmap(Context context, String portName, String portSettings, Bitmap source, int maxWidth, boolean compressionEnable, boolean pageModeEnable)
 	{
-        ArrayList<Byte> commands = new ArrayList<Byte>();
+        ArrayList<Byte> commands = new ArrayList<>();
         Byte[] tempList;
 		
 		StarBitmap starbitmap = new StarBitmap(source, false, maxWidth);
@@ -468,7 +463,7 @@ public class MiniPrinterFunctions
 	 */
 	public static void PrintBitmapImage(Context context, String portName, String portSettings, Bitmap bm, int maxWidth, boolean compressionEnable, boolean pageModeEnable)
 	{
-        ArrayList<Byte> commands = new ArrayList<Byte>();
+        ArrayList<Byte> commands = new ArrayList<>();
         Byte[] tempList;
         
 		StarBitmap starbitmap = new StarBitmap(bm, false, maxWidth);
@@ -511,7 +506,7 @@ public class MiniPrinterFunctions
 	 */
 	public static void PrintText(Context context, String portName, String portSettings, boolean underline, boolean emphasized, boolean upsidedown, boolean invertColor, byte heightExpansion, byte widthExpansion, int leftMargin, PrinterFunctions.Alignment alignment, byte[] textToPrint)
 	{
-		ArrayList<Byte> commands = new ArrayList<Byte>();
+		ArrayList<Byte> commands = new ArrayList<>();
 		
 		Byte[] initCommand = new Byte[] {0x1b, 0x40};               // Initialization
 		AddRange(commands, initCommand);
@@ -585,9 +580,8 @@ public class MiniPrinterFunctions
 		}
 		AddRange(commands, justificationCommand);
 
-		for (int i = 0; i < textToPrint.length; i++)
-		{
-			commands.add(textToPrint[i]);
+		for (byte aTextToPrint : textToPrint) {
+			commands.add(aTextToPrint);
 		}
 		
 		commands.add((byte) 0x0a);
@@ -612,7 +606,7 @@ public class MiniPrinterFunctions
 	 */
 	public static void PrintTextKanji(Context context, String portName, String portSettings, boolean underline, boolean emphasized, boolean upsidedown, boolean invertColor, byte heightExpansion, byte widthExpansion, int leftMargin, PrinterFunctions.Alignment alignment, byte[] textToPrint)
 	{
-		ArrayList<Byte> commands = new ArrayList<Byte>();
+		ArrayList<Byte> commands = new ArrayList<>();
 		
 		Byte[] initCommand = new Byte[] {0x1b, 0x40};               // Initialization
 		AddRange(commands, initCommand);
@@ -700,10 +694,9 @@ public class MiniPrinterFunctions
 	    {
 			rawData = strData.getBytes();
 	    }
-		
-		for (int i = 0; i < rawData.length; i++)
-		{
-			commands.add(rawData[i]);
+
+		for (byte aRawData : rawData) {
+			commands.add(aRawData);
 		}
 		
 		commands.add((byte) 0x0a);
@@ -822,7 +815,7 @@ public class MiniPrinterFunctions
     		dialog.setNegativeButton("Ok", null);
     		AlertDialog alert = dialog.create();
     		alert.setTitle("Failure");
-    		alert.setMessage("Failed to connectTFHKA to printer");
+    		alert.setMessage("Failed to connect to printer");
     		alert.setCancelable(false);
     		alert.show();
 			if(portForMoreThanOneFunction != null)
@@ -999,7 +992,7 @@ public class MiniPrinterFunctions
 		    /* Start of Begin / End Checked Block Sample code */
 			StarPrinterStatus status = port.beginCheckedBlock();
 
-			if (true == status.offline)
+			if (status.offline)
 			{
 				throw new StarIOPortException("A printer is offline");
 			}
@@ -1010,15 +1003,15 @@ public class MiniPrinterFunctions
 			port.setEndCheckedBlockTimeoutMillis(30000);//Change the timeout time of endCheckedBlock method.
 			status = port.endCheckedBlock();
 
-			if (true == status.coverOpen)
+			if (status.coverOpen)
 			{
 				throw new StarIOPortException("Printer cover is open");
 			}
-			else if (true == status.receiptPaperEmpty)
+			else if (status.receiptPaperEmpty)
 			{
 				throw new StarIOPortException("Receipt paper is empty");
 			}
-			else if (true == status.offline)
+			else if (status.offline)
 			{
 				throw new StarIOPortException("Printer is offline");
 			}

@@ -1,0 +1,26 @@
+<TableRow xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_vertical"
+    android:padding="5dp">
+
+    <TextView
+        android:id="@+id/customerCustomFieldLabelTextView"
+        style="@style/black_text_appearance_unbold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/header_title_gift_card"
+        android:textSize="@dimen/about_main_text_size" />
+
+    <com.android.support.MyEditText
+        android:id="@+id/customerCustomFieldValueEditText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="3"
+        android:imeOptions="flagNoExtractUi|actionNext"
+        android:inputType="number"
+        android:textAppearance="@style/black_text_appearance_unbold"
+        android:textColor="#000000"
+        android:textSize="@dimen/field_general_txt_size" />
+</TableRow>

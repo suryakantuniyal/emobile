@@ -16,7 +16,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
 import com.android.support.CardParser;
@@ -77,7 +77,7 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     private BarcodeReader barcodereader = new BarcodeReader();
     private boolean didConnect;
     private static CFD customerFacingDisplay;
-    private static MTSCRA m_scra;
+    private MTSCRA m_scra;
     private Handler m_scraHandler;
 
     private class SCRAHandlerCallback implements Handler.Callback {
@@ -207,7 +207,7 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
                 new processConnectionAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
             }
         } else {
-            edm.driverDidConnectToDevice(thisInstance, false);
+            edm.driverDidConnectToDevice(thisInstance, false, activity);
         }
     }
 
@@ -226,7 +226,7 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
                 new processConnectionAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
             }
         } else {
-            edm.driverDidConnectToDevice(thisInstance, false);
+            edm.driverDidConnectToDevice(thisInstance, false, activity);
         }
         return true;
     }
@@ -265,9 +265,9 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
         protected void onPostExecute(Boolean showAlert) {
             if (didConnect) {
                 playSound();
-                edm.driverDidConnectToDevice(thisInstance, showAlert);
+                edm.driverDidConnectToDevice(thisInstance, showAlert, activity);
             } else {
-                edm.driverDidNotConnectToDevice(thisInstance, "", showAlert);
+                edm.driverDidNotConnectToDevice(thisInstance, "", showAlert, activity);
             }
         }
     }
@@ -579,7 +579,7 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
 //    }
 
     @Override
-    public void printReceiptPreview(SplitedOrder splitedOrder) {
+    public void printReceiptPreview(SplittedOrder splitedOrder) {
         try {
             SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
             eloPrinterApi = new PrinterAPI(eloPrinterPort);

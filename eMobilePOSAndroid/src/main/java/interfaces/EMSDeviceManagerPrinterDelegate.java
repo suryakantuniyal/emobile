@@ -6,7 +6,7 @@ import android.graphics.Bitmap;
 import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.Global;
@@ -74,7 +74,7 @@ public interface EMSDeviceManagerPrinterDelegate {
 
 //    void printReceiptPreview(View view);
 
-    void printReceiptPreview(SplitedOrder splitedOrder);
+    void printReceiptPreview(SplittedOrder splitedOrder);
 
     void salePayment(Payment payment);
 

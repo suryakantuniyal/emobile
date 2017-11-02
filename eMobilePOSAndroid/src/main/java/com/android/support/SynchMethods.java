@@ -18,6 +18,7 @@ import com.android.dao.ClerkDAO;
 import com.android.dao.CustomerCustomFieldsDAO;
 import com.android.dao.DeviceTableDAO;
 import com.android.dao.DinningTableDAO;
+import com.android.dao.EmobileBiometricDAO;
 import com.android.dao.EmployeePermissionDAO;
 import com.android.dao.MixMatchDAO;
 import com.android.dao.OrderAttributesDAO;
@@ -58,6 +59,7 @@ import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.CustomerCustomField;
 import com.android.emobilepos.models.realms.DinningTable;
+import com.android.emobilepos.models.realms.EmobileBiometric;
 import com.android.emobilepos.models.realms.MixMatch;
 import com.android.emobilepos.models.realms.OrderAttributes;
 import com.android.emobilepos.models.realms.PaymentMethod;
@@ -170,6 +172,27 @@ public class SynchMethods {
     }
 
 
+    public static void syncBiometrics(Context context) {
+        if (OAuthManager.isExpired(context)) {
+            getOAuthManager(context);
+        }
+        StringBuilder url = new StringBuilder(context.getString(R.string.sync_enablermobile_biometrics));
+        OAuthClient authClient = OAuthManager.getOAuthClient(context);
+        oauthclient.HttpClient httpClient = new oauthclient.HttpClient();
+        try {
+            String response = httpClient.getString(url.toString(), authClient);
+            Type listType = new com.google.gson.reflect.TypeToken<List<EmobileBiometric>>() {
+            }.getType();
+            Gson gson = JsonUtils.getInstance();
+            List<EmobileBiometric> emobileBiometrics = gson.fromJson(response, listType);
+            EmobileBiometricDAO.truncate();
+            EmobileBiometricDAO.upsert(emobileBiometrics);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
+        }
+    }
     public static void postSalesAssociatesConfiguration(Activity activity, List<Clerk> clerks) throws Exception {
         List<DinningLocationConfiguration> configurations = new ArrayList<>();
 
@@ -198,7 +221,25 @@ public class SynchMethods {
         oauthclient.HttpClient httpClient = new oauthclient.HttpClient();
         httpClient.post(url.toString(), json, authClient);
     }
+    public static void postEmobileBiometrics(Context context) throws Exception {
+        List<EmobileBiometric> emobileBiometrics = EmobileBiometricDAO.getBiometrics();
+        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+        MyPreferences preferences = new MyPreferences(context);
+        StringBuilder url = new StringBuilder(context.getString(R.string.sync_enablermobile_biometrics));
+        url.append("/").append(URLEncoder.encode(String.valueOf(assignEmployee.getEmpId()), GenerateXML.UTF_8));
+        url.append("/").append(URLEncoder.encode(preferences.getDeviceID(), GenerateXML.UTF_8));
+        url.append("/").append(URLEncoder.encode(preferences.getActivKey(), GenerateXML.UTF_8));
+        url.append("/").append(URLEncoder.encode(preferences.getBundleVersion(), GenerateXML.UTF_8));
 
+        if (OAuthManager.isExpired(context)) {
+            getOAuthManager(context);
+        }
+        OAuthClient authClient = OAuthManager.getOAuthClient(context);
+        Gson gson = JsonUtils.getInstance();
+        String json = gson.toJson(emobileBiometrics);
+        oauthclient.HttpClient httpClient = new oauthclient.HttpClient();
+        String response = httpClient.post(url.toString(), json, authClient);
+    }
     public static void synchSalesAssociateDinnindTablesConfiguration(Context activity) throws IOException, SAXException {
         oauthclient.HttpClient client = new oauthclient.HttpClient();
         Gson gson = JsonUtils.getInstance();
@@ -238,26 +279,6 @@ public class SynchMethods {
         return xml.split("<" + tagName + ">")[1].split("</" + tagName + ">")[0];
     }
 
-//    private void showProgressDialog() {
-//        if (myProgressDialog == null) {
-//            myProgressDialog = new ProgressDialog(context);
-//            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-//            myProgressDialog.setCancelable(false);
-//        }
-//        myProgressDialog.show();
-//    }
-//
-//    private void dismissProgressDialog() {
-//        if (myProgressDialog != null && myProgressDialog.isShowing()) {
-//            myProgressDialog.dismiss();
-//        }
-//    }
-
-//    public void synchReceive(int type, Activity activity) {
-//        this.type = type;
-//        isReceive = true;
-//        new ResynchAsync(activity).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-//    }
 
     public static void synchOrdersOnHoldList(Context context) throws SAXException, IOException {
         Gson gson = JsonUtils.getInstance();
@@ -409,6 +430,7 @@ public class SynchMethods {
             synchSalesAssociateDinnindTablesConfiguration(context);
             synchDownloadMixMatch();
             synchDownloadTermsAndConditions();
+            syncBiometrics(context);
             if (preferences.getPreferences(MyPreferences.pref_enable_location_inventory)) {
                 synchLocations();
                 synchLocationsInventory();
@@ -449,7 +471,6 @@ public class SynchMethods {
         this.isFromMainMenu = isFromMainMenu;
         if (!isSending)
             new SendAsync(activity).execute("");
-
     }
 
     public void synchForceSend(Activity activity) {
@@ -861,13 +882,40 @@ public class SynchMethods {
         tempFile.delete();
     }
 
+//    private void synchCustomers() throws IOException, SAXException {
+//        post.postData(7, "Customers");
+//        SAXSynchHandler synchHandler = new SAXSynchHandler(context, Global.S_CUSTOMERS);
+//        File tempFile = new File(tempFilePath);
+//        sp.parse(tempFile, synchHandler);
+//        tempFile.delete();
+//    }
+
     private void synchCustomers() throws IOException, SAXException {
-        post.postData(7, "Customers");
-        SAXSynchHandler synchHandler = new SAXSynchHandler(context, Global.S_CUSTOMERS);
-        File tempFile = new File(tempFilePath);
-        sp.parse(tempFile, synchHandler);
-        tempFile.delete();
+        Gson gson = JsonUtils.getInstance();
+        GenerateXML xml = new GenerateXML(context);
+        InputStream inputStream = client.httpInputStreamRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                xml.downloadAll("Customers"));
+        JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
+        List<Customer> customers = new ArrayList<>();
+        CustomersHandler handler = new CustomersHandler(context);
+        handler.emptyTable();
+        reader.beginArray();
+        int i = 0;
+        while (reader.hasNext()) {
+            Customer customer = gson.fromJson(reader, Customer.class);
+            customers.add(customer);
+            i++;
+            if (i == 1000) {
+                handler.insert(customers);
+                customers.clear();
+                i = 0;
+            }
+        }
+        handler.insert(customers);
+        reader.endArray();
+        reader.close();
     }
+
 
     private void synchEmpInv() throws IOException, SAXException {
         post.postData(7, "EmpInv");
@@ -1444,189 +1492,11 @@ public class SynchMethods {
         tempFile.delete();
     }
 
-//    private class ResynchAsync extends AsyncTask<Void, String, Boolean> {
-//        MyPreferences myPref = new MyPreferences(context);
-//        private Activity activity;
-//
-//        private ResynchAsync(Activity activity) {
-//            this.activity = activity;
-//        }
-//
-//        @Override
-//        protected void onPreExecute() {
-//            int orientation = context.getResources().getConfiguration().orientation;
-//            activity.setRequestedOrientation(Global.getScreenOrientation(context));
-////            showProgressDialog();
-//        }
-//
-//        @Override
-//        protected void onProgressUpdate(String... params) {
-////            myProgressDialog.setMessage(params[0]);
-//        }
-//
-//        public void updateProgress(String msg) {
-//            publishProgress(msg);
-//        }
-//
-//        @Override
-//        protected Boolean doInBackground(Void... params) {
-//            try {
-//                updateProgress("Getting Server Time");
-//                synchGetServerTime();
-//                updateProgress(context.getString(R.string.sync_dload_employee_data));
-//                synchEmployeeData();
-//                updateProgress(context.getString(R.string.sync_dload_address));
-//                synchAddresses();
-//                updateProgress(context.getString(R.string.sync_dload_categories));
-//                synchCategories();
-//                updateProgress(context.getString(R.string.sync_dload_cust));
-//                synchCustomers();
-//                updateProgress(context.getString(R.string.sync_dload_emp_inv));
-//                synchEmpInv();
-//                updateProgress(context.getString(R.string.sync_dload_prod_inv));
-//                synchProdInv();
-//                updateProgress(context.getString(R.string.sync_dload_invoices));
-//                synchInvoices();
-//                updateProgress(context.getString(R.string.sync_dload_pay_methods));
-//                synchPaymentMethods();
-//                updateProgress(context.getString(R.string.sync_dload_price_levels));
-//                synchPriceLevel();
-//                updateProgress(context.getString(R.string.sync_dload_item_price_levels));
-//                synchItemsPriceLevel();
-//                updateProgress(context.getString(R.string.sync_dload_printers));
-//                synchPrinters();
-//                updateProgress(context.getString(R.string.sync_dload_prodcatxref));
-//                synchProdCatXref();
-//                updateProgress(context.getString(R.string.sync_dload_productchainxref));
-//                synchProdChain();
-//                updateProgress(context.getString(R.string.sync_dload_product_addons));
-//                synchProdAddon();
-//                updateProgress(context.getString(R.string.sync_dload_products));
-//                synchProducts();
-//                synchOrderAttributes();
-//                updateProgress(context.getString(R.string.sync_dload_product_aliases));
-//                synchOrderAttributes();
-//                synchProductAliases();
-//                updateProgress(context.getString(R.string.sync_dload_products_images));
-//                synchProductImages();
-//                updateProgress(context.getString(R.string.sync_dload_products_attributes));
-//                synchDownloadProductsAttr();
-//                updateProgress(context.getString(R.string.sync_dload_ordprodattr));
-//                synchGetOrdProdAttr();
-//                updateProgress(context.getString(R.string.sync_dload_salestaxcodes));
-//                synchSalesTaxCode();
-//                updateProgress(context.getString(R.string.sync_dload_shipmethod));
-//                synchShippingMethods();
-//                updateProgress(context.getString(R.string.sync_dload_taxes));
-//                synchTaxes();
-//                updateProgress(context.getString(R.string.sync_dload_taxes_group));
-//                synchTaxGroup();
-//                updateProgress(context.getString(R.string.sync_dload_terms));
-//                synchTerms();
-//                updateProgress(context.getString(R.string.sync_dload_memotext));
-//                synchMemoText();
-//                updateProgress(context.getString(R.string.sync_dload_logo));
-//                synchAccountLogo();
-//                updateProgress(context.getString(R.string.sync_dload_device_default_values));
-//                synchDeviceDefaultValues();
-//                updateProgress(context.getString(R.string.sync_dload_last_pay_id));
-//                synchDownloadLastPayID();
-//                updateProgress(context.getString(R.string.sync_dload_volume_prices));
-//                synchVolumePrices();
-//                updateProgress(context.getString(R.string.sync_dload_uom));
-//                synchUoM();
-//                updateProgress(context.getString(R.string.sync_dload_templates));
-//                synchGetTemplates();
-//
-//                if (Global.isIvuLoto) {
-//                    updateProgress(context.getString(R.string.sync_dload_ivudrawdates));
-//                    synchIvuLottoDrawDates();
-//                }
-//                updateProgress(context.getString(R.string.sync_dload_customer_inventory));
-//                synchDownloadCustomerInventory();
-//                updateProgress(context.getString(R.string.sync_dload_consignment_transaction));
-//                synchDownloadConsignmentTransaction();
-//                updateProgress(context.getString(R.string.sync_dload_shifts));
-//                synchShifts();
-//                updateProgress(context.getString(R.string.sync_dload_clerks));
-//                synchDownloadClerks();
-//                synchClerkPersmissions();
-////                updateProgress(context.getString(R.string.sync_dload_salesassociate));
-////                synchDownloadSalesAssociate();
-//                updateProgress(context.getString(R.string.sync_dload_dinnertables));
-//                synchDownloadDinnerTable();
-//                synchSalesAssociateDinnindTablesConfiguration(context);
-//                updateProgress(context.getString(R.string.sync_dload_mixmatch));
-//                synchDownloadMixMatch();
-//                updateProgress(context.getString(R.string.sync_dload_termsandconditions));
-//                synchDownloadTermsAndConditions();
-//                if (myPref.getPreferences(MyPreferences.pref_enable_location_inventory)) {
-//                    if (isReceive)
-//                        updateProgress(context.getString(R.string.sync_dload_locations));
-//                    else
-//                        updateProgress(context.getString(R.string.sync_dload_locations));
-//                    synchLocations();
-//                    if (isReceive)
-//                        updateProgress(context.getString(R.string.sync_dload_locations_inventory));
-//                    else
-//                        updateProgress(context.getString(R.string.sync_dload_locations_inventory));
-//                    synchLocationsInventory();
-//                }
-////                SynchMethods.synchOrdersOnHoldList(context);
-////                Intent intent = new Intent(MainMenu_FA.NOTIFICATION_RECEIVED);
-////                intent.putExtra(MainMenu_FA.NOTIFICATION_MESSAGE, String.valueOf(NotificationEvent.NotificationEventAction.SYNC_HOLDS.getCode()));
-////                context.sendBroadcast(intent);
-//                updateProgress("Updating Sync Time");
-//                synchUpdateSyncTime();
-//
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//                return false;
-//            }
-//            return true;
-//        }
-//
-//        protected void onPostExecute(Boolean result) {
-//            isReceive = false;
-//            SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy h:mm a", Locale.getDefault());
-//            String date = sdf.format(new Date());
-//            myPref.setLastReceiveSync(date);
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-//                if (!activity.isFinishing() && !activity.isDestroyed()) {
-////                    dismissProgressDialog();
-//                }
-//            } else {
-//                if (!activity.isFinishing()) {
-////                    dismissProgressDialog();
-//                }
-//            }
-//            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-//            if (type == Global.FROM_LOGIN_ACTIVITTY) {
-//                Intent intent = new Intent(context, MainMenu_FA.class);
-//                context.startActivity(intent);
-//                activity.finish();
-//            } else if (type == Global.FROM_REGISTRATION_ACTIVITY) {
-//                Intent intent = new Intent(context, MainMenu_FA.class);
-//                activity.setResult(-1);
-//                context.startActivity(intent);
-//                activity.finish();
-//            } else if (type == Global.FROM_SYNCH_ACTIVITY) {
-//                if (SyncTab_FR.syncTabHandler != null) {
-//                    SyncTab_FR.syncTabHandler.sendEmptyMessage(0);
-//                }
-//            }
-//            if (!result) {
-//                Global.showPrompt(context, R.string.sync_title, context.getString(R.string.sync_fail));
-//            }
-//        }
-//
-//    }
 
     private class SendAsync extends AsyncTask<String, String, String> {
         boolean proceed = false;
         MyPreferences myPref = new MyPreferences(context);
         String synchStage = "";
-        //        TextView synchTextView;
         private Context activity;
 
         private SendAsync(Context activity) {
@@ -1637,24 +1507,10 @@ public class SynchMethods {
         protected void onPreExecute() {
             isSending = true;
             int orientation = context.getResources().getConfiguration().orientation;
-//            activity.setRequestedOrientation(Global.getScreenOrientation(context));
-//            if (isFromMainMenu) {
-//                MainMenu_FA synchActivity = (MainMenu_FA) context;
-//                synchTextView = synchActivity.getSynchTextView();
-//            }
         }
 
         @Override
         protected void onProgressUpdate(String... params) {
-//            if (!isFromMainMenu) {
-////                if (!myProgressDialog.isShowing())
-////                    myProgressDialog.show();
-////                myProgressDialog.setMessage(params[0]);
-//            } else {
-////                if (!synchTextView.isShown())
-////                    synchTextView.setVisibility(View.VISIBLE);
-////                synchTextView.setText(params[0]);
-//            }
         }
 
         public void updateProgress(String msg) {
@@ -1689,6 +1545,7 @@ public class SynchMethods {
                     if (didSendData) {
                         synchStage = context.getString(R.string.sync_sending_cust);
                         sendNewCustomers(this);
+                        postEmobileBiometrics(context);
                     }
 
                     // add shifts

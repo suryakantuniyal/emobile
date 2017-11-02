@@ -12,7 +12,7 @@ import com.android.database.PaymentsHandler;
 import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.Tax;
 import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.orders.OrderProduct;
@@ -53,7 +53,7 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
     private static final int TAX_LENGTH_PANAMA = 3;
     private static final int TAX_LENGTH_DOMINICAN = 5;
     private static final int LINE_WIDTH = 48;
-    String msg = "Failed to connectTFHKA";
+    String msg = "Failed to connect";
     private EMSDeviceManager edm;
     private BixolonCountry country;
 
@@ -74,9 +74,9 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
             setSendCommandRetry(printerTFHKA);
 //            printerTFHKA.setSendCmdRetryAttempts(5);
 //            printerTFHKA.setSendCmdRetryInterval(1000);
-            edm.driverDidConnectToDevice(this, true);
+            edm.driverDidConnectToDevice(this, true, activity);
         } else {
-            edm.driverDidNotConnectToDevice(this, msg, true);
+            edm.driverDidNotConnectToDevice(this, msg, true, activity);
         }
     }
 
@@ -110,9 +110,9 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
             setSendCommandRetry(printerTFHKA);
 //            printerTFHKA.setSendCmdRetryAttempts(5);
 //            printerTFHKA.setSendCmdRetryInterval(1000);
-            edm.driverDidConnectToDevice(this, false);
+            edm.driverDidConnectToDevice(this, false, activity);
         } else {
-            edm.driverDidNotConnectToDevice(this, msg, false);
+            edm.driverDidNotConnectToDevice(this, msg, false, activity);
         }
         return true;
     }
@@ -220,7 +220,17 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
     }
 
     private boolean closeDocument() {
-        return SendCmd("199");
+        switch (country) {
+            case PANAMA: {
+//                return SendCmd("199");
+                return true;
+            }
+            case DOMINICAN_REPUBLIC: {
+                return SendCmd("199");
+            }
+            default:
+                return true;
+        }
     }
 
     private boolean openDocument(Global.OrderType orderType) {
@@ -391,9 +401,10 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
     }
 
     @Override
-    public void printReceiptPreview(SplitedOrder splitedOrder) {
+    public void printReceiptPreview(SplittedOrder splitedOrder) {
 
     }
+
 
     @Override
     public void salePayment(Payment payment) {
@@ -450,7 +461,7 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
         calendar.setTime(new Date());
         boolean cmd = SendCmd("PJ3201"); //set print for retail mode
         cmd = cmd && SendCmd("PG" + DateUtils.getDateAsString(new Date(), "ddMMyy"));
-        cmd = cmd && SendCmd("PF" + DateUtils.getDateAsString(new Date(), "HH:mm:ss"));
+        cmd = cmd && SendCmd("PF" + DateUtils.getDateAsString(new Date(), "HHmmss"));
         return cmd;
     }
 
@@ -474,13 +485,13 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
         SendCmd("I0Z0");
         boolean cmd = true;
         for (int i = 0; i < HEADER_LENGTH; i++) {
-            if (!cmd) {
-                return false;
-            }
+//            if (!cmd) {
+//                return false;
+//            }
             if (i < footers.length) {
-                cmd = SendCmd("PH9" + (i + 1) + footers[i]);
+                cmd = cmd && SendCmd("PH9" + (i + 1) + footers[i]);
             } else {
-                cmd = SendCmd("PH9" + (i + 1) + "");
+                cmd = cmd && SendCmd("PH9" + (i + 1) + "");
             }
         }
         return cmd;
@@ -513,7 +524,7 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
                         break;
                 }
             } else {
-                taxCmd += "20000";
+                taxCmd += taxChar + "0000";
             }
         }
         boolean cmd = SendCmd("I0Z0");
@@ -651,8 +662,8 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
         AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
         BixolonTax tax = BixolonDAO.getTax(product.getProd_taxId(), assignEmployee.getTaxDefault());
         String cmnd;
-        BigDecimal totalPrice = Global.getBigDecimalNum(product.getFinalPrice(), 2).add(product.getProd_taxValue());
-        int scaleQty = country == BixolonCountry.PANAMA ? 2 : 2;
+        BigDecimal totalPrice = Global.getBigDecimalNum(product.getFinalPrice(), 2);
+        int scaleQty = country == BixolonCountry.PANAMA ? 3 : 2;
         if (isCredit) {
             cmnd = String.format(Locale.getDefault(), "d%s%s%s",
                     String.format("%0" + (10 - Global.getRoundBigDecimal(totalPrice, 2).toString().replace(".", "").length()) + "d%s", 0, Global.getRoundBigDecimal(totalPrice, 2).toString().replace(".", "")),

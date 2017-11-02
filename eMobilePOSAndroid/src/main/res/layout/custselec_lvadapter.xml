@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:gravity="center_vertical"
     android:orientation="vertical"
     android:paddingBottom="10dp"
     android:paddingRight="20dp"
-    android:paddingTop="10dp" >
+    android:background="@drawable/blue_row_selector"
+    android:paddingTop="10dp">
 
     <TextView
         android:id="@+id/custSelecName"
@@ -21,14 +22,14 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" >
+        android:orientation="horizontal">
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginRight="10dp"
             android:layout_weight="1"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/custSelecCompanyName"
@@ -55,15 +56,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="10dp"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/custSelecPhone"
                 style="@style/text_shadow"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:singleLine="false"
                 android:layout_gravity="right"
+                android:singleLine="false"
                 android:text=""
                 android:textAppearance="@style/grey_text_appearance_unbold"
                 android:textSize="@dimen/lview_cust_phone" />
@@ -73,8 +74,8 @@
                 style="@style/text_shadow"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:singleLine="false"
                 android:layout_gravity="right"
+                android:singleLine="false"
                 android:text=""
                 android:textAppearance="@style/grey_text_appearance_unbold"
                 android:textSize="@dimen/lview_cust_pricelevel" />

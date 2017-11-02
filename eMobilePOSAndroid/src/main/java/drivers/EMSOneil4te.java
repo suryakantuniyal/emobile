@@ -20,8 +20,7 @@ import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.PaymentDetails;
-import com.android.emobilepos.models.SplitedOrder;
-import com.android.emobilepos.models.TimeClock;
+import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
@@ -46,17 +45,16 @@ import plaintext.EMSPlainTextHelper;
 
 public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
 
-    public EMSPrintingDelegate printingDelegate;
     private final int LINE_WIDTH = 83;
     private final String FORMAT = "windows-1252";
+    public EMSPrintingDelegate printingDelegate;
+    AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
     private String encodedSignature;
     private String encodedQRCode = "";
     private ProgressDialog myProgressDialog;
-
     private EMSDeviceDriver thisInstance;
     private EMSDeviceManager edm;
     private Resources resources;
-    AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
 
     public void registerAll() {
         this.registerPrinter();
@@ -92,62 +90,15 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
         }
 
         if (didConnect) {
-            edm.driverDidConnectToDevice(thisInstance, false);
+            edm.driverDidConnectToDevice(thisInstance, false, activity);
         } else {
 
-            edm.driverDidNotConnectToDevice(thisInstance, "", false);
+            edm.driverDidNotConnectToDevice(thisInstance, "", false, activity);
         }
 
         return didConnect;
 
     }
-
-    public class processConnectionAsync extends AsyncTask<Integer, String, String> {
-
-        String msg = new String("Failed to connectTFHKA");
-        boolean didConnect = false;
-
-        @Override
-        protected void onPreExecute() {
-            myProgressDialog = new ProgressDialog(activity);
-            myProgressDialog.setMessage("Connecting Printer...");
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            myProgressDialog.show();
-
-        }
-
-        @Override
-        protected String doInBackground(Integer... params) {
-            // TODO Auto-generated method stub
-            String macAddress = myPref.getPrinterMACAddress();
-
-            try {
-                device = Connection_Bluetooth.createClient(macAddress);
-                didConnect = true;
-            } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-                didConnect = false;
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String unused) {
-            myProgressDialog.dismiss();
-
-            if (didConnect) {
-                edm.driverDidConnectToDevice(thisInstance, true);
-            } else {
-
-                edm.driverDidNotConnectToDevice(thisInstance, msg, true);
-            }
-
-        }
-    }
-
 
     @Override
     public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
@@ -177,7 +128,6 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
         printTransaction(ordID, type, isFromHistory, fromOnHold, null);
         return true;
     }
-
 
     @Override
     public boolean printPaymentDetails(String payID, int type, boolean isReprint, EMVContainer emvContainer) {
@@ -296,7 +246,6 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
         return true;
     }
 
-
     @Override
     public boolean printBalanceInquiry(HashMap<String, String> values) {
         return printBalanceInquiry(values, LINE_WIDTH);
@@ -307,6 +256,86 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
 
         printConsignmentReceipt(myConsignment, encodedSig, LINE_WIDTH);
 
+
+        return true;
+    }
+
+    @Override
+    public boolean printConsignmentPickup(List<ConsignmentTransaction> myConsignment, String encodedSignature) {
+        // TODO Auto-generated method stub
+        try {
+
+            if (!device.getIsOpen())
+                device.open();
+
+            EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
+            StringBuilder sb = new StringBuilder();
+            printPref = myPref.getPrintingPreferences();
+            // SQLiteDatabase db = new DBManager(activity).openReadableDB();
+            ProductsHandler productDBHandler = new ProductsHandler(activity);
+            HashMap<String, String> map = new HashMap<>();
+
+            int size = myConsignment.size();
+
+            this.printImage(0);
+
+            if (printPref.contains(MyPreferences.print_header))
+                this.printHeader();
+
+            sb.append(textHandler.centeredString("Consignment Pickup Summary", LINE_WIDTH)).append("\n\n");
+
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer),
+                    myPref.getCustName(), LINE_WIDTH, 0)).append("\n");
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_employee),
+                    assignEmployee.getEmpName(), LINE_WIDTH, 0)).append("\n");
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
+                    Global.formatToDisplayDate(DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss), 3), LINE_WIDTH, 0)).append("\n");
+            sb.append(textHandler.newLines(3));
+
+            for (int i = 0; i < size; i++) {
+                map = productDBHandler.getProductMap(myConsignment.get(i).ConsProd_ID, true);
+
+                sb.append(textHandler.oneColumnLineWithLeftAlignedText(map.get("prod_name"), LINE_WIDTH, 0));
+
+                if (printPref.contains(MyPreferences.print_descriptions)) {
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_description), "",
+                            LINE_WIDTH, 3)).append("\n");
+                    sb.append(textHandler.oneColumnLineWithLeftAlignedText(map.get("prod_desc"), LINE_WIDTH, 5))
+                            .append("\n");
+                }
+
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Original Qty:",
+                        myConsignment.get(i).ConsOriginal_Qty, LINE_WIDTH, 3)).append("\n");
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Picked up Qty:",
+                        myConsignment.get(i).ConsPickup_Qty, LINE_WIDTH, 3)).append("\n");
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText("New Qty:", myConsignment.get(i).ConsNew_Qty,
+                        LINE_WIDTH, 3)).append("\n\n\n");
+
+                device.write(sb.toString().getBytes(FORMAT));
+                sb.setLength(0);
+            }
+
+            if (printPref.contains(MyPreferences.print_footer))
+                this.printFooter();
+
+            if (!encodedSignature.isEmpty()) {
+                this.encodedSignature = encodedSignature;
+                this.printImage(1);
+                sb.setLength(0);
+                sb.append("x").append(textHandler.lines(LINE_WIDTH / 2)).append("\n");
+                sb.append(getString(R.string.receipt_signature)).append(textHandler.newLines(4));
+                device.write(sb.toString().getBytes(FORMAT));
+            }
+            // db.close();
+
+        } catch (UnsupportedEncodingException e) {
+            // TODO Auto-generated catch block
+        } catch (Exception e) {
+        } finally {
+
+            if (device != null && device.getIsOpen())
+                device.close();
+        }
 
         return true;
     }
@@ -447,86 +476,6 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
 */
 
     @Override
-    public boolean printConsignmentPickup(List<ConsignmentTransaction> myConsignment, String encodedSignature) {
-        // TODO Auto-generated method stub
-        try {
-
-            if (!device.getIsOpen())
-                device.open();
-
-            EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
-            StringBuilder sb = new StringBuilder();
-            printPref = myPref.getPrintingPreferences();
-            // SQLiteDatabase db = new DBManager(activity).openReadableDB();
-            ProductsHandler productDBHandler = new ProductsHandler(activity);
-            HashMap<String, String> map = new HashMap<String, String>();
-
-            int size = myConsignment.size();
-
-            this.printImage(0);
-
-            if (printPref.contains(MyPreferences.print_header))
-                this.printHeader();
-
-            sb.append(textHandler.centeredString("Consignment Pickup Summary", LINE_WIDTH)).append("\n\n");
-
-            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer),
-                    myPref.getCustName(), LINE_WIDTH, 0)).append("\n");
-            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_employee),
-                    assignEmployee.getEmpName(), LINE_WIDTH, 0)).append("\n");
-            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
-                    Global.formatToDisplayDate(DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss),  3), LINE_WIDTH, 0)).append("\n");
-            sb.append(textHandler.newLines(3));
-
-            for (int i = 0; i < size; i++) {
-                map = productDBHandler.getProductMap(myConsignment.get(i).ConsProd_ID, true);
-
-                sb.append(textHandler.oneColumnLineWithLeftAlignedText(map.get("prod_name"), LINE_WIDTH, 0));
-
-                if (printPref.contains(MyPreferences.print_descriptions)) {
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_description), "",
-                            LINE_WIDTH, 3)).append("\n");
-                    sb.append(textHandler.oneColumnLineWithLeftAlignedText(map.get("prod_desc"), LINE_WIDTH, 5))
-                            .append("\n");
-                }
-
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Original Qty:",
-                        myConsignment.get(i).ConsOriginal_Qty, LINE_WIDTH, 3)).append("\n");
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Picked up Qty:",
-                        myConsignment.get(i).ConsPickup_Qty, LINE_WIDTH, 3)).append("\n");
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText("New Qty:", myConsignment.get(i).ConsNew_Qty,
-                        LINE_WIDTH, 3)).append("\n\n\n");
-
-                device.write(sb.toString().getBytes(FORMAT));
-                sb.setLength(0);
-            }
-
-            if (printPref.contains(MyPreferences.print_footer))
-                this.printFooter();
-
-            if (!encodedSignature.isEmpty()) {
-                this.encodedSignature = encodedSignature;
-                this.printImage(1);
-                sb.setLength(0);
-                sb.append("x").append(textHandler.lines(LINE_WIDTH / 2)).append("\n");
-                sb.append(getString(R.string.receipt_signature)).append(textHandler.newLines(4));
-                device.write(sb.toString().getBytes(FORMAT));
-            }
-            // db.close();
-
-        } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
-        } catch (Exception e) {
-        } finally {
-
-            if (device != null && device.getIsOpen())
-                device.close();
-        }
-
-        return true;
-    }
-
-    @Override
     public String printStationPrinter(List<Orders> orders, String ordID, boolean cutPaper, boolean printHeader) {
 //        try {
 //
@@ -628,7 +577,7 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
             StringBuilder sb = new StringBuilder();
             printPref = myPref.getPrintingPreferences();
             String[] rightInfo = new String[]{};
-            List<String[]> productInfo = new ArrayList<String[]>();
+            List<String[]> productInfo = new ArrayList<>();
 
             InvoicesHandler invHandler = new InvoicesHandler(activity);
             rightInfo = invHandler.getSpecificInvoice(invID);
@@ -747,7 +696,6 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
         //	printShiftDetailsReceipt(LINE_WIDTH, shiftID);
     }
 
-
     @Override
     public boolean printReport(String curDate) {
         // TODO Auto-generated method stub
@@ -763,7 +711,7 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
             StringBuilder sb_refunds = new StringBuilder();
             device.write(textHandler.newLines(3).getBytes(FORMAT));
             sb.append(textHandler.centeredString("REPORT", LINE_WIDTH));
-            sb.append(textHandler.centeredString(Global.formatToDisplayDate(curDate,  0), LINE_WIDTH));
+            sb.append(textHandler.centeredString(Global.formatToDisplayDate(curDate, 0), LINE_WIDTH));
             sb.append(textHandler.newLines(2));
             sb.append(textHandler.oneColumnLineWithLeftAlignedText(getString(R.string.receipt_pay_summary), LINE_WIDTH,
                     0));
@@ -771,9 +719,9 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
                     LINE_WIDTH, 0));
 
             HashMap<String, String> paymentMap = paymentHandler
-                    .getPaymentsRefundsForReportPrinting(Global.formatToDisplayDate(curDate,  4), 0);
+                    .getPaymentsRefundsForReportPrinting(Global.formatToDisplayDate(curDate, 4), 0);
             HashMap<String, String> refundMap = paymentHandler
-                    .getPaymentsRefundsForReportPrinting(Global.formatToDisplayDate(curDate,  4), 1);
+                    .getPaymentsRefundsForReportPrinting(Global.formatToDisplayDate(curDate, 4), 1);
             List<String[]> payMethodsNames = payMethodHandler.getPayMethodsName();
             int size = payMethodsNames.size();
             double payGranTotal = 0.00;
@@ -835,7 +783,7 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
 
     @Override
     public void registerPrinter() {
-        edm.setCurrentDevice( this);
+        edm.setCurrentDevice(this);
         this.printingDelegate = edm;
     }
 
@@ -860,6 +808,12 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
     public void openCashDrawer() {
         // TODO Auto-generated method stub
 
+    }
+
+    @Override
+    public boolean printConsignmentHistory(HashMap<String, String> map, Cursor c, boolean isPickup) {
+        // TODO Auto-generated method stub
+        return true;
     }
     //
     //
@@ -991,12 +945,6 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
     // }
 
     @Override
-    public boolean printConsignmentHistory(HashMap<String, String> map, Cursor c, boolean isPickup) {
-        // TODO Auto-generated method stub
-        return true;
-    }
-
-    @Override
     public void loadScanner(EMSCallBack _callBack) {
         // TODO Auto-generated method stub
     }
@@ -1011,6 +959,19 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
 
     }
 
+    @Override
+    public void printReceiptPreview(SplittedOrder splitedOrder) {
+        try {
+            setPaperWidth(LINE_WIDTH);
+//            Bitmap bitmap = loadBitmapFromView(view);
+            super.printReceiptPreview(splitedOrder, LINE_WIDTH);
+        } catch (JAException e) {
+            e.printStackTrace();
+        } catch (StarIOPortException e) {
+            e.printStackTrace();
+        }
+    }
+
 //    @Override
 //    public void printReceiptPreview(View view) {
 //        try {
@@ -1022,19 +983,6 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
 //            e.printStackTrace();
 //        }
 //    }
-
-    @Override
-    public void printReceiptPreview(SplitedOrder splitedOrder) {
-        try {
-            setPaperWidth(LINE_WIDTH);
-//            Bitmap bitmap = loadBitmapFromView(view);
-            super.printReceiptPreview(splitedOrder, LINE_WIDTH);
-        } catch (JAException e) {
-            e.printStackTrace();
-        } catch (StarIOPortException e) {
-            e.printStackTrace();
-        }
-    }
 
     @Override
     public void salePayment(Payment payment) {
@@ -1094,5 +1042,51 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
     @Override
     public void printFooter() {
         super.printFooter(LINE_WIDTH);
+    }
+
+    public class processConnectionAsync extends AsyncTask<Integer, String, String> {
+
+        String msg = new String("Failed to connect");
+        boolean didConnect = false;
+
+        @Override
+        protected void onPreExecute() {
+            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog.setMessage("Connecting Printer...");
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setCancelable(false);
+            myProgressDialog.show();
+
+        }
+
+        @Override
+        protected String doInBackground(Integer... params) {
+            // TODO Auto-generated method stub
+            String macAddress = myPref.getPrinterMACAddress();
+
+            try {
+                device = Connection_Bluetooth.createClient(macAddress);
+                didConnect = true;
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                didConnect = false;
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String unused) {
+            myProgressDialog.dismiss();
+
+            if (didConnect) {
+                edm.driverDidConnectToDevice(thisInstance, true, activity);
+            } else {
+
+                edm.driverDidNotConnectToDevice(thisInstance, msg, true, activity);
+            }
+
+        }
     }
 }

@@ -12,8 +12,7 @@ import android.os.Handler;
 import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.SplitedOrder;
-import com.android.emobilepos.models.TimeClock;
+import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
@@ -33,13 +32,34 @@ import main.EMSDeviceManager;
  */
 public class EMSEM70 extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
 
+    public static final String SCANNER_DATA_KEY = "com.partner.barcode.data";
+    public static final String ACTION_NEW_DATA1 = "android.intent.action.bcr.newdata";
+    public static final String ACTION_NEW_DATA = "android.intent.action.scanner.data";
+    String scannedData = "";
     private EMSCallBack scannerCallBack;
+    final BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            scannedData = intent.getStringExtra(SCANNER_DATA_KEY);
+            scannerCallBack.scannerWasRead(scannedData);
+        }
+    };
     private Encrypt encrypt;
     private CreditCardInfo cardManager;
     private EMSDeviceManager edm;
     private EMSEM70 thisInstance;
     private Handler handler;
-    String scannedData = "";
+    private Runnable runnableScannedData = new Runnable() {
+        public void run() {
+            try {
+                if (scannerCallBack != null)
+                    scannerCallBack.scannerWasRead(scannedData);
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
 
     @Override
     public void connect(Context activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
@@ -49,9 +69,8 @@ public class EMSEM70 extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
         encrypt = new Encrypt(activity);
         this.edm = edm;
         thisInstance = this;
-        this.edm.driverDidConnectToDevice(thisInstance, false);
+        this.edm.driverDidConnectToDevice(thisInstance, false, activity);
     }
-
 
     @Override
     public boolean autoConnect(Activity activity, EMSDeviceManager edm, int paperSize, boolean isPOSPrinter,
@@ -62,7 +81,7 @@ public class EMSEM70 extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
         encrypt = new Encrypt(activity);
         this.edm = edm;
         thisInstance = this;
-        this.edm.driverDidConnectToDevice(thisInstance, false);
+        this.edm.driverDidConnectToDevice(thisInstance, false, activity);
         return true;
     }
 
@@ -81,12 +100,10 @@ public class EMSEM70 extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
         return false;
     }
 
-
     @Override
     public boolean printBalanceInquiry(HashMap<String, String> values) {
         return false;
     }
-
 
     @Override
     public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSignature) {
@@ -148,17 +165,14 @@ public class EMSEM70 extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 
     }
 
-
     @Override
     public void printShiftDetailsReport(String shiftID) {
     }
-
 
     @Override
     public void registerAll() {
         this.registerPrinter();
     }
-
 
     @Override
     public void registerPrinter() {
@@ -186,7 +200,7 @@ public class EMSEM70 extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
             filter.addAction("android.intent.action.bcr.newdata");
             filter.addAction("android.intent.action.scanner.data");
             activity.registerReceiver(mBroadcastReceiver, filter);
-            Intent intent = ((Activity)activity).getIntent();
+            Intent intent = ((Activity) activity).getIntent();
             String action = intent.getAction();
             if ("android.intent.action.bcr.newdata".equals(action)) {
                 String SCANNER_DATA_KEY = "com.partner.barcode.data";
@@ -194,7 +208,6 @@ public class EMSEM70 extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
             }
         }
     }
-
 
     @Override
     public void releaseCardReader() {
@@ -204,6 +217,11 @@ public class EMSEM70 extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
             e.printStackTrace();
         }
     }
+
+//    @Override
+//    public void printReceiptPreview(View view) {
+//
+//    }
 
     @Override
     public void openCashDrawer() {
@@ -230,13 +248,8 @@ public class EMSEM70 extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 
     }
 
-//    @Override
-//    public void printReceiptPreview(View view) {
-//
-//    }
-
     @Override
-    public void printReceiptPreview(SplitedOrder splitedOrder) {
+    public void printReceiptPreview(SplittedOrder splitedOrder) {
 
     }
 
@@ -288,27 +301,4 @@ public class EMSEM70 extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     @Override
     public void printClockInOut(List<ClockInOut> timeClocks, String clerkID) {
     }
-
-    private Runnable runnableScannedData = new Runnable() {
-        public void run() {
-            try {
-                if (scannerCallBack != null)
-                    scannerCallBack.scannerWasRead(scannedData);
-
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-    };
-
-    public static final String SCANNER_DATA_KEY = "com.partner.barcode.data";
-    public static final String ACTION_NEW_DATA1 = "android.intent.action.bcr.newdata";
-    public static final String ACTION_NEW_DATA = "android.intent.action.scanner.data";
-    final BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            scannedData = intent.getStringExtra(SCANNER_DATA_KEY);
-            scannerCallBack.scannerWasRead(scannedData);
-        }
-    };
 }

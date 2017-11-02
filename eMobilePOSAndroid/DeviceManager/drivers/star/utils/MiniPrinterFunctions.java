@@ -105,7 +105,7 @@ public class MiniPrinterFunctions
     		dialog.setNegativeButton("Ok", null);
     		AlertDialog alert = dialog.create();
     		alert.setTitle("Failure");
-    		alert.setMessage("Failed to connectTFHKA to printer");
+    		alert.setMessage("Failed to connect to printer");
     		alert.setCancelable(false);
     		alert.show();
     	}
@@ -187,7 +187,7 @@ public class MiniPrinterFunctions
     		dialog.setNegativeButton("Ok", null);
     		AlertDialog alert = dialog.create();
     		alert.setTitle("Failure");
-    		alert.setMessage("Failed to connectTFHKA to printer");
+    		alert.setMessage("Failed to connect to printer");
     		alert.setCancelable(false);
     		alert.show();
     	}
@@ -822,7 +822,7 @@ public class MiniPrinterFunctions
     		dialog.setNegativeButton("Ok", null);
     		AlertDialog alert = dialog.create();
     		alert.setTitle("Failure");
-    		alert.setMessage("Failed to connectTFHKA to printer");
+    		alert.setMessage("Failed to connect to printer");
     		alert.setCancelable(false);
     		alert.show();
 			if(portForMoreThanOneFunction != null)

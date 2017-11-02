@@ -14,8 +14,11 @@ public class PrinterFunctions {
 	public enum Alignment {Left, Center, Right}
 
 
-	public final static byte[] createCommandsEnglishRasterModeCoupon(int width, ICommandBuilder.BitmapConverterRotation rotation,
-																	 Bitmap bitmap) {
+
+
+	public  static byte[] createCommandsEnglishRasterModeCoupon(int width, ICommandBuilder.BitmapConverterRotation rotation,
+			Bitmap bitmap) {
+
 
 		// Bitmap bitmap = BitmapFactory.decodeResource( resource,
 		// R.drawable.amex);
@@ -36,7 +39,7 @@ public class PrinterFunctions {
 		return builder.getCommands();
 	}
 
-	public final static byte[] createCommandsOpenCashDrawer() {
+	public static byte[] createCommandsOpenCashDrawer() {
 		byte[] commands = new byte[1];
 
 		commands[0] = 0x07; // BEL

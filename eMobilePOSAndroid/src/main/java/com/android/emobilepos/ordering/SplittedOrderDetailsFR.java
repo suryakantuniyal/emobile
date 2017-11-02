@@ -26,7 +26,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.OrderProductListAdapter;
 import com.android.emobilepos.adapters.SplittedOrderSummaryAdapter;
 import com.android.emobilepos.models.OrderSeatProduct;
-import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
@@ -37,7 +37,6 @@ import com.android.support.MyPreferences;
 import com.android.support.OrderProductUtils;
 import com.android.support.SynchMethods;
 import com.android.support.TaxesCalculator;
-import com.google.gson.Gson;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -51,7 +50,7 @@ import java.util.StringTokenizer;
  * Created by Guarionex on 2/19/2016.
  */
 public class SplittedOrderDetailsFR extends Fragment implements View.OnClickListener {
-    public SplitedOrder restaurantSplitedOrder;
+    public SplittedOrder restaurantSplitedOrder;
     private TextView orderId;
     private TextView subtotal;
     private MyPreferences myPref;
@@ -181,7 +180,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         return (SplittedOrderSummary_FA) getActivity();
     }
 
-    private void applyPreviewCalculations(SplitedOrder splitedOrder) {
+    private void applyPreviewCalculations(SplittedOrder splitedOrder) {
         SplittedOrderSummary_FA orderSummaryFa = (SplittedOrderSummary_FA) getActivity();
         BigDecimal orderSubtotal = new BigDecimal(0);
         BigDecimal orderTaxes = new BigDecimal(0);
@@ -196,11 +195,11 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                     .multiply(orderSummaryFa.getGlobalDiscountPercentge().setScale(6, RoundingMode.HALF_UP)));
             itemDiscountTotal = itemDiscountTotal.add(Global.getBigDecimalNum(product.getDiscount_value()));
             if (orderSummaryFa.getTax() != null) {
-                TaxesCalculator taxesCalculator = new TaxesCalculator(getActivity(), product, splitedOrder.tax_id,
-                        orderSummaryFa.getTax(), orderSummaryFa.getDiscount(), Global.getBigDecimalNum(splitedOrder.ord_subtotal),
-                        Global.getBigDecimalNum(splitedOrder.ord_discount));
-                orderTaxes = orderTaxes.add(taxesCalculator.getTaxableAmount());
-                splitedOrder.setListOrderTaxes(taxesCalculator.getListOrderTaxes());
+//                TaxesCalculator taxesCalculator = new TaxesCalculator(getActivity(), product, splitedOrder.tax_id,
+//                        orderSummaryFa.getTax(), orderSummaryFa.getDiscount(), Global.getBigDecimalNum(splitedOrder.ord_subtotal),
+//                        Global.getBigDecimalNum(splitedOrder.ord_discount), getSplittedOrderSummaryFa().transType);
+                orderTaxes = orderTaxes.add(product.getProd_taxValue());
+                splitedOrder.setListOrderTaxes(splitedOrder.getListOrderTaxes());
 
             }
         }
@@ -215,7 +214,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         splitedOrder.ord_lineItemDiscount = itemDiscountTotal.toString();
     }
 
-    public void setReceiptOrder(SplitedOrder splitedOrder) {
+    public void setReceiptOrder(SplittedOrder splitedOrder) {
         restaurantSplitedOrder = splitedOrder;
 //        SplittedOrderSummary_FA orderSummaryFa = (SplittedOrderSummary_FA) getActivity();
         List<OrderProduct> products = splitedOrder.getOrderProducts();
@@ -304,17 +303,17 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
 //                    vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 //                        @Override
 //                        public void onGlobalLayout() {
-//                            Global.mainPrinterManager.getCurrentDevice().printReceiptPreview((SplitedOrder) adapter.getItem(count[0]));
+//                            Global.mainPrinterManager.getCurrentDevice().printReceiptPreview((SplittedOrder) adapter.getItem(count[0]));
 //                            count[0]++;
 //                            if (count[0] < adapter.getCount()) {
-//                                setReceiptOrder((SplitedOrder) adapter.getItem(count[0]));
+//                                setReceiptOrder((SplittedOrder) adapter.getItem(count[0]));
 //                            } else {
 //                                receiptPreview.getViewTreeObserver().removeGlobalOnLayoutListener(this);
 //                            }
 //                        }
 //                    });
                     for (int i = 0; i < adapter.getCount(); i++) {
-                        applyPreviewCalculations((SplitedOrder) adapter.getItem(i));
+                        applyPreviewCalculations((SplittedOrder) adapter.getItem(i));
                     }
                     new PrintPreview().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, adapter.getItems());
                 }
@@ -322,7 +321,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         }
     }
 
-    private void saveHoldOrder(SplitedOrder splitedOrder) {
+    private void saveHoldOrder(SplittedOrder splitedOrder) {
         OrdersHandler ordersHandler = new OrdersHandler(getActivity());
         OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB();
         Global global = (Global) getActivity().getApplication();
@@ -406,7 +405,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         }
     }
 
-    private void isSalesReceipt(SplitedOrder order) {
+    private void isSalesReceipt(SplittedOrder order) {
         Intent intent = new Intent(getActivity(), SelectPayMethod_FA.class);
         intent.putExtra("typeOfProcedure", Global.TransactionType.SALE_RECEIPT);
         intent.putExtra("salesreceipt", true);
@@ -445,7 +444,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                 getActivity().setResult(-1);
                 getActivity().finish();
             } else {
-                summaryFa.getOrderDetailsFR().setReceiptOrder((SplitedOrder) summaryFa.getOrderSummaryFR().getGridView().getAdapter().getItem(0));
+                summaryFa.getOrderDetailsFR().setReceiptOrder((SplittedOrder) summaryFa.getOrderSummaryFR().getGridView().getAdapter().getItem(0));
             }
         } else if (resultCode == SplittedOrderSummary_FA.NavigationResult.PAYMENT_COMPLETED.getCode()) {
             removeCheckoutOrder(summaryFa);
@@ -457,7 +456,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
 //                getActivity().setResult(-1);
 //                getActivity().finish();
             } else {
-                summaryFa.getOrderDetailsFR().setReceiptOrder((SplitedOrder) summaryFa.getOrderSummaryFR().getGridView().getAdapter().getItem(0));
+                summaryFa.getOrderDetailsFR().setReceiptOrder((SplittedOrder) summaryFa.getOrderSummaryFR().getGridView().getAdapter().getItem(0));
             }
         } else {//Rollback order checkout
             for (OrderProduct product : restaurantSplitedOrder.getOrderProducts()) {
@@ -491,12 +490,12 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         removeTicket(restaurantSplitedOrder);
         if (!adapter.isEmpty()) {
             adapter.setSelectedIndex(0);
-            restaurantSplitedOrder = (SplitedOrder) adapter.getItem(0);
+            restaurantSplitedOrder = (SplittedOrder) adapter.getItem(0);
             summaryFa.getOrderDetailsFR().setReceiptOrder(restaurantSplitedOrder);
         }
     }
 
-    private void removeTicket(SplitedOrder splitedOrder) {
+    private void removeTicket(SplittedOrder splitedOrder) {
         SplittedOrderSummary_FA summaryFa = (SplittedOrderSummary_FA) getActivity();
         List<OrderSeatProduct> seatProducts = new ArrayList<OrderSeatProduct>(summaryFa.orderSeatProducts);
         List<OrderProduct> products = splitedOrder.getOrderProducts();
@@ -510,7 +509,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         }
     }
 
-    public class PrintPreview extends AsyncTask<SplitedOrder, Void, Void> {
+    public class PrintPreview extends AsyncTask<SplittedOrder, Void, Void> {
         private ProgressDialog myProgressDialog;
 
         @Override
@@ -523,8 +522,8 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         }
 
         @Override
-        protected Void doInBackground(SplitedOrder... params) {
-            for (SplitedOrder order : params) {
+        protected Void doInBackground(SplittedOrder... params) {
+            for (SplittedOrder order : params) {
                 Global.mainPrinterManager.getCurrentDevice().printReceiptPreview(order);
             }
             return null;

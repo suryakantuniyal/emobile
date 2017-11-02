@@ -149,6 +149,10 @@
             android:key="pref_use_clerks"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_use_clerks" />
+        <Preference
+            android:key="pref_clerk_management"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_clerk_management" />
     </PreferenceCategory>
     <PreferenceCategory
         android:layout="@layout/settings_custom_header_layout"

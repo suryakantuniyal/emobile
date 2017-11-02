@@ -50,8 +50,8 @@ android {
         ems {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.2.2.90"
-            versionCode 147
+            versionName "1.2.3.05"
+            versionCode 145
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -64,8 +64,8 @@ android {
         icmpevo {
             minSdkVersion 15
             applicationId 'com.emobilepos.icmpevo.app'
-            versionName "1.2.2.90"
-            versionCode 147
+            versionName "1.2.3.05"
+            versionCode 145
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -92,8 +92,8 @@ android {
         ivupos {
             minSdkVersion 15
             applicationId 'com.emobilepos.ivupos.app'
-            versionName "1.2.2.90"
-            versionCode 147
+            versionName "1.2.3.05"
+            versionCode 145
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -248,8 +248,8 @@ dependencies {
     compile files('libs/hapi-android-3.2.5.jar')
     compile 'com.google.guava:guava:20.0'
     compile 'com.android.support:multidex:1.0.1'
-//    compile 'com.android.support:support-v4:24.0.0'
-    compile 'com.android.support:support-v13:25.3.1'
+    //    compile 'com.android.support:support-v4:24.0.0'
+    compile 'com.android.support:support-v13:25.2.0'
     compile files('libs/bixolon_printer.jar')
     compile files('libs/jpos114-controls.jar')
     compile files('libs/xerces.jar')
@@ -270,28 +270,29 @@ dependencies {
     compile files('libs/spm2_1_2_1.jar')
     compile files('libs/walker_1_2_1.jar')
     compile files('libs/coresdk_1_2_3.jar')
+    compile files('libs/dpuareu.jar')
     compile files('libs/TfhkaAndroid.jar')
 }
 
 dependencies {
 //    compile 'com.google.firebase:firebase-core:9.2.1'
-    compile 'com.google.android.gms:play-services:10.2.6'
+    compile 'com.google.android.gms:play-services:10.2.0'
 }
 
 
 dependencies {
-    compile 'com.android.support:support-v4:25.3.1'
-    compile 'com.android.support:recyclerview-v7:25.3.1'
+    compile 'com.android.support:support-v4:25.2.0'
+    compile 'com.android.support:recyclerview-v7:25.2.0'
     compile files('libs/UniMag_SDK_v5.0.jar')
-    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    }
-    androidTestCompile 'com.android.support.test.espresso:espresso-contrib:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-        exclude group: 'com.android.support', module: 'support-v4'
-        exclude group: 'com.android.support', module: 'design'
-        exclude group: 'com.android.support', module: 'recyclerview-v7'
-    }
+//    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2', {
+//        exclude group: 'com.android.support', module: 'support-annotations'
+//    }
+//    androidTestCompile 'com.android.support.test.espresso:espresso-contrib:2.2.2', {
+//        exclude group: 'com.android.support', module: 'support-annotations'
+//        exclude group: 'com.android.support', module: 'support-v4'
+//        exclude group: 'com.android.support', module: 'design'
+//        exclude group: 'com.android.support', module: 'recyclerview-v7'
+//    }
     compile 'net.zetetic:android-database-sqlcipher:3.5.4@aar'
 }
 dependencies {
@@ -306,9 +307,9 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
 }
 dependencies {
-    compile 'com.android.support:support-v4:25.+'
+    compile 'com.android.support.constraint:constraint-layout:+'
 }
 dependencies {
-    compile 'com.android.support:support-v4:25.+'
+    compile 'com.android.support.constraint:constraint-layout:+'
 }
 apply plugin: 'com.google.gms.google-services'

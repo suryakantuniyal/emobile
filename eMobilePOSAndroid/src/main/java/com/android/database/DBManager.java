@@ -7,6 +7,8 @@ import android.os.Environment;
 import android.provider.Settings.Secure;
 import android.text.TextUtils;
 
+import com.android.dao.AssignEmployeeDAO;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.SynchMethods;
@@ -22,8 +24,10 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import io.realm.Realm;
+
 public class DBManager {
-    public static final int VERSION = 57;
+    public static final int VERSION = 58;
     private static final String DB_NAME_OLD = "emobilepos.sqlite";
     private static final String CIPHER_DB_NAME = "emobilepos.sqlcipher";
     private static final String PASSWORD = "em0b1l3p05";
@@ -562,6 +566,10 @@ public class DBManager {
         exist = cursor.getColumnIndex("prod_prices_group_id") > -1;
         if (!exist) {
             getDatabase().execSQL("ALTER TABLE [Orders] ADD COLUMN [prod_prices_group_id] [varchar](50) NULL");
+        }
+        exist = cursor.getColumnIndex("bixolonTransactionId") > -1;
+        if (!exist) {
+            getDatabase().execSQL("ALTER TABLE [Orders] ADD COLUMN [bixolonTransactionId] [varchar](50) NULL");
         }
         exist = cursor.getColumnIndex("assignedTable") > -1;
         if (!exist) {

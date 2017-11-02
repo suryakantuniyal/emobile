@@ -9,12 +9,14 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.hardware.usb.UsbDevice;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +33,7 @@ import android.widget.TextView;
 import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.ClerkDAO;
 import com.android.dao.DinningTableDAO;
+import com.android.dao.EmobileBiometricDAO;
 import com.android.dao.ShiftDAO;
 import com.android.database.CustomersHandler;
 import com.android.database.SalesTaxCodesHandler;
@@ -42,6 +45,7 @@ import com.android.emobilepos.cardmanager.GiftCard_FA;
 import com.android.emobilepos.cardmanager.LoyaltyCard_FA;
 import com.android.emobilepos.cardmanager.RewardCard_FA;
 import com.android.emobilepos.consignment.ConsignmentMain_FA;
+import com.android.emobilepos.customer.ViewCustomerDetails_FA;
 import com.android.emobilepos.customer.ViewCustomers_FA;
 import com.android.emobilepos.history.HistoryOpenInvoices_FA;
 import com.android.emobilepos.holders.Locations_Holder;
@@ -50,8 +54,10 @@ import com.android.emobilepos.locations.LocationsPickerDlog_FR;
 import com.android.emobilepos.locations.LocationsPicker_Listener;
 import com.android.emobilepos.mainmenu.restaurant.DinningTablesActivity;
 import com.android.emobilepos.models.BCRMacro;
+import com.android.emobilepos.models.realms.BiometricFid;
 import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.DinningTable;
+import com.android.emobilepos.models.realms.EmobileBiometric;
 import com.android.emobilepos.models.realms.Shift;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.emobilepos.ordering.SplittedOrderSummary_FA;
@@ -66,20 +72,25 @@ import com.android.support.Customer;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
-import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 
+import java.util.Collection;
 import java.util.HashMap;
 
 import drivers.EMSDeviceDriver;
 import drivers.EMSPowaPOS;
 import drivers.EMSmePOS;
+import drivers.digitalpersona.DigitalPersona;
+import interfaces.BCRCallbacks;
+import interfaces.BiometricCallbacks;
+import interfaces.EMSCallBack;
+import util.json.JsonUtils;
 import interfaces.BCRCallbacks;
 import util.json.UIUtils;
 import interfaces.EMSCallBack;
 import util.json.JsonUtils;
 
-public class SalesTab_FR extends Fragment implements EMSCallBack , BCRCallbacks{
+public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCallbacks, EMSCallBack {
     //    boolean validPassword = true;
     private SalesMenuAdapter myAdapter;
     private GridView myListview;
@@ -92,9 +103,16 @@ public class SalesTab_FR extends Fragment implements EMSCallBack , BCRCallbacks{
     private EditText hiddenField;
     private DinningTable selectedDinningTable;
     private int selectedSeatsAmount;
+    private DigitalPersona digitalPersona;
+    private boolean isReaderConnected;
     private BroadcastReceiver messageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            if (Global.loggedIn) {
+                digitalPersona.loadForScan();
+            } else {
+                digitalPersona.releaseReader();
+            }
             if (Global.deviceHasBarcodeScanner(myPref.getPrinterType()) ||
                     Global.deviceHasBarcodeScanner(myPref.getSwiperType())
                     || Global.deviceHasBarcodeScanner(myPref.sledType(true, -2))) {
@@ -108,33 +126,37 @@ public class SalesTab_FR extends Fragment implements EMSCallBack , BCRCallbacks{
         }
     };
 
-    public static void startDefault(Activity activity, String type) {
-        if (activity != null) {
-            int transType;
-            try {
-                if (type == null || type.isEmpty())
-                    type = "-1";
-                transType = Integer.parseInt(type);
-            } catch (NumberFormatException e) {
-                Crashlytics.logException(e);
-                transType = -1;
-            }
 
-            Intent intent;
-            if (transType != -1) {
-                switch (transType) {
-                    case 0:
-                        intent = new Intent(activity, OrderingMain_FA.class);
-                        intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
-                        activity.startActivityForResult(intent, 0);
-                        break;
-                    case 2:
-                        intent = new Intent(activity, OrderingMain_FA.class);
-                        intent.putExtra("option_number", Global.TransactionType.RETURN);
-                        activity.startActivityForResult(intent, 0);
-                        break;
-                }
-            }
+    public static void startDefault(Activity activity, Global.TransactionType type) {
+        if (activity != null && type != null) {
+            Intent intent = new Intent(activity, OrderingMain_FA.class);
+            intent.putExtra("option_number", type);
+            activity.startActivityForResult(intent, 0);
+//            int transType;
+//            try {
+////                if (type == null)
+////                    type = "-1";
+//                transType = Integer.parseInt(type);
+//            } catch (NumberFormatException e) {
+//                Crashlytics.logException(e);
+//                transType = -1;
+//            }
+
+
+//            if (transType != -1) {
+//                switch (type) {
+//                    case SALE_RECEIPT:
+//                        intent = new Intent(activity, OrderingMain_FA.class);
+//                        intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
+//                        activity.startActivityForResult(intent, 0);
+//                        break;
+//                    case 2:
+//                        intent = new Intent(activity, OrderingMain_FA.class);
+//                        intent.putExtra("option_number", Global.TransactionType.RETURN);
+//                        activity.startActivityForResult(intent, 0);
+//                        break;
+//                }
+//            }
         }
 
     }
@@ -153,7 +175,9 @@ public class SalesTab_FR extends Fragment implements EMSCallBack , BCRCallbacks{
         salesInvoices = (Button) view.findViewById(R.id.invoiceButton);
         hiddenField = (EditText) view.findViewById(R.id.hiddenField);
         hiddenField.addTextChangedListener(textWatcher());
-
+        Collection<UsbDevice> usbDevices = DeviceUtils.getUSBDevices(getActivity());
+        isReaderConnected = usbDevices != null && usbDevices.size() > 0;
+        digitalPersona = new DigitalPersona(getActivity().getApplicationContext(), this, EmobileBiometric.UserType.CUSTOMER);
         if (isTablet())
             myPref.setIsTablet(true);
         else
@@ -232,6 +256,11 @@ public class SalesTab_FR extends Fragment implements EMSCallBack , BCRCallbacks{
         Global global = (Global) getActivity().getApplication();
         global.resetOrderDetailsValues();
         global.clearListViewData();
+        getActivity().registerReceiver(messageReceiver, new IntentFilter(MainMenu_FA.NOTIFICATION_LOGIN_STATECHANGE));
+
+        if (isReaderConnected && Global.loggedIn) {
+            digitalPersona.loadForScan();
+        }
         if (myPref.isCustSelected()) {
             isCustomerSelected = true;
             selectedCust.setText(myPref.getCustName());
@@ -264,6 +293,7 @@ public class SalesTab_FR extends Fragment implements EMSCallBack , BCRCallbacks{
     @Override
     public void onPause() {
         super.onPause();
+        digitalPersona.releaseReader();
         if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
             Global.mainPrinterManager.getCurrentDevice().releaseCardReader();
             Global.mainPrinterManager.getCurrentDevice().turnOffBCR();
@@ -1338,60 +1368,6 @@ public class SalesTab_FR extends Fragment implements EMSCallBack , BCRCallbacks{
     }
 
     @Override
-    public void cardWasReadSuccessfully(boolean read, CreditCardInfo cardManager) {
-
-    }
-
-    @Override
-    public void readerConnectedSuccessfully(boolean value) {
-
-    }
-
-    @Override
-    public void scannerWasRead(String data) {
-        if (!data.isEmpty()) {
-            if (data.contains("START_ORDER")) {
-                Gson gson = JsonUtils.getInstance();
-                BCRMacro bcrMacro = gson.fromJson(data, BCRMacro.class);
-                if (bcrMacro != null) {
-                    CustomersHandler customersHandler = new CustomersHandler(getActivity());
-                    Customer customer = customersHandler.getCustomer(bcrMacro.getBcrMacroParams().getCustId());
-                    SalesTaxCodesHandler taxHandler = new SalesTaxCodesHandler(getActivity());
-                    SalesTaxCodesHandler.TaxableCode taxable = taxHandler.checkIfCustTaxable(customer.cust_taxable);
-
-                    myPref.setCustTaxCode(taxable, customer.cust_taxable);
-                    myPref.setCustID(customer.cust_id);
-                    myPref.setCustName(customer.cust_name);
-                    myPref.setCustIDKey(customer.custidkey);
-                    myPref.setCustSelected(true);
-                    myPref.setCustPriceLevel(customer.pricelevel_id);
-                    myPref.setCustEmail(customer.cust_email);
-                    selectedCust.setText(customer.cust_name);
-                    salesInvoices.setVisibility(View.VISIBLE);
-                    isCustomerSelected = true;
-                    myAdapter = new SalesMenuAdapter(getActivity(), true);
-                    myListview.setAdapter(myAdapter);
-                    myListview.setOnItemClickListener(new MyListener());
-                    Intent intent = new Intent(getActivity(), OrderingMain_FA.class);
-                    intent.putExtra("BCRMacro", data);
-                    intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
-                    startActivityForResult(intent, 0);
-                }
-            }
-        }
-    }
-
-    @Override
-    public void startSignature() {
-
-    }
-
-    @Override
-    public void nfcWasRead(String nfcUID) {
-
-    }
-
-    @Override
     public void executeBCR() {
         CustomersHandler custHandler = new CustomersHandler(getActivity());
         HashMap<String, String> map = custHandler.getCustomerInfo(hiddenField.getText().toString().replace("\n", "").trim());
@@ -1414,6 +1390,119 @@ public class SalesTab_FR extends Fragment implements EMSCallBack , BCRCallbacks{
             myListview.setOnItemClickListener(new MyListener());
         }
     }
+
+    @Override
+    public void cardWasReadSuccessfully(boolean read, CreditCardInfo cardManager) {
+
+    }
+
+    @Override
+    public void readerConnectedSuccessfully(boolean value) {
+
+    }
+
+    private void startOrderWithCustomer(String customerId, String data) {
+        CustomersHandler customersHandler = new CustomersHandler(getActivity());
+        Customer customer = customersHandler.getCustomer(customerId);
+        SalesTaxCodesHandler taxHandler = new SalesTaxCodesHandler(getActivity());
+        SalesTaxCodesHandler.TaxableCode taxable = taxHandler.checkIfCustTaxable(customer.getCust_taxable());
+        myPref.setCustTaxCode(taxable, customer.getCust_taxable());
+        myPref.setCustID(customer.getCust_id());
+        myPref.setCustName(customer.getCust_name());
+        myPref.setCustIDKey(customer.getCustIdKey());
+        myPref.setCustSelected(true);
+        myPref.setCustPriceLevel(customer.getPricelevel_id());
+        myPref.setCustEmail(customer.getCust_email());
+        selectedCust.setText(customer.getCust_name());
+        salesInvoices.setVisibility(View.VISIBLE);
+        isCustomerSelected = true;
+        myAdapter = new SalesMenuAdapter(getActivity(), true);
+        myListview.setAdapter(myAdapter);
+        myListview.setOnItemClickListener(new MyListener());
+        Intent intent = new Intent(getActivity(), OrderingMain_FA.class);
+        if (!TextUtils.isEmpty(data)) {
+            intent.putExtra("BCRMacro", data);
+        }
+        intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
+        startActivityForResult(intent, 0);
+    }
+    @Override
+    public void scannerWasRead(String data) {
+        if (!data.isEmpty()) {
+            if (data.contains("START_ORDER")) {
+                Gson gson = JsonUtils.getInstance();
+                BCRMacro bcrMacro = gson.fromJson(data, BCRMacro.class);
+                if (bcrMacro != null) {
+                    startOrderWithCustomer(bcrMacro.getBcrMacroParams().getCustId(), data);
+//                    CustomersHandler customersHandler = new CustomersHandler(getActivity());
+//                    Customer customer = customersHandler.getCustomer(bcrMacro.getBcrMacroParams().getCustId());
+//                    SalesTaxCodesHandler taxHandler = new SalesTaxCodesHandler(getActivity());
+//                    SalesTaxCodesHandler.TaxableCode taxable = taxHandler.checkIfCustTaxable(customer.getCust_taxable());
+//
+//                    myPref.setCustTaxCode(taxable, customer.getCust_taxable());
+//                    myPref.setCustID(customer.getCust_id());
+//                    myPref.setCustName(customer.getCust_name());
+//                    myPref.setCustIDKey(customer.getCustIdKey());
+//                    myPref.setCustSelected(true);
+//                    myPref.setCustPriceLevel(customer.getPricelevel_id());
+//                    myPref.setCustEmail(customer.getCust_email());
+//                    selectedCust.setText(customer.getCust_name());
+//                    salesInvoices.setVisibility(View.VISIBLE);
+//                    isCustomerSelected = true;
+//                    myAdapter = new SalesMenuAdapter(getActivity(), true);
+//                    myListview.setAdapter(myAdapter);
+//                    myListview.setOnItemClickListener(new MyListener());
+//                    Intent intent = new Intent(getActivity(), OrderingMain_FA.class);
+//                    intent.putExtra("BCRMacro", data);
+//                    intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
+//                    startActivityForResult(intent, 0);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void startSignature() {
+
+    }
+
+    @Override
+    public void nfcWasRead(String nfcUID) {
+
+    }
+
+    @Override
+    public void biometricsWasRead(final EmobileBiometric emobileBiometric) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                startOrderWithCustomer(emobileBiometric.getEntityid(), null);
+
+            }
+        });
+    }
+
+    @Override
+    public void biometricsReadNotFound() {
+
+    }
+
+    @Override
+    public void biometricsWasEnrolled(BiometricFid biometricFid) {
+
+    }
+
+    @Override
+    public void biometricsDuplicatedEnroll(EmobileBiometric emobileBiometric, BiometricFid biometricFid) {
+
+    }
+
+
+    @Override
+    public void biometricsUnregister(ViewCustomerDetails_FA.Finger finger) {
+
+    }
+
 
     public class MyListener implements AdapterView.OnItemClickListener {
 

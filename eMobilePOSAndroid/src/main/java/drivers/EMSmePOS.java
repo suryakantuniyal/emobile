@@ -13,8 +13,7 @@ import com.StarMicronics.jasura.JAException;
 import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.SplitedOrder;
-import com.android.emobilepos.models.TimeClock;
+import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.Global;
@@ -40,10 +39,10 @@ import main.EMSDeviceManager;
 public class EMSmePOS extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
 
     private static final int LINE_WIDTH = 42;
-    private EMSDeviceManager edm;
     protected static Device device;
-    String msg = "Failed to connectTFHKA";
     private static boolean connected = false;
+    String msg = "Failed to connect";
+    private EMSDeviceManager edm;
 
     @Override
     public void connect(final Context activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
@@ -52,9 +51,9 @@ public class EMSmePOS extends EMSDeviceDriver implements EMSDeviceManagerPrinter
         myPref = new MyPreferences(activity);
         init();
         if (mePOS != null && mePOS.getConnectionManager().getConnectionStatus() == MePOSConnectionManager.STATUS_CONNECTED_USB) {
-            edm.driverDidConnectToDevice(this, true);
+            edm.driverDidConnectToDevice(this, true, activity);
         } else {
-            edm.driverDidNotConnectToDevice(this, msg, true);
+            edm.driverDidNotConnectToDevice(this, msg, true, activity);
         }
     }
 
@@ -66,9 +65,9 @@ public class EMSmePOS extends EMSDeviceDriver implements EMSDeviceManagerPrinter
         myPref = new MyPreferences(activity);
         init();
         if (mePOS != null && mePOS.getConnectionManager().getConnectionStatus() == MePOSConnectionManager.STATUS_CONNECTED_USB) {
-            edm.driverDidConnectToDevice(this, false);
+            edm.driverDidConnectToDevice(this, false, activity);
         } else {
-            edm.driverDidNotConnectToDevice(this, msg, false);
+            edm.driverDidNotConnectToDevice(this, msg, false, activity);
         }
         return true;
     }
@@ -292,7 +291,7 @@ public class EMSmePOS extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 //    }
 
     @Override
-    public void printReceiptPreview(SplitedOrder splitedOrder) {
+    public void printReceiptPreview(SplittedOrder splitedOrder) {
         try {
             setPaperWidth(LINE_WIDTH);
 //            Bitmap bitmap = loadBitmapFromView(view);
