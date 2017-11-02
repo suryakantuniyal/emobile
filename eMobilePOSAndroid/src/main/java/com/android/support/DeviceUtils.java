@@ -9,7 +9,6 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.android.dao.DeviceTableDAO;
-import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.models.realms.Device;
 import com.crashlytics.android.Crashlytics;
@@ -121,6 +120,16 @@ public class DeviceUtils {
                     sb.append(Global.BuildModel.PAT215.name()).append(": ").append("Connected\n\r");
                 } else {
                     sb.append(Global.BuildModel.PAT215.name()).append(": ").append("Failed to connectTFHKA\n\r");
+                }
+            }
+        } else if (myPref.isESY13P1()) {
+            if (Global.embededMSR == null || forceReload) {
+                edm = new EMSDeviceManager();
+                Global.embededMSR = edm.getManager();
+                if (Global.embededMSR.loadMultiDriver(activity, Global.ELOPAYPOINT, 0, false, "", "")) {
+                    sb.append(Global.BuildModel.PayPoint_ESY13P1.name()).append(": ").append("Connected\n\r");
+                } else {
+                    sb.append(Global.BuildModel.PayPoint_ESY13P1.name()).append(": ").append("Failed to connectTFHKA\n\r");
                 }
             }
         }
