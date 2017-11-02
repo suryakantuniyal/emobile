@@ -80,6 +80,10 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     private MTSCRA m_scra;
     private Handler m_scraHandler;
 
+    public static boolean isEloPaypoint2() {
+        return DeviceManager.getPlatformInfo().eloPlatform == EloPlatform.PAYPOINT_2;
+    }
+
     private class SCRAHandlerCallback implements Handler.Callback {
         private static final String TAG = "Magtek";
 
@@ -174,23 +178,27 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     public static void printTextOnCFD(String Line1, String Line2, Context context) {
         DeviceManager deviceManager;
         try {
-            deviceManager = DeviceManager.getInstance(EloPlatform.PAYPOINT_2, context);
-            if (deviceManager != null) {
-                com.elo.device.peripherals.CFD cfd = deviceManager.getCfd();
-                if (cfd != null) {
-                    cfd.setBacklight(true);
-                    cfd.clear();
-                    cfd.setLine(1, Line1);
-                    cfd.setLine(2, Line2);
+            if (DeviceManager.getPlatformInfo().eloPlatform != EloPlatform.PAYPOINT_1) {
+                deviceManager = DeviceManager.getInstance(EloPlatform.PAYPOINT_2, context);
+                if (deviceManager != null) {
+                    com.elo.device.peripherals.CFD cfd = deviceManager.getCfd();
+                    if (cfd != null) {
+                        cfd.setBacklight(true);
+                        cfd.clear();
+                        cfd.setLine(1, Line1);
+                        cfd.setLine(2, Line2);
+                    }
                 }
+            } else {
+                getTerminalDisp().setBacklight(true);
+                getTerminalDisp().clearDisplay();
+                getTerminalDisp().setLine1(Line1);
+                getTerminalDisp().setLine2(Line2);
             }
         } catch (UnsupportedEloPlatform unsupportedEloPlatform) {
 
         }
-//        getTerminalDisp().setBacklight(true);
-//        getTerminalDisp().clearDisplay();
-//        getTerminalDisp().setLine1(Line1);
-//        getTerminalDisp().setLine2(Line2);
+
     }
 
     @Override
@@ -202,7 +210,7 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
         thisInstance = this;
         playSound();
         ProductInfo platformInfo = DeviceManager.getPlatformInfo();
-        if (platformInfo.eloPlatform != EloPlatform.PAYPOINT_2 && isPOSPrinter) {
+        if (platformInfo.eloPlatform == EloPlatform.PAYPOINT_1 || isPOSPrinter) {
             if (Global.mainPrinterManager == null || Global.mainPrinterManager.getCurrentDevice() == null) {
                 new processConnectionAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
             }
@@ -221,7 +229,7 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
         thisInstance = this;
         playSound();
         ProductInfo platformInfo = DeviceManager.getPlatformInfo();
-        if (platformInfo.eloPlatform != EloPlatform.PAYPOINT_2 && isPOSPrinter) {
+        if (platformInfo.eloPlatform == EloPlatform.PAYPOINT_1 || isPOSPrinter) {
             if (Global.mainPrinterManager == null || Global.mainPrinterManager.getCurrentDevice() == null) {
                 new processConnectionAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
             }
