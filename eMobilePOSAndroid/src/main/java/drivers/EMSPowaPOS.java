@@ -342,6 +342,16 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
     }
 
     @Override
+    public void turnOnBCR() {
+
+    }
+
+    @Override
+    public void turnOffBCR() {
+
+    }
+
+    @Override
     public void printEndOfDayReport(String curDate, String clerk_id, boolean printDetails) {
         printEndOfDayReportReceipt(curDate, LINE_WIDTH, printDetails);
     }

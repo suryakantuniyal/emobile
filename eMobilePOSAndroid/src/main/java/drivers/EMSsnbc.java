@@ -186,6 +186,17 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     }
 
     @Override
+    public void turnOnBCR() {
+
+    }
+
+    @Override
+    public void turnOffBCR() {
+
+    }
+
+
+    @Override
     public void printEndOfDayReport(String curDate, String clerk_id, boolean printDetails) {
         openUsbInterface();
         printEndOfDayReportReceipt(curDate, LINE_WIDTH, printDetails);

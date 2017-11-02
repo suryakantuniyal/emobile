@@ -19,11 +19,16 @@ import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
+import com.android.support.CardParser;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.elo.device.DeviceManager;
+import com.elo.device.ProductInfo;
+import com.elo.device.enums.EloPlatform;
+import com.elo.device.exceptions.UnsupportedEloPlatform;
 import com.elotouch.paypoint.register.barcodereader.BarcodeReader;
 import com.elotouch.paypoint.register.cd.CashDrawer;
 import com.elotouch.paypoint.register.cfd.CFD;
@@ -75,6 +80,10 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     private MTSCRA m_scra;
     private Handler m_scraHandler;
 
+    public static boolean isEloPaypoint2() {
+        return DeviceManager.getPlatformInfo().eloPlatform == EloPlatform.PAYPOINT_2;
+    }
+
     private class SCRAHandlerCallback implements Handler.Callback {
         private static final String TAG = "Magtek";
 
@@ -91,27 +100,31 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
                     case MTSCRAEvent.OnDataReceived:
                         if (m_scra.getResponseData() != null) {
                             CreditCardInfo cardInfo = new CreditCardInfo();
-                            cardInfo.setCardOwnerName(m_scra.getCardName());
-                            if (m_scra.getCardExpDate() != null && !m_scra.getCardExpDate().isEmpty()) {
-                                String year = m_scra.getCardExpDate().substring(0, 2);
-                                String month = m_scra.getCardExpDate().substring(2, 4);
-                                cardInfo.setCardExpYear(year);
-                                cardInfo.setCardExpMonth(month);
+                            if (m_scra.getKSN().equals("00000000000000000000")) {
+                                CardParser.parseCreditCard(activity, m_scra.getMaskedTracks(), cardInfo);
+                            } else {
+                                cardInfo.setCardOwnerName(m_scra.getCardName());
+                                if (m_scra.getCardExpDate() != null && !m_scra.getCardExpDate().isEmpty()) {
+                                    String year = m_scra.getCardExpDate().substring(0, 2);
+                                    String month = m_scra.getCardExpDate().substring(2, 4);
+                                    cardInfo.setCardExpYear(year);
+                                    cardInfo.setCardExpMonth(month);
+                                }
+                                cardInfo.setCardType(ProcessCreditCard_FA.getCardType(m_scra.getCardIIN()));
+                                cardInfo.setCardLast4(m_scra.getCardLast4());
+                                cardInfo.setEncryptedTrack1(m_scra.getTrack1());
+                                cardInfo.setEncryptedTrack2(m_scra.getTrack2());
+                                cardInfo.setCardNumAESEncrypted(encrypt.encryptWithAES(m_scra.getCardPAN()));
+                                if (m_scra.getTrack1Masked() != null && !m_scra.getTrack1Masked().isEmpty())
+                                    cardInfo.setEncryptedAESTrack1(encrypt.encryptWithAES(m_scra.getTrack1Masked()));
+                                if (m_scra.getTrack2Masked() != null && !m_scra.getTrack2Masked().isEmpty())
+                                    cardInfo.setEncryptedAESTrack2(encrypt.encryptWithAES(m_scra.getTrack2Masked()));
+                                cardInfo.setDeviceSerialNumber(m_scra.getDeviceSerial());
+                                cardInfo.setMagnePrint(m_scra.getMagnePrint());
+                                cardInfo.setCardNumUnencrypted(m_scra.getCardPAN());
+                                cardInfo.setMagnePrintStatus(m_scra.getMagnePrintStatus());
+                                cardInfo.setTrackDataKSN(m_scra.getKSN());
                             }
-                            cardInfo.setCardType(ProcessCreditCard_FA.getCardType(m_scra.getCardIIN()));
-                            cardInfo.setCardLast4(m_scra.getCardLast4());
-                            cardInfo.setEncryptedTrack1(m_scra.getTrack1());
-                            cardInfo.setEncryptedTrack2(m_scra.getTrack2());
-                            cardInfo.setCardNumAESEncrypted(encrypt.encryptWithAES(m_scra.getCardPAN()));
-                            if (m_scra.getTrack1Masked() != null && !m_scra.getTrack1Masked().isEmpty())
-                                cardInfo.setEncryptedAESTrack1(encrypt.encryptWithAES(m_scra.getTrack1Masked()));
-                            if (m_scra.getTrack2Masked() != null && !m_scra.getTrack2Masked().isEmpty())
-                                cardInfo.setEncryptedAESTrack2(encrypt.encryptWithAES(m_scra.getTrack2Masked()));
-                            cardInfo.setDeviceSerialNumber(m_scra.getDeviceSerial());
-                            cardInfo.setMagnePrint(m_scra.getMagnePrint());
-                            cardInfo.setCardNumUnencrypted(m_scra.getCardPAN());
-                            cardInfo.setMagnePrintStatus(m_scra.getMagnePrintStatus());
-                            cardInfo.setTrackDataKSN(m_scra.getKSN());
                             scannerCallBack.cardWasReadSuccessfully(true, cardInfo);
                         }
                         break;
@@ -162,11 +175,30 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
  * Prints/Displays Text on Customer Facing Display.
  *
  * */
-    public static void printTextOnCFD(String Line1, String Line2) {
-        getTerminalDisp().setBacklight(true);
-        getTerminalDisp().clearDisplay();
-        getTerminalDisp().setLine1(Line1);
-        getTerminalDisp().setLine2(Line2);
+    public static void printTextOnCFD(String Line1, String Line2, Context context) {
+        DeviceManager deviceManager;
+        try {
+            if (DeviceManager.getPlatformInfo().eloPlatform != EloPlatform.PAYPOINT_1) {
+                deviceManager = DeviceManager.getInstance(EloPlatform.PAYPOINT_2, context);
+                if (deviceManager != null) {
+                    com.elo.device.peripherals.CFD cfd = deviceManager.getCfd();
+                    if (cfd != null) {
+                        cfd.setBacklight(true);
+                        cfd.clear();
+                        cfd.setLine(1, Line1);
+                        cfd.setLine(2, Line2);
+                    }
+                }
+            } else {
+                getTerminalDisp().setBacklight(true);
+                getTerminalDisp().clearDisplay();
+                getTerminalDisp().setLine1(Line1);
+                getTerminalDisp().setLine2(Line2);
+            }
+        } catch (UnsupportedEloPlatform unsupportedEloPlatform) {
+
+        }
+
     }
 
     @Override
@@ -177,7 +209,14 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
         this.edm = edm;
         thisInstance = this;
         playSound();
-        new processConnectionAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
+        ProductInfo platformInfo = DeviceManager.getPlatformInfo();
+        if (platformInfo.eloPlatform == EloPlatform.PAYPOINT_1 || isPOSPrinter) {
+            if (Global.mainPrinterManager == null || Global.mainPrinterManager.getCurrentDevice() == null) {
+                new processConnectionAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
+            }
+        } else {
+            edm.driverDidConnectToDevice(thisInstance, false, activity);
+        }
     }
 
     @Override
@@ -189,7 +228,14 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
         this.edm = edm;
         thisInstance = this;
         playSound();
-        new processConnectionAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
+        ProductInfo platformInfo = DeviceManager.getPlatformInfo();
+        if (platformInfo.eloPlatform == EloPlatform.PAYPOINT_1 || isPOSPrinter) {
+            if (Global.mainPrinterManager == null || Global.mainPrinterManager.getCurrentDevice() == null) {
+                new processConnectionAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
+            }
+        } else {
+            edm.driverDidConnectToDevice(thisInstance, false, activity);
+        }
         return true;
     }
 
@@ -201,7 +247,6 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
 
         @Override
         protected Boolean doInBackground(Boolean... params) {
-            String Text = "\n\n\nYour Elo Touch Solutions\nPayPoint receipt printer is\nworking properly.";
             SerialPort port;
             try {
                 port = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
@@ -433,7 +478,7 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
 
     public void unregisterPrinter() {
         edm.setCurrentDevice(null);
-        TurnOffBCR();
+        turnOffBCR();
     }
 
     @Override
@@ -478,9 +523,9 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
         if (handler == null)
             handler = new Handler();
         if (callBack != null) {
-            TurnOnBCR();
+            turnOnBCR();
         } else {
-            TurnOffBCR();
+            turnOffBCR();
         }
     }
 
@@ -630,16 +675,16 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
          *
          * */
     private void readBarcode() {
-        TurnOnBCR();
+        turnOnBCR();
     }
 
-    public void TurnOnBCR() {
+    public void turnOnBCR() {
         if (!barcodereader.isBcrOn()) {
             barcodereader.turnOnLaser();
         }
     }
 
-    public void TurnOffBCR() {
+    public void turnOffBCR() {
         if (barcodereader.isBcrOn()) {
             barcodereader.turnOnLaser();
         }

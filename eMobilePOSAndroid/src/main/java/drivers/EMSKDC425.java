@@ -230,6 +230,16 @@ public class EMSKDC425 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     }
 
     @Override
+    public void turnOnBCR() {
+
+    }
+
+    @Override
+    public void turnOffBCR() {
+
+    }
+
+    @Override
     public boolean printReport(String curDate) {
         return false;
     }

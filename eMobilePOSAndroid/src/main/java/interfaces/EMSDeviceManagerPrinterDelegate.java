@@ -40,6 +40,10 @@ public interface EMSDeviceManagerPrinterDelegate {
 
     void playSound();
 
+    void turnOnBCR();
+
+    void turnOffBCR();
+
     void cutPaper();
 
     boolean printReport(String curDate);

@@ -779,8 +779,8 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             if (_msrUsbSams.OpenDevice())
                 _msrUsbSams.StartReadingThread();
         } else if (myPref.isESY13P1()) {
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
-                Global.mainPrinterManager.getCurrentDevice().loadCardReader(callBack, isDebit);
+            if (Global.embededMSR != null && Global.embededMSR.getCurrentDevice() != null) {
+                Global.embededMSR.getCurrentDevice().loadCardReader(callBack, isDebit);
                 cardSwipe.setChecked(true);
             }
         } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310() || myPref.isKDC425()) {

@@ -98,6 +98,7 @@ import java.util.UUID;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import drivers.EMSELO;
 import drivers.EMSIDTechUSB;
 import drivers.EMSMagtekAudioCardReader;
 import drivers.EMSRover;
@@ -888,6 +889,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 Global.btSwiper.getCurrentDevice().releaseCardReader();
             if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
                 Global.mainPrinterManager.getCurrentDevice().releaseCardReader();
+                Global.mainPrinterManager.getCurrentDevice().turnOffBCR();
                 Global.mainPrinterManager.getCurrentDevice().loadScanner(null);
             }
             if (Global.btSled != null && Global.btSled.getCurrentDevice() != null)
@@ -1093,8 +1095,11 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             public void afterTextChanged(Editable s) {
                 if (doneScanning) {
                     doneScanning = false;
-                    if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
-                        Global.mainPrinterManager.getCurrentDevice().playSound();
+                    if(EMSELO.isEloPaypoint2()) {
+                        if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                            Global.mainPrinterManager.getCurrentDevice().playSound();
+                            Global.mainPrinterManager.getCurrentDevice().turnOnBCR();
+                        }
                     }
                     String upc = invisibleSearchMain.getText().toString().trim().replace("\n", "").replace("\r", "");
 //                    upc = invisibleSearchMain.getText().toString().trim().replace("\r", "");
@@ -1105,10 +1110,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                                 if (myPref.isGroupReceiptBySku(isToGo)) {//(myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
                                     int foundPosition = global.checkIfGroupBySKU(OrderingMain_FA.this, product.getId(), "1");
                                     if (foundPosition != -1 && !OrderingMain_FA.returnItem) // product
-                                    // already
-                                    // exist
-                                    // in
-                                    // list
                                     {
                                         global.refreshParticularOrder(OrderingMain_FA.this, foundPosition, product);
                                     } else
@@ -1424,8 +1425,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 temp = s.toString();
 
-                if (temp.contains(";") && temp.contains("?") && temp.contains("\n"))
+                if (temp.contains(";") && temp.contains("?") && temp.contains("\n")) {
                     doneScanning = true;
+                }
 
             }
         };

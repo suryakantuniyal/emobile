@@ -677,6 +677,16 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
     }
 
     @Override
+    public void turnOnBCR() {
+
+    }
+
+    @Override
+    public void turnOffBCR() {
+
+    }
+
+    @Override
     public void printEndOfDayReport(String curDate, String clerk_id, boolean printDetails) {
 //		printEndOfDayReportReceipt(curDate, LINE_WIDTH, printDetails);
     }

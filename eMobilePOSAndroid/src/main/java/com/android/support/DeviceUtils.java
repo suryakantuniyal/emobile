@@ -5,7 +5,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.Intent;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.text.TextUtils;
@@ -13,10 +12,11 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.android.dao.DeviceTableDAO;
-import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.models.realms.Device;
 import com.crashlytics.android.Crashlytics;
+import com.elo.device.DeviceManager;
+import com.elo.device.enums.EloPlatform;
 import com.starmicronics.stario.PortInfo;
 import com.starmicronics.stario.StarIOPort;
 import com.starmicronics.stario.StarIOPortException;
@@ -127,6 +127,28 @@ public class DeviceUtils {
                     sb.append(Global.BuildModel.PAT215.name()).append(": ").append("Connected\n\r");
                 } else {
                     sb.append(Global.BuildModel.PAT215.name()).append(": ").append("Failed to connect\n\r");
+                }
+            }
+        } else if (myPref.isESY13P1()) {
+            myPref.setPrinterType(Global.ELOPAYPOINT);
+            if (DeviceManager.getPlatformInfo().eloPlatform == EloPlatform.PAYPOINT_2) {
+                if (Global.embededMSR == null || forceReload) {
+                    edm = new EMSDeviceManager();
+                    Global.embededMSR = edm.getManager();
+                    if (Global.embededMSR.loadMultiDriver(activity, Global.ELOPAYPOINT, 0, false, "", "")) {
+                        sb.append(Global.BuildModel.PayPoint_ESY13P1.name()).append(": ").append("Connected\n\r");
+                    } else {
+                        sb.append(Global.BuildModel.PayPoint_ESY13P1.name()).append(": ").append("Failed to connectTFHKA\n\r");
+                    }
+                }
+            } else {
+                edm = new EMSDeviceManager();
+                Global.mainPrinterManager = edm.getManager();
+                Global.embededMSR = Global.mainPrinterManager;
+                if (Global.mainPrinterManager.loadMultiDriver(activity, Global.ELOPAYPOINT, 0, true, "", "")) {
+                    sb.append(Global.BuildModel.PayPoint_ESY13P1.name()).append(": ").append("Connected\n\r");
+                } else {
+                    sb.append(Global.BuildModel.PayPoint_ESY13P1.name()).append(": ").append("Failed to connectTFHKA\n\r");
                 }
             }
         }

@@ -323,13 +323,13 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
     public void driverDidConnectToDevice(EMSDeviceDriver theDevice, boolean showPrompt, Context activity) {
         boolean isDestroyed = false;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            if (activity instanceof Activity) {
+            if (activity != null && activity instanceof Activity) {
                 if (((Activity) activity).isDestroyed()) {
                     isDestroyed = true;
                 }
             }
         }
-        if (activity instanceof Activity) {
+        if (activity != null && activity instanceof Activity) {
             if (showPrompt && !((Activity) activity).isFinishing() && !isDestroyed) {
                 Builder dialog = new Builder(activity);
                 dialog.setNegativeButton(R.string.button_ok, null);
@@ -339,8 +339,11 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 alert.show();
             }
         }
-        DeviceUtils.sendBroadcastDeviceConnected(activity);
+        if (activity != null) {
+            DeviceUtils.sendBroadcastDeviceConnected(activity);
+        }
         theDevice.registerAll();
+
     }
 
     public void driverDidDisconnectFromDevice(EMSDeviceDriver theDevice, boolean showPrompt) {
