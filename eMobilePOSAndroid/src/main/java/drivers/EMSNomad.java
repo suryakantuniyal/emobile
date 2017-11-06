@@ -449,12 +449,13 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
 
     @Override
     public void onSettingsRetrieved(CoreSettings arg0) {
-        edm.driverDidConnectToDevice(this, !isAutoConnect, activity);
-        if (!isAutoConnect) {
-            dismissDialog();
-        } else {
-            dismissDialog();
-        }
+        terminal.initDevice(DeviceEnum.BBPOSDEVICE, DeviceConnectionType.BLUETOOTH, null);
+//        edm.driverDidConnectToDevice(this, !isAutoConnect, activity);
+//        if (!isAutoConnect) {
+//            dismissDialog();
+//        } else {
+//            dismissDialog();
+//        }
 //        if (devicePlugged) {
 //        terminal.initDevice(DeviceEnum.NOMAD);
 //        terminal.initDevice(DeviceEnum.BBPOSDEVICE, DeviceConnectionType.BLUETOOTH, null);
