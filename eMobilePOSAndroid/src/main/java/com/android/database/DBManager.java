@@ -579,7 +579,11 @@ public class DBManager {
         if (!exist) {
             getDatabase().execSQL("ALTER TABLE [Orders] ADD COLUMN [orderAttributes] [varchar](1000) NULL");
         }
-
+        cursor = getDatabase().rawQuery("select * from  [Products] limit 1", new String[]{});
+        exist = cursor.getColumnIndex("isGC") > -1;
+        if (!exist) {
+            getDatabase().execSQL("ALTER TABLE [Products] ADD COLUMN [isGC] [bit] NULL");
+        }
         cursor = getDatabase().rawQuery("select * from  [OrderProduct] limit 1", new String[]{});
         exist = cursor.getColumnIndex("prod_sku") > -1;
         if (!exist) {
