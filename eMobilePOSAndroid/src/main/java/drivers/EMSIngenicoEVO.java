@@ -15,7 +15,6 @@ import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplitedOrder;
-import com.android.emobilepos.models.TimeClock;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
@@ -59,7 +58,7 @@ public class EMSIngenicoEVO extends EMSDeviceDriver implements EMSDeviceManagerP
     protected static Device device;
     private Handler handler;
     private EMSCallBack msrCallBack;
-    String msg = "Failed to connectTFHKA";
+    String msg = "Failed to connect";
     static boolean connected = false;
     private ProgressDialog myProgressDialog;
     private ApiConfiguration apiConfig;

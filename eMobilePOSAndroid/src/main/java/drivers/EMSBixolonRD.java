@@ -53,7 +53,7 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
     private static final int TAX_LENGTH_PANAMA = 3;
     private static final int TAX_LENGTH_DOMINICAN = 5;
     private static final int LINE_WIDTH = 48;
-    String msg = "Failed to connectTFHKA";
+    String msg = "Failed to connect";
     private EMSDeviceManager edm;
     private BixolonCountry country;
 
