@@ -56,28 +56,18 @@ import main.EMSDeviceManager;
 
 public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDeviceManagerPrinterDelegate {
 
-    public static CoreSignature signature;
+    private Context activity;
+    private static AndroidTerminal terminal;
     private static String TERMINAL_ID = "2993001";
     private static String SECRET = "password";
-    private static EMSCallBack msrCallBack;
-    private static EMSDeviceManager edm;
-    private static ProgressDialog myProgressDialog;
-    private AndroidTerminal terminal;
-    private Context activity;
+    public static CoreSignature signature;
     private boolean isReadingCard = false;
     private Handler handler;
-    private boolean isAutoConnect = false;
-    private Runnable doUpdateDidConnect = new Runnable() {
-        public void run() {
-            try {
-                if (msrCallBack != null)
-                    msrCallBack.readerConnectedSuccessfully(true);
+    private static EMSCallBack msrCallBack;
 
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-    };
+    private static EMSDeviceManager edm;
+    private static ProgressDialog myProgressDialog;
+    private boolean isAutoConnect = false;
 
     @Override
     public void connect(Context activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
@@ -86,8 +76,7 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
         if (terminal != null) {
             terminal.releaseResources();
         }
-        AndroidTerminal.getInstance().initSingletonListener(this);
-        terminal = AndroidTerminal.getInstance();
+        terminal = new AndroidTerminal(this);
         myPref = new MyPreferences(this.activity);
         EMSNomad.edm = edm;
 //        synchronized (terminal) {
@@ -119,8 +108,8 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
         }
         myPref = new MyPreferences(this.activity);
         EMSNomad.edm = edm;
-        AndroidTerminal.getInstance().initSingletonListener(this);
-        terminal = AndroidTerminal.getInstance();
+        terminal = new AndroidTerminal(this);
+
 //        initDevice();
 //        synchronized (myPref) {
         new ConnectNomadAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -246,11 +235,23 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
 
     @Override
     public void loadCardReader(EMSCallBack callBack, boolean isDebitCard) {
-        terminal.initDevice(DeviceEnum.BBPOSDEVICE, DeviceConnectionType.BLUETOOTH, null);
         if (handler == null)
             handler = new Handler();
         msrCallBack = callBack;
+        handler.post(doUpdateDidConnect);
     }
+
+    private Runnable doUpdateDidConnect = new Runnable() {
+        public void run() {
+            try {
+                if (msrCallBack != null)
+                    msrCallBack.readerConnectedSuccessfully(true);
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
 
     @Override
     public void loadScanner(EMSCallBack _callBack) {
@@ -287,15 +288,16 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
 
     }
 
+    @Override
+    public void printReceiptPreview(SplittedOrder splitedOrder) {
+
+    }
+
 //    @Override
 //    public void printReceiptPreview(View view) {
 //
 //    }
 
-    @Override
-    public void printReceiptPreview(SplittedOrder splitedOrder) {
-
-    }
 
     @Override
     public void salePayment(Payment payment) {
@@ -340,6 +342,26 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
     @Override
     public void updateFirmware() {
 
+    }
+
+    private class ConnectNomadAsync extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected void onPreExecute() {
+            showDialog(R.string.connecting_handpoint);
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            EMSEpayLoginInfo loginInfo = EMSUtils.getEmsEpayLoginInfo(activity);
+            SECRET = loginInfo.getSecret();
+            TERMINAL_ID = loginInfo.getTerminalId();
+            initDevice();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void unused) {
+        }
     }
 
     public void startReading(CreditCardInfo cardInfo, ProgressDialog dialog) {
@@ -449,16 +471,9 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
 
     @Override
     public void onSettingsRetrieved(CoreSettings arg0) {
-        terminal.initDevice(DeviceEnum.BBPOSDEVICE, DeviceConnectionType.BLUETOOTH, null);
-//        edm.driverDidConnectToDevice(this, !isAutoConnect, activity);
-//        if (!isAutoConnect) {
-//            dismissDialog();
-//        } else {
-//            dismissDialog();
-//        }
 //        if (devicePlugged) {
 //        terminal.initDevice(DeviceEnum.NOMAD);
-//        terminal.initDevice(DeviceEnum.BBPOSDEVICE, DeviceConnectionType.BLUETOOTH, null);
+        terminal.initDevice(DeviceEnum.BBPOSDEVICE, DeviceConnectionType.BLUETOOTH, null);
 //            try {
 //                EMSCallBack callBack = (EMSCallBack) activity;
 //                callBack.readerConnectedSuccessfully(true);
@@ -494,11 +509,12 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
     public void onDeviceConnected(DeviceEnum deviceEnum, HashMap<String, String> arg1) {
         Toast.makeText(this.activity, deviceEnum.name() + " connected", Toast.LENGTH_SHORT).show();
 
-        try {
-            handler.post(doUpdateDidConnect);
-        } catch (Exception ex) {
-
-        }
+//        try {
+//            EMSCallBack callBack = (EMSCallBack) activity;
+//            callBack.readerConnectedSuccessfully(true);
+//        } catch (Exception ex) {
+//
+//        }
 //        synchronized (terminal) {
 //        terminal.notifyAll();
         edm.driverDidConnectToDevice(this, !isAutoConnect, activity);
@@ -516,9 +532,6 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
     public void onDeviceDisconnected(DeviceEnum deviceEnum) {
         Toast.makeText(this.activity, deviceEnum.name() + " disconnected", Toast.LENGTH_SHORT).show();
         edm.driverDidNotConnectToDevice(this, activity.getString(R.string.fail_to_connect), false, activity);
-        if (msrCallBack != null) {
-            msrCallBack.readerConnectedSuccessfully(false);
-        }
         if (!isAutoConnect) {
 //            dismissDialog();
         } else {
@@ -628,25 +641,5 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
             myProgressDialog.dismiss();
         }
         myProgressDialog = null;
-    }
-
-    private class ConnectNomadAsync extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected void onPreExecute() {
-            showDialog(R.string.connecting_handpoint);
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            EMSEpayLoginInfo loginInfo = EMSUtils.getEmsEpayLoginInfo(activity);
-            SECRET = loginInfo.getSecret();
-            TERMINAL_ID = loginInfo.getTerminalId();
-            initDevice();
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void unused) {
-        }
     }
 }
