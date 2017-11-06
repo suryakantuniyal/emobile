@@ -7,4 +7,12 @@
     <usb-device vendor-id="2049" product-id="17" />
     <!-- vendor and product ID for Eikons -->
     <usb-device vendor-id="5246" product-id="8214" />
+    <!--
+      Microchip and STM32 boards present in early
+      versions of the T25
+  -->
+    <!-- Official Powa T25 -->
+    <usb-device
+        vendor-id="10944"
+        product-id="21541" />
 </resources>
