@@ -7,5 +7,9 @@
      
     <usb-accessory model="mcu" manufacturer="Powa" version="1.0"/>
     <usb-device vendor-id="7306" product-id="515" />
+    <usb-accessory
+        model="mcu"
+        manufacturer="Powa"
+        version="1.0" />
 
 </resources>

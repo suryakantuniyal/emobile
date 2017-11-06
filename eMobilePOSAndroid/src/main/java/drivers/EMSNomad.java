@@ -240,7 +240,6 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
         if (handler == null)
             handler = new Handler();
         msrCallBack = callBack;
-        handler.post(doUpdateDidConnect);
     }
 
     private Runnable doUpdateDidConnect = new Runnable() {
@@ -516,12 +515,11 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
     public void onDeviceConnected(DeviceEnum deviceEnum, HashMap<String, String> arg1) {
         Toast.makeText(this.activity, deviceEnum.name() + " connected", Toast.LENGTH_SHORT).show();
 
-//        try {
-//            EMSCallBack callBack = (EMSCallBack) activity;
-//            callBack.readerConnectedSuccessfully(true);
-//        } catch (Exception ex) {
-//
-//        }
+        try {
+            handler.post(doUpdateDidConnect);
+        } catch (Exception ex) {
+
+        }
 //        synchronized (terminal) {
 //        terminal.notifyAll();
         edm.driverDidConnectToDevice(this, !isAutoConnect);
@@ -539,6 +537,9 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
     public void onDeviceDisconnected(DeviceEnum deviceEnum) {
         Toast.makeText(this.activity, deviceEnum.name() + " disconnected", Toast.LENGTH_SHORT).show();
         edm.driverDidNotConnectToDevice(this, activity.getString(R.string.fail_to_connect), false);
+        if (msrCallBack != null) {
+            msrCallBack.readerConnectedSuccessfully(false);
+        }
         if (!isAutoConnect) {
 //            dismissDialog();
         } else {

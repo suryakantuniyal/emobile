@@ -191,28 +191,20 @@ dependencies {
     compile(name: 'nostraLoader-release', ext: 'aar')
     compile(name: 'viewPagerIndicator-release', ext: 'aar')
     compile(name: 'elo-peripherals-refresh-sdk-release', ext: 'aar')
-
     ivuposCompile files('libs/Android_Platform_Adapter.jar')
     ivuposCompile files('libs/RBA_SDK.jar')
     ivuposCompile files('libs/evoSnapSDK.jar')
     //    restoffivuposCompile files('libs/Android_Platform_Adapter.jar')
-
     //    restoffivuposCompile files('libs/RBA_SDK.jar')
-
     //    restoffivuposCompile files('libs/evoSnapSDK.jar')
     emsCompile files('libs/Android_Platform_Adapter.jar')
     emsCompile files('libs/RBA_SDK.jar')
     emsCompile files('libs/evoSnapSDK.jar')
     //    restoffCompile files('libs/Android_Platform_Adapter.jar')
-
     //    restoffCompile files('libs/RBA_SDK.jar')
-
     //    restoffCompile files('libs/evoSnapSDK.jar')
-
     //    emsblueCompile files('libs/Android_Platform_Adapter.jar')
-
     //    emsblueCompile files('libs/RBA_SDK.jar')
-
     //    emsblueCompile files('libs/evoSnapSDK.jar')
     compile files('libs/bouncycastle.jar')
     compile files('libs/commons-codec-1.4.0.jar')
@@ -248,7 +240,7 @@ dependencies {
     compile files('libs/hapi-android-3.2.5.jar')
     compile 'com.google.guava:guava:20.0'
     compile 'com.android.support:multidex:1.0.1'
-//    compile 'com.android.support:support-v4:24.0.0'
+    //    compile 'com.android.support:support-v4:24.0.0'
     compile 'com.android.support:support-v13:25.3.1'
     compile files('libs/bixolon_printer.jar')
     compile files('libs/jpos114-controls.jar')
@@ -261,16 +253,16 @@ dependencies {
     compile files('libs/PAT215Display.1.0.0.jar')
     compile files('libs/pat215msr1.0.0.jar')
     //    compile 'com.google.firebase:firebase-core:9.2.1'
-
     //    compile 'com.google.android.gms:play-services:9.2.1'
     compile 'com.google.code.gson:gson:2.7'
     compile files('libs/dspread_1_2_1.jar')
-    compile files('libs/nomad_1_2_3.jar')
+//    compile files('libs/nomad_1_2_3.jar')
     compile files('libs/rambler_1_2_1.jar')
     compile files('libs/spm2_1_2_1.jar')
-    compile files('libs/walker_1_2_1.jar')
+//    compile files('libs/walker_1_2_1.jar')
     compile files('libs/coresdk_1_4_2.jar')
     compile files('libs/TfhkaAndroid.jar')
+    compile files('libs/bbposdevice_1_4_2.jar')
 }
 
 dependencies {
