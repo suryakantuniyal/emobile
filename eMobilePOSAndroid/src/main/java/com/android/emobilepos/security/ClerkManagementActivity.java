@@ -16,10 +16,11 @@ import android.widget.TextView;
 import com.android.dao.ClerkDAO;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.realms.Clerk;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import java.util.List;
 
-public class ClerkManagementActivity extends Activity {
+public class ClerkManagementActivity extends BaseFragmentActivityActionBar {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
