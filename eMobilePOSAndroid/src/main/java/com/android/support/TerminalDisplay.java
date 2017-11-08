@@ -19,7 +19,7 @@ import util.StringUtil;
  * Created by Guarionex on 11/23/2015.
  */
 public class TerminalDisplay {
-    public static void setTerminalDisplay(MyPreferences myPref, String row1, String row2) {
+    public static void setTerminalDisplay(final MyPreferences myPref, String row1, String row2) {
         row1 = StringUtil.nullStringToEmpty(row1);
         row2 = StringUtil.nullStringToEmpty(row2);
         if (myPref.isSam4s()) {
@@ -31,7 +31,14 @@ public class TerminalDisplay {
             EMSPAT100.getTerminalDisp().clearText();
             EMSPAT100.getTerminalDisp().displayText(Global.formatSam4sCDT(row1, row2));
         } else if (myPref.isESY13P1()) {
-            EMSELO.printTextOnCFD(row1, row2, myPref.context);
+            final String finalRow = row1;
+            final String finalRow1 = row2;
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    EMSELO.printTextOnCFD(finalRow, finalRow1, myPref.context);
+                }
+            }).start();
         } else if (myPref.isPAT215()) {
             EMSPAT215.getTerminalDisp().clearText();
             EMSPAT215.getTerminalDisp().displayText(Global.formatSam4sCDT(row1, row2));

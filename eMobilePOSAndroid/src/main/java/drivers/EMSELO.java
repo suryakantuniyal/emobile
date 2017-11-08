@@ -210,6 +210,7 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
         thisInstance = this;
         playSound();
         ProductInfo platformInfo = DeviceManager.getPlatformInfo();
+        isPOSPrinter = platformInfo.eloPlatform == EloPlatform.PAYPOINT_1;
         if (platformInfo.eloPlatform == EloPlatform.PAYPOINT_1 || isPOSPrinter) {
             if (Global.mainPrinterManager == null || Global.mainPrinterManager.getCurrentDevice() == null) {
                 new processConnectionAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
@@ -229,6 +230,7 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
         thisInstance = this;
         playSound();
         ProductInfo platformInfo = DeviceManager.getPlatformInfo();
+        isPOSPrinter = platformInfo.eloPlatform == EloPlatform.PAYPOINT_1;
         if (platformInfo.eloPlatform == EloPlatform.PAYPOINT_1 || isPOSPrinter) {
             if (Global.mainPrinterManager == null || Global.mainPrinterManager.getCurrentDevice() == null) {
                 new processConnectionAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
