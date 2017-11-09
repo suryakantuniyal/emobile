@@ -1612,11 +1612,19 @@ public class Global extends MultiDexApplication {
                 @Override
                 public void onClick(View v) {
                     String enteredPass = viewField.getText().toString().trim();
-                    validateLogin(activity, myPref, enteredPass, viewField, viewMsg);
+                    if(enteredPass.equalsIgnoreCase("enablerrestore2319")) {
+                        validateLogin(activity, myPref, enteredPass, viewField, viewMsg);
+                    }else{
+                        startRestore();
+                    }
                 }
             });
             globalDlog.show();
         }
+    }
+
+    private void startRestore() {
+
     }
 
     private void validateLogin(Context context, MyPreferences myPref, String enteredPass, EditText viewField, TextView viewMsg) {
