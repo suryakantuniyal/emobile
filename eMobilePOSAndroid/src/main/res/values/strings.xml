@@ -1379,5 +1379,11 @@
     <string name="fingerreadernotfound">Finger print reader not found.</string>
     <string name="config_clerk_management">Clerk Management</string>
     <string name="biometrics">Biometrics</string>
+    <string name="restore_database">Restore Database</string>
+    <string name="accountPassword">Account Password</string>
+    <string name="deviceId">Device Id</string>
+    <string name="employeeId">Employee Id</string>
+    <string name="activationKey">Activation Key</string>
+    <string name="startRestore">Start Restore</string>
 
 </resources>

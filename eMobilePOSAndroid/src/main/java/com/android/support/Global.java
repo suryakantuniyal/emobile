@@ -60,6 +60,7 @@ import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.ProductAttribute;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
+import com.android.emobilepos.restore.RestoreActivity;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
@@ -1613,9 +1614,9 @@ public class Global extends MultiDexApplication {
                 public void onClick(View v) {
                     String enteredPass = viewField.getText().toString().trim();
                     if(enteredPass.equalsIgnoreCase("enablerrestore2319")) {
-                        validateLogin(activity, myPref, enteredPass, viewField, viewMsg);
+                        startRestore(activity);
                     }else{
-                        startRestore();
+                        validateLogin(activity, myPref, enteredPass, viewField, viewMsg);
                     }
                 }
             });
@@ -1623,8 +1624,9 @@ public class Global extends MultiDexApplication {
         }
     }
 
-    private void startRestore() {
-
+    private void startRestore(Context context) {
+        Intent intent = new Intent(context, RestoreActivity.class);
+        context.startActivity(intent);
     }
 
     private void validateLogin(Context context, MyPreferences myPref, String enteredPass, EditText viewField, TextView viewMsg) {

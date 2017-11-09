@@ -28,7 +28,7 @@ import io.realm.Realm;
 
 public class DBManager {
     public static final int VERSION = 58;
-    private static final String DB_NAME_OLD = "emobilepos.sqlite";
+    public static final String DB_NAME_OLD = "emobilepos.sqlite";
     private static final String CIPHER_DB_NAME = "emobilepos.sqlcipher";
     private static final String PASSWORD = "em0b1l3p05";
     //    private boolean sendAndReceive = false;
@@ -489,6 +489,36 @@ public class DBManager {
             e1.printStackTrace();
         }
         File dbCipherPath = context.getDatabasePath(CIPHER_DB_NAME);
+        if (dbPath != null && dbPath.exists() && !dbCipherPath.exists()) {
+            try {
+                encrypt(context, DB_NAME_OLD, getPassword());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void dbRestore() {
+        File dbPath = null;
+        try {
+//            dbPath = context.getDatabasePath(DB_NAME_OLD);
+            dbPath = new File(Environment.getExternalStorageDirectory() + "/" + DB_NAME_OLD);
+//            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+//            assignEmployee.setEmpId(1);
+//            Realm realm = Realm.getDefaultInstance();
+//            realm.beginTransaction();
+//            realm.where(AssignEmployee.class).findAll().deleteAllFromRealm();
+//            realm.copyToRealm(assignEmployee);
+//            realm.commitTransaction();
+//            myPref.setDeviceID("21e2243f5be84a18");
+//            myPref.setAcctNumber("150872170602");
+//            myPref.setAcctPassword("rum123");
+//            myPref.setActivKey("31295R1401263065748Y79004A");
+        } catch (Exception e1) {
+            e1.printStackTrace();
+        }
+        File dbCipherPath = context.getDatabasePath(CIPHER_DB_NAME);
+        boolean delete = dbCipherPath.delete();
         if (dbPath != null && dbPath.exists() && !dbCipherPath.exists()) {
             try {
                 encrypt(context, DB_NAME_OLD, getPassword());
