@@ -501,8 +501,8 @@ public class DBManager {
     public void dbRestore() {
         File dbPath = null;
         try {
-//            dbPath = context.getDatabasePath(DB_NAME_OLD);
-            dbPath = new File(Environment.getExternalStorageDirectory() + "/" + DB_NAME_OLD);
+            dbPath = context.getDatabasePath(DB_NAME_OLD);
+//            dbPath = new File(Environment.getExternalStorageDirectory() + "/" + DB_NAME_OLD);
 //            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
 //            assignEmployee.setEmpId(1);
 //            Realm realm = Realm.getDefaultInstance();
