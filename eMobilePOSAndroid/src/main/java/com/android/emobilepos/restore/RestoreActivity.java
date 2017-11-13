@@ -66,7 +66,7 @@ public class RestoreActivity extends Activity implements View.OnClickListener {
         preferences.setAcctPassword(getEditText(R.id.accountPasswordRestore).getText().toString());
         preferences.setActivKey(getEditText(R.id.activationKeyRestore).getText().toString());
         AssignEmployee assignEmployee = new AssignEmployee();//AssignEmployeeDAO.getAssignEmployee(false);
-        assignEmployee.setEmpId(Integer.parseInt(getEditText(R.id.employeeIdRestore).toString()));
+        assignEmployee.setEmpId(Integer.parseInt(getEditText(R.id.employeeIdRestore).getText().toString()));
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
         realm.where(AssignEmployee.class).findAll().deleteAllFromRealm();

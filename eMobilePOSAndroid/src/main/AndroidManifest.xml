@@ -516,7 +516,8 @@
             android:label="@string/config_clerk_management" />
         <activity
             android:name=".security.ClerkManagementDetailActivity"
-            android:label="@string/config_clerk_management"></activity>
+            android:label="@string/config_clerk_management" />
+        <activity android:name=".restore.RestoreActivity" />
     </application>
 
 </manifest>

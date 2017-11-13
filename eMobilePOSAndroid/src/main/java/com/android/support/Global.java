@@ -41,6 +41,7 @@ import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.ClerkDAO;
 import com.android.dao.EmobilePOSRealmMigration;
 import com.android.dao.RealmModule;
+import com.android.database.DBManager;
 import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.R;
@@ -1613,7 +1614,8 @@ public class Global extends MultiDexApplication {
                 @Override
                 public void onClick(View v) {
                     String enteredPass = viewField.getText().toString().trim();
-                    if(enteredPass.equalsIgnoreCase("enablerrestore2319")) {
+                    File restoreDB = new File(Environment.getExternalStorageDirectory() + "/emobilepos.db");
+                    if (restoreDB.exists() && enteredPass.equalsIgnoreCase("enablerrestore2319")) {
                         startRestore(activity);
                     }else{
                         validateLogin(activity, myPref, enteredPass, viewField, viewMsg);
