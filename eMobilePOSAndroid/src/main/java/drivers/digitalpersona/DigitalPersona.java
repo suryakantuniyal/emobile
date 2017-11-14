@@ -107,8 +107,15 @@ public class DigitalPersona {
         } catch (UareUException e) {
             Crashlytics.logException(e);
             e.printStackTrace();
+            return;
         } catch (DPFPDDUsbException e) {
-
+            Crashlytics.logException(e);
+            e.printStackTrace();
+            return;
+        } catch (UnsatisfiedLinkError e) {
+            Crashlytics.logException(e);
+            e.printStackTrace();
+            return;
         }
     }
 
@@ -193,12 +200,19 @@ public class DigitalPersona {
                     } catch (UareUException e) {
                         Crashlytics.logException(e);
                         e.printStackTrace();
+                        return;
                     } catch (InterruptedException e) {
                         Crashlytics.logException(e);
                         e.printStackTrace();
+                        return;
                     } catch (DPFPDDUsbException e) {
                         Crashlytics.logException(e);
                         e.printStackTrace();
+                        return;
+                    } catch (UnsatisfiedLinkError e) {
+                        Crashlytics.logException(e);
+                        e.printStackTrace();
+                        return;
                     }
                 }
             }).start();

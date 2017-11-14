@@ -60,6 +60,7 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.TaxesCalculator;
 import com.crashlytics.android.Crashlytics;
+import com.elo.device.peripherals.Printer;
 import com.miurasystems.miuralibrary.api.executor.MiuraManager;
 import com.miurasystems.miuralibrary.api.listener.MiuraDefaultListener;
 import com.mpowa.android.sdk.powapos.PowaPOS;
@@ -134,6 +135,7 @@ public class EMSDeviceDriver {
     MePOS mePOS;
     POSSDK pos_sdk = null;
     PrinterAPI eloPrinterApi;
+    Printer eloPrinterRefresh;
     POSPrinter bixolonPrinter;
     MePOSReceipt mePOSReceipt;
     InputStream inputStream;
@@ -300,7 +302,10 @@ public class EMSDeviceDriver {
                 SendCmd(String.format("80*%s", line));
             }
         } else if (this instanceof EMSELO) {
-            eloPrinterApi.print(str);
+            if (eloPrinterRefresh != null) {
+                eloPrinterRefresh.print(str);
+            } else
+                eloPrinterApi.print(str);
         } else if (this instanceof EMSMiura) {
             String[] split = str.split(("\n"));
             for (String line : split) {
@@ -387,7 +392,11 @@ public class EMSDeviceDriver {
                 SendCmd(String.format("80*%s", line));
             }
         } else if (this instanceof EMSELO) {
-            eloPrinterApi.print(new String(byteArray));
+            if (eloPrinterRefresh != null) {
+                eloPrinterRefresh.print(new String(byteArray));
+            } else {
+                eloPrinterApi.print(new String(byteArray));
+            }
         } else if (this instanceof EMSMiura) {
             print(new String(byteArray));
         } else if (this instanceof EMSmePOS) {
@@ -593,7 +602,10 @@ public class EMSDeviceDriver {
                 }
             }
         } else if (this instanceof EMSELO) {
-            eloPrinterApi.print(str);
+            if (eloPrinterRefresh != null) {
+                eloPrinterRefresh.print(str);
+            } else
+                eloPrinterApi.print(str);
         } else if (this instanceof EMSMiura) {
             print(str);
         } else if (this instanceof EMSmePOS) {
@@ -1314,11 +1326,13 @@ public class EMSDeviceDriver {
                 pos_sdk.imageStandardModeRasterPrint(myBitmap, PrinterWidth);
                 pos_sdk.textStandardModeAlignment(ALIGN_LEFT);
             } else if (this instanceof EMSELO) {
-                Matrix matrix = new Matrix();
-                matrix.postRotate(90);
-                matrix.preScale(1.0f, -1.0f);
-                Bitmap rotatedBmp = Bitmap.createBitmap(myBitmap, 0, 0, myBitmap.getWidth(), myBitmap.getHeight(), matrix, true);
-                eloPrinterApi.print_image(activity, rotatedBmp);
+                if (eloPrinterRefresh == null) {
+                    Matrix matrix = new Matrix();
+                    matrix.postRotate(90);
+                    matrix.preScale(1.0f, -1.0f);
+                    Bitmap rotatedBmp = Bitmap.createBitmap(myBitmap, 0, 0, myBitmap.getWidth(), myBitmap.getHeight(), matrix, true);
+                    eloPrinterApi.print_image(activity, rotatedBmp);
+                }
             } else if (this instanceof EMSMiura) {
 //                try {
 //                    InputStream inputStream = activity.getAssets().open("image.bmp");
@@ -1469,12 +1483,15 @@ public class EMSDeviceDriver {
                 pos_sdk.imageStandardModeRasterPrint(bitmap, PrinterWidth);
                 pos_sdk.textStandardModeAlignment(ALIGN_LEFT);
             } else if (this instanceof EMSELO) {
-                Matrix matrix = new Matrix();
-                matrix.postRotate(90);
-                matrix.preScale(1.0f, -1.0f);
-                Bitmap rotatedBmp = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-                eloPrinterApi.print_image(activity, rotatedBmp);
+                if (eloPrinterRefresh == null) {
+                    Matrix matrix = new Matrix();
+                    matrix.postRotate(90);
+                    matrix.preScale(1.0f, -1.0f);
+                    Bitmap rotatedBmp = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+                    eloPrinterApi.print_image(activity, rotatedBmp);
+                }
                 print("\n\n\n\n");
+
             } else if (this instanceof EMSBixolon) {
                 ByteBuffer buffer = ByteBuffer.allocate(4);
                 buffer.put((byte) POSPrinterConst.PTR_S_RECEIPT);

@@ -890,7 +890,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
                 Global.mainPrinterManager.getCurrentDevice().releaseCardReader();
                 Global.mainPrinterManager.getCurrentDevice().turnOffBCR();
-                Global.mainPrinterManager.getCurrentDevice().loadScanner(null);
+//                Global.mainPrinterManager.getCurrentDevice().loadScanner(null);
             }
             if (Global.btSled != null && Global.btSled.getCurrentDevice() != null)
                 Global.btSled.getCurrentDevice().releaseCardReader();

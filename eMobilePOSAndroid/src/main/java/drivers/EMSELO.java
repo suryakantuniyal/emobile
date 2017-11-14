@@ -28,7 +28,9 @@ import com.android.support.MyPreferences;
 import com.elo.device.DeviceManager;
 import com.elo.device.ProductInfo;
 import com.elo.device.enums.EloPlatform;
+import com.elo.device.enums.Status;
 import com.elo.device.exceptions.UnsupportedEloPlatform;
+import com.elo.device.peripherals.BarCodeReader;
 import com.elotouch.paypoint.register.barcodereader.BarcodeReader;
 import com.elotouch.paypoint.register.cd.CashDrawer;
 import com.elotouch.paypoint.register.cfd.CFD;
@@ -74,7 +76,7 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     private Handler handler;
     String scannedData = "";
     private final int LINE_WIDTH = 32;
-    private BarcodeReader barcodereader = new BarcodeReader();
+    BarCodeReaderAdapter barcodereader;
     private boolean didConnect;
     private static CFD customerFacingDisplay;
     private MTSCRA m_scra;
@@ -285,12 +287,17 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     @Override
     public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
         try {
-            SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
-            eloPrinterApi = new PrinterAPI(eloPrinterPort);
-            printReceipt(ordID, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, emvContainer);
-            eloPrinterPort.getInputStream().close();
-            eloPrinterPort.getOutputStream().close();
-            eloPrinterPort.close();
+            if (DeviceManager.getPlatformInfo().eloPlatform == EloPlatform.PAYPOINT_REFRESH) {
+                eloPrinterRefresh = DeviceManager.getInstance(DeviceManager.getPlatformInfo().eloPlatform, activity).getPrinter();
+                printReceipt(ordID, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, emvContainer);
+            } else {
+                SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
+                eloPrinterApi = new PrinterAPI(eloPrinterPort);
+                printReceipt(ordID, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, emvContainer);
+                eloPrinterPort.getInputStream().close();
+                eloPrinterPort.getOutputStream().close();
+                eloPrinterPort.close();
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -308,12 +315,16 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     @Override
     public boolean printPaymentDetails(String payID, int isFromMainMenu, boolean isReprint, EMVContainer emvContainer) {
         try {
-            SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
-            eloPrinterApi = new PrinterAPI(eloPrinterPort);
-            super.printPaymentDetailsReceipt(payID, isFromMainMenu, isReprint, LINE_WIDTH, emvContainer);
-            eloPrinterPort.getInputStream().close();
-            eloPrinterPort.getOutputStream().close();
-            eloPrinterPort.close();
+            if (DeviceManager.getPlatformInfo().eloPlatform == EloPlatform.PAYPOINT_REFRESH) {
+                eloPrinterRefresh = DeviceManager.getInstance(DeviceManager.getPlatformInfo().eloPlatform, activity).getPrinter();
+                super.printPaymentDetailsReceipt(payID, isFromMainMenu, isReprint, LINE_WIDTH, emvContainer);
+            } else {
+                SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
+                eloPrinterApi = new PrinterAPI(eloPrinterPort);
+                super.printPaymentDetailsReceipt(payID, isFromMainMenu, isReprint, LINE_WIDTH, emvContainer);
+                eloPrinterPort.getInputStream().close();
+                eloPrinterPort.getOutputStream().close();
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -330,12 +341,17 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     @Override
     public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSignature) {
         try {
-            SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
-            eloPrinterApi = new PrinterAPI(eloPrinterPort);
-            super.printConsignmentReceipt(myConsignment, encodedSignature, LINE_WIDTH);
-            eloPrinterPort.getInputStream().close();
-            eloPrinterPort.getOutputStream().close();
-            eloPrinterPort.close();
+            if (DeviceManager.getPlatformInfo().eloPlatform == EloPlatform.PAYPOINT_REFRESH) {
+                eloPrinterRefresh = DeviceManager.getInstance(DeviceManager.getPlatformInfo().eloPlatform, activity).getPrinter();
+                super.printConsignmentReceipt(myConsignment, encodedSignature, LINE_WIDTH);
+            } else {
+                SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
+                eloPrinterApi = new PrinterAPI(eloPrinterPort);
+                super.printConsignmentReceipt(myConsignment, encodedSignature, LINE_WIDTH);
+                eloPrinterPort.getInputStream().close();
+                eloPrinterPort.getOutputStream().close();
+                eloPrinterPort.close();
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -346,12 +362,17 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     @Override
     public boolean printConsignmentPickup(List<ConsignmentTransaction> myConsignment, String encodedSignature) {
         try {
-            SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
-            eloPrinterApi = new PrinterAPI(eloPrinterPort);
-            super.printConsignmentPickupReceipt(myConsignment, encodedSignature, LINE_WIDTH);
-            eloPrinterPort.getInputStream().close();
-            eloPrinterPort.getOutputStream().close();
-            eloPrinterPort.close();
+            if (DeviceManager.getPlatformInfo().eloPlatform == EloPlatform.PAYPOINT_REFRESH) {
+                eloPrinterRefresh = DeviceManager.getInstance(DeviceManager.getPlatformInfo().eloPlatform, activity).getPrinter();
+                super.printConsignmentPickupReceipt(myConsignment, encodedSignature, LINE_WIDTH);
+            } else {
+                SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
+                eloPrinterApi = new PrinterAPI(eloPrinterPort);
+                super.printConsignmentPickupReceipt(myConsignment, encodedSignature, LINE_WIDTH);
+                eloPrinterPort.getInputStream().close();
+                eloPrinterPort.getOutputStream().close();
+                eloPrinterPort.close();
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -362,12 +383,17 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     @Override
     public boolean printConsignmentHistory(HashMap<String, String> map, Cursor c, boolean isPickup) {
         try {
-            SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
-            eloPrinterApi = new PrinterAPI(eloPrinterPort);
-            super.printConsignmentHistoryReceipt(map, c, isPickup, LINE_WIDTH);
-            eloPrinterPort.getInputStream().close();
-            eloPrinterPort.getOutputStream().close();
-            eloPrinterPort.close();
+            if (DeviceManager.getPlatformInfo().eloPlatform == EloPlatform.PAYPOINT_REFRESH) {
+                eloPrinterRefresh = DeviceManager.getInstance(DeviceManager.getPlatformInfo().eloPlatform, activity).getPrinter();
+                super.printConsignmentHistoryReceipt(map, c, isPickup, LINE_WIDTH);
+            } else {
+                SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
+                eloPrinterApi = new PrinterAPI(eloPrinterPort);
+                super.printConsignmentHistoryReceipt(map, c, isPickup, LINE_WIDTH);
+                eloPrinterPort.getInputStream().close();
+                eloPrinterPort.getOutputStream().close();
+                eloPrinterPort.close();
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -378,13 +404,19 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     @Override
     public String printStationPrinter(List<Orders> orderProducts, String ordID, boolean cutPaper, boolean printHeader) {
         try {
-            SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
-            eloPrinterApi = new PrinterAPI(eloPrinterPort);
-            String receipt = super.printStationPrinterReceipt(orderProducts, ordID, LINE_WIDTH, cutPaper, printHeader);
-            eloPrinterPort.getInputStream().close();
-            eloPrinterPort.getOutputStream().close();
-            eloPrinterPort.close();
-            return receipt;
+            if (DeviceManager.getPlatformInfo().eloPlatform == EloPlatform.PAYPOINT_REFRESH) {
+                eloPrinterRefresh = DeviceManager.getInstance(DeviceManager.getPlatformInfo().eloPlatform, activity).getPrinter();
+                String receipt = super.printStationPrinterReceipt(orderProducts, ordID, LINE_WIDTH, cutPaper, printHeader);
+                return receipt;
+            } else {
+                SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
+                eloPrinterApi = new PrinterAPI(eloPrinterPort);
+                String receipt = super.printStationPrinterReceipt(orderProducts, ordID, LINE_WIDTH, cutPaper, printHeader);
+                eloPrinterPort.getInputStream().close();
+                eloPrinterPort.getOutputStream().close();
+                eloPrinterPort.close();
+                return receipt;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -394,12 +426,17 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     @Override
     public boolean printOpenInvoices(String invID) {
         try {
-            SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
-            eloPrinterApi = new PrinterAPI(eloPrinterPort);
-            super.printOpenInvoicesReceipt(invID, LINE_WIDTH);
-            eloPrinterPort.getInputStream().close();
-            eloPrinterPort.getOutputStream().close();
-            eloPrinterPort.close();
+            if (DeviceManager.getPlatformInfo().eloPlatform == EloPlatform.PAYPOINT_REFRESH) {
+                eloPrinterRefresh = DeviceManager.getInstance(DeviceManager.getPlatformInfo().eloPlatform, activity).getPrinter();
+                super.printOpenInvoicesReceipt(invID, LINE_WIDTH);
+            } else {
+                SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
+                eloPrinterApi = new PrinterAPI(eloPrinterPort);
+                super.printOpenInvoicesReceipt(invID, LINE_WIDTH);
+                eloPrinterPort.getInputStream().close();
+                eloPrinterPort.getOutputStream().close();
+                eloPrinterPort.close();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -429,12 +466,17 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     @Override
     public boolean printReport(String curDate) {
         try {
-            SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
-            eloPrinterApi = new PrinterAPI(eloPrinterPort);
-            super.printReportReceipt(curDate, LINE_WIDTH);
-            eloPrinterPort.getInputStream().close();
-            eloPrinterPort.getOutputStream().close();
-            eloPrinterPort.close();
+            if (DeviceManager.getPlatformInfo().eloPlatform == EloPlatform.PAYPOINT_REFRESH) {
+                eloPrinterRefresh = DeviceManager.getInstance(DeviceManager.getPlatformInfo().eloPlatform, activity).getPrinter();
+                super.printReportReceipt(curDate, LINE_WIDTH);
+            } else {
+                SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
+                eloPrinterApi = new PrinterAPI(eloPrinterPort);
+                super.printReportReceipt(curDate, LINE_WIDTH);
+                eloPrinterPort.getInputStream().close();
+                eloPrinterPort.getOutputStream().close();
+                eloPrinterPort.close();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -444,12 +486,17 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     @Override
     public void printEndOfDayReport(String date, String clerk_id, boolean printDetails) {
         try {
-            SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
-            eloPrinterApi = new PrinterAPI(eloPrinterPort);
-            super.printEndOfDayReportReceipt(date, LINE_WIDTH, printDetails);
-            eloPrinterPort.getInputStream().close();
-            eloPrinterPort.getOutputStream().close();
-            eloPrinterPort.close();
+            if (DeviceManager.getPlatformInfo().eloPlatform == EloPlatform.PAYPOINT_REFRESH) {
+                eloPrinterRefresh = DeviceManager.getInstance(DeviceManager.getPlatformInfo().eloPlatform, activity).getPrinter();
+                super.printEndOfDayReportReceipt(date, LINE_WIDTH, printDetails);
+            } else {
+                SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
+                eloPrinterApi = new PrinterAPI(eloPrinterPort);
+                super.printEndOfDayReportReceipt(date, LINE_WIDTH, printDetails);
+                eloPrinterPort.getInputStream().close();
+                eloPrinterPort.getOutputStream().close();
+                eloPrinterPort.close();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -458,12 +505,17 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     @Override
     public void printShiftDetailsReport(String shiftID) {
         try {
-            SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
-            eloPrinterApi = new PrinterAPI(eloPrinterPort);
-            super.printShiftDetailsReceipt(LINE_WIDTH, shiftID);
-            eloPrinterPort.getInputStream().close();
-            eloPrinterPort.getOutputStream().close();
-            eloPrinterPort.close();
+            if (DeviceManager.getPlatformInfo().eloPlatform == EloPlatform.PAYPOINT_REFRESH) {
+                eloPrinterRefresh = DeviceManager.getInstance(DeviceManager.getPlatformInfo().eloPlatform, activity).getPrinter();
+                super.printShiftDetailsReceipt(LINE_WIDTH, shiftID);
+            } else {
+                SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
+                eloPrinterApi = new PrinterAPI(eloPrinterPort);
+                super.printShiftDetailsReceipt(LINE_WIDTH, shiftID);
+                eloPrinterPort.getInputStream().close();
+                eloPrinterPort.getOutputStream().close();
+                eloPrinterPort.close();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -520,7 +572,11 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
 
     @Override
     public void loadScanner(EMSCallBack callBack) {
-
+        if (DeviceManager.getPlatformInfo().eloPlatform == EloPlatform.PAYPOINT_1) {
+            barcodereader = new Elo1Barcodereader();
+        } else {
+            barcodereader = new EloRefreshBarcodereader();
+        }
         scannerCallBack = callBack;
         if (handler == null)
             handler = new Handler();
@@ -537,11 +593,25 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
 
     @Override
     public void openCashDrawer() {
-        CashDrawer cash_drawer = new CashDrawer();
-        if (cash_drawer.isDrawerOpen()) {
-            Toast.makeText(activity, "The Cash Drawer is already open !", Toast.LENGTH_SHORT).show();
+        if (DeviceManager.getPlatformInfo().eloPlatform == EloPlatform.PAYPOINT_REFRESH) {
+            try {
+                DeviceManager deviceManager = DeviceManager.getInstance(DeviceManager.getPlatformInfo().eloPlatform, activity);
+                com.elo.device.peripherals.CashDrawer cashDrawer = deviceManager.getCashDrawer();
+                if (cashDrawer.isOpen()) {
+                    Toast.makeText(activity, "The Cash Drawer is already open !", Toast.LENGTH_SHORT).show();
+                } else {
+                    cashDrawer.open();
+                }
+            } catch (UnsupportedEloPlatform unsupportedEloPlatform) {
+
+            }
         } else {
-            cash_drawer.openCashDrawer();
+            CashDrawer cash_drawer = new CashDrawer();
+            if (cash_drawer.isDrawerOpen()) {
+                Toast.makeText(activity, "The Cash Drawer is already open !", Toast.LENGTH_SHORT).show();
+            } else {
+                cash_drawer.openCashDrawer();
+            }
         }
     }
 
@@ -563,7 +633,7 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     @Override
     public void toggleBarcodeReader() {
         if (barcodereader != null) {
-            barcodereader.turnOnLaser();
+            barcodereader.setBarCodeReaderEnabled(true);
         }
     }
 
@@ -591,19 +661,26 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     @Override
     public void printReceiptPreview(SplittedOrder splitedOrder) {
         try {
-            SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
-            eloPrinterApi = new PrinterAPI(eloPrinterPort);
-            setPaperWidth(LINE_WIDTH);
-            super.printReceiptPreview(splitedOrder, LINE_WIDTH);
-            eloPrinterPort.getInputStream().close();
-            eloPrinterPort.getOutputStream().close();
-            eloPrinterPort.close();
+            if (DeviceManager.getPlatformInfo().eloPlatform == EloPlatform.PAYPOINT_REFRESH) {
+                eloPrinterRefresh = DeviceManager.getInstance(DeviceManager.getPlatformInfo().eloPlatform, activity).getPrinter();
+                super.printReceiptPreview(splitedOrder, LINE_WIDTH);
+            } else {
+                SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
+                eloPrinterApi = new PrinterAPI(eloPrinterPort);
+                setPaperWidth(LINE_WIDTH);
+                super.printReceiptPreview(splitedOrder, LINE_WIDTH);
+                eloPrinterPort.getInputStream().close();
+                eloPrinterPort.getOutputStream().close();
+                eloPrinterPort.close();
+            }
         } catch (JAException e) {
             e.printStackTrace();
         } catch (StarIOPortException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (UnsupportedEloPlatform unsupportedEloPlatform) {
+
         }
     }
 
@@ -681,14 +758,82 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     }
 
     public void turnOnBCR() {
-        if (!barcodereader.isBcrOn()) {
-            barcodereader.turnOnLaser();
+        if (barcodereader != null && !barcodereader.isBarCodeReaderEnabled()) {
+//            barcodereader.turnOnLaser();
+            barcodereader.setBarCodeReaderEnabled(true);
         }
     }
 
     public void turnOffBCR() {
-        if (barcodereader.isBcrOn()) {
-            barcodereader.turnOnLaser();
+        if (barcodereader != null && barcodereader.isBarCodeReaderEnabled()) {
+//            barcodereader.turnOnLaser();
+            barcodereader.setBarCodeReaderEnabled(false);
         }
+    }
+
+    class Elo1Barcodereader implements BarCodeReaderAdapter {
+        BarcodeReader barcodeReader = new BarcodeReader();
+
+        @Override
+        public boolean isBarCodeReaderEnabled() {
+            return barcodeReader.isBcrOn();
+        }
+
+        @Override
+        public void setBarCodeReaderEnabled(boolean enabled) {
+            barcodeReader.turnOnLaser();
+        }
+
+        @Override
+        public boolean isBarCodeReaderKbdMode() {
+            return true;
+        }
+
+        @Override
+        public void setBarCodeReaderKbdMode() {
+
+        }
+    }
+
+    class EloRefreshBarcodereader implements BarCodeReaderAdapter {
+        BarCodeReader barCodeReader;
+
+        EloRefreshBarcodereader() {
+            try {
+                barCodeReader = DeviceManager.getInstance(DeviceManager.getPlatformInfo().eloPlatform, activity).getBarCodeReader();
+            } catch (UnsupportedEloPlatform unsupportedEloPlatform) {
+
+            }
+        }
+
+        @Override
+        public boolean isBarCodeReaderEnabled() {
+            return barCodeReader.getStatus() == Status.ENABLED;
+        }
+
+        @Override
+        public void setBarCodeReaderEnabled(boolean enabled) {
+            barCodeReader.setEnabled(enabled);
+        }
+
+        @Override
+        public boolean isBarCodeReaderKbdMode() {
+            return barCodeReader.isKbMode(activity);
+        }
+
+        @Override
+        public void setBarCodeReaderKbdMode() {
+            barCodeReader.setKbMode(activity);
+        }
+    }
+
+    public interface BarCodeReaderAdapter {
+        boolean isBarCodeReaderEnabled();
+
+        void setBarCodeReaderEnabled(boolean enabled);
+
+        boolean isBarCodeReaderKbdMode();
+
+        void setBarCodeReaderKbdMode();
     }
 }
