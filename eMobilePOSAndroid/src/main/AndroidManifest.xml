@@ -27,6 +27,8 @@
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE"/>
+
 
     <permission
         android:name="android.permission.MSR_OPERATION"
@@ -509,7 +511,12 @@
         <activity android:name=".shifts.ShiftsActivity" />
         <activity
             android:name=".bixolon.BixolonTransactionsActivity"
-            android:label="@string/title_activity_bixolon_transactions"></activity>
+            android:label="@string/title_activity_bixolon_transactions" />
+
+        <service
+            android:name=".service.SyncConfigServerService"
+            android:enabled="true"
+            android:exported="true" />
     </application>
 
 </manifest>

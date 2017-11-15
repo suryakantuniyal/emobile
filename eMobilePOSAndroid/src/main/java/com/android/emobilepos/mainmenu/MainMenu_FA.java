@@ -2,7 +2,6 @@ package com.android.emobilepos.mainmenu;
 
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
-import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
@@ -35,6 +34,7 @@ import com.android.emobilepos.firebase.PollingNotificationService;
 import com.android.emobilepos.firebase.RegistrationIntentService;
 import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.security.SecurityManager;
+import com.android.emobilepos.service.SyncConfigServerService;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -246,6 +246,8 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         if ((myPref.isPollingHoldsEnable() || myPref.isAutoSyncEnable()) && !PollingNotificationService.isServiceRunning(this)) {
             startPollingService();
         }
+        Intent service = new Intent(this, SyncConfigServerService.class);
+        startService(service);
         registerReceiver(messageReceiver, new IntentFilter(NOTIFICATION_RECEIVED));
         if (global.isApplicationSentToBackground()) {
             Global.loggedIn = false;
