@@ -553,10 +553,8 @@ public class EMSDeviceDriver {
             byte[] commandToSendToPrinter = convertFromListbyteArrayTobyteArray(commands);
             port.writePort(commandToSendToPrinter, 0, commandToSendToPrinter.length);
         } else {
-            if (!port.getPortName().startsWith("BT:")) {
                 Bitmap bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(str, 20
                         , PAPER_WIDTH, typeface);
-                emulation = StarIoExt.Emulation.StarPRNT;
                 ICommandBuilder builder = StarIoExt.createCommandBuilder(emulation);
                 builder.beginDocument();
                 builder.appendBitmap(bitmapFromText, false);
@@ -572,21 +570,20 @@ public class EMSDeviceDriver {
                 builder.endDocument();
                 byte[] cmds = builder.getCommands();
                 port.writePort(cmds, 0, cmds.length);
-            } else {
-                ArrayList<byte[]> commands = new ArrayList<>();
-                commands.add(new byte[]{0x1b, 0x40}); // Initialization
-                byte[] characterheightExpansion = new byte[]{0x1b, 0x68, 0x00};
-                characterheightExpansion[2] = 48;
-                commands.add(characterheightExpansion);
-                byte[] characterwidthExpansion = new byte[]{0x1b, 0x57, 0x00};
-                characterwidthExpansion[2] = 48;
-                commands.add(characterwidthExpansion);
-//            commands.add(str.getBytes());
-                commands.add(new byte[]{0x0a});
-                byte[] commandToSendToPrinter = convertFromListbyteArrayTobyteArray(commands);
-                port.writePort(commandToSendToPrinter, 0, commandToSendToPrinter.length);
-                port.writePort(str.getBytes(FORMAT), 0, str.length());
-            }
+//                ArrayList<byte[]> commands = new ArrayList<>();
+//                commands.add(new byte[]{0x1b, 0x40}); // Initialization
+//                byte[] characterheightExpansion = new byte[]{0x1b, 0x68, 0x00};
+//                characterheightExpansion[2] = 48;
+//                commands.add(characterheightExpansion);
+//                byte[] characterwidthExpansion = new byte[]{0x1b, 0x57, 0x00};
+//                characterwidthExpansion[2] = 48;
+//                commands.add(characterwidthExpansion);
+////            commands.add(str.getBytes());
+//                commands.add(new byte[]{0x0a});
+//                byte[] commandToSendToPrinter = convertFromListbyteArrayTobyteArray(commands);
+//                port.writePort(commandToSendToPrinter, 0, commandToSendToPrinter.length);
+//                port.writePort(str.getBytes(FORMAT), 0, str.length());
+
         }
     }
 
@@ -2445,7 +2442,7 @@ public class EMSDeviceDriver {
             for (OrderProduct prod : listProd) {
                 String calc;
                 if (new BigDecimal(prod.getOrdprod_qty()).compareTo(new BigDecimal(0)) != 0) {
-                    calc = prod.getItemTotal();//Global.formatDoubleStrToCurrency(String.valueOf(new BigDecimal(prod.getItemTotal())
+                    calc = Global.getCurrencyFormat(prod.getItemTotal());//Global.formatDoubleStrToCurrency(String.valueOf(new BigDecimal(prod.getItemTotal())
 //                            .divide(new BigDecimal(prod.getOrdprod_qty()), 2, RoundingMode.HALF_UP)));
                 } else {
                     calc = Global.formatDoubleToCurrency(0);

@@ -366,6 +366,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
     @Override
     public boolean printBalanceInquiry(HashMap<String, String> values) {
+        setPaperWidth(LINE_WIDTH);
         setStartIOPort();
         boolean print = printBalanceInquiry(values, LINE_WIDTH);
         releasePrinter();
@@ -408,6 +409,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
     @Override
     public void printEndOfDayReport(String curDate, String clerk_id, boolean printDetails) {
+        setPaperWidth(LINE_WIDTH);
         setStartIOPort();
         printEndOfDayReportReceipt(curDate, LINE_WIDTH, printDetails);
         releasePrinter();
@@ -416,6 +418,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     @Override
     public boolean printReport(String curDate) {
         try {
+            setPaperWidth(LINE_WIDTH);
             setStartIOPort();
             verifyConnectivity();
             Thread.sleep(1000);
@@ -450,6 +453,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     @Override
     public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSig) {
         try {
+            setPaperWidth(LINE_WIDTH);
             setStartIOPort();
             verifyConnectivity();
             Thread.sleep(1000);
@@ -498,6 +502,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     @Override
     public boolean printConsignmentPickup(List<ConsignmentTransaction> myConsignment, String encodedSig) {
         try {
+            setPaperWidth(LINE_WIDTH);
             setStartIOPort();
             verifyConnectivity();
             Thread.sleep(1000);
@@ -514,6 +519,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     @Override
     public boolean printOpenInvoices(String invID) {
         try {
+            setPaperWidth(LINE_WIDTH);
             setStartIOPort();
             verifyConnectivity();
             Thread.sleep(1000);
@@ -560,6 +566,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     @Override
     public boolean printConsignmentHistory(HashMap<String, String> map, Cursor c, boolean isPickup) {
         try {
+            setPaperWidth(LINE_WIDTH);
             setStartIOPort();
             verifyConnectivity();
             Thread.sleep(1000);
@@ -577,6 +584,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     @Override
     public void printShiftDetailsReport(String shiftID) {
         try {
+            setPaperWidth(LINE_WIDTH);
             setStartIOPort();
             verifyConnectivity();
             Thread.sleep(1000);
@@ -731,6 +739,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
     @Override
     public void printClockInOut(List<ClockInOut> timeClocks, String clerkID) {
+        setPaperWidth(LINE_WIDTH);
         super.printClockInOut(timeClocks, LINE_WIDTH, clerkID);
     }
 
