@@ -553,11 +553,13 @@ public class EMSDeviceDriver {
             byte[] commandToSendToPrinter = convertFromListbyteArrayTobyteArray(commands);
             port.writePort(commandToSendToPrinter, 0, commandToSendToPrinter.length);
         } else {
-            Bitmap bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(str, 20
-                    , PAPER_WIDTH, typeface);
-            ICommandBuilder builder = StarIoExt.createCommandBuilder(emulation);
-            builder.beginDocument();
-            builder.appendBitmap(bitmapFromText, false);
+            if (!port.getPortName().startsWith("BT:")) {
+                Bitmap bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(str, 20
+                        , PAPER_WIDTH, typeface);
+                emulation = StarIoExt.Emulation.StarPRNT;
+                ICommandBuilder builder = StarIoExt.createCommandBuilder(emulation);
+                builder.beginDocument();
+                builder.appendBitmap(bitmapFromText, false);
 
 //            Charset encoding = Charset.forName("UTF-8");
 //            builder.appendCodePage(ICommandBuilder.CodePageType.UTF8);
@@ -566,23 +568,25 @@ public class EMSDeviceDriver {
 //            builder.appendAlignment(ICommandBuilder.AlignmentPosition.Left);
 //            builder.append(str.getBytes(encoding));
 
-            //            builder.appendCutPaper(ICommandBuilder.CutPaperAction.PartialCutWithFeed);
-            builder.endDocument();
-            byte[] cmds = builder.getCommands();
-            port.writePort(cmds, 0, cmds.length);
-//            ArrayList<byte[]> commands = new ArrayList<>();
-//            commands.add(new byte[]{0x1b, 0x40}); // Initialization
-//            byte[] characterheightExpansion = new byte[]{0x1b, 0x68, 0x00};
-//            characterheightExpansion[2] = 48;
-//            commands.add(characterheightExpansion);
-//            byte[] characterwidthExpansion = new byte[]{0x1b, 0x57, 0x00};
-//            characterwidthExpansion[2] = 48;
-//            commands.add(characterwidthExpansion);
-////            commands.add(str.getBytes());
-//            commands.add(new byte[]{0x0a});
-//            byte[] commandToSendToPrinter = convertFromListbyteArrayTobyteArray(commands);
-//            port.writePort(commandToSendToPrinter, 0, commandToSendToPrinter.length);
-//            port.writePort(str.getBytes(FORMAT), 0, str.length());
+                //            builder.appendCutPaper(ICommandBuilder.CutPaperAction.PartialCutWithFeed);
+                builder.endDocument();
+                byte[] cmds = builder.getCommands();
+                port.writePort(cmds, 0, cmds.length);
+            } else {
+                ArrayList<byte[]> commands = new ArrayList<>();
+                commands.add(new byte[]{0x1b, 0x40}); // Initialization
+                byte[] characterheightExpansion = new byte[]{0x1b, 0x68, 0x00};
+                characterheightExpansion[2] = 48;
+                commands.add(characterheightExpansion);
+                byte[] characterwidthExpansion = new byte[]{0x1b, 0x57, 0x00};
+                characterwidthExpansion[2] = 48;
+                commands.add(characterwidthExpansion);
+//            commands.add(str.getBytes());
+                commands.add(new byte[]{0x0a});
+                byte[] commandToSendToPrinter = convertFromListbyteArrayTobyteArray(commands);
+                port.writePort(commandToSendToPrinter, 0, commandToSendToPrinter.length);
+                port.writePort(str.getBytes(FORMAT), 0, str.length());
+            }
         }
     }
 

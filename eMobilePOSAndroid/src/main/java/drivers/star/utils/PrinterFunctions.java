@@ -7,7 +7,7 @@ import com.starmicronics.starioextension.StarIoExt;
 
 public class PrinterFunctions {
 
-	public static final StarIoExt.Emulation emulation = StarIoExt.Emulation.StarGraphic;
+	public static StarIoExt.Emulation emulation = StarIoExt.Emulation.StarGraphic;
 
 	public enum CorrectionLevelOption {Low, Middle, Q, High}
 

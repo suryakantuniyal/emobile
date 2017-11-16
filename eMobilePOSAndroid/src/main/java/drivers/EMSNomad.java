@@ -73,10 +73,9 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
     public void connect(Context activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
         this.activity = activity;
         isAutoConnect = false;
-        if (terminal != null) {
-            terminal.releaseResources();
+        if (terminal == null) {
+            terminal = new AndroidTerminal(this);
         }
-        terminal = new AndroidTerminal(this);
         myPref = new MyPreferences(this.activity);
         EMSNomad.edm = edm;
 //        synchronized (terminal) {
