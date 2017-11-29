@@ -450,7 +450,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 loadCustomerTemplate();
             }
         }
-
     }
 
     private void setupListView() {

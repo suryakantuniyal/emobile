@@ -67,13 +67,17 @@ import com.starmicronics.stario.PortInfo;
 import com.starmicronics.stario.StarIOPort;
 import com.starmicronics.stario.StarIOPortException;
 
+import org.apache.commons.io.FileUtils;
+
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import io.realm.Realm;
 import main.EMSDeviceManager;
 
 /**
@@ -870,8 +874,20 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                             dbManager.forceSend(getActivity());
                             break;
                         case R.string.config_backup_data:
-                            DBManager manag = new DBManager(getActivity());
-                            manag.exportDBFile();
+                            Realm realm = Realm.getDefaultInstance();
+                            try {
+                                File outFile = new File(Environment.getExternalStorageDirectory() + "/emobilepos.realmdb");
+                                DBManager manag = new DBManager(getActivity());
+                                manag.exportDBFile();
+                                File realmDirectory = new File(realm.getConfiguration().getPath());
+                                try {
+                                    FileUtils.copyFile(realmDirectory, outFile);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            } finally {
+                                realm.close();
+                            }
                             break;
                     }
                 }
