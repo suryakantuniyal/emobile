@@ -561,6 +561,11 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         } catch (Exception e) {
             e.printStackTrace();
         }
+        if(myPref.isESY13P1()){
+            EMSELO elo = new EMSELO();
+            elo.activity=activity;
+            elo.openCashDrawer();
+        }
     }
 
     @Override

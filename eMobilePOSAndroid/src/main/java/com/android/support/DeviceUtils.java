@@ -129,7 +129,7 @@ public class DeviceUtils {
                     sb.append(Global.BuildModel.PAT215.name()).append(": ").append("Failed to connect\n\r");
                 }
             }
-        } else if (myPref.isESY13P1()) {
+        } else if (myPref.isESY13P1() && myPref.getPrinterType() == -1) {
             myPref.setPrinterType(Global.ELOPAYPOINT);
             if (DeviceManager.getPlatformInfo().eloPlatform == EloPlatform.PAYPOINT_2) {
                 if (Global.embededMSR == null || forceReload) {
@@ -141,7 +141,7 @@ public class DeviceUtils {
                         sb.append(Global.BuildModel.PayPoint_ESY13P1.name()).append(": ").append("Failed to connectTFHKA\n\r");
                     }
                 }
-            } else {
+            } else if (Global.mainPrinterManager == null || Global.mainPrinterManager.getCurrentDevice() == null) {
                 edm = new EMSDeviceManager();
                 Global.mainPrinterManager = edm.getManager();
                 Global.embededMSR = Global.mainPrinterManager;
@@ -161,7 +161,7 @@ public class DeviceUtils {
             if (myPref.getPrinterType() != Global.POWA
                     && myPref.getPrinterType() != Global.MEPOS
                     && myPref.getPrinterType() != Global.MIURA
-                    && myPref.getPrinterType() != Global.ELOPAYPOINT
+//                    && myPref.getPrinterType() != Global.ELOPAYPOINT
                     && myPref.getPrinterType() != Global.PAT215) {
                 if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
                     if (!Global.mainPrinterManager.getCurrentDevice().isConnected()) {
