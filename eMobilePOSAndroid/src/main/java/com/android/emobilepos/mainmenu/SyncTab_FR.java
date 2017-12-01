@@ -32,6 +32,9 @@ import com.android.support.MyPreferences;
 import com.android.support.NetworkUtils;
 import com.android.support.SynchMethods;
 
+import java.util.List;
+import java.util.Set;
+
 public class SyncTab_FR extends Fragment implements View.OnClickListener {
     public static Handler syncTabHandler;
     ProgressDialog dialog;
@@ -59,6 +62,14 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
             public boolean handleMessage(Message msg) {
 
                 switch (msg.what) {
+                    case 9:
+                        Set<String> errorList = (Set<String>) msg.obj;
+                        StringBuilder error = new StringBuilder();
+                        for (String s : errorList) {
+                            error.append(s);
+                        }
+                        Global.showPrompt(getActivity(), R.string.sync_fail, error.toString());
+                        break;
 //                    case 1:
 //                        dialog = new ProgressDialog(getActivity());
 //                        dialog.setIndeterminate(true);

@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.os.Message;
 import android.text.TextUtils;
 import android.widget.Toast;
 
@@ -105,9 +106,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -579,7 +582,9 @@ public class SynchMethods {
         SAXSyncPayPostHandler handler2 = new SAXSyncPayPostHandler();
         PaymentsHandler payHandler = new PaymentsHandler(context);
         long totlaPaments = payHandler.getNumUnsyncPayments();
-        while (payHandler.getNumUnsyncPayments() > 0) {
+        int loop = 0;
+        Set<String> errorList = new HashSet<>();
+        while (payHandler.getNumUnsyncPayments() > 0 && loop < totlaPaments) {
             if (Global.isForceUpload)
                 ((ForceSendAsync) task).updateProgress(String.format(Locale.getDefault(),
                         "%s %d/%d", context.getString(R.string.sync_sending_payment), payHandler.getNumUnsyncPayments(), totlaPaments));
@@ -591,9 +596,20 @@ public class SynchMethods {
             xr.parse(inSource);
             data = handler2.getEmpData();
             payHandler.updateIsSync(data);
-            if (data.isEmpty())
+            if (data.isEmpty()) {
+                errorList.add(String.format(Locale.getDefault(), " (Error: %s) ", xml));
                 didSendData = false;
+            }
             data.clear();
+            loop++;
+            if (loop == totlaPaments && !errorList.isEmpty()) {
+                Message msg = SyncTab_FR.syncTabHandler.obtainMessage();
+                msg.what = 9;
+                msg.obj = errorList;
+                SyncTab_FR.syncTabHandler.sendMessage(msg);
+                break;
+            }
+
         }
     }
 
@@ -622,7 +638,9 @@ public class SynchMethods {
         SAXSynchOrdPostHandler handler = new SAXSynchOrdPostHandler();
         OrdersHandler ordersHandler = new OrdersHandler(context);
         long totalOrders = ordersHandler.getNumUnsyncOrders();
-        while ((Global.isForceUpload && ordersHandler.getNumUnsyncOrders() > 0) ||
+        int loop = 0;
+        Set<String> errorList = new HashSet<>();
+        while ((Global.isForceUpload && ordersHandler.getNumUnsyncOrders() > 0 && loop < totalOrders) ||
                 (!Global.isForceUpload && ordersHandler.getNumUnsyncProcessedOrders() > ordersHandler.getNumUnsyncOrdersStoredFwd())) {
             if (Global.isForceUpload) {
                 ((ForceSendAsync) task).updateProgress(String.format(Locale.getDefault(),
@@ -637,9 +655,19 @@ public class SynchMethods {
             xr.parse(inSource);
             data = handler.getEmpData();
             ordersHandler.updateIsSync(data);
-            if (data.isEmpty())
+            if (data.isEmpty()) {
+                errorList.add(String.format(Locale.getDefault(), " ( Error: %s) ", xml));
                 didSendData = false;
+            }
             data.clear();
+            loop++;
+            if (loop == totalOrders && !errorList.isEmpty()) {
+                Message msg = SyncTab_FR.syncTabHandler.obtainMessage();
+                msg.what = 9;
+                msg.obj = errorList;
+                SyncTab_FR.syncTabHandler.sendMessage(msg);
+                break;
+            }
         }
     }
 
