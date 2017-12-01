@@ -42,6 +42,9 @@ import java.util.List;
 
 import drivers.EMSBixolonRD;
 
+import java.util.List;
+import java.util.Set;
+
 public class SyncTab_FR extends Fragment implements View.OnClickListener {
     public static Handler syncTabHandler;
     ProgressDialog dialog;
@@ -95,6 +98,14 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
             @Override
             public boolean handleMessage(Message msg) {
                 switch (msg.what) {
+                    case 9:
+                        Set<String> errorList = (Set<String>) msg.obj;
+                        StringBuilder error = new StringBuilder();
+                        for (String s : errorList) {
+                            error.append(s);
+                        }
+                        Global.showPrompt(getActivity(), R.string.sync_fail, error.toString());
+                        break;
                     case 0:
                         MainMenu_FA mainMenuFa = (MainMenu_FA) getActivity();
                         if (mainMenuFa != null && mainMenuFa.getSynchTextView() != null) {
