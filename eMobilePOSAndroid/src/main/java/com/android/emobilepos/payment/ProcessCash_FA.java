@@ -320,7 +320,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
             }
         });
 
-        subtotal.setText(Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(extras.getString("amount")))));
+
         if (!Global.isIvuLoto || isFromSalesReceipt) {
             findViewById(R.id.ivuposRow1).setVisibility(View.GONE);
             findViewById(R.id.ivuposRow2).setVisibility(View.GONE);
@@ -328,7 +328,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         } else {
             setIVUPOSFieldListeners();
         }
-
+        subtotal.setText(Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(extras.getString("amount")))));
         if (showTipField) {
             Button tipButton = (Button) findViewById(R.id.tipAmountBut);
             tipButton.setOnClickListener(new View.OnClickListener() {
