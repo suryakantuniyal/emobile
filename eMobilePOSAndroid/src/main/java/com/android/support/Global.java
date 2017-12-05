@@ -313,7 +313,7 @@ public class Global extends MultiDexApplication {
     };
     private static com.android.support.LocationServices locationServices;
     private static Dialog popDlog;
-    private final long MAX_ACTIVITY_TRANSITION_TIME_MS = 5000;
+    private final long MAX_ACTIVITY_TRANSITION_TIME_MS = 15000;
     public String encodedImage = "";
     public int orientation;
     // For new addon views
