@@ -65,14 +65,26 @@ public class EmobilePOSRealmMigration implements io.realm.RealmMigration {
                     oldVersion++;
                 }
                 if (oldVersion == 5) {
+                    if (schema.contains(EmobileBiometric.class.getSimpleName())) {
+                        schema.remove(EmobileBiometric.class.getSimpleName());
+                    }
+                    if (schema.contains(BiometricFid.class.getSimpleName())) {
+                        schema.remove(BiometricFid.class.getSimpleName());
+                    }
                     schema.create(BiometricFid.class.getSimpleName()).
                             addField("id", String.class, FieldAttribute.PRIMARY_KEY)
                             .addField("fid", String.class)
+                            .addField("fmdData", byte[].class)
+                            .addField("fmdBase64", String.class)
                             .addField("fingerCode", int.class, FieldAttribute.INDEXED);
 
+
                     schema.create(EmobileBiometric.class.getSimpleName()).
-                            addField("customerId", String.class, FieldAttribute.PRIMARY_KEY)
-                            .addRealmListField("fids", schema.get(BiometricFid.class.getSimpleName()));
+                            addField("realmId", String.class, FieldAttribute.PRIMARY_KEY)
+                            .addField("entityid", String.class, FieldAttribute.INDEXED)
+                            .addField("userTypeCode", int.class, FieldAttribute.INDEXED)
+                            .addRealmListField("fids", schema.get(BiometricFid.class.getSimpleName()))
+                            .addField("regid", String.class, FieldAttribute.INDEXED);
                     oldVersion++;
                 }
                 if (oldVersion == 6) {
@@ -113,36 +125,36 @@ public class EmobilePOSRealmMigration implements io.realm.RealmMigration {
                             .addField("merchantName", String.class);
                     oldVersion++;
                 }
-                if (oldVersion == 7) {
-                    if (schema.contains(EmobileBiometric.class.getSimpleName())) {
-                        schema.remove(EmobileBiometric.class.getSimpleName());
-                    }
-                    if (schema.contains(BiometricFid.class.getSimpleName())) {
-                        schema.remove(BiometricFid.class.getSimpleName());
-                    }
-                    schema.create(BiometricFid.class.getSimpleName()).
-                            addField("id", String.class, FieldAttribute.PRIMARY_KEY)
-                            .addField("fid", String.class)
-                            .addField("fmdData", byte[].class)
-                            .addField("fmdBase64", String.class)
-                            .addField("fingerCode", int.class, FieldAttribute.INDEXED);
-
-
-                    schema.create(EmobileBiometric.class.getSimpleName()).
-                            addField("realmId", String.class, FieldAttribute.PRIMARY_KEY)
-                            .addField("entityid", String.class, FieldAttribute.INDEXED)
-                            .addField("userTypeCode", int.class, FieldAttribute.INDEXED)
-                            .addRealmListField("fids", schema.get(BiometricFid.class.getSimpleName()))
-                            .addField("regid", String.class, FieldAttribute.INDEXED);
-                    oldVersion++;
-                }
-                if (oldVersion == 8) {
-                    if (!schema.get(BiometricFid.class.getSimpleName()).hasField("fmdBase64")) {
-                        schema.get(BiometricFid.class.getSimpleName())
-                                .addField("fmdBase64", String.class);
-                    }
-                    oldVersion++;
-                }
+//                if (oldVersion == 7) {
+//                    if (schema.contains(EmobileBiometric.class.getSimpleName())) {
+//                        schema.remove(EmobileBiometric.class.getSimpleName());
+//                    }
+//                    if (schema.contains(BiometricFid.class.getSimpleName())) {
+//                        schema.remove(BiometricFid.class.getSimpleName());
+//                    }
+//                    schema.create(BiometricFid.class.getSimpleName()).
+//                            addField("id", String.class, FieldAttribute.PRIMARY_KEY)
+//                            .addField("fid", String.class)
+//                            .addField("fmdData", byte[].class)
+//                            .addField("fmdBase64", String.class)
+//                            .addField("fingerCode", int.class, FieldAttribute.INDEXED);
+//
+//
+//                    schema.create(EmobileBiometric.class.getSimpleName()).
+//                            addField("realmId", String.class, FieldAttribute.PRIMARY_KEY)
+//                            .addField("entityid", String.class, FieldAttribute.INDEXED)
+//                            .addField("userTypeCode", int.class, FieldAttribute.INDEXED)
+//                            .addRealmListField("fids", schema.get(BiometricFid.class.getSimpleName()))
+//                            .addField("regid", String.class, FieldAttribute.INDEXED);
+//                    oldVersion++;
+//                }
+//                if (oldVersion == 8) {
+//                    if (!schema.get(BiometricFid.class.getSimpleName()).hasField("fmdBase64")) {
+//                        schema.get(BiometricFid.class.getSimpleName())
+//                                .addField("fmdBase64", String.class);
+//                    }
+//                    oldVersion++;
+//                }
             }
         } catch (Exception e) {
             Crashlytics.logException(e);

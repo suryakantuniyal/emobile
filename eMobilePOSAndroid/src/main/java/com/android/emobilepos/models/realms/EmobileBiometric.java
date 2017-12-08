@@ -39,7 +39,7 @@ public class EmobileBiometric extends RealmObject {
 
     @Expose(serialize = false, deserialize = false)
     @PrimaryKey
-    transient private String realmId;
+    private String realmId;
     @Expose
     @Index
     private String entityid;
@@ -51,6 +51,7 @@ public class EmobileBiometric extends RealmObject {
     @Expose
     private RealmList<BiometricFid> fids;
     @Expose
+    @Index
     private String regid;
 
     public String getEntityid() {
