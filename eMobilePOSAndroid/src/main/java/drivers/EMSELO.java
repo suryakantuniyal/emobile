@@ -60,6 +60,8 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     //Load JNI from the library project. Refer MainActivity.java from library project elotouchBarcodeReader.
     // In constructor we are loading .so file for Barcode Reader.
 
+    private static CFD customerFacingDisplay;
+
     //Load JNI from the library project. Refer MainActivity.java from library project elotouchCashDrawer.
     // In constructor we are loading .so file for Cash Drawer.
     static {
@@ -69,99 +71,34 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
         System.loadLibrary("serial_port");
     }
 
+    private final int LINE_WIDTH = 32;
+    String scannedData = "";
+    BarCodeReaderAdapter barcodereader;
     private EMSCallBack scannerCallBack;
     private Encrypt encrypt;
     private EMSDeviceManager edm;
     private EMSELO thisInstance;
     private Handler handler;
-    String scannedData = "";
-    private final int LINE_WIDTH = 32;
-    BarCodeReaderAdapter barcodereader;
     private boolean didConnect;
-    private static CFD customerFacingDisplay;
     private MTSCRA m_scra;
     private Handler m_scraHandler;
+    private Runnable runnableScannedData = new Runnable() {
+        public void run() {
+            try {
+                if (scannerCallBack != null)
+                    scannerCallBack.scannerWasRead(scannedData);
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
 
     public static boolean isEloPaypoint2() {
-        return DeviceManager.getPlatformInfo().eloPlatform == EloPlatform.PAYPOINT_2;
-    }
-
-    private class SCRAHandlerCallback implements Handler.Callback {
-        private static final String TAG = "Magtek";
-
-        public boolean handleMessage(Message msg) {
-            try {
-                Log.i(TAG, "*** Callback " + msg.what);
-                switch (msg.what) {
-                    case MTSCRAEvent.OnDeviceConnectionStateChanged:
-//                        OnDeviceStateChanged((MTConnectionState) msg.obj);
-                        break;
-                    case MTSCRAEvent.OnCardDataStateChanged:
-//                        OnCardDataStateChanged((MTCardDataState) msg.obj);
-                        break;
-                    case MTSCRAEvent.OnDataReceived:
-                        if (m_scra.getResponseData() != null) {
-                            CreditCardInfo cardInfo = new CreditCardInfo();
-                            if (m_scra.getKSN().equals("00000000000000000000")) {
-                                CardParser.parseCreditCard(activity, m_scra.getMaskedTracks(), cardInfo);
-                            } else {
-                                cardInfo.setCardOwnerName(m_scra.getCardName());
-                                if (m_scra.getCardExpDate() != null && !m_scra.getCardExpDate().isEmpty()) {
-                                    String year = m_scra.getCardExpDate().substring(0, 2);
-                                    String month = m_scra.getCardExpDate().substring(2, 4);
-                                    cardInfo.setCardExpYear(year);
-                                    cardInfo.setCardExpMonth(month);
-                                }
-                                cardInfo.setCardType(ProcessCreditCard_FA.getCardType(m_scra.getCardIIN()));
-                                cardInfo.setCardLast4(m_scra.getCardLast4());
-                                cardInfo.setEncryptedTrack1(m_scra.getTrack1());
-                                cardInfo.setEncryptedTrack2(m_scra.getTrack2());
-                                cardInfo.setCardNumAESEncrypted(encrypt.encryptWithAES(m_scra.getCardPAN()));
-                                if (m_scra.getTrack1Masked() != null && !m_scra.getTrack1Masked().isEmpty())
-                                    cardInfo.setEncryptedAESTrack1(encrypt.encryptWithAES(m_scra.getTrack1Masked()));
-                                if (m_scra.getTrack2Masked() != null && !m_scra.getTrack2Masked().isEmpty())
-                                    cardInfo.setEncryptedAESTrack2(encrypt.encryptWithAES(m_scra.getTrack2Masked()));
-                                cardInfo.setDeviceSerialNumber(m_scra.getDeviceSerial());
-                                cardInfo.setMagnePrint(m_scra.getMagnePrint());
-                                cardInfo.setCardNumUnencrypted(m_scra.getCardPAN());
-                                cardInfo.setMagnePrintStatus(m_scra.getMagnePrintStatus());
-                                cardInfo.setTrackDataKSN(m_scra.getKSN());
-                            }
-                            scannerCallBack.cardWasReadSuccessfully(true, cardInfo);
-                        }
-                        break;
-                    case MTSCRAEvent.OnDeviceResponse:
-//                        OnDeviceResponse((String) msg.obj);
-                        break;
-                    case MTEMVEvent.OnTransactionStatus:
-//                        OnTransactionStatus((byte[]) msg.obj);
-                        break;
-                    case MTEMVEvent.OnDisplayMessageRequest:
-//                        OnDisplayMessageRequest((byte[]) msg.obj);
-                        break;
-                    case MTEMVEvent.OnUserSelectionRequest:
-//                        OnUserSelectionRequest((byte[]) msg.obj);
-                        break;
-                    case MTEMVEvent.OnARQCReceived:
-//                        OnARQCReceived((byte[]) msg.obj);
-                        break;
-                    case MTEMVEvent.OnTransactionResult:
-//                        OnTransactionResult((byte[]) msg.obj);
-                        break;
-
-                    case MTEMVEvent.OnEMVCommandResult:
-//                        OnEMVCommandResult((byte[]) msg.obj);
-                        break;
-
-                    case MTEMVEvent.OnDeviceExtendedResponse:
-//                        OnDeviceExtendedResponse((String) msg.obj);
-                        break;
-                }
-            } catch (Exception ex) {
-
-            }
-
-            return true;
+        try {
+            return DeviceManager.getPlatformInfo() != null && DeviceManager.getPlatformInfo().eloPlatform == EloPlatform.PAYPOINT_2;
+        } catch (Exception e) {
+            return false;
         }
     }
 
@@ -241,47 +178,6 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
             edm.driverDidConnectToDevice(thisInstance, false, activity);
         }
         return true;
-    }
-
-    public class processConnectionAsync extends AsyncTask<Boolean, String, Boolean> {
-        @Override
-        protected void onPreExecute() {
-
-        }
-
-        @Override
-        protected Boolean doInBackground(Boolean... params) {
-            SerialPort port;
-            try {
-                port = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
-                OutputStream stream = port.getOutputStream();
-                InputStream iStream = port.getInputStream();
-                SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
-                eloPrinterApi = new PrinterAPI(eloPrinterPort);
-                if (!eloPrinterApi.isPaperAvailable()) {
-//                    Toast.makeText(activity, "Printer out of paper!", Toast.LENGTH_LONG).show();
-                }
-                eloPrinterPort.getInputStream().close();
-                eloPrinterPort.getOutputStream().close();
-                eloPrinterPort.close();
-
-                didConnect = true;
-            } catch (IOException e) {
-                didConnect = false;
-                e.printStackTrace();
-            }
-            return params[0];
-        }
-
-        @Override
-        protected void onPostExecute(Boolean showAlert) {
-            if (didConnect) {
-                playSound();
-                edm.driverDidConnectToDevice(thisInstance, showAlert, activity);
-            } else {
-                edm.driverDidNotConnectToDevice(thisInstance, "", showAlert, activity);
-            }
-        }
     }
 
     @Override
@@ -637,27 +533,6 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
         }
     }
 
-//    @Override
-//    public void printReceiptPreview(View view) {
-//
-//        try {
-//            SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
-//            eloPrinterApi = new PrinterAPI(eloPrinterPort);
-//            setPaperWidth(LINE_WIDTH);
-//            Bitmap bitmap = loadBitmapFromView(view);
-//            super.printReceiptPreview(bitmap, LINE_WIDTH);
-//            eloPrinterPort.getInputStream().close();
-//            eloPrinterPort.getOutputStream().close();
-//            eloPrinterPort.close();
-//        } catch (JAException e) {
-//            e.printStackTrace();
-//        } catch (StarIOPortException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
-
     @Override
     public void printReceiptPreview(SplittedOrder splitedOrder) {
         try {
@@ -683,6 +558,27 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
 
         }
     }
+
+//    @Override
+//    public void printReceiptPreview(View view) {
+//
+//        try {
+//            SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
+//            eloPrinterApi = new PrinterAPI(eloPrinterPort);
+//            setPaperWidth(LINE_WIDTH);
+//            Bitmap bitmap = loadBitmapFromView(view);
+//            super.printReceiptPreview(bitmap, LINE_WIDTH);
+//            eloPrinterPort.getInputStream().close();
+//            eloPrinterPort.getOutputStream().close();
+//            eloPrinterPort.close();
+//        } catch (JAException e) {
+//            e.printStackTrace();
+//        } catch (StarIOPortException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     @Override
     public void salePayment(Payment payment) {
@@ -734,18 +630,6 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
         super.printClockInOut(timeClocks, LINE_WIDTH, clerkID);
     }
 
-    private Runnable runnableScannedData = new Runnable() {
-        public void run() {
-            try {
-                if (scannerCallBack != null)
-                    scannerCallBack.scannerWasRead(scannedData);
-
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-    };
-
     /*
          *
          * Code to Read Barcode through Barcode Reader.
@@ -768,6 +652,136 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
         if (barcodereader != null && barcodereader.isBarCodeReaderEnabled()) {
 //            barcodereader.turnOnLaser();
             barcodereader.setBarCodeReaderEnabled(false);
+        }
+    }
+
+    public interface BarCodeReaderAdapter {
+        boolean isBarCodeReaderEnabled();
+
+        void setBarCodeReaderEnabled(boolean enabled);
+
+        boolean isBarCodeReaderKbdMode();
+
+        void setBarCodeReaderKbdMode();
+    }
+
+    private class SCRAHandlerCallback implements Handler.Callback {
+        private static final String TAG = "Magtek";
+
+        public boolean handleMessage(Message msg) {
+            try {
+                Log.i(TAG, "*** Callback " + msg.what);
+                switch (msg.what) {
+                    case MTSCRAEvent.OnDeviceConnectionStateChanged:
+//                        OnDeviceStateChanged((MTConnectionState) msg.obj);
+                        break;
+                    case MTSCRAEvent.OnCardDataStateChanged:
+//                        OnCardDataStateChanged((MTCardDataState) msg.obj);
+                        break;
+                    case MTSCRAEvent.OnDataReceived:
+                        if (m_scra.getResponseData() != null) {
+                            CreditCardInfo cardInfo = new CreditCardInfo();
+                            if (m_scra.getKSN().equals("00000000000000000000")) {
+                                CardParser.parseCreditCard(activity, m_scra.getMaskedTracks(), cardInfo);
+                            } else {
+                                cardInfo.setCardOwnerName(m_scra.getCardName());
+                                if (m_scra.getCardExpDate() != null && !m_scra.getCardExpDate().isEmpty()) {
+                                    String year = m_scra.getCardExpDate().substring(0, 2);
+                                    String month = m_scra.getCardExpDate().substring(2, 4);
+                                    cardInfo.setCardExpYear(year);
+                                    cardInfo.setCardExpMonth(month);
+                                }
+                                cardInfo.setCardType(ProcessCreditCard_FA.getCardType(m_scra.getCardIIN()));
+                                cardInfo.setCardLast4(m_scra.getCardLast4());
+                                cardInfo.setEncryptedTrack1(m_scra.getTrack1());
+                                cardInfo.setEncryptedTrack2(m_scra.getTrack2());
+                                cardInfo.setCardNumAESEncrypted(encrypt.encryptWithAES(m_scra.getCardPAN()));
+                                if (m_scra.getTrack1Masked() != null && !m_scra.getTrack1Masked().isEmpty())
+                                    cardInfo.setEncryptedAESTrack1(encrypt.encryptWithAES(m_scra.getTrack1Masked()));
+                                if (m_scra.getTrack2Masked() != null && !m_scra.getTrack2Masked().isEmpty())
+                                    cardInfo.setEncryptedAESTrack2(encrypt.encryptWithAES(m_scra.getTrack2Masked()));
+                                cardInfo.setDeviceSerialNumber(m_scra.getDeviceSerial());
+                                cardInfo.setMagnePrint(m_scra.getMagnePrint());
+                                cardInfo.setCardNumUnencrypted(m_scra.getCardPAN());
+                                cardInfo.setMagnePrintStatus(m_scra.getMagnePrintStatus());
+                                cardInfo.setTrackDataKSN(m_scra.getKSN());
+                            }
+                            scannerCallBack.cardWasReadSuccessfully(true, cardInfo);
+                        }
+                        break;
+                    case MTSCRAEvent.OnDeviceResponse:
+//                        OnDeviceResponse((String) msg.obj);
+                        break;
+                    case MTEMVEvent.OnTransactionStatus:
+//                        OnTransactionStatus((byte[]) msg.obj);
+                        break;
+                    case MTEMVEvent.OnDisplayMessageRequest:
+//                        OnDisplayMessageRequest((byte[]) msg.obj);
+                        break;
+                    case MTEMVEvent.OnUserSelectionRequest:
+//                        OnUserSelectionRequest((byte[]) msg.obj);
+                        break;
+                    case MTEMVEvent.OnARQCReceived:
+//                        OnARQCReceived((byte[]) msg.obj);
+                        break;
+                    case MTEMVEvent.OnTransactionResult:
+//                        OnTransactionResult((byte[]) msg.obj);
+                        break;
+
+                    case MTEMVEvent.OnEMVCommandResult:
+//                        OnEMVCommandResult((byte[]) msg.obj);
+                        break;
+
+                    case MTEMVEvent.OnDeviceExtendedResponse:
+//                        OnDeviceExtendedResponse((String) msg.obj);
+                        break;
+                }
+            } catch (Exception ex) {
+
+            }
+
+            return true;
+        }
+    }
+
+    public class processConnectionAsync extends AsyncTask<Boolean, String, Boolean> {
+        @Override
+        protected void onPreExecute() {
+
+        }
+
+        @Override
+        protected Boolean doInBackground(Boolean... params) {
+            SerialPort port;
+            try {
+                port = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
+                OutputStream stream = port.getOutputStream();
+                InputStream iStream = port.getInputStream();
+                SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
+                eloPrinterApi = new PrinterAPI(eloPrinterPort);
+                if (!eloPrinterApi.isPaperAvailable()) {
+//                    Toast.makeText(activity, "Printer out of paper!", Toast.LENGTH_LONG).show();
+                }
+                eloPrinterPort.getInputStream().close();
+                eloPrinterPort.getOutputStream().close();
+                eloPrinterPort.close();
+
+                didConnect = true;
+            } catch (IOException e) {
+                didConnect = false;
+                e.printStackTrace();
+            }
+            return params[0];
+        }
+
+        @Override
+        protected void onPostExecute(Boolean showAlert) {
+            if (didConnect) {
+                playSound();
+                edm.driverDidConnectToDevice(thisInstance, showAlert, activity);
+            } else {
+                edm.driverDidNotConnectToDevice(thisInstance, "", showAlert, activity);
+            }
         }
     }
 
@@ -825,15 +839,5 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
         public void setBarCodeReaderKbdMode() {
             barCodeReader.setKbMode(activity);
         }
-    }
-
-    public interface BarCodeReaderAdapter {
-        boolean isBarCodeReaderEnabled();
-
-        void setBarCodeReaderEnabled(boolean enabled);
-
-        boolean isBarCodeReaderKbdMode();
-
-        void setBarCodeReaderKbdMode();
     }
 }
