@@ -202,7 +202,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (v.hasFocus()) {
-                    int lent = paid.getText().length();
+                    int lent = paid.getText().toString().length();
                     Selection.setSelection(paid.getText(), lent);
                 }
             }
@@ -212,7 +212,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (v.hasFocus()) {
-                    Selection.setSelection(amountDue.getText(), amountDue.getText().length());
+                    Selection.setSelection(amountDue.getText(), amountDue.getText().toString().length());
                 }
 
             }
@@ -320,7 +320,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
             }
         });
 
-        subtotal.setText(Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(extras.getString("amount")))));
+
         if (!Global.isIvuLoto || isFromSalesReceipt) {
             findViewById(R.id.ivuposRow1).setVisibility(View.GONE);
             findViewById(R.id.ivuposRow2).setVisibility(View.GONE);
@@ -328,7 +328,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         } else {
             setIVUPOSFieldListeners();
         }
-
+        subtotal.setText(Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(extras.getString("amount")))));
         if (showTipField) {
             Button tipButton = (Button) findViewById(R.id.tipAmountBut);
             tipButton.setOnClickListener(new View.OnClickListener() {
@@ -371,7 +371,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (v.hasFocus()) {
-                    Selection.setSelection(subtotal.getText(), subtotal.getText().length());
+                    Selection.setSelection(subtotal.getText(), subtotal.getText().toString().length());
                 }
 
             }
@@ -381,7 +381,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (v.hasFocus()) {
-                    Selection.setSelection(tax1.getText(), tax1.getText().length());
+                    Selection.setSelection(tax1.getText(), tax1.getText().toString().length());
                 }
 
             }
@@ -391,14 +391,14 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (v.hasFocus()) {
-                    Selection.setSelection(tax2.getText(), tax2.getText().length());
+                    NumberUtils.parseInputedCurrency(tax2.getText().toString(), tax2);
                 }
 
             }
         });
         subtotal.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
-                NumberUtils.parseInputedCurrency(s, subtotal);
+//                NumberUtils.parseInputedCurrency(s, subtotal);
                 if (!isFromSalesReceipt) {
                     calculateTaxes(groupTaxRate, subtotal, tax1, tax2);
                     calculateAmountDue(subtotal, tax1, tax2, amountDue);
@@ -411,7 +411,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-//                parseInputedCurrency(s, subtotal);
+                NumberUtils.parseInputedCurrency(s, subtotal);
             }
         });
         tax1.addTextChangedListener(new TextWatcher() {
@@ -424,7 +424,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-//                parseInputedCurrency(s, tax1);
+                NumberUtils.parseInputedCurrency(s, tax1);
             }
         });
         tax2.addTextChangedListener(new TextWatcher() {
@@ -438,7 +438,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-//                parseInputedCurrency(s, tax2);
+                NumberUtils.parseInputedCurrency(s, tax2);
             }
         });
     }
@@ -526,7 +526,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (v.hasFocus()) {
-                    Selection.setSelection(promptTipField.getText(), promptTipField.getText().length());
+                    Selection.setSelection(promptTipField.getText(), promptTipField.getText().toString().length());
                 }
 
             }
