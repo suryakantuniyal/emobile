@@ -8,6 +8,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+
     <style name="ThemeSpinner">
         <!-- Color when pressed -->
         <item name="colorAccent">#ffa000</item>
@@ -49,6 +50,11 @@
         </item>
     </style>
 
+    <style name="MatterialButton" parent="Theme.AppCompat.Light">
+        <item name="colorControlHighlight">@color/blueTransprent</item>
+        <item name="colorButtonNormal">@color/colorPrimary</item>
+    </style>
+
     <style name="ExpandedAppBar" parent="@android:style/TextAppearance.Medium">
         <item name="android:textSize">24sp</item>
     </style>
@@ -63,4 +69,8 @@
     <style name="MyAlertDialogStyle" parent="Theme.AppCompat.Light.Dialog.Alert">
         <item name="colorAccent">@color/colorPrimary</item>
     </style>
+
+    <style name="Theme"></style>
+
+    <style name="ThemeOverlay"></style>
 </resources>

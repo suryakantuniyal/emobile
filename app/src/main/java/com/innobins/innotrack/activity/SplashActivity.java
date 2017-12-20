@@ -1,4 +1,4 @@
-package in.gtech.gogeotrack.activity;
+package com.innobins.innotrack.activity;
 
 
 import android.app.Dialog;
@@ -22,12 +22,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.innobins.innotrack.utils.UtilsFunctions;
 import com.rampo.updatechecker.UpdateChecker;
 import com.rampo.updatechecker.notice.Notice;
 
-import in.gtech.gogeotrack.R;
-import in.gtech.gogeotrack.utils.URLContstant;
-import in.gtech.gogeotrack.utils.UtilsFunctions;
+import in.innobins.innotrack.R;
+import com.innobins.innotrack.utils.URLContstant;
 
 
 /**

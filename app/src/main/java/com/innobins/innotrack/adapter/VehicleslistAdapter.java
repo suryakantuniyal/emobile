@@ -1,4 +1,4 @@
-package in.gtech.gogeotrack.adapter;
+package com.innobins.innotrack.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -17,8 +17,8 @@ import com.bumptech.glide.Glide;
 import java.util.ArrayList;
 import java.util.List;
 
-import in.gtech.gogeotrack.R;
-import in.gtech.gogeotrack.model.VehicleList;
+import in.innobins.innotrack.R;
+import com.innobins.innotrack.model.VehicleList;
 
 /**
  * Created by silence12 on 28/6/17.

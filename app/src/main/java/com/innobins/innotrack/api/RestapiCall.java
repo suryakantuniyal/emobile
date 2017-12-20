@@ -1,4 +1,4 @@
-package in.gtech.gogeotrack.api;
+package com.innobins.innotrack.api;
 
 import android.content.Context;
 

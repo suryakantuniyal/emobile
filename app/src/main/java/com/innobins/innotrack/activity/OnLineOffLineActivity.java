@@ -1,4 +1,4 @@
-package in.gtech.gogeotrack.activity;
+package com.innobins.innotrack.activity;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -23,6 +23,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.innobins.innotrack.adapter.VehicleslistAdapter;
+import com.innobins.innotrack.api.APIServices;
+import com.innobins.innotrack.model.VehicleList;
+import com.innobins.innotrack.network.ResponseOnlineVehicle;
+import com.innobins.innotrack.services.UpdateListViewService;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,13 +37,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import in.gtech.gogeotrack.R;
-import in.gtech.gogeotrack.adapter.VehicleslistAdapter;
-import in.gtech.gogeotrack.api.APIServices;
-import in.gtech.gogeotrack.model.VehicleList;
-import in.gtech.gogeotrack.network.ResponseOnlineVehicle;
-import in.gtech.gogeotrack.services.UpdateListViewService;
-import in.gtech.gogeotrack.utils.URLContstant;
+import in.innobins.innotrack.R;
+
+import com.innobins.innotrack.utils.URLContstant;
 
 /**
  * Created by silence12 on 5/7/17.

@@ -24,7 +24,7 @@
     <dimen name="text18">18.0sp</dimen>
     <dimen name="dashboard_items_padding">7.0dip</dimen>
     <dimen name="tiny">4.0dip</dimen>
-
+    <dimen name="fab_margin">16dp</dimen>
 
 
     <!-- End Deprecate -->

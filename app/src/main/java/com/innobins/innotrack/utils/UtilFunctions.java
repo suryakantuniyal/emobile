@@ -1,4 +1,4 @@
-package in.gtech.gogeotrack.utils;
+package com.innobins.innotrack.utils;
 
 import android.content.Context;
 import android.net.ConnectivityManager;

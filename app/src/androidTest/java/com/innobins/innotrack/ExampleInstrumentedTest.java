@@ -1,4 +1,4 @@
-package in.gtech.gogeotrack;
+package com.innobins.innotrack;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

@@ -182,13 +182,13 @@
                 android:gravity="center"
                 android:background="@drawable/full_rounded_white"
                 >
+
                 <RelativeLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:background="#ffffff"
-                    android:orientation="horizontal"
-                    >
+                    android:orientation="horizontal">
 
                     <TextView
                         android:id="@+id/upadated"
@@ -196,22 +196,21 @@
                         android:layout_height="wrap_content"
                         android:text="Last Updated"
                         android:textColor="@color/app_body_text_2"
-                        android:textSize="12dp"
-                        />
+                        android:textSize="12dp" />
+
                     <TextView
                         android:id="@+id/timediff_tv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/upadated"
                         android:layout_gravity="center"
-                        android:background="#ffffff"
-                        android:layout_marginTop="2dp"
                         android:layout_marginLeft="15dp"
+                        android:layout_marginTop="2dp"
+                        android:background="#ffffff"
                         android:gravity="left|center_vertical"
                         android:text=""
                         android:textColor="@color/colorPrimary"
-                        android:textSize="10dp"
-                        />
+                        android:textSize="10dp" />
                 </RelativeLayout>
             </LinearLayout>
         </LinearLayout>
@@ -324,6 +323,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:onClick="onClick"
                 android:gravity="center"
                 android:clickable="true"
                 android:background="@drawable/bg_tab_pressed"

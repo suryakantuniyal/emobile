@@ -1,4 +1,4 @@
-package in.gtech.gogeotrack.ReportsAdapter;
+package com.innobins.innotrack.ReportsAdapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -7,11 +7,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.innobins.innotrack.activity.Reports.ReportData;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import in.gtech.gogeotrack.R;
-import in.gtech.gogeotrack.activity.Reports.ReportData;
+import in.innobins.innotrack.R;
+
 /**
  * Created by surya on 10/10/17.
  */

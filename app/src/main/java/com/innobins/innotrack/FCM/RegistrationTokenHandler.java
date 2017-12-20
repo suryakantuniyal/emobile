@@ -1,4 +1,4 @@
-package in.gtech.gogeotrack.FCM;
+package com.innobins.innotrack.FCM;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -7,7 +7,7 @@ import android.util.Log;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 
-import in.gtech.gogeotrack.utils.URLContstant;
+import com.innobins.innotrack.utils.URLContstant;
 
 /**
  * Created by silence12 on 20/6/17.

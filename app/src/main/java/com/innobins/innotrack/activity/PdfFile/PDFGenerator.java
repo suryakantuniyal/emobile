@@ -1,4 +1,4 @@
-package in.gtech.gogeotrack.activity.PdfFile;
+package com.innobins.innotrack.activity.PdfFile;
 
 import android.graphics.pdf.PdfDocument;
 import android.os.Build;

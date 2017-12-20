@@ -1,14 +1,14 @@
-package in.gtech.gogeotrack.services;
+package com.innobins.innotrack.services;
 
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 
-import in.gtech.gogeotrack.activity.MainActivity;
-import in.gtech.gogeotrack.activity.MapViewActivity;
-import in.gtech.gogeotrack.activity.OnLineOffLineActivity;
-import in.gtech.gogeotrack.activity.TrackingDevicesActivity;
-import in.gtech.gogeotrack.activity.VehicleDetailActivity;
+import com.innobins.innotrack.activity.MapViewActivity;
+import com.innobins.innotrack.activity.VehicleDetailActivity;
+import com.innobins.innotrack.activity.MainActivity;
+import com.innobins.innotrack.activity.OnLineOffLineActivity;
+import com.innobins.innotrack.activity.TrackingDevicesActivity;
 
 /**
  * Created by surya on 27/9/17.

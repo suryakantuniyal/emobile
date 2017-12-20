@@ -1,4 +1,4 @@
-package in.gtech.gogeotrack.FCM;
+package com.innobins.innotrack.FCM;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -7,9 +7,8 @@ import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import in.gtech.gogeotrack.api.APIServices;
-import in.gtech.gogeotrack.network.ResponseCallback;
-import in.gtech.gogeotrack.utils.URLContstant;
+
+import com.innobins.innotrack.utils.URLContstant;
 
 /**
  * Created by silence12 on 19/6/17.

@@ -1,4 +1,4 @@
-package in.gtech.gogeotrack.activity;
+package com.innobins.innotrack.activity;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -8,7 +8,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import in.gtech.gogeotrack.parser.TraccerParser;
+import com.innobins.innotrack.parser.TraccerParser;
 
 /**
  * Created by silence12 on 19/7/17.

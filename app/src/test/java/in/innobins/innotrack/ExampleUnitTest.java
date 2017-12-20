@@ -1,4 +1,4 @@
-package in.gtech.gogeotrack;
+package in.innobins.innotrack;
 
 import org.junit.Test;
 

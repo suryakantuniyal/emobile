@@ -1,4 +1,4 @@
-package in.gtech.gogeotrack.activity;
+package com.innobins.innotrack.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,13 +15,13 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.innobins.innotrack.adapter.ViewPagerAdapter;
 import com.viewpagerindicator.CirclePageIndicator;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
-import in.gtech.gogeotrack.R;
-import in.gtech.gogeotrack.adapter.ViewPagerAdapter;
+import in.innobins.innotrack.R;
 
 /**
  * Created by silence12 on 4/7/17.

@@ -1,4 +1,4 @@
-package in.gtech.gogeotrack.model;
+package com.innobins.innotrack.model;
 
 /**
  * Created by silence12 on 15/6/17.

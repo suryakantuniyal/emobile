@@ -1,6 +1,8 @@
-package in.gtech.gogeotrack.parser;
+package com.innobins.innotrack.parser;
 
 import android.util.Log;
+
+import com.innobins.innotrack.model.VehicleList;
 
 import org.joda.time.DateTime;
 import org.json.JSONArray;
@@ -14,8 +16,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.StringTokenizer;
 import java.util.concurrent.TimeUnit;
-
-import in.gtech.gogeotrack.model.VehicleList;
 
 /**
  * Created by silence12 on 19/6/17.

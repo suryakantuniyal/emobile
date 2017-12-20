@@ -1,4 +1,4 @@
-package in.gtech.gogeotrack.activity.Reports;
+package com.innobins.innotrack.activity.Reports;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,11 +16,11 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import in.gtech.gogeotrack.R;
-import in.gtech.gogeotrack.ReportsAdapter.TripReportAdapter;
-import in.gtech.gogeotrack.api.APIServices;
-import in.gtech.gogeotrack.network.ReportResponseCallBack;
-import in.gtech.gogeotrack.utils.URLContstant;
+import in.innobins.innotrack.R;
+import com.innobins.innotrack.ReportsAdapter.TripReportAdapter;
+import com.innobins.innotrack.api.APIServices;
+import com.innobins.innotrack.network.ReportResponseCallBack;
+import com.innobins.innotrack.utils.URLContstant;
 
 public class TripsReportActiviy extends AppCompatActivity {
     TripReportAdapter tripReportAdapter;

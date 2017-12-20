@@ -1,6 +1,6 @@
-package in.gtech.gogeotrack.network;
+package com.innobins.innotrack.network;
 
-import in.gtech.gogeotrack.model.VehicleList;
+import com.innobins.innotrack.model.VehicleList;
 
 import java.util.ArrayList;
 

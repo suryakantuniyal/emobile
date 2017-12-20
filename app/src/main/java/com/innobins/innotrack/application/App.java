@@ -1,4 +1,4 @@
-package in.gtech.gogeotrack.application;
+package com.innobins.innotrack.application;
 
 import android.app.Application;
 

@@ -1,4 +1,4 @@
-package in.gtech.gogeotrack.activity;
+package com.innobins.innotrack.activity;
 
 import android.Manifest;
 import android.app.AlarmManager;
@@ -37,10 +37,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import in.gtech.gogeotrack.R;
-import in.gtech.gogeotrack.model.VehicleList;
-import in.gtech.gogeotrack.services.UpdateListViewService;
-import in.gtech.gogeotrack.utils.URLContstant;
+import in.innobins.innotrack.R;
+import com.innobins.innotrack.model.VehicleList;
+import com.innobins.innotrack.services.UpdateListViewService;
+import com.innobins.innotrack.utils.URLContstant;
 
 /**
  * Created by silence12 on 5/7/17.

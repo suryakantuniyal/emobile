@@ -1,4 +1,4 @@
-package in.gtech.gogeotrack.fragments;
+package com.innobins.innotrack.fragments;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -18,16 +18,17 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.innobins.innotrack.FCM.SendRegistrationTokentoServer;
+import com.innobins.innotrack.activity.Main2Activity;
+import com.innobins.innotrack.api.APIServices;
+import com.innobins.innotrack.network.ResponseStringCallback;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import in.gtech.gogeotrack.FCM.SendRegistrationTokentoServer;
-import in.gtech.gogeotrack.R;
+import in.innobins.innotrack.R;
 //import in.gtech.gogeotrack.activity.CircularActivity;
-import in.gtech.gogeotrack.activity.Main2Activity;
-import in.gtech.gogeotrack.api.APIServices;
-import in.gtech.gogeotrack.network.ResponseStringCallback;
-import in.gtech.gogeotrack.utils.URLContstant;
+import com.innobins.innotrack.utils.URLContstant;
 
 /**
  * Created by silence12 on 19/6/17.

@@ -1,4 +1,4 @@
-package in.gtech.gogeotrack.FCM;
+package com.innobins.innotrack.FCM;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;

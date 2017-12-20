@@ -1,4 +1,4 @@
-package in.gtech.gogeotrack.activity;
+package com.innobins.innotrack.activity;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -29,18 +29,18 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.innobins.innotrack.api.APIServices;
+import com.innobins.innotrack.network.DetailResponseCallback;
+import com.innobins.innotrack.parser.TraccerParser;
+import com.innobins.innotrack.services.UpdateListViewService;
+import com.innobins.innotrack.utils.URLContstant;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.Calendar;
 
-import in.gtech.gogeotrack.R;
-import in.gtech.gogeotrack.api.APIServices;
-import in.gtech.gogeotrack.network.DetailResponseCallback;
-import in.gtech.gogeotrack.parser.TraccerParser;
-import in.gtech.gogeotrack.services.UpdateListViewService;
-import in.gtech.gogeotrack.utils.URLContstant;
+import in.innobins.innotrack.R;
 
 /**
  * Created by silence12 on 21/6/17.

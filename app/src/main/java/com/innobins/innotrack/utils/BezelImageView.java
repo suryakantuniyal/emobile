@@ -1,4 +1,4 @@
-package in.gtech.gogeotrack.utils;
+package com.innobins.innotrack.utils;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -16,7 +16,7 @@ import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 
-import in.gtech.gogeotrack.R;
+import in.innobins.innotrack.R;
 
 /**
  * Created by silence12 on 26/6/17.

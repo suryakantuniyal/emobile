@@ -1,4 +1,4 @@
-package in.gtech.gogeotrack.fragments;
+package com.innobins.innotrack.fragments;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -15,12 +15,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import org.json.JSONObject;
-import in.gtech.gogeotrack.R;
-import in.gtech.gogeotrack.api.APIServices;
-import in.gtech.gogeotrack.network.ResponseCallback;
+import com.innobins.innotrack.network.ResponseCallback;
 
-import in.gtech.gogeotrack.activity.SignUpAccount;
+import org.json.JSONObject;
+import in.innobins.innotrack.R;
+import com.innobins.innotrack.api.APIServices;
+
+import com.innobins.innotrack.activity.SignUpAccount;
 
 /**
  * Created by silence12 on 19/6/17.

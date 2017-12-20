@@ -1,4 +1,4 @@
-package in.gtech.gogeotrack.network;
+package com.innobins.innotrack.network;
 
 import android.content.Context;
 import android.util.Log;
@@ -8,10 +8,9 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.innobins.innotrack.api.RestapiCall;
 
 import org.json.JSONObject;
-
-import in.gtech.gogeotrack.api.RestapiCall;
 
 /**
  * Created by surya on 21/9/17.

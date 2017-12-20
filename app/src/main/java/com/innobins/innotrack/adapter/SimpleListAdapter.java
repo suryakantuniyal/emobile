@@ -1,4 +1,4 @@
-package in.gtech.gogeotrack.adapter;
+package com.innobins.innotrack.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,7 +10,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import in.gtech.gogeotrack.R;
+import in.innobins.innotrack.R;
 
 /**
  * Created by surya on 11/10/17.

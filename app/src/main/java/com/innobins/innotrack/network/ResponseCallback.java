@@ -1,4 +1,4 @@
-package in.gtech.gogeotrack.network;
+package com.innobins.innotrack.network;
 
 import org.json.JSONObject;
 

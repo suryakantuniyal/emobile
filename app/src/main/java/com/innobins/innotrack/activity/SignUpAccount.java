@@ -1,4 +1,4 @@
-package in.gtech.gogeotrack.activity;
+package com.innobins.innotrack.activity;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -18,9 +18,10 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 
-import in.gtech.gogeotrack.R;
-import in.gtech.gogeotrack.fragments.LoginFragment;
-import in.gtech.gogeotrack.utils.UtilFunctions;
+import com.innobins.innotrack.utils.UtilFunctions;
+
+import in.innobins.innotrack.R;
+import com.innobins.innotrack.fragments.LoginFragment;
 
 /**
  * Created by silence12 on 19/6/17.

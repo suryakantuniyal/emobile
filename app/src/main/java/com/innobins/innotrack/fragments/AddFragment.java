@@ -1,4 +1,4 @@
-package in.gtech.gogeotrack.fragments;
+package com.innobins.innotrack.fragments;
 
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,7 +14,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import in.gtech.gogeotrack.R;
+import in.innobins.innotrack.R;
 
 /**
  * Created by silence12 on 4/7/17.

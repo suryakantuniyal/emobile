@@ -1,4 +1,4 @@
-package in.gtech.gogeotrack.ReportsFragment;
+package com.innobins.innotrack.ReportsFragment;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -7,7 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import in.gtech.gogeotrack.R;
+import in.innobins.innotrack.R;
 
 public class RouteFragment extends Fragment {
 

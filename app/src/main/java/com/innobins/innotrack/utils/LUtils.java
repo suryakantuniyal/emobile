@@ -1,4 +1,4 @@
-package in.gtech.gogeotrack.utils;
+package com.innobins.innotrack.utils;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -21,7 +21,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import in.gtech.gogeotrack.R;
+import in.innobins.innotrack.R;
 
 /**
  * Created by silence12 on 26/6/17.

@@ -1,4 +1,4 @@
-package in.gtech.gogeotrack.adapter;
+package com.innobins.innotrack.adapter;
 
 import android.content.Context;
 import android.os.Parcelable;
@@ -7,7 +7,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.util.Log;
 
-import in.gtech.gogeotrack.fragments.AddFragment;
+import com.innobins.innotrack.fragments.AddFragment;
 
 /**
  * Created by silence12 on 4/7/17.

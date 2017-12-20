@@ -1,4 +1,4 @@
-package in.gtech.gogeotrack.adapter;
+package com.innobins.innotrack.adapter;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,11 +14,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.innobins.innotrack.activity.VehicleDetailActivity;
+import com.innobins.innotrack.model.VehicleList;
 
-import in.gtech.gogeotrack.R;
-import in.gtech.gogeotrack.activity.TrackingDevicesActivity;
-import in.gtech.gogeotrack.activity.VehicleDetailActivity;
-import in.gtech.gogeotrack.model.VehicleList;
+import in.innobins.innotrack.R;
+import com.innobins.innotrack.activity.TrackingDevicesActivity;
 
 import java.util.ArrayList;
 import java.util.List;

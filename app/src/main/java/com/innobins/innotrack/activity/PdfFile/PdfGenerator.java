@@ -1,4 +1,4 @@
-package in.gtech.gogeotrack.activity.PdfFile;
+package com.innobins.innotrack.activity.PdfFile;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -18,8 +18,8 @@ import android.widget.TextView;
 import java.io.File;
 import java.util.List;
 
-import in.gtech.gogeotrack.R;
-import in.gtech.gogeotrack.activity.Reports.ReportsActivity;
+import in.innobins.innotrack.R;
+import com.innobins.innotrack.activity.Reports.ReportsActivity;
 
 public class PdfGenerator extends AppCompatActivity {
 

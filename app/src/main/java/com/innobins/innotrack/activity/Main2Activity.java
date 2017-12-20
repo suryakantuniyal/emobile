@@ -1,4 +1,4 @@
-package in.gtech.gogeotrack.activity;
+package com.innobins.innotrack.activity;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -29,6 +29,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.innobins.innotrack.adapter.ViewPagerAdapter;
+import com.innobins.innotrack.model.VehicleList;
+import com.innobins.innotrack.network.ResponseOnlineVehicle;
 import com.viewpagerindicator.CirclePageIndicator;
 
 import org.json.JSONArray;
@@ -39,13 +42,10 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import in.gtech.gogeotrack.R;
-import in.gtech.gogeotrack.activity.Reports.ReportsActivity;
-import in.gtech.gogeotrack.adapter.ViewPagerAdapter;
-import in.gtech.gogeotrack.api.APIServices;
-import in.gtech.gogeotrack.model.VehicleList;
-import in.gtech.gogeotrack.network.ResponseOnlineVehicle;
-import in.gtech.gogeotrack.utils.URLContstant;
+import in.innobins.innotrack.R;
+import com.innobins.innotrack.activity.Reports.ReportsActivity;
+import com.innobins.innotrack.api.APIServices;
+import com.innobins.innotrack.utils.URLContstant;
 
 public class  Main2Activity  extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {

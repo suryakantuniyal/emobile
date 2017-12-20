@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <paths>
+        <files-path name="shared_pdf" path="shared_pdf"/>
+    </paths>
 </PreferenceScreen>

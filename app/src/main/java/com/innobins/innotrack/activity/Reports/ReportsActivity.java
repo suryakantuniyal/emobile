@@ -1,4 +1,4 @@
-package in.gtech.gogeotrack.activity.Reports;
+package com.innobins.innotrack.activity.Reports;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -25,6 +25,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import com.innobins.innotrack.activity.PdfFile.PdfGenerator;
+import com.innobins.innotrack.model.VehicleList;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,11 +40,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import in.gtech.gogeotrack.R;
-import in.gtech.gogeotrack.activity.PdfFile.PdfGenerator;
-import in.gtech.gogeotrack.adapter.SimpleListAdapter;
-import in.gtech.gogeotrack.model.VehicleList;
-import in.gtech.gogeotrack.utils.URLContstant;
+import in.innobins.innotrack.R;
+
+import com.innobins.innotrack.adapter.SimpleListAdapter;
+import com.innobins.innotrack.utils.URLContstant;
 
 public class ReportsActivity extends AppCompatActivity {
     Spinner reportSpinner;

@@ -1,4 +1,4 @@
-package in.gtech.gogeotrack.utils;
+package com.innobins.innotrack.utils;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -34,7 +34,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.TextView;
 
-import in.gtech.gogeotrack.R;
+import in.innobins.innotrack.R;
 
 import java.util.regex.Pattern;
 

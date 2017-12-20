@@ -1,4 +1,4 @@
-package in.gtech.gogeotrack.utils;
+package com.innobins.innotrack.utils;
 
 import static android.R.attr.id;
 

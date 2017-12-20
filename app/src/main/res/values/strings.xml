@@ -7,6 +7,14 @@
     <string name="login">LOG IN</string>
     <string name="phone">Phone Number</string>
 
+    <string-array name="Type">
+        <item>Route</item>
+        <item>Events</item>
+        <item>Summary</item>
+        <item>Trips</item>
+
+    </string-array>
+
 
     <!-- String used to wrap navigation item descriptions for a11y users to indicate the user
          interface element is a menu item. -->
@@ -28,5 +36,8 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_main_progress_dialog">MainProgressDialog</string>
+    <string name="title_activity_go_geo_progress_dialog">GoGeoProgressDialog</string>
+    <string name="title_activity_pdf_generator">PdfGenerator</string>
 
 </resources>
