@@ -778,7 +778,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             _msrUsbSams = new EMSIDTechUSB(activity, callBack);
             if (_msrUsbSams.OpenDevice())
                 _msrUsbSams.StartReadingThread();
-        } else if (myPref.isESY13P1()) {
+        } else if ((myPref.isESY13P1() || MyPreferences.isTeamSable()) && Global.btSwiper == null) {
             if (Global.embededMSR != null && Global.embededMSR.getCurrentDevice() != null) {
                 Global.embededMSR.getCurrentDevice().loadCardReader(callBack, isDebit);
                 cardSwipe.setChecked(true);

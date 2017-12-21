@@ -140,6 +140,8 @@ public class Global extends MultiDexApplication {
     public static final int MEPOS = 20;
     public static final int MIURA = 21;
     public static final int BIXOLON_RD = 22;
+    public static final int TEAMSABLE = 23;
+
 
     public static final String AUDIO_MSR_UNIMAG = "0";
     public static final String AUDIO_MSR_MAGTEK = "1";

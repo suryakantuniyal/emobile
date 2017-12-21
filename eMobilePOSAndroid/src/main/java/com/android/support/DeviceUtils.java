@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
@@ -28,6 +29,7 @@ import java.util.List;
 
 import drivers.EMSBluetoothStarPrinter;
 import drivers.EMSDeviceDriver;
+import drivers.EMSMagtekSwiper;
 import drivers.EMSPowaPOS;
 import drivers.EMSmePOS;
 import main.EMSDeviceManager;
@@ -129,6 +131,20 @@ public class DeviceUtils {
                     sb.append(Global.BuildModel.PAT215.name()).append(": ").append("Failed to connect\n\r");
                 }
             }
+        } else if (MyPreferences.isTeamSable()) {
+            Looper.prepare();
+            edm = new EMSDeviceManager();
+            Global.embededMSR = edm.getManager();
+            EMSMagtekSwiper swiper = new EMSMagtekSwiper();
+            swiper.autoConnect(activity,edm,0,false,"","");
+            Global.embededMSR.setCurrentDevice(swiper);
+            Global.embededMSR.getCurrentDevice().loadCardReader(null, false);
+            if (Global.embededMSR.getCurrentDevice().isConnected()) {
+                sb.append("MSR Magtek: Connected");
+            } else {
+                sb.append("MSR Magtek: Failed to connect");
+            }
+            Looper.loop();
         } else if (myPref.isESY13P1() && myPref.getPrinterType() == -1) {
             myPref.setPrinterType(Global.ELOPAYPOINT);
             if (DeviceManager.getPlatformInfo().eloPlatform == EloPlatform.PAYPOINT_2) {
@@ -240,7 +256,7 @@ public class DeviceUtils {
         intentFilter.addAction("android.hardware.usb.action.USB_DEVICE_ATTACHED");
         intentFilter.addAction("android.hardware.usb.action.USB_DEVICE_DETACHED");
 
-         fingerPrintbroadcastReceiver = new BroadcastReceiver() {
+        fingerPrintbroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 boolean connected;
@@ -281,7 +297,7 @@ public class DeviceUtils {
         }
     }
 
-   public static void sendBroadcastDeviceConnected(Context context) {
+    public static void sendBroadcastDeviceConnected(Context context) {
         Intent intent = new Intent(MainMenu_FA.NOTIFICATION_DEVICES_LOADED);
         context.sendBroadcast(intent);
     }
