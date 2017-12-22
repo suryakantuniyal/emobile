@@ -13,30 +13,6 @@ import io.realm.annotations.PrimaryKey;
  */
 public class EmobileBiometric extends RealmObject {
 
-    public enum UserType{
-        CUSTOMER(0), CLERK(1), SYSTEM(2);
-
-        private int code;
-
-        UserType(int code) {
-            this.code = code;
-        }
-        public int getCode(){
-            return code;
-        }
-        public static UserType getByCode(int code){
-            switch (code){
-                case 0:
-                    return CUSTOMER;
-                case 1:
-                    return CLERK;
-                case 2:
-                    return SYSTEM;
-            }
-            return null;
-        }
-    }
-
     @Expose(serialize = false, deserialize = false)
     @PrimaryKey
     private String realmId;
@@ -62,6 +38,7 @@ public class EmobileBiometric extends RealmObject {
         this.entityid = entityid;
         realmId = this.entityid + userTypeCode;
     }
+
     public RealmList<BiometricFid> getFids() {
         if (null == fids) {
             fids = new RealmList<>();
@@ -71,6 +48,10 @@ public class EmobileBiometric extends RealmObject {
 
     public void setFids(RealmList<BiometricFid> fids) {
         this.fids = fids;
+    }
+
+    public void initRealmId() {
+        setEntityid(this.entityid);
     }
 
     public UserType getUserType() {
@@ -98,6 +79,32 @@ public class EmobileBiometric extends RealmObject {
 
     public void setRegid(String regid) {
         this.regid = regid;
+    }
+
+    public enum UserType {
+        CUSTOMER(0), CLERK(1), SYSTEM(2);
+
+        private int code;
+
+        UserType(int code) {
+            this.code = code;
+        }
+
+        public static UserType getByCode(int code) {
+            switch (code) {
+                case 0:
+                    return CUSTOMER;
+                case 1:
+                    return CLERK;
+                case 2:
+                    return SYSTEM;
+            }
+            return null;
+        }
+
+        public int getCode() {
+            return code;
+        }
     }
 
 }

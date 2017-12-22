@@ -31,13 +31,13 @@ public class EmobileBiometricDAO {
 
     public static void delete(String id, EmobileBiometric.UserType userType) {
         Realm realm = Realm.getDefaultInstance();
-        try{
+        try {
             realm.beginTransaction();
             EmobileBiometric biometric = realm.where(EmobileBiometric.class)
                     .equalTo("entityid", id, Case.INSENSITIVE)
                     .equalTo("userTypeCode", userType.getCode())
                     .findFirst();
-            if(biometric!=null && biometric.isValid()) {
+            if (biometric != null && biometric.isValid()) {
                 biometric.getFids().clear();
             }
         } finally {
@@ -80,7 +80,7 @@ public class EmobileBiometricDAO {
                     fids.deleteAllFromRealm();
                 }
             }
-        }finally {
+        } finally {
             realm.commitTransaction();
             realm.close();
         }
@@ -138,21 +138,24 @@ public class EmobileBiometricDAO {
             return all;
         }
     }
-public static void truncate(){
-    Realm realm = Realm.getDefaultInstance();
-    try {
-        realm.beginTransaction();
-        RealmResults<EmobileBiometric> all = realm.where(EmobileBiometric.class).findAll();
-        all.deleteAllFromRealm();
-        realm.commitTransaction();
-    } finally {
-        realm.close();
+
+    public static void truncate() {
+        Realm realm = Realm.getDefaultInstance();
+        try {
+            realm.beginTransaction();
+            RealmResults<EmobileBiometric> all = realm.where(EmobileBiometric.class).findAll();
+            all.deleteAllFromRealm();
+            realm.commitTransaction();
+        } finally {
+            realm.close();
+        }
     }
-}
+
     public static void upsert(List<EmobileBiometric> emobileBiometrics) {
         Realm realm = Realm.getDefaultInstance();
         try {
             for (EmobileBiometric biometric : emobileBiometrics) {
+                biometric.initRealmId();
                 RealmList<BiometricFid> fids = biometric.getFids();
                 for (BiometricFid fid : fids) {
                     fid.decodeFmdBase64();

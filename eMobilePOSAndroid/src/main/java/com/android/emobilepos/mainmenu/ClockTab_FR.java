@@ -2,7 +2,6 @@ package com.android.emobilepos.mainmenu;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,8 +25,9 @@ import drivers.digitalpersona.DigitalPersona;
 import interfaces.BiometricCallbacks;
 
 public class ClockTab_FR extends Fragment implements OnClickListener, BiometricCallbacks {
-    private EditText fieldPassword;
     DigitalPersona digitalPersona;
+    private EditText fieldPassword;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.clocks_parent_layout, container, false);
@@ -41,7 +41,8 @@ public class ClockTab_FR extends Fragment implements OnClickListener, BiometricC
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onResume() {
+        super.onResume();
         digitalPersona.loadForScan();
     }
 
@@ -78,8 +79,8 @@ public class ClockTab_FR extends Fragment implements OnClickListener, BiometricC
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onPause() {
+        super.onPause();
         digitalPersona.releaseReader();
     }
 

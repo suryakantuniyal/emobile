@@ -35,7 +35,6 @@ import com.digitalpersona.uareu.UareUException;
 import com.digitalpersona.uareu.UareUGlobal;
 import com.digitalpersona.uareu.dpfpddusbhost.DPFPDDUsbException;
 import com.digitalpersona.uareu.dpfpddusbhost.DPFPDDUsbHost;
-import com.google.gson.Gson;
 
 import java.util.Collection;
 import java.util.List;
@@ -44,13 +43,13 @@ import interfaces.BiometricCallbacks;
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
-import util.json.JsonUtils;
 
 import static com.android.emobilepos.R.id.fingerPrintimageView;
 import static com.android.emobilepos.R.id.unregisterFingerprintbutton2;
 
 public class DigitalPersona {
 
+    public static boolean isReaderAvailable = true;
     private int spleepTime = 500;
     private Reader reader;
     private boolean stopFingerReader;
@@ -79,6 +78,53 @@ public class DigitalPersona {
         this.context = context;
         this.callbacks = callbacks;
         this.userType = userType;
+    }
+
+    public static String QualityToString(Reader.CaptureResult result) {
+        if (result == null) {
+            return "";
+        }
+        if (result.quality == null) {
+            return "An error occurred";
+        }
+        switch (result.quality) {
+            case FAKE_FINGER:
+                return "Fake finger";
+            case NO_FINGER:
+                return "No finger";
+            case CANCELED:
+                return "Capture cancelled";
+            case TIMED_OUT:
+                return "Capture timed out";
+            case FINGER_TOO_LEFT:
+                return "Finger too left";
+            case FINGER_TOO_RIGHT:
+                return "Finger too right";
+            case FINGER_TOO_HIGH:
+                return "Finger too high";
+            case FINGER_TOO_LOW:
+                return "Finger too low";
+            case FINGER_OFF_CENTER:
+                return "Finger off center";
+            case SCAN_SKEWED:
+                return "Scan skewed";
+            case SCAN_TOO_SHORT:
+                return "Scan too short";
+            case SCAN_TOO_LONG:
+                return "Scan too long";
+            case SCAN_TOO_SLOW:
+                return "Scan too slow";
+            case SCAN_TOO_FAST:
+                return "Scan too fast";
+            case SCAN_WRONG_DIRECTION:
+                return "Wrong direction";
+            case READER_DIRTY:
+                return "Reader dirty";
+            case GOOD:
+                return "";
+            default:
+                return "An error occurred";
+        }
     }
 
     public void loadForEnrollment() {
@@ -121,7 +167,7 @@ public class DigitalPersona {
 
     public void loadForScan() {
         Collection<UsbDevice> usbDevices = DeviceUtils.getUSBDevices(context);
-        boolean isReaderConnected = usbDevices.size() > 0;
+        final boolean isReaderConnected = usbDevices.size() > 0;
         if (isReaderConnected) {
             new Thread(new Runnable() {
                 @Override
@@ -130,7 +176,16 @@ public class DigitalPersona {
                         int dpi;
                         Engine engine;
                         ReaderCollection readers;
-                        Thread.sleep(spleepTime);
+                        if (!isReaderAvailable) {
+                            int retries = 0;
+                            while (!isReaderAvailable && retries <= 3) {
+                                Thread.sleep(spleepTime);
+                                retries++;
+                            }
+                            if (retries >= 3 && !isReaderAvailable) {
+                                return;
+                            }
+                        }
                         readers = UareUGlobal.GetReaderCollection(context);
                         readers.GetReaders();
                         if (readers.size() > 0) {
@@ -140,7 +195,7 @@ public class DigitalPersona {
                         }
                         PendingIntent mPermissionIntent;
                         mPermissionIntent = PendingIntent.getBroadcast(context, 0, new Intent(ViewCustomerDetails_FA.ACTION_USB_PERMISSION), 0);
-                        IntentFilter filter = new IntentFilter(ViewCustomerDetails_FA.ACTION_USB_PERMISSION);
+//                        IntentFilter filter = new IntentFilter(ViewCustomerDetails_FA.ACTION_USB_PERMISSION);
 //                        registerReceiver(mUsbReceiver, filter);
 
                         DPFPDDUsbHost.DPFPDDUsbCheckAndRequestPermissions(context, mPermissionIntent, reader.GetDescription().name);
@@ -162,18 +217,19 @@ public class DigitalPersona {
                                 fid.setFmdData(fid.getFmdData());
                             }
                         }
-                        Gson g = JsonUtils.getInstance();
-                        String json = g.toJson(emobileBiometrics);
+//                        Gson g = JsonUtils.getInstance();
+//                        String json = g.toJson(emobileBiometrics);
                         if (fmds.length > 0) {
                             while (!stopFingerReader) {
                                 try {
+                                    isReaderAvailable = false;
                                     Reader.CaptureResult cap_result = reader.Capture(Fid.Format.ANSI_381_2004, Reader.ImageProcessing.IMG_PROC_DEFAULT, dpi, -1);
                                     if (cap_result == null || cap_result.image == null) {
                                         continue;
                                     }
                                     Fmd fmd = engine.CreateFmd(cap_result.image, Fmd.Format.ANSI_378_2004);
                                     Engine.Candidate[] candidates = engine.Identify(fmd, 0, fmds, 100000, 2);
-                                    if(candidates.length>0) {
+                                    if (candidates.length > 0) {
                                         for (Engine.Candidate candidate : candidates) {
                                             int fmd_index = candidate.fmd_index;
                                             final EmobileBiometric biometric = EmobileBiometricDAO.getBiometrics(fmds[fmd_index]);
@@ -181,7 +237,7 @@ public class DigitalPersona {
                                                 callbacks.biometricsWasRead(biometric);
                                             }
                                         }
-                                    }else {
+                                    } else {
                                         callbacks.biometricsReadNotFound();
                                     }
                                 } catch (UareUException e) {
@@ -194,6 +250,7 @@ public class DigitalPersona {
                                 reader.CancelCapture();
                             }
                             reader.Close();
+                            isReaderAvailable = true;
                         } catch (UareUException e) {
                             e.printStackTrace();
                         }
@@ -219,7 +276,6 @@ public class DigitalPersona {
         }
     }
 
-
     private int GetFirstDPI(Reader reader) {
         Reader.Capabilities caps = reader.GetCapabilities();
         return caps.resolutions[0];
@@ -238,8 +294,8 @@ public class DigitalPersona {
         } catch (UareUException e) {
             e.printStackTrace();
         }
+        isReaderAvailable = true;
     }
-
 
     public void startFingerPrintEnrollment(final ViewCustomerDetails_FA.Finger finger) {
         try {
@@ -471,53 +527,6 @@ public class DigitalPersona {
             }
 
             return result;
-        }
-    }
-
-    public static String QualityToString(Reader.CaptureResult result) {
-        if (result == null) {
-            return "";
-        }
-        if (result.quality == null) {
-            return "An error occurred";
-        }
-        switch (result.quality) {
-            case FAKE_FINGER:
-                return "Fake finger";
-            case NO_FINGER:
-                return "No finger";
-            case CANCELED:
-                return "Capture cancelled";
-            case TIMED_OUT:
-                return "Capture timed out";
-            case FINGER_TOO_LEFT:
-                return "Finger too left";
-            case FINGER_TOO_RIGHT:
-                return "Finger too right";
-            case FINGER_TOO_HIGH:
-                return "Finger too high";
-            case FINGER_TOO_LOW:
-                return "Finger too low";
-            case FINGER_OFF_CENTER:
-                return "Finger off center";
-            case SCAN_SKEWED:
-                return "Scan skewed";
-            case SCAN_TOO_SHORT:
-                return "Scan too short";
-            case SCAN_TOO_LONG:
-                return "Scan too long";
-            case SCAN_TOO_SLOW:
-                return "Scan too slow";
-            case SCAN_TOO_FAST:
-                return "Scan too fast";
-            case SCAN_WRONG_DIRECTION:
-                return "Wrong direction";
-            case READER_DIRTY:
-                return "Reader dirty";
-            case GOOD:
-                return "";
-            default:
-                return "An error occurred";
         }
     }
 }

@@ -670,7 +670,7 @@ public class OrderProductsHandler {
         List<OrderProduct> listOrdProd = new ArrayList<>();
 
         query.append(
-                "SELECT prod_price, c.cat_name,op.cat_id, sum(ordprod_qty) as 'ordprod_qty',  sum(overwrite_price) 'overwrite_price'," +
+                "SELECT prod_price as 'prod_price', c.cat_name,op.cat_id, sum(ordprod_qty) as 'ordprod_qty',  sum(overwrite_price) 'overwrite_price'," +
                         "date(o.ord_timecreated,'localtime') as 'date'  " +
                         "FROM " + table_name + " op ");
         query.append(
@@ -696,7 +696,7 @@ public class OrderProductsHandler {
             where_values = new String[]{date};
         }
 
-        query.append(" GROUP BY op.cat_id");
+        query.append(" GROUP BY op.cat_id, prod_price ORDER BY op.cat_id");
 
         Cursor c = DBManager.getDatabase().rawQuery(query.toString(), where_values);
 
