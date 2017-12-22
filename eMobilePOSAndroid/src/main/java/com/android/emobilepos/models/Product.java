@@ -21,7 +21,7 @@ public class Product {
     private String prodDesc;
     @SerializedName("prod_name")
     private String prodName;
-    @SerializedName("prodExtraDesc")
+    @SerializedName("prod_extradesc")
     private String prodExtraDesc;
     @SerializedName("volumePrice")
     private String volumePrice;

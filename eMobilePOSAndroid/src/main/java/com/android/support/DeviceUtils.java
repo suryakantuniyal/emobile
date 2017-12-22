@@ -132,19 +132,19 @@ public class DeviceUtils {
                 }
             }
         } else if (MyPreferences.isTeamSable()) {
-            Looper.prepare();
-            edm = new EMSDeviceManager();
-            Global.embededMSR = edm.getManager();
-            EMSMagtekSwiper swiper = new EMSMagtekSwiper();
-            swiper.autoConnect(activity,edm,0,false,"","");
-            Global.embededMSR.setCurrentDevice(swiper);
-            Global.embededMSR.getCurrentDevice().loadCardReader(null, false);
-            if (Global.embededMSR.getCurrentDevice().isConnected()) {
-                sb.append("MSR Magtek: Connected");
-            } else {
-                sb.append("MSR Magtek: Failed to connect");
-            }
-            Looper.loop();
+//            Looper.prepare();
+//            edm = new EMSDeviceManager();
+//            Global.embededMSR = edm.getManager();
+//            EMSMagtekSwiper swiper = new EMSMagtekSwiper();
+//            swiper.autoConnect(activity,edm,0,false,"","");
+//            Global.embededMSR.setCurrentDevice(swiper);
+//            Global.embededMSR.getCurrentDevice().loadCardReader(null, false);
+//            if (Global.embededMSR.getCurrentDevice().isConnected()) {
+//                sb.append("MSR Magtek: Connected");
+//            } else {
+//                sb.append("MSR Magtek: Failed to connect");
+//            }
+//            Looper.loop();
         } else if (myPref.isESY13P1() && myPref.getPrinterType() == -1) {
             myPref.setPrinterType(Global.ELOPAYPOINT);
             if (DeviceManager.getPlatformInfo().eloPlatform == EloPlatform.PAYPOINT_2) {
