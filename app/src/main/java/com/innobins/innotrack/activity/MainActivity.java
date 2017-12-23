@@ -23,9 +23,11 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.innobins.innotrack.adapter.VehicleslistAdapter;
+import com.innobins.innotrack.api.APIServices;
 import com.innobins.innotrack.model.VehicleList;
 import com.innobins.innotrack.network.ResponseOnlineVehicle;
 import com.innobins.innotrack.services.UpdateListViewService;
+import com.innobins.innotrack.utils.URLContstant;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,9 +38,6 @@ import java.util.Calendar;
 import java.util.List;
 
 import in.innobins.innotrack.R;
-
-import com.innobins.innotrack.api.APIServices;
-import com.innobins.innotrack.utils.URLContstant;
 
 public class MainActivity extends AppCompatActivity
         implements VehicleslistAdapter.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
@@ -171,6 +170,10 @@ public class MainActivity extends AppCompatActivity
     public void OnItemClick(View view, int position, List<VehicleList> mFilteredList) {
 
         if (view.getId() == R.id.detail_ll) {
+
+            /*Intent intent = new Intent(MainActivity.this,Animation.class);
+            startActivity(intent);
+            finish();*/
             //  activitystart();
             // startService(updateListViewService);
             // startService(locationService);

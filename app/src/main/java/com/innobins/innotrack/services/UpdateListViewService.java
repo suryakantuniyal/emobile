@@ -57,6 +57,7 @@ public class UpdateListViewService extends Service {
         if (vehicleDetailActivity!=null){
             vehicleDetailActivity.uploadIndividualData();
         }
+
         if (mapViewActivity!=null){
             mapViewActivity.reloadMap();
         }

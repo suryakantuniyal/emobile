@@ -2,8 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="in.innobins.innotrack">
 
-
-
     <uses-sdk
         android:minSdkVersion="15"
         android:targetSdkVersion="24" />
@@ -46,17 +44,14 @@
         android:largeHeap="true"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
-
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
-
         </provider>
 
         <activity
@@ -126,8 +121,11 @@
         <activity android:name="com.innobins.innotrack.activity.Reports.SummaryReportActivity" />
         <activity
             android:name="com.innobins.innotrack.activity.PdfFile.PdfGenerator"
-            android:label="@string/title_activity_pdf_generator"
-           ></activity>
+            android:label="@string/title_activity_pdf_generator" />
+        <activity
+            android:name="com.innobins.innotrack.activity.Animation"
+            android:label="@string/title_activity_animation"
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>
