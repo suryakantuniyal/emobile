@@ -28,7 +28,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
-import com.android.dao.EmobileBiometricDAO;
 import com.android.database.CustomersHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.history.HistoryTransactions_FA;
@@ -45,6 +44,7 @@ import java.util.Collection;
 import drivers.digitalpersona.DigitalPersona;
 import interfaces.BCRCallbacks;
 import interfaces.BiometricCallbacks;
+import util.StringUtil;
 import util.json.UIUtils;
 
 public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements BiometricCallbacks, OnClickListener, OnItemClickListener, BCRCallbacks {
@@ -170,19 +170,20 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
     }
 
     private void releaseReader() {
-        if(isReaderConnected) {
+        if (isReaderConnected) {
             digitalPersona.releaseReader();
         }
     }
 
     private void selectCustomer(int itemIndex) {
-        Intent results = new Intent();
         myCursor.moveToPosition(itemIndex);
         String name = myCursor.getString(myCursor.getColumnIndex("cust_name"));
+        selectCustomer(name);
+    }
+
+    private void selectCustomer(String name) {
+        Intent results = new Intent();
         results.putExtra("customer_name", name);
-//        SalesTaxCodesHandler taxHandler = new SalesTaxCodesHandler(activity);
-//        SalesTaxCodesHandler.TaxableCode taxable = taxHandler.checkIfCustTaxable(myCursor.getString(myCursor.getColumnIndex("cust_taxable")));
-//        myPref.setCustTaxCode(taxable, myCursor.getString(myCursor.getColumnIndex("cust_salestaxcode")));
         myPref.setCustID(myCursor.getString(myCursor.getColumnIndex("_id")));    //getting cust_id as _id
         myPref.setCustName(name);
         myPref.setCustIDKey(myCursor.getString(myCursor.getColumnIndex("custidkey")));
@@ -192,7 +193,6 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
         setResult(1, results);
         finish();
     }
-
 
     @Override
     public void onResume() {
@@ -255,6 +255,7 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == -1) {
+            selectCustomer(myPref.getCustName());
             finish();
         }
     }
@@ -376,8 +377,9 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
         public void bindView(View view, Context context, Cursor cursor) {
             final ViewHolder holder = (ViewHolder) view.getTag();
             String temp = cursor.getString(holder.i_cust_name);
+            String lastname = cursor.getString(holder.i_cust_lastName);
             if (temp != null)
-                holder.cust_name.setText(temp);
+                holder.cust_name.setText(String.format("%s %s", temp, StringUtil.nullStringToEmpty(lastname)));
 
             temp = cursor.getString(holder.i_CompanyName);
             if (temp != null)
@@ -427,6 +429,9 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
             holder.i_cust_id = cursor.getColumnIndex("_id");
             holder.i_account_number = cursor.getColumnIndex("AccountNumnber");
             holder.i_cust_name = cursor.getColumnIndex("cust_name");
+            holder.i_cust_lastName = cursor.getColumnIndex("cust_lastName");
+
+
             holder.i_CompanyName = cursor.getColumnIndex("CompanyName");
             holder.i_cust_phone = cursor.getColumnIndex("cust_phone");
             holder.i_pricelevel_name = cursor.getColumnIndex("pricelevel_name");
@@ -441,7 +446,7 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
             TextView cust_name, CompanyName, cust_id, cust_phone, pricelevel_name;
             ImageView moreInfoIcon;
 
-            int i_cust_id, i_account_number, i_cust_name, i_CompanyName, i_cust_phone, i_pricelevel_name;
+            int i_cust_id, i_account_number, i_cust_name, i_cust_lastName, i_CompanyName, i_cust_phone, i_pricelevel_name;
         }
 
     }

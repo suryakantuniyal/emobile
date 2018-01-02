@@ -241,7 +241,7 @@ public class CustomersHandler {
     }
 
     public Cursor getCursorAllCust() {
-        String query = "SELECT cust_id as _id,AccountNumnber, custidkey, cust_name,c.pricelevel_id,pl.pricelevel_name," +
+        String query = "SELECT cust_id as _id,AccountNumnber, custidkey, cust_name, cust_lastName,c.pricelevel_id,pl.pricelevel_name," +
                 "cust_taxable,cust_salestaxcode,cust_email,CompanyName,cust_phone " +
                 "FROM Customers c LEFT OUTER JOIN PriceLevel pl ON c.pricelevel_id = pl.pricelevel_id ORDER BY cust_name";
 
@@ -376,10 +376,9 @@ public class CustomersHandler {
         return value.trim();
     }
 
-    public Cursor getSearchCust(String search) // Transactions Receipts first
-    // listview
+    public Cursor getSearchCust(String search)
     {
-        String sb = "SELECT cust_id as _id,c.AccountNumnber, custidkey, cust_name,c.pricelevel_id,pl.pricelevel_name,cust_taxable,cust_salestaxcode," +
+        String sb = "SELECT cust_id as _id,c.AccountNumnber, custidkey, cust_name, cust_lastName,c.pricelevel_id,pl.pricelevel_name,cust_taxable,cust_salestaxcode," +
                 "cust_email,CompanyName,cust_phone FROM Customers c LEFT OUTER JOIN PriceLevel pl ON c.pricelevel_id = pl.pricelevel_id " +
                 "WHERE c.cust_name LIKE ? OR c.cust_id LIKE ? OR c.AccountNumnber LIKE ? OR c.cust_email LIKE ? OR c.cust_phone LIKE ? OR c.CompanyName LIKE ? ORDER BY cust_name";
 
