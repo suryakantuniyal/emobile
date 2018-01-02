@@ -53,6 +53,8 @@ public class MyPreferences {
     public static final String pref_display_also_redeem = "pref_display_also_redeem";
     public static final String pref_display_redeem_all = "pref_display_redeem_all";
     public static final String pref_use_loyal_patron = "pref_use_loyal_patron";
+    public static final String pref_print_raster_mode = "pref_print_raster_mode";
+
     public static final String pref_giftcard_auto_balance_request = "pref_giftcard_auto_balance_request";
     public static final String pref_giftcard_show_balance = "pref_giftcard_show_balance";
     public static final String pref_cash_show_change = "pref_cash_show_change";
@@ -171,9 +173,9 @@ public class MyPreferences {
     private final String rsa_pub_key = "rsa_pub_key";
     private final String aes_key = "aes_key";
     private final String aes_iv = "aes_iv";
+    public Context context;
     private SharedPreferences.Editor prefEditor;
     private SharedPreferences prefs;
-    public Context context;
     private SharedPreferences sharedPref;
     private String defaultUnitsName;
 
@@ -243,15 +245,15 @@ public class MyPreferences {
         prefEditor.commit();
     }
 
+    public String getDefaultCountryName() {
+        String key = "default_country_name";
+        return prefs.getString(key, "NONE");
+    }
+
     public void setDefaultCountryName(String val) {
         String key = "default_country_name";
         prefEditor.putString(key, val);
         prefEditor.commit();
-    }
-
-    public String getDefaultCountryName() {
-        String key = "default_country_name";
-        return prefs.getString(key, "NONE");
     }
 
 //    public String getZoneID() {
@@ -1453,9 +1455,14 @@ public class MyPreferences {
         return getPreferences(MyPreferences.pref_enable_multiple_prints);
     }
 
+    public boolean isRasterModePrint() {
+        return getPreferences(MyPreferences.pref_print_raster_mode);
+    }
+
     public boolean isPayWithCardOnFile() {
         return getPreferences(MyPreferences.pref_pay_with_card_on_file);
     }
+
     public enum PrinterPreviewWidth {SMALL, MEDIUM, LARGE}
 
 }

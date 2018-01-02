@@ -1347,4 +1347,5 @@
     <string name="fingerreadernotfound">No se encuentra la huella dactilar.</string>
     <string name="config_clerk_management">Manejo de empleados</string>
     <string name="biometrics">Biometría</string>
+    <string name="config_print_raster_mode">Imprimir en modo Raster</string>
 </resources>

@@ -83,7 +83,10 @@
             android:key="pref_connect_to_usb_peripheral"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_connect_to_usb_peripheral" />
-
+        <CheckBoxPreference
+            android:key="pref_print_raster_mode"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_print_raster_mode" />
         <Preference
             android:key="pref_redetect_peripherals"
             android:layout="@layout/settings_custom_layout"
