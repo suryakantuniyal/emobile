@@ -753,7 +753,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             Bundle extras = data.getExtras();
             String newName = extras.getString("customer_name");
             Global.taxID = "";
-            leftFragment.custName.setText(newName);
+            leftFragment.setCustName();
             if(leftFragment.orderTotalDetailsFr!=null) {
                 leftFragment.orderTotalDetailsFr.initSpinners();
             }

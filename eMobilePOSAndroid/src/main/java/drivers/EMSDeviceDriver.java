@@ -27,6 +27,7 @@ import com.android.dao.ShiftDAO;
 import com.android.dao.ShiftExpensesDAO;
 import com.android.dao.StoredPaymentsDAO;
 import com.android.dao.TermsNConditionsDAO;
+import com.android.database.CustomersHandler;
 import com.android.database.InvProdHandler;
 import com.android.database.InvoicesHandler;
 import com.android.database.MemoTextHandler;
@@ -55,6 +56,7 @@ import com.android.emobilepos.models.realms.ShiftExpense;
 import com.android.emobilepos.models.realms.TermsNConditions;
 import com.android.emobilepos.payment.ProcessGenius_FA;
 import com.android.support.ConsignmentTransaction;
+import com.android.support.Customer;
 import com.android.support.DateUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -780,12 +782,18 @@ public class EMSDeviceDriver {
             }
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_employee),
                     employee.getEmpName() + "(" + employee.getEmpId() + ")", lineWidth, 0));
-
-            String custName = anOrder.cust_name;
-            if (custName != null && !custName.isEmpty())
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer), custName,
-                        lineWidth, 0));
-
+            String custName = null;
+            if (myPref.isCustSelected()) {
+                CustomersHandler handler = new CustomersHandler(activity);
+                Customer customer = handler.getCustomer(myPref.getCustID());
+                if (customer != null) {
+                    custName = String.format("%s %s", customer.getCust_firstName(), customer.getCust_lastName());
+                }
+                if (custName != null && !custName.isEmpty()) {
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer), custName,
+                            lineWidth, 0));
+                }
+            }
             custName = anOrder.cust_id;
             if (printPref.contains(MyPreferences.print_customer_id) && custName != null && !custName.isEmpty())
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer_id),

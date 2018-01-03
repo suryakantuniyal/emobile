@@ -45,6 +45,7 @@ import android.widget.Toast;
 import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.DinningTableOrderDAO;
 import com.android.dao.ShiftDAO;
+import com.android.database.CustomersHandler;
 import com.android.database.DBManager;
 import com.android.database.EmpInvHandler;
 import com.android.database.OrderProductsAttr_DB;
@@ -63,7 +64,6 @@ import com.android.emobilepos.consignment.ConsignmentCheckout_FA;
 import com.android.emobilepos.customer.ViewCustomers_FA;
 import com.android.emobilepos.holders.TransferInventory_Holder;
 import com.android.emobilepos.holders.TransferLocations_Holder;
-import com.android.emobilepos.mainmenu.SalesTab_FR;
 import com.android.emobilepos.models.BCRMacro;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.OrderSeatProduct;
@@ -76,6 +76,7 @@ import com.android.emobilepos.models.realms.OrderAttributes;
 import com.android.emobilepos.models.salesassociates.Template;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.emobilepos.security.SecurityManager;
+import com.android.support.Customer;
 import com.android.support.CustomerInventory;
 import com.android.support.GenerateNewID;
 import com.android.support.GenerateNewID.IdType;
@@ -333,36 +334,36 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             switch (typeOfProcedure) {
                 case SALE_RECEIPT: {
                     // title.setText("Sales Receipt");
-                    custName.setText(myPref.getCustName());
+                    setCustName();
                     Global.ord_type = Global.OrderType.SALES_RECEIPT;
                     break;
                 }
                 case ORDERS: {
                     // title.setText("Order");
-                    custName.setText(myPref.getCustName());
+                    setCustName();
                     Global.ord_type = Global.OrderType.ORDER;
                     break;
                 }
                 case RETURN: {
                     // title.setText("Return");
-                    custName.setText(myPref.getCustName());
+                    setCustName();
                     Global.ord_type = Global.OrderType.RETURN;
                     break;
                 }
                 case INVOICE: {
                     // title.setText("Invoice");
-                    custName.setText(myPref.getCustName());
+                    setCustName();
                     Global.ord_type = Global.OrderType.INVOICE;
                     break;
                 }
                 case ESTIMATE: {
                     // title.setText("Estimate");
-                    custName.setText(myPref.getCustName());
+                    setCustName();
                     Global.ord_type = Global.OrderType.ESTIMATE;
                     break;
                 }
                 case CONSIGNMENT: {
-                    custName.setText(myPref.getCustName());
+                    setCustName();
                     plusBut.setVisibility(View.INVISIBLE);
                     customerLinearLayout.setOnClickListener(null);
                     btnTemplate
@@ -2070,6 +2071,14 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         return discountedAmount;
     }
 
+    public void setCustName() {
+        if (myPref.isCustSelected()) {
+            CustomersHandler handler = new CustomersHandler(getActivity());
+            Customer customer = handler.getCustomer(myPref.getCustID());
+            custName.setText(String.format("%s %s", customer.getCust_firstName(), customer.getCust_lastName()));
+        }
+    }
+
     public interface AddProductBtnCallback {
         void addProductServices();
     }
@@ -2271,7 +2280,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             dialog.setIndeterminate(true);
             dialog.setCancelable(false);
             dialog.setMessage(getString(R.string.sync_sending_orders));
-            if(Global.isActivityDestroyed(getActivity())) {
+            if (Global.isActivityDestroyed(getActivity())) {
                 dialog.show();
             }
         }

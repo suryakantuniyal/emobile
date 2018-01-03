@@ -9,13 +9,13 @@ import android.util.Log;
 
 import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.DinningTableOrderDAO;
-import com.android.emobilepos.initialization.SelectAccount_FA;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.OrderAttributes;
 import com.android.emobilepos.models.realms.ProductAttribute;
+import com.android.support.Customer;
 import com.android.support.DateUtils;
 import com.android.support.GenerateNewID;
 import com.android.support.Global;

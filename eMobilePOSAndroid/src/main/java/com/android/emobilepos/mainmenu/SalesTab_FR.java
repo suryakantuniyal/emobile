@@ -33,7 +33,6 @@ import android.widget.TextView;
 import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.ClerkDAO;
 import com.android.dao.DinningTableDAO;
-import com.android.dao.EmobileBiometricDAO;
 import com.android.dao.ShiftDAO;
 import com.android.database.CustomersHandler;
 import com.android.database.SalesTaxCodesHandler;
@@ -84,20 +83,18 @@ import drivers.digitalpersona.DigitalPersona;
 import interfaces.BCRCallbacks;
 import interfaces.BiometricCallbacks;
 import interfaces.EMSCallBack;
+import util.StringUtil;
 import util.json.JsonUtils;
-import interfaces.BCRCallbacks;
 import util.json.UIUtils;
-import interfaces.EMSCallBack;
-import util.json.JsonUtils;
 
 public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCallbacks, EMSCallBack {
+    EMSCallBack emsCallBack;
     //    boolean validPassword = true;
     private SalesMenuAdapter myAdapter;
     private GridView myListview;
     private Context thisContext;
     private boolean isCustomerSelected = false;
     private TextView selectedCust;
-    EMSCallBack emsCallBack;
     private MyPreferences myPref;
     private Button salesInvoices;
     private EditText hiddenField;
@@ -185,7 +182,7 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
 
         if (myPref.isCustSelected()) {
             isCustomerSelected = true;
-            selectedCust.setText(myPref.getCustName());
+            setCustName();
         } else {
             salesInvoices.setVisibility(View.GONE);
             isCustomerSelected = false;
@@ -245,6 +242,17 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
         checkWritePermissions();
     }
 
+    public void setCustName() {
+        if (myPref.isCustSelected()) {
+            CustomersHandler handler = new CustomersHandler(getActivity());
+            Customer customer = handler.getCustomer(myPref.getCustID());
+            if (customer != null) {
+                selectedCust.setText(String.format("%s %s", StringUtil.nullStringToEmpty(customer.getCust_firstName())
+                        , StringUtil.nullStringToEmpty(customer.getCust_lastName())));
+            }
+        }
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -263,7 +271,7 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
         }
         if (myPref.isCustSelected()) {
             isCustomerSelected = true;
-            selectedCust.setText(myPref.getCustName());
+            setCustName();
             myAdapter = new SalesMenuAdapter(getActivity(), true);
             myListview.setAdapter(myAdapter);
             myListview.setOnItemClickListener(new MyListener());
@@ -309,7 +317,7 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
 
             salesInvoices.setVisibility(View.VISIBLE);
             Bundle extras = data.getExtras();
-            selectedCust.setText(extras.getString("customer_name"));
+            setCustName();
 
             myPref.setCustName(extras.getString("customer_name"));
             myPref.setCustSelected(true);
@@ -1328,7 +1336,7 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
 
                         myPref.setCustEmail(map.get("cust_email"));
 
-                        selectedCust.setText(map.get("cust_name"));
+                        setCustName();
 
                         salesInvoices.setVisibility(View.VISIBLE);
                         isCustomerSelected = true;
@@ -1382,7 +1390,7 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
             myPref.setCustSelected(true);
             myPref.setCustPriceLevel(map.get("pricelevel_id"));
             myPref.setCustEmail(map.get("cust_email"));
-            selectedCust.setText(map.get("cust_name"));
+            setCustName();
             salesInvoices.setVisibility(View.VISIBLE);
             isCustomerSelected = true;
             myAdapter = new SalesMenuAdapter(getActivity(), true);
@@ -1413,7 +1421,7 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
         myPref.setCustSelected(true);
         myPref.setCustPriceLevel(customer.getPricelevel_id());
         myPref.setCustEmail(customer.getCust_email());
-        selectedCust.setText(customer.getCust_name());
+        setCustName();
         salesInvoices.setVisibility(View.VISIBLE);
         isCustomerSelected = true;
         myAdapter = new SalesMenuAdapter(getActivity(), true);
@@ -1426,6 +1434,7 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
         intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
         startActivityForResult(intent, 0);
     }
+
     @Override
     public void scannerWasRead(String data) {
         if (!data.isEmpty()) {
@@ -1502,17 +1511,6 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
     public void biometricsUnregister(ViewCustomerDetails_FA.Finger finger) {
 
     }
-
-
-    public class MyListener implements AdapterView.OnItemClickListener {
-
-        @Override
-        public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-            final int adapterPos = (Integer) myAdapter.getItem(position);
-            performListViewClick(adapterPos);
-        }
-    }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -1592,6 +1590,15 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                             SelectAccount_FA.PermissionType.ACCESS_MICROPHONE.ordinal());
                 }
             }
+        }
+    }
+
+    public class MyListener implements AdapterView.OnItemClickListener {
+
+        @Override
+        public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+            final int adapterPos = (Integer) myAdapter.getItem(position);
+            performListViewClick(adapterPos);
         }
     }
 }

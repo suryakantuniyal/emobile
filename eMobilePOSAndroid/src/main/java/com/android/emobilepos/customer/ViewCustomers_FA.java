@@ -177,13 +177,14 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
 
     private void selectCustomer(int itemIndex) {
         myCursor.moveToPosition(itemIndex);
-        String name = myCursor.getString(myCursor.getColumnIndex("cust_name"));
-        selectCustomer(name);
+        selectCustomer();
     }
 
-    private void selectCustomer(String name) {
+    private void selectCustomer() {
         Intent results = new Intent();
-        results.putExtra("customer_name", name);
+        String name = myCursor.getString(myCursor.getColumnIndex("cust_name"));
+        String lastname = myCursor.getString(myCursor.getColumnIndex("cust_lastName"));
+        results.putExtra("customer_name", String.format("%s %s", name, lastname));
         myPref.setCustID(myCursor.getString(myCursor.getColumnIndex("_id")));    //getting cust_id as _id
         myPref.setCustName(name);
         myPref.setCustIDKey(myCursor.getString(myCursor.getColumnIndex("custidkey")));
@@ -255,7 +256,7 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == -1) {
-            selectCustomer(myPref.getCustName());
+            selectCustomer();
             finish();
         }
     }
