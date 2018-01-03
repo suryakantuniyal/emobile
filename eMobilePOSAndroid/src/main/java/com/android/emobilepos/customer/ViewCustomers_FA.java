@@ -34,6 +34,7 @@ import com.android.emobilepos.history.HistoryTransactions_FA;
 import com.android.emobilepos.models.realms.BiometricFid;
 import com.android.emobilepos.models.realms.EmobileBiometric;
 import com.android.emobilepos.security.SecurityManager;
+import com.android.support.Customer;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -177,10 +178,6 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
 
     private void selectCustomer(int itemIndex) {
         myCursor.moveToPosition(itemIndex);
-        selectCustomer();
-    }
-
-    private void selectCustomer() {
         Intent results = new Intent();
         String name = myCursor.getString(myCursor.getColumnIndex("cust_name"));
         String lastname = myCursor.getString(myCursor.getColumnIndex("cust_lastName"));
@@ -191,6 +188,16 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
         myPref.setCustSelected(true);
         myPref.setCustPriceLevel(myCursor.getString(myCursor.getColumnIndex("pricelevel_id")));
         myPref.setCustEmail(myCursor.getString(myCursor.getColumnIndex("cust_email")));
+        setResult(1, results);
+        finish();
+    }
+
+    private void selectCustomer() {
+        Intent results = new Intent();
+        CustomersHandler handler =new CustomersHandler(this);
+        Customer customer = handler.getCustomer(myPref.getCustID());
+        results.putExtra("customer_name", String.format("%s %s", customer.getCust_name()
+                , customer.getCust_lastName()));
         setResult(1, results);
         finish();
     }
