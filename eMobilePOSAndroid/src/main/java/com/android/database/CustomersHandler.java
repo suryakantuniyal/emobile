@@ -380,7 +380,10 @@ public class CustomersHandler {
     {
         String sb = "SELECT cust_id as _id,c.AccountNumnber, custidkey, cust_name, cust_lastName,c.pricelevel_id,pl.pricelevel_name,cust_taxable,cust_salestaxcode," +
                 "cust_email,CompanyName,cust_phone FROM Customers c LEFT OUTER JOIN PriceLevel pl ON c.pricelevel_id = pl.pricelevel_id " +
-                "WHERE c.cust_name LIKE ? OR c.cust_id LIKE ? OR c.AccountNumnber LIKE ? OR c.cust_email LIKE ? OR c.cust_phone LIKE ? OR c.CompanyName LIKE ? ORDER BY cust_name";
+                "WHERE c.cust_name LIKE ? OR c.cust_lastName LIKE ? " +
+                "OR c.cust_id LIKE ? OR c.AccountNumnber LIKE ? " +
+                "OR c.cust_email LIKE ? OR c.cust_phone LIKE ? " +
+                "OR c.CompanyName LIKE ? ORDER BY cust_name";
 
         Cursor cursor = DBManager.getDatabase().rawQuery(sb, new String[]{"%" + search + "%", "%" + search + "%",
                 "%" + search + "%", "%" + search + "%", "%" + search + "%", "%" + search + "%"});
