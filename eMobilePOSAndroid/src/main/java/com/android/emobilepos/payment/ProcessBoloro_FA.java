@@ -541,7 +541,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
             if (!myPreferences.isPrefUseStoreForward()) {
                 if (!failed) {
                     new BoloroPollingAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                    //Global.showPrompt(activity, R.string.dlog_title_confirm, response.get("addnote"));
+                    //Global.showPrompt(activity, R.string.dlog_title_confirm, Response.get("addnote"));
                 } else if (response.containsKey("error_message")) {
                     Global.showPrompt(activity, R.string.dlog_title_error, response.get("error_message"));
                 } else if (response.containsKey("epayStatusCode")) {

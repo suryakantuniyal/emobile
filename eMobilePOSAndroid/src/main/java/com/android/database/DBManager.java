@@ -27,7 +27,7 @@ import java.security.NoSuchAlgorithmException;
 import io.realm.Realm;
 
 public class DBManager {
-    public static final int VERSION = 58;
+    public static final int VERSION = 59;
     public static final String DB_NAME_OLD = "emobilepos.sqlite";
     private static final String CIPHER_DB_NAME = "emobilepos.sqlcipher";
     private static final String PASSWORD = "em0b1l3p05";
@@ -145,7 +145,8 @@ public class DBManager {
             + "[isactive] [tinyint] NOT NULL, [paymethod_showOnline] [tinyint] NULL, [image_url] [varchar] NULL, [OriginalTransid] [BOOL] DEFAULT (0))";
     private final String CREATE_PAYMENTS = "CREATE TABLE [Payments] ([pay_id] varchar PRIMARY KEY  NOT NULL ,[group_pay_id] varchar,[cust_id] varchar,"
             + "[emp_id] int,[custidkey] [varchar],[tupyx_user_id][varchar](50),[inv_id] varchar,[paymethod_id] varchar,[pay_check] varchar,[pay_receipt] varchar,[pay_amount] money,[pay_comment] varchar,"
-            + "[pay_dueamount][money],[pay_timecreated] datetime,[pay_timesync] datetime,[account_id] varchar,[processed] int,[pay_issync] tinyint DEFAULT 0,[pay_transid] varchar,"
+            + "[pay_dueamount][money],[pay_timecreated] datetime,[pay_timesync] datetime,[account_id] varchar,[processed] int," +
+            " [pay_signature_issync] tinyint DEFAULT 0, [pay_issync] tinyint DEFAULT 0,[pay_transid] varchar,"
             + "[pay_refnum] varchar,[pay_name] varchar,[pay_addr] varchar,[pay_poscode] varchar,[pay_seccode] varchar,[pay_maccount] varchar,"
             + "[pay_groupcode] varchar,[pay_stamp] varchar,[pay_resultcode] varchar,[pay_resultmessage] varchar,[pay_ccnum] varchar,"
             + "[pay_expmonth] varchar,[pay_expyear] varchar,[pay_expdate] varchar,[pay_result] varchar,[pay_date] datetime,[recordnumber] varchar,"
@@ -675,6 +676,11 @@ public class DBManager {
         exist = cursor.getColumnIndex("EMV_JSON") > -1;
         if (!exist) {
             getDatabase().execSQL("ALTER TABLE [StoredPayments] ADD COLUMN [EMV_JSON] VARCHAR");
+        }
+        cursor = getDatabase().rawQuery("select * from  [Payments] limit 1", new String[]{});
+        exist = cursor.getColumnIndex("pay_signature_issync") > -1;
+        if (!exist) {
+            getDatabase().execSQL("ALTER TABLE [Payments] ADD COLUMN [pay_signature_issync] tinyint DEFAULT 0");
         }
         exist = cursor.getColumnIndex("amount_tender") > -1;
         if (!exist) {

@@ -7,6 +7,7 @@ import com.android.emobilepos.models.realms.BixolonTax;
 import com.android.emobilepos.models.realms.BixolonTransaction;
 import com.android.emobilepos.models.realms.CustomerCustomField;
 import com.android.emobilepos.models.realms.EmobileBiometric;
+import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.PaymentMethod;
 import com.crashlytics.android.Crashlytics;
 
@@ -21,7 +22,7 @@ import io.realm.RealmSchema;
  * Created by Guarionex on 4/13/2016.
  */
 public class EmobilePOSRealmMigration implements io.realm.RealmMigration {
-    public static int REALM_SCHEMA_VERSION = 9;
+    public static int REALM_SCHEMA_VERSION = 10;
 
     @Override
     public void migrate(DynamicRealm realm, long oldVersion, long newVersion) {
@@ -123,6 +124,12 @@ public class EmobilePOSRealmMigration implements io.realm.RealmMigration {
                             .addRealmListField("bixolontaxes", schema.get(BixolonTax.class.getSimpleName()))
                             .addRealmListField("paymentMethods", schema.get(BixolonPaymentMethod.class.getSimpleName()))
                             .addField("merchantName", String.class);
+                    oldVersion++;
+                }
+                if (oldVersion == 9) {
+                    if(!schema.get(Payment.class.getSimpleName()).hasField("pay_SignatureIssync")){
+                        schema.get(Payment.class.getSimpleName()).addField("pay_SignatureIssync", String.class);
+                    }
                     oldVersion++;
                 }
 //                if (oldVersion == 7) {

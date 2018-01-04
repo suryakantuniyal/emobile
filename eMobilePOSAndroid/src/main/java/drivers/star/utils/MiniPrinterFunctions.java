@@ -707,7 +707,7 @@ public class MiniPrinterFunctions
 	/**
 	 * This function shows how to read the MSR data(credit card) of a portable printer.
 	 * The function first puts the printer into MSR read mode, then asks the user to swipe a credit card
-	 * The function waits for a response from the user.
+	 * The function waits for a Response from the user.
 	 * The user can cancel MSR mode or have the printer read the card.
 	 * @param context - Activity for displaying messages to the user
 	 * @param portName - Port name to use for communication. This should be (TCP:<IPAddress> or BT:<Device pair name>)
@@ -984,7 +984,7 @@ public class MiniPrinterFunctions
             use Begin / End Checked Block method and adjust the value in the timeout in the "StarIOPort.getPort"
             in order to prevent "timeout" of the "endCheckedBlock method" while a printing.
             
-            *If receipt print is success but timeout error occurs(Show message which is "There was no response of the printer within the timeout period."),
+            *If receipt print is success but timeout error occurs(Show message which is "There was no Response of the printer within the timeout period."),
              need to change value of timeout more longer in "StarIOPort.getPort" method. (e.g.) 10000 -> 30000
             *When use "Begin / End Checked Block Sample Code", do comment out "query commands Sample code".
 		    */
@@ -1029,7 +1029,7 @@ public class MiniPrinterFunctions
 				and adjust the value in the timeout in the "checkPrinterSendToComplete" method
 				in order to prevent "timeout" of the "sending query commands" while a printing.
                 
-				*If receipt print is success but timeout error occurs(Show message which is "There was no response of the printer within the timeout period."),
+				*If receipt print is success but timeout error occurs(Show message which is "There was no Response of the printer within the timeout period."),
 				 need to change value of timeout more longer in "checkPrinterSendToComplete" method. (e.g.) 10000 -> 30000
 				*When use "query commands Sample code", do comment out "Begin / End Checked Block Sample Code".
 			 */

@@ -30,6 +30,7 @@ import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.CustomerCustomField;
 import com.android.emobilepos.models.realms.OrderAttributes;
+import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.Shift;
 import com.android.emobilepos.models.realms.ShiftExpense;
 import com.android.emobilepos.shifts.ClockInOut_FA;
@@ -944,7 +945,7 @@ public class GenerateXML {
         serializer.endTag(empstr, "total_lines_pay");
 
         serializer.startTag(empstr, "ord_total");
-        serializer.text(String.valueOf(order.isReturn()?Math.abs(Double.parseDouble(order.ord_total)):order.ord_total));
+        serializer.text(String.valueOf(order.isReturn() ? Math.abs(Double.parseDouble(order.ord_total)) : order.ord_total));
         serializer.endTag(empstr, "ord_total");
 
         serializer.startTag(empstr, "ord_comment");
@@ -1024,7 +1025,7 @@ public class GenerateXML {
         serializer.endTag(empstr, "ord_class");
 
         serializer.startTag(empstr, "ord_subtotal");
-        serializer.text(String.valueOf(order.isReturn()?Math.abs(Double.parseDouble(order.ord_subtotal)):order.ord_subtotal));
+        serializer.text(String.valueOf(order.isReturn() ? Math.abs(Double.parseDouble(order.ord_subtotal)) : order.ord_subtotal));
         serializer.endTag(empstr, "ord_subtotal");
 
         serializer.startTag(empstr, "ord_taxamount");
@@ -1305,205 +1306,197 @@ public class GenerateXML {
         }
     }
 
+    public String syncPaymentSignatures() {
+        int count = 0;
+        PaymentsHandler handler = new PaymentsHandler(thisActivity);
+        List<Payment> unsyncPayments = handler.getUnsyncPaymentSignatures();
+
+        XmlSerializer serializer = Xml.newSerializer();
+        StringWriter writer = new StringWriter();
+        try {
+            serializer.setOutput(writer);
+            serializer.startDocument("UTF-8", true);
+            serializer.startTag(empstr, "ASXML");
+
+            buildAccountInformation(serializer);
+            serializer.startTag(empstr, "paysignatures");
+            for (Payment payment : unsyncPayments) {
+                serializer.startTag(empstr, "paysignature");
+                serializer.startTag(empstr, "emp_id");
+                serializer.text(payment.getEmp_id());
+                serializer.endTag(empstr, "emp_id");
+                serializer.startTag(empstr, "pay_transid");
+                serializer.text(payment.getPay_transid());
+                serializer.endTag(empstr, "pay_transid");
+                serializer.startTag(empstr, "pay_signature");
+                serializer.text(payment.getPay_signature());
+                serializer.endTag(empstr, "pay_signature");
+                serializer.endTag(empstr, "paysignature");
+                count++;
+                if (count >= 10) {
+                    break;
+                }
+            }
+            serializer.endTag(empstr, "paysignatures");
+            serializer.endDocument();
+            String xml = writer.toString();
+            return xml;
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void buildPayments(XmlSerializer serializer) {
         PaymentsHandler handler = new PaymentsHandler(thisActivity);
-        Cursor cursor = handler.getUnsyncPayments();
-        cursor.moveToFirst();
-        int size = cursor.getCount();
+        List<Payment> unsyncPayments = handler.getUnsyncPayments();
+        int size = unsyncPayments.size();
         String payID;
         for (int i = 0; i < size && i < 10; i++) {
             try {
                 serializer.startTag(empstr, "Payment");
-
-                payID = cursor.getString(cursor.getColumnIndex("pay_id"));
-
+                payID = unsyncPayments.get(i).getPay_id();
                 serializer.startTag(empstr, "pay_id");
                 serializer.text(payID);
                 serializer.endTag(empstr, "pay_id");
-
                 serializer.startTag(empstr, "group_pay_id");
-                serializer.text(cursor.getString(cursor.getColumnIndex("group_pay_id")));
+                serializer.text(unsyncPayments.get(i).getGroup_pay_id());
                 serializer.endTag(empstr, "group_pay_id");
-
                 serializer.startTag(empstr, "cust_id");
-                serializer.text(cursor.getString(cursor.getColumnIndex("cust_id")));
+                serializer.text(unsyncPayments.get(i).getCust_id());
                 serializer.endTag(empstr, "cust_id");
-
                 serializer.startTag(empstr, "pay_latitude");
-                serializer.text(cursor.getString(cursor.getColumnIndex("pay_latitude")));
+                serializer.text(unsyncPayments.get(i).getPay_latitude());
                 serializer.endTag(empstr, "pay_latitude");
-
                 serializer.startTag(empstr, "pay_longitude");
-                serializer.text(cursor.getString(cursor.getColumnIndex("pay_longitude")));
+                serializer.text(unsyncPayments.get(i).getPay_longitude());
                 serializer.endTag(empstr, "pay_longitude");
-
                 serializer.startTag(empstr, "emp_id");
-                serializer.text(cursor.getString(cursor.getColumnIndex("emp_id")));
+                serializer.text(unsyncPayments.get(i).getEmp_id());
                 serializer.endTag(empstr, "emp_id");
-
                 serializer.startTag(empstr, "paymethod_id");
-                serializer.text(cursor.getString(cursor.getColumnIndex("paymethod_id")));
+                serializer.text(unsyncPayments.get(i).getPaymethod_id());
                 serializer.endTag(empstr, "paymethod_id");
-
                 serializer.startTag(empstr, "pay_check");
-                serializer.text(cursor.getString(cursor.getColumnIndex("pay_check")));
+                serializer.text(unsyncPayments.get(i).getPay_check());
                 serializer.endTag(empstr, "pay_check");
-
                 serializer.startTag(empstr, "pay_receipt");
-                serializer.text(cursor.getString(cursor.getColumnIndex("pay_receipt")));
+                serializer.text(unsyncPayments.get(i).getPay_receipt());
                 serializer.endTag(empstr, "pay_receipt");
-
                 serializer.startTag(empstr, "pay_amount");
-                serializer.text(cursor.getString(cursor.getColumnIndex("pay_amount")));
+                serializer.text(unsyncPayments.get(i).getPay_amount());
                 serializer.endTag(empstr, "pay_amount");
-
                 serializer.startTag(empstr, "tipAmount");
-                serializer.text(cursor.getString(cursor.getColumnIndex("pay_tip")));
+                serializer.text(unsyncPayments.get(i).getPay_tip());
                 serializer.endTag(empstr, "tipAmount");
-
                 serializer.startTag(empstr, "pay_comment");
-                serializer.text(cursor.getString(cursor.getColumnIndex("pay_comment")));
+                serializer.text(unsyncPayments.get(i).getPay_comment());
                 serializer.endTag(empstr, "pay_comment");
-
                 serializer.startTag(empstr, "pay_timecreated");
-                serializer.text(cursor.getString(cursor.getColumnIndex("pay_timecreated")));
+                serializer.text(unsyncPayments.get(i).getPay_timecreated());
                 serializer.endTag(empstr, "pay_timecreated");
-
                 serializer.startTag(empstr, "pay_timesync");
-                serializer.text(cursor.getString(cursor.getColumnIndex("pay_timesync")));
+                serializer.text(unsyncPayments.get(i).getPay_timesync());
                 serializer.endTag(empstr, "pay_timesync");
-
                 serializer.startTag(empstr, "account_id");
-                serializer.text(cursor.getString(cursor.getColumnIndex("account_id")));
+                serializer.text(unsyncPayments.get(i).getAccount_id());
                 serializer.endTag(empstr, "account_id");
-
                 serializer.startTag(empstr, "pay_issync");
-                serializer.text(cursor.getString(cursor.getColumnIndex("pay_issync")));
+                serializer.text(unsyncPayments.get(i).getPay_issync());
                 serializer.endTag(empstr, "pay_issync");
-
                 serializer.startTag(empstr, "pay_name");
-                serializer.text(cursor.getString(cursor.getColumnIndex("pay_name")));
+                serializer.text(unsyncPayments.get(i).getPay_name());
                 serializer.endTag(empstr, "pay_name");
-
                 serializer.startTag(empstr, "processed");
-                serializer.text(cursor.getString(cursor.getColumnIndex("processed")));
+                serializer.text(unsyncPayments.get(i).getProcessed());
                 serializer.endTag(empstr, "processed");
-
                 serializer.startTag(empstr, "pay_poscode");
-                serializer.text(cursor.getString(cursor.getColumnIndex("pay_poscode")));
+                serializer.text(unsyncPayments.get(i).getPay_poscode());
                 serializer.endTag(empstr, "pay_poscode");
-
                 serializer.startTag(empstr, "pay_seccode");
-                serializer.text(cursor.getString(cursor.getColumnIndex("pay_seccode")));
+                serializer.text(unsyncPayments.get(i).getPay_seccode());
                 serializer.endTag(empstr, "pay_seccode");
-
                 serializer.startTag(empstr, "pay_resultcode");
-                serializer.text(cursor.getString(cursor.getColumnIndex("pay_resultcode")));
+                serializer.text(unsyncPayments.get(i).getPay_resultcode());
                 serializer.endTag(empstr, "pay_resultcode");
-
                 serializer.startTag(empstr, "pay_resultmessage");
-                serializer.text(cursor.getString(cursor.getColumnIndex("pay_resultmessage")));
+                serializer.text(unsyncPayments.get(i).getPay_resultmessage());
                 serializer.endTag(empstr, "pay_resultmessage");
-
                 serializer.startTag(empstr, "pay_result");
-                serializer.text(cursor.getString(cursor.getColumnIndex("pay_result")));
+                serializer.text(unsyncPayments.get(i).getPay_result());
                 serializer.endTag(empstr, "pay_result");
-
                 serializer.startTag(empstr, "pay_date");
-                serializer.text(cursor.getString(cursor.getColumnIndex("pay_date")));
+                serializer.text(unsyncPayments.get(i).getPay_date());
                 serializer.endTag(empstr, "pay_date");
-
                 serializer.startTag(empstr, "recordnumber");
-                serializer.text(cursor.getString(cursor.getColumnIndex("recordnumber")));
+                serializer.text(unsyncPayments.get(i).getRecordnumber());
                 serializer.endTag(empstr, "recordnumber");
-
                 serializer.startTag(empstr, "authcode");
-                serializer.text(cursor.getString(cursor.getColumnIndex("authcode")));
+                serializer.text(unsyncPayments.get(i).getAuthcode());
                 serializer.endTag(empstr, "authcode");
-
                 serializer.startTag(empstr, "pay_transid");
-                serializer.text(cursor.getString(cursor.getColumnIndex("pay_transid")));
+                serializer.text(unsyncPayments.get(i).getPay_transid());
                 serializer.endTag(empstr, "pay_transid");
-
                 serializer.startTag(empstr, "status");
-                serializer.text(cursor.getString(cursor.getColumnIndex("status")));
+                serializer.text(unsyncPayments.get(i).getStatus());
                 serializer.endTag(empstr, "status");
-
                 serializer.startTag(empstr, "job_id");
-                serializer.text(cursor.getString(cursor.getColumnIndex("job_id")));
+                serializer.text(unsyncPayments.get(i).getJob_id());
                 serializer.endTag(empstr, "job_id");
-
                 serializer.startTag(empstr, "inv_id");
-                serializer.text(cursor.getString(cursor.getColumnIndex("inv_id")));
+                serializer.text(unsyncPayments.get(i).getInv_id());
                 serializer.endTag(empstr, "inv_id");
-
                 serializer.startTag(empstr, "clerk_id");
-                serializer.text(cursor.getString(cursor.getColumnIndex("clerk_id")));
+                serializer.text(unsyncPayments.get(i).getClerk_id());
                 serializer.endTag(empstr, "clerk_id");
-
                 serializer.startTag(empstr, "pay_ccfournum");
-                serializer.text(cursor.getString(cursor.getColumnIndex("ccnum_last4")));
+                serializer.text(unsyncPayments.get(i).getPay_ccnum());
                 serializer.endTag(empstr, "pay_ccfournum");
-
                 serializer.startTag(empstr, "pay_cardtype");
-                serializer.text(cursor.getString(cursor.getColumnIndex("card_type")));
+                serializer.text(unsyncPayments.get(i).getCard_type());
                 serializer.endTag(empstr, "pay_cardtype");
-
                 serializer.startTag(empstr, "trans_type");
-                serializer.text(cursor.getString(cursor.getColumnIndex("pay_type")));
+                serializer.text(unsyncPayments.get(i).getPay_type());
                 serializer.endTag(empstr, "trans_type");
-
                 serializer.startTag(empstr, "refNumber");
-                serializer.text(cursor.getString(cursor.getColumnIndex("ref_num")));
+                serializer.text(unsyncPayments.get(i).getPay_refnum());
                 serializer.endTag(empstr, "refNumber");
-
                 serializer.startTag(empstr, "email");
-                serializer.text(cursor.getString(cursor.getColumnIndex("pay_email")));
+                serializer.text(unsyncPayments.get(i).getPay_email());
                 serializer.endTag(empstr, "email");
-
                 serializer.startTag(empstr, "phone");
-                serializer.text(cursor.getString(cursor.getColumnIndex("pay_phone")));
+                serializer.text(unsyncPayments.get(i).getPay_phone());
                 serializer.endTag(empstr, "phone");
-
-                if (!cursor.getString(cursor.getColumnIndex("original_pay_id")).isEmpty()) {
+                if (!unsyncPayments.get(i).getOriginal_pay_id().isEmpty()) {
                     serializer.startTag(empstr, "VoidBlock");
                     serializer.startTag(empstr, "original_pay_id");
-                    serializer.text(cursor.getString(cursor.getColumnIndex("original_pay_id")));
+                    serializer.text(unsyncPayments.get(i).getOriginal_pay_id());
                     serializer.endTag(empstr, "original_pay_id");
                     serializer.endTag(empstr, "VoidBlock");
                 }
 
                 if (Global.isIvuLoto) {
                     serializer.startTag(empstr, "ivuLotto");
-
                     serializer.startTag(empstr, "ivuLottoDrawDate");
-                    serializer.text(cursor.getString(cursor.getColumnIndex("IvuLottoDrawDate")));
+                    serializer.text(unsyncPayments.get(i).getIvuLottoDrawDate());
                     serializer.endTag(empstr, "ivuLottoDrawDate");
                     serializer.startTag(empstr, "ivuLottoNumber");
-                    serializer.text(cursor.getString(cursor.getColumnIndex("IvuLottoNumber")));
+                    serializer.text(unsyncPayments.get(i).getIvuLottoNumber());
                     serializer.endTag(empstr, "ivuLottoNumber");
                     serializer.startTag(empstr, "Tax1");
-                    serializer.text(cursor.getString(cursor.getColumnIndex("Tax1_amount")));
+                    serializer.text(unsyncPayments.get(i).getTax1_amount());
                     serializer.endTag(empstr, "Tax1");
                     serializer.startTag(empstr, "Tax2");
-                    serializer.text(cursor.getString(cursor.getColumnIndex("Tax2_amount")));
+                    serializer.text(unsyncPayments.get(i).getTax2_amount());
                     serializer.endTag(empstr, "Tax2");
-
                     serializer.endTag(empstr, "ivuLotto");
                 }
-
                 buildInvoicePayment(serializer, payID);
-
                 serializer.endTag(empstr, "Payment");
-
-                cursor.moveToNext();
-
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-
         }
-        cursor.close();
     }
 
     private void buildInvoicePayment(XmlSerializer serializer, String payID) {

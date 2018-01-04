@@ -8,6 +8,7 @@
     <string name="sync_enablermobile_getxmldinnertables" translatable="false">getXMLMesas.ashx</string>
     <string name="sync_enabler_submitordersonhold" translatable="false">https://sync.enablermobile.com/deviceASXMLTrans/submitOrdersOnHold.ashx</string>
     <string name="sync_enabler_submitpayments" translatable="false">https://sync.enablermobile.com/deviceASXMLTrans/submitPayments.aspx</string>
+    <string name="sync_enabler_submitpaymentsignatures" translatable="false">https://sync.enablermobile.com/deviceASXMLTrans/submitPaymentSignatures.aspx</string>
     <string name="sync_enabler_submittimeclock" translatable="false">https://sync.enablermobile.com/deviceASXMLTrans/submitTimeClock.ashx</string>
     <string name="sync_enabler_submitvoidtrans" translatable="false">https://sync.enablermobile.com/deviceASXMLTrans/submitVoidTrans.aspx</string>
     <string name="sync_enabler_submitcustomer" translatable="false">https://sync.enablermobile.com/deviceASXMLTrans/submitCustomer.aspx</string>

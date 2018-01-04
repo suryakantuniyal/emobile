@@ -11,6 +11,7 @@ import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.PaymentDetails;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Payment;
+import com.android.saxhandler.SAXSyncPaySignaturePostHandler;
 import com.android.support.DateUtils;
 import com.android.support.GenerateNewID;
 import com.android.support.GenerateNewID.IdType;
@@ -34,6 +35,9 @@ import io.realm.Realm;
 
 public class PaymentsHandler {
 
+    private static final String table_name = "Payments";
+    private static final String table_name_declined = "PaymentsDeclined";
+    private static Payment lastPaymentInserted;
     private final String pay_id = "pay_id";
     private final String group_pay_id = "group_pay_id";
     private final String custidkey = "custidkey";
@@ -46,6 +50,7 @@ public class PaymentsHandler {
     private final String pay_receipt = "pay_receipt";
     private final String pay_amount = "pay_amount";
     private final String pay_dueamount = "pay_dueamount";
+    private final String pay_signature_issync = "pay_signature_issync";
     private final String pay_comment = "pay_comment";
     private final String pay_timecreated = "pay_timecreated";
     private final String pay_timesync = "pay_timesync";
@@ -73,7 +78,6 @@ public class PaymentsHandler {
     private final String pay_signature = "pay_signature";
     private final String authcode = "authcode";
     private final String status = "status";
-
     // added
     private final String job_id = "job_id";
     private final String amount_tender = "amount_tender";
@@ -84,7 +88,6 @@ public class PaymentsHandler {
     private final String pay_phone = "pay_phone";
     private final String pay_email = "pay_email";
     private final String card_type = "card_type";
-
     private final String isVoid = "isVoid";
     private final String pay_latitude = "pay_latitude";
     private final String pay_longitude = "pay_longitude";
@@ -93,18 +96,39 @@ public class PaymentsHandler {
     private final String is_refund = "is_refund";
     private final String ref_num = "ref_num";
     private final String original_pay_id = "original_pay_id";
-
     private final String IvuLottoDrawDate = "IvuLottoDrawDate";
     private final String IvuLottoNumber = "IvuLottoNumber";
     private final String IvuLottoQR = "IvuLottoQR";
-
     private final String Tax1_amount = "Tax1_amount";
     private final String Tax1_name = "Tax1_name";
     private final String Tax2_amount = "Tax2_amount";
     private final String Tax2_name = "Tax2_name";
     private final String EMVJson = "EMV_JSON";
+    public final List<String> attr = Arrays.asList(pay_id, group_pay_id, cust_id, tupyx_user_id, emp_id,
+            inv_id, paymethod_id, pay_check, pay_receipt, pay_amount, pay_dueamount, pay_comment, pay_timecreated,
+            pay_timesync, account_id, processed, pay_issync, pay_signature_issync, pay_transid, pay_refnum, pay_name, pay_addr, pay_poscode,
+            pay_seccode, pay_maccount, pay_groupcode, pay_stamp, pay_resultcode, pay_resultmessage, pay_ccnum,
+            pay_expmonth, pay_expyear, pay_expdate, pay_result, pay_date, recordnumber, pay_signature, authcode, status,
+            job_id, user_ID, pay_type, pay_tip, ccnum_last4, pay_phone, pay_email, isVoid, pay_latitude, pay_longitude,
+            tipAmount, clerk_id, is_refund, ref_num, IvuLottoDrawDate, IvuLottoNumber, IvuLottoQR, card_type,
+            Tax1_amount, Tax1_name, Tax2_amount, Tax2_name, custidkey, original_pay_id, EMVJson, amount_tender);
 
-    private static Payment lastPaymentInserted;
+    private StringBuilder sb1, sb2;
+    private HashMap<String, Integer> attrHash;
+    //    private Global global;
+    private MyPreferences myPref;
+    private Context activity;
+
+    public PaymentsHandler(Context context) {
+//        global = (Global) activity.getApplication();
+        myPref = new MyPreferences(context);
+        this.activity = context;
+        attrHash = new HashMap<>();
+        sb1 = new StringBuilder();
+        sb2 = new StringBuilder();
+        new DBManager(context);
+        initDictionary();
+    }
 
     public static Payment getLastPaymentInserted() {
         return lastPaymentInserted;
@@ -120,32 +144,8 @@ public class PaymentsHandler {
         }
     }
 
-    public final List<String> attr = Arrays.asList(pay_id, group_pay_id, cust_id, tupyx_user_id, emp_id,
-            inv_id, paymethod_id, pay_check, pay_receipt, pay_amount, pay_dueamount, pay_comment, pay_timecreated,
-            pay_timesync, account_id, processed, pay_issync, pay_transid, pay_refnum, pay_name, pay_addr, pay_poscode,
-            pay_seccode, pay_maccount, pay_groupcode, pay_stamp, pay_resultcode, pay_resultmessage, pay_ccnum,
-            pay_expmonth, pay_expyear, pay_expdate, pay_result, pay_date, recordnumber, pay_signature, authcode, status,
-            job_id, user_ID, pay_type, pay_tip, ccnum_last4, pay_phone, pay_email, isVoid, pay_latitude, pay_longitude,
-            tipAmount, clerk_id, is_refund, ref_num, IvuLottoDrawDate, IvuLottoNumber, IvuLottoQR, card_type,
-            Tax1_amount, Tax1_name, Tax2_amount, Tax2_name, custidkey, original_pay_id, EMVJson, amount_tender);
-
-    private StringBuilder sb1, sb2;
-    private HashMap<String, Integer> attrHash;
-    //    private Global global;
-    private MyPreferences myPref;
-    private static final String table_name = "Payments";
-    private static final String table_name_declined = "PaymentsDeclined";
-    private Context activity;
-
-    public PaymentsHandler(Context context) {
-//        global = (Global) activity.getApplication();
-        myPref = new MyPreferences(context);
-        this.activity = context;
-        attrHash = new HashMap<>();
-        sb1 = new StringBuilder();
-        sb2 = new StringBuilder();
-        new DBManager(context);
-        initDictionary();
+    public static PaymentsHandler getInstance(Context activity) {
+        return new PaymentsHandler(activity);
     }
 
     public SQLiteDatabase getDatabase() {
@@ -200,6 +200,12 @@ public class PaymentsHandler {
             insert.bindString(index(account_id), payment.getAccount_id() == null ? "" : payment.getAccount_id()); // account_id
             insert.bindString(index(processed), TextUtils.isEmpty(payment.getProcessed()) ? "0" : payment.getProcessed()); // processed
             insert.bindString(index(pay_issync), TextUtils.isEmpty(payment.getPay_issync()) ? "0" : payment.getPay_issync()); // pay_issync
+            if (TextUtils.isEmpty(payment.getPay_SignatureIssync()) && !TextUtils.isEmpty(payment.getPay_signature())) {
+                payment.setPay_SignatureIssync("0");
+            } else {
+                payment.setPay_SignatureIssync("1");
+            }
+            insert.bindString(index(pay_signature_issync), payment.getPay_SignatureIssync());
             insert.bindString(index(pay_transid), payment.getPay_transid() == null ? "" : payment.getPay_transid()); // pay_transid
             insert.bindString(index(pay_refnum), payment.getPay_refnum() == null ? "" : payment.getPay_refnum()); // pay_refnum
             insert.bindString(index(pay_name), payment.getPay_name() == null ? "" : payment.getPay_name()); // pay_name
@@ -271,12 +277,35 @@ public class PaymentsHandler {
         getDatabase().execSQL("DELETE FROM " + table_name);
     }
 
+//    public Cursor getUnsyncPayments() {
+//        return getDatabase().rawQuery("SELECT " + sb1.toString() + " FROM " + table_name + " WHERE pay_issync = '0'", null);
+//    }
 
-    public Cursor getUnsyncPayments() // Will return Cursor to all
-    // unsynchronized payments (used in
-    // generation of XML for post)
-    {
-        return getDatabase().rawQuery("SELECT " + sb1.toString() + " FROM " + table_name + " WHERE pay_issync = '0'", null);
+    public List<Payment> getUnsyncPayments() {
+        List<Payment> payments = new ArrayList<>();
+        Cursor cursor = getDatabase().rawQuery("SELECT " + sb1.toString() + " FROM " +
+                table_name + " WHERE pay_issync = '0'", null);
+        if (cursor.moveToFirst()) {
+            do {
+                payments.add(getPayment(cursor));
+            } while (cursor.moveToNext());
+        }
+        return payments;
+    }
+
+    public List<Payment> getUnsyncPaymentSignatures() {
+        List<Payment> payments = new ArrayList<>();
+        Cursor cursor = getDatabase().rawQuery("SELECT " + sb1.toString() + " FROM " +
+                table_name + " WHERE pay_signature_issync = '0'", null);
+        if (cursor.moveToFirst()) {
+            do {
+                Payment payment = getPayment(cursor);
+                if (!TextUtils.isEmpty(payment.getPay_signature())) {
+                    payments.add(payment);
+                }
+            } while (cursor.moveToNext());
+        }
+        return payments;
     }
 
     public String getTotalPayAmount(String paymethod_id, String pay_date) {
@@ -318,6 +347,14 @@ public class PaymentsHandler {
 
     public long getNumUnsyncPayments() {
         SQLiteStatement stmt = getDatabase().compileStatement("SELECT Count(*) FROM " + table_name + " WHERE pay_issync = '0'");
+        long count = stmt.simpleQueryForLong();
+        stmt.close();
+        return count;
+    }
+
+    public long getNumUnsyncPaymentSignatures() {
+        SQLiteStatement stmt = getDatabase().compileStatement("SELECT Count(*) FROM " +
+                table_name + " WHERE pay_signature_issync = '0' ");
         long count = stmt.simpleQueryForLong();
         stmt.close();
         return count;
@@ -377,7 +414,7 @@ public class PaymentsHandler {
         ContentValues args = new ContentValues();
 
         args.put(pay_signature, encodedImage);
-
+        args.put(pay_signature_issync, "0");
         getDatabase().update(table_name, args, sb.toString(), new String[]{payID});
         sb.setLength(0);
         sb.append("SELECT pay_amount FROM Payments WHERE pay_id = '").append(payID).append("'");
@@ -392,11 +429,19 @@ public class PaymentsHandler {
     }
 
     public void updateIsVoid(String param) {
-
         ContentValues args = new ContentValues();
-
         args.put(isVoid, "1");
         getDatabase().update(table_name, args, pay_id + " = ?", new String[]{param});
+    }
+
+    public void updateSignatureIsSync(List<SAXSyncPaySignaturePostHandler.Response> responses) {
+        ContentValues args = new ContentValues();
+        args.put(pay_signature_issync, "1");
+        for (SAXSyncPaySignaturePostHandler.Response response : responses) {
+            if(response.getStatus().equalsIgnoreCase("0")) {
+                getDatabase().update(table_name, args, pay_transid + " = ?", new String[]{response.getTransId()});
+            }
+        }
     }
 
     public void createVoidPayment(Payment payment, boolean onlineVoid, HashMap<String, String> response) {
@@ -429,7 +474,6 @@ public class PaymentsHandler {
             tempHandler.updateIsVoid(_ord_id);
         }
     }
-
 
     public PaymentDetails getPaymentDetails(String payID, boolean isDeclined) {
         String tableName = table_name;
@@ -1117,10 +1161,6 @@ public class PaymentsHandler {
             myPref.setLastPayID(lastPayID);
         }
         return lastPayID;
-    }
-
-    public static PaymentsHandler getInstance(Context activity) {
-        return new PaymentsHandler(activity);
     }
 
     public void insertDeclined(Payment payment) {

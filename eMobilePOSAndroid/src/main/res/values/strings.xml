@@ -1386,5 +1386,6 @@
     <string name="activationKey" translatable="false">Activation Key</string>
     <string name="startRestore" translatable="false">Start Restore</string>
     <string name="config_print_raster_mode">Print Raster Mode</string>
+    <string name="sync_sending_signatures">Sending payment signatures</string>
 
 </resources>

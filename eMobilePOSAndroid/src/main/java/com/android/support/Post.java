@@ -165,6 +165,12 @@ public class Post {
                 isPost = true;
                 break;
             }
+            case Global.S_SUBMIT_PAYMENT_SIGNATURES: {
+                postLink = context.getString(R.string.sync_enabler_submitpaymentsignatures);
+                entity = xml.syncPaymentSignatures();
+                isPost = true;
+                break;
+            }
             case Global.S_SUBMIT_TIME_CLOCK: {
                 postLink = context.getString(R.string.sync_enabler_submittimeclock);
                 entity = xml.synchTimeClock();
@@ -175,7 +181,6 @@ public class Post {
                 postLink = context.getString(R.string.sync_enabler_submitvoidtrans);
                 entity = xml.syncVoidTransactions();
                 isPost = true;
-
                 break;
             }
             case 11: {
@@ -291,7 +296,7 @@ public class Post {
         } else {
 //            Log.d("Request XMKL: ", entity);
             response = this.postRequest(postLink, entity);
-//            Log.d("Request XMKL: ", response);
+//            Log.d("Request XMKL: ", Response);
         }
 
         return response;
@@ -411,10 +416,12 @@ public class Post {
 
                 return sb.toString();
             } catch (Exception e) {
+                e.printStackTrace();
                 return Global.NOT_VALID_URL;
             }
 
         } catch (IOException e) {
+            e.printStackTrace();
             return Global.NOT_VALID_URL;
         }
     }

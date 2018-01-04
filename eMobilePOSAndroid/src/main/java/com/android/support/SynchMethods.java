@@ -77,6 +77,7 @@ import com.android.saxhandler.SAXSendCustomerInventory;
 import com.android.saxhandler.SAXSendInventoryTransfer;
 import com.android.saxhandler.SAXSyncNewCustomerHandler;
 import com.android.saxhandler.SAXSyncPayPostHandler;
+import com.android.saxhandler.SAXSyncPaySignaturePostHandler;
 import com.android.saxhandler.SAXSyncVoidTransHandler;
 import com.android.saxhandler.SAXSynchHandler;
 import com.android.saxhandler.SAXSynchOrdPostHandler;
@@ -196,6 +197,7 @@ public class SynchMethods {
             Crashlytics.logException(e);
         }
     }
+
     public static void postSalesAssociatesConfiguration(Activity activity, List<Clerk> clerks) throws Exception {
         List<DinningLocationConfiguration> configurations = new ArrayList<>();
 
@@ -224,6 +226,7 @@ public class SynchMethods {
         oauthclient.HttpClient httpClient = new oauthclient.HttpClient();
         httpClient.post(url.toString(), json, authClient);
     }
+
     public static void postEmobileBiometrics(Context context) throws Exception {
         List<EmobileBiometric> emobileBiometrics = EmobileBiometricDAO.getBiometrics();
         AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
@@ -243,6 +246,7 @@ public class SynchMethods {
         oauthclient.HttpClient httpClient = new oauthclient.HttpClient();
         String response = httpClient.post(url.toString(), json, authClient);
     }
+
     public static void synchSalesAssociateDinnindTablesConfiguration(Context activity) throws IOException, SAXException {
         oauthclient.HttpClient client = new oauthclient.HttpClient();
         Gson gson = JsonUtils.getInstance();
@@ -453,7 +457,7 @@ public class SynchMethods {
         int count = Realm.getGlobalInstanceCount(Realm.getDefaultConfiguration());
         if (count == 0) {
             boolean compactRealm = Realm.compactRealm(Realm.getDefaultConfiguration());
-            if(!compactRealm){
+            if (!compactRealm) {
                 Crashlytics.log("Realm compact fail.");
             }
         } else {
@@ -618,6 +622,37 @@ public class SynchMethods {
             data = handler2.getEmpData();
             payHandler.updateIsSync(data);
             if (data.isEmpty()) {
+                errorList.add(String.format(Locale.getDefault(), " (Error: %s) ", xml));
+                didSendData = false;
+            }
+            data.clear();
+            loop++;
+            if (loop == totlaPaments && !errorList.isEmpty()) {
+                Message msg = SyncTab_FR.syncTabHandler.obtainMessage();
+                msg.what = 9;
+                msg.obj = errorList;
+                SyncTab_FR.syncTabHandler.sendMessage(msg);
+                break;
+            }
+
+        }
+    }
+
+    private void sendPaymentSignatures(Object task) throws IOException, SAXException, ParserConfigurationException {
+        SAXSyncPaySignaturePostHandler signaturePostHandler = new SAXSyncPaySignaturePostHandler();
+        PaymentsHandler payHandler = new PaymentsHandler(context);
+        long totlaPaments = payHandler.getNumUnsyncPaymentSignatures();
+        int loop = 0;
+        Set<String> errorList = new HashSet<>();
+        while (payHandler.getNumUnsyncPaymentSignatures() > 0 && loop < totlaPaments) {
+            ((SendAsync) task).updateProgress(context.getString(R.string.sync_sending_signatures));
+            xml = post.postData(Global.S_SUBMIT_PAYMENT_SIGNATURES, "");
+            inSource = new InputSource(new StringReader(xml));
+            xr.setContentHandler(signaturePostHandler);
+            xr.parse(inSource);
+            List<SAXSyncPaySignaturePostHandler.Response> resposeData = signaturePostHandler.getResposeData();
+            payHandler.updateSignatureIsSync(resposeData);
+            if (resposeData.isEmpty()) {
                 errorList.add(String.format(Locale.getDefault(), " (Error: %s) ", xml));
                 didSendData = false;
             }
@@ -1566,6 +1601,12 @@ public class SynchMethods {
 
                     // add signatures
                     if (didSendData) {
+                        synchStage = context.getString(R.string.sync_sending_signatures);
+                        sendPaymentSignatures(this);
+                    }
+
+
+                    if (didSendData) {
                         synchStage = context.getString(R.string.sync_sending_templates);
                         sendTemplates(this);
                     }
@@ -1717,6 +1758,11 @@ public class SynchMethods {
             }
             try {
                 sendPayments(this);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            try {
+                sendPaymentSignatures(this);
             } catch (Exception e) {
                 e.printStackTrace();
             }

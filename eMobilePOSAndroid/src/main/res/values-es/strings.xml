@@ -1348,4 +1348,5 @@
     <string name="config_clerk_management">Manejo de empleados</string>
     <string name="biometrics">Biometría</string>
     <string name="config_print_raster_mode">Imprimir en modo Raster</string>
+    <string name="sync_sending_signatures">Enviando firmas</string>
 </resources>
