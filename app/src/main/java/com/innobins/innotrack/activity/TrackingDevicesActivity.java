@@ -27,8 +27,10 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.innobins.innotrack.api.APIServices;
 import com.innobins.innotrack.network.DetailResponseCallback;
 import com.innobins.innotrack.parser.TraccerParser;
+import com.innobins.innotrack.services.GPSTracker;
 import com.innobins.innotrack.services.UpdateListViewService;
 
 import org.json.JSONArray;
@@ -37,8 +39,6 @@ import org.json.JSONException;
 import java.util.Calendar;
 
 import in.innobins.innotrack.R;
-import com.innobins.innotrack.api.APIServices;
-import com.innobins.innotrack.services.GPSTracker;
 
 /**
  * Created by silence12 on 22/6/17.
@@ -234,10 +234,10 @@ public class TrackingDevicesActivity extends AppCompatActivity {
             markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_punch_person));
             trackDeviceIcn.setImageResource(R.drawable.ic_punch_person);
         }
-       /* if (uniqId.equals("007835051035")){
+        if (categoryString.equals("motorcycle")){
             markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.motobikes));
             trackDeviceIcn.setImageResource(R.drawable.motobikes);
-        }*/
+        }
         else {
             if (statsString.equals("Online")) {
                 markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.greentruck));

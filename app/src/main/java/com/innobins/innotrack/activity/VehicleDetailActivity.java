@@ -10,17 +10,16 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
-import android.widget.Button;
-import android.widget.ImageView;
+import android.view.animation.TranslateAnimation;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -33,7 +32,6 @@ import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -58,7 +56,8 @@ import java.util.List;
 
 import in.innobins.innotrack.R;
 
-public class   VehicleDetailActivity extends AppCompatActivity  {
+
+public class   VehicleDetailActivity extends AppCompatActivity  implements View.OnClickListener,View.OnTouchListener {
 
     private static final String TAG = VehicleDetailActivity.class.getSimpleName();
 
@@ -66,16 +65,11 @@ public class   VehicleDetailActivity extends AppCompatActivity  {
     GoogleMap googleMap;
     private TextView name_tv, positionId_tv, uniqueId_tv, status_tv, lastUpdate_tv, category_tv, contact_tv,
             speed_tv, distance_tv, timedated;
-    private ImageView projImageView;
-    private CollapsingToolbarLayout collapsingToolbarLayout;
     private ProgressDialog progressDialog;
-    private String nameString, positionIdString, uniqueIdString, lastUpdatetString, categoryString, statusString,
-            contactString, diffString,address;
-    private int id, positionId,deviceId;
-    private Button homeButton;
+    private String nameString, uniqueIdString, lastUpdatetString, categoryString, statusString,address;
+    private int id;
     private MarkerOptions markerOptions;
     Double speed;
-    //28.535517, 77.391029
     Double origin_latitute,origin_longitute;
     Double destiny_latitude,destiny_longitude;
     Double newLatitude,newLongitude;
@@ -85,8 +79,6 @@ public class   VehicleDetailActivity extends AppCompatActivity  {
     Intent updateListViewService;
     PendingIntent pintent;
     AlarmManager alarm;
-    LatLng oldLatLng;
-    // private GoogleMap mMap;
     private List<LatLng> polyLineList;
     private int index, next;
     private LatLng sydney;
@@ -97,12 +89,11 @@ public class   VehicleDetailActivity extends AppCompatActivity  {
     private Handler handler;
     private LatLng startPosition, endPosition;
     private float v;
-    NestedScrollView nestedScrollView ;
-
+    View myView;
+    boolean isUp;
     ArrayList<LatLng> lineStringArray = new ArrayList<LatLng>();
 
     ///start latlong static and then start = new latlong.....
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,60 +107,40 @@ public class   VehicleDetailActivity extends AppCompatActivity  {
 
         Intent getIntent = getIntent();
         id = getIntent.getIntExtra("id", -1);
+        Log.d("idgenrt",String.valueOf(id));
+        //130 id of 2713
         origin_latitute = getIntent.getDoubleExtra("lat",0.0);
         origin_longitute = getIntent.getDoubleExtra("long",0.0);
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        setTitle("DeviceDetail");
+        getSupportActionBar().setIcon(R.mipmap.luncher_icon);
+        setTitle("Device Details");
         initViews();
         mSharedPreferences = getSharedPreferences(URLContstant.PREFERENCE_NAME, Context.MODE_PRIVATE);
-        collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        collapsingToolbarLayout.setCollapsedTitleTextColor(Color.WHITE);
-        collapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.ExpandedAppBar);
         progressDialog = new ProgressDialog(this);
         progressDialog.setCancelable(false);
         progressDialog.setMessage("Wait a moment...");
         progressDialog.show();
-        final AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
-        appBarLayout.addOnOffsetChangedListener(new AppBarStateChangeListener() {
-            @Override
-            public void onStateChanged(AppBarLayout appBarLayout, State state) {
-                if (state.name().equals(State.COLLAPSED.name())) {
-                    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-                } else if (state.name().equals(State.IDLE.name())) {
-                    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-                }
-            }
-        });
-        SupportMapFragment supportMapFragment;
-        //  if (Build.VERSION.SDK_INT < 21)
         googleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map25)).getMap();
         googleMap.getUiSettings().setZoomControlsEnabled(true);
         googleMap.setPadding(10,10,10,20);
-
         CameraUpdate point = CameraUpdateFactory.newLatLng(new LatLng(origin_latitute, origin_longitute));
         googleMap.moveCamera(point);
 
         markerOptions = new MarkerOptions().position(new LatLng(origin_latitute,origin_longitute)).title(address);//set current position lat,long
         cameraPosition = new CameraPosition.Builder().target(new LatLng(origin_latitute,origin_longitute)).zoom(15).build();
-//                    googleMap.moveCamera(CameraUpdateFactory.newLatLng(oldLatLng));
         googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
         uploadIndividualData();
 
-        collapsingToolbarLayout.setTitle(nameString);
-
         pintent = PendingIntent.getService(VehicleDetailActivity.this, 0, updateListViewService,0);
         alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         Calendar cal = Calendar.getInstance();
-        alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), 3 * 1000, pintent);
+        alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), 24 * 1000, pintent);
     }
 
-    /* if (Build.VERSION.SDK_INT >= 22){
-             Toast.makeText(getApplicationContext(), "APK greater than 22", Toast.LENGTH_LONG).show();
-         }*/
     private void initViews() {
         name_tv = (TextView) findViewById(R.id.project_name_tv);
         positionId_tv = (TextView) findViewById(R.id.positionId_tv);
@@ -180,22 +151,18 @@ public class   VehicleDetailActivity extends AppCompatActivity  {
         speed_tv = (TextView) findViewById(R.id.speed_tv);
         distance_tv = (TextView) findViewById(R.id.distancecover_tv);
         timedated = (TextView) findViewById(R.id.diff_tv);
-        homeButton = (Button) findViewById(R.id.gohome_btn);
-        homeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onBackPressed();
-            }
-        });
+        myView = findViewById(R.id.mainswipe_ll);
+//        myView.setOnTouchListener(this);
+        myView.setOnClickListener(this);
+        myView.setVisibility(View.VISIBLE);
+        isUp = false;
     }
 
     public void uploadIndividualData(){
         APIServices.GetVehicleDetailById(VehicleDetailActivity.this, id, new DetailResponseCallback() {
             @Override
             public void OnResponse(JSONArray result) {
-             Log.d("NEW_RESPONSE",String.valueOf(result));
                 try {
-                    // nameString,uniqueIdString,lastUpdatetString,statusString,categoryString,address,latitute,longitute,speed,diffString
                     nameString = result.getJSONObject(0).getString("name");
                     uniqueIdString = result.getJSONObject(0).getString("uniqueid");
                     lastUpdatetString = result.getJSONObject(0).getString("lastupdate");
@@ -205,40 +172,17 @@ public class   VehicleDetailActivity extends AppCompatActivity  {
                     destiny_latitude = result.getJSONObject(0).getDouble("latitude");
                     destiny_longitude = result.getJSONObject(0).getDouble("longitude");
                     speed = result.getJSONObject(0).getDouble("speed");
-                    Log.d("destLat",String.valueOf(destiny_latitude));
-
                     lastUpdate_tv.setText(result.getJSONObject(0).getString("latitude"));
-
                     String time = TraccerParser.datetime(lastUpdatetString);
                     String timeDiff = TraccerParser.numDays(lastUpdatetString);
-
                     progressDialog.dismiss();
                     name_tv.setText(nameString);
+
                     if (address.equals("null")) {
                         address = "Loading...";
                     }
                     positionId_tv.setText(address);
-                    // oldLatLng = new LatLng(latitute,longitute);
-
-
-                    if(categoryString.equals("person")){
-                        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_punch_person));
-                    }
-                    if (uniqueIdString.equals("007835051035")){
-                        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.motobikes));
-                    }
-                    else {
-                        if (statusString.equals("online")) {
-                            markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.greentruck));
-                        } else if (statusString.equals("offline")) {
-                            markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.redtruck));
-                        } else {
-                            markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_car));
-                        }
-                    }
-                   // marker.remove();
-
-
+                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_car));
                     markerOptions.anchor(0.5f,0.5f)
                             .flat(true);
                     marker=googleMap.addMarker(markerOptions);
@@ -253,16 +197,9 @@ public class   VehicleDetailActivity extends AppCompatActivity  {
 
                     lineStringArray.add(new LatLng(origin_latitute,origin_longitute));
 
-                    Log.d("originLat", String.valueOf(origin_latitute +","+destiny_longitude));
-                    /*destiny_latitude = 26.886111111111213;
-                    destiny_longitude= 80.9642311111211;*/
                     if(Double.compare(origin_latitute,destiny_latitude)!=0) {
-                        Log.d("chekConditi","this is going right");
-
                         animationFunc(origin_latitute, origin_longitute);
-
                     }
-
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -281,13 +218,11 @@ public class   VehicleDetailActivity extends AppCompatActivity  {
                     + "origin=" + latitute + "," + longitute + "&"
                     + "destination=" + destiny_latitude+","+destiny_longitude + "&"
                     + "key=" + getResources().getString(R.string.google_directions_key);
-            Log.d(TAG, requestUrl);
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
                     requestUrl, null,
                     new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
-                            Log.d(TAG, response + "");
                             try {
                                 JSONArray jsonArray = response.getJSONArray("routes");
                                 for (int i = 0; i < jsonArray.length(); i++) {
@@ -295,7 +230,6 @@ public class   VehicleDetailActivity extends AppCompatActivity  {
                                     JSONObject poly = route.getJSONObject("overview_polyline");
                                     String polyline = poly.getString("points");
                                     polyLineList = decodePoly(polyline);
-                                    Log.d(TAG, polyLineList + "");
                                 }
                                 //Adjusting bounds
                                 LatLngBounds.Builder builder = new LatLngBounds.Builder();
@@ -341,11 +275,7 @@ public class   VehicleDetailActivity extends AppCompatActivity  {
                                         blackPolyline.setPoints(p);
                                     }
                                 });
-                                polylineAnimator.start();
-                              /* if (marker!=null){
-                                   marker.remove();
-                               }*/
-                               googleMap.clear();
+                                googleMap.clear();
                                 marker = googleMap.addMarker(new MarkerOptions().position(new LatLng(destiny_latitude,destiny_longitude))
                                         .flat(true)
                                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_car)));
@@ -362,7 +292,6 @@ public class   VehicleDetailActivity extends AppCompatActivity  {
                                         }
                                         if (index < polyLineList.size() - 1) {
                                             startPosition = polyLineList.get(index);
-                                            Log.d("startpos",String.valueOf(startPosition));
                                             endPosition = polyLineList.get(next);
                                         }
                                         ValueAnimator valueAnimator = ValueAnimator.ofFloat(0, 1);
@@ -372,17 +301,12 @@ public class   VehicleDetailActivity extends AppCompatActivity  {
                                             @Override
                                             public void onAnimationUpdate(ValueAnimator valueAnimator) {
                                                 v = valueAnimator.getAnimatedFraction();
-                                                Log.d("valueofv",String.valueOf(v));
-
                                                 newLongitude = v * endPosition.longitude + (1 - v)
                                                         * startPosition.longitude;
-                                                Log.d("newLtitut",String.valueOf(newLongitude));
-
                                                 newLatitude = v * endPosition.latitude + (1 - v)
                                                         * startPosition.latitude;
 
                                                 LatLng newPos = new LatLng(newLatitude, newLongitude);
-                                                // Log.d("newpos",String.valueOf(newPos));
                                                 marker.setPosition(newPos);
                                                 marker.setAnchor(0.5f, 0.5f);
                                                 marker.setRotation(getBearing(startPosition, newPos));
@@ -396,16 +320,8 @@ public class   VehicleDetailActivity extends AppCompatActivity  {
                                         });
                                         valueAnimator.start();
                                         handler.postDelayed(this, 3000);
-                                        count[0]++;
                                         origin_latitute = newLatitude;
                                         origin_longitute = newLongitude;
-//                                        if(count[0] ==1){
-//                                            valueAnimator.start();
-//                                        }
-//                                        Log.d("DurationTime", String.valueOf(count[0]));
-
-                                       /* latitude = latitute;
-                                        longitude = longitute;*/
                                     }
                                 }, 3000);
 
@@ -416,7 +332,6 @@ public class   VehicleDetailActivity extends AppCompatActivity  {
                     }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    Log.d(TAG, error + "");
                 }
             });
             RequestQueue requestQueue = Volley.newRequestQueue(this);
@@ -437,6 +352,7 @@ public class   VehicleDetailActivity extends AppCompatActivity  {
     }
     @Override
     public void onBackPressed() {
+
         getBaseContext().stopService(updateListViewService);
         pintent.cancel();
         super.onBackPressed();
@@ -446,7 +362,6 @@ public class   VehicleDetailActivity extends AppCompatActivity  {
     protected void onResume() {
         super.onResume();
     }
-
 
     private List<LatLng> decodePoly(String encoded) {
         List<LatLng> poly = new ArrayList<>();
@@ -477,48 +392,31 @@ public class   VehicleDetailActivity extends AppCompatActivity  {
                     (((double) lng / 1E5)));
             poly.add(p);
         }
-
         return poly;
     }
 
-    public abstract static class AppBarStateChangeListener implements AppBarLayout.OnOffsetChangedListener {
+    @Override
+    public boolean onTouch(View view, MotionEvent event) {
 
-        private State mCurrentState = State.IDLE;
-        @Override
-        public final void onOffsetChanged(AppBarLayout appBarLayout, int i) {
-            if (i == 0) {
-                if (mCurrentState != State.EXPANDED) {
-                    onStateChanged(appBarLayout, State.EXPANDED);
-                }
-                mCurrentState = State.EXPANDED;
-            } else if (Math.abs(i) >= appBarLayout.getTotalScrollRange()) {
-                if (mCurrentState != State.COLLAPSED) {
-                    onStateChanged(appBarLayout, State.COLLAPSED);
-                }
-                mCurrentState = State.COLLAPSED;
-            } else {
-                if (mCurrentState != State.IDLE) {
-                    onStateChanged(appBarLayout, State.IDLE);
-                }
-                mCurrentState = State.IDLE;
-            }
-        }
-        public abstract void onStateChanged(AppBarLayout appBarLayout, State state);
+        switch (event.getAction()) {
 
-        public enum State {
-            EXPANDED,
-            COLLAPSED,
-            IDLE
+            case MotionEvent.ACTION_DOWN:
+//                onSlideViewButtonClick(myView);
+                break;
+            default:
+                return false;
         }
+        return true;
     }
+
     @Override
     public void onDestroy() {
-        // Toast.makeText(this, "Service Destroyed", Toast.LENGTH_LONG).show();
         getBaseContext().stopService(updateListViewService);
         pintent.cancel();
         super.onDestroy();
         updateListViewService = null;
     }
+
     private float getBearing(LatLng begin, LatLng end) {
         double lat = Math.abs(begin.latitude - end.latitude);
         double lng = Math.abs(begin.longitude - end.longitude);
@@ -534,4 +432,45 @@ public class   VehicleDetailActivity extends AppCompatActivity  {
         return -1;
     }
 
+    public void slideUp(View view){
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        view.setLayoutParams(layoutParams);
+       // view.setVisibility(View.VISIBLE);
+        TranslateAnimation animate = new TranslateAnimation(
+                0,                 // fromXDelta
+                0,                 // toXDelta
+                view.getHeight(),          // fromYDelta
+                85);                // toYDelta
+        animate.setDuration(300);
+        animate.setFillAfter(true);
+        view.startAnimation(animate);
+    }
+
+    public void slideDown(View view){
+
+        TranslateAnimation animate = new TranslateAnimation(
+                0,                 // fromXDelta
+                0,                 // toXDelta
+                80,                 // fromYDelta
+                650);              // toYDelta
+        animate.setDuration(300);
+        animate.setFillAfter(true);
+        view.startAnimation(animate);
+    }
+    public void onSlideViewButtonClick(View view) {
+        if (isUp) {
+            slideDown(myView);
+        } else {
+            slideUp(myView);
+            //isUp = !isUp;
+        }
+           isUp = !isUp;  //true
+    }
+
+    @Override
+    public void onClick(View view) {
+        if(view.getId()==R.id.mainswipe_ll)
+            Log.d("ClickedToHo", String.valueOf(view.getId()));
+        onSlideViewButtonClick(view);
+    }
 }

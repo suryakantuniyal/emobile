@@ -10,7 +10,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,10 +17,10 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.innobins.innotrack.fragments.LoginFragment;
 import com.innobins.innotrack.utils.UtilFunctions;
 
 import in.innobins.innotrack.R;
-import com.innobins.innotrack.fragments.LoginFragment;
 
 /**
  * Created by silence12 on 19/6/17.
@@ -84,10 +83,10 @@ public class SignUpAccount extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+      /*  Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         setTitle("Sign In");
-        getSupportActionBar().setIcon(R.mipmap.luncher_icon);
+        getSupportActionBar().setIcon(R.mipmap.luncher_icon);*/
         Log.d("lifecycle-loginactivity", "oncreate");
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         IntentFilter filter = new IntentFilter();

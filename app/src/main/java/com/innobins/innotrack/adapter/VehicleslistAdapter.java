@@ -13,12 +13,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.innobins.innotrack.model.VehicleList;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import in.innobins.innotrack.R;
-import com.innobins.innotrack.model.VehicleList;
 
 /**
  * Created by silence12 on 28/6/17.
@@ -61,6 +61,9 @@ public class VehicleslistAdapter extends RecyclerView.Adapter<VehicleslistAdapte
 
         if (vehicle.category.equals("person")){
             holder.vehicleLstIcn.setImageResource(R.drawable.ic_punch_person);
+        }
+        if (vehicle.category.equals("motorcycle")){
+            holder.vehicleLstIcn.setImageResource(R.drawable.motobikes);
         }
             else {
             holder.vehicleLstIcn.setImageResource(R.drawable.truckicon2);

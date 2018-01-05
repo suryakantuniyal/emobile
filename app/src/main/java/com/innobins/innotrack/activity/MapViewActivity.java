@@ -28,6 +28,9 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.innobins.innotrack.model.VehicleList;
+import com.innobins.innotrack.services.UpdateListViewService;
+import com.innobins.innotrack.utils.URLContstant;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,9 +41,6 @@ import java.util.Calendar;
 import java.util.List;
 
 import in.innobins.innotrack.R;
-import com.innobins.innotrack.model.VehicleList;
-import com.innobins.innotrack.services.UpdateListViewService;
-import com.innobins.innotrack.utils.URLContstant;
 
 /**
  * Created by silence12 on 5/7/17.
@@ -153,8 +153,6 @@ public class MapViewActivity extends AppCompatActivity {
                // title = name+","+ address;
 
                 drawMarker(new LatLng(lat, lng),jsonObject.getString("status"),name,address,jsonObject.getString("category"));
-
-
             }
 
         } catch (JSONException e) {

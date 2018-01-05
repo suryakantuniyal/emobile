@@ -149,6 +149,7 @@ public class MainActivity extends AppCompatActivity
         // updateCard();
     }
     public void uploadNewData() {
+
         listArrayList.clear();
 
         APIServices.GetAllVehicle(MainActivity.this, userName, password, new ResponseOnlineVehicle() {
@@ -163,7 +164,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
         parseView();
-
     }
 
     @Override
@@ -256,7 +256,8 @@ public class MainActivity extends AppCompatActivity
                         jsonObject.getString("date"), jsonObject.getString("category"), jsonObject.getInt("positionid"), jsonObject.getString("address"), jsonObject.getString("time")
                         , jsonObject.getDouble("speed"), jsonObject.getDouble("latitude"), jsonObject.getDouble("longitude"),jsonObject.getString("timeDiff"),jsonObject.getInt("groupid"));
                 listArrayList.add(vehicleList1);
-               /* int id = jsonObject.getInt("id");
+
+                /* int id = jsonObject.getInt("id");
                 mEditor = mSharedPreferences.edit();
                 mEditor.putInt(String.valueOf(URLContstant.VEHICLE_ID),id);
                 mEditor.apply();*/
