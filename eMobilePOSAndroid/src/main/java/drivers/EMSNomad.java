@@ -126,7 +126,7 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
     }
 
     private void initDevice() {
-        terminal.setMode(CoreMode.TEST);
+        terminal.setMode(CoreMode.LIVE);
         terminal.setCurrency(Currency.USD);
         terminal.initWithConfiguration(activity, TERMINAL_ID, SECRET);
     }
