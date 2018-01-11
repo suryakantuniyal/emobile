@@ -290,6 +290,7 @@ public class PaymentsHandler {
                 payments.add(getPayment(cursor));
             } while (cursor.moveToNext());
         }
+        cursor.close();
         return payments;
     }
 
@@ -305,6 +306,7 @@ public class PaymentsHandler {
                 }
             } while (cursor.moveToNext());
         }
+        cursor.close();
         return payments;
     }
 

@@ -657,7 +657,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             return;
         }
         if (getOrderingMainFa() != null) {
-            new ReCalculate().execute(orderProducts);
+            new ReCalculate().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, orderProducts);
         }
     }
 

@@ -254,7 +254,7 @@ public class SynchMethods {
             getOAuthManager(activity);
         }
         OAuthClient oauthClient = OAuthManager.getOAuthClient(activity);
-//            String s = client.getString(activity.getString(R.string.sync_enablermobile_mesasconfig), oauthClient);
+//            String s = client.getString(context.getString(R.string.sync_enablermobile_mesasconfig), oauthClient);
         InputStream inputStream = client.get(activity.getString(R.string.sync_enablermobile_mesasconfig), oauthClient);
         JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
         List<DinningLocationConfiguration> configurations = new ArrayList<>();
@@ -472,12 +472,12 @@ public class SynchMethods {
         new AsyncGetLocationsInventory(activity).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    public void synchSend(int type, boolean isFromMainMenu, Context activity) {
+    public void synchSend(int type, boolean isFromMainMenu) {
         Global.isForceUpload = false;
         this.type = type;
         this.isFromMainMenu = isFromMainMenu;
         if (!isSending)
-            new SendAsync(activity).execute("");
+            new SendAsync().execute("");
     }
 
     public void synchForceSend(Activity activity) {
@@ -495,7 +495,7 @@ public class SynchMethods {
     public boolean synchSendOnHold(boolean downloadHoldList, boolean checkoutOnHold, Activity activity, String ord_id) {
         this.downloadHoldList = downloadHoldList;
         this.checkoutOnHold = checkoutOnHold;
-//        new SynchSendOrdersOnHold(activity).execute(ord_id);
+//        new SynchSendOrdersOnHold(context).execute(ord_id);
 
         String err_msg;
         boolean isError = false;
@@ -1560,11 +1560,6 @@ public class SynchMethods {
         boolean proceed = false;
         MyPreferences myPref = new MyPreferences(context);
         String synchStage = "";
-        private Context activity;
-
-        private SendAsync(Context activity) {
-            this.activity = activity;
-        }
 
         @Override
         protected void onPreExecute() {
@@ -1646,7 +1641,7 @@ public class SynchMethods {
 
                     if (didSendData) {
                         synchStage = context.getString(R.string.sync_sending_shifts);
-                        postShift(activity);
+                        postShift(context);
                     }
 
                     if (didSendData) {
@@ -1661,7 +1656,7 @@ public class SynchMethods {
                     e.printStackTrace();
                 }
             } else
-                xml = context.getString(R.string.dlog_msg_no_internet_access);
+                xml = SynchMethods.this.context.getString(R.string.dlog_msg_no_internet_access);
             return null;
         }
 
@@ -1672,45 +1667,17 @@ public class SynchMethods {
             myPref.setLastSendSync(date);
             compactRealm();
             isSending = false;
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-//                if (!activity.isDestroyed()) {
-//                    if (myProgressDialog != null && myProgressDialog.isShowing()) {
-//                        myProgressDialog.dismiss();
-//                    }
-//                }
-//            } else {
-//            if (myProgressDialog != null && myProgressDialog.isShowing()) {
-//                myProgressDialog.dismiss();
-//            }
-//            }
-
             if (type == Global.FROM_SYNCH_ACTIVITY) {
-//                if (isFromMainMenu) {
-//                    synchTextView.setVisibility(View.GONE);
-//                }
                 if (SyncTab_FR.syncTabHandler != null) {
                     SyncTab_FR.syncTabHandler.sendEmptyMessage(0);
                 }
             }
 
-//            if (proceed && dbManager.isSendAndReceive()) {
-//                dbManager.updateDB();
-//            } else
             if (!proceed) {
-                // failed to synch....
                 if (TextUtils.isEmpty(xml)) {
-                    xml = context.getString(R.string.sync_fail);
+                    xml = SynchMethods.this.context.getString(R.string.sync_fail);
                 }
-//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-//                    if (!activity.isFinishing() && !activity.isDestroyed()) {
-//                        Global.showPrompt(activity, R.string.dlog_title_error, xml);
-//                    }
-//                } else if (!activity.isFinishing()) {
-//                    Global.showPrompt(activity, R.string.dlog_title_error, xml);
-//                }
             }
-
-//            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         }
     }
 
@@ -1726,28 +1693,12 @@ public class SynchMethods {
         protected void onPreExecute() {
             isSending = true;
             int orientation = context.getResources().getConfiguration().orientation;
-
-//            activity.setRequestedOrientation(Global.getScreenOrientation(context));
-
-//            myProgressDialog = new ProgressDialog(context);
-//
-//            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-//            myProgressDialog.setCancelable(false);
-//            myProgressDialog.setMax(100);
         }
 
         public void updateProgress(String msg) {
             publishProgress(msg);
         }
 
-        @Override
-        protected void onProgressUpdate(String... params) {
-
-//            if (!myProgressDialog.isShowing())
-//                myProgressDialog.show();
-//            myProgressDialog.setMessage(params[0]);
-
-        }
 
         @Override
         protected Void doInBackground(Void... params) {
@@ -1846,7 +1797,7 @@ public class SynchMethods {
         protected void onPreExecute() {
 
             int orientation = context.getResources().getConfiguration().orientation;
-//            activity.setRequestedOrientation(Global.getScreenOrientation(context));
+//            context.setRequestedOrientation(Global.getScreenOrientation(context));
 
 //            myProgressDialog = new ProgressDialog(context);
 //            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -1900,7 +1851,7 @@ public class SynchMethods {
         protected void onPreExecute() {
 
             int orientation = context.getResources().getConfiguration().orientation;
-//            activity.setRequestedOrientation(Global.getScreenOrientation(context));
+//            context.setRequestedOrientation(Global.getScreenOrientation(context));
 //            myProgressDialog = new ProgressDialog(context);
 //            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 //            myProgressDialog.setCancelable(false);
@@ -1926,7 +1877,7 @@ public class SynchMethods {
                 if (BuildConfig.DELETE_INVALID_HOLDS || (c != null && c.getCount() > 0)) {
                     proceedToView = true;
 //                    if (type == 0)
-//                        OnHoldActivity.addOrderProducts(activity, c);
+//                        OnHoldActivity.addOrderProducts(context, c);
                 } else
                     proceedToView = false;
                 if (c != null) {
@@ -2016,7 +1967,7 @@ public class SynchMethods {
         }
 
         protected void onPostExecute(String unused) {
-//            if (!activity.isFinishing() && myProgressDialog != null && myProgressDialog.isShowing())
+//            if (!context.isFinishing() && myProgressDialog != null && myProgressDialog.isShowing())
 //                myProgressDialog.dismiss();
             if (context instanceof OrderingMain_FA) {
                 Global.dismissDialog((Activity) context, myProgressDialog);
@@ -2053,7 +2004,7 @@ public class SynchMethods {
         protected void onPreExecute() {
 
             int orientation = context.getResources().getConfiguration().orientation;
-//            activity.setRequestedOrientation(Global.getScreenOrientation(context));
+//            context.setRequestedOrientation(Global.getScreenOrientation(context));
 //            myProgressDialog = new ProgressDialog(context);
 //            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 //            myProgressDialog.setCancelable(false);
