@@ -385,7 +385,7 @@ public class EMSKDC425 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     }
 
     @Override
-    public void salePayment(Payment payment) {
+    public void salePayment(Payment payment, CreditCardInfo creditCardInfo) {
 
     }
 

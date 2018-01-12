@@ -29,6 +29,7 @@ import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -92,7 +93,7 @@ import interfaces.EMSCallBack;
 import main.EMSDeviceManager;
 import util.json.UIUtils;
 
-public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener, TextWatcherCallback {
+public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener, TextWatcherCallback, CompoundButton.OnCheckedChangeListener {
 
     public static final String CREDITCARD_TYPE_JCB = "JCB", CREDITCARD_TYPE_CUP = "CUP",
             CREDITCARD_TYPE_DISCOVER = "Discover", CREDITCARD_TYPE_VISA = "Visa", CREDITCARD_TYPE_DINERS = "DinersClub",
@@ -438,11 +439,11 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
         Global.isEncryptSwipe = true;
         cardInfoManager = new CreditCardInfo();
-        scrollView = (ScrollView) findViewById(R.id.scrollView);
-        reference = (EditText) findViewById(R.id.referenceNumber);
-        TextView headerTitle = (TextView) findViewById(R.id.HeaderTitle);
-        tvStatusMSR = (TextView) findViewById(R.id.tvStatusMSR);
-        cardSwipe = (CheckBox) findViewById(R.id.checkBox1);
+        scrollView = findViewById(R.id.scrollView);
+        reference = findViewById(R.id.referenceNumber);
+        TextView headerTitle = findViewById(R.id.HeaderTitle);
+        tvStatusMSR = findViewById(R.id.tvStatusMSR);
+        cardSwipe = findViewById(R.id.checkBox1);
         extras = this.getIntent().getExtras();
         String paymentMethodType = extras.getString("paymentmethod_type");
         if (paymentMethodType == null) {
@@ -476,24 +477,24 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         if (custidkey == null)
             custidkey = "";
 
-        hiddenField = (EditText) findViewById(R.id.hiddenField);
-        zipCode = (EditText) findViewById(R.id.processCardZipCode);
+        hiddenField = findViewById(R.id.hiddenField);
+        zipCode = findViewById(R.id.processCardZipCode);
         zipCode.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
-        month = (EditText) findViewById(R.id.monthEdit);
+        month = findViewById(R.id.monthEdit);
         month.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
         listener(0, month);
 
-        year = (EditText) findViewById(R.id.yearEdit);
+        year = findViewById(R.id.yearEdit);
         year.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
         listener(0, year);
 
-        authIDField = (EditText) findViewById(R.id.cardAuthIDField);
-        transIDField = (EditText) findViewById(R.id.cardTransIDField);
-        subtotal = (EditText) findViewById(R.id.subtotalCardAmount);
-        tax1 = (EditText) findViewById(R.id.tax1CardAmount);
-        tax2 = (EditText) findViewById(R.id.tax2CardAmount);
-        TextView tax1Lbl = (TextView) findViewById(R.id.tax1CreditCardLbl);
-        TextView tax2Lbl = (TextView) findViewById(R.id.tax2CreditCardLbl);
+        authIDField = findViewById(R.id.cardAuthIDField);
+        transIDField = findViewById(R.id.cardTransIDField);
+        subtotal = findViewById(R.id.subtotalCardAmount);
+        tax1 = findViewById(R.id.tax1CardAmount);
+        tax2 = findViewById(R.id.tax2CardAmount);
+        TextView tax1Lbl = findViewById(R.id.tax1CreditCardLbl);
+        TextView tax2Lbl = findViewById(R.id.tax2CreditCardLbl);
 
         tax1.setText(Global.formatDoubleStrToCurrency(extras.getString("Tax1_amount")));
         tax2.setText(Global.formatDoubleStrToCurrency(extras.getString("Tax2_amount")));
@@ -504,7 +505,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             subtotalDbl += products.getItemSubtotalCalculated().doubleValue();
         }
         subtotal.setText(Global.formatDoubleToCurrency(subtotalDbl));
-        this.amountDueField = (EditText) findViewById(R.id.processCardAmount);
+        this.amountDueField = findViewById(R.id.processCardAmount);
         this.amountDueField.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
         this.amountDueField.setText(
                 Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(extras.getString("amount")))));
@@ -532,7 +533,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             tax2.addTextChangedListener(getTextWatcher(tax2));
             ProcessCash_FA.setTaxLabels(groupTaxRate, tax1Lbl, tax2Lbl);
         }
-        this.amountPaidField = (EditText) findViewById(R.id.processCardAmountPaid);
+        this.amountPaidField = findViewById(R.id.processCardAmountPaid);
         this.amountPaidField.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
         this.amountPaidField.addTextChangedListener(getTextWatcher(amountPaidField));
 
@@ -543,15 +544,15 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         else
             this.amountPaidField.setText("");
 
-        Button exactBut = (Button) findViewById(R.id.exactAmountBut);
+        Button exactBut = findViewById(R.id.exactAmountBut);
         exactBut.setOnClickListener(this);
 
-        cardNum = (EditText) findViewById(R.id.cardNumEdit);
+        cardNum = findViewById(R.id.cardNumEdit);
         cardNum.setInputType(InputType.TYPE_CLASS_NUMBER);
         cardNum.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
         cardNum.setTransformationMethod(PasswordTransformationMethod.getInstance());
 
-        ownersName = (EditText) findViewById(R.id.nameOnCardEdit);
+        ownersName = findViewById(R.id.nameOnCardEdit);
         ownersName.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
 
         if (extras.getBoolean("histinvoices", false)) {
@@ -567,7 +568,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         } else
             inv_id = extras.getString("job_id");
 
-        secCode = (EditText) findViewById(R.id.processCardSeccode);
+        secCode = findViewById(R.id.processCardSeccode);
         secCode.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
 
         if (isDebit) {
@@ -576,13 +577,13 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
         }
 
-        btnProcess = (Button) findViewById(R.id.processButton);
+        btnProcess = findViewById(R.id.processButton);
         btnProcess.setOnClickListener(this);
 
-        Button tipButton = (Button) findViewById(R.id.tipAmountBut);
+        Button tipButton = findViewById(R.id.tipAmountBut);
         tipButton.setOnClickListener(this);
 
-        this.tipAmount = (EditText) findViewById(R.id.processCardTip);
+        this.tipAmount = findViewById(R.id.processCardTip);
         if (myPref.getPreferences(MyPreferences.pref_show_confirmation_screen)) {
             this.tipAmount.setVisibility(View.GONE);
             tipButton.setVisibility(View.GONE);
@@ -594,8 +595,8 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             this.tipAmount.setOnFocusChangeListener(getFocusListener(this.tipAmount));
         }
 
-        phoneNumberField = (EditText) findViewById(R.id.processCardPhone);
-        customerEmailField = (EditText) findViewById(R.id.processCardEmail);
+        phoneNumberField = findViewById(R.id.processCardPhone);
+        customerEmailField = findViewById(R.id.processCardEmail);
 
         if (!Global.getValidString(extras.getString("cust_id")).isEmpty())
             prefillCustomerInfo();
@@ -625,11 +626,11 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         year.setVisibility(View.GONE);
         authIDField.setVisibility(View.GONE);
         transIDField.setVisibility(View.GONE);
-//        tipAmount.setVisibility(View.GONE);
         findViewById(R.id.accountInformationTextView).setVisibility(View.GONE);
-//        findViewById(R.id.tipAmountBut).setVisibility(View.GONE);
         findViewById(R.id.expirationDateTextView).setVisibility(View.GONE);
-
+        CheckBox swiperCheckBox = findViewById(R.id.checkBox1);
+        swiperCheckBox.setClickable(true);
+        swiperCheckBox.setOnCheckedChangeListener(this);
     }
 
     private void enableManualCreditCard() {
@@ -639,6 +640,15 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         zipCode.setEnabled(allow);
         month.setEnabled(allow);
         year.setEnabled(allow);
+        cardNum.setVisibility(View.VISIBLE);
+        secCode.setVisibility(View.VISIBLE);
+        zipCode.setVisibility(View.VISIBLE);
+        month.setVisibility(View.VISIBLE);
+        year.setVisibility(View.VISIBLE);
+        authIDField.setVisibility(View.VISIBLE);
+        transIDField.setVisibility(View.VISIBLE);
+        findViewById(R.id.accountInformationTextView).setVisibility(View.VISIBLE);
+        findViewById(R.id.expirationDateTextView).setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -807,7 +817,8 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             // cardInfoManager.setCardEncryptedNum(encrypt.encryptWithAES(cardNum.getText().toString()));
             cardInfoManager.setCardNumAESEncrypted(encrypt.encryptWithAES(cardNum.getText().toString()));
             cardInfoManager.setCardEncryptedSecCode(encrypt.encryptWithAES(secCode.getText().toString()));
-
+            cardInfoManager.setCardUnEncryptedSecCode(secCode.getText().toString());
+            cardInfoManager.setCardNumUnencrypted(cardNum.getText().toString());
         }
     }
 
@@ -1129,24 +1140,24 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         double amountToBePaid = Global
                 .formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
         grandTotalAmount = amountToBePaid + amountToTip;
-        final TextView totalAmountView = (TextView) dialogLayout.findViewById(R.id.totalAmountView);
+        final TextView totalAmountView = dialogLayout.findViewById(R.id.totalAmountView);
         totalAmountView.setText(String.format(Locale.getDefault(), getString(R.string.total_plus_tip),
                 Global.formatDoubleToCurrency(subTotal), Global.formatDoubleToCurrency(0)));
-        Button tenPercent = (Button) dialogLayout.findViewById(R.id.tenPercent);
-        Button fifteenPercent = (Button) dialogLayout.findViewById(R.id.fifteenPercent);
-        Button twentyPercent = (Button) dialogLayout.findViewById(R.id.twentyPercent);
-        dlogGrandTotal = (TextView) dialogLayout.findViewById(R.id.grandTotalView);
+        Button tenPercent = dialogLayout.findViewById(R.id.tenPercent);
+        Button fifteenPercent = dialogLayout.findViewById(R.id.fifteenPercent);
+        Button twentyPercent = dialogLayout.findViewById(R.id.twentyPercent);
+        dlogGrandTotal = dialogLayout.findViewById(R.id.grandTotalView);
 
         dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
 
-        promptTipField = (EditText) dialogLayout.findViewById(R.id.otherTipAmountField);
+        promptTipField = dialogLayout.findViewById(R.id.otherTipAmountField);
         promptTipField.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
         promptTipField.clearFocus();
         promptTipField.setText("");
 
-        Button cancelTip = (Button) dialogLayout.findViewById(R.id.cancelTipButton);
-        Button saveTip = (Button) dialogLayout.findViewById(R.id.acceptTipButton);
-        Button noneButton = (Button) dialogLayout.findViewById(R.id.noneButton);
+        Button cancelTip = dialogLayout.findViewById(R.id.cancelTipButton);
+        Button saveTip = dialogLayout.findViewById(R.id.acceptTipButton);
+        Button noneButton = dialogLayout.findViewById(R.id.noneButton);
 
         promptTipField.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
@@ -1281,10 +1292,10 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         dialog.setView(dialogLayout, 0, 0, 0, 0);
         dialog.setInverseBackgroundForced(true);
         dialog.setCancelable(false);
-        dlogGrandTotal = (TextView) dialogLayout.findViewById(R.id.confirmTotalView);
-        TextView dlogCardType = (TextView) dialogLayout.findViewById(R.id.confirmCardType);
-        TextView dlogCardExpDate = (TextView) dialogLayout.findViewById(R.id.confirmExpDate);
-        TextView dlogCardNum = (TextView) dialogLayout.findViewById(R.id.confirmCardNumber);
+        dlogGrandTotal = dialogLayout.findViewById(R.id.confirmTotalView);
+        TextView dlogCardType = dialogLayout.findViewById(R.id.confirmCardType);
+        TextView dlogCardExpDate = dialogLayout.findViewById(R.id.confirmExpDate);
+        TextView dlogCardNum = dialogLayout.findViewById(R.id.confirmCardNumber);
 
         grandTotalAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
         dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
@@ -1296,8 +1307,8 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         dlogCardNum.setText(String.format("*%s", last4Digits));
         dlogCardExpDate.setText(month.getText().toString() + "/" + year.getText().toString());
 
-        Button cancelButton = (Button) dialogLayout.findViewById(R.id.cancelButton);
-        Button nextButton = (Button) dialogLayout.findViewById(R.id.nextButton);
+        Button cancelButton = dialogLayout.findViewById(R.id.cancelButton);
+        Button nextButton = dialogLayout.findViewById(R.id.nextButton);
 
         cancelButton.setOnClickListener(new Button.OnClickListener() {
 
@@ -1667,8 +1678,8 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         dlog.setCancelable(false);
         dlog.setContentView(R.layout.dlog_btn_left_right_layout);
 
-        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+        TextView viewTitle = dlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = dlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_confirm);
         if (isRetry) {
             viewTitle.setText(R.string.dlog_title_error);
@@ -1681,8 +1692,8 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         }
         dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
 
-        Button btnYes = (Button) dlog.findViewById(R.id.btnDlogLeft);
-        Button btnNo = (Button) dlog.findViewById(R.id.btnDlogRight);
+        Button btnYes = dlog.findViewById(R.id.btnDlogLeft);
+        Button btnNo = dlog.findViewById(R.id.btnDlogRight);
         btnYes.setText(R.string.button_yes);
         btnNo.setText(R.string.button_no);
 
@@ -1711,12 +1722,12 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         dlog.setCancelable(false);
         dlog.setContentView(R.layout.dlog_btn_single_layout);
 
-        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+        TextView viewTitle = dlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = dlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_error);
         viewMsg.setText(msg);
 
-        Button btnOk = (Button) dlog.findViewById(R.id.btnDlogSingle);
+        Button btnOk = dlog.findViewById(R.id.btnDlogSingle);
         btnOk.setText(R.string.button_ok);
         btnOk.setOnClickListener(new View.OnClickListener() {
 
@@ -1856,7 +1867,8 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                                 p.setPay_amount(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
                                 p.setTipAmount(String.valueOf(Global.getBigDecimalNum(NumberUtils.cleanCurrencyFormatedNumber(tipAmount), 2)));
                                 if (Global.btSwiper != null && Global.btSwiper.getCurrentDevice() != null) {
-                                    Global.btSwiper.getCurrentDevice().salePayment(p);
+                                    populateCardInfo();
+                                    Global.btSwiper.getCurrentDevice().salePayment(p, cardInfoManager);
                                 } else if (isEverpay) {
                                     openEverpayApp(p);
                                 }
@@ -1989,6 +2001,15 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
     @Override
     public void nfcWasRead(String nfcUID) {
 
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+        if(!b){
+            enableManualCreditCard();
+        }else{
+            setHandopintUIFields();
+        }
     }
 
 

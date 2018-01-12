@@ -39,6 +39,7 @@ public class CreditCardInfo {
     private boolean wasSwiped = false;
     private String resultMessage;
     private EMVContainer emvContainer;
+    private String cardUnEncryptedSecCode;
 
 
     public void setWasSwiped(boolean value) {
@@ -318,6 +319,14 @@ public class CreditCardInfo {
         setMagnePrintStatus(creditCardInfo.getMagnePrintStatus());
         setWasSwiped(creditCardInfo.getWasSwiped());
         setTrackDataKSN(creditCardInfo.getTrackDataKSN());
+    }
+
+    public void setCardUnEncryptedSecCode(String cardUnEncryptedSecCode) {
+        this.cardUnEncryptedSecCode = cardUnEncryptedSecCode;
+    }
+
+    public String getCardUnEncryptedSecCode() {
+        return cardUnEncryptedSecCode;
     }
 }
 

@@ -581,7 +581,7 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
 //    }
 
     @Override
-    public void salePayment(Payment payment) {
+    public void salePayment(Payment payment, CreditCardInfo creditCardInfo) {
 
     }
 

@@ -666,7 +666,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     }
 
     @Override
-    public void salePayment(Payment payment) {
+    public void salePayment(Payment payment, CreditCardInfo creditCardInfo) {
 
     }
 

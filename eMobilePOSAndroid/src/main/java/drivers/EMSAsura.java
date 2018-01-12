@@ -1272,7 +1272,7 @@ public class EMSAsura extends EMSDeviceDriver
     }
 
     @Override
-    public void salePayment(Payment payment) {
+    public void salePayment(Payment payment, CreditCardInfo creditCardInfo) {
 
     }
 

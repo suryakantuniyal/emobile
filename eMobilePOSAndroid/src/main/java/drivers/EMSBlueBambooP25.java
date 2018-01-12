@@ -370,7 +370,7 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
     }
 
     @Override
-    public void salePayment(Payment payment) {
+    public void salePayment(Payment payment, CreditCardInfo creditCardInfo) {
 
     }
 

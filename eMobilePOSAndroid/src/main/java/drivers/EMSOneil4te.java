@@ -24,6 +24,7 @@ import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
+import com.android.support.CreditCardInfo;
 import com.android.support.DateUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -985,7 +986,7 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
 //    }
 
     @Override
-    public void salePayment(Payment payment) {
+    public void salePayment(Payment payment, CreditCardInfo creditCardInfo) {
 
     }
 

@@ -273,7 +273,7 @@ public class EMSIngenicoEVO extends EMSDeviceDriver implements EMSDeviceManagerP
 //    }
 
     @Override
-    public void salePayment(Payment payment) {
+    public void salePayment(Payment payment, CreditCardInfo creditCardInfo) {
         TransactionData transactionData = new TransactionData();
         transactionData.setCustomerPresence(CustomerPresence.PRESENT);
         transactionData.setOrderNumber("");

@@ -16,6 +16,7 @@ import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
+import com.android.support.CreditCardInfo;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.handpoint.api.Device;
@@ -304,7 +305,7 @@ public class EMSmePOS extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     }
 
     @Override
-    public void salePayment(Payment payment) {
+    public void salePayment(Payment payment, CreditCardInfo creditCardInfo) {
 
     }
 

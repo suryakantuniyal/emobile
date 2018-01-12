@@ -56,18 +56,28 @@ import main.EMSDeviceManager;
 
 public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDeviceManagerPrinterDelegate {
 
-    private Context activity;
+    public static CoreSignature signature;
     private static AndroidTerminal terminal;
     private static String TERMINAL_ID = "2993001";
     private static String SECRET = "password";
-    public static CoreSignature signature;
-    private boolean isReadingCard = false;
-    private Handler handler;
     private static EMSCallBack msrCallBack;
-
     private static EMSDeviceManager edm;
     private static ProgressDialog myProgressDialog;
+    private Context activity;
+    private boolean isReadingCard = false;
+    private Handler handler;
     private boolean isAutoConnect = false;
+    private Runnable doUpdateDidConnect = new Runnable() {
+        public void run() {
+            try {
+                if (msrCallBack != null)
+                    msrCallBack.readerConnectedSuccessfully(true);
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
 
     @Override
     public void connect(Context activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
@@ -240,18 +250,6 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
         handler.post(doUpdateDidConnect);
     }
 
-    private Runnable doUpdateDidConnect = new Runnable() {
-        public void run() {
-            try {
-                if (msrCallBack != null)
-                    msrCallBack.readerConnectedSuccessfully(true);
-
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-    };
-
     @Override
     public void loadScanner(EMSCallBack _callBack) {
 
@@ -299,13 +297,27 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
 
 
     @Override
-    public void salePayment(Payment payment) {
-        CoreSale sale = new CoreSale(new BigDecimal(payment.getPay_amount()));
-        if (!TextUtils.isEmpty(payment.getTipAmount())
-                && new BigDecimal(payment.getTipAmount()).compareTo(new BigDecimal(0)) > 0) {
-            sale.addTipWithAmount(new BigDecimal(payment.getTipAmount()));
+    public void salePayment(Payment payment, CreditCardInfo creditCardInfo) {
+        if (creditCardInfo == null) {
+            CoreSale sale = new CoreSale(new BigDecimal(payment.getPay_amount()));
+            if (!TextUtils.isEmpty(payment.getTipAmount())
+                    && new BigDecimal(payment.getTipAmount()).compareTo(new BigDecimal(0)) > 0) {
+                sale.addTipWithAmount(new BigDecimal(payment.getTipAmount()));
+            }
+            terminal.processSale(sale);
+        } else {
+            CoreSaleKeyed sale = new CoreSaleKeyed(new BigDecimal(payment.getPay_amount()));
+            if (!TextUtils.isEmpty(payment.getTipAmount())
+                    && new BigDecimal(payment.getTipAmount()).compareTo(new BigDecimal(0)) > 0) {
+                sale.addTipWithAmount(new BigDecimal(payment.getTipAmount()));
+            }
+            sale.setCardHolderName(creditCardInfo.getCardOwnerName());
+            sale.setCardNumber(creditCardInfo.getCardNumUnencrypted());
+            sale.setCardCvv(creditCardInfo.getCardUnEncryptedSecCode());
+            sale.setCardType(creditCardInfo.getCardType());
+            sale.setExpiryDate(creditCardInfo.getCardExpMonth() + creditCardInfo.getCardExpYear().substring(2));
+            terminal.processSale(sale);
         }
-        terminal.processSale(sale);
     }
 
     @Override
@@ -341,26 +353,6 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
     @Override
     public void updateFirmware() {
 
-    }
-
-    private class ConnectNomadAsync extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected void onPreExecute() {
-            showDialog(R.string.connecting_handpoint);
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            EMSEpayLoginInfo loginInfo = EMSUtils.getEmsEpayLoginInfo(activity);
-            SECRET = loginInfo.getSecret();
-            TERMINAL_ID = loginInfo.getTerminalId();
-            initDevice();
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void unused) {
-        }
     }
 
     public void startReading(CreditCardInfo cardInfo, ProgressDialog dialog) {
@@ -640,5 +632,25 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
             myProgressDialog.dismiss();
         }
         myProgressDialog = null;
+    }
+
+    private class ConnectNomadAsync extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected void onPreExecute() {
+            showDialog(R.string.connecting_handpoint);
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            EMSEpayLoginInfo loginInfo = EMSUtils.getEmsEpayLoginInfo(activity);
+            SECRET = loginInfo.getSecret();
+            TERMINAL_ID = loginInfo.getTerminalId();
+            initDevice();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void unused) {
+        }
     }
 }

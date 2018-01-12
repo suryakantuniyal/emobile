@@ -296,7 +296,7 @@ public class EMSOT310 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     }
 
     @Override
-    public void salePayment(Payment payment) {
+    public void salePayment(Payment payment, CreditCardInfo creditCardInfo) {
 
     }
 

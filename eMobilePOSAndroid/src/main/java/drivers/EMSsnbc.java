@@ -17,6 +17,7 @@ import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
+import com.android.support.CreditCardInfo;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.crashlytics.android.Crashlytics;
@@ -395,7 +396,7 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 //    }
 
     @Override
-    public void salePayment(Payment payment) {
+    public void salePayment(Payment payment, CreditCardInfo creditCardInfo) {
 
     }
 

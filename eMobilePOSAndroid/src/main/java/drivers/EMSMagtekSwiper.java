@@ -250,7 +250,7 @@ public class EMSMagtekSwiper extends EMSDeviceDriver implements EMSDeviceManager
     }
 
     @Override
-    public void salePayment(Payment payment) {
+    public void salePayment(Payment payment, CreditCardInfo creditCardInfo) {
 
     }
 

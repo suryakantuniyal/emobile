@@ -254,7 +254,7 @@ public class EMSEM70 extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     }
 
     @Override
-    public void salePayment(Payment payment) {
+    public void salePayment(Payment payment, CreditCardInfo creditCardInfo) {
 
     }
 

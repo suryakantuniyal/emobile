@@ -337,7 +337,7 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
     }
 
     @Override
-    public void salePayment(Payment payment) {
+    public void salePayment(Payment payment, CreditCardInfo creditCardInfo) {
 
     }
 

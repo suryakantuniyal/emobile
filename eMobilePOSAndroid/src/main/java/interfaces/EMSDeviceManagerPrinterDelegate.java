@@ -9,6 +9,7 @@ import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
+import com.android.support.CreditCardInfo;
 import com.android.support.Global;
 
 import java.util.HashMap;
@@ -76,7 +77,7 @@ public interface EMSDeviceManagerPrinterDelegate {
 
     void printReceiptPreview(SplittedOrder splitedOrder);
 
-    void salePayment(Payment payment);
+    void salePayment(Payment payment, CreditCardInfo creditCardInfo);
 
     void saleReversal(Payment payment, String originalTransactionId);
 

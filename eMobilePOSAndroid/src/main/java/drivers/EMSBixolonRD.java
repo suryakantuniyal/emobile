@@ -23,6 +23,7 @@ import com.android.emobilepos.models.realms.BixolonTransaction;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.PaymentMethod;
 import com.android.support.ConsignmentTransaction;
+import com.android.support.CreditCardInfo;
 import com.android.support.DateUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -407,7 +408,7 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
 
 
     @Override
-    public void salePayment(Payment payment) {
+    public void salePayment(Payment payment, CreditCardInfo creditCardInfo) {
 
     }
 

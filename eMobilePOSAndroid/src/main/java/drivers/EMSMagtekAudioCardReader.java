@@ -456,7 +456,7 @@ public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDevi
     }
 
     @Override
-    public void salePayment(Payment payment) {
+    public void salePayment(Payment payment, CreditCardInfo creditCardInfo) {
 
     }
 
