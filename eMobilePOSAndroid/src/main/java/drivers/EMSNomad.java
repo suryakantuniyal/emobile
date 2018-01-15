@@ -38,6 +38,7 @@ import com.payments.core.CoreTransactions;
 import com.payments.core.admin.AndroidTerminal;
 import com.payments.core.admin.DeviceConnectionType;
 import com.payments.core.common.contracts.CoreAPIListener;
+import com.payments.core.common.enums.AvsResponseCode;
 import com.payments.core.common.enums.CoreDeviceError;
 import com.payments.core.common.enums.CoreError;
 import com.payments.core.common.enums.CoreMessage;
@@ -298,7 +299,7 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
 
     @Override
     public void salePayment(Payment payment, CreditCardInfo creditCardInfo) {
-        if (creditCardInfo == null) {
+        if (creditCardInfo == null || TextUtils.isEmpty(creditCardInfo.getCardNumUnencrypted())) {
             CoreSale sale = new CoreSale(new BigDecimal(payment.getPay_amount()));
             if (!TextUtils.isEmpty(payment.getTipAmount())
                     && new BigDecimal(payment.getTipAmount()).compareTo(new BigDecimal(0)) > 0) {
@@ -454,7 +455,7 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
             cardManager.transid = response.getUniqueRef();
             cardManager.setWasSwiped(true);
             cardManager.setCardLast4(response.getCardNumber().substring(response.getCardNumber().length() - 4));
-            msrCallBack.cardWasReadSuccessfully(true, cardManager);
+            msrCallBack.cardWasReadSuccessfully(response.getAVSResponseCode() == AvsResponseCode.A, cardManager);
         } catch (Exception ex) {
             ex.printStackTrace();
         }

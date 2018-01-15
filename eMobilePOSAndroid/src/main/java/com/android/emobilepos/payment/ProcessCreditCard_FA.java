@@ -1868,6 +1868,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                                 p.setTipAmount(String.valueOf(Global.getBigDecimalNum(NumberUtils.cleanCurrencyFormatedNumber(tipAmount), 2)));
                                 if (Global.btSwiper != null && Global.btSwiper.getCurrentDevice() != null) {
                                     populateCardInfo();
+                                    Global.btSwiper.getCurrentDevice().loadCardReader(callBack, false);
                                     Global.btSwiper.getCurrentDevice().salePayment(p, cardInfoManager);
                                 } else if (isEverpay) {
                                     openEverpayApp(p);
