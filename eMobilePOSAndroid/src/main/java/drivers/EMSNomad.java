@@ -455,7 +455,7 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
             cardManager.transid = response.getUniqueRef();
             cardManager.setWasSwiped(true);
             cardManager.setCardLast4(response.getCardNumber().substring(response.getCardNumber().length() - 4));
-            msrCallBack.cardWasReadSuccessfully(response.getAVSResponseCode() == AvsResponseCode.A, cardManager);
+            msrCallBack.cardWasReadSuccessfully(response.getCode().equalsIgnoreCase("A"), cardManager);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
