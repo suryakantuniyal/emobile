@@ -35,10 +35,10 @@ import com.payments.core.CoreSecureCardResponse;
 import com.payments.core.CoreSettings;
 import com.payments.core.CoreSignature;
 import com.payments.core.CoreTransactions;
+import com.payments.core.CoreUnreferencedRefund;
 import com.payments.core.admin.AndroidTerminal;
 import com.payments.core.admin.DeviceConnectionType;
 import com.payments.core.common.contracts.CoreAPIListener;
-import com.payments.core.common.enums.AvsResponseCode;
 import com.payments.core.common.enums.CoreDeviceError;
 import com.payments.core.common.enums.CoreError;
 import com.payments.core.common.enums.CoreMessage;
@@ -322,23 +322,34 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
     }
 
     @Override
-    public void saleReversal(Payment payment, String originalTransactionId) {
-        refund(payment);
+    public void saleReversal(Payment payment, String originalTransactionId, CreditCardInfo creditCardInfo) {
+        refund(payment, creditCardInfo);
     }
 
     @Override
-    public void refund(Payment payment) {
-        GenerateNewID newID = new GenerateNewID(activity);
-        payment.setPay_id(newID.getNextID(GenerateNewID.IdType.PAYMENT_ID));
-        CoreRefund refund = new CoreRefund(new BigDecimal(payment.getPay_amount()));
-        refund.setUniqueRef(payment.getPay_id());
-        refund.setReason("payment refund");
-        terminal.processRefund(refund);
+    public void refund(Payment payment, CreditCardInfo creditCardInfo) {
+        if (creditCardInfo == null || TextUtils.isEmpty(creditCardInfo.getCardNumUnencrypted())) {
+            GenerateNewID newID = new GenerateNewID(activity);
+            payment.setPay_id(newID.getNextID(GenerateNewID.IdType.PAYMENT_ID));
+            CoreRefund refund = new CoreRefund(new BigDecimal(payment.getPay_amount()));
+            refund.setUniqueRef(payment.getPay_id());
+            refund.setReason("payment refund");
+            terminal.processRefund(refund);
+        } else {
+            CoreUnreferencedRefund refund = new CoreUnreferencedRefund(new BigDecimal(payment.getPay_amount()));
+            refund.setCardHolderName(creditCardInfo.getCardOwnerName());
+            refund.setCardNumber(creditCardInfo.getCardNumUnencrypted());
+            refund.setCardCvv(creditCardInfo.getCardUnEncryptedSecCode());
+            refund.setCardType(creditCardInfo.getCardType());
+            refund.setReason("payment refund");
+            refund.setExpiryDate(creditCardInfo.getCardExpMonth() + creditCardInfo.getCardExpYear().substring(2));
+            terminal.processUnreferencedRefund(refund);
+        }
     }
 
     @Override
-    public void refundReversal(Payment payment, String originalTransactionId) {
-        refund(payment);
+    public void refundReversal(Payment payment, String originalTransactionId, CreditCardInfo creditCardInfo) {
+        refund(payment, creditCardInfo);
     }
 
     @Override

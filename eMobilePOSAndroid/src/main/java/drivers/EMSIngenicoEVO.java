@@ -293,12 +293,12 @@ public class EMSIngenicoEVO extends EMSDeviceDriver implements EMSDeviceManagerP
     }
 
     @Override
-    public void saleReversal(Payment payment, String originalTransactionId) {
+    public void saleReversal(Payment payment, String originalTransactionId, CreditCardInfo creditCardInfo) {
         new EVOCancelTransaction().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, payment);
     }
 
     @Override
-    public void refund(Payment payment) {
+    public void refund(Payment payment, CreditCardInfo creditCardInfo) {
         TransactionData transactionData = new TransactionData();
         transactionData.setCustomerPresence(CustomerPresence.PRESENT);
         transactionData.setOrderNumber(payment.getPay_id());
@@ -318,7 +318,7 @@ public class EMSIngenicoEVO extends EMSDeviceDriver implements EMSDeviceManagerP
     }
 
     @Override
-    public void refundReversal(Payment payment, String originalTransactionId) {
+    public void refundReversal(Payment payment, String originalTransactionId, CreditCardInfo creditCardInfo) {
 
     }
 

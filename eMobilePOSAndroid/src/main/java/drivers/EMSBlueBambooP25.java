@@ -375,7 +375,7 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
     }
 
     @Override
-    public void saleReversal(Payment payment, String originalTransactionId) {
+    public void saleReversal(Payment payment, String originalTransactionId, CreditCardInfo creditCardInfo) {
 
     }
 
@@ -392,12 +392,12 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
 //    }
 
     @Override
-    public void refund(Payment payment) {
+    public void refund(Payment payment, CreditCardInfo creditCardInfo) {
 
     }
 
     @Override
-    public void refundReversal(Payment payment, String originalTransactionId) {
+    public void refundReversal(Payment payment, String originalTransactionId, CreditCardInfo creditCardInfo) {
 
     }
 

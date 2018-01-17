@@ -1388,5 +1388,7 @@
     <string name="config_print_raster_mode">Print Raster Mode</string>
     <string name="sync_sending_signatures">Sending payment signatures</string>
     <string name="gift_balance">Gift Balance:</string>
+    <string name="backup_data_fail">Cloud Backup data has fail</string>
+    <string name="backup_data_success">Coud Backup data success</string>
 
 </resources>

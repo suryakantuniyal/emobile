@@ -431,7 +431,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
     }
 
     @Override
-    public void saleReversal(Payment payment, String originalTransactionId) {
+    public void saleReversal(Payment payment, String originalTransactionId, CreditCardInfo creditCardInfo) {
         hapi.getPendingTransaction();
         boolean succeed = hapi.saleReversal(new BigInteger(payment.getPay_amount().replace(".", "")), currency, originalTransactionId);
         if (!succeed) {
@@ -440,7 +440,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
     }
 
     @Override
-    public void refund(Payment payment) {
+    public void refund(Payment payment, CreditCardInfo creditCardInfo) {
         hapi.addPendingResultsEventHandler(this);
         hapi.getPendingTransaction();
         boolean succeed = hapi.refund(new BigInteger(payment.getPay_amount().replace(".", "")), currency);
@@ -451,7 +451,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
     }
 
     @Override
-    public void refundReversal(Payment payment, String originalTransactionId) {
+    public void refundReversal(Payment payment, String originalTransactionId, CreditCardInfo creditCardInfo) {
         hapi.addPendingResultsEventHandler(this);
         hapi.getPendingTransaction();
         boolean succeed = hapi.saleReversal(new

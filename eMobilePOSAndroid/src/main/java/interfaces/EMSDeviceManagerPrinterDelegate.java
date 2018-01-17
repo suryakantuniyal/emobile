@@ -79,11 +79,11 @@ public interface EMSDeviceManagerPrinterDelegate {
 
     void salePayment(Payment payment, CreditCardInfo creditCardInfo);
 
-    void saleReversal(Payment payment, String originalTransactionId);
+    void saleReversal(Payment payment, String originalTransactionId, CreditCardInfo creditCardInfo);
 
-    void refund(Payment payment);
+    void refund(Payment payment, CreditCardInfo creditCardInfo);
 
-    void refundReversal(Payment payment, String originalTransactionId);
+    void refundReversal(Payment payment, String originalTransactionId, CreditCardInfo creditCardInfo);
 
     void printEMVReceipt(String text);
 

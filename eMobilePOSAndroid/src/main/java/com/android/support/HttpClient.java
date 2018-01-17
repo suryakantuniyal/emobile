@@ -2,12 +2,18 @@ package com.android.support;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 
 import com.android.emobilepos.R;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -27,11 +33,16 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Date;
 
 /**
  * Created by Guarionex on 4/21/2016.
  */
 public class HttpClient {
+    protected static final int ID = 0;
+    private static final int COPY_STARTED = 0;
+    private static final int UPDATE_PROGRESS = 1;
+    public static int incr;
     org.apache.http.client.HttpClient client = new DefaultHttpClient();
     HttpPost post;
     StringEntity stringEntity;
@@ -41,11 +52,58 @@ public class HttpClient {
     Handler handler;
     ProgressDialog progressDialog;
     private DownloadFileCallBack callback;
-    public static int incr;
-    protected static final int ID = 0;
-    private static final int COPY_STARTED = 0;
-    private static final int UPDATE_PROGRESS = 1;
     private Context context;
+
+    private static String convertStreamToString(InputStream is) {
+        /*
+         * To convert the InputStream to String we use the
+		 * BufferedReader.readLine() method. We iterate until the BufferedReader
+		 * return null which means there's no more data to read. Each line will
+		 * appended to a StringBuilder and returned as String.
+		 */
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+        StringBuilder sb = new StringBuilder();
+
+        String line;
+        try {
+            while ((line = reader.readLine()) != null) {
+                sb.append(line + "\n");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                is.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return sb.toString();
+    }
+
+    public static void uploadCloudFile(String bucketName, Uri file, OnFailureListener failCallback, OnSuccessListener successCallback) {
+        String date = DateUtils.getDateAsString(new Date(), "yyyyMMdd_hhmm");
+        FirebaseStorage storage = FirebaseStorage.getInstance();//("gs://emobilepos-53888.appspot.com");
+        StorageReference fileReference = storage.getReference().child("emobilepos/" + bucketName + "_" + date + "_" + file.getLastPathSegment());
+        UploadTask uploadTask = fileReference.putFile(file);
+        if (failCallback != null) {
+            uploadTask.addOnFailureListener(failCallback);
+        }
+        if (successCallback != null) {
+            uploadTask.addOnSuccessListener(successCallback);
+        }
+//        uploadTask.addOnFailureListener(new OnFailureListener() {
+//            @Override
+//            public void onFailure(@NonNull Exception e) {
+//                Toast.makeText(context, R.string.backup_data_fail, Toast.LENGTH_LONG).show();
+//            }
+//        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+//            @Override
+//            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+//                Toast.makeText(context, R.string.backup_data_success, Toast.LENGTH_LONG).show();
+//            }
+//        });
+    }
 
     public String downloadFile(String urlAddress, String path) {
         InputStream input = null;
@@ -134,7 +192,6 @@ public class HttpClient {
         return null;
     }
 
-
     /**
      * @param url
      * @return
@@ -201,31 +258,20 @@ public class HttpClient {
         return null;
     }
 
-    private static String convertStreamToString(InputStream is) {
-        /*
-         * To convert the InputStream to String we use the
-		 * BufferedReader.readLine() method. We iterate until the BufferedReader
-		 * return null which means there's no more data to read. Each line will
-		 * appended to a StringBuilder and returned as String.
-		 */
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-        StringBuilder sb = new StringBuilder();
-
-        String line;
-        try {
-            while ((line = reader.readLine()) != null) {
-                sb.append(line + "\n");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                is.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+    public String httpJsonRequest(String url, String json)
+            throws Exception {
+        post = new HttpPost(url);
+        stringEntity = new StringEntity(json, "UTF-8");
+        post.setHeader("Content-Type", "application/json");
+        post.setEntity(stringEntity);
+        response = client.execute(post);
+        entity = response.getEntity();
+        if (entity != null) {
+            String convertStreamToString = convertStreamToString(entity
+                    .getContent());
+            return convertStreamToString;
         }
-        return sb.toString();
+        return null;
     }
 
     public void downloadFileAsync(String urlAddress, String path, DownloadFileCallBack callBack, Context context) {
@@ -249,28 +295,6 @@ public class HttpClient {
         handlerMsg.arg1 = 1;
         handler.sendMessage(handlerMsg);
         new DownloadFileTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, urlAddress, path);
-    }
-
-    private class DownloadFileTask extends AsyncTask<Object, Void, String> {
-
-        @Override
-        protected String doInBackground(Object... params) {
-            return downloadFile((String) params[0], (String) params[1]);
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            if (TextUtils.isEmpty(s))
-                callback.downloadFail();
-            else
-                callback.downloadCompleted(s);
-        }
-    }
-
-    public interface DownloadFileCallBack {
-        public void downloadCompleted(String path);
-
-        public void downloadFail();
     }
 
     private void setHandler() {
@@ -311,6 +335,28 @@ public class HttpClient {
                 }
             }
         };
+    }
+
+    public interface DownloadFileCallBack {
+        public void downloadCompleted(String path);
+
+        public void downloadFail();
+    }
+
+    private class DownloadFileTask extends AsyncTask<Object, Void, String> {
+
+        @Override
+        protected String doInBackground(Object... params) {
+            return downloadFile((String) params[0], (String) params[1]);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            if (TextUtils.isEmpty(s))
+                callback.downloadFail();
+            else
+                callback.downloadCompleted(s);
+        }
     }
 }
 

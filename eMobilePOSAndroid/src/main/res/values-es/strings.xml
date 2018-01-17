@@ -1350,4 +1350,6 @@
     <string name="config_print_raster_mode">Imprimir en modo Raster</string>
     <string name="sync_sending_signatures">Enviando firmas</string>
     <string name="gift_balance">Balance Regalo:</string>
+    <string name="backup_data_fail">Backup data has fail</string>
+    <string name="backup_data_success">Backup data success</string>
 </resources>

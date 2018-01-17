@@ -1860,8 +1860,11 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
                                 if (isEverpay)
                                     openEverpayApp(p);
-                                else
-                                    Global.btSwiper.getCurrentDevice().refund(p);
+                                else {
+                                    populateCardInfo();
+                                    Global.btSwiper.getCurrentDevice().loadCardReader(callBack, false);
+                                    Global.btSwiper.getCurrentDevice().refund(p, cardInfoManager);
+                                }
                             } else {
                                 Payment p = new Payment(activity);
                                 p.setPay_amount(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
@@ -2006,9 +2009,9 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
     @Override
     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-        if(!b){
+        if (!b) {
             enableManualCreditCard();
-        }else{
+        } else {
             setHandopintUIFields();
         }
     }

@@ -46,6 +46,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.PayMethodsDAO;
 import com.android.database.CategoriesHandler;
 import com.android.database.DBManager;
@@ -63,6 +64,8 @@ import com.android.support.MyPreferences;
 import com.android.support.SynchMethods;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.crashlytics.android.Crashlytics;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.starmicronics.stario.PortInfo;
 import com.starmicronics.stario.StarIOPort;
 import com.starmicronics.stario.StarIOPortException;
@@ -876,7 +879,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                         case R.string.config_backup_data:
                             Realm realm = Realm.getDefaultInstance();
                             try {
-                                File outFile = new File(Environment.getExternalStorageDirectory() + "/emobilepos.realmdb");
+                                final File outFile = new File(Environment.getExternalStorageDirectory() + "/emobilepos.realmdb");
                                 DBManager manag = new DBManager(getActivity());
                                 manag.exportDBFile();
                                 File realmDirectory = new File(realm.getConfiguration().getPath());
@@ -885,6 +888,25 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
+                                final File sqlDBFile = new File(Environment.getExternalStorageDirectory() + "/emobilepos.db");
+                                HttpClient.uploadCloudFile(myPref.getAcctNumber() + "_"
+                                                + AssignEmployeeDAO.getAssignEmployee(false).getEmpId(),
+                                        Uri.fromFile(outFile), new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                Toast.makeText(getActivity(), R.string.backup_data_fail, Toast.LENGTH_LONG).show();
+                                                HttpClient.uploadCloudFile(myPref.getAcctNumber() + "_"
+                                                        + AssignEmployeeDAO.getAssignEmployee(false).getEmpId(), Uri.fromFile(sqlDBFile), null, null);
+                                            }
+                                        }, new OnSuccessListener() {
+                                            @Override
+                                            public void onSuccess(Object o) {
+                                                Toast.makeText(getActivity(), R.string.backup_data_success, Toast.LENGTH_LONG).show();
+                                                HttpClient.uploadCloudFile(myPref.getAcctNumber() + "_"
+                                                        + AssignEmployeeDAO.getAssignEmployee(false).getEmpId(), Uri.fromFile(sqlDBFile), null, null);
+                                            }
+                                        });
+
                             } finally {
                                 realm.close();
                             }

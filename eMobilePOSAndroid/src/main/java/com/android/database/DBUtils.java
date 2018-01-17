@@ -1,30 +1,35 @@
 package com.android.database;
 
+import com.android.support.HttpClient;
 import com.crashlytics.android.Crashlytics;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.gson.Gson;
 
 import net.sqlcipher.database.SQLiteStatement;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import util.json.JsonUtils;
+
 public class DBUtils {
-    DatabaseReference dbAuditing;
+//    DatabaseReference dbAuditing;
     DBChild dbChild;
     Map<String, Object> sparseArray = new HashMap<>();
-    private String account;
+    HttpClient httpClient;
+    String url = "https://emobilepos-53888.firebaseio.com/";
+    private String index;
     private String sql;
     private SQLiteStatement statement;
 
-    public static DBUtils getInstance(String account, SQLiteStatement statement, String sql, DBChild dbChild) {
+    public static DBUtils getInstance(String index, SQLiteStatement statement, String sql, DBChild dbChild) {
         DBUtils dbUtils = new DBUtils();
-        dbUtils.account = account;
+        dbUtils.index = index;
         dbUtils.sql = sql;
         dbUtils.dbChild = dbChild;
+        dbUtils.httpClient = new HttpClient();
         dbUtils.statement = statement;
-        FirebaseDatabase.getInstance().goOnline();
-        dbUtils.dbAuditing = FirebaseDatabase.getInstance().getReference(dbChild.name()).push();
+//        FirebaseDatabase.getInstance().goOnline();
+//        dbUtils.dbAuditing = FirebaseDatabase.getInstance().getReference(dbChild.name()).push();
         return dbUtils;
     }
 
@@ -44,11 +49,22 @@ public class DBUtils {
     public void executeAuditedDB() {
         statement.execute();
         try {
-            AuditingRecord record = new AuditingRecord();
-            record.setIndex(account);
+            final AuditingRecord record = new AuditingRecord();
+            record.setIndex(index);
             record.setSql(sql);
             record.setData(sparseArray);
-            dbAuditing.setValue(record);
+//            dbAuditing.setValue(record);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        String response = httpClient.httpJsonRequest(url + dbChild.name() + ".json", record.toJson());
+                    } catch (Exception e) {
+
+                    }
+                }
+            }).start();
+
         } catch (Exception e) {
             e.printStackTrace();
             Crashlytics.logException(e);
@@ -82,6 +98,13 @@ public class DBUtils {
 
         public AuditingRecord() {
 
+        }
+
+        public String toJson() {
+            Gson gson = JsonUtils.getInstance();
+            String toJson = gson.toJson(this);
+            toJson = "{\"" + index + "\":" + toJson + "}";
+            return toJson;
         }
 
         public String getSql() {
