@@ -3,16 +3,29 @@ package com.android.database;
 import com.android.support.HttpClient;
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
+import com.microsoft.azure.storage.CloudStorageAccount;
+import com.microsoft.azure.storage.StorageException;
+import com.microsoft.azure.storage.blob.CloudBlobClient;
+import com.microsoft.azure.storage.blob.CloudBlobContainer;
+import com.microsoft.azure.storage.blob.CloudBlockBlob;
 
 import net.sqlcipher.database.SQLiteStatement;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.security.InvalidKeyException;
 import java.util.HashMap;
 import java.util.Map;
 
 import util.json.JsonUtils;
 
 public class DBUtils {
-//    DatabaseReference dbAuditing;
+    public static final String storageConnectionString = "DefaultEndpointsProtocol=https;"
+            + "AccountName=enablerbackup;"
+            + "AccountKey=qSBKH0hNLkqdC4hgfNfE88xAeVpUnA4h2ZCX+P4EhKsrNYlLMYN+Jq4U/Ylyhdy1ctK89Bk4LIPZz5Nh4K8pSg==;" +
+            "EndpointSuffix=core.windows.net";
+
     DBChild dbChild;
     Map<String, Object> sparseArray = new HashMap<>();
     HttpClient httpClient;
@@ -28,14 +41,21 @@ public class DBUtils {
         dbUtils.dbChild = dbChild;
         dbUtils.httpClient = new HttpClient();
         dbUtils.statement = statement;
-//        FirebaseDatabase.getInstance().goOnline();
-//        dbUtils.dbAuditing = FirebaseDatabase.getInstance().getReference(dbChild.name()).push();
         return dbUtils;
+    }
+
+    public static void uploadDatabaseBackup(InputStream dbFileInputStream, String uploadFileName) throws URISyntaxException, InvalidKeyException, StorageException, IOException {
+        CloudStorageAccount storageAccount = CloudStorageAccount
+                .parse(storageConnectionString);
+        CloudBlobClient blobClient = storageAccount.createCloudBlobClient();
+        CloudBlobContainer container = blobClient.getContainerReference("emsbackupfiles");
+        container.createIfNotExists();
+        CloudBlockBlob imageBlob = container.getBlockBlobReference(uploadFileName);
+        imageBlob.upload(dbFileInputStream, dbFileInputStream.available());
     }
 
     public static void release() {
         try {
-//            FirebaseDatabase.getInstance().goOffline();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -53,7 +73,6 @@ public class DBUtils {
             record.setIndex(index);
             record.setSql(sql);
             record.setData(sparseArray);
-//            dbAuditing.setValue(record);
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -139,4 +158,5 @@ public class DBUtils {
             this.timestamp = timestamp;
         }
     }
+
 }

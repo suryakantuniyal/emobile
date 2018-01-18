@@ -51,7 +51,7 @@ android {
         ems {
             minSdkVersion 16
             applicationId 'com.emobilepos.app'
-            versionName "1.2.3.27"
+            versionName "1.2.3.28"
             versionCode 149
             targetSdkVersion 23
             multiDexEnabled = true
@@ -66,7 +66,7 @@ android {
         icmpevo {
             minSdkVersion 16
             applicationId 'com.emobilepos.icmpevo.app'
-            versionName "1.2.3.27"
+            versionName "1.2.3.28"
             versionCode 149
             targetSdkVersion 23
             multiDexEnabled = true
@@ -95,7 +95,7 @@ android {
         ivupos {
             minSdkVersion 16
             applicationId 'com.emobilepos.ivupos.app'
-            versionName "1.2.3.27"
+            versionName "1.2.3.28"
             versionCode 149
             targetSdkVersion 23
             multiDexEnabled = true
@@ -302,6 +302,7 @@ dependencies {
 dependencies {
     compile 'com.android.support:support-v4:27.0.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile 'com.microsoft.azure.android:azure-storage-android:0.8.0@aar'
 }
 dependencies {
     implementation 'com.google.firebase:firebase-database:11.8.0'

@@ -50,6 +50,7 @@ import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.PayMethodsDAO;
 import com.android.database.CategoriesHandler;
 import com.android.database.DBManager;
+import com.android.database.DBUtils;
 import com.android.emobilepos.R;
 import com.android.emobilepos.country.CountryPicker;
 import com.android.emobilepos.country.CountryPickerListener;
@@ -57,6 +58,7 @@ import com.android.emobilepos.mainmenu.SettingsTab_FR;
 import com.android.emobilepos.models.realms.PaymentMethod;
 import com.android.emobilepos.security.ClerkManagementActivity;
 import com.android.emobilepos.security.SecurityManager;
+import com.android.support.DateUtils;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.HttpClient;
@@ -64,8 +66,7 @@ import com.android.support.MyPreferences;
 import com.android.support.SynchMethods;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.crashlytics.android.Crashlytics;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.microsoft.azure.storage.StorageException;
 import com.starmicronics.stario.PortInfo;
 import com.starmicronics.stario.StarIOPort;
 import com.starmicronics.stario.StarIOPortException;
@@ -73,9 +74,15 @@ import com.starmicronics.stario.StarIOPortException;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.security.InvalidKeyException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -889,23 +896,25 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                                     e.printStackTrace();
                                 }
                                 final File sqlDBFile = new File(Environment.getExternalStorageDirectory() + "/emobilepos.db");
-                                HttpClient.uploadCloudFile(myPref.getAcctNumber() + "_"
-                                                + AssignEmployeeDAO.getAssignEmployee(false).getEmpId(),
-                                        Uri.fromFile(outFile), new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
-                                                Toast.makeText(getActivity(), R.string.backup_data_fail, Toast.LENGTH_LONG).show();
-                                                HttpClient.uploadCloudFile(myPref.getAcctNumber() + "_"
-                                                        + AssignEmployeeDAO.getAssignEmployee(false).getEmpId(), Uri.fromFile(sqlDBFile), null, null);
-                                            }
-                                        }, new OnSuccessListener() {
-                                            @Override
-                                            public void onSuccess(Object o) {
-                                                Toast.makeText(getActivity(), R.string.backup_data_success, Toast.LENGTH_LONG).show();
-                                                HttpClient.uploadCloudFile(myPref.getAcctNumber() + "_"
-                                                        + AssignEmployeeDAO.getAssignEmployee(false).getEmpId(), Uri.fromFile(sqlDBFile), null, null);
-                                            }
-                                        });
+                                new UploadDBBackupTask(getActivity()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, sqlDBFile, outFile);
+
+//                                HttpClient.uploadCloudFile(myPref.getAcctNumber() + "_"
+//                                                + AssignEmployeeDAO.getAssignEmployee(false).getEmpId(),
+//                                        Uri.fromFile(outFile), new OnFailureListener() {
+//                                            @Override
+//                                            public void onFailure(@NonNull Exception e) {
+//                                                Toast.makeText(getActivity(), R.string.backup_data_fail, Toast.LENGTH_LONG).show();
+//                                                HttpClient.uploadCloudFile(myPref.getAcctNumber() + "_"
+//                                                        + AssignEmployeeDAO.getAssignEmployee(false).getEmpId(), Uri.fromFile(sqlDBFile), null, null);
+//                                            }
+//                                        }, new OnSuccessListener() {
+//                                            @Override
+//                                            public void onSuccess(Object o) {
+//                                                Toast.makeText(getActivity(), R.string.backup_data_success, Toast.LENGTH_LONG).show();
+//                                                HttpClient.uploadCloudFile(myPref.getAcctNumber() + "_"
+//                                                        + AssignEmployeeDAO.getAssignEmployee(false).getEmpId(), Uri.fromFile(sqlDBFile), null, null);
+//                                            }
+//                                        });
 
                             } finally {
                                 realm.close();
@@ -1456,6 +1465,68 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
             Toast.makeText(activity, s, Toast.LENGTH_LONG).show();
             activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
             Global.dismissDialog(activity, dialog);
+        }
+    }
+
+    private static class UploadDBBackupTask extends AsyncTask<File, Void, Void> {
+        private Context context;
+        private ProgressDialog progressDialog;
+
+        public UploadDBBackupTask(Context context) {
+            this.context = context;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            progressDialog = new ProgressDialog(context);
+            progressDialog.setCancelable(true);
+            progressDialog.setTitle(R.string.config_backup_data);
+            progressDialog.setMessage(context.getString(R.string.processing));
+            progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(File... files) {
+            InputStream dbInputStream;
+            try {
+                String date = DateUtils.getDateAsString(new Date(), "yyyyMMdd_hhmm");
+                File sqlDBFile = files[0];
+                dbInputStream = new FileInputStream(sqlDBFile);
+                MyPreferences myPref = new MyPreferences(context);
+                DBUtils.uploadDatabaseBackup(dbInputStream,
+                        myPref.getAcctNumber() + "_" +
+                                AssignEmployeeDAO.getAssignEmployee(false).getEmpId()
+                                + "_" + date + "_" +
+                                Uri.fromFile(sqlDBFile).getLastPathSegment());
+                File outFile = files[1];
+                dbInputStream = new FileInputStream(outFile);
+                DBUtils.uploadDatabaseBackup(dbInputStream,
+                        myPref.getAcctNumber() + "_" +
+                                AssignEmployeeDAO.getAssignEmployee(false).getEmpId()
+                                + "_" + date + "_" +
+                                Uri.fromFile(outFile).getLastPathSegment());
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                Toast.makeText(context, R.string.backup_data_success, Toast.LENGTH_LONG).show();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Toast.makeText(context, R.string.backup_data_success, Toast.LENGTH_LONG).show();
+            } catch (StorageException e) {
+                e.printStackTrace();
+                Toast.makeText(context, R.string.backup_data_success, Toast.LENGTH_LONG).show();
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+                Toast.makeText(context, R.string.backup_data_success, Toast.LENGTH_LONG).show();
+            } catch (InvalidKeyException e) {
+                e.printStackTrace();
+                Toast.makeText(context, R.string.backup_data_success, Toast.LENGTH_LONG).show();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            progressDialog.dismiss();
         }
     }
 
