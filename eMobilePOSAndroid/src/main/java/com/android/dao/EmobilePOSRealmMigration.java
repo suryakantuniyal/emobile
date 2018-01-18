@@ -126,6 +126,12 @@ public class EmobilePOSRealmMigration implements io.realm.RealmMigration {
                             .addField("merchantName", String.class);
                     oldVersion++;
                 }
+                if (oldVersion == 7) {
+                    oldVersion++;
+                }
+                if (oldVersion == 8) {
+                    oldVersion++;
+                }
                 if (oldVersion == 9) {
                     if(!schema.get(Payment.class.getSimpleName()).hasField("pay_SignatureIssync")){
                         schema.get(Payment.class.getSimpleName()).addField("pay_SignatureIssync", String.class);
