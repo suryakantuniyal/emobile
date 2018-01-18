@@ -63,6 +63,7 @@ import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.HttpClient;
 import com.android.support.MyPreferences;
+import com.android.support.NetworkUtils;
 import com.android.support.SynchMethods;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.crashlytics.android.Crashlytics;
@@ -896,7 +897,11 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                                     e.printStackTrace();
                                 }
                                 final File sqlDBFile = new File(Environment.getExternalStorageDirectory() + "/emobilepos.db");
-                                new UploadDBBackupTask(getActivity()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, sqlDBFile, outFile);
+                                if (NetworkUtils.isConnectedToInternet(getActivity())) {
+                                    new UploadDBBackupTask(getActivity()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, sqlDBFile, outFile);
+                                } else {
+                                    Toast.makeText(getActivity(), R.string.backup_data_fail, Toast.LENGTH_LONG).show();
+                                }
 
 //                                HttpClient.uploadCloudFile(myPref.getAcctNumber() + "_"
 //                                                + AssignEmployeeDAO.getAssignEmployee(false).getEmpId(),
