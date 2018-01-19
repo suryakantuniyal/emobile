@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "/home/silence12/Innobins/InnoTrack/MapBike/app/build/intermediates/res/merged/debug/mipmap-hdpi/ic_launcher.png",
+        "source": "/home/silence12/Innobins/InnoTrack/MapBike/app/src/main/res/mipmap-hdpi/ic_launcher.png"
+    },
+    {
+        "merged": "/home/silence12/Innobins/InnoTrack/MapBike/app/build/intermediates/res/merged/debug/mipmap-hdpi/ic_launcher_round.png",
+        "source": "/home/silence12/Innobins/InnoTrack/MapBike/app/src/main/res/mipmap-hdpi/ic_launcher_round.png"
+    }
+]

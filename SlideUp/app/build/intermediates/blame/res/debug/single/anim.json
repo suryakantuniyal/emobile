@@ -1,0 +1,42 @@
+[
+    {
+        "merged": "/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/res/merged/debug/anim/abc_grow_fade_in_from_bottom.xml",
+        "source": "/home/silence12/.android/build-cache/64bf4df60048de68351169fb3af85f676fadd254/output/res/anim/abc_grow_fade_in_from_bottom.xml"
+    },
+    {
+        "merged": "/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/res/merged/debug/anim/abc_slide_in_top.xml",
+        "source": "/home/silence12/.android/build-cache/64bf4df60048de68351169fb3af85f676fadd254/output/res/anim/abc_slide_in_top.xml"
+    },
+    {
+        "merged": "/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/res/merged/debug/anim/abc_fade_out.xml",
+        "source": "/home/silence12/.android/build-cache/64bf4df60048de68351169fb3af85f676fadd254/output/res/anim/abc_fade_out.xml"
+    },
+    {
+        "merged": "/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/res/merged/debug/anim/abc_shrink_fade_out_from_bottom.xml",
+        "source": "/home/silence12/.android/build-cache/64bf4df60048de68351169fb3af85f676fadd254/output/res/anim/abc_shrink_fade_out_from_bottom.xml"
+    },
+    {
+        "merged": "/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/res/merged/debug/anim/abc_slide_out_bottom.xml",
+        "source": "/home/silence12/.android/build-cache/64bf4df60048de68351169fb3af85f676fadd254/output/res/anim/abc_slide_out_bottom.xml"
+    },
+    {
+        "merged": "/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/res/merged/debug/anim/abc_slide_out_top.xml",
+        "source": "/home/silence12/.android/build-cache/64bf4df60048de68351169fb3af85f676fadd254/output/res/anim/abc_slide_out_top.xml"
+    },
+    {
+        "merged": "/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/res/merged/debug/anim/abc_popup_enter.xml",
+        "source": "/home/silence12/.android/build-cache/64bf4df60048de68351169fb3af85f676fadd254/output/res/anim/abc_popup_enter.xml"
+    },
+    {
+        "merged": "/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/res/merged/debug/anim/abc_popup_exit.xml",
+        "source": "/home/silence12/.android/build-cache/64bf4df60048de68351169fb3af85f676fadd254/output/res/anim/abc_popup_exit.xml"
+    },
+    {
+        "merged": "/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/res/merged/debug/anim/abc_fade_in.xml",
+        "source": "/home/silence12/.android/build-cache/64bf4df60048de68351169fb3af85f676fadd254/output/res/anim/abc_fade_in.xml"
+    },
+    {
+        "merged": "/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/res/merged/debug/anim/abc_slide_in_bottom.xml",
+        "source": "/home/silence12/.android/build-cache/64bf4df60048de68351169fb3af85f676fadd254/output/res/anim/abc_slide_in_bottom.xml"
+    }
+]

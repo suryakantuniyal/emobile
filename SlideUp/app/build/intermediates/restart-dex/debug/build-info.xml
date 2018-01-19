@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<instant-run
+    abi="armeabi-v7a,armeabi"
+    api-level="22"
+    build-mode="HOT_WARM"
+    density="hdpi"
+    format="10"
+    plugin-version="2.3.3"
+    timestamp="1514357337950"
+    token="2296199793051807082"
+    verifier="COMPATIBLE" >
+
+    <task
+        name="javac"
+        duration="102" />
+    <task
+        name="instant-run-dex"
+        duration="26" />
+    <task
+        name="instant-run-transform"
+        duration="28" />
+    <task
+        name="verifier"
+        duration="0" />
+
+    <artifact
+        location="/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/reload-dex/debug/classes.dex"
+        type="RELOAD_DEX" />
+
+    <build
+        build-mode="FULL"
+        timestamp="1514356649169"
+        verifier="FULL_BUILD_REQUESTED" >
+        <artifact
+            location="/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/split-apk/debug/slices/slice_0.apk"
+            type="SPLIT" />
+        <artifact
+            location="/home/silence12/Innobins/InnoTrack/SlideUp/app/build/outputs/apk/app-debug.apk"
+            type="SPLIT_MAIN" />
+        <artifact
+            location="/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/split-apk/debug/slices/slice_1.apk"
+            type="SPLIT" />
+        <artifact
+            location="/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/split-apk/debug/slices/slice_2.apk"
+            type="SPLIT" />
+        <artifact
+            location="/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/split-apk/debug/slices/slice_8.apk"
+            type="SPLIT" />
+        <artifact
+            location="/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/split-apk/debug/slices/slice_5.apk"
+            type="SPLIT" />
+        <artifact
+            location="/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/split-apk/debug/slices/slice_6.apk"
+            type="SPLIT" />
+        <artifact
+            location="/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/split-apk/debug/slices/slice_7.apk"
+            type="SPLIT" />
+        <artifact
+            location="/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/split-apk/debug/slices/slice_4.apk"
+            type="SPLIT" />
+        <artifact
+            location="/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/split-apk/debug/dep/dependencies.apk"
+            type="SPLIT" />
+        <artifact
+            location="/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/split-apk/debug/slices/slice_9.apk"
+            type="SPLIT" />
+        <artifact
+            location="/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/split-apk/debug/slices/slice_3.apk"
+            type="SPLIT" />
+    </build>
+    <build
+        build-mode="COLD"
+        timestamp="1514356869436"
+        verifier="IMPLEMENTED_INTERFACES_CHANGE" >
+        <artifact
+            location="/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/split-apk/debug/slices/slice_0.apk"
+            type="SPLIT" />
+        <artifact
+            location="/home/silence12/Innobins/InnoTrack/SlideUp/app/build/outputs/apk/app-debug.apk"
+            type="SPLIT_MAIN" />
+    </build>
+    <build
+        build-mode="HOT_WARM"
+        timestamp="1514356926819"
+        verifier="COMPATIBLE" >
+        <artifact
+            location="/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/builds/debug/1514356926819/classes.dex"
+            type="RELOAD_DEX" />
+    </build>
+    <build
+        build-mode="HOT_WARM"
+        timestamp="1514356985027"
+        verifier="COMPATIBLE" >
+        <artifact
+            location="/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/builds/debug/1514356985027/classes.dex"
+            type="RELOAD_DEX" />
+    </build>
+    <build
+        build-mode="HOT_WARM"
+        timestamp="1514357075975"
+        verifier="COMPATIBLE" >
+        <artifact
+            location="/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/builds/debug/1514357075975/classes.dex"
+            type="RELOAD_DEX" />
+    </build>
+    <build
+        build-mode="HOT_WARM"
+        timestamp="1514357099322"
+        verifier="COMPATIBLE" >
+        <artifact
+            location="/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/builds/debug/1514357099322/classes.dex"
+            type="RELOAD_DEX" />
+    </build>
+    <build
+        build-mode="HOT_WARM"
+        timestamp="1514357140457"
+        verifier="COMPATIBLE" >
+        <artifact
+            location="/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/builds/debug/1514357140457/classes.dex"
+            type="RELOAD_DEX" />
+    </build>
+    <build
+        build-mode="HOT_WARM"
+        timestamp="1514357190493"
+        verifier="COMPATIBLE" >
+        <artifact
+            location="/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/builds/debug/1514357190493/classes.dex"
+            type="RELOAD_DEX" />
+    </build>
+    <build
+        build-mode="HOT_WARM"
+        timestamp="1514357234732"
+        verifier="COMPATIBLE" >
+        <artifact
+            location="/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/builds/debug/1514357234732/classes.dex"
+            type="RELOAD_DEX" />
+    </build>
+    <build
+        build-mode="HOT_WARM"
+        timestamp="1514357271196"
+        verifier="COMPATIBLE" >
+        <artifact
+            location="/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/builds/debug/1514357271196/classes.dex"
+            type="RELOAD_DEX" />
+    </build>
+    <build
+        build-mode="HOT_WARM"
+        timestamp="1514357337950"
+        verifier="COMPATIBLE" >
+        <artifact
+            location="/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/reload-dex/debug/classes.dex"
+            type="RELOAD_DEX" />
+    </build>
+
+</instant-run>

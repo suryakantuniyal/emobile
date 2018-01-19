@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/res/merged/debug/mipmap-mdpi/ic_launcher.png",
+        "source": "/home/silence12/Innobins/InnoTrack/SlideUp/app/src/main/res/mipmap-mdpi/ic_launcher.png"
+    },
+    {
+        "merged": "/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/res/merged/debug/mipmap-mdpi/ic_launcher_round.png",
+        "source": "/home/silence12/Innobins/InnoTrack/SlideUp/app/src/main/res/mipmap-mdpi/ic_launcher_round.png"
+    }
+]

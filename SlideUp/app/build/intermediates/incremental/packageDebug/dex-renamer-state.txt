@@ -1,0 +1,7 @@
+#Wed Dec 27 00:03:03 IST 2017
+base.0=/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/transforms/dex/debug/folders/1000/10000/instant-run-bootstrap_e8f8b28650a2c1654893417c82db97d0811667c0
+renamed.1=classes.dex
+renamed.0=classes2.dex
+file.1=/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/transforms/dex/debug/folders/1000/10000/instant-run_3ae4aaa41be80312c3e11d86a1aba45e2eb7527b/classes.dex
+base.1=/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/transforms/dex/debug/folders/1000/10000/instant-run_3ae4aaa41be80312c3e11d86a1aba45e2eb7527b
+file.0=/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/transforms/dex/debug/folders/1000/10000/instant-run-bootstrap_e8f8b28650a2c1654893417c82db97d0811667c0/classes.dex
