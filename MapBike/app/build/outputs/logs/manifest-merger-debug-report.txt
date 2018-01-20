@@ -1,0 +1,87 @@
+-- Merging decision tree log ---
+manifest
+ADDED from /home/silence12/Innobins/InnoTrack/MapBike/app/src/main/AndroidManifest.xml:2:1-21:12
+	package
+		ADDED from /home/silence12/Innobins/InnoTrack/MapBike/app/src/main/AndroidManifest.xml:3:5-40
+		INJECTED from /home/silence12/Innobins/InnoTrack/MapBike/app/src/main/AndroidManifest.xml
+		INJECTED from /home/silence12/Innobins/InnoTrack/MapBike/app/src/main/AndroidManifest.xml
+	android:versionName
+		INJECTED from /home/silence12/Innobins/InnoTrack/MapBike/app/src/main/AndroidManifest.xml
+		INJECTED from /home/silence12/Innobins/InnoTrack/MapBike/app/src/main/AndroidManifest.xml
+	xmlns:android
+		ADDED from /home/silence12/Innobins/InnoTrack/MapBike/app/src/main/AndroidManifest.xml:2:11-69
+	android:versionCode
+		INJECTED from /home/silence12/Innobins/InnoTrack/MapBike/app/src/main/AndroidManifest.xml
+		INJECTED from /home/silence12/Innobins/InnoTrack/MapBike/app/src/main/AndroidManifest.xml
+application
+ADDED from /home/silence12/Innobins/InnoTrack/MapBike/app/src/main/AndroidManifest.xml:5:5-19:19
+MERGED from [com.android.support:appcompat-v7:26.0.0-alpha1] /home/silence12/.android/build-cache/64bf4df60048de68351169fb3af85f676fadd254/output/AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-v4:26.0.0-alpha1] /home/silence12/.android/build-cache/e2105182d140cbce26173a6084b67705fbf86bed/output/AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-media-compat:26.0.0-alpha1] /home/silence12/.android/build-cache/bfe231fdefcf80405f9dd92675326bbecd4171af/output/AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-fragment:26.0.0-alpha1] /home/silence12/.android/build-cache/bfa63ab71ebc61bd7dbe5255ff6d9cdf714e3863/output/AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-core-ui:26.0.0-alpha1] /home/silence12/.android/build-cache/a000374fbd2835f5780e4e293d3d5ad6bc470855/output/AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-core-utils:26.0.0-alpha1] /home/silence12/.android/build-cache/b16bf00bdcff3bf1610f35b9a9c33dd2941af05b/output/AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:animated-vector-drawable:26.0.0-alpha1] /home/silence12/.android/build-cache/bc2a9d3381c2094e310d58737227904fcfa14371/output/AndroidManifest.xml:26:5-20
+MERGED from [com.android.support:support-vector-drawable:26.0.0-alpha1] /home/silence12/.android/build-cache/41ead5936be75eb26f7d54923b3286d6aa87e0f1/output/AndroidManifest.xml:26:5-20
+MERGED from [com.android.support:support-compat:26.0.0-alpha1] /home/silence12/.android/build-cache/0594da87db4de5f288a87339ab6de582cec39bcc/output/AndroidManifest.xml:29:5-20
+MERGED from [com.android.support.constraint:constraint-layout:1.0.2] /home/silence12/.android/build-cache/bbe2b4252b15f4e86eaa57e4c33ba653585c9305/output/AndroidManifest.xml:9:5-20
+	android:label
+		ADDED from /home/silence12/Innobins/InnoTrack/MapBike/app/src/main/AndroidManifest.xml:8:9-41
+	android:supportsRtl
+		ADDED from /home/silence12/Innobins/InnoTrack/MapBike/app/src/main/AndroidManifest.xml:10:9-35
+	android:roundIcon
+		ADDED from /home/silence12/Innobins/InnoTrack/MapBike/app/src/main/AndroidManifest.xml:9:9-54
+	android:allowBackup
+		ADDED from /home/silence12/Innobins/InnoTrack/MapBike/app/src/main/AndroidManifest.xml:6:9-35
+	android:icon
+		ADDED from /home/silence12/Innobins/InnoTrack/MapBike/app/src/main/AndroidManifest.xml:7:9-43
+	android:theme
+		ADDED from /home/silence12/Innobins/InnoTrack/MapBike/app/src/main/AndroidManifest.xml:11:9-40
+activity#partner.gtrans.in.mapbike.MainActivity
+ADDED from /home/silence12/Innobins/InnoTrack/MapBike/app/src/main/AndroidManifest.xml:12:9-18:20
+	android:name
+		ADDED from /home/silence12/Innobins/InnoTrack/MapBike/app/src/main/AndroidManifest.xml:12:19-47
+intent-filter#android.intent.action.MAIN+android.intent.category.LAUNCHER
+ADDED from /home/silence12/Innobins/InnoTrack/MapBike/app/src/main/AndroidManifest.xml:13:13-17:29
+action#android.intent.action.MAIN
+ADDED from /home/silence12/Innobins/InnoTrack/MapBike/app/src/main/AndroidManifest.xml:14:17-69
+	android:name
+		ADDED from /home/silence12/Innobins/InnoTrack/MapBike/app/src/main/AndroidManifest.xml:14:25-66
+category#android.intent.category.LAUNCHER
+ADDED from /home/silence12/Innobins/InnoTrack/MapBike/app/src/main/AndroidManifest.xml:16:17-77
+	android:name
+		ADDED from /home/silence12/Innobins/InnoTrack/MapBike/app/src/main/AndroidManifest.xml:16:27-74
+uses-sdk
+INJECTED from /home/silence12/Innobins/InnoTrack/MapBike/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
+MERGED from [com.android.support:appcompat-v7:26.0.0-alpha1] /home/silence12/.android/build-cache/64bf4df60048de68351169fb3af85f676fadd254/output/AndroidManifest.xml:21:5-23:78
+MERGED from [com.android.support:support-v4:26.0.0-alpha1] /home/silence12/.android/build-cache/e2105182d140cbce26173a6084b67705fbf86bed/output/AndroidManifest.xml:21:5-23:54
+MERGED from [com.android.support:support-media-compat:26.0.0-alpha1] /home/silence12/.android/build-cache/bfe231fdefcf80405f9dd92675326bbecd4171af/output/AndroidManifest.xml:21:5-23:63
+MERGED from [com.android.support:support-fragment:26.0.0-alpha1] /home/silence12/.android/build-cache/bfa63ab71ebc61bd7dbe5255ff6d9cdf714e3863/output/AndroidManifest.xml:21:5-23:60
+MERGED from [com.android.support:support-core-ui:26.0.0-alpha1] /home/silence12/.android/build-cache/a000374fbd2835f5780e4e293d3d5ad6bc470855/output/AndroidManifest.xml:21:5-23:58
+MERGED from [com.android.support:support-core-utils:26.0.0-alpha1] /home/silence12/.android/build-cache/b16bf00bdcff3bf1610f35b9a9c33dd2941af05b/output/AndroidManifest.xml:21:5-23:61
+MERGED from [com.android.support:animated-vector-drawable:26.0.0-alpha1] /home/silence12/.android/build-cache/bc2a9d3381c2094e310d58737227904fcfa14371/output/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-vector-drawable:26.0.0-alpha1] /home/silence12/.android/build-cache/41ead5936be75eb26f7d54923b3286d6aa87e0f1/output/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-compat:26.0.0-alpha1] /home/silence12/.android/build-cache/0594da87db4de5f288a87339ab6de582cec39bcc/output/AndroidManifest.xml:21:5-23:58
+MERGED from [com.android.support.constraint:constraint-layout:1.0.2] /home/silence12/.android/build-cache/bbe2b4252b15f4e86eaa57e4c33ba653585c9305/output/AndroidManifest.xml:5:5-7:41
+	tools:overrideLibrary
+		ADDED from [com.android.support:appcompat-v7:26.0.0-alpha1] /home/silence12/.android/build-cache/64bf4df60048de68351169fb3af85f676fadd254/output/AndroidManifest.xml:23:9-75
+	android:targetSdkVersion
+		INJECTED from /home/silence12/Innobins/InnoTrack/MapBike/app/src/main/AndroidManifest.xml
+		INJECTED from /home/silence12/Innobins/InnoTrack/MapBike/app/src/main/AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from /home/silence12/Innobins/InnoTrack/MapBike/app/src/main/AndroidManifest.xml
+		INJECTED from /home/silence12/Innobins/InnoTrack/MapBike/app/src/main/AndroidManifest.xml
+meta-data#android.support.VERSION
+ADDED from [com.android.support:appcompat-v7:26.0.0-alpha1] /home/silence12/.android/build-cache/64bf4df60048de68351169fb3af85f676fadd254/output/AndroidManifest.xml:25:5-27:41
+MERGED from [com.android.support:support-v4:26.0.0-alpha1] /home/silence12/.android/build-cache/e2105182d140cbce26173a6084b67705fbf86bed/output/AndroidManifest.xml:25:5-27:41
+MERGED from [com.android.support:support-media-compat:26.0.0-alpha1] /home/silence12/.android/build-cache/bfe231fdefcf80405f9dd92675326bbecd4171af/output/AndroidManifest.xml:25:5-27:41
+MERGED from [com.android.support:support-fragment:26.0.0-alpha1] /home/silence12/.android/build-cache/bfa63ab71ebc61bd7dbe5255ff6d9cdf714e3863/output/AndroidManifest.xml:25:5-27:41
+MERGED from [com.android.support:support-core-ui:26.0.0-alpha1] /home/silence12/.android/build-cache/a000374fbd2835f5780e4e293d3d5ad6bc470855/output/AndroidManifest.xml:25:5-27:41
+MERGED from [com.android.support:support-core-utils:26.0.0-alpha1] /home/silence12/.android/build-cache/b16bf00bdcff3bf1610f35b9a9c33dd2941af05b/output/AndroidManifest.xml:25:5-27:41
+MERGED from [com.android.support:animated-vector-drawable:26.0.0-alpha1] /home/silence12/.android/build-cache/bc2a9d3381c2094e310d58737227904fcfa14371/output/AndroidManifest.xml:22:5-24:41
+MERGED from [com.android.support:support-vector-drawable:26.0.0-alpha1] /home/silence12/.android/build-cache/41ead5936be75eb26f7d54923b3286d6aa87e0f1/output/AndroidManifest.xml:22:5-24:41
+MERGED from [com.android.support:support-compat:26.0.0-alpha1] /home/silence12/.android/build-cache/0594da87db4de5f288a87339ab6de582cec39bcc/output/AndroidManifest.xml:25:5-27:41
+	android:value
+		ADDED from [com.android.support:appcompat-v7:26.0.0-alpha1] /home/silence12/.android/build-cache/64bf4df60048de68351169fb3af85f676fadd254/output/AndroidManifest.xml:27:9-38
+	android:name
+		ADDED from [com.android.support:appcompat-v7:26.0.0-alpha1] /home/silence12/.android/build-cache/64bf4df60048de68351169fb3af85f676fadd254/output/AndroidManifest.xml:26:9-47

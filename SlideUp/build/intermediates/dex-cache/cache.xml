@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        is-multidex="true"
+        jar="/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/incremental-runtime-classes/debug/instant-run.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="26.0.2"
+        sha1="3be78ebc2706b2e1fe2f12d5726887a92d6c183b">
+        <dex dex="/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/transforms/dex/debug/folders/1000/10000/instant-run_3ae4aaa41be80312c3e11d86a1aba45e2eb7527b/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/home/silence12/.android/build-cache/64bf4df60048de68351169fb3af85f676fadd254/output/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="26.0.2"
+        sha1="47471eb19df288158b00b8d9cfa41bce7373f5cc">
+        <dex dex="/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_77e59cedc7a428e95418e30c8193928a9ce77f0f/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/home/silence12/.android/build-cache/bfe231fdefcf80405f9dd92675326bbecd4171af/output/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="26.0.2"
+        sha1="9935891f23923f39d002087085d9696568a9f657">
+        <dex dex="/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_d9713a961580d3cddfd2c061643c5c77fcc800dc/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/incremental-classes/debug/instant-run-bootstrap.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="26.0.2"
+        sha1="ff0f885373c2a31edd49901a4596df1f925762a9">
+        <dex dex="/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/transforms/dex/debug/folders/1000/10000/instant-run-bootstrap_e8f8b28650a2c1654893417c82db97d0811667c0/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/home/silence12/.android/build-cache/0594da87db4de5f288a87339ab6de582cec39bcc/output/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="26.0.2"
+        sha1="8df0e365e40beb151bc42dee20817721a6cab7b0">
+        <dex dex="/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_df2927224d1b49037af242e4d2cb601e10873915/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/home/silence12/.android/build-cache/41ead5936be75eb26f7d54923b3286d6aa87e0f1/output/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="26.0.2"
+        sha1="952944218ecedea1554a513dec0c14d570642843">
+        <dex dex="/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_7545b96cedc80db94a98ce4ffe2e0108eea04a39/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/home/silence12/Android/Sdk/extras/android/m2repository/com/android/support/support-annotations/26.0.0-alpha1/support-annotations-26.0.0-alpha1.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="26.0.2"
+        sha1="023ee503b631f69511e335a061ea008f8da60f40">
+        <dex dex="/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/transforms/dex/debug/folders/1000/10/support-annotations-26.0.0-alpha1_51f3d8b8bb964853f13ada11f9807ef61c9d6744/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/home/silence12/.android/build-cache/e2105182d140cbce26173a6084b67705fbf86bed/output/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="26.0.2"
+        sha1="d7c42c80f6509b9ea4db28ca7859ffae08ec5741">
+        <dex dex="/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_c4cee2b29a332b51ba69b2846c0e0441f69804d3/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/home/silence12/.android/build-cache/b16bf00bdcff3bf1610f35b9a9c33dd2941af05b/output/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="26.0.2"
+        sha1="2e92aa0163544a804a0b34f169ca61801770839a">
+        <dex dex="/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_daa9edc62dc5367a8c8db4aa3e8f6a6aaa2b6859/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/home/silence12/.android/build-cache/a000374fbd2835f5780e4e293d3d5ad6bc470855/output/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="26.0.2"
+        sha1="fcd01fd11233459f546c437ec927e9b61bf7caf1">
+        <dex dex="/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_4e9150958e895aa8e0c8ee7e8e5128619ee2db0e/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/home/silence12/.android/build-cache/bfa63ab71ebc61bd7dbe5255ff6d9cdf714e3863/output/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="26.0.2"
+        sha1="18d31838aa4fcc768a8a0516e22cc13b94655d89">
+        <dex dex="/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_ff8b9b8252e75a3ed0c9d0b547fa0b107698cae1/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/home/silence12/.android/build-cache/bc2a9d3381c2094e310d58737227904fcfa14371/output/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="26.0.2"
+        sha1="88246166d5afb106f532f6e6deae683c66b42c89">
+        <dex dex="/home/silence12/Innobins/InnoTrack/SlideUp/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_a5abe30426d837a1e13c062413862764f85afdf0/classes.dex" />
+    </item>
+
+</items>
