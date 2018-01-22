@@ -36,7 +36,6 @@ import com.android.dao.PaymentMethodDAO;
 import com.android.dao.StoredPaymentsDAO;
 import com.android.database.DrawInfoHandler;
 import com.android.database.OrdersHandler;
-import com.android.database.PayMethodsHandler;
 import com.android.database.PaymentsHandler;
 import com.android.database.TaxesHandler;
 import com.android.database.VoidTransactionsHandler;

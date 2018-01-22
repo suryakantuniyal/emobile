@@ -14,7 +14,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
@@ -54,17 +54,27 @@ import main.EMSDeviceManager;
 
 public class EMSIngenicoEVO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate, TransactionCallbacks {
 
-    private EMSDeviceManager edm;
     protected static Device device;
+    String msg = "Failed to connect";
+    private EMSDeviceManager edm;
     private Handler handler;
     private EMSCallBack msrCallBack;
-    String msg = "Failed to connect";
     static boolean connected = false;
     private ProgressDialog myProgressDialog;
     private ApiConfiguration apiConfig;
     private boolean deviceFound;
     private EMSDeviceDriver thisInstance;
+    private Runnable doUpdateDidConnect = new Runnable() {
+        public void run() {
+            try {
+                if (msrCallBack != null)
+                    msrCallBack.readerConnectedSuccessfully(true);
 
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
 
     @Override
     public void connect(Context activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
@@ -103,31 +113,6 @@ public class EMSIngenicoEVO extends EMSDeviceDriver implements EMSDeviceManagerP
         setApiConfig();
         new EVOConnectAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
         return true;
-    }
-
-    private class EVOConnectAsync extends AsyncTask<Boolean, Void, SignOnResponse> {
-
-        private boolean showMsg;
-
-        @Override
-        protected SignOnResponse doInBackground(Boolean... params) {
-            showMsg = params[0];
-            deviceFound = true;
-            EvoSnapApi.init(activity, apiConfig);
-            SignOnRequest request = new SignOnRequest("enabler1", "Android!2$");
-            return EvoSnapApi.signOn(request);
-        }
-
-        @Override
-        protected void onPostExecute(SignOnResponse signOnResponse) {
-            dismissDialog();
-            connected = signOnResponse.isSuccessful() && deviceFound;
-            if (connected) {
-                edm.driverDidConnectToDevice(thisInstance, showMsg);
-            } else {
-                edm.driverDidNotConnectToDevice(thisInstance, msg, showMsg);
-            }
-        }
     }
 
     @Override
@@ -231,19 +216,6 @@ public class EMSIngenicoEVO extends EMSDeviceDriver implements EMSDeviceManagerP
         edm.setCurrentDevice(null);
     }
 
-
-    private Runnable doUpdateDidConnect = new Runnable() {
-        public void run() {
-            try {
-                if (msrCallBack != null)
-                    msrCallBack.readerConnectedSuccessfully(true);
-
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-    };
-
     @Override
     public void loadCardReader(EMSCallBack callBack, boolean isDebitCard) {
         if (handler == null)
@@ -290,18 +262,18 @@ public class EMSIngenicoEVO extends EMSDeviceDriver implements EMSDeviceManagerP
 
     }
 
+    @Override
+    public void printReceiptPreview(SplittedOrder splitedOrder) {
+
+    }
+
 //    @Override
 //    public void printReceiptPreview(View view) {
 //
 //    }
 
     @Override
-    public void printReceiptPreview(SplitedOrder splitedOrder) {
-
-    }
-
-    @Override
-    public void salePayment(Payment payment) {
+    public void salePayment(Payment payment, CreditCardInfo creditCardInfo) {
         TransactionData transactionData = new TransactionData();
         transactionData.setCustomerPresence(CustomerPresence.PRESENT);
         transactionData.setOrderNumber("");
@@ -321,39 +293,12 @@ public class EMSIngenicoEVO extends EMSDeviceDriver implements EMSDeviceManagerP
     }
 
     @Override
-    public void saleReversal(Payment payment, String originalTransactionId) {
+    public void saleReversal(Payment payment, String originalTransactionId, CreditCardInfo creditCardInfo) {
         new EVOCancelTransaction().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, payment);
     }
 
-    private class EVOCancelTransaction extends AsyncTask<Payment, Void, BankCardTransactionResponse> {
-
-        @Override
-        protected void onPreExecute() {
-//            showDialog(R.string.voiding_payments);
-        }
-
-        @Override
-        protected BankCardTransactionResponse doInBackground(Payment... params) {
-            BankCardCapture bankCardCapture = new BankCardCapture();
-            bankCardCapture.setTransactionId(params[0].getPay_transid());
-            bankCardCapture.setAmount(Global.getBigDecimalNum(params[0].getPay_amount()));
-            bankCardCapture.setType("Undo");
-            CancelTransactionRequest cancelRequest = new CancelTransactionRequest();
-            cancelRequest.setDifferenceData(bankCardCapture);
-            BankCardTransactionResponse response = EvoSnapApi.cancelTransaction(cancelRequest);
-            return response;
-        }
-
-        @Override
-        protected void onPostExecute(BankCardTransactionResponse bankCardTransactionResponse) {
-            msrCallBack.cardWasReadSuccessfully(bankCardTransactionResponse.getStatus() == TransactionStatus.SUCCESSFUL,
-                    new CreditCardInfo());
-        }
-    }
-
-
     @Override
-    public void refund(Payment payment) {
+    public void refund(Payment payment, CreditCardInfo creditCardInfo) {
         TransactionData transactionData = new TransactionData();
         transactionData.setCustomerPresence(CustomerPresence.PRESENT);
         transactionData.setOrderNumber(payment.getPay_id());
@@ -373,10 +318,9 @@ public class EMSIngenicoEVO extends EMSDeviceDriver implements EMSDeviceManagerP
     }
 
     @Override
-    public void refundReversal(Payment payment, String originalTransactionId) {
+    public void refundReversal(Payment payment, String originalTransactionId, CreditCardInfo creditCardInfo) {
 
     }
-
 
     private void showDialog(int messageRsId) {
         if (myProgressDialog != null && myProgressDialog.isShowing()) {
@@ -430,7 +374,7 @@ public class EMSIngenicoEVO extends EMSDeviceDriver implements EMSDeviceManagerP
         connected = true;
         if (myProgressDialog != null && myProgressDialog.isShowing()) {
             myProgressDialog.dismiss();
-            this.edm.driverDidConnectToDevice(this, true);
+            this.edm.driverDidConnectToDevice(this, true, activity);
 
         }
     }
@@ -440,7 +384,7 @@ public class EMSIngenicoEVO extends EMSDeviceDriver implements EMSDeviceManagerP
         connected = false;
         if (myProgressDialog != null && myProgressDialog.isShowing()) {
             myProgressDialog.dismiss();
-            this.edm.driverDidNotConnectToDevice(this, msg, true);
+            this.edm.driverDidNotConnectToDevice(this, msg, true, activity);
         }
     }
 
@@ -538,5 +482,56 @@ public class EMSIngenicoEVO extends EMSDeviceDriver implements EMSDeviceManagerP
         Looper.prepare();
         Toast.makeText(activity, "onRequestOverrideConfirmation", Toast.LENGTH_LONG).show();
         Looper.loop();
+    }
+
+    private class EVOConnectAsync extends AsyncTask<Boolean, Void, SignOnResponse> {
+
+        private boolean showMsg;
+
+        @Override
+        protected SignOnResponse doInBackground(Boolean... params) {
+            showMsg = params[0];
+            deviceFound = true;
+            EvoSnapApi.init(activity, apiConfig);
+            SignOnRequest request = new SignOnRequest("enabler1", "Android!2$");
+            return EvoSnapApi.signOn(request);
+        }
+
+        @Override
+        protected void onPostExecute(SignOnResponse signOnResponse) {
+            dismissDialog();
+            connected = signOnResponse.isSuccessful() && deviceFound;
+            if (connected) {
+                edm.driverDidConnectToDevice(thisInstance, showMsg, activity);
+            } else {
+                edm.driverDidNotConnectToDevice(thisInstance, msg, showMsg, activity);
+            }
+        }
+    }
+
+    private class EVOCancelTransaction extends AsyncTask<Payment, Void, BankCardTransactionResponse> {
+
+        @Override
+        protected void onPreExecute() {
+//            showDialog(R.string.voiding_payments);
+        }
+
+        @Override
+        protected BankCardTransactionResponse doInBackground(Payment... params) {
+            BankCardCapture bankCardCapture = new BankCardCapture();
+            bankCardCapture.setTransactionId(params[0].getPay_transid());
+            bankCardCapture.setAmount(Global.getBigDecimalNum(params[0].getPay_amount()));
+            bankCardCapture.setType("Undo");
+            CancelTransactionRequest cancelRequest = new CancelTransactionRequest();
+            cancelRequest.setDifferenceData(bankCardCapture);
+            BankCardTransactionResponse response = EvoSnapApi.cancelTransaction(cancelRequest);
+            return response;
+        }
+
+        @Override
+        protected void onPostExecute(BankCardTransactionResponse bankCardTransactionResponse) {
+            msrCallBack.cardWasReadSuccessfully(bankCardTransactionResponse.getStatus() == TransactionStatus.SUCCESSFUL,
+                    new CreditCardInfo());
+        }
     }
 }

@@ -27,6 +27,7 @@ import com.android.dao.ShiftDAO;
 import com.android.dao.ShiftExpensesDAO;
 import com.android.dao.StoredPaymentsDAO;
 import com.android.dao.TermsNConditionsDAO;
+import com.android.database.CustomersHandler;
 import com.android.database.InvProdHandler;
 import com.android.database.InvoicesHandler;
 import com.android.database.MemoTextHandler;
@@ -43,7 +44,7 @@ import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.PaymentDetails;
-import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
@@ -55,11 +56,13 @@ import com.android.emobilepos.models.realms.ShiftExpense;
 import com.android.emobilepos.models.realms.TermsNConditions;
 import com.android.emobilepos.payment.ProcessGenius_FA;
 import com.android.support.ConsignmentTransaction;
+import com.android.support.Customer;
 import com.android.support.DateUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.TaxesCalculator;
 import com.crashlytics.android.Crashlytics;
+import com.elo.device.peripherals.Printer;
 import com.miurasystems.miuralibrary.api.executor.MiuraManager;
 import com.miurasystems.miuralibrary.api.listener.MiuraDefaultListener;
 import com.mpowa.android.sdk.powapos.PowaPOS;
@@ -134,13 +137,13 @@ public class EMSDeviceDriver {
     MePOS mePOS;
     POSSDK pos_sdk = null;
     PrinterAPI eloPrinterApi;
+    Printer eloPrinterRefresh;
     POSPrinter bixolonPrinter;
     MePOSReceipt mePOSReceipt;
     InputStream inputStream;
     OutputStream outputStream;
-    private double saveAmount;
     Typeface typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
-
+    private double saveAmount;
 
     private static byte[] convertFromListbyteArrayTobyteArray(List<byte[]> ByteArray) {
         int dataLength = 0;
@@ -280,6 +283,7 @@ public class EMSDeviceDriver {
     }
 
     protected boolean SendCmd(String cmd) {
+        Log.d("BixolonCMD", cmd);
         if (printerTFHKA instanceof TfhkaAndroid) {
             return ((TfhkaAndroid) printerTFHKA).SendCmd(cmd);
         } else {
@@ -299,7 +303,10 @@ public class EMSDeviceDriver {
                 SendCmd(String.format("80*%s", line));
             }
         } else if (this instanceof EMSELO) {
-            eloPrinterApi.print(str);
+            if (eloPrinterRefresh != null) {
+                eloPrinterRefresh.print(str);
+            } else
+                eloPrinterApi.print(str);
         } else if (this instanceof EMSMiura) {
             String[] split = str.split(("\n"));
             for (String line : split) {
@@ -311,7 +318,7 @@ public class EMSDeviceDriver {
 
                     @Override
                     public void onError() {
-                        Toast.makeText(activity, "Miura printing error.", Toast.LENGTH_LONG);
+                        Toast.makeText(activity, "Miura printing error.", Toast.LENGTH_LONG).show();
                     }
                 });
                 try {
@@ -386,7 +393,11 @@ public class EMSDeviceDriver {
                 SendCmd(String.format("80*%s", line));
             }
         } else if (this instanceof EMSELO) {
-            eloPrinterApi.print(new String(byteArray));
+            if (eloPrinterRefresh != null) {
+                eloPrinterRefresh.print(new String(byteArray));
+            } else {
+                eloPrinterApi.print(new String(byteArray));
+            }
         } else if (this instanceof EMSMiura) {
             print(new String(byteArray));
         } else if (this instanceof EMSmePOS) {
@@ -543,36 +554,29 @@ public class EMSDeviceDriver {
             byte[] commandToSendToPrinter = convertFromListbyteArrayTobyteArray(commands);
             port.writePort(commandToSendToPrinter, 0, commandToSendToPrinter.length);
         } else {
-            Bitmap bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(str, 20
-                    , PAPER_WIDTH, typeface);
-            ICommandBuilder builder = StarIoExt.createCommandBuilder(emulation);
-            builder.beginDocument();
-            builder.appendBitmap(bitmapFromText, false);
-
-//            Charset encoding = Charset.forName("UTF-8");
-//            builder.appendCodePage(ICommandBuilder.CodePageType.UTF8);
-//            builder.appendInternational(ICommandBuilder.InternationalType.USA);
-//            builder.appendCharacterSpace(0);
-//            builder.appendAlignment(ICommandBuilder.AlignmentPosition.Left);
-//            builder.append(str.getBytes(encoding));
-
-            //            builder.appendCutPaper(ICommandBuilder.CutPaperAction.PartialCutWithFeed);
-            builder.endDocument();
-            byte[] cmds = builder.getCommands();
-            port.writePort(cmds, 0, cmds.length);
-//            ArrayList<byte[]> commands = new ArrayList<>();
-//            commands.add(new byte[]{0x1b, 0x40}); // Initialization
-//            byte[] characterheightExpansion = new byte[]{0x1b, 0x68, 0x00};
-//            characterheightExpansion[2] = 48;
-//            commands.add(characterheightExpansion);
-//            byte[] characterwidthExpansion = new byte[]{0x1b, 0x57, 0x00};
-//            characterwidthExpansion[2] = 48;
-//            commands.add(characterwidthExpansion);
-////            commands.add(str.getBytes());
-//            commands.add(new byte[]{0x0a});
-//            byte[] commandToSendToPrinter = convertFromListbyteArrayTobyteArray(commands);
-//            port.writePort(commandToSendToPrinter, 0, commandToSendToPrinter.length);
-//            port.writePort(str.getBytes(FORMAT), 0, str.length());
+            if (myPref.isRasterModePrint()) {
+                Bitmap bitmapFromText = EMSBluetoothStarPrinter.createBitmapFromText(str, 20
+                        , PAPER_WIDTH, typeface);
+                ICommandBuilder builder = StarIoExt.createCommandBuilder(emulation);
+                builder.beginDocument();
+                builder.appendBitmap(bitmapFromText, false);
+                builder.endDocument();
+                byte[] cmds = builder.getCommands();
+                port.writePort(cmds, 0, cmds.length);
+            } else {
+                ArrayList<byte[]> commands = new ArrayList<>();
+                commands.add(new byte[]{0x1b, 0x40}); // Initialization
+                byte[] characterheightExpansion = new byte[]{0x1b, 0x68, 0x00};
+                characterheightExpansion[2] = 48;
+                commands.add(characterheightExpansion);
+                byte[] characterwidthExpansion = new byte[]{0x1b, 0x57, 0x00};
+                characterwidthExpansion[2] = 48;
+                commands.add(characterwidthExpansion);
+                commands.add(new byte[]{0x0a});
+                byte[] commandToSendToPrinter = convertFromListbyteArrayTobyteArray(commands);
+                port.writePort(commandToSendToPrinter, 0, commandToSendToPrinter.length);
+                port.writePort(str.getBytes(FORMAT), 0, str.length());
+            }
         }
     }
 
@@ -592,7 +596,10 @@ public class EMSDeviceDriver {
                 }
             }
         } else if (this instanceof EMSELO) {
-            eloPrinterApi.print(str);
+            if (eloPrinterRefresh != null) {
+                eloPrinterRefresh.print(str);
+            } else
+                eloPrinterApi.print(str);
         } else if (this instanceof EMSMiura) {
             print(str);
         } else if (this instanceof EMSmePOS) {
@@ -680,7 +687,7 @@ public class EMSDeviceDriver {
         cutPaper();
     }
 
-    public void printReceiptPreview(SplitedOrder splitedOrder, int lineWidth) throws JAException, StarIOPortException {
+    public void printReceiptPreview(SplittedOrder splitedOrder, int lineWidth) throws JAException, StarIOPortException {
         AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee(false);
         startReceipt();
         setPaperWidth(lineWidth);
@@ -775,12 +782,18 @@ public class EMSDeviceDriver {
             }
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_employee),
                     employee.getEmpName() + "(" + employee.getEmpId() + ")", lineWidth, 0));
-
-            String custName = anOrder.cust_name;
-            if (custName != null && !custName.isEmpty())
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer), custName,
-                        lineWidth, 0));
-
+            String custName = null;
+            if (myPref.isCustSelected()) {
+                CustomersHandler handler = new CustomersHandler(activity);
+                Customer customer = handler.getCustomer(myPref.getCustID());
+                if (customer != null) {
+                    custName = String.format("%s %s", customer.getCust_firstName(), customer.getCust_lastName());
+                }
+                if (custName != null && !custName.isEmpty()) {
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer), custName,
+                            lineWidth, 0));
+                }
+            }
             custName = anOrder.cust_id;
             if (printPref.contains(MyPreferences.print_customer_id) && custName != null && !custName.isEmpty())
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer_id),
@@ -1313,11 +1326,13 @@ public class EMSDeviceDriver {
                 pos_sdk.imageStandardModeRasterPrint(myBitmap, PrinterWidth);
                 pos_sdk.textStandardModeAlignment(ALIGN_LEFT);
             } else if (this instanceof EMSELO) {
-                Matrix matrix = new Matrix();
-                matrix.postRotate(90);
-                matrix.preScale(1.0f, -1.0f);
-                Bitmap rotatedBmp = Bitmap.createBitmap(myBitmap, 0, 0, myBitmap.getWidth(), myBitmap.getHeight(), matrix, true);
-                eloPrinterApi.print_image(activity, rotatedBmp);
+                if (eloPrinterRefresh == null) {
+                    Matrix matrix = new Matrix();
+                    matrix.postRotate(90);
+                    matrix.preScale(1.0f, -1.0f);
+                    Bitmap rotatedBmp = Bitmap.createBitmap(myBitmap, 0, 0, myBitmap.getWidth(), myBitmap.getHeight(), matrix, true);
+                    eloPrinterApi.print_image(activity, rotatedBmp);
+                }
             } else if (this instanceof EMSMiura) {
 //                try {
 //                    InputStream inputStream = activity.getAssets().open("image.bmp");
@@ -1468,12 +1483,15 @@ public class EMSDeviceDriver {
                 pos_sdk.imageStandardModeRasterPrint(bitmap, PrinterWidth);
                 pos_sdk.textStandardModeAlignment(ALIGN_LEFT);
             } else if (this instanceof EMSELO) {
-                Matrix matrix = new Matrix();
-                matrix.postRotate(90);
-                matrix.preScale(1.0f, -1.0f);
-                Bitmap rotatedBmp = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-                eloPrinterApi.print_image(activity, rotatedBmp);
+                if (eloPrinterRefresh == null) {
+                    Matrix matrix = new Matrix();
+                    matrix.postRotate(90);
+                    matrix.preScale(1.0f, -1.0f);
+                    Bitmap rotatedBmp = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+                    eloPrinterApi.print_image(activity, rotatedBmp);
+                }
                 print("\n\n\n\n");
+
             } else if (this instanceof EMSBixolon) {
                 ByteBuffer buffer = ByteBuffer.allocate(4);
                 buffer.put((byte) POSPrinterConst.PTR_S_RECEIPT);
@@ -2034,7 +2052,9 @@ public class EMSDeviceDriver {
             printEnablerWebSite(lineWidth);
             cutPaper();
         } catch (StarIOPortException e) {
+            Crashlytics.logException(e);
         } catch (JAException e) {
+            Crashlytics.logException(e);
             e.printStackTrace();
         }
     }
@@ -2421,7 +2441,7 @@ public class EMSDeviceDriver {
             for (OrderProduct prod : listProd) {
                 String calc;
                 if (new BigDecimal(prod.getOrdprod_qty()).compareTo(new BigDecimal(0)) != 0) {
-                    calc = prod.getItemTotal();//Global.formatDoubleStrToCurrency(String.valueOf(new BigDecimal(prod.getItemTotal())
+                    calc = Global.getCurrencyFormat(prod.getItemTotal());//Global.formatDoubleStrToCurrency(String.valueOf(new BigDecimal(prod.getItemTotal())
 //                            .divide(new BigDecimal(prod.getOrdprod_qty()), 2, RoundingMode.HALF_UP)));
                 } else {
                     calc = Global.formatDoubleToCurrency(0);

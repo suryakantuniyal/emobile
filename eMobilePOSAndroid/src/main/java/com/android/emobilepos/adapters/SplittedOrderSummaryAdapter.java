@@ -10,8 +10,8 @@ import android.widget.Filterable;
 import android.widget.TextView;
 
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.orders.OrderProduct;
-import com.android.emobilepos.models.SplitedOrder;
 import com.android.support.Global;
 
 import java.util.HashSet;
@@ -19,10 +19,10 @@ import java.util.List;
 
 public class SplittedOrderSummaryAdapter extends BaseAdapter implements Filterable {
     private LayoutInflater mInflater;
-    private List<SplitedOrder> splitedOrders;
+    private List<SplittedOrder> splitedOrders;
     private int selectedIndex = 0;
 
-    public SplittedOrderSummaryAdapter(Activity activity, List<SplitedOrder> splitedOrders) {
+    public SplittedOrderSummaryAdapter(Activity activity, List<SplittedOrder> splitedOrders) {
         mInflater = LayoutInflater.from(activity);
         this.splitedOrders = splitedOrders;
     }
@@ -44,7 +44,7 @@ public class SplittedOrderSummaryAdapter extends BaseAdapter implements Filterab
             holder = (ViewHolder) convertView.getTag();
         }
 
-        SplitedOrder order = splitedOrders.get(position);
+        SplittedOrder order = splitedOrders.get(position);
         holder.tableNumber.setText(order.getTableNumber());
         HashSet<String> seats = new HashSet<>();
         HashSet<String> items = new HashSet<>();
@@ -102,13 +102,13 @@ public class SplittedOrderSummaryAdapter extends BaseAdapter implements Filterab
         return splitedOrders.get(position);
     }
 
-    public SplitedOrder[] getItems() {
-        SplitedOrder[] arr = new SplitedOrder[0];
+    public SplittedOrder[] getItems() {
+        SplittedOrder[] arr = new SplittedOrder[0];
         arr = splitedOrders.toArray(arr);
         return arr;
     }
 
-    public void removeOrder(SplitedOrder order) {
+    public void removeOrder(SplittedOrder order) {
         this.splitedOrders.remove(order);
         notifyDataSetChanged();
     }

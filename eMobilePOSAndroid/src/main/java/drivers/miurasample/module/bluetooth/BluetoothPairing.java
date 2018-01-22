@@ -102,7 +102,7 @@ public class BluetoothPairing {
         SharedPreferences prefs = context.getSharedPreferences("DevicePreferences", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(deviceType.getDeviceTypeName(), address);
-        editor.commit();
+        editor.apply();
     }
 
     public static String getDefaultDeviceAddress(Context context, BluetoothDeviceType deviceType) {

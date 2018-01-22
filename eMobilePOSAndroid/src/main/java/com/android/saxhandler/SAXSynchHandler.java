@@ -201,14 +201,14 @@ public class SAXSynchHandler extends DefaultHandler {
 
     private void switchCase(boolean isInsert) {
         switch (this.synchType) {
-            case Global.S_CUSTOMERS:
-                if (isInsert)
-                    custHandler.insert(dataList, dictionaryListMap);
-                else {
-                    custHandler = new CustomersHandler(activity);
-                    custHandler.emptyTable();
-                }
-                break;
+//            case Global.S_CUSTOMERS:
+//                if (isInsert)
+//                    custHandler.insert(dataList, dictionaryListMap);
+//                else {
+//                    custHandler = new CustomersHandler(activity);
+//                    custHandler.emptyTable();
+//                }
+//                break;
             case Global.S_ADDRESS:
                 if (isInsert)
                     addrHandler.insert(dataList, dictionaryListMap);

@@ -54,12 +54,13 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setUserVisibleHint(false);
+        preferences = new MyPreferences(getActivity());
     }
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser) {
+        if (isVisibleToUser && preferences != null) {
             if (preferences.isBixolonRD()) {
                 new LoadBixolonInfoTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
@@ -147,8 +148,9 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
 
             PaymentsHandler paymentHandler = new PaymentsHandler(getActivity());
             int unsyncPayments = (int) paymentHandler.getNumUnsyncPayments();
+            int unsyncSignatures = (int) paymentHandler.getNumUnsyncPaymentSignatures();
             syncPaymentsQty.setText(String.valueOf(unsyncPayments));
-
+            syncSignaturesQty.setText(String.valueOf(unsyncSignatures));
             OrdersHandler ordersHandler = new OrdersHandler(getActivity());
             int unsycOrders = (int) ordersHandler.getNumUnsyncOrders();
             sync_salesQty.setText(String.valueOf(unsycOrders));
@@ -172,8 +174,6 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
             TransferLocations_DB transferDB = new TransferLocations_DB(getActivity());
             int unsyncTransfer = (int) transferDB.getNumUnsyncTransfers();
             syncTransfersQty.setText(String.valueOf(unsyncTransfer));
-
-            syncSignaturesQty.setText("0");
             synchFeedText.setText(getWifiConnectivityName());
             synchSendDate.setText(preferences.getLastSendSync());
             synchReceiveDate.setText(preferences.getLastReceiveSync());
@@ -214,7 +214,7 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
                 DBManager dbManager = new DBManager(getActivity(), Global.FROM_SYNCH_ACTIVITY);
                 SynchMethods sm = new SynchMethods(dbManager);
                 if (NetworkUtils.isConnectedToInternet(getActivity())) {
-                    sm.synchSend(Global.FROM_SYNCH_ACTIVITY, true, getActivity());
+                    sm.synchSend(Global.FROM_SYNCH_ACTIVITY, true);
                 }
                 break;
             case R.id.syncReceiveButton:

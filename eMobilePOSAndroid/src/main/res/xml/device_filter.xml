@@ -5,6 +5,8 @@
     <usb-device vendor-id="1155" product-id="22321"/>
     <usb-device vendor-id="11406" product-id="9220" />
     <usb-device vendor-id="2049" product-id="17" />
+    <!-- vendor and product ID for Eikons -->
+    <usb-device vendor-id="5246" product-id="8214" />
     <!--
       Microchip and STM32 boards present in early
       versions of the T25

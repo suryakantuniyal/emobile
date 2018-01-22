@@ -132,6 +132,15 @@ public class Payment extends RealmObject {
     private String payment_xml = "";
     @Ignore
     private EMVContainer emvContainer;
+    private String pay_SignatureIssync;
+
+    public String getPay_SignatureIssync() {
+        return pay_SignatureIssync;
+    }
+
+    public void setPay_SignatureIssync(String pay_SignatureIssync) {
+        this.pay_SignatureIssync = pay_SignatureIssync;
+    }
 
     public enum PaymentType {
         PAYMENT(0), VOID(1), REFUND(2);

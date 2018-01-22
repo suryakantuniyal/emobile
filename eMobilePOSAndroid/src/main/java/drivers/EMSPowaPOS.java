@@ -19,10 +19,10 @@ import com.android.emobilepos.mainmenu.SalesTab_FR;
 import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.SplitedOrder;
-import com.android.emobilepos.models.TimeClock;
+import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
+import com.android.support.CreditCardInfo;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.mpowa.android.powapos.accessory.abstraction.PowaHidKeyDecoder;
@@ -77,13 +77,15 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
                 if (global.getGlobalDlog() != null)
                     global.getGlobalDlog().dismiss();
                 global.promptForMandatoryLogin(activity);
-                SalesTab_FR.startDefault((Activity) activity, myPref.getPreferencesValue(MyPreferences.pref_default_transaction));
+                String value = myPref.getPreferencesValue(MyPreferences.pref_default_transaction);
+                Global.TransactionType type = Global.TransactionType.getByCode(Integer.parseInt(value));
+                SalesTab_FR.startDefault((Activity) activity, type);
             }
 
             if (initializedResult.equals(PowaPOSEnums.InitializedResult.SUCCESSFUL))
-                edm.driverDidConnectToDevice(thisInstance, !isAutoConnect);
+                edm.driverDidConnectToDevice(thisInstance, !isAutoConnect, activity);
             else
-                edm.driverDidNotConnectToDevice(thisInstance, "Failed to connectTFHKA to MCU", !isAutoConnect);
+                edm.driverDidNotConnectToDevice(thisInstance, "Failed to connect to MCU", !isAutoConnect, activity);
         }
 
         @Override
@@ -219,7 +221,7 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
             } catch (Exception e) {
             }
-            this.edm.driverDidConnectToDevice(thisInstance, false);
+            this.edm.driverDidConnectToDevice(thisInstance, false, activity);
         } else {
             global.promptForMandatoryLogin(activity);
         }
@@ -238,7 +240,7 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
     }
 
     @Override
-    public void printReceiptPreview(SplitedOrder splitedOrder) {
+    public void printReceiptPreview(SplittedOrder splitedOrder) {
         try {
             setPaperWidth(LINE_WIDTH);
             super.printReceiptPreview(splitedOrder, LINE_WIDTH);
@@ -250,22 +252,22 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
     }
 
     @Override
-    public void salePayment(Payment payment) {
+    public void salePayment(Payment payment, CreditCardInfo creditCardInfo) {
 
     }
 
     @Override
-    public void saleReversal(Payment payment, String originalTransactionId) {
+    public void saleReversal(Payment payment, String originalTransactionId, CreditCardInfo creditCardInfo) {
 
     }
 
     @Override
-    public void refund(Payment payment) {
+    public void refund(Payment payment, CreditCardInfo creditCardInfo) {
 
     }
 
     @Override
-    public void refundReversal(Payment payment, String originalTransactionId) {
+    public void refundReversal(Payment payment, String originalTransactionId, CreditCardInfo creditCardInfo) {
 
     }
 

@@ -53,6 +53,8 @@ public class MyPreferences {
     public static final String pref_display_also_redeem = "pref_display_also_redeem";
     public static final String pref_display_redeem_all = "pref_display_redeem_all";
     public static final String pref_use_loyal_patron = "pref_use_loyal_patron";
+    public static final String pref_print_raster_mode = "pref_print_raster_mode";
+
     public static final String pref_giftcard_auto_balance_request = "pref_giftcard_auto_balance_request";
     public static final String pref_giftcard_show_balance = "pref_giftcard_show_balance";
     public static final String pref_cash_show_change = "pref_cash_show_change";
@@ -116,8 +118,8 @@ public class MyPreferences {
     public static final String print_terms_conditions = "print_terms_conditions";
     public static final String print_emobilepos_website = "print_emobilepos_website";
     public static final String print_ivuloto_qr = "print_ivuloto_qr";
-    private static final String pref_skip_email_phone = "pref_skip_email_phone";
     private static final String pref_require_customer = "pref_require_customer";
+    private static final String pref_skip_email_phone = "pref_skip_email_phone";
     private static final String pref_prefill_total_amount = "pref_prefill_total_amount";
     private static final String pref_automatic_sync = "pref_automatic_sync";
     private static final String pref_restaurant_mode = "pref_restaurant_mode";
@@ -171,9 +173,9 @@ public class MyPreferences {
     private final String rsa_pub_key = "rsa_pub_key";
     private final String aes_key = "aes_key";
     private final String aes_iv = "aes_iv";
+    public Context context;
     private SharedPreferences.Editor prefEditor;
     private SharedPreferences prefs;
-    public Context context;
     private SharedPreferences sharedPref;
     private String defaultUnitsName;
 
@@ -193,7 +195,7 @@ public class MyPreferences {
     }
 
     public static boolean isTeamSable() {
-        return Build.MODEL.toUpperCase().startsWith("SABRESD");
+        return Build.MODEL.toUpperCase().startsWith("SABRESD") || Build.MODEL.toUpperCase().equalsIgnoreCase("TR");
     }
 
     public String getApplicationPassword() {
@@ -232,26 +234,26 @@ public class MyPreferences {
         prefEditor.commit();
     }
 
-    public String defaultCountryCode(boolean isGet, String val) {
+    public String getDefaultCountryCode() {
         String key = "default_country_code";
-        if (isGet)
-            return prefs.getString(key, "-1");
-        else {
-            prefEditor.putString(key, val);
-            prefEditor.commit();
-        }
-        return "";
+        return prefs.getString(key, "-1");
     }
 
-    public String defaultCountryName(boolean isGet, String val) {
+    public void setDefaultCountryCode(String val) {
+        String key = "default_country_code";
+        prefEditor.putString(key, val);
+        prefEditor.commit();
+    }
+
+    public String getDefaultCountryName() {
         String key = "default_country_name";
-        if (isGet)
-            return prefs.getString(key, "NONE");
-        else {
-            prefEditor.putString(key, val);
-            prefEditor.commit();
-        }
-        return "";
+        return prefs.getString(key, "NONE");
+    }
+
+    public void setDefaultCountryName(String val) {
+        String key = "default_country_name";
+        prefEditor.putString(key, val);
+        prefEditor.commit();
     }
 
 //    public String getZoneID() {
@@ -1431,14 +1433,6 @@ public class MyPreferences {
         prefEditor.commit();
     }
 
-    public boolean isCustomerRequired() {
-        return getPreferences(MyPreferences.pref_require_customer);
-    }
-
-    public boolean isDirectCustomerSelection() {
-        return getPreferences(MyPreferences.pref_direct_customer_selection);
-
-    }
 
     public boolean isSkipEmailPhone() {
         return getPreferences(MyPreferences.pref_skip_email_phone);
@@ -1448,13 +1442,27 @@ public class MyPreferences {
         return getPreferences(MyPreferences.pref_cash_show_change);
     }
 
+    public boolean isCustomerRequired() {
+        return getPreferences(MyPreferences.pref_require_customer);
+    }
+
+    public boolean isDirectCustomerSelection() {
+        return getPreferences(MyPreferences.pref_direct_customer_selection);
+
+    }
+
     public boolean isMultiplePrints() {
         return getPreferences(MyPreferences.pref_enable_multiple_prints);
+    }
+
+    public boolean isRasterModePrint() {
+        return getPreferences(MyPreferences.pref_print_raster_mode);
     }
 
     public boolean isPayWithCardOnFile() {
         return getPreferences(MyPreferences.pref_pay_with_card_on_file);
     }
+
     public enum PrinterPreviewWidth {SMALL, MEDIUM, LARGE}
 
 }

@@ -3,16 +3,12 @@ package drivers.elo.utils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.text.format.Time;
 
 import com.elotouch.paypoint.register.printer.SerialPort;
 
@@ -42,7 +38,7 @@ public class PrinterAPI {
             if (!isPaperAvailable()) {
                 isPrinted = false;
             }
-            ArrayList<Byte> byteList = new ArrayList<Byte>();
+            ArrayList<Byte> byteList = new ArrayList<>();
             for (int i = 0; i <= 10; i++) {
                 byteList.add(Byte.valueOf((byte) 10));
             }
@@ -97,7 +93,7 @@ public class PrinterAPI {
     }
 
     private ArrayList<Byte> toByteArray(String string) {
-        ArrayList<Byte> list = new ArrayList<Byte>();
+        ArrayList<Byte> list = new ArrayList<>();
         if (string != null) {
             for (byte byt : string.getBytes()) {
                 list.add(Byte.valueOf(byt));
@@ -110,7 +106,7 @@ public class PrinterAPI {
     }
 
     private ArrayList<Byte> addBytesToList(byte[] b) {
-        ArrayList<Byte> list = new ArrayList<Byte>();
+        ArrayList<Byte> list = new ArrayList<>();
 
         for (int i = 0; i < b.length; i++) {
             list.add(b[i]);
@@ -122,7 +118,7 @@ public class PrinterAPI {
     }
 
     public ArrayList<Byte> PrintLF(int lines) {
-        ArrayList<Byte> list = new ArrayList<Byte>();
+        ArrayList<Byte> list = new ArrayList<>();
         list.add(Byte.valueOf((byte) 27));//Print & Line Feed
         list.add(Byte.valueOf((byte) 100));
         list.add(Byte.valueOf((byte) 2));
@@ -134,7 +130,7 @@ public class PrinterAPI {
     }
 
     public ArrayList<Byte> Print() {
-        ArrayList<Byte> list = new ArrayList<Byte>();
+        ArrayList<Byte> list = new ArrayList<>();
         list.add(Byte.valueOf((byte) 10));
         list.add(Byte.valueOf((byte) 13));
         return list;
@@ -146,7 +142,7 @@ public class PrinterAPI {
      * @return
      */
     public ArrayList<Byte> AlignLeft() {
-        ArrayList<Byte> list = new ArrayList<Byte>();
+        ArrayList<Byte> list = new ArrayList<>();
         list.add(Byte.valueOf((byte) 27));
         list.add(Byte.valueOf((byte) 97));
         list.add(Byte.valueOf((byte) 0));
@@ -159,7 +155,7 @@ public class PrinterAPI {
      * @return
      */
     public ArrayList<Byte> AlignCenter() {
-        ArrayList<Byte> list = new ArrayList<Byte>();
+        ArrayList<Byte> list = new ArrayList<>();
         list.add(Byte.valueOf((byte) 27));
         list.add(Byte.valueOf((byte) 97));
         list.add(Byte.valueOf((byte) 1));
@@ -172,7 +168,7 @@ public class PrinterAPI {
      * @return
      */
     public ArrayList<Byte> AlignRight() {
-        ArrayList<Byte> list = new ArrayList<Byte>();
+        ArrayList<Byte> list = new ArrayList<>();
         list.add(Byte.valueOf((byte) 27));
         list.add(Byte.valueOf((byte) 97));
         list.add(Byte.valueOf((byte) 2));
@@ -185,7 +181,7 @@ public class PrinterAPI {
      * @return
      */
     public ArrayList<Byte> SetBold() {
-        ArrayList<Byte> list = new ArrayList<Byte>();
+        ArrayList<Byte> list = new ArrayList<>();
         list.add(Byte.valueOf((byte) 27));
         list.add(Byte.valueOf((byte) 69));
         list.add(Byte.valueOf((byte) 1));
@@ -198,7 +194,7 @@ public class PrinterAPI {
      * @return
      */
     public ArrayList<Byte> SetLanguage(int langNo) {
-        ArrayList<Byte> list = new ArrayList<Byte>();
+        ArrayList<Byte> list = new ArrayList<>();
         list.add(Byte.valueOf((byte) 27));
         list.add(Byte.valueOf((byte) 82));
         list.add(Byte.valueOf((byte) langNo));
@@ -212,7 +208,7 @@ public class PrinterAPI {
      * @return
      */
     public ArrayList<Byte> SetNormal() {
-        ArrayList<Byte> list = new ArrayList<Byte>();
+        ArrayList<Byte> list = new ArrayList<>();
         list.add(Byte.valueOf((byte) 27));
         list.add(Byte.valueOf((byte) 69));
         list.add(Byte.valueOf((byte) 0));
@@ -225,14 +221,13 @@ public class PrinterAPI {
      * @return
      */
     public ArrayList<Byte> setBarcode() {
-        ArrayList<Byte> list = new ArrayList<Byte>();
 
-        return list;
+        return new ArrayList<Byte>();
     }
 
     public void print(String str) {
         try {
-            ArrayList<Byte> printReceipt = new ArrayList<Byte>();
+            ArrayList<Byte> printReceipt = new ArrayList<>();
             printReceipt.addAll(SetLanguage(0));
             printReceipt.addAll(toByteArray(str));
             sendCommand(printReceipt);
@@ -253,7 +248,7 @@ public class PrinterAPI {
 
         String barcode = "A" + Code + "B";
         byte[] codeData = barcode.getBytes();
-        ArrayList<Byte> command = new ArrayList<Byte>();
+        ArrayList<Byte> command = new ArrayList<>();
 
         //Barcode Width
         command.add(Byte.valueOf((byte) 0x1D));
@@ -283,7 +278,7 @@ public class PrinterAPI {
     }
 
     public ArrayList<Byte> LineFeed() {
-        ArrayList<Byte> list = new ArrayList<Byte>();
+        ArrayList<Byte> list = new ArrayList<>();
         list.add(Byte.valueOf((byte) 0x0A));
         list.add(Byte.valueOf((byte) 0x0D));
         return list;
@@ -291,7 +286,7 @@ public class PrinterAPI {
     }
 
     public ArrayList<Byte> addLines(int lines) {
-        ArrayList<Byte> list = new ArrayList<Byte>();
+        ArrayList<Byte> list = new ArrayList<>();
 
         list.add(Byte.valueOf((byte) 27));//Print & Line Feed
         list.add(Byte.valueOf((byte) 100));
@@ -315,10 +310,10 @@ public class PrinterAPI {
         // First 4 bits height & Second 4 bits for width
         Byte val = (byte) (wVal | hVal);
 
-        ArrayList<Byte> list = new ArrayList<Byte>();
-        list.add(Byte.valueOf((byte) 29));
-        list.add(Byte.valueOf((byte) 33));
-        list.add(Byte.valueOf(val));
+        ArrayList<Byte> list = new ArrayList<>();
+        list.add((byte) 29);
+        list.add((byte) 33);
+        list.add(val);
         return list;
     }
 
@@ -327,10 +322,10 @@ public class PrinterAPI {
 	 */
 
     public boolean isPaperAvailable() throws IOException {
-        ArrayList<Byte> byteArray = new ArrayList<Byte>();
-        byteArray.add(Byte.valueOf((byte) 0x10));
-        byteArray.add(Byte.valueOf((byte) 0x04));
-        byteArray.add(Byte.valueOf((byte) 0x04));
+        ArrayList<Byte> byteArray = new ArrayList<>();
+        byteArray.add((byte) 0x10);
+        byteArray.add((byte) 0x04);
+        byteArray.add((byte) 0x04);
         sendCommand(byteArray);
         String result = Integer.toHexString(mInputStream.read());
         return result.contains("12");
@@ -343,7 +338,7 @@ public class PrinterAPI {
             if (!isPaperAvailable()) {
                 isPrinted = false;
             }
-            ArrayList<Byte> printReceipt = new ArrayList<Byte>();
+            ArrayList<Byte> printReceipt = new ArrayList<>();
             printReceipt.addAll(SetLanguage(0));
             printReceipt.addAll(AlignCenter());
             printReceipt.addAll(printImage(context, resId));
@@ -364,7 +359,7 @@ public class PrinterAPI {
             if (!isPaperAvailable()) {
                 isPrinted = false;
             }
-            ArrayList<Byte> printReceipt = new ArrayList<Byte>();
+            ArrayList<Byte> printReceipt = new ArrayList<>();
             printReceipt.addAll(SetLanguage(0));
             printReceipt.addAll(AlignCenter());
             printReceipt.addAll(printImage(context, bmp));
@@ -379,7 +374,7 @@ public class PrinterAPI {
     }
 
     private ArrayList<Byte> printImage(Context context, int resId) {
-        ArrayList<Byte> list = new ArrayList<Byte>();
+        ArrayList<Byte> list = new ArrayList<>();
         // Set the Image Resource Id as argument
         int[][] pixels = getPixelsArray(context, resId);
         // Get Byte Array
@@ -388,7 +383,7 @@ public class PrinterAPI {
     }
 
     private ArrayList<Byte> printImage(Context context, Bitmap bmp) {
-        ArrayList<Byte> list = new ArrayList<Byte>();
+        ArrayList<Byte> list = new ArrayList<>();
         // Set the Image Resource Id as argument
         int[][] pixels = getPixelsArray(context, bmp);
         // Get Byte Array
@@ -424,7 +419,7 @@ public class PrinterAPI {
         final byte[] SET_LINE_SPACE_24 = new byte[]{ESC_CHAR, 0x33, 24};
         final byte[] SET_LINE_SPACE_30 = new byte[]{ESC_CHAR, 0x33, 30};
 
-        ArrayList<Byte> list = new ArrayList<Byte>();
+        ArrayList<Byte> list = new ArrayList<>();
 
         for (byte b : SET_LINE_SPACE_24) {
             list.add(Byte.valueOf(b));

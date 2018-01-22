@@ -374,7 +374,7 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
             }
             if (device != null) {
                 device.loadCardReader(this, false);
-                device.saleReversal(paymentToBeRefunded, paymentToBeRefunded.getPay_transid());
+                device.saleReversal(paymentToBeRefunded, paymentToBeRefunded.getPay_transid(), null);
             }
         } else if (paymethod_name.equals("Card")) {
             EMSPayGate_Default payGate = new EMSPayGate_Default(activity, paymentToBeRefunded);

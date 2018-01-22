@@ -91,15 +91,11 @@ public class MagStripDriver
 		}
 	}
 	public byte[] sendCommand(String command) {
-		CharSequence csCommand = command;
-		byte[] bResponse = mMagStripe.sendCommand(csCommand);
-		return bResponse;
+		return mMagStripe.sendCommand(command);
 	}
 	public byte[] sendCommandWithLength(String lCommand)
 	{
-		CharSequence csCommand = lCommand;
-		byte[] bResponse = mMagStripe.sendCommand(csCommand);
-		return bResponse;
+		return mMagStripe.sendCommand(lCommand);
 	}
 	public void stopDevice()
 	{ 

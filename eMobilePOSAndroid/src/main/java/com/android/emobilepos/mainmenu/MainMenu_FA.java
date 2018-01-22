@@ -2,7 +2,6 @@ package com.android.emobilepos.mainmenu;
 
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
-import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
@@ -56,13 +55,15 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
     public static final String NOTIFICATION_RECEIVED = "NOTIFICATION_RECEIVED";
     public static final String NOTIFICATION_MESSAGE = "NOTIFICATION_MESSAGE";
     public static final String NOTIFICATION_DEVICES_LOADED = "NOTIFICATION_DEVICES_LOADED";
+    public static final String NOTIFICATION_LOGIN_STATECHANGE = "NOTIFICATION_LOGIN_STATECHANGE";
+
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
-    private MyPreferences myPref;
 
     static {
         System.loadLibrary("serial_port");
     }
 
+    private MyPreferences myPref;
     private Global global;
     private boolean hasBeenCreated = false;
     private TextView synchTextView, tvStoreForward;
@@ -247,6 +248,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
             startPollingService();
         }
         registerReceiver(messageReceiver, new IntentFilter(NOTIFICATION_RECEIVED));
+        DeviceUtils.registerFingerPrintReader(this);
         if (global.isApplicationSentToBackground()) {
             Global.loggedIn = false;
         }
@@ -256,19 +258,8 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
                 && (myPref.getPrinterType() != Global.POWA || (myPref.getPrinterType() == Global.POWA
                 && (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)))) {
             Global.dismissDialog(this, global.getGlobalDlog());
-            //            if (global.getGlobalDlog() != null && global.getGlobalDlog().isShowing()) {
-//                global.getGlobalDlog().dismiss();
-//            }
             global.promptForMandatoryLogin(this);
         }
-
-//        if (myPref.isAutoSyncEnable() && hasBeenCreated) {
-//            DBManager dbManager = new DBManager(activity, Global.FROM_SYNCH_ACTIVITY);
-//            SynchMethods sm = new SynchMethods(dbManager);
-//            sm.synchSend(Global.FROM_SYNCH_ACTIVITY, true, activity);
-//            getSynchTextView().setText(getString(R.string.sync_inprogress));
-//            getSynchTextView().setVisibility(View.VISIBLE);
-//        }
 
         if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward))
             tvStoreForward.setVisibility(View.VISIBLE);
@@ -340,6 +331,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
     public void onPause() {
         super.onPause();
         unregisterReceiver(messageReceiver);
+        DeviceUtils.unregisterFingerPrintReader(this);
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         boolean isScreenOn = powerManager.isScreenOn();
         if (!isScreenOn)
@@ -480,7 +472,10 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
             }
 
             if (myTabs.get(0) == tag && hasBeenCreated && SecurityManager.hasPermissions(myContext, SecurityManager.SecurityAction.OPEN_ORDER)) {
-                SalesTab_FR.startDefault(MainMenu_FA.this, myPref.getPreferencesValue(MyPreferences.pref_default_transaction));
+//                SalesTab_FR.startDefault(MainMenu_FA.this, myPref.getPreferencesValue(MyPreferences.pref_default_transaction));
+                String value = myPref.getPreferencesValue(MyPreferences.pref_default_transaction);
+                Global.TransactionType type = Global.TransactionType.getByCode(Integer.parseInt(value));
+                SalesTab_FR.startDefault(MainMenu_FA.this, type);
             }
         }
 

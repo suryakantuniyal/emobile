@@ -59,7 +59,7 @@ public class BixolonDAO {
         BixolonTax bixolonTax;
         try {
             bixolonTax = realm.where(BixolonTax.class)
-                    .equalTo("taxId", prod_taxcode)
+                    .equalTo("taxId", prod_taxId)
 //                    .equalTo("taxCode", prod_taxcode)
                     .findFirst();
             if (bixolonTax != null) {
@@ -111,7 +111,7 @@ public class BixolonDAO {
         } finally {
             realm.close();
         }
-        return -1;
+        return 1;
     }
 
     public static void insertFailedOrder(BixolonTransaction bixolonTransaction) {

@@ -64,9 +64,6 @@ public class NotificationHandler extends NotificationsHandler {
                                     Log.d("NotificationHandler", "synchSalesAssociateDinnindTablesConfiguration");
                                     SynchMethods.synchSalesAssociateDinnindTablesConfiguration(context);
 //                                    updateMainActivity(context, eventAction);
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                    Crashlytics.logException(e);
                                 } catch (SAXException e) {
                                     e.printStackTrace();
                                     Crashlytics.logException(e);

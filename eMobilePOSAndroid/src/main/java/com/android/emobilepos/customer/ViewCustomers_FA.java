@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.hardware.usb.UsbDevice;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v4.widget.CursorAdapter;
@@ -30,15 +31,24 @@ import android.widget.TextView.OnEditorActionListener;
 import com.android.database.CustomersHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.history.HistoryTransactions_FA;
+import com.android.emobilepos.models.realms.BiometricFid;
+import com.android.emobilepos.models.realms.EmobileBiometric;
 import com.android.emobilepos.security.SecurityManager;
+import com.android.support.Customer;
+import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
+import java.util.Collection;
+
+import drivers.digitalpersona.DigitalPersona;
 import interfaces.BCRCallbacks;
+import interfaces.BiometricCallbacks;
+import util.StringUtil;
 import util.json.UIUtils;
 
-public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements OnClickListener, OnItemClickListener, BCRCallbacks {
+public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements BiometricCallbacks, OnClickListener, OnItemClickListener, BCRCallbacks {
     boolean isManualEntry = true;
     private ListView myListView;
     private Context thisContext = this;
@@ -53,17 +63,22 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
     private Dialog dlog;
     private EditText search;
 
+    private boolean isReaderConnected;
+    private DigitalPersona digitalPersona;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.custselec_listview_layout);
+        digitalPersona = new DigitalPersona(getApplicationContext(), this, EmobileBiometric.UserType.CUSTOMER);
 
         activity = this;
         myPref = new MyPreferences(activity);
         global = (Global) getApplication();
         myListView = (ListView) findViewById(R.id.customerSelectionLV);
         search = (EditText) findViewById(R.id.searchCustomer);
-
+        Collection<UsbDevice> usbDevices = DeviceUtils.getUSBDevices(this);
+        isReaderConnected = usbDevices != null && usbDevices.size() > 0;
         handler = new CustomersHandler(this);
         myCursor = handler.getCursorAllCust();
         adap2 = new CustomCursorAdapter(this, myCursor, CursorAdapter.NO_SELECTION);
@@ -84,31 +99,19 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 isManualEntry = false;
-//                if (startTyping == 0) {
-//                    startTyping = SystemClock.currentThreadTimeMillis();
-//                    v.postDelayed(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            if (search.getText().length() > 5) {
-//                                myCursor = handler.getSearchCust(search.getText().toString());
-//                                if (myCursor.getCount() == 1) {
-//                                    selectCustomer(0);
-//                                }
-//                            }
-//                        }
-//                    }, 1000);
-//                }
                 UIUtils.startBCR(v, search, ViewCustomers_FA.this);
                 return false;
             }
         });
         myListView.setOnItemClickListener(this);
         hasBeenCreated = true;
+
     }
 
 
     @Override
     public void onDestroy() {
+        releaseReader();
         super.onDestroy();
     }
 
@@ -167,14 +170,18 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
         };
     }
 
+    private void releaseReader() {
+        if (isReaderConnected) {
+            digitalPersona.releaseReader();
+        }
+    }
+
     private void selectCustomer(int itemIndex) {
-        Intent results = new Intent();
         myCursor.moveToPosition(itemIndex);
+        Intent results = new Intent();
         String name = myCursor.getString(myCursor.getColumnIndex("cust_name"));
-        results.putExtra("customer_name", name);
-//        SalesTaxCodesHandler taxHandler = new SalesTaxCodesHandler(activity);
-//        SalesTaxCodesHandler.TaxableCode taxable = taxHandler.checkIfCustTaxable(myCursor.getString(myCursor.getColumnIndex("cust_taxable")));
-//        myPref.setCustTaxCode(taxable, myCursor.getString(myCursor.getColumnIndex("cust_salestaxcode")));
+        String lastname = myCursor.getString(myCursor.getColumnIndex("cust_lastName"));
+        results.putExtra("customer_name", String.format("%s %s", name, lastname));
         myPref.setCustID(myCursor.getString(myCursor.getColumnIndex("_id")));    //getting cust_id as _id
         myPref.setCustName(name);
         myPref.setCustIDKey(myCursor.getString(myCursor.getColumnIndex("custidkey")));
@@ -185,10 +192,21 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
         finish();
     }
 
+    private void selectCustomer() {
+        Intent results = new Intent();
+        CustomersHandler handler =new CustomersHandler(this);
+        Customer customer = handler.getCustomer(myPref.getCustID());
+        results.putExtra("customer_name", String.format("%s %s", customer.getCust_name()
+                , customer.getCust_lastName()));
+        setResult(1, results);
+        finish();
+    }
 
     @Override
     public void onResume() {
-
+        if (isReaderConnected) {
+            digitalPersona.loadForScan();
+        }
         if (global.isApplicationSentToBackground())
             Global.loggedIn = false;
         global.stopActivityTransitionTimer();
@@ -245,6 +263,7 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == -1) {
+            selectCustomer();
             finish();
         }
     }
@@ -255,8 +274,9 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
             case R.id.addCustButton:
                 boolean hasPermissions = SecurityManager.hasPermissions(this, SecurityManager.SecurityAction.CREATE_CUSTOMERS);
                 if (hasPermissions) {
-                    Intent intent2 = new Intent(thisContext, CreateCustomer_FA.class);
-                    startActivityForResult(intent2, 0);
+                    releaseReader();
+                    Intent intent = new Intent(thisContext, ViewCustomerDetails_FA.class);
+                    startActivityForResult(intent, 0);
                 } else {
                     Global.showPrompt(this, R.string.security_alert, getString(R.string.permission_denied));
                 }
@@ -318,6 +338,38 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
         }
     }
 
+    @Override
+    public void biometricsWasRead(final EmobileBiometric biometric) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                search.setText(biometric.getEntityid());
+                executeBCR();
+            }
+        });
+    }
+
+    @Override
+    public void biometricsReadNotFound() {
+
+    }
+
+    @Override
+    public void biometricsWasEnrolled(BiometricFid biometricFid) {
+
+    }
+
+    @Override
+    public void biometricsDuplicatedEnroll(EmobileBiometric emobileBiometric, BiometricFid biometricFid) {
+
+    }
+
+
+    @Override
+    public void biometricsUnregister(ViewCustomerDetails_FA.Finger finger) {
+
+    }
+
 
     public class CustomCursorAdapter extends CursorAdapter {
         private LayoutInflater inflater;
@@ -333,8 +385,9 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
         public void bindView(View view, Context context, Cursor cursor) {
             final ViewHolder holder = (ViewHolder) view.getTag();
             String temp = cursor.getString(holder.i_cust_name);
+            String lastname = cursor.getString(holder.i_cust_lastName);
             if (temp != null)
-                holder.cust_name.setText(temp);
+                holder.cust_name.setText(String.format("%s %s", temp, StringUtil.nullStringToEmpty(lastname)));
 
             temp = cursor.getString(holder.i_CompanyName);
             if (temp != null)
@@ -360,6 +413,7 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
 
                 @Override
                 public void onClick(View v) {
+                    releaseReader();
                     String _cust_id = (String) v.getTag();
                     Intent intent = new Intent(thisContext, ViewCustomerDetails_FA.class);
                     intent.putExtra("cust_id", _cust_id);
@@ -383,6 +437,9 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
             holder.i_cust_id = cursor.getColumnIndex("_id");
             holder.i_account_number = cursor.getColumnIndex("AccountNumnber");
             holder.i_cust_name = cursor.getColumnIndex("cust_name");
+            holder.i_cust_lastName = cursor.getColumnIndex("cust_lastName");
+
+
             holder.i_CompanyName = cursor.getColumnIndex("CompanyName");
             holder.i_cust_phone = cursor.getColumnIndex("cust_phone");
             holder.i_pricelevel_name = cursor.getColumnIndex("pricelevel_name");
@@ -397,7 +454,7 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
             TextView cust_name, CompanyName, cust_id, cust_phone, pricelevel_name;
             ImageView moreInfoIcon;
 
-            int i_cust_id, i_account_number, i_cust_name, i_CompanyName, i_cust_phone, i_pricelevel_name;
+            int i_cust_id, i_account_number, i_cust_name, i_cust_lastName, i_CompanyName, i_cust_phone, i_pricelevel_name;
         }
 
     }

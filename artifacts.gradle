@@ -16,6 +16,6 @@ android.applicationVariants.all { variant ->
         } else {
             newApkName = "${appName}-${variants[0]}-${variant.versionName}.apk"
         }
-        output.outputFile = new File(output.outputFile.parent, newApkName)
+        output.outputFileName = newApkName
     }
 }

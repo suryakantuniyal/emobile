@@ -128,7 +128,7 @@ public class PollingNotificationService extends Service {
                             if ((intent.getFlags() & PollingServicesFlag.AUTO_SYNC.getCode()) == PollingServicesFlag.AUTO_SYNC.getCode()) {
                                 DBManager dbManager = new DBManager(PollingNotificationService.this, Global.FROM_SYNCH_ACTIVITY);
                                 SynchMethods sm = new SynchMethods(dbManager);
-                                sm.synchSend(Global.FROM_SYNCH_ACTIVITY, true, PollingNotificationService.this);
+                                sm.synchSend(Global.FROM_SYNCH_ACTIVITY, true);
                             }
                         }
                     }, delay, BuildConfig.AUTOSYNC_PERIOD);

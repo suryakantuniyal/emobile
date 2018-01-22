@@ -54,6 +54,10 @@ public class EMSPayGate_Default {
         writer = new StringWriter();
     }
 
+    public void reset(){
+        serializer = Xml.newSerializer();
+        writer = new StringWriter();
+    }
     public enum EAction {
         ChargeCreditCardAction(1010), ChargeTupixAction(1010), ChargeCheckAction(1012), ChargeCashAction(1013),
         ChargeDebitAction(1014), ChargeGeniusAction(1017), ChargeGiftCardAction(1018),

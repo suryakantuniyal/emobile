@@ -83,6 +83,7 @@ import com.honeywell.decodemanager.barcode.DecodeResult;
 import com.honeywell.decodemanager.symbologyconfig.SymbologyConfigCodeUPCA;
 
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
 import java.io.IOException;
@@ -95,9 +96,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import drivers.EMSELO;
 import drivers.EMSIDTechUSB;
 import drivers.EMSMagtekAudioCardReader;
 import drivers.EMSRover;
@@ -126,7 +129,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     public boolean isToGo = true;
     public boolean openFromHold;
     public boolean buildOrderStarted = false;
+    public Global global;
     OrderingAction orderingAction = OrderingAction.NONE;
+    private String giftCardgeneratedURL;
     private TextView headerTitle;
     private LinearLayout headerContainer;
     private int orientation;
@@ -135,7 +140,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     private Receipt_FR leftFragment;
     private OrderLoyalty_FR loyaltyFragment;
     private MyPreferences myPref;
-    public Global global;
     private boolean hasBeenCreated = false;
     private ProductsHandler handler;
     // Honeywell Dolphin black
@@ -395,18 +399,18 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         callBackMSR = this;
 //        setReceiptListHandler();
         handler = new ProductsHandler(this);
-        receiptContainer = (LinearLayout) findViewById(R.id.order_receipt_frag_container);
-        catalogContainer = (LinearLayout) findViewById(R.id.order_catalog_frag_container);
-        invisibleSearchMain = (EditText) findViewById(R.id.invisibleSearchMain);
-        btnCheckout = (Button) findViewById(R.id.btnCheckOut);
+        receiptContainer = findViewById(R.id.order_receipt_frag_container);
+        catalogContainer = findViewById(R.id.order_catalog_frag_container);
+        invisibleSearchMain = findViewById(R.id.invisibleSearchMain);
+        btnCheckout = findViewById(R.id.btnCheckOut);
         btnCheckout.setOnClickListener(this);
         myPref = new MyPreferences(this);
         if (myPref.isCustSelected()) {
             CustomersHandler customersHandler = new CustomersHandler(this);
             Customer customer = customersHandler.getCustomer(myPref.getCustID());
             SalesTaxCodesHandler taxHandler = new SalesTaxCodesHandler(this);
-            SalesTaxCodesHandler.TaxableCode taxable = taxHandler.checkIfCustTaxable(customer.cust_taxable);
-            myPref.setCustTaxCode(taxable, customer.cust_salestaxcode);
+            SalesTaxCodesHandler.TaxableCode taxable = taxHandler.checkIfCustTaxable(customer.getCust_taxable());
+            myPref.setCustTaxCode(taxable, customer.getCust_salestaxcode());
         }
 
         extras = getIntent().getExtras();
@@ -439,7 +443,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             if (!myPref.getIsTablet())
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             orientation = getResources().getConfiguration().orientation;
-            catalogFr = new Catalog_FR();
+            setCatalogFr(new Catalog_FR());
             if (onHoldOrder == null) {
                 leftFragment = new Receipt_FR();
             } else {
@@ -448,7 +452,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.add(R.id.order_receipt_frag_container, leftFragment);
-            ft.add(R.id.order_catalog_frag_container, catalogFr);
+            ft.add(R.id.order_catalog_frag_container, getCatalogFr());
             ft.commit();
 
             msrWasLoaded = false;
@@ -482,9 +486,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     }
 
     private void setupTitle() {
-        headerTitle = (TextView) findViewById(R.id.headerTitle);
+        headerTitle = findViewById(R.id.headerTitle);
 
-        headerContainer = (LinearLayout) findViewById(R.id.headerTitleContainer);
+        headerContainer = findViewById(R.id.headerTitleContainer);
         if (myPref.isCustSelected()) {
 
             switch (mTransType) {
@@ -579,8 +583,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         FragmentTransaction ft = fm.beginTransaction();
         if (leftFragment == null)
             leftFragment = (Receipt_FR) fm.findFragmentById(R.id.order_receipt_frag_container);
-        if (catalogFr == null)
-            catalogFr = (Catalog_FR) fm.findFragmentById(R.id.order_catalog_frag_container);
+        if (getCatalogFr() == null)
+            setCatalogFr((Catalog_FR) fm.findFragmentById(R.id.order_catalog_frag_container));
         if (orientation != _orientation) // screen orientation occurred
         {
             if (_orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -734,8 +738,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     public void refreshView() {
         if (leftFragment != null)
             leftFragment.refreshView();
-        if (catalogFr != null)
-            catalogFr.refreshListView();
+        if (getCatalogFr() != null)
+            getCatalogFr().refreshListView();
     }
 
     @Override
@@ -752,10 +756,12 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             Bundle extras = data.getExtras();
             String newName = extras.getString("customer_name");
             Global.taxID = "";
-            leftFragment.custName.setText(newName);
-            leftFragment.orderTotalDetailsFr.initSpinners();
-            if (catalogFr != null) {
-                catalogFr.loadCursor();
+            leftFragment.setCustName();
+            if (leftFragment.orderTotalDetailsFr != null) {
+                leftFragment.orderTotalDetailsFr.initSpinners();
+            }
+            if (getCatalogFr() != null) {
+                getCatalogFr().loadCursor();
             }
 
             prefetchLoyalty(true);
@@ -800,12 +806,16 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 //            }
 
 //            OrderTotalDetails_FR.resetView();
-            finish();
+
             if (myPref.isClearCustomerAfterTransaction()) {
                 myPref.resetCustInfo(getString(R.string.no_customer));
             }
-            SalesTab_FR.startDefault(this,
-                    myPref.getPreferencesValue(MyPreferences.pref_default_transaction));
+            String value = myPref.getPreferencesValue(MyPreferences.pref_default_transaction);
+            Global.TransactionType type = Global.TransactionType.getByCode(Integer.parseInt(value));
+            SalesTab_FR.startDefault(this, type);
+            finish();
+//            SalesTab_FR.startDefault(this,
+//                    myPref.getPreferencesValue(MyPreferences.pref_default_transaction));
         }
     }
 
@@ -883,7 +893,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
                 Global.mainPrinterManager.getCurrentDevice().releaseCardReader();
                 Global.mainPrinterManager.getCurrentDevice().turnOffBCR();
-                Global.mainPrinterManager.getCurrentDevice().loadScanner(null);
+//                Global.mainPrinterManager.getCurrentDevice().loadScanner(null);
             }
             if (Global.btSled != null && Global.btSled.getCurrentDevice() != null)
                 Global.btSled.getCurrentDevice().releaseCardReader();
@@ -984,16 +994,16 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                                 {
                                     global.refreshParticularOrder(OrderingMain_FA.this, foundPosition, product);
                                 } else
-                                    catalogFr.automaticAddOrder(product);// temp.automaticAddOrder(listData);
+                                    getCatalogFr().automaticAddOrder(product);// temp.automaticAddOrder(listData);
                             } else
-                                catalogFr.automaticAddOrder(product);
+                                getCatalogFr().automaticAddOrder(product);
                             refreshView();
                         } else {
                             Global.showPrompt(this, R.string.dlog_title_error,
                                     this.getString(R.string.limit_onhand));
                         }
                     } else {
-                        catalogFr.searchUPC(data);
+                        getCatalogFr().searchUPC(data);
                     }
                 }
             }
@@ -1007,11 +1017,11 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         dlog.setCanceledOnTouchOutside(false);
         dlog.setContentView(R.layout.dlog_btn_left_right_layout);
 
-        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+        TextView viewTitle = dlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = dlog.findViewById(R.id.dlogMessage);
 
-        Button btnLeft = (Button) dlog.findViewById(R.id.btnDlogLeft);
-        Button btnRight = (Button) dlog.findViewById(R.id.btnDlogRight);
+        Button btnLeft = dlog.findViewById(R.id.btnDlogLeft);
+        Button btnRight = dlog.findViewById(R.id.btnDlogRight);
         dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
 
         if (isFromOnHold) {
@@ -1088,9 +1098,11 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             public void afterTextChanged(Editable s) {
                 if (doneScanning) {
                     doneScanning = false;
-                    if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
-                        Global.mainPrinterManager.getCurrentDevice().playSound();
-                        Global.mainPrinterManager.getCurrentDevice().turnOnBCR();
+                    if (EMSELO.isEloPaypoint2()) {
+                        if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                            Global.mainPrinterManager.getCurrentDevice().playSound();
+                            Global.mainPrinterManager.getCurrentDevice().turnOnBCR();
+                        }
                     }
                     String upc = invisibleSearchMain.getText().toString().trim().replace("\n", "").replace("\r", "");
 //                    upc = invisibleSearchMain.getText().toString().trim().replace("\r", "");
@@ -1104,9 +1116,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                                     {
                                         global.refreshParticularOrder(OrderingMain_FA.this, foundPosition, product);
                                     } else
-                                        catalogFr.automaticAddOrder(product);// temp.automaticAddOrder(listData);
+                                        getCatalogFr().automaticAddOrder(product);// temp.automaticAddOrder(listData);
                                 } else
-                                    catalogFr.automaticAddOrder(product);
+                                    getCatalogFr().automaticAddOrder(product);
                                 refreshView();
                                 if (OrderingMain_FA.returnItem) {
                                     OrderingMain_FA.returnItem = !OrderingMain_FA.returnItem;
@@ -1117,7 +1129,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                                         OrderingMain_FA.this.getString(R.string.limit_onhand));
                             }
                         } else {
-                            catalogFr.searchUPC(upc);
+                            getCatalogFr().searchUPC(upc);
                         }
                     } else {
                         Global.showPrompt(OrderingMain_FA.this, R.string.dlog_title_error,
@@ -1142,8 +1154,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     @Override
     public void updateHeaderTitle(String val) {
         headerTitle.setText(val);
-        if ((Global.consignmentType == Global.OrderType.CONSIGNMENT_FILLUP || Global.consignmentType == Global.OrderType.CONSIGNMENT_RETURN) && catalogFr != null) {
-            catalogFr.loadCursor();
+        if ((Global.consignmentType == Global.OrderType.CONSIGNMENT_FILLUP || Global.consignmentType == Global.OrderType.CONSIGNMENT_RETURN) && getCatalogFr() != null) {
+            getCatalogFr().loadCursor();
         }
     }
 
@@ -1188,16 +1200,16 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                         {
                             global.refreshParticularOrder(OrderingMain_FA.this, foundPosition, product);
                         } else
-                            catalogFr.automaticAddOrder(product);// temp.automaticAddOrder(listData);
+                            getCatalogFr().automaticAddOrder(product);// temp.automaticAddOrder(listData);
                     } else
-                        catalogFr.automaticAddOrder(product);
+                        getCatalogFr().automaticAddOrder(product);
                     refreshView();
                 } else {
                     Global.showPrompt(this, R.string.dlog_title_error, this.getString(R.string.limit_onhand));
                 }
 
             } else {
-                catalogFr.searchUPC(upc);
+                getCatalogFr().searchUPC(upc);
             }
         }
     }
@@ -1251,7 +1263,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     @Override
     public void prefetchLoyaltyPoints() {
         if (myPref.isCustSelected() && myPref.isGiftCardAutoBalanceRequest()) {
-            if (NetworkUtils.isConnectedToInternet(this)) {
+            if (NetworkUtils.isConnectedToInternet(OrderingMain_FA.this)) {
                 prefetchLoyalty(true);
                 loyaltySwiped = true;
             }
@@ -1345,11 +1357,11 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         dlogMSR.setCanceledOnTouchOutside(false);
         dlogMSR.setContentView(R.layout.dlog_swiper_layout);
 
-        swiperLabel = (TextView) dlogMSR.findViewById(R.id.dlogMessage);
-        Button btnOK = (Button) dlogMSR.findViewById(R.id.btnDlogLeft);
-        Button btnCancel = (Button) dlogMSR.findViewById(R.id.btnDlogRight);
-        swiperField = (EditText) dlogMSR.findViewById(R.id.dlogFieldSingle);
-        EditText swiperHiddenField = (EditText) dlogMSR.findViewById(R.id.hiddenField);
+        swiperLabel = dlogMSR.findViewById(R.id.dlogMessage);
+        Button btnOK = dlogMSR.findViewById(R.id.btnDlogLeft);
+        Button btnCancel = dlogMSR.findViewById(R.id.btnDlogRight);
+        swiperField = dlogMSR.findViewById(R.id.dlogFieldSingle);
+        EditText swiperHiddenField = dlogMSR.findViewById(R.id.hiddenField);
         swiperHiddenField.addTextChangedListener(hiddenTxtWatcher(swiperHiddenField));
         swiperLabel.setText(R.string.loading);
         swiperLabel.setTextColor(Color.DKGRAY);
@@ -1481,7 +1493,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.BalanceRewardAction, wasReadFromReader, cardType,
                     cardInfoManager);
         }
-
+        payGate.reset();
+        giftCardgeneratedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.BalanceGiftCardAction, wasReadFromReader, "GiftCard",
+                cardInfoManager);
         new ProcessAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, generatedURL);
     }
 
@@ -1626,6 +1640,13 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         this.loyaltyFragment = loyaltyFragment;
     }
 
+    public Catalog_FR getCatalogFr() {
+        return catalogFr;
+    }
+
+    public void setCatalogFr(Catalog_FR catalogFr) {
+        this.catalogFr = catalogFr;
+    }
 
     public enum OrderingAction {
         HOLD, CHECKOUT, NONE, BACK_PRESSED
@@ -1642,7 +1663,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
     }
 
-    private class ProcessAsync extends AsyncTask<String, String, HashMap<String, String>> {
+    private class ProcessAsync extends AsyncTask<String, String, HashMap<String, String>[]> {
         private String urlToPost;
         private boolean wasProcessed = false;
         private String errorMsg = "Request could not be processed.";
@@ -1663,15 +1684,16 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
 
         @Override
-        protected HashMap<String, String> doInBackground(String... params) {
+        protected HashMap<String, String>[] doInBackground(String... params) {
             Post httpClient = new Post(OrderingMain_FA.this);
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
             urlToPost = params[0];
-            HashMap<String, String> parsedMap = new HashMap<>();
+            HashMap[] parsedMap = new HashMap[2];
 
             try {
                 String xml = httpClient.postData(13, urlToPost);
+                String xmlGiftCard = httpClient.postData(13, giftCardgeneratedURL);
                 switch (xml) {
                     case Global.TIME_OUT:
                         errorMsg = getString(R.string.timeout_try_again);
@@ -1681,19 +1703,20 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                         break;
                     default:
                         InputSource inSource = new InputSource(new StringReader(xml));
-
                         SAXParser sp = spf.newSAXParser();
                         XMLReader xr = sp.getXMLReader();
                         xr.setContentHandler(handler);
                         xr.parse(inSource);
-                        parsedMap = handler.getData();
-
-                        if (parsedMap != null && parsedMap.size() > 0 && parsedMap.get("epayStatusCode").equals("APPROVED"))
+                        parsedMap[0] = getHashMap(xml);//handler.getData();
+                        parsedMap[1] = getHashMap(xmlGiftCard);
+                        if (parsedMap != null && parsedMap[0].size() > 0 && parsedMap[0].get("epayStatusCode").equals("APPROVED"))
                             wasProcessed = true;
-                        else if (parsedMap != null && parsedMap.size() > 0) {
-                            errorMsg = "statusCode = " + parsedMap.get("statusCode") + "\n" + parsedMap.get("statusMessage");
+                        else if (parsedMap != null && parsedMap[0].size() > 0) {
+                            errorMsg = "statusCode = " + parsedMap[0].get("statusCode") + "\n" + parsedMap[0].get("statusMessage");
                         } else
                             errorMsg = xml;
+
+
                         break;
                 }
 
@@ -1706,30 +1729,55 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
 
         @Override
-        protected void onPostExecute(HashMap<String, String> parsedMap) {
-//            if (Global.isTablet(OrderingMain_FA.this))
-//                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-
+        protected void onPostExecute(HashMap<String, String>[] parsedMap) {
             if (myProgressDialog != null && myProgressDialog.isShowing()) {
                 myProgressDialog.dismiss();
             }
-
-            if (wasProcessed) // payment processing succeeded
-            {
-                String temp = (parsedMap.get("CardBalance") == null ? "0.0" : parsedMap.get("CardBalance"));
+            if (wasProcessed && parsedMap[0] != null) {
+                String temp = (parsedMap[0].get("CardBalance") == null ? "0.0" : parsedMap[0].get("CardBalance"));
+                String giftBalance = (parsedMap[1] == null || parsedMap[1].get("CardBalance") == null ? "0.0" : parsedMap[1].get("CardBalance"));
+                LinearLayout ll = findViewById(R.id.giftBalanceLinearLayout);
+                ll.setVisibility(View.VISIBLE);
+                TextView giftBalanceTextView = findViewById(R.id.giftBalancetextView44);
+                if (giftBalanceTextView != null) {
+                    giftBalanceTextView.setText(giftBalance);
+                }
                 if (loyaltySwiped && loyaltyFragment != null) {
                     loyaltyFragment.hideTapButton();
                     loyaltyFragment.setPointBalance(temp);
-                } else {
+                } else if (leftFragment.orderRewardsFr != null) {
                     leftFragment.orderRewardsFr.hideTapButton();
                     leftFragment.orderRewardsFr.setRewardBalance(temp);
                     rewardsWasRead = true;
                 }
-
-            } else // payment processing failed
-            {
+            } else {
                 Global.showPrompt(OrderingMain_FA.this, R.string.dlog_title_error, errorMsg);
             }
+        }
+
+        private HashMap<String, String> getHashMap(String xml) throws ParserConfigurationException, SAXException, IOException {
+            SAXParserFactory spf = SAXParserFactory.newInstance();
+            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
+            InputSource inSource = new InputSource(new StringReader(xml));
+            SAXParser sp = spf.newSAXParser();
+            XMLReader xr = sp.getXMLReader();
+            xr.setContentHandler(handler);
+            xr.parse(inSource);
+            HashMap<String, String> parsedMap = handler.getData();
+
+//            InputSource inSource = new InputSource(new StringReader(xml));
+//            SAXParser sp = spf.newSAXParser();
+//            XMLReader xr = sp.getXMLReader();
+//            xr.setContentHandler(handler);
+//            xr.parse(inSource);
+//            HashMap<String, String> parsedMap = handler.getData();
+//            if (parsedMap != null && parsedMap.size() > 0 && parsedMap.get("epayStatusCode").equals("APPROVED"))
+//                wasProcessed = true;
+//            else if (parsedMap != null && parsedMap.size() > 0) {
+//                errorMsg = "statusCode = " + parsedMap.get("statusCode") + "\n" + parsedMap.get("statusMessage");
+//            } else
+//                errorMsg = xml;
+            return parsedMap;
         }
 
     }

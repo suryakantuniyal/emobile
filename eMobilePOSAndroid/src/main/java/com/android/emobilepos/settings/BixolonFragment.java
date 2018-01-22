@@ -178,7 +178,7 @@ public class BixolonFragment extends Fragment implements View.OnClickListener {
                     return bixolonDevice.sendFooters(footers);
                 case SEND_TAXES:
                     TaxesHandler taxesHandler = new TaxesHandler(getActivity());
-                    return bixolonDevice.sendTaxes(taxesHandler.getTaxes(true));
+                    return bixolonDevice.sendTaxes(taxesHandler.getTaxes(false));
                 case SEND_PAYMENT_METHODS:
                     return bixolonDevice.sendPaymentMethods(paymentMethods);
             }
@@ -213,7 +213,7 @@ public class BixolonFragment extends Fragment implements View.OnClickListener {
         protected Void doInBackground(Void... params) {
 //            try {
             TaxesHandler taxesHandler = new TaxesHandler(getActivity());
-            taxes = taxesHandler.getTaxes(true);
+            taxes = taxesHandler.getTaxes(false);
             printerDate = bixolonDevice.getCurrentPrinterDateTime();
             MemoTextHandler handler = new MemoTextHandler(getActivity());
             headers = handler.getHeader();

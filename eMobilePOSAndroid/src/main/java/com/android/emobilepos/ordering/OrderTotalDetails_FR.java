@@ -2,7 +2,6 @@ package com.android.emobilepos.ordering;
 
 import android.app.Activity;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -657,7 +656,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             return;
         }
         if (getOrderingMainFa() != null) {
-            new ReCalculate().execute(orderProducts);
+            new ReCalculate().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, orderProducts);
         }
     }
 
@@ -705,6 +704,8 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         protected synchronized void onPostExecute(OrderTotalDetails totalDetails) {
             super.onPostExecute(totalDetails);
             if (totalDetails != null) {
+                Global.loyaltyCharge = String.valueOf(totalDetails.getPointsSubTotal());
+                Global.loyaltyPointsAvailable = String.valueOf(totalDetails.getPointsAvailable());
                 subTotal.setText(Global.getCurrencyFrmt(String.valueOf(sub_total)));
                 granTotal.setText(Global.getCurrencyFrmt(String.valueOf(gran_total)));
                 globalTax.setText(Global.getCurrencyFrmt(String.valueOf(tax_amount)));
