@@ -247,7 +247,7 @@ public class SynchMethods {
         String response = httpClient.post(url.toString(), json, authClient);
     }
 
-    public static void synchSalesAssociateDinnindTablesConfiguration(Context activity) throws IOException, SAXException {
+    public static void synchSalesAssociateDinnindTablesConfiguration(Context activity) throws SAXException {
         oauthclient.HttpClient client = new oauthclient.HttpClient();
         Gson gson = JsonUtils.getInstance();
         if (OAuthManager.isExpired(activity)) {
@@ -255,30 +255,34 @@ public class SynchMethods {
         }
         OAuthClient oauthClient = OAuthManager.getOAuthClient(activity);
 //            String s = client.getString(context.getString(R.string.sync_enablermobile_mesasconfig), oauthClient);
-        InputStream inputStream = client.get(activity.getString(R.string.sync_enablermobile_mesasconfig), oauthClient);
-        JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
         List<DinningLocationConfiguration> configurations = new ArrayList<>();
-        reader.beginArray();
-        String defaultLocation = AssignEmployeeDAO.getAssignEmployee(false).getDefaultLocation();
-        while (reader.hasNext()) {
-            DinningLocationConfiguration configuration = gson.fromJson(reader, DinningLocationConfiguration.class);
-            if (configuration.getLocationId().equalsIgnoreCase(defaultLocation)) {
-                configurations.add(configuration);
+        try {
+            InputStream inputStream = client.get(activity.getString(R.string.sync_enablermobile_mesasconfig), oauthClient);
+            JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
+            reader.beginArray();
+            String defaultLocation = AssignEmployeeDAO.getAssignEmployee(false).getDefaultLocation();
+            while (reader.hasNext()) {
+                DinningLocationConfiguration configuration = gson.fromJson(reader, DinningLocationConfiguration.class);
+                if (configuration.getLocationId().equalsIgnoreCase(defaultLocation)) {
+                    configurations.add(configuration);
+                }
             }
-        }
-
-        reader.endArray();
-        reader.close();
-        for (DinningLocationConfiguration configuration : configurations) {
-            for (Clerk associate : configuration.getClerks()) {
-                ClerkDAO.clearAllAssignedTable(associate);
-                for (DinningTable table : associate.getAssignedDinningTables()) {
-                    DinningTable dinningTable = DinningTableDAO.getById(table.getId());
-                    if (dinningTable != null) {
-                        ClerkDAO.addAssignedTable(associate, dinningTable);
+            reader.endArray();
+            reader.close();
+            for (DinningLocationConfiguration configuration : configurations) {
+                for (Clerk associate : configuration.getClerks()) {
+                    ClerkDAO.clearAllAssignedTable(associate);
+                    for (DinningTable table : associate.getAssignedDinningTables()) {
+                        DinningTable dinningTable = DinningTableDAO.getById(table.getId());
+                        if (dinningTable != null) {
+                            ClerkDAO.addAssignedTable(associate, dinningTable);
+                        }
                     }
                 }
             }
+        } catch (IOException e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
         }
     }
 
@@ -407,7 +411,7 @@ public class SynchMethods {
             synchProdAddon();
             synchProducts();
             synchOrderAttributes();
-            synchOrderAttributes();
+//            synchOrderAttributes();
             synchProductAliases();
             synchProductImages();
             synchDownloadProductsAttr();
