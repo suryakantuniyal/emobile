@@ -23,20 +23,16 @@ import java.io.File;
 
 
 public class ShowProductImageActivity extends BaseFragmentActivityActionBar {
-	private ImageLoader imageLoader;
-	private DisplayImageOptions options;
-	
+
 	private boolean hasBeenCreated = false;
 	private Global global;
-	private Activity activity;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 
 		super.onCreate(savedInstanceState);
 		global = (Global)getApplication();
-		activity = this;
-		
+
 		final TouchImageView img = new TouchImageView(this);
 		Bundle extras = getIntent().getExtras();
 
@@ -48,24 +44,23 @@ public class ShowProductImageActivity extends BaseFragmentActivityActionBar {
 			cacheDir.mkdirs();
 		
 		ImageLoader.getInstance().destroy();
-		imageLoader = ImageLoader.getInstance();
+		ImageLoader imageLoader = ImageLoader.getInstance();
 		ImageLoaderConfiguration config = new ImageLoaderConfiguration
 				.Builder(this).discCache(new UnlimitedDiscCache(cacheDir)).build();
 		
 		imageLoader.init(config);
-		options = new DisplayImageOptions.Builder().imageScaleType(ImageScaleType.EXACTLY).build();
 
 		String url = extras.getString("url");
-		int width = getResources().getDisplayMetrics().widthPixels*2;
-		int height = getResources().getDisplayMetrics().heightPixels*2;
+//		int width = getResources().getDisplayMetrics().widthPixels*2;
+//		int height = getResources().getDisplayMetrics().heightPixels*2;
 
 		int screenOrientation = this.getResources().getConfiguration().orientation;
-		if ((screenOrientation == Configuration.ORIENTATION_PORTRAIT && width > height)
-				|| (screenOrientation == Configuration.ORIENTATION_LANDSCAPE && width < height)) {
-			int tmp = width;
-			width = height;
-			height = tmp;
-		}
+//		if ((screenOrientation == Configuration.ORIENTATION_PORTRAIT && width > height)
+//				|| (screenOrientation == Configuration.ORIENTATION_LANDSCAPE && width < height)) {
+//			int tmp = width;
+//			width = height;
+//			height = tmp;
+//		}
 	
 		
 		//ImageLoaderTest imageLoaderTest = new ImageLoaderTest(activity);

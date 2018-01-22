@@ -19,7 +19,7 @@
           "client_type": 1,
           "android_info": {
             "package_name": "com.emobilepos.app",
-            "certificate_hash": "58529AF727B798AA8E16DC2873013663DDD40717"
+            "certificate_hash": "58529af727b798aa8e16dc2873013663ddd40717"
           }
         },
         {
@@ -27,7 +27,7 @@
           "client_type": 1,
           "android_info": {
             "package_name": "com.emobilepos.app",
-            "certificate_hash": "4862BEBB7735222264B81511D2C528517F105D10"
+            "certificate_hash": "4862bebb7735222264b81511d2c528517f105d10"
           }
         },
         {
@@ -71,7 +71,7 @@
           "client_type": 1,
           "android_info": {
             "package_name": "com.emobilepos.ivupos.app",
-            "certificate_hash": "58529AF727B798AA8E16DC2873013663DDD40717"
+            "certificate_hash": "58529af727b798aa8e16dc2873013663ddd40717"
           }
         },
         {
@@ -79,7 +79,7 @@
           "client_type": 1,
           "android_info": {
             "package_name": "com.emobilepos.ivupos.app",
-            "certificate_hash": "4862BEBB7735222264B81511D2C528517F105D10"
+            "certificate_hash": "4862bebb7735222264b81511d2c528517f105d10"
           }
         },
         {
@@ -123,7 +123,7 @@
           "client_type": 1,
           "android_info": {
             "package_name": "com.emobilepos.icmpevo.app",
-            "certificate_hash": "4862BEBB7735222264B81511D2C528517F105D10"
+            "certificate_hash": "4862bebb7735222264b81511d2c528517f105d10"
           }
         },
         {
@@ -131,7 +131,7 @@
           "client_type": 1,
           "android_info": {
             "package_name": "com.emobilepos.icmpevo.app",
-            "certificate_hash": "58529AF727B798AA8E16DC2873013663DDD40717"
+            "certificate_hash": "58529af727b798aa8e16dc2873013663ddd40717"
           }
         },
         {

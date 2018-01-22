@@ -12,7 +12,7 @@ import com.android.support.Global;
  * Created by Guarionex on 12/3/2015.
  */
 public class CreditCardTextWatcher implements android.text.TextWatcher {
-    boolean doneScanning = false;
+    private boolean doneScanning = false;
 
     private EditText hiddenEditText;
     private CreditCardInfo creditCardInfo;

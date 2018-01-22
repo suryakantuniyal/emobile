@@ -17,8 +17,7 @@ import com.android.database.MemoTextHandler;
 import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.SplitedOrder;
-import com.android.emobilepos.models.TimeClock;
+import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
@@ -210,6 +209,16 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
     }
 
     @Override
+    public void turnOnBCR() {
+
+    }
+
+    @Override
+    public void turnOffBCR() {
+
+    }
+
+    @Override
     public void printEndOfDayReport(String curDate, String clerk_id, boolean printDetails) {
 //        printEndOfDayReportReceipt(curDate, LINE_WIDTH, printDetails);
     }
@@ -297,9 +306,9 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
                             isConnected = true;
                             if (!isAutoConnect) {
                                 myProgressDialog.dismiss();
-                                edm.driverDidConnectToDevice(thisInstance, true);
+                                edm.driverDidConnectToDevice(thisInstance, true, activity);
                             } else {
-                                edm.driverDidConnectToDevice(thisInstance, false);
+                                edm.driverDidConnectToDevice(thisInstance, false, activity);
                             }
 
                             break;
@@ -315,9 +324,9 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
                                 stateCount = 0;
                                 if (!isAutoConnect) {
                                     myProgressDialog.dismiss();
-                                    edm.driverDidNotConnectToDevice(thisInstance, "Couldn't Connect...", true);
+                                    edm.driverDidNotConnectToDevice(thisInstance, "Couldn't Connect...", true, activity);
                                 } else
-                                    edm.driverDidNotConnectToDevice(thisInstance, "", false);
+                                    edm.driverDidNotConnectToDevice(thisInstance, "", false, activity);
 
                             }
                             break;
@@ -545,7 +554,7 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
 //    }
 
     @Override
-    public void printReceiptPreview(SplitedOrder splitedOrder) {
+    public void printReceiptPreview(SplittedOrder splitedOrder) {
         try {
             setPaperWidth(LINE_WIDTH);
 //            Bitmap bitmap = loadBitmapFromView(view);
@@ -558,22 +567,22 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
     }
 
     @Override
-    public void salePayment(Payment payment) {
+    public void salePayment(Payment payment, CreditCardInfo creditCardInfo) {
 
     }
 
     @Override
-    public void saleReversal(Payment payment, String originalTransactionId) {
+    public void saleReversal(Payment payment, String originalTransactionId, CreditCardInfo creditCardInfo) {
 
     }
 
     @Override
-    public void refund(Payment payment) {
+    public void refund(Payment payment, CreditCardInfo creditCardInfo) {
 
     }
 
     @Override
-    public void refundReversal(Payment payment, String originalTransactionId) {
+    public void refundReversal(Payment payment, String originalTransactionId, CreditCardInfo creditCardInfo) {
 
     }
 

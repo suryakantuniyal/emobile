@@ -16,8 +16,7 @@ import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMSEpayLoginInfo;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.SplitedOrder;
-import com.android.emobilepos.models.TimeClock;
+import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.settings.SettingListActivity;
 import com.android.support.ConsignmentTransaction;
@@ -32,10 +31,13 @@ import com.payments.core.CoreResponse;
 import com.payments.core.CoreSale;
 import com.payments.core.CoreSaleKeyed;
 import com.payments.core.CoreSaleResponse;
+import com.payments.core.CoreSecureCardResponse;
 import com.payments.core.CoreSettings;
 import com.payments.core.CoreSignature;
 import com.payments.core.CoreTransactions;
+import com.payments.core.CoreUnreferencedRefund;
 import com.payments.core.admin.AndroidTerminal;
+import com.payments.core.admin.DeviceConnectionType;
 import com.payments.core.common.contracts.CoreAPIListener;
 import com.payments.core.common.enums.CoreDeviceError;
 import com.payments.core.common.enums.CoreError;
@@ -55,27 +57,36 @@ import main.EMSDeviceManager;
 
 public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDeviceManagerPrinterDelegate {
 
-    private Context activity;
+    public static CoreSignature signature;
     private static AndroidTerminal terminal;
     private static String TERMINAL_ID = "2993001";
     private static String SECRET = "password";
-    public static CoreSignature signature;
-    private boolean isReadingCard = false;
-    private Handler handler;
     private static EMSCallBack msrCallBack;
-
     private static EMSDeviceManager edm;
     private static ProgressDialog myProgressDialog;
+    private Context activity;
+    private boolean isReadingCard = false;
+    private Handler handler;
     private boolean isAutoConnect = false;
+    private Runnable doUpdateDidConnect = new Runnable() {
+        public void run() {
+            try {
+                if (msrCallBack != null)
+                    msrCallBack.readerConnectedSuccessfully(true);
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
 
     @Override
     public void connect(Context activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
         this.activity = activity;
         isAutoConnect = false;
-        if (terminal != null) {
-            terminal.releaseResources();
+        if (terminal == null) {
+            terminal = new AndroidTerminal(this);
         }
-        terminal = new AndroidTerminal(this);
         myPref = new MyPreferences(this.activity);
         EMSNomad.edm = edm;
 //        synchronized (terminal) {
@@ -121,12 +132,12 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
 //        if (activity instanceof SettingListActivity) {
 //            Looper.myLooper().quit();
 //        }
-        EMSNomad.edm.driverDidConnectToDevice(this, false);
+        EMSNomad.edm.driverDidConnectToDevice(this, false, activity);
         return true;
     }
 
     private void initDevice() {
-        terminal.setMode(CoreMode.DEMO);
+        terminal.setMode(CoreMode.LIVE);
         terminal.setCurrency(Currency.USD);
         terminal.initWithConfiguration(activity, TERMINAL_ID, SECRET);
     }
@@ -203,6 +214,16 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
     }
 
     @Override
+    public void turnOnBCR() {
+
+    }
+
+    @Override
+    public void turnOffBCR() {
+
+    }
+
+    @Override
     public boolean printReport(String curDate) {
         return false;
     }
@@ -229,18 +250,6 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
         msrCallBack = callBack;
         handler.post(doUpdateDidConnect);
     }
-
-    private Runnable doUpdateDidConnect = new Runnable() {
-        public void run() {
-            try {
-                if (msrCallBack != null)
-                    msrCallBack.readerConnectedSuccessfully(true);
-
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-    };
 
     @Override
     public void loadScanner(EMSCallBack _callBack) {
@@ -277,44 +286,70 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
 
     }
 
+    @Override
+    public void printReceiptPreview(SplittedOrder splitedOrder) {
+
+    }
+
 //    @Override
 //    public void printReceiptPreview(View view) {
 //
 //    }
 
-    @Override
-    public void printReceiptPreview(SplitedOrder splitedOrder) {
-
-    }
 
     @Override
-    public void salePayment(Payment payment) {
-        CoreSale sale = new CoreSale(new BigDecimal(payment.getPay_amount()));
-        if (!TextUtils.isEmpty(payment.getTipAmount())
-                && new BigDecimal(payment.getTipAmount()).compareTo(new BigDecimal(0)) > 0) {
-            sale.addTipWithAmount(new BigDecimal(payment.getTipAmount()));
+    public void salePayment(Payment payment, CreditCardInfo creditCardInfo) {
+        if (creditCardInfo == null || TextUtils.isEmpty(creditCardInfo.getCardNumUnencrypted())) {
+            CoreSale sale = new CoreSale(new BigDecimal(payment.getPay_amount()));
+            if (!TextUtils.isEmpty(payment.getTipAmount())
+                    && new BigDecimal(payment.getTipAmount()).compareTo(new BigDecimal(0)) > 0) {
+                sale.addTipWithAmount(new BigDecimal(payment.getTipAmount()));
+            }
+            terminal.processSale(sale);
+        } else {
+            CoreSaleKeyed sale = new CoreSaleKeyed(new BigDecimal(payment.getPay_amount()));
+            if (!TextUtils.isEmpty(payment.getTipAmount())
+                    && new BigDecimal(payment.getTipAmount()).compareTo(new BigDecimal(0)) > 0) {
+                sale.addTipWithAmount(new BigDecimal(payment.getTipAmount()));
+            }
+            sale.setCardHolderName(creditCardInfo.getCardOwnerName());
+            sale.setCardNumber(creditCardInfo.getCardNumUnencrypted());
+            sale.setCardCvv(creditCardInfo.getCardUnEncryptedSecCode());
+            sale.setCardType(creditCardInfo.getCardType());
+            sale.setExpiryDate(creditCardInfo.getCardExpMonth() + creditCardInfo.getCardExpYear().substring(2));
+            terminal.processSale(sale);
         }
-        terminal.processSale(sale);
     }
 
     @Override
-    public void saleReversal(Payment payment, String originalTransactionId) {
-        refund(payment);
+    public void saleReversal(Payment payment, String originalTransactionId, CreditCardInfo creditCardInfo) {
+        refund(payment, creditCardInfo);
     }
 
     @Override
-    public void refund(Payment payment) {
-        GenerateNewID newID = new GenerateNewID(activity);
-        payment.setPay_id(newID.getNextID(GenerateNewID.IdType.PAYMENT_ID));
-        CoreRefund refund = new CoreRefund(new BigDecimal(payment.getPay_amount()));
-        refund.setUniqueRef(payment.getPay_id());
-        refund.setReason("payment refund");
-        terminal.processRefund(refund);
+    public void refund(Payment payment, CreditCardInfo creditCardInfo) {
+        if (creditCardInfo == null || TextUtils.isEmpty(creditCardInfo.getCardNumUnencrypted())) {
+            GenerateNewID newID = new GenerateNewID(activity);
+            payment.setPay_id(newID.getNextID(GenerateNewID.IdType.PAYMENT_ID));
+            CoreRefund refund = new CoreRefund(new BigDecimal(payment.getPay_amount()));
+            refund.setUniqueRef(payment.getPay_id());
+            refund.setReason("payment refund");
+            terminal.processRefund(refund);
+        } else {
+            CoreUnreferencedRefund refund = new CoreUnreferencedRefund(new BigDecimal(payment.getPay_amount()));
+            refund.setCardHolderName(creditCardInfo.getCardOwnerName());
+            refund.setCardNumber(creditCardInfo.getCardNumUnencrypted());
+            refund.setCardCvv(creditCardInfo.getCardUnEncryptedSecCode());
+            refund.setCardType(creditCardInfo.getCardType());
+            refund.setReason("payment refund");
+            refund.setExpiryDate(creditCardInfo.getCardExpMonth() + creditCardInfo.getCardExpYear().substring(2));
+            terminal.processUnreferencedRefund(refund);
+        }
     }
 
     @Override
-    public void refundReversal(Payment payment, String originalTransactionId) {
-        refund(payment);
+    public void refundReversal(Payment payment, String originalTransactionId, CreditCardInfo creditCardInfo) {
+        refund(payment, creditCardInfo);
     }
 
     @Override
@@ -330,26 +365,6 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
     @Override
     public void updateFirmware() {
 
-    }
-
-    private class ConnectNomadAsync extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected void onPreExecute() {
-            showDialog(R.string.connecting_handpoint);
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            EMSEpayLoginInfo loginInfo = EMSUtils.getEmsEpayLoginInfo(activity);
-            SECRET = loginInfo.getSecret();
-            TERMINAL_ID = loginInfo.getTerminalId();
-            initDevice();
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void unused) {
-        }
     }
 
     public void startReading(CreditCardInfo cardInfo, ProgressDialog dialog) {
@@ -378,7 +393,7 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
     }
 
     private boolean deviceConnected() {
-        return !(terminal == null || terminal.getDevice() == null) && terminal.getDevice().equals(DeviceEnum.NOMAD);
+        return !(terminal == null || terminal.getDevice() == null) && terminal.getDevice().equals(DeviceEnum.BBPOSDEVICE);
     }
 
     public void submitSignature() {
@@ -410,7 +425,7 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
         }
         if (!isAutoConnect) {
             dismissDialog();
-            edm.driverDidNotConnectToDevice(this, activity.getString(R.string.fail_to_connect), true);
+            edm.driverDidNotConnectToDevice(this, activity.getString(R.string.fail_to_connect), true, activity);
         } else {
             dismissDialog();
 //            MainMenu_FA.handler.sendEmptyMessage(0);
@@ -451,7 +466,7 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
             cardManager.transid = response.getUniqueRef();
             cardManager.setWasSwiped(true);
             cardManager.setCardLast4(response.getCardNumber().substring(response.getCardNumber().length() - 4));
-            msrCallBack.cardWasReadSuccessfully(true, cardManager);
+            msrCallBack.cardWasReadSuccessfully(response.getCode().equalsIgnoreCase("A"), cardManager);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -461,7 +476,7 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
     public void onSettingsRetrieved(CoreSettings arg0) {
 //        if (devicePlugged) {
 //        terminal.initDevice(DeviceEnum.NOMAD);
-        terminal.initDevice(DeviceEnum.NOMAD);
+        terminal.initDevice(DeviceEnum.BBPOSDEVICE, DeviceConnectionType.BLUETOOTH, null);
 //            try {
 //                EMSCallBack callBack = (EMSCallBack) activity;
 //                callBack.readerConnectedSuccessfully(true);
@@ -505,7 +520,7 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
 //        }
 //        synchronized (terminal) {
 //        terminal.notifyAll();
-        edm.driverDidConnectToDevice(this, !isAutoConnect);
+        edm.driverDidConnectToDevice(this, !isAutoConnect, activity);
 //        }
         if (!isAutoConnect) {
             dismissDialog();
@@ -519,7 +534,7 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
     @Override
     public void onDeviceDisconnected(DeviceEnum deviceEnum) {
         Toast.makeText(this.activity, deviceEnum.name() + " disconnected", Toast.LENGTH_SHORT).show();
-        edm.driverDidNotConnectToDevice(this, activity.getString(R.string.fail_to_connect), false);
+        edm.driverDidNotConnectToDevice(this, activity.getString(R.string.fail_to_connect), false, activity);
         if (!isAutoConnect) {
 //            dismissDialog();
         } else {
@@ -533,7 +548,7 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
 
     @Override
     public void onDeviceError(CoreDeviceError arg0, String arg1) {
-        edm.driverDidNotConnectToDevice(this, arg1, !isAutoConnect);
+        edm.driverDidNotConnectToDevice(this, arg1, !isAutoConnect, activity);
         if (msrCallBack != null) {
             msrCallBack.cardWasReadSuccessfully(false, new CreditCardInfo());
         }
@@ -576,7 +591,7 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
 
     @Override
     public void onDeviceConnectionError() {
-        edm.driverDidNotConnectToDevice(this, activity.getString(R.string.fail_to_connect), false);
+        edm.driverDidNotConnectToDevice(this, activity.getString(R.string.fail_to_connect), false, activity);
         if (!isAutoConnect) {
             dismissDialog();
         }
@@ -598,6 +613,21 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
 
     }
 
+    @Override
+    public void onSelectSerialPort(ArrayList<String> arrayList) {
+
+    }
+
+    @Override
+    public void onDeviceInfoReturned(HashMap<String, String> hashMap) {
+
+    }
+
+    @Override
+    public void onSecureCardResponse(CoreSecureCardResponse coreSecureCardResponse) {
+
+    }
+
     private void showDialog(int messageRsId) {
         if (myProgressDialog != null && myProgressDialog.isShowing()) {
             myProgressDialog.dismiss();
@@ -614,5 +644,25 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
             myProgressDialog.dismiss();
         }
         myProgressDialog = null;
+    }
+
+    private class ConnectNomadAsync extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected void onPreExecute() {
+            showDialog(R.string.connecting_handpoint);
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            EMSEpayLoginInfo loginInfo = EMSUtils.getEmsEpayLoginInfo(activity);
+            SECRET = loginInfo.getSecret();
+            TERMINAL_ID = loginInfo.getTerminalId();
+            initDevice();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void unused) {
+        }
     }
 }

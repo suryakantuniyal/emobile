@@ -892,6 +892,7 @@
                         android:gravity="center_vertical|center_horizontal"
                         android:text="@string/add_main_hint2"
                         android:textSize="@dimen/history_title_text_size" />
+
                     <TextView
                         android:id="@+id/shortOverStatustextView23"
                         android:layout_width="match_parent"

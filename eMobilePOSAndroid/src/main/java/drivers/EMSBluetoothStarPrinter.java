@@ -6,9 +6,17 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
+import android.text.Layout;
+import android.text.StaticLayout;
+import android.text.TextPaint;
 
 import com.StarMicronics.jasura.JAException;
 import com.android.dao.DeviceTableDAO;
@@ -17,7 +25,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.CardParser;
@@ -26,11 +34,18 @@ import com.android.support.CreditCardInfo;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.crashlytics.android.Crashlytics;
+import com.elo.device.DeviceManager;
+import com.elo.device.enums.EloPlatform;
+import com.elo.device.enums.Status;
+import com.elo.device.enums.TriggerMode;
+import com.elo.device.exceptions.UnsupportedEloPlatform;
+import com.elo.device.peripherals.BarCodeReader;
 import com.starmicronics.stario.StarIOPort;
 import com.starmicronics.stario.StarIOPortException;
 import com.starmicronics.stario.StarPrinterStatus;
-import com.starmicronics.starioextension.starioextmanager.StarIoExtManager;
-import com.starmicronics.starioextension.starioextmanager.StarIoExtManagerListener;
+import com.starmicronics.starioextension.IConnectionCallback;
+import com.starmicronics.starioextension.StarIoExtManager;
+import com.starmicronics.starioextension.StarIoExtManagerListener;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -43,10 +58,10 @@ import interfaces.EMSCallBack;
 import interfaces.EMSDeviceManagerPrinterDelegate;
 import main.EMSDeviceManager;
 
-public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
+public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate, IConnectionCallback {
 
-    int connectionRetries = 0;
-    boolean isNetworkPrinter = false;
+    private int connectionRetries = 0;
+    private boolean isNetworkPrinter = false;
     private int LINE_WIDTH = 32;
     private int PAPER_WIDTH;
     private String portSettings;
@@ -56,10 +71,11 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     private StarIoExtManager mStarIoExtManager;
     private Handler handler;
     private ProgressDialog myProgressDialog;
-    private EMSDeviceDriver thisInstance;
+    private EMSBluetoothStarPrinter thisInstance;
     private boolean stopLoop = false;
     private String portNumber = "";
     private EMSDeviceManager edm;
+    private BarCodeReader barCodeReaderElo2_0;
     private CreditCardInfo cardManager;
     private Runnable doUpdateViews = new Runnable() {
         public void run() {
@@ -93,10 +109,10 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
             }
         }
     };
-    StarIoExtManagerListener mStarIoExtManagerListener = new StarIoExtManagerListener() {
+    private StarIoExtManagerListener mStarIoExtManagerListener = new StarIoExtManagerListener() {
         @Override
-        public void didBarcodeDataReceive(byte[] data) {
-            String[] barcodeDataArray = new String(data).split("\r\n");
+        public void onBarcodeDataReceive(byte[] bytes) {
+            String[] barcodeDataArray = new String(bytes).split("\r\n");
             for (String barcodeData : barcodeDataArray) {
                 scannedData = barcodeData;
                 handler.post(runnableScannedData);
@@ -214,10 +230,10 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (didConnect || BuildConfig.USE_DUMMY_START_PRINTER) {
-            this.edm.driverDidConnectToDevice(thisInstance, false);
+        if (didConnect) {
+            this.edm.driverDidConnectToDevice(thisInstance, false, activity);
         } else {
-            this.edm.driverDidNotConnectToDevice(thisInstance, null, false);
+            this.edm.driverDidNotConnectToDevice(thisInstance, null, false, activity);
         }
 
         return didConnect || BuildConfig.USE_DUMMY_START_PRINTER;
@@ -300,6 +316,33 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         return printTransaction;
     }
 
+
+    static public Bitmap createBitmapFromText(String printText, int textSize, int printWidth, Typeface typeface) {
+        Paint paint = new Paint();
+        Bitmap bitmap;
+        Canvas canvas;
+
+        paint.setTextSize(textSize);
+        paint.setTypeface(typeface);
+
+        paint.getTextBounds(printText, 0, printText.length(), new Rect());
+
+        TextPaint textPaint = new TextPaint(paint);
+        android.text.StaticLayout staticLayout = new StaticLayout(printText, textPaint, printWidth, Layout.Alignment.ALIGN_NORMAL, 1, 0, false);
+
+        // Create bitmap
+        bitmap = Bitmap.createBitmap(staticLayout.getWidth(), staticLayout.getHeight(), Bitmap.Config.ARGB_8888);
+
+        // Create canvas
+        canvas = new Canvas(bitmap);
+        canvas.drawColor(Color.WHITE);
+        canvas.translate(0, 0);
+        staticLayout.draw(canvas);
+
+        return bitmap;
+    }
+
+
     @Override
     public boolean printPaymentDetails(String payID, int type, boolean isReprint, EMVContainer emvContainer) {
         setPaperWidth(LINE_WIDTH);
@@ -323,6 +366,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
     @Override
     public boolean printBalanceInquiry(HashMap<String, String> values) {
+        setPaperWidth(LINE_WIDTH);
         setStartIOPort();
         boolean print = printBalanceInquiry(values, LINE_WIDTH);
         releasePrinter();
@@ -344,7 +388,28 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     }
 
     @Override
+    public void turnOnBCR() {
+        if (barCodeReaderElo2_0 != null) {
+            barCodeReaderElo2_0.setEnabled(true);
+            barCodeReaderElo2_0.setKbMode(activity);
+            barCodeReaderElo2_0.setTriggerMode(TriggerMode.TRIGGERED);
+        }
+    }
+
+    @Override
+    public void turnOffBCR() {
+        if (barCodeReaderElo2_0 != null) {
+            if (barCodeReaderElo2_0.getStatus().equals(Status.ENABLED)) {
+                barCodeReaderElo2_0.setEnabled(false);
+            }
+//            barCodeReaderElo2_0.setKbMode(activity);
+//            barCodeReaderElo2_0.setTriggerMode(TriggerMode.TRIGGERED);
+        }
+    }
+
+    @Override
     public void printEndOfDayReport(String curDate, String clerk_id, boolean printDetails) {
+        setPaperWidth(LINE_WIDTH);
         setStartIOPort();
         printEndOfDayReportReceipt(curDate, LINE_WIDTH, printDetails);
         releasePrinter();
@@ -353,6 +418,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     @Override
     public boolean printReport(String curDate) {
         try {
+            setPaperWidth(LINE_WIDTH);
             setStartIOPort();
             verifyConnectivity();
             Thread.sleep(1000);
@@ -387,6 +453,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     @Override
     public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSig) {
         try {
+            setPaperWidth(LINE_WIDTH);
             setStartIOPort();
             verifyConnectivity();
             Thread.sleep(1000);
@@ -435,6 +502,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     @Override
     public boolean printConsignmentPickup(List<ConsignmentTransaction> myConsignment, String encodedSig) {
         try {
+            setPaperWidth(LINE_WIDTH);
             setStartIOPort();
             verifyConnectivity();
             Thread.sleep(1000);
@@ -451,6 +519,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     @Override
     public boolean printOpenInvoices(String invID) {
         try {
+            setPaperWidth(LINE_WIDTH);
             setStartIOPort();
             verifyConnectivity();
             Thread.sleep(1000);
@@ -492,11 +561,17 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         } catch (Exception e) {
             e.printStackTrace();
         }
+        if(myPref.isESY13P1()){
+            EMSELO elo = new EMSELO();
+            elo.activity=activity;
+            elo.openCashDrawer();
+        }
     }
 
     @Override
     public boolean printConsignmentHistory(HashMap<String, String> map, Cursor c, boolean isPickup) {
         try {
+            setPaperWidth(LINE_WIDTH);
             setStartIOPort();
             verifyConnectivity();
             Thread.sleep(1000);
@@ -514,34 +589,50 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     @Override
     public void printShiftDetailsReport(String shiftID) {
         try {
+            setPaperWidth(LINE_WIDTH);
             setStartIOPort();
             verifyConnectivity();
             Thread.sleep(1000);
             printShiftDetailsReceipt(LINE_WIDTH, shiftID);
             releasePrinter();
         } catch (StarIOPortException e) {
+            Crashlytics.logException(e);
         } catch (InterruptedException e) {
+            Crashlytics.logException(e);
             e.printStackTrace();
         }
 
     }
 
     @Override
-    public void loadScanner(EMSCallBack _callBack) {
+    public void loadScanner(EMSCallBack callBack) {
         if (myPref.getPrinterName().toUpperCase().contains("MPOP")) {
-            scannerCallBack = _callBack;
+            scannerCallBack = callBack;
             if (handler == null)
                 handler = new Handler();
-            if (_callBack != null) {
+            if (callBack != null) {
                 mStarIoExtManager = new StarIoExtManager(StarIoExtManager.Type.OnlyBarcodeReader, getPortName(), "", 10000,
                         this.activity);
                 mStarIoExtManager.setListener(mStarIoExtManagerListener);
                 starIoExtManagerConnect();
             } else {
                 if (mStarIoExtManager != null) {
-                    mStarIoExtManager.disconnect();
+                    mStarIoExtManager.disconnect(this);
                     mStarIoExtManager = null;
                 }
+            }
+        } else if (callBack != null && Build.MODEL.toUpperCase().contains("ELO")) {
+            try {
+                if (barCodeReaderElo2_0 == null) {
+                    DeviceManager deviceManager = DeviceManager.getInstance(EloPlatform.PAYPOINT_2, activity);
+                    barCodeReaderElo2_0 = deviceManager.getBarCodeReader();
+                }
+                barCodeReaderElo2_0.setEnabled(true);
+                barCodeReaderElo2_0.setTriggerMode(TriggerMode.TRIGGERED);
+                barCodeReaderElo2_0.setKbMode(activity);
+            } catch (UnsupportedEloPlatform e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
             }
         }
     }
@@ -553,11 +644,15 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
     @Override
     public void toggleBarcodeReader() {
-
+        if (barCodeReaderElo2_0 != null && barCodeReaderElo2_0.getStatus() == Status.ENABLED) {
+            turnOffBCR();
+        } else {
+            turnOnBCR();
+        }
     }
 
     @Override
-    public void printReceiptPreview(SplitedOrder splitedOrder) {
+    public void printReceiptPreview(SplittedOrder splitedOrder) {
         try {
             setPaperWidth(LINE_WIDTH);
             setStartIOPort();
@@ -571,22 +666,22 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     }
 
     @Override
-    public void salePayment(Payment payment) {
+    public void salePayment(Payment payment, CreditCardInfo creditCardInfo) {
 
     }
 
     @Override
-    public void saleReversal(Payment payment, String originalTransactionId) {
+    public void saleReversal(Payment payment, String originalTransactionId, CreditCardInfo creditCardInfo) {
 
     }
 
     @Override
-    public void refund(Payment payment) {
+    public void refund(Payment payment, CreditCardInfo creditCardInfo) {
 
     }
 
     @Override
-    public void refundReversal(Payment payment, String originalTransactionId) {
+    public void refundReversal(Payment payment, String originalTransactionId, CreditCardInfo creditCardInfo) {
 
     }
 
@@ -649,6 +744,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
     @Override
     public void printClockInOut(List<ClockInOut> timeClocks, String clerkID) {
+        setPaperWidth(LINE_WIDTH);
         super.printClockInOut(timeClocks, LINE_WIDTH, clerkID);
     }
 
@@ -664,8 +760,9 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
             @Override
             protected Boolean doInBackground(Void... params) {
-                mStarIoExtManager.disconnect();
-                return mStarIoExtManager.connect();
+                mStarIoExtManager.disconnect(EMSBluetoothStarPrinter.this);
+                mStarIoExtManager.connect(EMSBluetoothStarPrinter.this);
+                return true;
             }
 
             @Override
@@ -736,6 +833,16 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
             }
         }
         return port;
+    }
+
+    @Override
+    public void onConnected(ConnectResult connectResult) {
+
+    }
+
+    @Override
+    public void onDisconnected() {
+
     }
 
     public class processConnectionAsync extends AsyncTask<Integer, String, String> {
@@ -831,10 +938,10 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
             }
 
             if (didConnect) {
-                edm.driverDidConnectToDevice(thisInstance, true);
+                edm.driverDidConnectToDevice(thisInstance, true, activity);
             } else {
 
-                edm.driverDidNotConnectToDevice(thisInstance, msg, true);
+                edm.driverDidNotConnectToDevice(thisInstance, msg, true, activity);
             }
 
         }

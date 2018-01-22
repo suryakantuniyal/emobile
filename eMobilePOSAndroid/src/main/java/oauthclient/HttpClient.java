@@ -17,7 +17,7 @@ public class HttpClient {
 //    org.apache.http.client.HttpClient client = new DefaultHttpClient();
 //    HttpPost post;
 //    StringEntity stringEntity;
-//    HttpResponse response;
+//    HttpResponse Response;
 //    HttpEntity entity;
 
 
@@ -25,8 +25,8 @@ public class HttpClient {
 //            IOException {
 //        HttpGet httpGet = new HttpGet(url);
 //        httpGet.setHeader("Content-Type", "application/json");
-//        response = client.execute(httpGet);
-//        entity = response.getEntity();
+//        Response = client.execute(httpGet);
+//        entity = Response.getEntity();
 //        if (entity != null) {
 //            return entity.getContent();
 //        }
@@ -63,8 +63,8 @@ public class HttpClient {
 //        stringEntity = new StringEntity(jsonObject.toString(), "UTF-8");
 //        post.setHeader("Content-Type", "application/json");
 //        post.setEntity(stringEntity);
-//        response = client.execute(post);
-//        entity = response.getEntity();
+//        Response = client.execute(post);
+//        entity = Response.getEntity();
 //        if (entity != null) {
 //            String convertStreamToString = convertStreamToString(entity
 //                    .getContent());
@@ -79,8 +79,8 @@ public class HttpClient {
 //        stringEntity = new StringEntity(jsonObject.toString(), "UTF-8");
 //        post.setHeader("Content-Type", "application/json");
 //        post.setEntity(stringEntity);
-//        response = client.execute(post);
-//        entity = response.getEntity();
+//        Response = client.execute(post);
+//        entity = Response.getEntity();
 //        if (entity != null) {
 //            String convertStreamToString = convertStreamToString(entity
 //                    .getContent());
@@ -109,6 +109,7 @@ public class HttpClient {
         out.write(rawData.getBytes());
         out.flush();
         out.close();
+        int responseCode = httpURLConnection.getResponseCode();
         return convertStreamToString(httpURLConnection.getInputStream());
 
     }

@@ -18,8 +18,7 @@ import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMSEpayLoginInfo;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.SplitedOrder;
-import com.android.emobilepos.models.TimeClock;
+import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
@@ -53,16 +52,27 @@ import main.EMSDeviceManager;
  */
 public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate, Events.Required, Events.Status, Events.Log, Events.PendingResults {
 
-    private EMSDeviceManager edm;
-    static Hapi hapi;
-    private static String sharedSecret = "A110AEBBF5E0160A6F4427E052584C95CAD0C14072225CDD8B6E439FF0B976C1";
     protected static Device device;
+    static Hapi hapi;
+    static boolean connected = false;
+    private static String sharedSecret = "A110AEBBF5E0160A6F4427E052584C95CAD0C14072225CDD8B6E439FF0B976C1";
+    private static ProgressDialog myProgressDialog;
+    String msg = "Failed to connect";
+    com.handpoint.api.Currency currency = com.handpoint.api.Currency.valueOf(java.util.Currency.getInstance(Locale.getDefault()).getCurrencyCode());
+    private EMSDeviceManager edm;
     private Handler handler;
     private EMSCallBack msrCallBack;
-    String msg = "Failed to connect";
-    static boolean connected = false;
-    private static ProgressDialog myProgressDialog;
-    com.handpoint.api.Currency currency = com.handpoint.api.Currency.valueOf(java.util.Currency.getInstance(Locale.getDefault()).getCurrencyCode());
+    private Runnable doUpdateDidConnect = new Runnable() {
+        public void run() {
+            try {
+                if (msrCallBack != null)
+                    msrCallBack.readerConnectedSuccessfully(true);
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
 
     @Override
     public void connect(Context activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
@@ -71,39 +81,6 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
         this.edm = edm;
         new WorkingKeyRequest().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
-    }
-
-
-    @Override
-    public boolean autoConnect(Activity activity, EMSDeviceManager edm, int paperSize, boolean isPOSPrinter,
-                               String _portName, String _portNumber) {
-        this.activity = activity;
-        myPref = new MyPreferences(this.activity);
-        this.edm = edm;
-        if (hapi == null) {
-
-//            EMSPayGate_Default payGate = new EMSPayGate_Default(activity, null);
-//            String request = payGate.paymentWithAction(EMSPayGate_Default.EAction.HandpointWorkingKey, false, null,
-//                    null);
-//            Post httpClient = new Post();
-//            String xml = httpClient.postData(Global.S_SUBMIT_WORKINGKEY_REQUEST, activity, request);
-            EMSEpayLoginInfo loginInfo = EMSUtils.getEmsEpayLoginInfo(activity);
-            sharedSecret = loginInfo.getSecret();//getWorkingKey(xml, activity);
-            if (TextUtils.isEmpty(sharedSecret)) {
-                return false;
-            }
-            hapi = HapiFactory.getAsyncInterface(this, activity).defaultSharedSecret(sharedSecret);
-        }
-        synchronized (hapi) {
-            discoverDevices(myPref.getPrinterName(), myPref.getSwiperMACAddress());
-            try {
-                hapi.wait(10000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return connected;
     }
 
 //    public static String getWorkingKey(String xml, Activity activity) {
@@ -138,36 +115,36 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
 //        return workingKey;
 //    }
 
-    private class WorkingKeyRequest extends AsyncTask<Void, Void, String> {
-        @Override
-        protected void onPreExecute() {
-            showDialog(R.string.connecting_handpoint);
-        }
+    @Override
+    public boolean autoConnect(Activity activity, EMSDeviceManager edm, int paperSize, boolean isPOSPrinter,
+                               String _portName, String _portNumber) {
+        this.activity = activity;
+        myPref = new MyPreferences(this.activity);
+        this.edm = edm;
+        if (hapi == null) {
 
-        @Override
-        protected String doInBackground(Void... params) {
 //            EMSPayGate_Default payGate = new EMSPayGate_Default(activity, null);
 //            String request = payGate.paymentWithAction(EMSPayGate_Default.EAction.HandpointWorkingKey, false, null,
 //                    null);
 //            Post httpClient = new Post();
 //            String xml = httpClient.postData(Global.S_SUBMIT_WORKINGKEY_REQUEST, activity, request);
             EMSEpayLoginInfo loginInfo = EMSUtils.getEmsEpayLoginInfo(activity);
-            return loginInfo.getSecret();//getWorkingKey(xml, activity);
+            sharedSecret = loginInfo.getSecret();//getWorkingKey(xml, activity);
+            if (TextUtils.isEmpty(sharedSecret)) {
+                return false;
+            }
+            hapi = HapiFactory.getAsyncInterface(this, activity).defaultSharedSecret(sharedSecret);
+        }
+        synchronized (hapi) {
+            discoverDevices(myPref.getPrinterName(), myPref.getSwiperMACAddress());
+            try {
+                hapi.wait(10000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
-        @Override
-        protected void onPostExecute(String result) {
-            sharedSecret = result;
-            if (hapi == null) {
-                hapi = HapiFactory.getAsyncInterface(EMSHandpoint.this, activity).defaultSharedSecret(sharedSecret);
-            }
-            if (!TextUtils.isEmpty(sharedSecret)) {
-                discoverDevices(myPref.getPrinterName(), myPref.getSwiperMACAddress());
-            } else {
-                dismissDialog();
-                edm.driverDidNotConnectToDevice(EMSHandpoint.this, msg, true);
-            }
-        }
+        return connected;
     }
 
     @Override
@@ -231,6 +208,16 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
     }
 
     @Override
+    public void turnOnBCR() {
+
+    }
+
+    @Override
+    public void turnOffBCR() {
+
+    }
+
+    @Override
     public boolean printReport(String curDate) {
         return false;
     }
@@ -260,19 +247,6 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
     public void unregisterPrinter() {
         hapi.disconnect();
     }
-
-
-    private Runnable doUpdateDidConnect = new Runnable() {
-        public void run() {
-            try {
-                if (msrCallBack != null)
-                    msrCallBack.readerConnectedSuccessfully(true);
-
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-    };
 
     @Override
     public void loadCardReader(EMSCallBack callBack, boolean isDebitCard) {
@@ -326,16 +300,16 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
     public void toggleBarcodeReader() {
 
     }
+
+    @Override
+    public void printReceiptPreview(SplittedOrder splitedOrder) {
+
+    }
 //
 //    @Override
 //    public void printReceiptPreview(View view) {
 //
 //    }
-
-    @Override
-    public void printReceiptPreview(SplitedOrder splitedOrder) {
-
-    }
 
     public void discoverDevices(String deviceName, String macAddress) {
         device = new Device(deviceName, macAddress, "", ConnectionMethod.BLUETOOTH);
@@ -346,27 +320,26 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
                 dismissDialog();
 //                Looper.prepare();
                 if (connected) {
-                    this.edm.driverDidConnectToDevice(this, true);
+                    this.edm.driverDidConnectToDevice(this, true, activity);
                 } else {
-                    this.edm.driverDidNotConnectToDevice(this, msg, true);
+                    this.edm.driverDidNotConnectToDevice(this, msg, true, activity);
                 }
 //                Looper.loop();
             } else {
                 synchronized (hapi) {
                     hapi.notifyAll();
                     if (connected) {
-                        this.edm.driverDidConnectToDevice(this, false);
+                        this.edm.driverDidConnectToDevice(this, false, activity);
                     } else {
-                        this.edm.driverDidNotConnectToDevice(this, msg, false);
+                        this.edm.driverDidNotConnectToDevice(this, msg, false, activity);
                     }
                 }
             }
         } else {
-            this.edm.driverDidNotConnectToDevice(this, msg, false);
+            this.edm.driverDidNotConnectToDevice(this, msg, false, activity);
         }
 //        hapi.listDevices(ConnectionMethod.BLUETOOTH);
     }
-
 
     //******************** Handpoint callbacks
     @Override
@@ -430,36 +403,35 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
             dismissDialog();
             Looper.prepare();
             if (connected) {
-                this.edm.driverDidConnectToDevice(this, true);
+                this.edm.driverDidConnectToDevice(this, true, activity);
             } else {
-                this.edm.driverDidNotConnectToDevice(this, msg, true);
+                this.edm.driverDidNotConnectToDevice(this, msg, true, activity);
             }
             Looper.loop();
         } else {
             synchronized (hapi) {
                 hapi.notifyAll();
                 if (connected) {
-                    this.edm.driverDidConnectToDevice(this, false);
+                    this.edm.driverDidConnectToDevice(this, false, activity);
                 } else {
-                    this.edm.driverDidNotConnectToDevice(this, msg, false);
+                    this.edm.driverDidNotConnectToDevice(this, msg, false, activity);
                 }
             }
         }
     }
 
-
     @Override
-    public void salePayment(Payment payment) {
+    public void salePayment(Payment payment, CreditCardInfo creditCardInfo) {
         hapi.addPendingResultsEventHandler(this);
         hapi.getPendingTransaction();
         boolean succeed = hapi.sale(new BigInteger(payment.getPay_amount().replace(".", "")), currency);
-        if (!succeed && activity != null && !((Activity)activity).isFinishing()) {
+        if (!succeed && activity != null && !((Activity) activity).isFinishing()) {
             Global.showPrompt(activity, R.string.payment, activity.getString(R.string.handpoint_payment_error));
         }
     }
 
     @Override
-    public void saleReversal(Payment payment, String originalTransactionId) {
+    public void saleReversal(Payment payment, String originalTransactionId, CreditCardInfo creditCardInfo) {
         hapi.getPendingTransaction();
         boolean succeed = hapi.saleReversal(new BigInteger(payment.getPay_amount().replace(".", "")), currency, originalTransactionId);
         if (!succeed) {
@@ -467,9 +439,8 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
         }
     }
 
-
     @Override
-    public void refund(Payment payment) {
+    public void refund(Payment payment, CreditCardInfo creditCardInfo) {
         hapi.addPendingResultsEventHandler(this);
         hapi.getPendingTransaction();
         boolean succeed = hapi.refund(new BigInteger(payment.getPay_amount().replace(".", "")), currency);
@@ -480,7 +451,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
     }
 
     @Override
-    public void refundReversal(Payment payment, String originalTransactionId) {
+    public void refundReversal(Payment payment, String originalTransactionId, CreditCardInfo creditCardInfo) {
         hapi.addPendingResultsEventHandler(this);
         hapi.getPendingTransaction();
         boolean succeed = hapi.saleReversal(new
@@ -551,7 +522,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
 
     @Override
     public void onMessageLogged(LogLevel logLevel, String s) {
-        Toast.makeText(activity, s, Toast.LENGTH_LONG);
+        Toast.makeText(activity, s, Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -579,6 +550,38 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
                 }
             } else {
                 hapi.removePendingResultsEventHandler(this);
+            }
+        }
+    }
+
+    private class WorkingKeyRequest extends AsyncTask<Void, Void, String> {
+        @Override
+        protected void onPreExecute() {
+            showDialog(R.string.connecting_handpoint);
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+//            EMSPayGate_Default payGate = new EMSPayGate_Default(activity, null);
+//            String request = payGate.paymentWithAction(EMSPayGate_Default.EAction.HandpointWorkingKey, false, null,
+//                    null);
+//            Post httpClient = new Post();
+//            String xml = httpClient.postData(Global.S_SUBMIT_WORKINGKEY_REQUEST, activity, request);
+            EMSEpayLoginInfo loginInfo = EMSUtils.getEmsEpayLoginInfo(activity);
+            return loginInfo.getSecret();//getWorkingKey(xml, activity);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            sharedSecret = result;
+            if (hapi == null) {
+                hapi = HapiFactory.getAsyncInterface(EMSHandpoint.this, activity).defaultSharedSecret(sharedSecret);
+            }
+            if (!TextUtils.isEmpty(sharedSecret)) {
+                discoverDevices(myPref.getPrinterName(), myPref.getSwiperMACAddress());
+            } else {
+                dismissDialog();
+                edm.driverDidNotConnectToDevice(EMSHandpoint.this, msg, true, activity);
             }
         }
     }

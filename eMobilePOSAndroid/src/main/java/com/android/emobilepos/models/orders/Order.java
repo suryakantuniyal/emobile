@@ -77,6 +77,7 @@ public class Order implements Cloneable {
     public String gran_total = "";
     public String cust_name = "";
     public String sync_id = "";
+    private String bixolonTransactionId;
     public Customer customer;
 
     //private Global global;
@@ -231,7 +232,7 @@ public class Order implements Cloneable {
         } else {
             if (!Global.taxID.isEmpty()) {
                 tax = taxHandler.getTax(Global.taxID, "", Double.parseDouble(TextUtils.isEmpty(orderProduct.getProd_price()) ? "0" : orderProduct.getProd_price()));
-                if (listOrderTaxes != null && getListOrderTaxes() != null && !getListOrderTaxes().isEmpty()) {
+                if (listOrderTaxes != null && getListOrderTaxes()!=null && !getListOrderTaxes().isEmpty()) {
                     for (DataTaxes dataTaxes : getListOrderTaxes()) {
                         taxes.add(new BigDecimal(dataTaxes.getTax_rate()));
 //                        BigDecimal taxAmount = orderProduct.getProductPriceTaxableAmountCalculated()
@@ -344,6 +345,14 @@ public class Order implements Cloneable {
             return order.ord_id.equalsIgnoreCase(this.ord_id);
         }
         return super.equals(obj);
+    }
+
+    public String getBixolonTransactionId() {
+        return bixolonTransactionId;
+    }
+
+    public void setBixolonTransactionId(String bixolonTransactionId) {
+        this.bixolonTransactionId = bixolonTransactionId;
     }
 
     public boolean isAllProductsRequiredAttrsCompleted() {

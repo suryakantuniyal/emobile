@@ -251,7 +251,12 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
                         paid.setBackgroundResource(R.drawable.edittext_border);
 
                         if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
-                            Global.mainPrinterManager.getCurrentDevice().openCashDrawer();
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Global.mainPrinterManager.getCurrentDevice().openCashDrawer();
+                                }
+                            }).start();
                         }
 
                         if (!isInvoice || (isInvoice && !isMultiInvoice))

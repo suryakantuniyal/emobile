@@ -38,8 +38,7 @@ import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.PaymentDetails;
-import com.android.emobilepos.models.SplitedOrder;
-import com.android.emobilepos.models.TimeClock;
+import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
@@ -66,20 +65,16 @@ import plaintext.EMSPlainTextHelper;
 public class EMSAsura extends EMSDeviceDriver
         implements EMSDeviceManagerPrinterDelegate, IMSRListener, IBarcodeListener {
 
-    public enum Align {
-        ALIGN_LEFT, ALIGN_CENTER, ALIGN_RIGHT
-    }
-
+    private final String FORMAT = "windows-1252";
+    AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
     private int LINE_WIDTH = 40;
     private int PRINT_TXT_SIZE = 24;
     private int PAPER_WIDTH = 576;
     private String portSettings, portName;
     private Context activity;
     private EMSAsura thisClassInstance;
-
     private EMSCallBack callBack, _scannerCallBack;
     private String encodedSignature;
-    private final String FORMAT = "windows-1252";
     private String encodedQRCode = "";
     private ReceiveThread receiveThread;
     private Handler handler;// = new Handler();
@@ -100,7 +95,63 @@ public class EMSAsura extends EMSDeviceDriver
     private JABarcodeReader barcodeReader;
     private JAPrinterStatus status;
     private JAPrintCashDrawer cashDrawer;
-    AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+    // displays data from card swiping
+    private Runnable doUpdateViews = new Runnable() {
+        public void run() {
+            try {
+                if (callBack != null)
+                    callBack.cardWasReadSuccessfully(true, cardManager);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
+    private Runnable doUpdateDidConnect = new Runnable() {
+        public void run() {
+            try {
+                if (callBack != null)
+                    callBack.readerConnectedSuccessfully(true);
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
+    private StringBuilder msr_data = new StringBuilder();
+    private int count = 0;
+    private String scannedData = "";
+
+    // private String getString(int id)
+    // {
+    // return(activity.getResources().getString(id));
+    // }
+    //
+    private Runnable runnableScannedData = new Runnable() {
+        public void run() {
+            try {
+                if (_scannerCallBack != null)
+                    _scannerCallBack.scannerWasRead(scannedData);
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
+
+    // private void verifyConnectivity() throws StarIOPortException,
+    // InterruptedException
+    // {
+    // try {
+    // if(port==null||port.retreiveStatus()==null&&port.retreiveStatus().offline)
+    // port = StarIOPort.getPort(portName, portSettings, 1000, this.activity);
+    // }
+    // catch(StarIOPortException e)
+    // {
+    // StarIOPort.releasePort(port);
+    // Thread.sleep(1000);
+    // port = StarIOPort.getPort(portName, portSettings, 1000, this.activity);
+    // }
+    // }
 
     @Override
     public void connect(Context activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
@@ -153,10 +204,10 @@ public class EMSAsura extends EMSDeviceDriver
                 didConnect = true;
 
             if (didConnect) {
-                this.edm.driverDidConnectToDevice(thisInstance, false);
+                this.edm.driverDidConnectToDevice(thisInstance, false, activity);
             } else {
 
-                this.edm.driverDidNotConnectToDevice(thisInstance, null, false);
+                this.edm.driverDidNotConnectToDevice(thisInstance, null, false, activity);
             }
 
         } catch (JAException e) {
@@ -168,78 +219,10 @@ public class EMSAsura extends EMSDeviceDriver
         return didConnect;
     }
 
-    public class processConnectionAsync extends AsyncTask<Integer, String, String> {
-
-        String msg = new String();
-        boolean didConnect = false;
-
-        @Override
-        protected void onPreExecute() {
-            myProgressDialog = new ProgressDialog(activity);
-            myProgressDialog.setMessage(activity.getString(R.string.progress_connecting_printer));
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            myProgressDialog.show();
-
-        }
-
-        @Override
-        protected String doInBackground(Integer... params) {
-            // TODO Auto-generated method stub
-
-            try {
-
-                printer = new JAPrinter();
-                // try
-                // {
-                // synchronized(printerLock)
-                // {
-                // printer.claim();
-                // printerLock.
-                // }
-                // }
-
-                status = printer.status();
-
-                if (status.offline)
-                    msg = "Printer is offline";
-                else
-                    didConnect = true;
-
-            } catch (JAException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } finally {
-
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String unused) {
-            myProgressDialog.dismiss();
-
-            if (didConnect) {
-                edm.driverDidConnectToDevice(thisInstance, true);
-            } else {
-
-                edm.driverDidNotConnectToDevice(thisInstance, msg, true);
-            }
-
-        }
-    }
-
     @Override
     public void registerAll() {
         this.registerPrinter();
     }
-
-    // private String getString(int id)
-    // {
-    // return(activity.getResources().getString(id));
-    // }
-    //
 
     private Bitmap addLineTextImage(Bitmap dstBitmap, String lineText, int fontSize, Align align) {
         int alignment = 0;
@@ -301,21 +284,6 @@ public class EMSAsura extends EMSDeviceDriver
         return expandedBitmap;
     }
 
-    // private void verifyConnectivity() throws StarIOPortException,
-    // InterruptedException
-    // {
-    // try {
-    // if(port==null||port.retreiveStatus()==null&&port.retreiveStatus().offline)
-    // port = StarIOPort.getPort(portName, portSettings, 1000, this.activity);
-    // }
-    // catch(StarIOPortException e)
-    // {
-    // StarIOPort.releasePort(port);
-    // Thread.sleep(1000);
-    // port = StarIOPort.getPort(portName, portSettings, 1000, this.activity);
-    // }
-    // }
-
     @Override
     public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
         printReceipt(ordID, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, emvContainer);
@@ -327,7 +295,6 @@ public class EMSAsura extends EMSDeviceDriver
         printTransaction(ordID, type, isFromHistory, fromOnHold, null);
         return true;
     }
-
 
     @Override
     public boolean printPaymentDetails(String payID, int type, boolean isReprint, EMVContainer emvContainer) {
@@ -510,12 +477,10 @@ public class EMSAsura extends EMSDeviceDriver
         return true;
     }
 
-
     @Override
     public boolean printBalanceInquiry(HashMap<String, String> values) {
         return printBalanceInquiry(values, LINE_WIDTH);
     }
-
 
     protected void printImage(int type) throws JAException {
         Bitmap myBitmap = null;
@@ -589,6 +554,16 @@ public class EMSAsura extends EMSDeviceDriver
     }
 
     @Override
+    public void turnOnBCR() {
+
+    }
+
+    @Override
+    public void turnOffBCR() {
+
+    }
+
+    @Override
     public void printEndOfDayReport(String curDate, String clerk_id, boolean printDetails) {
         printEndOfDayReportReceipt(curDate, LINE_WIDTH, printDetails);
     }
@@ -609,7 +584,7 @@ public class EMSAsura extends EMSDeviceDriver
             EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
 
             Bitmap textBitmap = addLineTextImage(null, "REPORT", PRINT_TXT_SIZE, Align.ALIGN_CENTER);
-            textBitmap = addLineTextImage(textBitmap, Global.formatToDisplayDate(curDate,  0), PRINT_TXT_SIZE,
+            textBitmap = addLineTextImage(textBitmap, Global.formatToDisplayDate(curDate, 0), PRINT_TXT_SIZE,
                     Align.ALIGN_CENTER);
             textBitmap = addLineTextImage(textBitmap, " ", PRINT_TXT_SIZE + (2 * 2), Align.ALIGN_LEFT);
             textBitmap = addLineTextImage(textBitmap, getString(R.string.receipt_pay_summary), PRINT_TXT_SIZE,
@@ -619,9 +594,9 @@ public class EMSAsura extends EMSDeviceDriver
                     Align.ALIGN_LEFT);
 
             HashMap<String, String> paymentMap = paymentHandler
-                    .getPaymentsRefundsForReportPrinting(Global.formatToDisplayDate(curDate,  4), 0);
+                    .getPaymentsRefundsForReportPrinting(Global.formatToDisplayDate(curDate, 4), 0);
             HashMap<String, String> refundMap = paymentHandler
-                    .getPaymentsRefundsForReportPrinting(Global.formatToDisplayDate(curDate,  4), 1);
+                    .getPaymentsRefundsForReportPrinting(Global.formatToDisplayDate(curDate, 4), 1);
             List<String[]> payMethodsNames = payMethodHandler.getPayMethodsName();
             int size = payMethodsNames.size();
             double payGranTotal = 0.00;
@@ -923,30 +898,6 @@ public class EMSAsura extends EMSDeviceDriver
 
     }
 
-    // displays data from card swiping
-    private Runnable doUpdateViews = new Runnable() {
-        public void run() {
-            try {
-                if (callBack != null)
-                    callBack.cardWasReadSuccessfully(true, cardManager);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-    };
-
-    private Runnable doUpdateDidConnect = new Runnable() {
-        public void run() {
-            try {
-                if (callBack != null)
-                    callBack.readerConnectedSuccessfully(true);
-
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-    };
-
     @Override
     public boolean printConsignmentPickup(List<ConsignmentTransaction> myConsignment, String encodedSig) {
         // TODO Auto-generated method stub
@@ -958,7 +909,7 @@ public class EMSAsura extends EMSDeviceDriver
             StringBuilder sb = new StringBuilder();
             // SQLiteDatabase db = new DBManager(activity).openReadableDB();
             ProductsHandler productDBHandler = new ProductsHandler(activity);
-            HashMap<String, String> map = new HashMap<String, String>();
+            HashMap<String, String> map = new HashMap<>();
             String prodDesc = "";
 
             int size = myConsignment.size();
@@ -975,7 +926,7 @@ public class EMSAsura extends EMSDeviceDriver
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_employee),
                     assignEmployee.getEmpName(), LINE_WIDTH, 0));
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
-                    Global.formatToDisplayDate(DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss),  3), LINE_WIDTH, 0));
+                    Global.formatToDisplayDate(DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss), 3), LINE_WIDTH, 0));
             sb.append(textHandler.newLines(3));
 
             for (int i = 0; i < size; i++) {
@@ -1035,7 +986,7 @@ public class EMSAsura extends EMSDeviceDriver
             EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
             StringBuilder sb = new StringBuilder();
             String[] rightInfo = new String[]{};
-            List<String[]> productInfo = new ArrayList<String[]>();
+            List<String[]> productInfo = new ArrayList<>();
             printPref = myPref.getPrintingPreferences();
 
             InvoicesHandler invHandler = new InvoicesHandler(activity);
@@ -1162,7 +1113,7 @@ public class EMSAsura extends EMSDeviceDriver
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cons_trans_id),
                     map.get("ConsTrans_ID"), LINE_WIDTH, 0));
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
-                    Global.formatToDisplayDate(DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss),  3), LINE_WIDTH, 0));
+                    Global.formatToDisplayDate(DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss), 3), LINE_WIDTH, 0));
             sb.append(textHandler.newLines(3));
 
             for (int i = 0; i < size; i++) {
@@ -1285,16 +1236,6 @@ public class EMSAsura extends EMSDeviceDriver
         }
     }
 
-    @Override
-    public boolean isUSBConnected() {
-        return false;
-    }
-
-    @Override
-    public void toggleBarcodeReader() {
-
-    }
-
 //    @Override
 //    public void printReceiptPreview(View view) {
 //        try {
@@ -1308,7 +1249,17 @@ public class EMSAsura extends EMSDeviceDriver
 //    }
 
     @Override
-    public void printReceiptPreview(SplitedOrder splitedOrder) {
+    public boolean isUSBConnected() {
+        return false;
+    }
+
+    @Override
+    public void toggleBarcodeReader() {
+
+    }
+
+    @Override
+    public void printReceiptPreview(SplittedOrder splitedOrder) {
         try {
             setPaperWidth(LINE_WIDTH);
 //            Bitmap bitmap = loadBitmapFromView(view);
@@ -1321,22 +1272,22 @@ public class EMSAsura extends EMSDeviceDriver
     }
 
     @Override
-    public void salePayment(Payment payment) {
+    public void salePayment(Payment payment, CreditCardInfo creditCardInfo) {
 
     }
 
     @Override
-    public void saleReversal(Payment payment, String originalTransactionId) {
+    public void saleReversal(Payment payment, String originalTransactionId, CreditCardInfo creditCardInfo) {
 
     }
 
     @Override
-    public void refund(Payment payment) {
+    public void refund(Payment payment, CreditCardInfo creditCardInfo) {
 
     }
 
     @Override
-    public void refundReversal(Payment payment, String originalTransactionId) {
+    public void refundReversal(Payment payment, String originalTransactionId, CreditCardInfo creditCardInfo) {
 
     }
 
@@ -1376,9 +1327,6 @@ public class EMSAsura extends EMSDeviceDriver
 
     }
 
-    private StringBuilder msr_data = new StringBuilder();
-    private int count = 0;
-
     @Override
     public void msrRead() {
         // TODO Auto-generated method stub
@@ -1417,18 +1365,70 @@ public class EMSAsura extends EMSDeviceDriver
 
     }
 
-    private String scannedData = "";
+    public enum Align {
+        ALIGN_LEFT, ALIGN_CENTER, ALIGN_RIGHT
+    }
 
-    private Runnable runnableScannedData = new Runnable() {
-        public void run() {
-            try {
-                if (_scannerCallBack != null)
-                    _scannerCallBack.scannerWasRead(scannedData);
+    public class processConnectionAsync extends AsyncTask<Integer, String, String> {
 
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
+        String msg = new String();
+        boolean didConnect = false;
+
+        @Override
+        protected void onPreExecute() {
+            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog.setMessage(activity.getString(R.string.progress_connecting_printer));
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setCancelable(false);
+            myProgressDialog.show();
+
         }
-    };
+
+        @Override
+        protected String doInBackground(Integer... params) {
+            // TODO Auto-generated method stub
+
+            try {
+
+                printer = new JAPrinter();
+                // try
+                // {
+                // synchronized(printerLock)
+                // {
+                // printer.claim();
+                // printerLock.
+                // }
+                // }
+
+                status = printer.status();
+
+                if (status.offline)
+                    msg = "Printer is offline";
+                else
+                    didConnect = true;
+
+            } catch (JAException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } finally {
+
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String unused) {
+            myProgressDialog.dismiss();
+
+            if (didConnect) {
+                edm.driverDidConnectToDevice(thisInstance, true, activity);
+            } else {
+
+                edm.driverDidNotConnectToDevice(thisInstance, msg, true, activity);
+            }
+
+        }
+    }
 
 }

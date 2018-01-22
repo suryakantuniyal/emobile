@@ -143,26 +143,26 @@ public class AddressHandler {
                     ")";
             insert = DBManager.getDatabase().compileStatement(sb);
 
-            insert.bindString(index(addr_id), address.addr_id == null ? "" : address.addr_id);
-            insert.bindString(index(cust_id), address.cust_id == null ? "" : address.cust_id);
-            insert.bindString(index(addr_b_str1), address.addr_b_str1 == null ? "" : address.addr_b_str1);
-            insert.bindString(index(addr_b_str2), address.addr_b_str2 == null ? "" : address.addr_b_str2);
-            insert.bindString(index(addr_b_str3), address.addr_b_str3 == null ? "" : address.addr_b_str3);
-            insert.bindString(index(addr_b_city), address.addr_b_city == null ? "" : address.addr_b_city);
-            insert.bindString(index(addr_b_state), address.addr_b_state == null ? "" : address.addr_b_state);
-            insert.bindString(index(addr_b_country), address.addr_b_country == null ? "" : address.addr_b_country);
-            insert.bindString(index(addr_b_zipcode), address.addr_b_zipcode == null ? "" : address.addr_b_zipcode);
-            insert.bindString(index(addr_s_name), address.addr_s_name == null ? "" : address.addr_s_name);
-            insert.bindString(index(addr_s_str1), address.addr_s_str1 == null ? "" : address.addr_s_str1);
-            insert.bindString(index(addr_s_str2), address.addr_s_str2 == null ? "" : address.addr_s_str2);
-            insert.bindString(index(addr_s_str3), address.addr_s_str3 == null ? "" : address.addr_s_str3);
-            insert.bindString(index(addr_s_city), address.addr_s_city == null ? "" : address.addr_s_city);
-            insert.bindString(index(addr_s_state), address.addr_s_state == null ? "" : address.addr_s_state);
-            insert.bindString(index(addr_s_country), address.addr_s_country == null ? "" : address.addr_s_country);
-            insert.bindString(index(addr_s_zipcode), address.addr_s_zipcode == null ? "" : address.addr_s_zipcode);
-            insert.bindString(index(qb_cust_id), address.qb_cust_id == null ? "" : address.qb_cust_id);
-            insert.bindString(index(addr_b_type), address.addr_b_type == null ? "" : address.addr_b_type);
-            insert.bindString(index(addr_s_type), address.addr_s_type == null ? "" : address.addr_s_type);
+            insert.bindString(index(addr_id), address.getAddr_id() == null ? "" : address.getAddr_id());
+            insert.bindString(index(cust_id), address.getCust_id() == null ? "" : address.getCust_id());
+            insert.bindString(index(addr_b_str1), address.getAddr_b_str1() == null ? "" : address.getAddr_b_str1());
+            insert.bindString(index(addr_b_str2), address.getAddr_b_str2() == null ? "" : address.getAddr_b_str2());
+            insert.bindString(index(addr_b_str3), address.getAddr_b_str3() == null ? "" : address.getAddr_b_str3());
+            insert.bindString(index(addr_b_city), address.getAddr_b_city() == null ? "" : address.getAddr_b_city());
+            insert.bindString(index(addr_b_state), address.getAddr_b_state() == null ? "" : address.getAddr_b_state());
+            insert.bindString(index(addr_b_country), address.getAddr_b_country() == null ? "" : address.getAddr_b_country());
+            insert.bindString(index(addr_b_zipcode), address.getAddr_b_zipcode() == null ? "" : address.getAddr_b_zipcode());
+            insert.bindString(index(addr_s_name), address.getAddr_s_name() == null ? "" : address.getAddr_s_name());
+            insert.bindString(index(addr_s_str1), address.getAddr_s_str1() == null ? "" : address.getAddr_s_str1());
+            insert.bindString(index(addr_s_str2), address.getAddr_s_str2() == null ? "" : address.getAddr_s_str2());
+            insert.bindString(index(addr_s_str3), address.getAddr_s_str3() == null ? "" : address.getAddr_s_str3());
+            insert.bindString(index(addr_s_city), address.getAddr_s_city() == null ? "" : address.getAddr_s_city());
+            insert.bindString(index(addr_s_state), address.getAddr_s_state() == null ? "" : address.getAddr_s_state());
+            insert.bindString(index(addr_s_country), address.getAddr_s_country() == null ? "" : address.getAddr_s_country());
+            insert.bindString(index(addr_s_zipcode), address.getAddr_s_zipcode() == null ? "" : address.getAddr_s_zipcode());
+            insert.bindString(index(qb_cust_id), address.getQb_cust_id() == null ? "" : address.getQb_cust_id());
+            insert.bindString(index(addr_b_type), address.getAddr_b_type() == null ? "" : address.getAddr_b_type());
+            insert.bindString(index(addr_s_type), address.getAddr_s_type() == null ? "" : address.getAddr_s_type());
 
 
             insert.execute();
@@ -219,21 +219,21 @@ public class AddressHandler {
             int addr2StateIndex = cursor.getColumnIndex(addr_s_state);
             int addr2ZipCodeIndex = cursor.getColumnIndex(addr_s_zipcode);
             do {
-                address.addr_b_str1 = cursor.getString(addrSTR1Index);
-                address.addr_b_str2 = cursor.getString(addrSTR2Index);
-                address.addr_b_str3 = cursor.getString(addrSTR3Index);
-                address.addr_b_country = cursor.getString(addrCountryIndex);
-                address.addr_b_city = cursor.getString(addrCityIndex);
-                address.addr_b_state = cursor.getString(addrStateIndex);
-                address.addr_b_zipcode = cursor.getString(addrZipCodeIndex);
+                address.setAddr_b_str1(cursor.getString(addrSTR1Index));
+                address.setAddr_b_str2(cursor.getString(addrSTR2Index));
+                address.setAddr_b_str3(cursor.getString(addrSTR3Index));
+                address.setAddr_b_country(cursor.getString(addrCountryIndex));
+                address.setAddr_b_city(cursor.getString(addrCityIndex));
+                address.setAddr_b_state(cursor.getString(addrStateIndex));
+                address.setAddr_b_zipcode(cursor.getString(addrZipCodeIndex));
 
-                address.addr_s_str1 = cursor.getString(addr2STR1Index);
-                address.addr_s_str2 = cursor.getString(addr2STR2Index);
-                address.addr_s_str3 = cursor.getString(addr2STR3Index);
-                address.addr_s_country = cursor.getString(addr2CountryIndex);
-                address.addr_s_city = cursor.getString(addr2CityIndex);
-                address.addr_s_state = cursor.getString(addr2StateIndex);
-                address.addr_s_zipcode = cursor.getString(addr2ZipCodeIndex);
+                address.setAddr_s_str1(cursor.getString(addr2STR1Index));
+                address.setAddr_s_str2(cursor.getString(addr2STR2Index));
+                address.setAddr_s_str3(cursor.getString(addr2STR3Index));
+                address.setAddr_s_country(cursor.getString(addr2CountryIndex));
+                address.setAddr_s_city(cursor.getString(addr2CityIndex));
+                address.setAddr_s_state(cursor.getString(addr2StateIndex));
+                address.setAddr_s_zipcode(cursor.getString(addr2ZipCodeIndex));
                 addresses.add(address);
             } while (cursor.moveToNext());
         }

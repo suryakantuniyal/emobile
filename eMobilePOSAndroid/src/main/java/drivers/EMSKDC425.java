@@ -16,8 +16,7 @@ import android.widget.Toast;
 import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.SplitedOrder;
-import com.android.emobilepos.models.TimeClock;
+import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.CardParser;
 import com.android.support.ConsignmentTransaction;
@@ -134,9 +133,9 @@ public class EMSKDC425 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
         boolean connected = connectKDC425();
         if (connected) {
-            this.edm.driverDidConnectToDevice(thisInstance, false);
+            this.edm.driverDidConnectToDevice(thisInstance, false, activity);
         } else {
-            this.edm.driverDidNotConnectToDevice(thisInstance, msg, false);
+            this.edm.driverDidNotConnectToDevice(thisInstance, msg, false, activity);
         }
 
         return true;
@@ -231,6 +230,16 @@ public class EMSKDC425 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     }
 
     @Override
+    public void turnOnBCR() {
+
+    }
+
+    @Override
+    public void turnOffBCR() {
+
+    }
+
+    @Override
     public boolean printReport(String curDate) {
         return false;
     }
@@ -316,9 +325,9 @@ public class EMSKDC425 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
     private void showConnectionMessage() {
         if (kdc425Reader != null && kdc425Reader.IsConnected()) {
-            edm.driverDidConnectToDevice(thisInstance, !isAutoConect);
+            edm.driverDidConnectToDevice(thisInstance, !isAutoConect, activity);
         } else {
-            edm.driverDidNotConnectToDevice(thisInstance, msg, !isAutoConect);
+            edm.driverDidNotConnectToDevice(thisInstance, msg, !isAutoConect, activity);
         }
     }
 
@@ -371,27 +380,27 @@ public class EMSKDC425 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 //    }
 
     @Override
-    public void printReceiptPreview(SplitedOrder splitedOrder) {
+    public void printReceiptPreview(SplittedOrder splitedOrder) {
 
     }
 
     @Override
-    public void salePayment(Payment payment) {
+    public void salePayment(Payment payment, CreditCardInfo creditCardInfo) {
 
     }
 
     @Override
-    public void saleReversal(Payment payment, String originalTransactionId) {
+    public void saleReversal(Payment payment, String originalTransactionId, CreditCardInfo creditCardInfo) {
 
     }
 
     @Override
-    public void refund(Payment payment) {
+    public void refund(Payment payment, CreditCardInfo creditCardInfo) {
 
     }
 
     @Override
-    public void refundReversal(Payment payment, String originalTransactionId) {
+    public void refundReversal(Payment payment, String originalTransactionId, CreditCardInfo creditCardInfo) {
 
     }
 

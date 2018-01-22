@@ -9,16 +9,17 @@ import android.util.Log;
 
 import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.DinningTableOrderDAO;
-import com.android.emobilepos.initialization.SelectAccount_FA;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.OrderAttributes;
 import com.android.emobilepos.models.realms.ProductAttribute;
+import com.android.support.Customer;
 import com.android.support.DateUtils;
 import com.android.support.GenerateNewID;
 import com.android.support.Global;
+import com.android.support.MyPreferences;
 import com.google.gson.Gson;
 
 import net.sqlcipher.database.SQLiteStatement;
@@ -81,6 +82,7 @@ public class OrdersHandler {
     private final static String associateID = "associateID";
     private final static String is_stored_fwd = "is_stored_fwd";
     private final static String VAT = "VAT";
+    private final static String bixolonTransactionId = "bixolonTransactionId";
     private static String ord_timeStarted = "ord_timeStarted";
     private final static List<String> attr = Arrays.asList(ord_id, qbord_id, emp_id, cust_id, clerk_id, c_email,
             ord_signature, ord_po, total_lines, total_lines_pay, ord_total, ord_comment, ord_delivery, ord_timecreated,
@@ -88,7 +90,7 @@ public class OrdersHandler {
             ord_inventory, ord_issync, tax_id, ord_shipvia, ord_shipto, ord_terms, ord_custmsg, ord_class, ord_subtotal,
             ord_taxamount, ord_discount, ord_discount_id, ord_latitude, ord_longitude, tipAmount, isVoid, custidkey,
             isOnHold, ord_HoldName, is_stored_fwd, VAT, assignedTable, numberOfSeats, associateID,
-            ord_timeStarted, orderAttributes);
+            ord_timeStarted, orderAttributes, bixolonTransactionId);
     private static CustomersHandler custHandler;
     private static OrderTaxes_DB taxes_db;
     private static OrderProductsHandler orderProductsHandler;
@@ -172,6 +174,8 @@ public class OrdersHandler {
         order.ord_HoldName = cursor.getString(cursor.getColumnIndex(ord_HoldName));
         order.is_stored_fwd = cursor.getString(cursor.getColumnIndex(is_stored_fwd));
         order.custidkey = cursor.getString(cursor.getColumnIndex(custidkey));
+        order.setBixolonTransactionId(cursor.getString(cursor.getColumnIndex(bixolonTransactionId)));
+
         custHandler = new CustomersHandler(activity);
         order.customer = custHandler.getCustomer(order.cust_id);
         String attributes = cursor.getString(cursor.getColumnIndex(orderAttributes));
@@ -223,74 +227,76 @@ public class OrdersHandler {
 
     public void insert(List<Order> orders) {
         DBManager.getDatabase().beginTransaction();
+        MyPreferences preferences = new MyPreferences(activity);
         try {
             for (Order order : orders) {
-                SQLiteStatement insert;
+                SQLiteStatement sqlinsert;
                 String sb = "INSERT OR REPLACE INTO " + table_name + " (" + sb1.toString() + ") " +
                         "VALUES (" + sb2.toString() + ")";
-                insert = DBManager.getDatabase().compileStatement(sb);
+                sqlinsert = DBManager.getDatabase().compileStatement(sb);
+                DBUtils dbUtils = DBUtils.getInstance(preferences.getAcctNumber(), sqlinsert, sb, DBUtils.DBChild.ORDERS);
 //                order.ord_id = generateNewID.getNextID(GenerateNewID.IdType.ORDER_ID);
-                insert.bindString(index(ord_id), order.ord_id == null ? "" : order.ord_id); // cust_id
-                insert.bindString(index(qbord_id), order.qbord_id == null ? "" : order.qbord_id); // cust_id
-                insert.bindString(index(emp_id), order.emp_id == null ? "" : order.emp_id); // cust_id
-                insert.bindString(index(cust_id), order.cust_id == null ? "" : order.cust_id); // cust_id
-                insert.bindString(index(clerk_id), order.clerk_id == null ? "" : order.clerk_id); // cust_id
-                insert.bindString(index(c_email), order.c_email == null ? "" : order.c_email); // cust_id
-                insert.bindString(index(ord_signature), order.ord_signature == null ? "" : order.ord_signature); // cust_id
-                insert.bindString(index(ord_po), order.ord_po == null ? "" : order.ord_po); // cust_id
-                insert.bindString(index(total_lines), TextUtils.isEmpty(order.total_lines) ? "0" : order.total_lines); // cust_id
-                insert.bindString(index(total_lines_pay),
+                dbUtils.bindString(index(ord_id), order.ord_id == null ? "" : order.ord_id); // cust_id
+                dbUtils.bindString(index(qbord_id), order.qbord_id == null ? "" : order.qbord_id); // cust_id
+                dbUtils.bindString(index(emp_id), order.emp_id == null ? "" : order.emp_id); // cust_id
+                dbUtils.bindString(index(cust_id), order.cust_id == null ? "" : order.cust_id); // cust_id
+                dbUtils.bindString(index(clerk_id), order.clerk_id == null ? "" : order.clerk_id); // cust_id
+                dbUtils.bindString(index(c_email), order.c_email == null ? "" : order.c_email); // cust_id
+                dbUtils.bindString(index(ord_signature), order.ord_signature == null ? "" : order.ord_signature); // cust_id
+                dbUtils.bindString(index(ord_po), order.ord_po == null ? "" : order.ord_po); // cust_id
+                dbUtils.bindString(index(total_lines), TextUtils.isEmpty(order.total_lines) ? "0" : order.total_lines); // cust_id
+                dbUtils.bindString(index(total_lines_pay),
                         TextUtils.isEmpty(order.total_lines_pay) ? "0" : order.total_lines_pay); // cust_id
-                insert.bindString(index(ord_total), String.valueOf(TextUtils.isEmpty(order.ord_total) ? "0" : Global.getBigDecimalNum(order.ord_total, 2))); // cust_id
-                insert.bindString(index(ord_comment), order.ord_comment == null ? "" : order.ord_comment); // cust_id
-                insert.bindString(index(ord_delivery), order.ord_delivery == null ? "" : order.ord_delivery); // cust_id
-                insert.bindString(index(ord_timecreated), order.ord_timecreated == null ? "" : order.ord_timecreated); // cust_id
-                insert.bindString(index(ord_timesync), order.ord_timesync == null ? "" : order.ord_timesync); // cust_id
-                insert.bindString(index(qb_synctime), order.qb_synctime == null ? "" : order.qb_synctime); // cust_id
-                insert.bindString(index(emailed), TextUtils.isEmpty(order.emailed) ? "0" : order.emailed); // cust_id
-                insert.bindString(index(processed), TextUtils.isEmpty(order.processed) ? "1" : order.processed); // cust_id
-                insert.bindString(index(ord_type), order.ord_type == null ? "" : order.ord_type); // cust_id
-                insert.bindString(index(ord_claimnumber), order.ord_claimnumber == null ? "" : order.ord_claimnumber); // cust_id
-                insert.bindString(index(ord_rganumber), order.ord_rganumber == null ? "" : order.ord_rganumber); // cust_id
-                insert.bindString(index(ord_returns_pu), order.ord_returns_pu == null ? "" : order.ord_returns_pu); // cust_id
-                insert.bindString(index(ord_inventory), order.ord_inventory == null ? "" : order.ord_inventory); // cust_id
-                insert.bindString(index(ord_issync), TextUtils.isEmpty(order.ord_issync) ? "0" : order.ord_issync); // cust_id
-                insert.bindString(index(tax_id), order.tax_id == null ? "" : order.tax_id); // cust_id
-                insert.bindString(index(ord_shipvia), order.ord_shipvia == null ? "" : order.ord_shipvia); // cust_id
-                insert.bindString(index(ord_shipto), order.ord_shipto == null ? "" : order.ord_shipto); // cust_id
-                insert.bindString(index(ord_terms), order.ord_terms == null ? "" : order.ord_terms); // cust_id
-                insert.bindString(index(ord_custmsg), order.ord_custmsg == null ? "" : order.ord_custmsg); // cust_id
-                insert.bindString(index(ord_class), order.ord_class == null ? "" : order.ord_class); // cust_id
-                insert.bindString(index(ord_subtotal), TextUtils.isEmpty(order.ord_subtotal) ? "0" : order.ord_subtotal); // cust_id
-                insert.bindString(index(ord_taxamount), TextUtils.isEmpty(order.ord_taxamount) ? "0" : order.ord_taxamount); // cust_id
-                insert.bindString(index(ord_discount), TextUtils.isEmpty(order.ord_discount) ? "0" : order.ord_discount); // cust_id
-                insert.bindString(index(ord_discount_id), order.ord_discount_id == null ? "" : order.ord_discount_id); // cust_id
-                insert.bindString(index(ord_latitude), order.ord_latitude == null ? "" : order.ord_latitude); // cust_id
-                insert.bindString(index(ord_longitude), order.ord_longitude == null ? "" : order.ord_longitude); // cust_id
-                insert.bindString(index(tipAmount), TextUtils.isEmpty(order.tipAmount) ? "0" : order.tipAmount); // cust_id
-                insert.bindString(index(custidkey), order.custidkey == null ? "" : order.custidkey);
-                insert.bindString(index(isOnHold), TextUtils.isEmpty(order.isOnHold) ? "0" : order.isOnHold);
-                insert.bindString(index(ord_HoldName), order.ord_HoldName == null ? "" : order.ord_HoldName);
-                insert.bindString(index(is_stored_fwd), TextUtils.isEmpty(order.is_stored_fwd) ? "0" : order.is_stored_fwd);
-                insert.bindString(index(assignedTable), order.assignedTable == null ? "" : order.assignedTable);
-                insert.bindString(index(associateID), order.associateID == null ? "" : order.associateID);
-                insert.bindLong(index(numberOfSeats), order.numberOfSeats);
+                dbUtils.bindString(index(ord_total), String.valueOf(TextUtils.isEmpty(order.ord_total) ? "0" : Global.getBigDecimalNum(order.ord_total, 2))); // cust_id
+                dbUtils.bindString(index(ord_comment), order.ord_comment == null ? "" : order.ord_comment); // cust_id
+                dbUtils.bindString(index(ord_delivery), order.ord_delivery == null ? "" : order.ord_delivery); // cust_id
+                dbUtils.bindString(index(ord_timecreated), order.ord_timecreated == null ? "" : order.ord_timecreated); // cust_id
+                dbUtils.bindString(index(ord_timesync), order.ord_timesync == null ? "" : order.ord_timesync); // cust_id
+                dbUtils.bindString(index(qb_synctime), order.qb_synctime == null ? "" : order.qb_synctime); // cust_id
+                dbUtils.bindString(index(emailed), TextUtils.isEmpty(order.emailed) ? "0" : order.emailed); // cust_id
+                dbUtils.bindString(index(processed), TextUtils.isEmpty(order.processed) ? "1" : order.processed); // cust_id
+                dbUtils.bindString(index(ord_type), order.ord_type == null ? "" : order.ord_type); // cust_id
+                dbUtils.bindString(index(ord_claimnumber), order.ord_claimnumber == null ? "" : order.ord_claimnumber); // cust_id
+                dbUtils.bindString(index(ord_rganumber), order.ord_rganumber == null ? "" : order.ord_rganumber); // cust_id
+                dbUtils.bindString(index(ord_returns_pu), order.ord_returns_pu == null ? "" : order.ord_returns_pu); // cust_id
+                dbUtils.bindString(index(ord_inventory), order.ord_inventory == null ? "" : order.ord_inventory); // cust_id
+                dbUtils.bindString(index(ord_issync), TextUtils.isEmpty(order.ord_issync) ? "0" : order.ord_issync); // cust_id
+                dbUtils.bindString(index(tax_id), order.tax_id == null ? "" : order.tax_id); // cust_id
+                dbUtils.bindString(index(ord_shipvia), order.ord_shipvia == null ? "" : order.ord_shipvia); // cust_id
+                dbUtils.bindString(index(ord_shipto), order.ord_shipto == null ? "" : order.ord_shipto); // cust_id
+                dbUtils.bindString(index(ord_terms), order.ord_terms == null ? "" : order.ord_terms); // cust_id
+                dbUtils.bindString(index(ord_custmsg), order.ord_custmsg == null ? "" : order.ord_custmsg); // cust_id
+                dbUtils.bindString(index(ord_class), order.ord_class == null ? "" : order.ord_class); // cust_id
+                dbUtils.bindString(index(ord_subtotal), TextUtils.isEmpty(order.ord_subtotal) ? "0" : order.ord_subtotal); // cust_id
+                dbUtils.bindString(index(ord_taxamount), TextUtils.isEmpty(order.ord_taxamount) ? "0" : order.ord_taxamount); // cust_id
+                dbUtils.bindString(index(ord_discount), TextUtils.isEmpty(order.ord_discount) ? "0" : order.ord_discount); // cust_id
+                dbUtils.bindString(index(ord_discount_id), order.ord_discount_id == null ? "" : order.ord_discount_id); // cust_id
+                dbUtils.bindString(index(ord_latitude), order.ord_latitude == null ? "" : order.ord_latitude); // cust_id
+                dbUtils.bindString(index(ord_longitude), order.ord_longitude == null ? "" : order.ord_longitude); // cust_id
+                dbUtils.bindString(index(tipAmount), TextUtils.isEmpty(order.tipAmount) ? "0" : order.tipAmount); // cust_id
+                dbUtils.bindString(index(custidkey), order.custidkey == null ? "" : order.custidkey);
+                dbUtils.bindString(index(isOnHold), TextUtils.isEmpty(order.isOnHold) ? "0" : order.isOnHold);
+                dbUtils.bindString(index(ord_HoldName), order.ord_HoldName == null ? "" : order.ord_HoldName);
+                dbUtils.bindString(index(is_stored_fwd), TextUtils.isEmpty(order.is_stored_fwd) ? "0" : order.is_stored_fwd);
+                dbUtils.bindString(index(assignedTable), order.assignedTable == null ? "" : order.assignedTable);
+                dbUtils.bindString(index(associateID), order.associateID == null ? "" : order.associateID);
+                dbUtils.bindLong(index(numberOfSeats), order.numberOfSeats);
                 if (order.orderAttributes != null) {
                     Gson gson = JsonUtils.getInstance();
                     String json = gson.toJson(order.orderAttributes);
-                    insert.bindString(index(orderAttributes), json);
+                    dbUtils.bindString(index(orderAttributes), json);
                 }
                 if (TextUtils.isEmpty(order.ord_timeStarted)) {
                     order.ord_timeStarted = DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss);
                 }
-                insert.bindString(index(ord_timeStarted), order.ord_timeStarted);
-                insert.bindString(index(isVoid), TextUtils.isEmpty(order.isVoid) ? "0" : order.isVoid);
-                insert.bindString(index(VAT), TextUtils.isEmpty(order.VAT) ? "0" : order.VAT);
+                dbUtils.bindString(index(ord_timeStarted), order.ord_timeStarted);
+                dbUtils.bindString(index(isVoid), TextUtils.isEmpty(order.isVoid) ? "0" : order.isVoid);
+                dbUtils.bindString(index(VAT), TextUtils.isEmpty(order.VAT) ? "0" : order.VAT);
 
-                insert.execute();
-                insert.clearBindings();
-                insert.close();
-                Log.d("Order Insert:", order.toString());
+                dbUtils.executeAuditedDB();
+                sqlinsert.clearBindings();
+                sqlinsert.close();
+//                Log.d("Order Insert:", order.toString());
                 DinningTableOrderDAO.createDinningTableOrder(order);
                 if (GenerateNewID.isValidLastId(order.ord_id, GenerateNewID.IdType.ORDER_ID)) {
                     AssignEmployeeDAO.updateLastOrderId(order.ord_id);
@@ -817,5 +823,11 @@ public class OrdersHandler {
         }
 //        int delete = DBManager.getDatabase().delete(table_name, "isOnHold = ?", new String[]{"1"});
         return delete;
+    }
+
+    public void updateBixolonTransactionId(Order order) {
+        ContentValues args = new ContentValues();
+        args.put(bixolonTransactionId, order.getBixolonTransactionId());
+        DBManager.getDatabase().update(table_name, args, ord_id + " = ?", new String[]{order.ord_id});
     }
 }

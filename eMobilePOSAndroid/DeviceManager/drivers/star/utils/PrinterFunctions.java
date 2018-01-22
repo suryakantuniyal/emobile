@@ -303,7 +303,7 @@ public class PrinterFunctions {
 			 * 
 			 * If receipt print is success but timeout error occurs(Show message
 			 * which is
-			 * "There was no response of the printer within the timeout period."
+			 * "There was no Response of the printer within the timeout period."
 			 * ), need to change value of timeout more longer in
 			 * "StarIOPort.getPort" method. (e.g.) 10000 -> 30000
 			 */

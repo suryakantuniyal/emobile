@@ -16,8 +16,7 @@ import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.PaymentDetails;
-import com.android.emobilepos.models.SplitedOrder;
-import com.android.emobilepos.models.TimeClock;
+import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
@@ -104,10 +103,10 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         printerApi.open();
         int res = printerApi.initPrinter();
         if (res == 0) {
-            this.edm.driverDidConnectToDevice(thisInstance, false);
+            this.edm.driverDidConnectToDevice(thisInstance, false, activity);
             return true;
         } else
-            this.edm.driverDidNotConnectToDevice(thisInstance, null, false);
+            this.edm.driverDidNotConnectToDevice(thisInstance, null, false, activity);
 
         return false;
     }
@@ -148,10 +147,10 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
             myProgressDialog.dismiss();
 
             if (didConnect) {
-                edm.driverDidConnectToDevice(thisInstance, true);
+                edm.driverDidConnectToDevice(thisInstance, true, activity);
             } else {
 
-                edm.driverDidNotConnectToDevice(thisInstance, msg, true);
+                edm.driverDidNotConnectToDevice(thisInstance, msg, true, activity);
             }
         }
     }
@@ -387,6 +386,16 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     }
 
     @Override
+    public void turnOnBCR() {
+
+    }
+
+    @Override
+    public void turnOffBCR() {
+
+    }
+
+    @Override
     public boolean printReport(String curDate) {
         try {
 
@@ -509,7 +518,7 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 //    }
 
     @Override
-    public void printReceiptPreview(SplitedOrder splitedOrder) {
+    public void printReceiptPreview(SplittedOrder splitedOrder) {
         try {
             setPaperWidth(LINE_WIDTH);
             super.printReceiptPreview(splitedOrder, LINE_WIDTH);
@@ -521,22 +530,22 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     }
 
     @Override
-    public void salePayment(Payment payment) {
+    public void salePayment(Payment payment, CreditCardInfo creditCardInfo) {
 
     }
 
     @Override
-    public void saleReversal(Payment payment, String originalTransactionId) {
+    public void saleReversal(Payment payment, String originalTransactionId, CreditCardInfo creditCardInfo) {
 
     }
 
     @Override
-    public void refund(Payment payment) {
+    public void refund(Payment payment, CreditCardInfo creditCardInfo) {
 
     }
 
     @Override
-    public void refundReversal(Payment payment, String originalTransactionId) {
+    public void refundReversal(Payment payment, String originalTransactionId, CreditCardInfo creditCardInfo) {
 
     }
 

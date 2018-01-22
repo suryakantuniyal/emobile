@@ -106,9 +106,6 @@ public class SalesAssociateListFragment extends Fragment implements AdapterView.
             } catch (SAXException e) {
                 e.printStackTrace();
                 Crashlytics.logException(e);
-            } catch (IOException e) {
-                e.printStackTrace();
-                Crashlytics.logException(e);
             }
             return null;
         }

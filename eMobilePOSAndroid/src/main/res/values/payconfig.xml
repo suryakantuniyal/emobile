@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string translatable="false" name="gatewayLiveUrl">https://payments.anywherecommerce.com/merchant</string>
+	<string translatable="false" name="gatewayTestUrl">https://testpayments.anywherecommerce.com/merchant</string>
+	<string translatable="false" name="gatewayDevUrl">https://devpayments.anywherecommerce.com/merchant</string>
+	<string translatable="false" name="scheme">anywhere://com.anywhere.login</string>
+</resources>

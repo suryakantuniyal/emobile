@@ -70,7 +70,7 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
 
     public static final int CASE_GIFT = 0, CASE_LOYALTY = 1, CASE_REWARD = 2;
     private static final String DATA_STRING_TAG = "com.motorolasolutions.emdk.datawedge.data_string";
-    private static CheckBox cardSwipe;
+    private CheckBox cardSwipe;
     private static boolean cardReaderConnected = false;
     private static String ourIntentAction = "";
     EMSPayGate_Default.EAction PAYMENT_ACTION;

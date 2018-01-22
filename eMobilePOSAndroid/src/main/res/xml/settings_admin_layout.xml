@@ -149,6 +149,10 @@
             android:key="pref_use_clerks"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_use_clerks" />
+        <Preference
+            android:key="pref_clerk_management"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_clerk_management" />
     </PreferenceCategory>
     <PreferenceCategory
         android:layout="@layout/settings_custom_header_layout"
@@ -382,6 +386,11 @@
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_snbc_setup" />
 
+        <Preference
+            android:key="pref_bixolon_setup"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_bixolon_setup" />
+
         <MultiSelectListPreference
             android:defaultValue="@array/printPrefValues"
             android:entries="@array/printPrefArray"
@@ -404,7 +413,10 @@
             android:key="pref_connect_to_usb_peripheral"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_connect_to_usb_peripheral" />
-
+        <CheckBoxPreference
+            android:key="pref_print_raster_mode"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_print_raster_mode" />
         <Preference
             android:key="pref_redetect_peripherals"
             android:layout="@layout/settings_custom_layout"

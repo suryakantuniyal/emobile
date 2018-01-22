@@ -13,8 +13,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.SplitedOrder;
-import com.android.emobilepos.models.TimeClock;
+import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
@@ -34,13 +33,13 @@ import main.EMSDeviceManager;
 
 public class EMSRP600 extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
 
+    private final int LINE_WIDTH = 32;
+    Handler handler;
     private CashDrawerApiContext cashDrawerApiContext = new CashDrawerManage();
     private EMSDeviceManager edm;
     private EMSDeviceDriver thisInstance;
     private ProgressDialog myProgressDialog;
-    private final int LINE_WIDTH = 32;
     private EMSCallBack callback;
-    Handler handler;
     private POSUSBAPI posInterfaceAPI;
 
 
@@ -75,45 +74,12 @@ public class EMSRP600 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
         int printerErrorCode = posInterfaceAPI.OpenDevice();//
         if (printerErrorCode == 0) {
-            this.edm.driverDidConnectToDevice(thisInstance, false);
+            this.edm.driverDidConnectToDevice(thisInstance, false, activity);
             return true;
         } else
-            this.edm.driverDidNotConnectToDevice(thisInstance, null, false);
+            this.edm.driverDidNotConnectToDevice(thisInstance, null, false, activity);
 
         return false;
-    }
-
-    public class processConnectionAsync extends AsyncTask<Integer, String, String> {
-
-        String msg = "";
-        boolean didConnect = false;
-
-        @Override
-        protected void onPreExecute() {
-            myProgressDialog = new ProgressDialog(activity);
-            myProgressDialog.setMessage(activity.getString(R.string.connecting_device));
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            myProgressDialog.show();
-
-        }
-
-        @Override
-        protected String doInBackground(Integer... params) {
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String unused) {
-            myProgressDialog.dismiss();
-            if (didConnect) {
-                edm.driverDidConnectToDevice(thisInstance, true);
-            } else {
-
-                edm.driverDidNotConnectToDevice(thisInstance, msg, true);
-            }
-        }
     }
 
     @Override
@@ -131,12 +97,10 @@ public class EMSRP600 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
         return true;
     }
 
-
     @Override
     public boolean printPaymentDetails(String payID, int type, boolean isReprint, EMVContainer emvContainer) {
         return true;
     }
-
 
     @Override
     public boolean printBalanceInquiry(HashMap<String, String> values) {
@@ -173,6 +137,16 @@ public class EMSRP600 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     }
 
     @Override
+    public void turnOnBCR() {
+
+    }
+
+    @Override
+    public void turnOffBCR() {
+
+    }
+
+    @Override
     public boolean printReport(String curDate) {
         return true;
     }
@@ -194,7 +168,6 @@ public class EMSRP600 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
             handler = new Handler();
 
     }
-
 
     @Override
     public void loadScanner(EMSCallBack _callBack) {
@@ -220,33 +193,33 @@ public class EMSRP600 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
     }
 
+    @Override
+    public void printReceiptPreview(SplittedOrder splitedOrder) {
+
+    }
+
 //    @Override
 //    public void printReceiptPreview(View view) {
 //
 //    }
 
     @Override
-    public void printReceiptPreview(SplitedOrder splitedOrder) {
+    public void salePayment(Payment payment, CreditCardInfo creditCardInfo) {
 
     }
 
     @Override
-    public void salePayment(Payment payment) {
+    public void saleReversal(Payment payment, String originalTransactionId, CreditCardInfo creditCardInfo) {
 
     }
 
     @Override
-    public void saleReversal(Payment payment, String originalTransactionId) {
+    public void refund(Payment payment, CreditCardInfo creditCardInfo) {
 
     }
 
     @Override
-    public void refund(Payment payment) {
-
-    }
-
-    @Override
-    public void refundReversal(Payment payment, String originalTransactionId) {
+    public void refundReversal(Payment payment, String originalTransactionId, CreditCardInfo creditCardInfo) {
 
     }
 
@@ -306,6 +279,39 @@ public class EMSRP600 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     @Override
     public void printFooter() {
         super.printFooter(LINE_WIDTH);
+    }
+
+    public class processConnectionAsync extends AsyncTask<Integer, String, String> {
+
+        String msg = "";
+        boolean didConnect = false;
+
+        @Override
+        protected void onPreExecute() {
+            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog.setMessage(activity.getString(R.string.connecting_device));
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setCancelable(false);
+            myProgressDialog.show();
+
+        }
+
+        @Override
+        protected String doInBackground(Integer... params) {
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String unused) {
+            myProgressDialog.dismiss();
+            if (didConnect) {
+                edm.driverDidConnectToDevice(thisInstance, true, activity);
+            } else {
+
+                edm.driverDidNotConnectToDevice(thisInstance, msg, true, activity);
+            }
+        }
     }
 
 }
