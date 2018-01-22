@@ -29,6 +29,7 @@ public class URLContstant {
     public static final String KEY_FIRST_LOGGED = "loggedIn";
     /*User Profile information */
     public static final Integer VEHICLE_ID = id;
+    public static final String KEY_LOGEDIN_USERID = "logged_userid" ;
     public static final String KEY_USERNAME = "email";
     public static final String KEY_PASSWORD = "password";
     public static final String KEY_USER_EMAIL = "email";

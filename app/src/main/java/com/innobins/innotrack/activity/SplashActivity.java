@@ -22,6 +22,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.innobins.innotrack.home.HomeActivity;
 import com.innobins.innotrack.utils.UtilsFunctions;
 import com.rampo.updatechecker.UpdateChecker;
 import com.rampo.updatechecker.notice.Notice;
@@ -51,26 +52,12 @@ public class   SplashActivity extends AppCompatActivity  {
     ProgressBar progressBar;
     MyCustomTextView animated_textView;
 
-    RelativeLayout internet_ll;
-    CardView splashData_cv;
-    Button tryAgain_button;
-    ProgressDialog mProgressDialog;
-
-   // TextView animated_textView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        /*WindowManager.LayoutParams lp = getWindow().getAttributes();
-        lp.screenBrightness = 100 / 100.0f;
-        getWindow().setAttributes(lp);*/
-
-       /* UpdateChecker updateChecker = new UpdateChecker(this);
-        updateChecker.start();*/
-        updateCheck();
-        // progressBar = (ProgressBar)findViewById(R.id.progressBar);
         coordinatorLayout = (RelativeLayout) findViewById(R.id.coordinatorLayout);
         mSharedPreferences = getSharedPreferences(URLContstant.PREFERENCE_NAME, MODE_PRIVATE);
         sharedPrefs = getSharedPreferences("ArrayList", Context.MODE_PRIVATE);
@@ -99,50 +86,8 @@ public class   SplashActivity extends AppCompatActivity  {
             startAnimation();
         }
 
-
-        //animated_textView.setSelected(true);
-
-
     }
 
-   /* private void init() {
-        internet_ll = (RelativeLayout) findViewById(R.id.nointernet_connection);
-        splashData_cv = (CardView)findViewById(R.id.main_cardv);
-        tryAgain_button = (Button)findViewById(R.id.try_button);
-        tryAgain_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mProgressDialog.show();
-                startAnimation();
-                //checkConnection();
-            }
-        });
-    }*/
-    /*private void checkConnection() {
-
-        boolean isConnected = ConnectivityReceiver.isConnected();
-        new Handler().postDelayed(new Runnable() {
-
-            @Override
-            public void run() {
-                mProgressDialog.dismiss();
-            }
-        }, 300);
-        checkingNetwork(isConnected);
-    }
-*/
-   /* public void allOnlineVehicle() {
-
-        APIServices.GetAllOnlineVehicleList(SplashActivity.this,userName,password, new ResponseOnlineVehicle() {
-            @Override
-            public void onSuccessOnline(JSONArray result) {
-                Log.d("Result", String.valueOf(result));
-                SessionHandler.updateSnessionHandler(getBaseContext(), result, mSharedPreferences);
-                chooseBetweenLoginAndMainActivity();
-                }
-        });
-
-        };*/
 
     public void Continousservercheck() {
         final Handler handler = new Handler();
@@ -175,34 +120,11 @@ public class   SplashActivity extends AppCompatActivity  {
         }, 2000);
     }
 
-  /*  public void isNetworkActive(){
-        WebserviceHelper.getInstance().GetCall(getApplicationContext(), "https://app-dot-apicall-1191.appspot.com/api/server/check/", new ResponseCallback() {
-            @Override
-            public void OnResponse(JSONObject Response) {
-                if (Response == null){
-                    Log.d("response","Response is null");
-                    Activenetwork = false;
-                    if (!firstTime)
-                        Alertbar.show();
-                    firstTime = true;
-                } else {
-                    Log.d("response",Response.toString());
-                    Activenetwork = true;
-                    Alertbar.dismiss();
-                    if (activityOpened)
-                        chooseBetweenLoginAndMainActivity();
-                }
-
-            }
-
-        });
-    }*/
-
     void chooseBetweenLoginAndMainActivity() {
         activityOpened = false;
         Log.d("function", "chooseBetweenLoginMainActivity called");
         if (mSharedPreferences.getBoolean(URLContstant.KEY_LOGGED_IN, false)) {
-            Intent mainactivityintent = new Intent(this, Main2Activity.class);
+            Intent mainactivityintent = new Intent(this, HomeActivity.class);
             mainactivityintent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(mainactivityintent);
             finish();
@@ -287,12 +209,6 @@ public class   SplashActivity extends AppCompatActivity  {
         View sbView = Alertbar.getView();
         TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
         textView.setTextColor(Color.YELLOW);
-    }
-    public void updateCheck(){
-        UpdateChecker checker = new UpdateChecker(this);
-        checker.setNotice(Notice.DIALOG);
-        checker.setNotice(Notice.NOTIFICATION);
-        checker.start();
     }
 
 }

@@ -30,7 +30,7 @@ public class WebserviceHelper {
     }
 
     public void PostCall(Context context, String Url, JSONObject Data, final ResponseCallback ResponseCallback){
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(mUrl+Url, Data, new Response.Listener<JSONObject>() {
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Url, Data, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 if (response != null)

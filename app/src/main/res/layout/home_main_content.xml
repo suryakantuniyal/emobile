@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ScrollView
+        android:id="@+id/scroll_main"
+        android:layout_above="@+id/sliding_tabs"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent">
+
+        <RelativeLayout
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent">
+
+            <LinearLayout
+                android:id="@id/mail_ll"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:orientation="vertical">
+
+                <android.support.v4.view.ViewPager
+                    android:background="@color/white"
+                    android:id="@id/pager"
+                    android:layout_alignParentTop="true"
+                    android:layout_height="120dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_width="match_parent"
+                    android:visibility="visible" />
+
+                <com.viewpagerindicator.CirclePageIndicator
+                    android:background="@color/white"
+                    app:centered="true"
+                    app:fillColor="@color/colorPrimaryDark"
+                    android:gravity="top|bottom|center_vertical|fill_vertical|center|fill"
+                    android:id="@id/dotindicator"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:padding="6dp"
+                    app:pageColor="#969c9e"
+                    app:snap="false"
+                    android:visibility="visible" />
+
+                <LinearLayout
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
+                        android:layout_width="match_parent"
+                        android:text="Dashboard"
+                        android:textAlignment="center"
+                        android:textColor="@color/black"
+                        android:textSize="20dp"
+                        android:typeface="serif" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:layout_width="match_parent">
+
+                    <com.github.mikephil.charting.charts.PieChart
+                        android:id="@+id/piechart"
+                        android:layout_gravity="top|bottom|left|right|center_vertical|fill_vertical|center_horizontal|fill_horizontal|center|fill|start|end"
+                        android:layout_height="270dp"
+                        android:layout_marginBottom="5dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_width="270dp" />
+                </LinearLayout>
+            </LinearLayout>
+            <android.support.v4.view.ViewPager
+                android:id="@+id/viewpager"
+                android:layout_height="0dp"
+                android:layout_width="match_parent"
+                android:visibility="gone" />
+        </RelativeLayout>
+    </ScrollView>
+
+    <View
+        android:layout_above="@id/sliding_tabs"
+        android:layout_height="50dp"
+        android:layout_width="match_parent" />
+
+    <android.support.design.widget.TabLayout
+        android:background="@color/white"
+        android:id="@id/sliding_tabs"
+        android:layout_alignParentBottom="true"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        app:tabIndicatorHeight="0dp"
+        app:tabSelectedTextColor="@color/colorPrimary"/>
+</RelativeLayout>

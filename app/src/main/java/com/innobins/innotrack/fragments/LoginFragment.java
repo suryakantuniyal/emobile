@@ -21,6 +21,8 @@ import android.widget.Toast;
 import com.innobins.innotrack.FCM.SendRegistrationTokentoServer;
 import com.innobins.innotrack.activity.Main2Activity;
 import com.innobins.innotrack.api.APIServices;
+import com.innobins.innotrack.home.HomeActivity;
+import com.innobins.innotrack.network.ResponseCallback;
 import com.innobins.innotrack.network.ResponseStringCallback;
 
 import org.json.JSONException;
@@ -28,6 +30,7 @@ import org.json.JSONObject;
 
 import in.innobins.innotrack.R;
 //import in.gtech.gogeotrack.activity.CircularActivity;
+import com.innobins.innotrack.network.WebserviceHelper;
 import com.innobins.innotrack.utils.URLContstant;
 
 /**
@@ -72,51 +75,90 @@ public class LoginFragment extends Fragment {
 
                     final String user = username.getText().toString();
                     final String pass = password.getText().toString();
-
-                    final String newUrl = URLContstant.SESSION_URL + "?" + "email=" + user + "&password=" + pass;
-
-                    APIServices.getInstance().PostProblem(getActivity(), newUrl, new ResponseStringCallback() {
-
-                        @Override
-                        public void OnResponse(String Response) {
-                            Log.e("Response Comming", Response);
-                            progressDialog.dismiss();
-                            if (Response != null) {
+                    String sessionUrl = "https://mtrack-api.appspot.com/api/session/";
+                    JSONObject jsonObject = new JSONObject();
+                    try {
+                        jsonObject.put("user",user);
+                        jsonObject.put("password",pass);
+                        WebserviceHelper.getInstance().PostCall(getContext(), sessionUrl,jsonObject , new ResponseCallback() {
+                            @Override
+                            public void OnResponse(JSONObject Response) {
+                                progressDialog.dismiss();
                                 try {
-                                   // allOnlineVehicle(user, pass);
-                                    JSONObject jsonObject = new JSONObject(Response);
-                                    mEditor = mSharedPreferences.edit();
-                                    mEditor.putString(URLContstant.KEY_USERNAME, user);
-                                    mEditor.putString(URLContstant.KEY_PASSWORD,pass);
-                                    mEditor.putBoolean(URLContstant.KEY_LOGGED_IN, true);
-                                    mEditor.putString(URLContstant.FCM_TOKEN, jsonObject.getString("token"));
-                                    mEditor.apply();
-                                    Intent sendTokenservice = new Intent(getActivity(), SendRegistrationTokentoServer.class);
-                                    getActivity().startService(sendTokenservice);
-
-                                    Intent  intent = new Intent(getActivity(),Main2Activity.class);
-                                    intent.putExtra("logged",true);
-                                    startActivity(intent);
-                                    getActivity().finish();
-
+                                    JSONObject jsonObject1 = Response.getJSONObject("datasets");
+                                    if(jsonObject1.getInt("Message")==2) {
+                                        mEditor = mSharedPreferences.edit();
+                                        mEditor.putString(URLContstant.KEY_USERNAME, user);
+                                        mEditor.putString(URLContstant.KEY_PASSWORD, pass);
+                                        mEditor.putInt(URLContstant.KEY_LOGEDIN_USERID,jsonObject1.getInt("userId"));
+                                        mEditor.putBoolean(URLContstant.KEY_LOGGED_IN, true);
+                                        mEditor.apply();
+                                        Intent sendTokenservice = new Intent(getActivity(), SendRegistrationTokentoServer.class);
+                                        getActivity().startService(sendTokenservice);
+                                        Intent intent = new Intent(getActivity(), HomeActivity.class);
+                                        intent.putExtra("logged", true);
+                                        startActivity(intent);
+                                        getActivity().finish();
+                                    } else if(jsonObject1.getInt("Message")==1){
+                                        Toast.makeText(getContext(),"User doesn't exit",Toast.LENGTH_SHORT).show();
+                                    }else if(jsonObject1.getInt("Message")==3){
+                                        Toast.makeText(getContext(),"Wrong password",Toast.LENGTH_SHORT).show();
+                                    }else if(jsonObject1.getInt("Message")==0){
+                                        Toast.makeText(getContext(),"Server Error. Try again Later",Toast.LENGTH_SHORT).show();
+                                    }
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
-                            } else {
-                                Toast.makeText(getActivity(), "Server Error. Try again Later", Toast.LENGTH_SHORT).show();
                             }
-                        }
+                        });
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
 
-                        @Override
-                        public void OnFial(int Response) {
-                            if(Response == 401){
-                                progressDialog.dismiss();
-                                Toast.makeText(getActivity(), "Incorrect user name or password", Toast.LENGTH_SHORT).show();
-                            }
+                    final String newUrl = URLContstant.SESSION_URL + "?" + "email=" + user + "&password=" + pass;
 
-                        }
-
-                    });
+//                    APIServices.getInstance().PostProblem(getActivity(), newUrl, new ResponseStringCallback() {
+//
+//                        @Override
+//                        public void OnResponse(String Response) {
+//                            Log.e("Response Comming", Response);
+//                            progressDialog.dismiss();
+//                            if (Response != null) {
+//                                try {
+//                                   // allOnlineVehicle(user, pass);
+//                                    JSONObject jsonObject = new JSONObject(Response);
+//                                    mEditor = mSharedPreferences.edit();
+//                                    mEditor.putString(URLContstant.KEY_USERNAME, user);
+//                                    mEditor.putString(URLContstant.KEY_PASSWORD,pass);
+//                                    mEditor.putBoolean(URLContstant.KEY_LOGGED_IN, true);
+//                                    mEditor.putString(URLContstant.FCM_TOKEN, jsonObject.getString("token"));
+//                                    mEditor.apply();
+//                                    Intent sendTokenservice = new Intent(getActivity(), SendRegistrationTokentoServer.class);
+//                                    getActivity().startService(sendTokenservice);
+//
+//                                    Intent  intent = new Intent(getActivity(),Main2Activity.class);
+//                                    intent.putExtra("logged",true);
+//                                    startActivity(intent);
+//                                    getActivity().finish();
+//
+//                                } catch (JSONException e) {
+//                                    e.printStackTrace();
+//                                }
+//                            } else {
+//                                Toast.makeText(getActivity(), "Server Error. Try again Later", Toast.LENGTH_SHORT).show();
+//                            }
+//                        }
+//
+//                        @Override
+//                        public void OnFial(int Response) {
+//                            if(Response == 401){
+//                                progressDialog.dismiss();
+//                                Toast.makeText(getActivity(), "Incorrect user name or password", Toast.LENGTH_SHORT).show();
+//                            }
+//
+//                        }
+//
+//                    });
 
                 }
             }
@@ -147,22 +189,6 @@ public class LoginFragment extends Fragment {
         return rootView;
     }
 
- /*   public void allOnlineVehicle(String userName, String password) {
-
-        APIServices.GetAllOnlineVehicleList(getActivity(),userName,password, new ResponseOnlineVehicle() {
-            @Override
-            public void onSuccessOnline(JSONArray result) {
-                SessionHandler.updateSnessionHandler(getContext(), result, mSharedPreferences);
-                Intent  intent = new Intent(getActivity(),CircularActivity.class);
-                intent.putExtra("logged",true);
-                startActivity(intent);
-                getActivity().finish();
-
-            }
-        });
-
-    };
-*/
     @Override
     public void onResume() {
         super.onResume();

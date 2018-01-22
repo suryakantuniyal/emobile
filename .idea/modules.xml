@@ -2,11 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Traccar.iml" filepath="$PROJECT_DIR$/Traccar.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Innotrack.iml" filepath="$PROJECT_DIR$/Innotrack.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/gradle-wrapper/gradle-wrapper.iml" filepath="$PROJECT_DIR$/gradle-wrapper/gradle-wrapper.iml" />
       <module fileurl="file://$PROJECT_DIR$/libs/libs.iml" filepath="$PROJECT_DIR$/libs/libs.iml" />
-      <module fileurl="file://$PROJECT_DIR$/traccar.iml" filepath="$PROJECT_DIR$/traccar.iml" />
     </modules>
   </component>
 </project>
