@@ -1115,6 +1115,11 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         if (_msrUsbSams != null && _msrUsbSams.isDeviceOpen()) {
             _msrUsbSams.CloseTheDevice();
         }
+        if (myPref.getSwiperType() == Global.NOMAD) {
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                Global.mainPrinterManager.getCurrentDevice().releaseCardReader();
+            }
+        }
     }
 
     private void promptTipConfirmation() {
@@ -1774,7 +1779,9 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                 if (cardManager.getResultMessage() != null && !cardManager.getResultMessage().isEmpty()) {
                     errorMsg += "\n\r" + cardManager.getResultMessage();
                 }
-                Global.showPrompt(activity, R.string.payment, errorMsg);
+                if (!Global.isActivityDestroyed(activity)) {
+                    Global.showPrompt(activity, R.string.payment, errorMsg);
+                }
             }
         }
     }
