@@ -114,7 +114,6 @@ import main.EMSDeviceManager;
 import plaintext.EMSPlainTextHelper;
 import util.StringUtil;
 
-import static drivers.star.utils.PrinterFunctions.emulation;
 
 public class EMSDeviceDriver {
     private static final boolean PRINT_TO_LOG = BuildConfig.PRINT_TO_LOG;
@@ -144,6 +143,7 @@ public class EMSDeviceDriver {
     OutputStream outputStream;
     Typeface typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
     private double saveAmount;
+    private StarIoExt.Emulation emulation = StarIoExt.Emulation.StarGraphic;
 
     private static byte[] convertFromListbyteArrayTobyteArray(List<byte[]> ByteArray) {
         int dataLength = 0;
@@ -463,6 +463,11 @@ public class EMSDeviceDriver {
     }
 
     private void startReceipt() {
+        if (myPref.getPrinterName().toUpperCase().contains("MPOP")) {
+            emulation = StarIoExt.Emulation.StarPRNT;
+        } else {
+            emulation = StarIoExt.Emulation.StarGraphic;
+        }
         if (this instanceof EMSmePOS) {
             mePOSReceipt = new MePOSReceipt();
         }
@@ -1244,7 +1249,7 @@ public class EMSDeviceDriver {
                 if (isPOSPrinter) {
                     data = PrinterFunctions.createCommandsEnglishRasterModeCoupon(PAPER_WIDTH,
                             ICommandBuilder.BitmapConverterRotation.Normal,
-                            myBitmap);
+                            myBitmap, emulation);
                     Communication.sendCommands(data, port, this.activity); // 10000mS!!!
                 } else {
                     Bitmap bmp = myBitmap.copy(Bitmap.Config.ARGB_8888, true);

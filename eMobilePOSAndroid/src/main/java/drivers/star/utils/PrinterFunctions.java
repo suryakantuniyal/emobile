@@ -7,8 +7,6 @@ import com.starmicronics.starioextension.StarIoExt;
 
 public class PrinterFunctions {
 
-	public final static StarIoExt.Emulation emulation = StarIoExt.Emulation.StarGraphic;
-
 	public enum CorrectionLevelOption {Low, Middle, Q, High}
 
 	public enum Alignment {Left, Center, Right}
@@ -17,7 +15,7 @@ public class PrinterFunctions {
 
 
 	public  static byte[] createCommandsEnglishRasterModeCoupon(int width, ICommandBuilder.BitmapConverterRotation rotation,
-			Bitmap bitmap) {
+																Bitmap bitmap, StarIoExt.Emulation emulation) {
 
 
 		// Bitmap bitmap = BitmapFactory.decodeResource( resource,
