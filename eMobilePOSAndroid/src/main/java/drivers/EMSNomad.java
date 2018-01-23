@@ -258,7 +258,8 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
 
     @Override
     public void releaseCardReader() {
-
+        terminal.cancelTransaction();
+//        initDevice();
     }
 
     @Override
@@ -535,6 +536,7 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
     public void onDeviceDisconnected(DeviceEnum deviceEnum) {
         Toast.makeText(this.activity, deviceEnum.name() + " disconnected", Toast.LENGTH_SHORT).show();
         edm.driverDidNotConnectToDevice(this, activity.getString(R.string.fail_to_connect), false, activity);
+        initDevice();
         if (!isAutoConnect) {
 //            dismissDialog();
         } else {
