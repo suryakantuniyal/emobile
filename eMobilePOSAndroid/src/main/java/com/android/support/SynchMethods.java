@@ -1374,6 +1374,12 @@ public class SynchMethods {
             os.close();
             bmp.recycle();
             newBitmap.recycle();
+        } else {
+            String logoPath = myPref.getAccountLogoPath();
+            File file = new File(logoPath);
+            if (file.exists()) {
+                file.delete();
+            }
         }
 
     }
