@@ -8,7 +8,7 @@
 
     <ScrollView
         android:id="@+id/scroll_main"
-        android:layout_above="@+id/sliding_tabs"
+        android:layout_above="@+id/listbutton"
         android:layout_height="match_parent"
         android:layout_width="match_parent">
 
@@ -22,27 +22,27 @@
                 android:layout_width="match_parent"
                 android:orientation="vertical">
 
-                <android.support.v4.view.ViewPager
-                    android:background="@color/white"
-                    android:id="@id/pager"
-                    android:layout_alignParentTop="true"
-                    android:layout_height="120dp"
-                    android:layout_marginTop="5dp"
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:visibility="visible" />
+                    android:layout_height="wrap_content">
+                    <android.support.v4.view.ViewPager
+                        android:id="@+id/pager"
+                        android:layout_width="wrap_content"
+                        android:layout_margin="2dp"
+                        android:layout_height="152dp"
+                        android:layout_alignParentTop="true"
+                        android:background="@color/white" />
 
-                <com.viewpagerindicator.CirclePageIndicator
-                    android:background="@color/white"
-                    app:centered="true"
-                    app:fillColor="@color/colorPrimaryDark"
-                    android:gravity="top|bottom|center_vertical|fill_vertical|center|fill"
-                    android:id="@id/dotindicator"
-                    android:layout_height="wrap_content"
-                    android:layout_width="match_parent"
-                    android:padding="6dp"
-                    app:pageColor="#969c9e"
-                    app:snap="false"
-                    android:visibility="visible" />
+                    <com.viewpagerindicator.CirclePageIndicator
+                        android:id="@+id/dotindicator"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="15dp"
+                        android:layout_alignBottom="@+id/pager"
+                        app:centered="true"
+                        app:fillColor="@color/colorPrimaryDark"
+                        app:snap="false" />
+                </RelativeLayout>
 
                 <LinearLayout
                     android:layout_height="wrap_content"
@@ -83,16 +83,55 @@
     </ScrollView>
 
     <View
-        android:layout_above="@id/sliding_tabs"
-        android:layout_height="50dp"
+        android:layout_above="@id/listbutton"
+        android:layout_height="2dp"
         android:layout_width="match_parent" />
-
-    <android.support.design.widget.TabLayout
-        android:background="@color/white"
-        android:id="@id/sliding_tabs"
+    <LinearLayout
+        android:id="@+id/listbutton"
+        android:orientation="horizontal"
+        android:layout_height="65dp"
         android:layout_alignParentBottom="true"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        app:tabIndicatorHeight="0dp"
-        app:tabSelectedTextColor="@color/colorPrimary"/>
+        android:layout_width="match_parent">
+        <LinearLayout
+            android:id="@+id/mapview_ll"
+            android:layout_weight="1"
+            android:background="@drawable/full_rounded_white"
+            android:layout_height="match_parent"
+            android:layout_width="0dp">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textAlignment="center"
+                android:textSize="18dp"
+                android:textColor="@color/colorPrimary"
+                android:text="Mapview"/>
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/listview_ll"
+            android:layout_weight="1"
+            android:background="@drawable/full_rounded_white"
+            android:layout_marginLeft="1dp"
+            android:layout_height="match_parent"
+            android:layout_width="0dp">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textAlignment="center"
+                android:textSize="18dp"
+                android:textColor="@color/colorPrimary"
+                android:text="Listview"/>
+        </LinearLayout>
+
+    </LinearLayout>
+    <!--<android.support.design.widget.TabLayout-->
+    <!--android:background="@color/white"-->
+    <!--android:id="@id/sliding_tabs"-->
+    <!--android:layout_alignParentBottom="true"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_width="match_parent"-->
+    <!--app:tabIndicatorHeight="0dp"-->
+    <!--app:tabSelectedTextColor="@color/colorPrimary">-->
+    <!--</android.support.design.widget.TabLayout>-->
 </RelativeLayout>

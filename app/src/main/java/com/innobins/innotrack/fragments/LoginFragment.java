@@ -42,12 +42,12 @@ public class LoginFragment extends Fragment {
     TextView login;
     EditText username, password;
     TextView forgotpassword;
-    CheckBox mCbShowPwd;
+    CheckBox mCbShowPwd,rememberMe;
     SharedPreferences mSharedPreferences;
     SharedPreferences.Editor mEditor;
-    SharedPreferences.Editor arrayEditor;
     private static ProgressDialog progressDialog;
-    byte[] data = new byte[0];
+    private Boolean saveLogin;
+
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.login_fragment, container, false);
@@ -56,8 +56,14 @@ public class LoginFragment extends Fragment {
         password = (EditText) rootView.findViewById(R.id.loginpassword);
         forgotpassword = (TextView) rootView.findViewById(R.id.forgotpassword);
         mCbShowPwd = (CheckBox) rootView.findViewById(R.id.cbShowPwd);
+        rememberMe = (CheckBox)rootView.findViewById(R.id.rememberme);
         mSharedPreferences = getActivity().getSharedPreferences(URLContstant.PREFERENCE_NAME, Context.MODE_PRIVATE);
-
+        saveLogin = mSharedPreferences.getBoolean(URLContstant.KEY_SAVED_LOGIN,false);
+        if(saveLogin == true){
+            username.setText(mSharedPreferences.getString(URLContstant.KEY_REMBR_USER,""));
+            password.setText(mSharedPreferences.getString(URLContstant.KEY_REMBR_PASS,""));
+            rememberMe.setChecked(true);
+        }
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -92,6 +98,11 @@ public class LoginFragment extends Fragment {
                                         mEditor.putString(URLContstant.KEY_PASSWORD, pass);
                                         mEditor.putInt(URLContstant.KEY_LOGEDIN_USERID,jsonObject1.getInt("userId"));
                                         mEditor.putBoolean(URLContstant.KEY_LOGGED_IN, true);
+                                        if (rememberMe.isChecked()) {
+                                            mEditor.putString(URLContstant.KEY_REMBR_USER,user);
+                                            mEditor.putString(URLContstant.KEY_REMBR_PASS,pass);
+                                            mEditor.putBoolean(URLContstant.KEY_SAVED_LOGIN,true);
+                                        }
                                         mEditor.apply();
                                         Intent sendTokenservice = new Intent(getActivity(), SendRegistrationTokentoServer.class);
                                         getActivity().startService(sendTokenservice);
@@ -114,52 +125,6 @@ public class LoginFragment extends Fragment {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
-                    final String newUrl = URLContstant.SESSION_URL + "?" + "email=" + user + "&password=" + pass;
-
-//                    APIServices.getInstance().PostProblem(getActivity(), newUrl, new ResponseStringCallback() {
-//
-//                        @Override
-//                        public void OnResponse(String Response) {
-//                            Log.e("Response Comming", Response);
-//                            progressDialog.dismiss();
-//                            if (Response != null) {
-//                                try {
-//                                   // allOnlineVehicle(user, pass);
-//                                    JSONObject jsonObject = new JSONObject(Response);
-//                                    mEditor = mSharedPreferences.edit();
-//                                    mEditor.putString(URLContstant.KEY_USERNAME, user);
-//                                    mEditor.putString(URLContstant.KEY_PASSWORD,pass);
-//                                    mEditor.putBoolean(URLContstant.KEY_LOGGED_IN, true);
-//                                    mEditor.putString(URLContstant.FCM_TOKEN, jsonObject.getString("token"));
-//                                    mEditor.apply();
-//                                    Intent sendTokenservice = new Intent(getActivity(), SendRegistrationTokentoServer.class);
-//                                    getActivity().startService(sendTokenservice);
-//
-//                                    Intent  intent = new Intent(getActivity(),Main2Activity.class);
-//                                    intent.putExtra("logged",true);
-//                                    startActivity(intent);
-//                                    getActivity().finish();
-//
-//                                } catch (JSONException e) {
-//                                    e.printStackTrace();
-//                                }
-//                            } else {
-//                                Toast.makeText(getActivity(), "Server Error. Try again Later", Toast.LENGTH_SHORT).show();
-//                            }
-//                        }
-//
-//                        @Override
-//                        public void OnFial(int Response) {
-//                            if(Response == 401){
-//                                progressDialog.dismiss();
-//                                Toast.makeText(getActivity(), "Incorrect user name or password", Toast.LENGTH_SHORT).show();
-//                            }
-//
-//                        }
-//
-//                    });
-
                 }
             }
         });

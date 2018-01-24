@@ -16,6 +16,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.innobins.innotrack.adapter.ViewPagerAdapter;
+import com.innobins.innotrack.home.BaseActivity;
 import com.viewpagerindicator.CirclePageIndicator;
 
 import java.util.Timer;
@@ -27,7 +28,7 @@ import in.innobins.innotrack.R;
  * Created by silence12 on 4/7/17.
  */
 
-public class WelcomeMessageActivity extends AppCompatActivity implements View.OnClickListener {
+public class WelcomeMessageActivity extends BaseActivity implements View.OnClickListener {
     public View rootView;
     TextView totalDevices, onlineDevices, offlineDevices;
     private RelativeLayout message_rl;
@@ -43,8 +44,8 @@ public class WelcomeMessageActivity extends AppCompatActivity implements View.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.welcome_adds_layout);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        getSupportActionBar().setIcon(R.mipmap.luncher_icon);
-        setTitle("Home");
+        getSupportActionBar().setIcon(R.mipmap.innotrack_icon);
+        customTitle("   "+"Home");
         setSupportActionBar(toolbar);
         init();
 

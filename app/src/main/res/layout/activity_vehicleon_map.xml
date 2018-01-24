@@ -7,8 +7,9 @@
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
-        android:layout_height="400dp"
+        android:layout_height="match_parent"
         android:layout_width="match_parent"
+        android:layout_marginBottom="130dp"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
         <android.support.design.widget.CollapsingToolbarLayout
@@ -18,14 +19,14 @@
             android:layout_height="match_parent"
             android:layout_width="match_parent"
             android:fitsSystemWindows="true"
-            app:contentScrim="?attr/colorPrimary"
             app:expandedTitleMarginEnd="64dp"
-            app:expandedTitleMarginStart="48dp"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
+            app:expandedTitleMarginStart="65dp"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
             android:title="">
 
             <FrameLayout
                 app:layout_collapseMode="parallax"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed"
                 android:layout_height="match_parent"
                 android:layout_width="match_parent">
 
@@ -37,7 +38,7 @@
                     android:name="com.google.android.gms.maps.MapFragment" />
 
                 <LinearLayout
-                    android:background="@drawable/full_rounded_white"
+                    android:background="@drawable/imageview_gradient"
                     android:id="@+id/shadoview_vv"
                     android:layout_gravity="top|bottom|left|right|center_vertical|fill_vertical|center_horizontal|fill_horizontal|center|fill|start|end"
                     android:layout_height="2dp"
@@ -50,8 +51,7 @@
                 android:layout_width="match_parent"
                 android:background="?attr/colorPrimary"
                 android:layout_height="?attr/actionBarSize"
-                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-                app:layout_collapseMode="parallax"
+                app:layout_collapseMode="pin"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
@@ -67,6 +67,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="bottom"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+
             android:orientation="vertical">
 
             <android.support.v7.widget.CardView
@@ -92,7 +94,9 @@
 
                         <RelativeLayout
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent">
+                            android:layout_height="match_parent"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="5dp">
 
                             <LinearLayout
                                 android:id="@+id/date"
@@ -100,25 +104,24 @@
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentLeft="true"
                                 android:layout_centerVertical="true"
-                                android:layout_gravity="top|bottom|left|right|center_vertical|fill_vertical|center_horizontal|fill_horizontal|center|fill|start|end"
-                                android:layout_marginLeft="12dp"
-                                android:background="#ffffff"
+                                android:layout_marginLeft="10dp"
                                 android:orientation="horizontal">
 
                                 <ImageView
-                                    android:layout_width="30dp"
-                                    android:layout_height="30dp"
+                                    android:layout_width="25dp"
+                                    android:layout_height="25dp"
                                     android:layout_gravity="top|bottom|center_vertical|fill_vertical|center|fill"
                                     android:src="@drawable/ic_date" />
 
                                 <TextView
                                     android:id="@+id/date_tv"
+                                    android:text=""
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_gravity="top|bottom|left|right|center_vertical|fill_vertical|center_horizontal|fill_horizontal|center|fill|start|end"
                                     android:layout_marginLeft="10dp"
+                                    android:layout_marginTop="3dp"
                                     android:background="#ffffff"
-                                    android:gravity="top|bottom|left|right|center_vertical|fill_vertical|center_horizontal|fill_horizontal|center|fill|start|end"
+                                    android:gravity="left|center|center_vertical|center_horizontal"
                                     android:textColor="@color/colorPrimary"
                                     android:textSize="12dp"
                                     android:typeface="serif" />
@@ -173,12 +176,12 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="4dp"
-                                android:layout_marginLeft="30dp"
+                                android:layout_marginLeft="10dp"
                                 android:layout_marginRight="10dp"
                                 android:layout_marginTop="5dp"
                                 android:text="Vehicle Name"
-                                android:textColor="@color/black"
-                                android:typeface="serif" />
+                                android:typeface="serif"
+                                android:textColor="@color/black"/>
 
                             <TextView
                                 android:id="@+id/project_name_tv"
@@ -186,7 +189,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_below="@id/taskduration"
                                 android:layout_marginBottom="8dp"
-                                android:layout_marginLeft="30dp"
+                                android:layout_marginLeft="10dp"
                                 android:layout_marginRight="10dp"
                                 android:layout_marginTop="5dp"
                                 android:inputType="text|textCapCharacters|textCapWords|textCapSentences|textAutoCorrect|textAutoComplete|textMultiLine|textImeMultiLine|textNoSuggestions|textUri|textEmailAddress|textEmailSubject|textShortMessage|textLongMessage|textPersonName|textPostalAddress|textPassword|textVisiblePassword|textWebEditText|textFilter|textPhonetic|textWebEmailAddress|textWebPassword|numberDecimal|phone"
@@ -201,7 +204,7 @@
                                 android:layout_alignParentRight="true"
                                 android:layout_marginBottom="4dp"
                                 android:layout_marginLeft="10dp"
-                                android:layout_marginRight="30dp"
+                                android:layout_marginRight="10dp"
                                 android:layout_marginTop="5dp"
                                 android:text="Unique Id"
                                 android:textColor="@color/black"
@@ -215,7 +218,7 @@
                                 android:layout_below="@id/taskcreate_tv"
                                 android:layout_marginBottom="8dp"
                                 android:layout_marginLeft="10dp"
-                                android:layout_marginRight="30dp"
+                                android:layout_marginRight="10dp"
                                 android:layout_marginTop="5dp"
                                 android:inputType="text|textCapCharacters|textCapWords|textCapSentences|textAutoCorrect|textAutoComplete|textMultiLine|textImeMultiLine|textNoSuggestions|textUri|textEmailAddress|textEmailSubject|textShortMessage|textLongMessage|textPersonName|textPostalAddress|textPassword|textVisiblePassword|textWebEditText|textFilter|textPhonetic|textWebEmailAddress|textWebPassword|numberDecimal|phone"
                                 android:text=""
@@ -242,7 +245,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="4dp"
-                                android:layout_marginLeft="30dp"
+                                android:layout_marginLeft="10dp"
                                 android:layout_marginRight="10dp"
                                 android:layout_marginTop="5dp"
                                 android:text="Status"
@@ -255,7 +258,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_below="@id/statusduration"
                                 android:layout_marginBottom="8dp"
-                                android:layout_marginLeft="30dp"
+                                android:layout_marginLeft="10dp"
                                 android:layout_marginRight="10dp"
                                 android:layout_marginTop="5dp"
                                 android:inputType="text|textCapCharacters|textCapWords|textCapSentences|textAutoCorrect|textAutoComplete|textMultiLine|textImeMultiLine|textNoSuggestions|textUri|textEmailAddress|textEmailSubject|textShortMessage|textLongMessage|textPersonName|textPostalAddress|textPassword|textVisiblePassword|textWebEditText|textFilter|textPhonetic|textWebEmailAddress|textWebPassword|numberDecimal|phone"
@@ -270,7 +273,7 @@
                                 android:layout_alignParentRight="true"
                                 android:layout_marginBottom="4dp"
                                 android:layout_marginLeft="10dp"
-                                android:layout_marginRight="30dp"
+                                android:layout_marginRight="10dp"
                                 android:layout_marginTop="5dp"
                                 android:text="Speed"
                                 android:textColor="@color/black"
@@ -284,7 +287,7 @@
                                 android:layout_below="@id/speedcreate_tv"
                                 android:layout_marginBottom="8dp"
                                 android:layout_marginLeft="10dp"
-                                android:layout_marginRight="30dp"
+                                android:layout_marginRight="10dp"
                                 android:layout_marginTop="5dp"
                                 android:inputType="text|textCapCharacters|textCapWords|textCapSentences|textAutoCorrect|textAutoComplete|textMultiLine|textImeMultiLine|textNoSuggestions|textUri|textEmailAddress|textEmailSubject|textShortMessage|textLongMessage|textPersonName|textPostalAddress|textPassword|textVisiblePassword|textWebEditText|textFilter|textPhonetic|textWebEmailAddress|textWebPassword|numberDecimal|phone"
                                 android:text=""
@@ -344,6 +347,8 @@
                             android:orientation="horizontal"
                             android:paddingBottom="8dp"
                             android:paddingRight="8dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="5dp"
                             android:paddingTop="8dp">
 
                             <TextView
@@ -365,6 +370,7 @@
                                 android:layout_centerVertical="true"
                                 android:layout_marginLeft="10dp"
                                 android:text=""
+                                android:maxLines="3"
                                 android:textColor="@color/colorPrimary"
                                 android:textSize="12dp"
                                 android:typeface="serif" />

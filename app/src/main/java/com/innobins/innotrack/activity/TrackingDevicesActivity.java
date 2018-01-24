@@ -28,13 +28,18 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.innobins.innotrack.api.APIServices;
+import com.innobins.innotrack.home.BaseActivity;
 import com.innobins.innotrack.network.DetailResponseCallback;
+import com.innobins.innotrack.network.ResponseCallback;
+import com.innobins.innotrack.network.WebserviceHelper;
 import com.innobins.innotrack.parser.TraccerParser;
 import com.innobins.innotrack.services.GPSTracker;
 import com.innobins.innotrack.services.UpdateListViewService;
+import com.innobins.innotrack.vehicleonmap.VehicleOnMap;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Calendar;
 
@@ -44,7 +49,7 @@ import in.innobins.innotrack.R;
  * Created by silence12 on 22/6/17.
  */
 
-public class TrackingDevicesActivity extends AppCompatActivity {
+public class TrackingDevicesActivity extends BaseActivity {
 
     private static final int REQUEST_CODE_PERMISSION = 2;
     public static TrackingDevicesActivity trackingDevicesActivity;
@@ -76,13 +81,14 @@ public class TrackingDevicesActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        setTitle("Tracking");
-        getSupportActionBar().setIcon(R.mipmap.luncher_icon);
+        customTitle("   "+"Tracking");
+        getSupportActionBar().setIcon(R.mipmap.innotrack_icon);
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Wait a moment...");
         progressDialog.setCancelable(false);
         progressDialog.show();
         initView();
+        setPintent();
         uploadIndividualData();
 
         pintent = PendingIntent.getService(TrackingDevicesActivity.this, 0, updateListViewService,0);
@@ -123,60 +129,68 @@ public class TrackingDevicesActivity extends AppCompatActivity {
 
     public void uploadIndividualData() {
 
-        APIServices.GetVehicleDetailById(TrackingDevicesActivity.this, id, new DetailResponseCallback() {
-            @Override
-            public void OnResponse(JSONArray result) {
 
-                try {
-                     update = result.getJSONObject(0).getString("lastupdate");
-                    name = result.getJSONObject(0).getString("name");
-                    uniqId =  result.getJSONObject(0).getString("uniqueid");
-                    statsString = result.getJSONObject(0).getString("status");
-                    categoryString = result.getJSONObject(0).getString("category");
-                    address = result.getJSONObject(0).getString("address");
-                    latitute = result.getJSONObject(0).getDouble("latitude");
-                    longitute = result.getJSONObject(0).getDouble("longitude");
-                    speed = result.getJSONObject(0).getDouble("speed");
-                    String time = TraccerParser.datetime(update);
-                    String timeDiff = TraccerParser.numDays(update);
-                    String newDate = TraccerParser.date(update);
-                     Log.d("updatetime",update);
-                    lastupdate_tv.setText(newDate);
-                    vehicleName_tv.setText(name);
-                    travelled_tv.setText(time);
-                    if (address.equals("null")) {
-                        address_tv.setText("Loading...");
-                    } else {
-                        address_tv.setText(address);
-                    }
-                    double d = speed;
-                    String formattedData = String.format("%.02f", d);
-                    speed_tv.setText(formattedData);
-                    cameraPosition(address,latitute,longitute);
-                    currentLocation.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            cameraPosition(address,latitute,longitute);
+        String urlStr = "https://mtrack-api.appspot.com/api/get/devices/deviceid/" ;
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("deviceId",id);
+            WebserviceHelper.getInstance().PostCall(TrackingDevicesActivity.this, urlStr, jsonObject, new ResponseCallback() {
+                @Override
+                public void OnResponse(JSONObject Response) {
+                    progressDialog.dismiss();
+                    Log.d("TrckingDetails", String.valueOf(Response));
+                    try {
+                        JSONArray result = Response.getJSONArray("deviceData");
+                        update = result.getJSONObject(0).getString("lastUpdate");
+                        name = result.getJSONObject(0).getString("name");
+                        uniqId =  result.getJSONObject(0).getString("uniqueId");
+                        statsString = result.getJSONObject(0).getString("status");
+                        categoryString = result.getJSONObject(0).getString("category");
+                        address = result.getJSONObject(0).getString("address");
+                        latitute = result.getJSONObject(0).getDouble("latitude");
+                        longitute = result.getJSONObject(0).getDouble("longitude");
+                        speed = result.getJSONObject(0).getDouble("speed");
+                        String time = TraccerParser.datetime(update);
+                        String timeDiff = TraccerParser.numDays(update);
+                        String newDate = TraccerParser.date(update);
+                        Log.d("updatetime",update);
+                        lastupdate_tv.setText(newDate);
+                        vehicleName_tv.setText(name);
+                        travelled_tv.setText(time);
+                        if (address.equals("null")) {
+                            address_tv.setText("Loading...");
+                        } else {
+                            address_tv.setText(address);
                         }
-                    });
-                    if (ActivityCompat.checkSelfPermission(TrackingDevicesActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(TrackingDevicesActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                        // TODO: Consider calling
-                        //    ActivityCompat#requestPermissions
-                        // here to request the missing permissions, and then overriding
-                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                        //                                          int[] grantResults)
-                        // to handle the case where the user grants the permission. See the documentation
-                        // for ActivityCompat#requestPermissions for more details.
-                        return;
+                        double d = speed;
+                        String formattedData = String.format("%.02f", d);
+                        speed_tv.setText(formattedData);
+                        cameraPosition(address,latitute,longitute);
+                        currentLocation.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                cameraPosition(address,latitute,longitute);
+                            }
+                        });
+                        if (ActivityCompat.checkSelfPermission(TrackingDevicesActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(TrackingDevicesActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                            // TODO: Consider calling
+                            //    ActivityCompat#requestPermissions
+                            // here to request the missing permissions, and then overriding
+                            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                            //                                          int[] grantResults)
+                            // to handle the case where the user grants the permission. See the documentation
+                            // for ActivityCompat#requestPermissions for more details.
+                            return;
+                        }
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
                 }
-
-            }
-        });
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private void initView() {
@@ -279,5 +293,21 @@ public class TrackingDevicesActivity extends AppCompatActivity {
         pintent.cancel();
         super.onBackPressed();
     }
+
+    private void setPintent(){
+        Intent getIntent = getIntent();
+        id = getIntent.getIntExtra("id", -1);
+        latitute = getIntent.getDoubleExtra("lat",0.0);
+        longitute = getIntent.getDoubleExtra("long",0.0);
+        name = getIntent.getStringExtra("tname");
+        uniqId = getIntent.getStringExtra("uid");
+        update = getIntent.getStringExtra("tupdate");
+        statsString = getIntent.getStringExtra("status");
+        categoryString = getIntent.getStringExtra("category");
+        address = getIntent.getStringExtra("address");
+        progressDialog.dismiss();
+
+    }
+
 
 }

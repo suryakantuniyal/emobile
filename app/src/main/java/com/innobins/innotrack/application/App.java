@@ -11,5 +11,9 @@ import com.android.volley.toolbox.Volley;
 
 public class App extends Application {
 
-    RequestQueue queue = Volley.newRequestQueue(this);
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        TypefaceUtil.overrideFont(getApplicationContext(), "SERIF", "fonts/Serif.ttf"); // font from assets: "assets/fonts/Roboto-Regular.ttf
+    }
 }

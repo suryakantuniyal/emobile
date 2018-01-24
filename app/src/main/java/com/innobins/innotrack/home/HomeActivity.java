@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
+import android.renderscript.Sampler;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
@@ -26,6 +27,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.PieChart;
@@ -61,7 +63,7 @@ import in.innobins.innotrack.R;
  * Created by silence12 on 22/1/18.
  */
 
-public class HomeActivity extends AppCompatActivity implements OnChartValueSelectedListener, NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
+public class HomeActivity extends BaseActivity implements OnChartValueSelectedListener, NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
     private static ProgressDialog progressDialog;
     TextView totalDevices, onlineDevices, offlineDevices;
@@ -74,7 +76,7 @@ public class HomeActivity extends AppCompatActivity implements OnChartValueSelec
     String userName,password;
     GoGeoDataProDialog goGeoDataProDialog;
     PieChart pieChart ;
-
+    LinearLayout mapView_ll,listView_ll ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,7 +84,8 @@ public class HomeActivity extends AppCompatActivity implements OnChartValueSelec
         setContentView(R.layout.activity_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setIcon(R.mipmap.luncher_icon);
+        getSupportActionBar().setIcon(R.mipmap.innotrack_icon);
+        customTitle("   "+"Innotrack");
         mSharedPreferences = getSharedPreferences(URLContstant.PREFERENCE_NAME, MODE_PRIVATE);
         userName = mSharedPreferences.getString(URLContstant.KEY_USERNAME, "");
         password = mSharedPreferences.getString(URLContstant.KEY_PASSWORD,"");
@@ -103,6 +106,7 @@ public class HomeActivity extends AppCompatActivity implements OnChartValueSelec
         drawer.setDrawerListener(toggle);
         toggle.syncState();
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setItemIconTintList(null);
         navigationView.setNavigationItemSelectedListener(this);
         View header = navigationView.getHeaderView(0);
         TextView username = (TextView) header.findViewById(R.id.username_tv);
@@ -115,7 +119,7 @@ public class HomeActivity extends AppCompatActivity implements OnChartValueSelec
         String mUrl = "https://mtrack-api.appspot.com/api/get/devices/byuser/" ;
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("userid",userName);
+            jsonObject.put("userid",mSharedPreferences.getInt(URLContstant.KEY_LOGEDIN_USERID,-1));
             WebserviceHelper.getInstance().PostCall(HomeActivity.this, mUrl, jsonObject, new ResponseCallback() {
                 @Override
                 public void OnResponse(JSONObject Response) {
@@ -140,6 +144,10 @@ public class HomeActivity extends AppCompatActivity implements OnChartValueSelec
         totalDevices = (TextView) findViewById(R.id.all_count);
         onlineDevices = (TextView) findViewById(R.id.online_count);
         offlineDevices = (TextView) findViewById(R.id.offline_count);
+        mapView_ll = (LinearLayout)findViewById(R.id.mapview_ll);
+        listView_ll = (LinearLayout)findViewById(R.id.listview_ll);
+        mapView_ll.setOnClickListener(this);
+        listView_ll.setOnClickListener(this);
         circleviewPager.setAdapter(viewPagerAdapter);
         circleviewPager.setCurrentItem(0);
         CirclePageIndicator indicator = (CirclePageIndicator) findViewById(R.id.dotindicator);
@@ -191,25 +199,29 @@ public class HomeActivity extends AppCompatActivity implements OnChartValueSelec
         String mUrl = "https://mtrack-api.appspot.com/api/get/summary/byuser/" ;
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("userid",2);
+            jsonObject.put("userid",mSharedPreferences.getInt(URLContstant.KEY_LOGEDIN_USERID,-1));
             WebserviceHelper.getInstance().PostCall(HomeActivity.this, mUrl, jsonObject, new ResponseCallback() {
                 @Override
                 public void OnResponse(JSONObject Response) {
                     try {
                         JSONArray jsonArray = Response.getJSONArray("summaryData");
                         JSONObject jsonObject1 = jsonArray.getJSONObject(0);
-                        Log.d("TestVersion",Response.getString(jsonObject1.getString("online_vehicle")));
+                        mEditor = mSharedPreferences.edit();
+                        mEditor.putInt("active", jsonObject1.getInt("online_vehicle"));
+                        mEditor.putInt("inactive", jsonObject1.getInt("offline_vehicle"));
+                        mEditor.putInt("running",jsonObject1.getInt("running_vehicle"));
+                        mEditor.putInt("total", jsonObject1.getInt("total_vehicle"));
+                        mEditor.putInt("unknown",jsonObject1.getInt("unknown_vehicle"));
+                        mEditor.apply();
+
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
                 }
             });
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-
     }
 
     @Override
@@ -309,30 +321,23 @@ public class HomeActivity extends AppCompatActivity implements OnChartValueSelec
     }
 
     @Override
+
     public void onClick(View view) {
-//        if (view.getId() == R.id.listview_bb || view.getId() == R.id.alldevices_view) {
-//            Intent intent = new Intent(HomeActivity.this, MainActivity.class);
-//            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-//            startActivity(intent);
-//            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-//        } else if (view.getId() == R.id.online_img ) {
-//            Intent intent = new Intent(HomeActivity.this, OnLineOffLineActivity.class);
-//            intent.putExtra("onoff", "online");
-//            startActivity(intent);
-//        } else if (view.getId() == R.id.offline_img) {
-//            Intent intent = new Intent(HomeActivity.this, OfflineActivity.class);
-//            intent.putExtra("onoff", "offline");
-//            startActivity(intent);
-//        } else if (view.getId() == R.id.mapview_bb) {
-//            Intent intent = new Intent(HomeActivity.this, MapViewActivity.class);
-//            startActivity(intent);
-//        }
+        if (view.getId() == R.id.listview_ll || view.getId() == R.id.alldevices_view) {
+            Intent intent = new Intent(HomeActivity.this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            startActivity(intent);
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+        } else if (view.getId() == R.id.mapview_ll ) {
+            Intent intent = new Intent(HomeActivity.this, MapViewActivity.class);
+            startActivity(intent);
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+        }
     }
 
 
 
     public void CheckGPS(){
-
 
         if (!isGPSenabled(HomeActivity.this)){
 
@@ -357,7 +362,6 @@ public class HomeActivity extends AppCompatActivity implements OnChartValueSelec
         }
     }
 
-
     public boolean isGPSenabled(Context context) {
         LocationManager lm = null;
         boolean gps_enabled = false,network_enabled=false;
@@ -378,16 +382,17 @@ public class HomeActivity extends AppCompatActivity implements OnChartValueSelec
 
     private void piChartData(){
         ArrayList<Entry> yvalues = new ArrayList<Entry>();
-        yvalues.add(new Entry(8f, 0));
-        yvalues.add(new Entry(15f, 1));
-        yvalues.add(new Entry(12f, 2));
-        yvalues.add(new Entry(25f, 3));
+
+        yvalues.add(new Entry(mSharedPreferences.getInt("active",-1), 0));
+        yvalues.add(new Entry(mSharedPreferences.getInt("inactive",-1), 1));
+        yvalues.add(new Entry(mSharedPreferences.getInt("running",-1), 2));
+        yvalues.add(new Entry(mSharedPreferences.getInt("unknown",-1), 3));
         PieDataSet dataSet = new PieDataSet(yvalues, "");
 
         ArrayList<String> xVals = new ArrayList<String>();
 
-        xVals.add("Active");
-        xVals.add("Inactive");
+        xVals.add("Online");
+        xVals.add("Offline");
         xVals.add("Running");
         xVals.add("No Data");
         PieData data = new PieData(xVals, dataSet);
@@ -395,17 +400,21 @@ public class HomeActivity extends AppCompatActivity implements OnChartValueSelec
         data.setValueFormatter(new PercentFormatter());
         // Default value
         //data.setValueFormatter(new DefaultValueFormatter(0));
+        int[] VORDIPLOM_COLORS = {
+                Color.rgb(192, 255, 140),Color.rgb(255, 208, 140),
+                Color.rgb(140, 234, 255),  Color.rgb(255, 247, 140),
+        };
         pieChart.setData(data);
         pieChart.setDescription("");
         pieChart.setDrawHoleEnabled(true);
         pieChart.setTransparentCircleRadius(28f);
-
         pieChart.setHoleRadius(28f);
-        dataSet.setColors(ColorTemplate.VORDIPLOM_COLORS);
-
+        pieChart.setCenterText(String.valueOf(mSharedPreferences.getInt("total",-1)));
+        pieChart.setDrawCenterText(true);
+        pieChart.setDrawSliceText(true);
+        dataSet.setColors(VORDIPLOM_COLORS);
         data.setValueTextSize(13f);
         data.setValueTextColor(Color.DKGRAY);
-
         pieChart.setOnChartValueSelectedListener(HomeActivity.this);
     }
 
@@ -413,9 +422,23 @@ public class HomeActivity extends AppCompatActivity implements OnChartValueSelec
     public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
         if (e == null)
             return;
-        Log.i("VAL SELECTED",
-                "Value: " + e.getVal() + ", xIndex: " + e.getXIndex()
-                        + ", DataSet index: " + dataSetIndex);
+
+        if(e.getXIndex()==0){
+            Intent intent = new Intent(HomeActivity.this, OnLineOffLineActivity.class);
+            intent.putExtra("onoff", "online");
+            startActivity(intent);
+        }else if(e.getXIndex()==1){
+            Intent intent = new Intent(HomeActivity.this, OfflineActivity.class);
+            intent.putExtra("onoff", "offline");
+            startActivity(intent);
+        }else if(e.getXIndex()==2){
+
+        }else if(e.getXIndex()==3){
+            Intent intent = new Intent(HomeActivity.this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            startActivity(intent);
+        }
+
     }
 
     @Override

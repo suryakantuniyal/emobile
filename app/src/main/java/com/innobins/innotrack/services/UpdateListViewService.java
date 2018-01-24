@@ -9,6 +9,7 @@ import com.innobins.innotrack.activity.VehicleDetailActivity;
 import com.innobins.innotrack.activity.MainActivity;
 import com.innobins.innotrack.activity.OnLineOffLineActivity;
 import com.innobins.innotrack.activity.TrackingDevicesActivity;
+import com.innobins.innotrack.vehicleonmap.VehicleOnMap;
 
 /**
  * Created by surya on 27/9/17.
@@ -34,6 +35,7 @@ public class UpdateListViewService extends Service {
         VehicleDetailActivity vehicleDetailActivity = VehicleDetailActivity.vehicleDetailActivity;
         TrackingDevicesActivity trackingDevicesActivity = TrackingDevicesActivity.trackingDevicesActivity;
         MapViewActivity mapViewActivity = MapViewActivity.mapViewActivity;
+        VehicleOnMap vehicleOnMap = VehicleOnMap.vehicleOnMap;
       //  mainActivity.uploadNewData();
 
         OnLineOffLineActivity onLineOffLineActivity = OnLineOffLineActivity.onLineInstance;
@@ -49,6 +51,10 @@ public class UpdateListViewService extends Service {
         if (onLineOffLineActivity!=null){
 
             onLineOffLineActivity.uploadNewData();
+        }
+
+        if(vehicleOnMap!=null){
+            vehicleOnMap.uploadIndividualData();
         }
        /* if (vehicleDetailActivity!= null){
             vehicleDetailActivity.individualDetail();

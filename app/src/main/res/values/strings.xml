@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">GoGeoTrack</string>
+    <string name="app_name">InnoTrack</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="forgot"><u>Forgot Password</u></string>
@@ -41,5 +41,6 @@
     <string name="title_activity_pdf_generator">PdfGenerator</string>
     <string name="google_directions_key">AIzaSyCW1DQ2a04jdkNaflkD363mliOSfpPsZE4</string>
     <string name="title_activity_animation">Animation</string>
+    <string name="sign_in_username">Username</string>
 
 </resources>

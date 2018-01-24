@@ -25,6 +25,7 @@ import android.widget.LinearLayout;
 
 import com.innobins.innotrack.adapter.VehicleslistAdapter;
 import com.innobins.innotrack.api.APIServices;
+import com.innobins.innotrack.home.BaseActivity;
 import com.innobins.innotrack.model.VehicleList;
 import com.innobins.innotrack.network.ResponseOnlineVehicle;
 import com.innobins.innotrack.services.UpdateListViewService;
@@ -40,12 +41,13 @@ import java.util.List;
 import in.innobins.innotrack.R;
 
 import com.innobins.innotrack.utils.URLContstant;
+import com.innobins.innotrack.vehicleonmap.VehicleOnMap;
 
 /**
  * Created by silence12 on 5/7/17.
  */
 
-public class OnLineOffLineActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, VehicleslistAdapter.OnItemClickListener {
+public class OnLineOffLineActivity extends BaseActivity implements SwipeRefreshLayout.OnRefreshListener, VehicleslistAdapter.OnItemClickListener {
     public static MenuItem searchMenuItem;
     private static ProgressDialog progressDialog;
     SharedPreferences sharedPrefs;
@@ -80,7 +82,7 @@ public class OnLineOffLineActivity extends AppCompatActivity implements SwipeRef
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setIcon(R.mipmap.luncher_icon);
+        getSupportActionBar().setIcon(R.mipmap.innotrack_icon);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mSharedPreferences = getSharedPreferences(URLContstant.PREFERENCE_NAME, Context.MODE_PRIVATE);
@@ -91,7 +93,7 @@ public class OnLineOffLineActivity extends AppCompatActivity implements SwipeRef
         progressDialog.setMessage("Wait a moment...");
         progressDialog.setCancelable(false);
         progressDialog.show();
-        setTitle("Online Devices");
+        customTitle(" "+"Online Devices");
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh_online);
         swipeRefreshLayout.setRefreshing(false);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
@@ -140,31 +142,6 @@ public class OnLineOffLineActivity extends AppCompatActivity implements SwipeRef
 
     }
 
-    /*
-
-    public void uploadNewData() {
-       // Toast.makeText(getBaseContext(), "OnLineOfLine", Toast.LENGTH_LONG).show();
-        // swipeRefreshLayout.setRefreshing(true);
-        listArrayList.clear();
-       // parseView();
-        vehiclesAdapter.notifyDataSetChanged();
-*/
-/*
-        APIServices.GetAllOnlineVehicleList(OnLineOffLineActivity.this,userName,password, new ResponseOnlineVehicle() {
-            @Override
-            public void onSuccessOnline(JSONObject result) {
-                Log.d("Result", String.valueOf(result));
-               // SessionHandler.updateSnessionHandler(getBaseContext(), result, mSharedPreferences);
-                // recyclerView.getRecycledViewPool().clear();
-                vehiclesAdapter.notifyDataSetChanged();
-                //8189 1.8.23
-                //6958 1.6.27
-            }
-        });
-*//*
-
-    }
-*/
     private List<VehicleList> parseView() {
 
         JSONObject previousData = null;
@@ -199,7 +176,7 @@ public class OnLineOffLineActivity extends AppCompatActivity implements SwipeRef
     @Override
     public void OnItemClick(View view, int position, List<VehicleList> mFilteredList) {
         if (view.getId() == R.id.detail_ll) {
-            Intent intent = new Intent(OnLineOffLineActivity.this, VehicleDetailActivity.class);
+            Intent intent = new Intent(OnLineOffLineActivity.this, VehicleOnMap.class);
             Log.d("Position", String.valueOf(position));
             intent.putExtra("id", mFilteredList.get(position).getId());
             intent.putExtra("name", mFilteredList.get(position).getName());
@@ -231,6 +208,7 @@ public class OnLineOffLineActivity extends AppCompatActivity implements SwipeRef
             trackIntent.putExtra("address",mFilteredList.get(position).getAddress());
             trackIntent.putExtra("speed",mFilteredList.get(position).getSpeed());
             trackIntent.putExtra("lat",mFilteredList.get(position).getLatitute());
+            trackIntent.putExtra("id", mFilteredList.get(position).getId());
             trackIntent.putExtra("long",mFilteredList.get(position).getLongitute());
             trackIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(trackIntent);

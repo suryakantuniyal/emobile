@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.innobins.innotrack.fragments.LoginFragment;
+import com.innobins.innotrack.home.BaseActivity;
 import com.innobins.innotrack.utils.UtilFunctions;
 
 import in.innobins.innotrack.R;
@@ -26,7 +27,7 @@ import in.innobins.innotrack.R;
  * Created by silence12 on 19/6/17.
  */
 
-public class SignUpAccount extends AppCompatActivity {
+public class SignUpAccount extends BaseActivity {
 
     public static boolean isDestroy = false;
     private static boolean activityVisible = true;

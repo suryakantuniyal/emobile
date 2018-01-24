@@ -24,10 +24,15 @@ import android.widget.LinearLayout;
 
 import com.innobins.innotrack.adapter.VehicleslistAdapter;
 import com.innobins.innotrack.api.APIServices;
+import com.innobins.innotrack.home.BaseActivity;
+import com.innobins.innotrack.home.HomeActivity;
 import com.innobins.innotrack.model.VehicleList;
+import com.innobins.innotrack.network.ResponseCallback;
 import com.innobins.innotrack.network.ResponseOnlineVehicle;
+import com.innobins.innotrack.network.WebserviceHelper;
 import com.innobins.innotrack.services.UpdateListViewService;
 import com.innobins.innotrack.utils.URLContstant;
+import com.innobins.innotrack.vehicleonmap.VehicleOnMap;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,7 +44,7 @@ import java.util.List;
 
 import in.innobins.innotrack.R;
 
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends BaseActivity
         implements VehicleslistAdapter.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
     // private static final String TAG = "MainActivity";
 
@@ -48,11 +53,6 @@ public class MainActivity extends AppCompatActivity
 
     private static final String TAG = "BroadcastTest";
     private Intent intent;
-
-    private Intent locationService;
-    private Intent gpsTrackerService;
-    // UpdateLocationService updateLocationService;
-    //    UpdateListViewService updateListViewService;
     public static MenuItem searchMenuItem;
     private static ProgressDialog progressDialog;
     SharedPreferences mSharedPreferences;
@@ -65,7 +65,6 @@ public class MainActivity extends AppCompatActivity
     PendingIntent pintent;
     AlarmManager alarm;
     private boolean bound = false;
-    // private LocalService mBoundService;
     Intent updateListViewService;
 
     String userName,password;
@@ -81,26 +80,19 @@ public class MainActivity extends AppCompatActivity
 
         updateListViewService = new Intent(getBaseContext(), UpdateListViewService.class);
         startService(updateListViewService);
-        // intent = new Intent(getBaseContext(), BroadcastService.class);
-        /*locationService = new Intent(getBaseContext(),UpdateLocationService.class);
-         startService(locationService);*/
-        // gpsTrackerService = new Intent(this, GPSTracker.class);
-        // updateLocationService = new UpdateLocationService();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        setTitle("ListView");
-        getSupportActionBar().setIcon(R.mipmap.luncher_icon);
+        customTitle("   "+"Listview");
+        getSupportActionBar().setIcon(R.mipmap.innotrack_icon);
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Wait a moment...");
         progressDialog.setCancelable(false);
         progressDialog.show();
 
         mSharedPreferences = getSharedPreferences(URLContstant.PREFERENCE_NAME, Context.MODE_PRIVATE);
-
         userName = mSharedPreferences.getString(URLContstant.KEY_USERNAME, "");
         password = mSharedPreferences.getString(URLContstant.KEY_PASSWORD,"");
-        // vhcleId  = mSharedPreferences.getInt("", URLContstant.VEHICLE_ID);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
         swipeRefreshLayout.setRefreshing(false);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
@@ -119,50 +111,39 @@ public class MainActivity extends AppCompatActivity
             no_data_ll.setVisibility(View.GONE);
         }
         vehiclesAdapter = new VehicleslistAdapter(getBaseContext(), listArrayList, this);
-
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(vehiclesAdapter);
-
         vehiclesAdapter.setOnItemClickListener(this);
-
-        // doBindService();
-        // startService(locationService);
-        //vehiclesAdapter.notifyDataSetChanged();
-        // startService(locationService);
-
         pintent = PendingIntent.getService(MainActivity.this, 0, updateListViewService,0);
         alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         Calendar cal = Calendar.getInstance();
         alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), 6 * 1000, pintent);
         recyclerView.getRecycledViewPool().clear();
-
-       /* swipeRefreshLayout.post(new Runnable() {
-            @Override
-            public void run() {
-                swipeRefreshLayout.setRefreshing(true);
-                recyclerView.getRecycledViewPool().clear();
-                parseView();
-            }
-        });*/
-        // updateCard();
     }
     public void uploadNewData() {
 
         listArrayList.clear();
 
-        APIServices.GetAllVehicle(MainActivity.this, userName, password, new ResponseOnlineVehicle() {
-            @Override
-            public void onSuccessOnline(JSONArray response) {
-
-                if (response!=null){
-
-                    SessionHandler.updateSnessionHandler(getBaseContext(), response, mSharedPreferences);
-                    vehiclesAdapter.notifyDataSetChanged();
+        String mUrl = "https://mtrack-api.appspot.com/api/get/devices/byuser/" ;
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("userid",mSharedPreferences.getInt(URLContstant.KEY_LOGEDIN_USERID,-1));
+            WebserviceHelper.getInstance().PostCall(MainActivity.this, mUrl, jsonObject, new ResponseCallback() {
+                @Override
+                public void OnResponse(JSONObject Response) {
+                    try {
+                        JSONArray jsonArray = Response.getJSONArray("deviceData");
+                        SessionHandler.updateSnessionHandler(getBaseContext(),jsonArray,mSharedPreferences);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
-            }
-        });
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         parseView();
     }
 
@@ -171,26 +152,13 @@ public class MainActivity extends AppCompatActivity
 
         if (view.getId() == R.id.detail_ll) {
 
-            /*Intent intent = new Intent(MainActivity.this,Animation.class);
-            startActivity(intent);
-            finish();*/
-            //  activitystart();
-            // startService(updateListViewService);
-            // startService(locationService);
-            Intent intent = new Intent(MainActivity.this, VehicleDetailActivity.class);
+            Intent intent = new Intent(MainActivity.this, VehicleOnMap.class);
             Log.d("Position", String.valueOf(position));
             int id = mFilteredList.get(position).getId();
-            // intent.putExtra("deviceId",mFilteredList.get(position).getDeviceId());
             intent.putExtra("id", mFilteredList.get(position).getId());
             intent.putExtra("name", mFilteredList.get(position).getName());
             intent.putExtra("pid", mFilteredList.get(position).getPositionId());
             intent.putExtra("uid", mFilteredList.get(position).getUniqueId());
-
-            /* String uniqid = mFilteredList.get(position).getUniqueId();
-            Log.d("uniqly",String.valueOf(uniqid));
-            int uniId = Integer.parseInt(uniqid);
-            Log.d("intuniq",String.valueOf(uniId));*/
-
             intent.putExtra("status", mFilteredList.get(position).getStatus());
             intent.putExtra("category", mFilteredList.get(position).getCategory());
             intent.putExtra("lastupdate", mFilteredList.get(position).getLastUpdates());
@@ -198,13 +166,11 @@ public class MainActivity extends AppCompatActivity
             intent.putExtra("address", mFilteredList.get(position).getAddress());
             intent.putExtra("speed", mFilteredList.get(position).getSpeed());
             intent.putExtra("time",mFilteredList.get(position).getTime());
-
             intent.putExtra("lat", mFilteredList.get(position).getLatitute());
             intent.putExtra("long", mFilteredList.get(position).getLongitute());
-
             intent.putExtra("distance", mFilteredList.get(position).getDistance_travelled());
             Log.d("latit", String.valueOf(mFilteredList.get(position).latitute));
-            // intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+             intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(intent);
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 
@@ -224,6 +190,7 @@ public class MainActivity extends AppCompatActivity
             trackIntent.putExtra("speed", mFilteredList.get(position).getSpeed());
             trackIntent.putExtra("lat", mFilteredList.get(position).getLatitute());
             trackIntent.putExtra("long", mFilteredList.get(position).getLongitute());
+            trackIntent.putExtra("id", mFilteredList.get(position).getId());
             trackIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(trackIntent);
             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
@@ -235,9 +202,6 @@ public class MainActivity extends AppCompatActivity
         recyclerView.getRecycledViewPool().clear();
         listArrayList.clear();
         parseView();
-
-       /* Toast.makeText(getApplicationContext(),"ON REFERESH OF MAIN", Toast.LENGTH_SHORT).show();
-        vehiclesAdapter.notifyDataSetChanged();*/
     }
 
     private List<VehicleList> parseView() {
@@ -256,11 +220,6 @@ public class MainActivity extends AppCompatActivity
                         jsonObject.getString("date"), jsonObject.getString("category"), jsonObject.getInt("positionid"), jsonObject.getString("address"), jsonObject.getString("time")
                         , jsonObject.getDouble("speed"), jsonObject.getDouble("latitude"), jsonObject.getDouble("longitude"),jsonObject.getString("timeDiff"),jsonObject.getInt("groupid"));
                 listArrayList.add(vehicleList1);
-
-                /* int id = jsonObject.getInt("id");
-                mEditor = mSharedPreferences.edit();
-                mEditor.putInt(String.valueOf(URLContstant.VEHICLE_ID),id);
-                mEditor.apply();*/
             }
             return listArrayList;
 
@@ -323,24 +282,17 @@ public class MainActivity extends AppCompatActivity
     public void onBackPressed() {
         getBaseContext().stopService(updateListViewService);
         pintent.cancel();
-        //stopService(updateListViewService);
-
         super.onBackPressed();
 
     }
 
     @Override
     protected void onResume() {
-        // startService(locationService);
         super.onResume();
-        //startService(locationService);
-        // startService(intent);
-        // registerReceiver(broadcastReceiver, new IntentFilter(BroadcastService.BROADCAST_ACTION));
     }
 
     @Override
     public void onDestroy() {
-        // Toast.makeText(this, "Service Destroyed", Toast.LENGTH_LONG).show();
         getBaseContext().stopService(updateListViewService);
         pintent.cancel();
         super.onDestroy();

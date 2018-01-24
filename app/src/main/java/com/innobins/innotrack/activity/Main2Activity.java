@@ -30,6 +30,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.innobins.innotrack.adapter.ViewPagerAdapter;
+import com.innobins.innotrack.home.BaseActivity;
 import com.innobins.innotrack.model.VehicleList;
 import com.innobins.innotrack.network.ResponseOnlineVehicle;
 import com.viewpagerindicator.CirclePageIndicator;
@@ -47,7 +48,7 @@ import com.innobins.innotrack.activity.Reports.ReportsActivity;
 import com.innobins.innotrack.api.APIServices;
 import com.innobins.innotrack.utils.URLContstant;
 
-public class  Main2Activity  extends AppCompatActivity
+public class  Main2Activity  extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
     public static ArrayList<VehicleList> listArrayList;
@@ -76,7 +77,7 @@ public class  Main2Activity  extends AppCompatActivity
         setContentView(R.layout.activity_main2);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setIcon(R.mipmap.luncher_icon);
+        getSupportActionBar().setIcon(R.mipmap.innotrack_icon);
 
         mSharedPreferences = getSharedPreferences(URLContstant.PREFERENCE_NAME, MODE_PRIVATE);
         userName = mSharedPreferences.getString(URLContstant.KEY_USERNAME, "");

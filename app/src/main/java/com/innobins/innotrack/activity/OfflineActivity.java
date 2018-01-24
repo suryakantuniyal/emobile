@@ -22,6 +22,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.innobins.innotrack.adapter.VehicleslistAdapter;
+import com.innobins.innotrack.home.BaseActivity;
 import com.innobins.innotrack.model.VehicleList;
 
 import org.json.JSONArray;
@@ -34,12 +35,13 @@ import java.util.List;
 import in.innobins.innotrack.R;
 
 import com.innobins.innotrack.utils.URLContstant;
+import com.innobins.innotrack.vehicleonmap.VehicleOnMap;
 
 /**
  * Created by silence12 on 11/7/17.
  */
 
-public class OfflineActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, VehicleslistAdapter.OnItemClickListener {
+public class OfflineActivity extends BaseActivity implements SwipeRefreshLayout.OnRefreshListener, VehicleslistAdapter.OnItemClickListener {
     public static MenuItem searchMenuItem;
     private static ProgressDialog progressDialog;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -56,13 +58,12 @@ public class OfflineActivity extends AppCompatActivity implements SwipeRefreshLa
         setContentView(R.layout.activity_offline);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setIcon(R.mipmap.luncher_icon);
+        getSupportActionBar().setIcon(R.mipmap.innotrack_icon);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mSharedPreferences = getSharedPreferences(URLContstant.PREFERENCE_NAME, Context.MODE_PRIVATE);
         userName = mSharedPreferences.getString(URLContstant.KEY_USERNAME, "");
         password = mSharedPreferences.getString(URLContstant.KEY_PASSWORD,"");
-
-        setTitle("Offline Devices");
+        customTitle("   "+"Offline Devices");
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Wait a moment...");
         progressDialog.setCancelable(false);
@@ -150,7 +151,7 @@ public class OfflineActivity extends AppCompatActivity implements SwipeRefreshLa
     public void OnItemClick(View view, int position, List<VehicleList> mFilteredList) {
         if (view.getId() == R.id.detail_ll) {
 
-            Intent intent = new Intent(OfflineActivity.this, VehicleDetailActivity.class);
+            Intent intent = new Intent(OfflineActivity.this, VehicleOnMap.class);
             Log.d("Position", String.valueOf(position));
             intent.putExtra("id", mFilteredList.get(position).getId());
             intent.putExtra("name", mFilteredList.get(position).getName());
@@ -182,6 +183,7 @@ public class OfflineActivity extends AppCompatActivity implements SwipeRefreshLa
             trackIntent.putExtra("speed",mFilteredList.get(position).getSpeed());
             trackIntent.putExtra("lat",mFilteredList.get(position).getLatitute());
             trackIntent.putExtra("long",mFilteredList.get(position).getLongitute());
+            trackIntent.putExtra("id", mFilteredList.get(position).getId());
             trackIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(trackIntent);
             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);

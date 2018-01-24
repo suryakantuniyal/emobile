@@ -28,6 +28,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.innobins.innotrack.home.BaseActivity;
 import com.innobins.innotrack.model.VehicleList;
 import com.innobins.innotrack.services.UpdateListViewService;
 import com.innobins.innotrack.utils.URLContstant;
@@ -46,7 +47,7 @@ import in.innobins.innotrack.R;
  * Created by silence12 on 5/7/17.
  */
 
-public class MapViewActivity extends AppCompatActivity {
+public class MapViewActivity extends BaseActivity {
 
     public static MapViewActivity mapViewActivity;
 
@@ -80,8 +81,8 @@ public class MapViewActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setIcon(R.mipmap.luncher_icon);
-        setTitle("MapView");
+        getSupportActionBar().setIcon(R.mipmap.innotrack_icon);
+        customTitle("   "+"Mapview");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Loading Map...");

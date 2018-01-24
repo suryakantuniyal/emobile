@@ -22,6 +22,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.innobins.innotrack.home.BaseActivity;
 import com.innobins.innotrack.home.HomeActivity;
 import com.innobins.innotrack.utils.UtilsFunctions;
 import com.rampo.updatechecker.UpdateChecker;
@@ -35,7 +36,7 @@ import com.innobins.innotrack.utils.URLContstant;
  * Created by silence12 on 26/6/17.
  */
 
-public class   SplashActivity extends AppCompatActivity  {
+public class   SplashActivity extends BaseActivity {
     Boolean isActive = false;
     private static int SPLASH_TIME_OUT = 5000;
     int Counter = 0;

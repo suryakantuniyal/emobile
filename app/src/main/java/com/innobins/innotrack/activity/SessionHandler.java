@@ -45,23 +45,23 @@ public class   SessionHandler  {
                 int positionid = positionId.intValue();*/
 
                 vehicleDict.put("status",innerElement.getString("status"));
-                vehicleDict.put("positionid",innerElement.getInt("positionid"));
+                vehicleDict.put("positionid",innerElement.getInt("positionId"));
                 vehicleDict.put("name",innerElement.getString("name"));
                 vehicleDict.put("longitude",innerElement.getDouble("longitude"));
                 vehicleDict.put("latitude",innerElement.getDouble("latitude"));
                 vehicleDict.put("deviceId",innerElement.getInt("deviceId"));
-                vehicleDict.put("uniqueid",innerElement.getString("uniqueid"));
+                vehicleDict.put("uniqueid",innerElement.getString("uniqueId"));
                 vehicleDict.put("address",innerElement.getString("address"));
                 vehicleDict.put("category",innerElement.getString("category"));
                 vehicleDict.put("speed",innerElement.getDouble("speed"));
                 vehicleDict.put("groupid",innerElement.getInt("groupid"));
-                vehicleDict.put("lastUpdates", innerElement.getString("lastupdate"));
+                vehicleDict.put("lastUpdates", innerElement.getString("lastUpdate"));
 
                 try {
-                    String lastupdation = innerElement.getString("lastupdate");
-                    String time = TraccerParser.datetime(innerElement.getString("lastupdate"));
-                    String newDate = TraccerParser.date(innerElement.getString("lastupdate"));
-                    String timeDiff = TraccerParser.numDays(innerElement.getString("lastupdate"));
+                    String lastupdation = innerElement.getString("lastUpdate");
+                    String time = TraccerParser.datetime(innerElement.getString("lastUpdate"));
+                    String newDate = TraccerParser.date(innerElement.getString("lastUpdate"));
+                    String timeDiff = TraccerParser.numDays(innerElement.getString("lastUpdate"));
                     Log.d("newTimediif",timeDiff);
 /*                    String timeDiff = TraccerParser.numDays(innerElement.getString("lastupdate"));
                     Log.d("timediffofTrcker",timeDiff);*/
