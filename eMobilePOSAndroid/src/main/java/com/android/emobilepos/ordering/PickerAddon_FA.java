@@ -71,13 +71,13 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
     @Override
     public void onCreate(Bundle savedInstanceState) {
         myPref = new MyPreferences(this);
-        if (!myPref.getIsTablet())                        //reset to default layout (not as dialog)
+        if (!myPref.isTablet())                        //reset to default layout (not as dialog)
             super.setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.addon_picker_layout);
         activity = this;
         global = (Global) getApplication();
-        if (myPref.getIsTablet()) {
+        if (myPref.isTablet()) {
             DisplayMetrics metrics = getResources().getDisplayMetrics();
             int screenWidth = (int) (metrics.widthPixels * 0.80);
             int screenHeight = (int) (metrics.heightPixels * 0.80);

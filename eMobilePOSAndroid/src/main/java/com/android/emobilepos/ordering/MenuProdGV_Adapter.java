@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.os.SystemClock;
 import android.support.v4.widget.CursorAdapter;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -22,7 +21,6 @@ import com.android.support.OrderProductUtils;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 
 import util.json.UIUtils;
@@ -55,7 +53,7 @@ public class MenuProdGV_Adapter extends CursorAdapter {
         callBack = _this;
         MyPreferences myPref = new MyPreferences(context);
 
-        isPortrait = Global.isPortrait(context) || !myPref.getIsTablet();
+        isPortrait = Global.isPortrait(context) || !myPref.isTablet();
         imageLoader = _imageLoader;
         attrToDisplay = myPref.getPreferencesValue(MyPreferences.pref_attribute_to_display);
         isFastScanning = myPref.getPreferences(MyPreferences.pref_fast_scanning_mode);

@@ -515,8 +515,14 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     changePassword(false, null);
                     break;
                 case R.string.config_open_cash_drawer:
-                    if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)
-                        Global.mainPrinterManager.getCurrentDevice().openCashDrawer();
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)
+                                Global.mainPrinterManager.getCurrentDevice().openCashDrawer();
+                        }
+                    }).start();
+
                     break;
                 case R.string.config_configure_cash_drawer:
                     break;
