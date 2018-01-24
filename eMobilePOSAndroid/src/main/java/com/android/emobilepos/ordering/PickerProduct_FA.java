@@ -120,7 +120,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
     public void onCreate(Bundle savedInstanceState) {
 
         myPref = new MyPreferences(this);
-        if (!myPref.getIsTablet())                        //reset to default layout (not as dialog)
+        if (!myPref.isTablet())                        //reset to default layout (not as dialog)
         {
             super.setTheme(R.style.AppTheme);
         }

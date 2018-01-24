@@ -92,7 +92,7 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
         Global.isEncryptSwipe = false; // will not encrypt number of card after
         // swipe
 
-        if (!myPref.getIsTablet()) // reset to default layout (not as dialog)
+        if (!myPref.isTablet()) // reset to default layout (not as dialog)
             super.setTheme(R.style.LightTheme);
 
         super.onCreate(savedInstanceState);

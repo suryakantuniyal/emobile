@@ -271,7 +271,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
         Button addProd = (Button) view.findViewById(R.id.addProdButton);
         addProd.setOnClickListener(this);
-        if (myPref.getIsTablet()
+        if (myPref.isTablet()
                 && orientation == Configuration.ORIENTATION_LANDSCAPE) {
             addProd.setVisibility(View.GONE);
         }

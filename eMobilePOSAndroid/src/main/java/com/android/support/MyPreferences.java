@@ -1082,7 +1082,7 @@ public class MyPreferences {
         prefEditor.commit();
     }
 
-    public boolean getIsTablet() {
+    public boolean isTablet() {
         return (prefs.getBoolean(is_tablet, false));
     }
 
