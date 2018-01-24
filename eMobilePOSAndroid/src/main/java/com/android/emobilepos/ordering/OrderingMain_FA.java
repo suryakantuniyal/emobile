@@ -436,11 +436,11 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         isToGo = getRestaurantSaleType() == Global.RestaurantSaleType.TO_GO;
 
         returnItem = mTransType == Global.TransactionType.RETURN;
-        if (!myPref.getIsTablet())
+        if (!myPref.isTablet())
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         if (savedInstanceState == null) {
-            if (!myPref.getIsTablet())
+            if (!myPref.isTablet())
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             orientation = getResources().getConfiguration().orientation;
             setCatalogFr(new Catalog_FR());
@@ -608,7 +608,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     @Override
     public void onBackPressed() {
-        boolean tablet = myPref.getIsTablet();
+        boolean tablet = myPref.isTablet();
         orderingAction = OrderingAction.BACK_PRESSED;
         if (catalogContainer.getVisibility() == View.VISIBLE && (!tablet || orientation == Configuration.ORIENTATION_PORTRAIT)) {
             catalogContainer.setVisibility(View.GONE);

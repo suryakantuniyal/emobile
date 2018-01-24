@@ -431,10 +431,10 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         activity = getActivity();
         myPref = new MyPreferences(activity);
 
-        if (!myPref.getIsTablet() && leftHolder != null) {
+        if (!myPref.isTablet() && leftHolder != null) {
             leftHolder.setVisibility(View.GONE);
         }
-//        else if (myPref.getIsTablet() && leftHolder != null)
+//        else if (myPref.isTablet() && leftHolder != null)
 //            itemCount = (TextView) view.findViewById(R.id.itemCount);
         initSpinners();
         return view;
