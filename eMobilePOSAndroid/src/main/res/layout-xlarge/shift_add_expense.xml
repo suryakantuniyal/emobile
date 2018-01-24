@@ -99,7 +99,9 @@
                 android:textAppearance="@style/black_text_appearance_unbold"
                 android:textColor="#000000"
                 android:textSize="@dimen/field_general_txt_size"
-                android:layout_marginRight="10dp"></com.android.support.MyEditText>
+                android:layout_marginRight="10dp">
+                <requestFocus />
+            </com.android.support.MyEditText>
 
             <Button
                 android:id="@+id/buttonSubmit"
