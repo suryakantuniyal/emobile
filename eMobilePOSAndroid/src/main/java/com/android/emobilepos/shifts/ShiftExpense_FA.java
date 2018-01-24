@@ -37,9 +37,6 @@ public class ShiftExpense_FA extends BaseFragmentActivityActionBar implements Vi
     private Activity activity;
     private int expenseProductIDSelected = 1;
     private String expenseName = "";
-    private EditText cashAmount, comments;
-    private Global global;
-
     AdapterView.OnItemSelectedListener onItemSelectedListenerSpinner =
             new AdapterView.OnItemSelectedListener() {
 
@@ -54,26 +51,28 @@ public class ShiftExpense_FA extends BaseFragmentActivityActionBar implements Vi
                 public void onNothingSelected(AdapterView<?> parent) {
                 }
             };
-
+    private EditText cashAmount, comments;
+    private Global global;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.shift_add_expense);
         activity = this;
-        cashAmount = (EditText) findViewById(R.id.cashAmount);
-        comments = (EditText) findViewById(R.id.expenseCommentseditText);
+        cashAmount = findViewById(R.id.cashAmount);
+        comments = findViewById(R.id.expenseCommentseditText);
         global = (Global) getApplication();
-        Button btnCancel = (Button) findViewById(R.id.buttonCancel);
+        Button btnCancel = findViewById(R.id.buttonCancel);
         btnCancel.setOnClickListener(this);
-        Button btnSubmit = (Button) findViewById(R.id.buttonSubmit);
+        Button btnSubmit = findViewById(R.id.buttonSubmit);
         btnSubmit.setOnClickListener(this);
         String[] theSpinnerNames = getResources().getStringArray(R.array.expenseTypes);
-        Spinner spinnerView = (Spinner) findViewById(R.id.expenseSpinner);
+        Spinner spinnerView = findViewById(R.id.expenseSpinner);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, theSpinnerNames);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerView.setAdapter(adapter);
         spinnerView.setOnItemSelectedListener(onItemSelectedListenerSpinner);
+
         this.cashAmount.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
             }
@@ -85,6 +84,7 @@ public class ShiftExpense_FA extends BaseFragmentActivityActionBar implements Vi
                 NumberUtils.parseInputedCurrency(s, cashAmount);
             }
         });
+        cashAmount.setText(R.string.amount_zero_lbl);
     }
 
     @Override
@@ -151,8 +151,15 @@ public class ShiftExpense_FA extends BaseFragmentActivityActionBar implements Vi
             ShiftDAO.insertOrUpdate(openShift);
         }
         Toast.makeText(activity, "Expense Added", Toast.LENGTH_LONG).show();
-        if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)
-            Global.mainPrinterManager.getCurrentDevice().openCashDrawer();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                    Global.mainPrinterManager.getCurrentDevice().openCashDrawer();
+                }
+            }
+        }).start();
+
         finish();
     }
 
