@@ -287,12 +287,26 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
         shift.setShiftStatus(Shift.ShiftStatus.PENDING);
         ShiftDAO.insertOrUpdate(shift);
         setShiftUI();
-        if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)
-            Global.mainPrinterManager.getCurrentDevice().openCashDrawer();
+        if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Global.mainPrinterManager.getCurrentDevice().openCashDrawer();
+                }
+            }).start();
+        }
         new SendShiftTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     private void openShift() {
+        if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Global.mainPrinterManager.getCurrentDevice().openCashDrawer();
+                }
+            }).start();
+        }
         Date now = new Date();
         shift = new Shift();
         AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee(false);
@@ -309,8 +323,6 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
         //set the ending petty cash equal to the beginning petty cash, decrease the ending petty cash every time there is an expense
         shift.setEndingPettyCash(NumberUtils.cleanCurrencyFormatedNumber(totalAmountEditText.getText().toString()));
         ShiftDAO.insertOrUpdate(shift);
-        if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)
-            Global.mainPrinterManager.getCurrentDevice().openCashDrawer();
         finish();
     }
 
