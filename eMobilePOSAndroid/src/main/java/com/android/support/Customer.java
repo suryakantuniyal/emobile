@@ -2,352 +2,354 @@ package com.android.support;
 
 import com.android.emobilepos.models.Address;
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
+public class Customer {
+    @Expose
+    private String cust_id = "";
+    @Expose
+    private String cust_id_ref = "";
+    @Expose
+    private String qb_sync = "";
+    @Expose
+    private String zone_id = "";
+    @Expose
+    private String CompanyName = "";
+    @Expose
+    private String Salutation = "";
+    @Expose
+    private String cust_contact = "";
+    @Expose
+    private String cust_name = "";
+    @Expose
+    private String cust_chain = "";
+    @Expose
+    private String cust_balance = "";
+    @Expose
+    private String cust_limit = "";
+    @Expose
+    private String cust_firstName = "";
+    @Expose
+    private String cust_middleName = "";
+    @Expose
+    private String cust_lastName = "";
+    @Expose
+    private String cust_phone = "";
+    @Expose
+    private String cust_email = "";
+    @Expose
+    private String cust_fax = "";
+    @Expose
+    private String cust_update = "";
+    @Expose
+    private String isactive = "";
+    @Expose
+    private String cust_ordertype = "";
+    @Expose
+    private String cust_taxable = "";
+    @Expose
+    private String cust_salestaxcode = "";
+    @Expose
+    private String pricelevel_id = "";
+    @Expose
+    private String cust_terms = "";
+    @Expose
+    private String cust_pwd = "";
+    @Expose
+    private String cust_securityquestion = "";
+    @Expose
+    private String cust_securityanswer = "";
+    @Expose
+    private String cust_points = "";
+    @Expose
+    private String cust_dob = "";
+    @Expose
+    private Address shippingAddress;
+    @Expose
+    private Address billingAddress;
+    @Expose
+    private String custIdKey;
+    @Expose
+    private String custIdNumeric;
+    @Expose
+    @SerializedName("AccountNumnber")
+    private String custAccountNumber;
+
+    public String getCust_id() {
+        return cust_id;
+    }
+
+    public void setCust_id(String cust_id) {
+        this.cust_id = cust_id;
+    }
+
+    public String getCust_id_ref() {
+        return cust_id_ref;
+    }
+
+    public void setCust_id_ref(String cust_id_ref) {
+        this.cust_id_ref = cust_id_ref;
+    }
+
+    public String getQb_sync() {
+        return qb_sync;
+    }
+
+    public void setQb_sync(String qb_sync) {
+        this.qb_sync = qb_sync;
+    }
+
+    public String getZone_id() {
+        return zone_id;
+    }
+
+    public void setZone_id(String zone_id) {
+        this.zone_id = zone_id;
+    }
 
-public class Customer 
-{
-	@Expose
-	private String cust_id = "";
-	@Expose private String cust_id_ref = "";
-	@Expose
-	private String qb_sync = "";
-	@Expose
-	private String zone_id = "";
-	@Expose
-	private String CompanyName = "";
-	@Expose
-	private String Salutation = "";
-	@Expose
-	private String cust_contact = "";
-	@Expose
-	private String cust_name = "";
-	@Expose
-	private String cust_chain = "";
-	@Expose
-	private String cust_balance = "";
-	@Expose
-	private String cust_limit = "";
-	@Expose
-	private String cust_firstName = "";
-	@Expose
-	private String cust_middleName = "";
-	@Expose
-	private String cust_lastName = "";
-	@Expose
-	private String cust_phone = "";
-	@Expose
-	private String cust_email = "";
-	@Expose
-	private String cust_fax = "";
-	@Expose
-	private String cust_update = "";
-	@Expose
-	private String isactive = "";
-	@Expose
-	private String cust_ordertype = "";
-	@Expose
-	private String cust_taxable = "";
-	@Expose
-	private String cust_salestaxcode = "";
-	@Expose
-	private String pricelevel_id = "";
-	@Expose
-	private String cust_terms = "";
-	@Expose
-	private String cust_pwd = "";
-	@Expose
-	private String cust_securityquestion = "";
-	@Expose
-	private String cust_securityanswer = "";
-	@Expose
-	private String cust_points = "";
-	@Expose
-	private String cust_dob = "";
-	@Expose
-	private Address shippingAddress;
-	@Expose
-	private Address billingAddress;
-	@Expose
-	private String custIdKey;
-	@Expose
-	private String custIdNumeric;
-	@Expose
-	private String custAccountNumber;
-
-	public String getCust_id() {
-		return cust_id;
-	}
-
-	public void setCust_id(String cust_id) {
-		this.cust_id = cust_id;
-	}
-
-	public String getCust_id_ref() {
-		return cust_id_ref;
-	}
-
-	public void setCust_id_ref(String cust_id_ref) {
-		this.cust_id_ref = cust_id_ref;
-	}
-
-	public String getQb_sync() {
-		return qb_sync;
-	}
-
-	public void setQb_sync(String qb_sync) {
-		this.qb_sync = qb_sync;
-	}
-
-	public String getZone_id() {
-		return zone_id;
-	}
-
-	public void setZone_id(String zone_id) {
-		this.zone_id = zone_id;
-	}
-
-	public String getCompanyName() {
-		return CompanyName;
-	}
-
-	public void setCompanyName(String companyName) {
-		CompanyName = companyName;
-	}
-
-	public String getSalutation() {
-		return Salutation;
-	}
-
-	public void setSalutation(String salutation) {
-		Salutation = salutation;
-	}
-
-	public String getCust_contact() {
-		return cust_contact;
-	}
-
-	public void setCust_contact(String cust_contact) {
-		this.cust_contact = cust_contact;
-	}
-
-	public String getCust_name() {
-		return cust_name;
-	}
-
-	public void setCust_name(String cust_name) {
-		this.cust_name = cust_name;
-	}
-
-	public String getCust_chain() {
-		return cust_chain;
-	}
-
-	public void setCust_chain(String cust_chain) {
-		this.cust_chain = cust_chain;
-	}
-
-	public String getCust_balance() {
-		return cust_balance;
-	}
-
-	public void setCust_balance(String cust_balance) {
-		this.cust_balance = cust_balance;
-	}
-
-	public String getCust_limit() {
-		return cust_limit;
-	}
-
-	public void setCust_limit(String cust_limit) {
-		this.cust_limit = cust_limit;
-	}
-
-	public String getCust_firstName() {
-		return cust_firstName;
-	}
-
-	public void setCust_firstName(String cust_firstName) {
-		this.cust_firstName = cust_firstName;
-	}
-
-	public String getCust_middleName() {
-		return cust_middleName;
-	}
-
-	public void setCust_middleName(String cust_middleName) {
-		this.cust_middleName = cust_middleName;
-	}
-
-	public String getCust_lastName() {
-		return cust_lastName;
-	}
-
-	public void setCust_lastName(String cust_lastName) {
-		this.cust_lastName = cust_lastName;
-	}
-
-	public String getCust_phone() {
-		return cust_phone;
-	}
-
-	public void setCust_phone(String cust_phone) {
-		this.cust_phone = cust_phone;
-	}
-
-	public String getCust_email() {
-		return cust_email;
-	}
-
-	public void setCust_email(String cust_email) {
-		this.cust_email = cust_email;
-	}
-
-	public String getCust_fax() {
-		return cust_fax;
-	}
-
-	public void setCust_fax(String cust_fax) {
-		this.cust_fax = cust_fax;
-	}
-
-	public String getCust_update() {
-		return cust_update;
-	}
-
-	public void setCust_update(String cust_update) {
-		this.cust_update = cust_update;
-	}
-
-	public String getIsactive() {
-		return isactive;
-	}
-
-	public void setIsactive(String isactive) {
-		this.isactive = isactive;
-	}
-
-	public String getCust_ordertype() {
-		return cust_ordertype;
-	}
-
-	public void setCust_ordertype(String cust_ordertype) {
-		this.cust_ordertype = cust_ordertype;
-	}
+    public String getCompanyName() {
+        return CompanyName;
+    }
 
-	public String getCust_taxable() {
-		return cust_taxable;
-	}
+    public void setCompanyName(String companyName) {
+        CompanyName = companyName;
+    }
 
-	public void setCust_taxable(String cust_taxable) {
-		this.cust_taxable = cust_taxable;
-	}
+    public String getSalutation() {
+        return Salutation;
+    }
 
-	public String getCust_salestaxcode() {
-		return cust_salestaxcode;
-	}
+    public void setSalutation(String salutation) {
+        Salutation = salutation;
+    }
 
-	public void setCust_salestaxcode(String cust_salestaxcode) {
-		this.cust_salestaxcode = cust_salestaxcode;
-	}
+    public String getCust_contact() {
+        return cust_contact;
+    }
 
-	public String getPricelevel_id() {
-		return pricelevel_id;
-	}
+    public void setCust_contact(String cust_contact) {
+        this.cust_contact = cust_contact;
+    }
 
-	public void setPricelevel_id(String pricelevel_id) {
-		this.pricelevel_id = pricelevel_id;
-	}
+    public String getCust_name() {
+        return cust_name;
+    }
 
-	public String getCust_terms() {
-		return cust_terms;
-	}
+    public void setCust_name(String cust_name) {
+        this.cust_name = cust_name;
+    }
 
-	public void setCust_terms(String cust_terms) {
-		this.cust_terms = cust_terms;
-	}
+    public String getCust_chain() {
+        return cust_chain;
+    }
 
-	public String getCust_pwd() {
-		return cust_pwd;
-	}
+    public void setCust_chain(String cust_chain) {
+        this.cust_chain = cust_chain;
+    }
 
-	public void setCust_pwd(String cust_pwd) {
-		this.cust_pwd = cust_pwd;
-	}
+    public String getCust_balance() {
+        return cust_balance;
+    }
 
-	public String getCust_securityquestion() {
-		return cust_securityquestion;
-	}
+    public void setCust_balance(String cust_balance) {
+        this.cust_balance = cust_balance;
+    }
 
-	public void setCust_securityquestion(String cust_securityquestion) {
-		this.cust_securityquestion = cust_securityquestion;
-	}
+    public String getCust_limit() {
+        return cust_limit;
+    }
 
-	public String getCust_securityanswer() {
-		return cust_securityanswer;
-	}
+    public void setCust_limit(String cust_limit) {
+        this.cust_limit = cust_limit;
+    }
 
-	public void setCust_securityanswer(String cust_securityanswer) {
-		this.cust_securityanswer = cust_securityanswer;
-	}
+    public String getCust_firstName() {
+        return cust_firstName;
+    }
 
-	public String getCust_points() {
-		return cust_points;
-	}
+    public void setCust_firstName(String cust_firstName) {
+        this.cust_firstName = cust_firstName;
+    }
 
-	public void setCust_points(String cust_points) {
-		this.cust_points = cust_points;
-	}
+    public String getCust_middleName() {
+        return cust_middleName;
+    }
 
-	public String getCust_dob() {
-		return cust_dob;
-	}
+    public void setCust_middleName(String cust_middleName) {
+        this.cust_middleName = cust_middleName;
+    }
 
-	public void setCust_dob(String cust_dob) {
-		this.cust_dob = cust_dob;
-	}
+    public String getCust_lastName() {
+        return cust_lastName;
+    }
 
-	public Address getShippingAddress() {
-		return shippingAddress;
-	}
+    public void setCust_lastName(String cust_lastName) {
+        this.cust_lastName = cust_lastName;
+    }
 
-	public void setShippingAddress(Address shippingAddress) {
-		this.shippingAddress = shippingAddress;
-	}
+    public String getCust_phone() {
+        return cust_phone;
+    }
 
-	public Address getBillingAddress() {
-		return billingAddress;
-	}
+    public void setCust_phone(String cust_phone) {
+        this.cust_phone = cust_phone;
+    }
 
-	public void setBillingAddress(Address billingAddress) {
-		this.billingAddress = billingAddress;
-	}
+    public String getCust_email() {
+        return cust_email;
+    }
 
-	public String getCustIdKey() {
-		return custIdKey;
-	}
+    public void setCust_email(String cust_email) {
+        this.cust_email = cust_email;
+    }
 
-	public void setCustIdKey(String custIdKey) {
-		this.custIdKey = custIdKey;
-	}
+    public String getCust_fax() {
+        return cust_fax;
+    }
 
+    public void setCust_fax(String cust_fax) {
+        this.cust_fax = cust_fax;
+    }
 
-	public String getCustIdNumeric() {
-		return custIdNumeric;
-	}
+    public String getCust_update() {
+        return cust_update;
+    }
 
-	public void setCustIdNumeric(String custIdNumeric) {
-		this.custIdNumeric = custIdNumeric;
-	}
+    public void setCust_update(String cust_update) {
+        this.cust_update = cust_update;
+    }
 
-	public String getCustAccountNumber() {
-		return custAccountNumber;
-	}
+    public String getIsactive() {
+        return isactive;
+    }
 
-	public void setCustAccountNumber(String custAccountNumber) {
-		this.custAccountNumber = custAccountNumber;
-	}
+    public void setIsactive(String isactive) {
+        this.isactive = isactive;
+    }
 
-	@Override
-	public String toString() {
-		return String.format("%s(%s)", this.cust_name, this.cust_id);
-	}
+    public String getCust_ordertype() {
+        return cust_ordertype;
+    }
+
+    public void setCust_ordertype(String cust_ordertype) {
+        this.cust_ordertype = cust_ordertype;
+    }
+
+    public String getCust_taxable() {
+        return cust_taxable;
+    }
+
+    public void setCust_taxable(String cust_taxable) {
+        this.cust_taxable = cust_taxable;
+    }
+
+    public String getCust_salestaxcode() {
+        return cust_salestaxcode;
+    }
+
+    public void setCust_salestaxcode(String cust_salestaxcode) {
+        this.cust_salestaxcode = cust_salestaxcode;
+    }
+
+    public String getPricelevel_id() {
+        return pricelevel_id;
+    }
+
+    public void setPricelevel_id(String pricelevel_id) {
+        this.pricelevel_id = pricelevel_id;
+    }
+
+    public String getCust_terms() {
+        return cust_terms;
+    }
+
+    public void setCust_terms(String cust_terms) {
+        this.cust_terms = cust_terms;
+    }
+
+    public String getCust_pwd() {
+        return cust_pwd;
+    }
+
+    public void setCust_pwd(String cust_pwd) {
+        this.cust_pwd = cust_pwd;
+    }
+
+    public String getCust_securityquestion() {
+        return cust_securityquestion;
+    }
+
+    public void setCust_securityquestion(String cust_securityquestion) {
+        this.cust_securityquestion = cust_securityquestion;
+    }
+
+    public String getCust_securityanswer() {
+        return cust_securityanswer;
+    }
+
+    public void setCust_securityanswer(String cust_securityanswer) {
+        this.cust_securityanswer = cust_securityanswer;
+    }
+
+    public String getCust_points() {
+        return cust_points;
+    }
+
+    public void setCust_points(String cust_points) {
+        this.cust_points = cust_points;
+    }
+
+    public String getCust_dob() {
+        return cust_dob;
+    }
+
+    public void setCust_dob(String cust_dob) {
+        this.cust_dob = cust_dob;
+    }
+
+    public Address getShippingAddress() {
+        return shippingAddress;
+    }
+
+    public void setShippingAddress(Address shippingAddress) {
+        this.shippingAddress = shippingAddress;
+    }
+
+    public Address getBillingAddress() {
+        return billingAddress;
+    }
+
+    public void setBillingAddress(Address billingAddress) {
+        this.billingAddress = billingAddress;
+    }
+
+    public String getCustIdKey() {
+        return custIdKey;
+    }
+
+    public void setCustIdKey(String custIdKey) {
+        this.custIdKey = custIdKey;
+    }
+
+
+    public String getCustIdNumeric() {
+        return custIdNumeric;
+    }
+
+    public void setCustIdNumeric(String custIdNumeric) {
+        this.custIdNumeric = custIdNumeric;
+    }
+
+    public String getCustAccountNumber() {
+        return custAccountNumber;
+    }
+
+    public void setCustAccountNumber(String custAccountNumber) {
+        this.custAccountNumber = custAccountNumber;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s(%s)", this.cust_name, this.cust_id);
+    }
 }
