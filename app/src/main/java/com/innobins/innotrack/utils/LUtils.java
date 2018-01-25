@@ -21,7 +21,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import in.innobins.innotrack.R;
+import com.innobins.innotrack.R;
 
 /**
  * Created by silence12 on 26/6/17.

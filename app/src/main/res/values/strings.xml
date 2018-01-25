@@ -39,7 +39,7 @@
     <string name="title_activity_main_progress_dialog">MainProgressDialog</string>
     <string name="title_activity_go_geo_progress_dialog">GoGeoProgressDialog</string>
     <string name="title_activity_pdf_generator">PdfGenerator</string>
-    <string name="google_directions_key">AIzaSyCW1DQ2a04jdkNaflkD363mliOSfpPsZE4</string>
+    <string name="google_directions_key">AIzaSyDoNLdPwYDEFvXsxAQtfNk1yJZetjDniEw</string>
     <string name="title_activity_animation">Animation</string>
     <string name="sign_in_username">Username</string>
 

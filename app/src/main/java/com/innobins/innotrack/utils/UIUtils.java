@@ -34,7 +34,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.TextView;
 
-import in.innobins.innotrack.R;
+import com.innobins.innotrack.R;
 
 import java.util.regex.Pattern;
 

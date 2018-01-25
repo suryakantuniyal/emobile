@@ -18,7 +18,7 @@ import android.widget.TextView;
 import java.io.File;
 import java.util.List;
 
-import in.innobins.innotrack.R;
+import com.innobins.innotrack.R;
 import com.innobins.innotrack.activity.Reports.ReportsActivity;
 
 public class PdfGenerator extends AppCompatActivity {

@@ -28,7 +28,7 @@ import com.innobins.innotrack.utils.UtilsFunctions;
 import com.rampo.updatechecker.UpdateChecker;
 import com.rampo.updatechecker.notice.Notice;
 
-import in.innobins.innotrack.R;
+import com.innobins.innotrack.R;
 import com.innobins.innotrack.utils.URLContstant;
 
 
@@ -36,7 +36,7 @@ import com.innobins.innotrack.utils.URLContstant;
  * Created by silence12 on 26/6/17.
  */
 
-public class   SplashActivity extends BaseActivity {
+public class   SplashActivity extends AppCompatActivity {
     Boolean isActive = false;
     private static int SPLASH_TIME_OUT = 5000;
     int Counter = 0;

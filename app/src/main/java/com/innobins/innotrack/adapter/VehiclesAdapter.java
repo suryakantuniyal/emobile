@@ -17,7 +17,7 @@ import com.innobins.innotrack.activity.TrackingDevicesActivity;
 import com.innobins.innotrack.activity.VehicleDetailActivity;
 import com.innobins.innotrack.model.VehicleList;
 
-import in.innobins.innotrack.R;
+import com.innobins.innotrack.R;
 
 import java.util.ArrayList;
 import java.util.List;

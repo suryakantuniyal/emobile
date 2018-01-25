@@ -143,8 +143,8 @@
                         android:id="@+id/vehicleListIcn"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/truckicon2"
-                        android:padding="5dp"/>
+                        android:src="@drawable/car_green"
+                        android:padding="2dp"/>
                 </LinearLayout>
 
                 <RelativeLayout

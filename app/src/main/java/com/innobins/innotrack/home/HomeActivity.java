@@ -29,6 +29,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.Entry;
@@ -55,9 +56,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-import in.innobins.innotrack.R;
+import com.innobins.innotrack.R;
 
 /**
  * Created by silence12 on 22/1/18.
@@ -73,7 +75,7 @@ public class HomeActivity extends BaseActivity implements OnChartValueSelectedLi
     private int currentPage;
     private ViewPager circleviewPager;
     private ViewPagerAdapter viewPagerAdapter;
-    String userName,password;
+
     GoGeoDataProDialog goGeoDataProDialog;
     PieChart pieChart ;
     LinearLayout mapView_ll,listView_ll ;
@@ -87,15 +89,13 @@ public class HomeActivity extends BaseActivity implements OnChartValueSelectedLi
         getSupportActionBar().setIcon(R.mipmap.innotrack_icon);
         customTitle("   "+"Innotrack");
         mSharedPreferences = getSharedPreferences(URLContstant.PREFERENCE_NAME, MODE_PRIVATE);
-        userName = mSharedPreferences.getString(URLContstant.KEY_USERNAME, "");
-        password = mSharedPreferences.getString(URLContstant.KEY_PASSWORD,"");
         pieChart = (PieChart) findViewById(R.id.piechart);
         pieChart.setUsePercentValues(true);
         goGeoDataProDialog = new GoGeoDataProDialog(this);
         Intent intent = getIntent();
         boolean b = intent.getBooleanExtra("logged",false);
         init();
-        vehicleStatusData();
+//        vehicleStatusData();
         getData();
         piChartData();
         setSupportActionBar(toolbar);
@@ -382,28 +382,40 @@ public class HomeActivity extends BaseActivity implements OnChartValueSelectedLi
 
     private void piChartData(){
         ArrayList<Entry> yvalues = new ArrayList<Entry>();
-
-        yvalues.add(new Entry(mSharedPreferences.getInt("active",-1), 0));
-        yvalues.add(new Entry(mSharedPreferences.getInt("inactive",-1), 1));
-        yvalues.add(new Entry(mSharedPreferences.getInt("running",-1), 2));
-        yvalues.add(new Entry(mSharedPreferences.getInt("unknown",-1), 3));
+        List<Integer> VORDIPLOM_COLORS = new ArrayList<>();
         PieDataSet dataSet = new PieDataSet(yvalues, "");
 
         ArrayList<String> xVals = new ArrayList<String>();
 
-        xVals.add("Online");
-        xVals.add("Offline");
-        xVals.add("Running");
-        xVals.add("No Data");
+        if(mSharedPreferences.getInt("active",-1)!=0){
+            yvalues.add(new Entry(mSharedPreferences.getInt("active",-1), 0));
+            xVals.add("Online");
+            VORDIPLOM_COLORS.add(Color.rgb(192, 255, 140));
+        }
+        if(mSharedPreferences.getInt("inactive",-1)!=0) {
+            yvalues.add(new Entry(mSharedPreferences.getInt("inactive",-1), 1));
+            xVals.add("Offline");
+            VORDIPLOM_COLORS.add(Color.rgb(255, 77, 77));
+        }
+        if(mSharedPreferences.getInt("running",-1)!=0) {
+            yvalues.add(new Entry(mSharedPreferences.getInt("running",-1), 2));
+            xVals.add("Running");
+            VORDIPLOM_COLORS.add(Color.rgb(140, 234, 255));
+        }
+        if(mSharedPreferences.getInt("unknown",-1)!=0) {
+            yvalues.add(new Entry(mSharedPreferences.getInt("unknown",-1), 3));
+            xVals.add("No Data");
+            VORDIPLOM_COLORS.add(Color.rgb(30, 30, 30));
+        }
         PieData data = new PieData(xVals, dataSet);
         // In Percentage
         data.setValueFormatter(new PercentFormatter());
         // Default value
         //data.setValueFormatter(new DefaultValueFormatter(0));
-        int[] VORDIPLOM_COLORS = {
-                Color.rgb(192, 255, 140),Color.rgb(255, 208, 140),
-                Color.rgb(140, 234, 255),  Color.rgb(255, 247, 140),
-        };
+//        int[] VORDIPLOM_COLORS = {
+//                Color.rgb(192, 255, 140),Color.rgb(255, 208, 140),
+//                Color.rgb(140, 234, 255),  Color.rgb(140, 234, 255),
+//        };
         pieChart.setData(data);
         pieChart.setDescription("");
         pieChart.setDrawHoleEnabled(true);
@@ -432,11 +444,11 @@ public class HomeActivity extends BaseActivity implements OnChartValueSelectedLi
             intent.putExtra("onoff", "offline");
             startActivity(intent);
         }else if(e.getXIndex()==2){
-
-        }else if(e.getXIndex()==3){
-            Intent intent = new Intent(HomeActivity.this, MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            Intent intent = new Intent(HomeActivity.this, OnLineOffLineActivity.class);
+            intent.putExtra("onoff", "online");
             startActivity(intent);
+        }else if(e.getXIndex()==3){
+            Toast.makeText(this,"No data found",Toast.LENGTH_SHORT).show();
         }
 
     }

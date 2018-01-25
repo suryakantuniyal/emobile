@@ -1,35 +1,35 @@
 {
   "project_info": {
-    "project_number": "56430313575",
-    "firebase_url": "https://traccar-440d2.firebaseio.com",
-    "project_id": "traccar-440d2",
-    "storage_bucket": "traccar-440d2.appspot.com"
+    "project_number": "66295195619",
+    "firebase_url": "https://innotrack-190111.firebaseio.com",
+    "project_id": "innotrack-190111",
+    "storage_bucket": "innotrack-190111.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:56430313575:android:ddfd572332cea794",
+        "mobilesdk_app_id": "1:66295195619:android:0f0c956d48a7b66c",
         "android_client_info": {
-          "package_name": "org.traccar.manager"
+          "package_name": "com.innobins.innotrack"
         }
       },
       "oauth_client": [
         {
-          "client_id": "56430313575-1eqpaursielk5g5necdp09cn4ok7ml57.apps.googleusercontent.com",
+          "client_id": "66295195619-d6ht4bmlao06jg3molk7ob81rt100uln.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "org.traccar.manager",
+            "package_name": "com.innobins.innotrack",
             "certificate_hash": "26dfc2bbf4fc220dc8fc456b1e436d17ecb0b641"
           }
         },
         {
-          "client_id": "56430313575-e91n5c8l1vl2sg423h4unh9j8i84nkge.apps.googleusercontent.com",
+          "client_id": "66295195619-s1vl6hpc36tp4400mp3br9n77i31lqei.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCw_igqHzJLc-zGSnIJ0UK3pQQ_aiHqKJ0"
+          "current_key": "AIzaSyDUIQJhCxAOmAnxPqNkU2fwHQjF-TYJmXs"
         }
       ],
       "services": {
@@ -40,51 +40,7 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "56430313575-e91n5c8l1vl2sg423h4unh9j8i84nkge.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        },
-        "ads_service": {
-          "status": 2
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:56430313575:android:0fa1456021deb0fe",
-        "android_client_info": {
-          "package_name": "in.gtech.gogeotrack"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "56430313575-lros5hbj83jn5afbl24lnpo4lo3mnm63.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "in.gtech.gogeotrack",
-            "certificate_hash": "26dfc2bbf4fc220dc8fc456b1e436d17ecb0b641"
-          }
-        },
-        {
-          "client_id": "56430313575-e91n5c8l1vl2sg423h4unh9j8i84nkge.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyCw_igqHzJLc-zGSnIJ0UK3pQQ_aiHqKJ0"
-        }
-      ],
-      "services": {
-        "analytics_service": {
-          "status": 1
-        },
-        "appinvite_service": {
-          "status": 2,
-          "other_platform_oauth_client": [
-            {
-              "client_id": "56430313575-e91n5c8l1vl2sg423h4unh9j8i84nkge.apps.googleusercontent.com",
+              "client_id": "66295195619-s1vl6hpc36tp4400mp3br9n77i31lqei.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

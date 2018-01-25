@@ -43,7 +43,7 @@ import org.json.JSONObject;
 
 import java.util.Calendar;
 
-import in.innobins.innotrack.R;
+import com.innobins.innotrack.R;
 
 /**
  * Created by silence12 on 22/6/17.
@@ -254,9 +254,9 @@ public class TrackingDevicesActivity extends BaseActivity {
         }
         else {
             if (statsString.equals("Online")) {
-                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.greentruck));
+                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.car_green));
             } else if (statsString.equals("Offline")) {
-                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.redtruck));
+                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.car_red));
             } else {
                 markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_truck_med));
             }

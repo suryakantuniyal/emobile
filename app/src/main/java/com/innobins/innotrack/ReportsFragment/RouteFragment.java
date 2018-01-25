@@ -7,7 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import in.innobins.innotrack.R;
+import com.innobins.innotrack.R;
 
 public class RouteFragment extends Fragment {
 

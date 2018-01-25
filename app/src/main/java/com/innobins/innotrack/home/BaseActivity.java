@@ -18,9 +18,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 
+import com.innobins.innotrack.R;
+import com.innobins.innotrack.network.ResponseCallback;
+import com.innobins.innotrack.network.WebserviceHelper;
 import com.innobins.innotrack.utils.SharedUtils;
+import com.innobins.innotrack.utils.URLContstant;
 
-import in.innobins.innotrack.R;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 
 /**
  * Created by silence12 on 24/1/18.
@@ -82,6 +89,7 @@ public class BaseActivity extends AppCompatActivity {
         s.setSpan(new TypefaceSpan("fonts/Serif.ttf"), 0, s.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         setTitle(s);
     }
+
 
     @Override
     protected void onPause() {

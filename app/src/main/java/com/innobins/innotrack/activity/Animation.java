@@ -38,7 +38,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import in.innobins.innotrack.R;
+import com.innobins.innotrack.R;
 
 public class Animation extends FragmentActivity implements OnMapReadyCallback {
 

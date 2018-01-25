@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?><!-- suppress ALL -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="in.innobins.innotrack">
+    package="com.innobins.innotrack">
 
     <permission
-        android:name="in.innobins.innotrack.permission.MAPS_RECEIVE"
+        android:name="com.innobins.innotrack.permission.MAPS_RECEIVE"
         android:protectionLevel="signature"
         tools:ignore="UniquePermission" />
 
-    <uses-permission android:name="in.gtech.gogeotrack.permission.MAPS_RECEIVE" />
+    <uses-permission android:name="com.innobins.innotrack.permission.MAPS_RECEIVE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -29,10 +29,10 @@
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
 
     <permission
-        android:name="in.innobins.innotrack.permission.C2D_MESSAGE"
+        android:name="com.innobins.innotrack.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
 
-    <uses-permission android:name="in.gtech.gogeotrack.permission.C2D_MESSAGE" />
+    <uses-permission android:name="com.innobins.innotrack.permission.C2D_MESSAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
@@ -104,7 +104,7 @@
 
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value=" AIzaSyCW1DQ2a04jdkNaflkD363mliOSfpPsZE4 " />
+            android:value="AIzaSyAa6oTp11HF9-joRd366-2m8rdQNqhyskE" />
 
         <activity
             android:name="com.innobins.innotrack.activity.Main2Activity"

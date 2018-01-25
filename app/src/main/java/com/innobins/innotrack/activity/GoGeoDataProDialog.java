@@ -6,7 +6,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
-import in.innobins.innotrack.R;
+import com.innobins.innotrack.R;
 
 /**
  * Created by surya on 13/11/17.

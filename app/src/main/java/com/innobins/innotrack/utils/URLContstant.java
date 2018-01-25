@@ -19,7 +19,7 @@ public class URLContstant {
     public static final String ROUTE_REPORT = "api/reports/route";
     public static final String SUMMARY_REPORT = "api/reports/summary";
     public static final String TRIP_REPORT = "api/reports/trips";
-    public static final String PREFERENCE_NAME = "in.gtech.gogeotrack";
+    public static final String PREFERENCE_NAME = "com.innobins.innotrack";
     public static final String KEY_LOGEDIN_USERID = "logged_userid" ;
     public static final String KEY_USERNAME = "email";
     public static final String KEY_PASSWORD = "password";

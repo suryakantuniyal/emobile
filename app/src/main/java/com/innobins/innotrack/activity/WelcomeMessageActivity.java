@@ -22,7 +22,7 @@ import com.viewpagerindicator.CirclePageIndicator;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import in.innobins.innotrack.R;
+import com.innobins.innotrack.R;
 
 /**
  * Created by silence12 on 4/7/17.

@@ -12,20 +12,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
-import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -44,25 +38,21 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.innobins.innotrack.R;
 import com.innobins.innotrack.activity.VehicleDetailActivity;
-import com.innobins.innotrack.api.APIServices;
 import com.innobins.innotrack.home.BaseActivity;
-import com.innobins.innotrack.network.DetailResponseCallback;
 import com.innobins.innotrack.network.ResponseCallback;
 import com.innobins.innotrack.network.WebserviceHelper;
 import com.innobins.innotrack.parser.TraccerParser;
 import com.innobins.innotrack.services.UpdateListViewService;
 import com.innobins.innotrack.utils.URLContstant;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import in.innobins.innotrack.R;
 
 /**
  * Created by silence12 on 23/1/18.
@@ -117,6 +107,7 @@ public class VehicleOnMap extends BaseActivity implements View.OnClickListener {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         customTitle("   "+"Device Details");
+        setPintent();
         initViews();
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
 //        collapsingToolbarLayout.setTitle("Device Details");
@@ -141,19 +132,20 @@ public class VehicleOnMap extends BaseActivity implements View.OnClickListener {
         googleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map25)).getMap();
         googleMap.getUiSettings().setZoomControlsEnabled(true);
         googleMap.setPadding(10,10,10,20);
-        setPintent();
         CameraUpdate point = CameraUpdateFactory.newLatLng(new LatLng(origin_latitute, origin_longitute));
         googleMap.moveCamera(point);
         markerOptions = new MarkerOptions().position(new LatLng(origin_latitute,origin_longitute)).title(address);//set current position lat,long
-        cameraPosition = new CameraPosition.Builder().target(new LatLng(origin_latitute,origin_longitute)).zoom(17f).build();
+        cameraPosition = new CameraPosition.Builder().target(new LatLng(origin_latitute,origin_longitute)).zoom(17).build();
         googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.carnew_icon));
+        marker=googleMap.addMarker(markerOptions);
 
 //        uploadIndividualData();
 
         pintent = PendingIntent.getService(VehicleOnMap.this, 0, updateListViewService,0);
         alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         Calendar cal = Calendar.getInstance();
-        alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), 24 * 1000, pintent);
+        alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), 6 * 1000, pintent);
     }
 
     private void initViews() {
@@ -204,13 +196,11 @@ public class VehicleOnMap extends BaseActivity implements View.OnClickListener {
                         if (address.equals("null")) {
                             address = "Loading...";
                         }
-                        googleMap.clear();
                         positionId_tv.setText(address);
-                        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_car));
-                        markerOptions.anchor(0.5f,0.5f)
-                                .flat(true);
-                        marker=googleMap.addMarker(markerOptions);
-
+//                        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_car));
+//                        markerOptions.anchor(0.5f,0.5f)
+//                                .flat(true);
+//                        marker=googleMap.addMarker(markerOptions);
                         uniqueId_tv.setText(uniqueIdString);
                         lastUpdate_tv.setText(time);
                         status_tv.setText(statusString);
@@ -222,7 +212,7 @@ public class VehicleOnMap extends BaseActivity implements View.OnClickListener {
                         lineStringArray.add(new LatLng(origin_latitute,origin_longitute));
 
                         if(Double.compare(origin_latitute,destiny_latitude)!=0) {
-                            animationFunc(origin_latitute, origin_longitute);
+                            animationFunc();
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -235,9 +225,8 @@ public class VehicleOnMap extends BaseActivity implements View.OnClickListener {
 
     }
 
-    private void animationFunc(final double latitute, double longitute) {
+    private void animationFunc() {
 
-        final int[] count = {0};
         String requestUrl = null;
         try {
             requestUrl = "https://maps.googleapis.com/maps/api/directions/json?" +
@@ -261,10 +250,10 @@ public class VehicleOnMap extends BaseActivity implements View.OnClickListener {
                                     polyLineList = decodePoly(polyline);
                                 }
                                 //Adjusting bounds
-                                LatLngBounds.Builder builder = new LatLngBounds.Builder();
-                                for (LatLng latLng : polyLineList) {
-                                    builder.include(latLng);
-                                }
+//                                LatLngBounds.Builder builder = new LatLngBounds.Builder();
+//                                for (LatLng latLng : polyLineList) {
+//                                    builder.include(latLng);
+//                                }
 //                                LatLngBounds bounds = builder.build();
 //                                CameraUpdate mCameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, 2);
 //                                googleMap.animateCamera(mCameraUpdate);
@@ -273,16 +262,25 @@ public class VehicleOnMap extends BaseActivity implements View.OnClickListener {
                                 polylineOptions.color(Color.GRAY);
                                 polylineOptions.width(5);
 
+                             /*   polylineOptions.startCap(new SquareCap());
+                                polylineOptions.endCap(new SquareCap());
+                                polylineOptions.jointType(ROUND);*/
                                 polylineOptions.addAll(polyLineList);
                                 greyPolyLine = googleMap.addPolyline(polylineOptions);
 
                                 blackPolylineOptions = new PolylineOptions();
                                 blackPolylineOptions.width(5);
                                 blackPolylineOptions.color(Color.BLACK);
+                                /*blackPolylineOptions.startCap(new SquareCap());
+                                blackPolylineOptions.endCap(new SquareCap());
+                                blackPolylineOptions.jointType(ROUND);*/
                                 blackPolyline = googleMap.addPolyline(blackPolylineOptions);
 
+                                /*googleMap.addMarker(new MarkerOptions()
+                                        .position(polyLineList.get(polyLineList.size() - 1)));
+*/
                                 ValueAnimator polylineAnimator = ValueAnimator.ofInt(0, 100);
-                                polylineAnimator.setDuration(4000);
+                                polylineAnimator.setDuration(5000);
                                 polylineAnimator.setInterpolator(new LinearInterpolator());
                                 polylineAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                                     @Override
@@ -296,9 +294,9 @@ public class VehicleOnMap extends BaseActivity implements View.OnClickListener {
                                     }
                                 });
                                 googleMap.clear();
-//                                marker = googleMap.addMarker(new MarkerOptions().position(new LatLng(destiny_latitude,destiny_longitude))
-//                                        .flat(true)
-//                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_car)));
+                                marker = googleMap.addMarker(new MarkerOptions().position(new LatLng(destiny_latitude,destiny_longitude))
+                                        .flat(true)
+                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.carnew_icon)));
 
                                 handler = new Handler();
                                 index = -1;
@@ -315,7 +313,7 @@ public class VehicleOnMap extends BaseActivity implements View.OnClickListener {
                                             endPosition = polyLineList.get(next);
                                         }
                                         ValueAnimator valueAnimator = ValueAnimator.ofFloat(0, 1);
-                                        valueAnimator.setDuration(5000);
+                                        valueAnimator.setDuration(6000);
                                         valueAnimator.setInterpolator(new LinearInterpolator());
                                         valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                                             @Override
@@ -329,16 +327,15 @@ public class VehicleOnMap extends BaseActivity implements View.OnClickListener {
                                                 LatLng newPos = new LatLng(newLatitude, newLongitude);
                                                 marker.setPosition(newPos);
                                                 marker.setAnchor(0.5f, 0.5f);
-                                                marker.setRotation(getBearing(new LatLng(origin_latitute,origin_longitute), newPos));
+                                                marker.setRotation(getBearing(startPosition, newPos));
                                                 googleMap.moveCamera(CameraUpdateFactory
                                                         .newCameraPosition
                                                                 (new CameraPosition.Builder()
                                                                         .target(newPos)
-                                                                        .zoom(17f)
+                                                                        .zoom(17)
                                                                         .build()));
                                             }
                                         });
-
                                         if(Double.compare(origin_latitute,destiny_latitude)!=0) {
                                             valueAnimator.start();
 //                                        handler.postDelayed(this, 3000);
@@ -346,7 +343,7 @@ public class VehicleOnMap extends BaseActivity implements View.OnClickListener {
                                             origin_longitute = destiny_longitude;
                                         }
                                     }
-                                }, 5000);
+                                }, 6000);
 
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -379,6 +376,7 @@ public class VehicleOnMap extends BaseActivity implements View.OnClickListener {
         getBaseContext().stopService(updateListViewService);
         pintent.cancel();
         super.onBackPressed();
+        finish();
 
     }
     @Override
@@ -458,7 +456,6 @@ public class VehicleOnMap extends BaseActivity implements View.OnClickListener {
         statusString = getIntent.getStringExtra("status");
         categoryString = getIntent.getStringExtra("category");
         address = getIntent.getStringExtra("address");
-        progressDialog.dismiss();
 
     }
 

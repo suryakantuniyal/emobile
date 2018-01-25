@@ -16,7 +16,7 @@ import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 
-import in.innobins.innotrack.R;
+import com.innobins.innotrack.R;
 
 /**
  * Created by silence12 on 26/6/17.

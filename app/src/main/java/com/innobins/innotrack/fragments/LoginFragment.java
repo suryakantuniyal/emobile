@@ -25,11 +25,12 @@ import com.innobins.innotrack.home.HomeActivity;
 import com.innobins.innotrack.network.ResponseCallback;
 import com.innobins.innotrack.network.ResponseStringCallback;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import in.innobins.innotrack.R;
-//import in.gtech.gogeotrack.activity.CircularActivity;
+import com.innobins.innotrack.R;
+//import com.innobins.innotrack.activity.CircularActivity;
 import com.innobins.innotrack.network.WebserviceHelper;
 import com.innobins.innotrack.utils.URLContstant;
 
@@ -98,6 +99,7 @@ public class LoginFragment extends Fragment {
                                         mEditor.putString(URLContstant.KEY_PASSWORD, pass);
                                         mEditor.putInt(URLContstant.KEY_LOGEDIN_USERID,jsonObject1.getInt("userId"));
                                         mEditor.putBoolean(URLContstant.KEY_LOGGED_IN, true);
+                                        vehicleStatusData(jsonObject1.getInt("userId"));
                                         if (rememberMe.isChecked()) {
                                             mEditor.putString(URLContstant.KEY_REMBR_USER,user);
                                             mEditor.putString(URLContstant.KEY_REMBR_PASS,pass);
@@ -159,6 +161,35 @@ public class LoginFragment extends Fragment {
         super.onResume();
     }
 
+
+    private void vehicleStatusData(int id) {
+        String mUrl = "https://mtrack-api.appspot.com/api/get/summary/byuser/" ;
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("userid",id);
+            WebserviceHelper.getInstance().PostCall(getContext(), mUrl, jsonObject, new ResponseCallback() {
+                @Override
+                public void OnResponse(JSONObject Response) {
+                    try {
+                        JSONArray jsonArray = Response.getJSONArray("summaryData");
+                        JSONObject jsonObject1 = jsonArray.getJSONObject(0);
+                        mEditor = mSharedPreferences.edit();
+                        mEditor.putInt("active", jsonObject1.getInt("online_vehicle"));
+                        mEditor.putInt("inactive", jsonObject1.getInt("offline_vehicle"));
+                        mEditor.putInt("running",jsonObject1.getInt("running_vehicle"));
+                        mEditor.putInt("total", jsonObject1.getInt("total_vehicle"));
+                        mEditor.putInt("unknown",jsonObject1.getInt("unknown_vehicle"));
+                        mEditor.apply();
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 
 
 }

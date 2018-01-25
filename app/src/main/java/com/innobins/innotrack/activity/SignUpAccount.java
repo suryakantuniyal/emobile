@@ -21,7 +21,7 @@ import com.innobins.innotrack.fragments.LoginFragment;
 import com.innobins.innotrack.home.BaseActivity;
 import com.innobins.innotrack.utils.UtilFunctions;
 
-import in.innobins.innotrack.R;
+import com.innobins.innotrack.R;
 
 /**
  * Created by silence12 on 19/6/17.

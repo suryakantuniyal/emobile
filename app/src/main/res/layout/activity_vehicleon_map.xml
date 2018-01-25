@@ -66,6 +66,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="5dp"
             android:layout_gravity="bottom"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
 
@@ -75,8 +76,8 @@
                 android:id="@+id/position_cv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp">
+                android:layout_marginLeft="3dp"
+                android:layout_marginRight="3dp">
 
                 <LinearLayout
                     android:id="@+id/mainswipe_ll"
@@ -90,72 +91,301 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/full_rounded_white">
+                        android:background="@drawable/full_rounded_white"
+                        android:orientation="vertical">
 
-                        <RelativeLayout
+                        <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_marginTop="5dp"
-                            android:layout_marginBottom="5dp">
+                            android:layout_height="40dp"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginRight="10dp"
+                            android:orientation="horizontal"
+                            android:weightSum="2"
+
+                            >
 
                             <LinearLayout
-                                android:id="@+id/date"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentLeft="true"
-                                android:layout_centerVertical="true"
-                                android:layout_marginLeft="10dp"
-                                android:orientation="horizontal">
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:background="@drawable/full_rounded_white"
+                                >
 
-                                <ImageView
-                                    android:layout_width="25dp"
-                                    android:layout_height="25dp"
-                                    android:layout_gravity="top|bottom|center_vertical|fill_vertical|center|fill"
-                                    android:src="@drawable/ic_date" />
+                                <LinearLayout
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp"
+                                    android:layout_marginLeft="1dp"
+                                    android:layout_gravity="center"
+                                    android:gravity="center">
+                                    <ImageView
+                                        android:layout_width="25dp"
+                                        android:layout_height="25dp"
+                                        android:src="@drawable/ic_date" />
 
-                                <TextView
-                                    android:id="@+id/date_tv"
-                                    android:text=""
+                                </LinearLayout>
+                                <LinearLayout
                                     android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginLeft="10dp"
-                                    android:layout_marginTop="3dp"
-                                    android:background="#ffffff"
-                                    android:gravity="left|center|center_vertical|center_horizontal"
-                                    android:textColor="@color/colorPrimary"
-                                    android:textSize="12dp"
-                                    android:typeface="serif" />
+                                    android:layout_height="40dp"
+                                    android:gravity="center"
+                                    android:layout_gravity="center_vertical">
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:background="#ffffff"
+                                        android:gravity="left"
+                                        android:id="@+id/date_tv"
+                                        android:layout_marginLeft="10dp"
+                                        android:text=""
+                                        android:textColor="@color/black"
+                                        android:textSize="13dp" />
+
+                                </LinearLayout>
+
                             </LinearLayout>
+                            <View
+                                android:layout_width="1dp"
+                                android:layout_height="match_parent"
+                                android:background="#E0E0E0"/>
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:background="@drawable/full_rounded_white"
+                                >
 
-                            <RelativeLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignLeft="@id/date"
-                                android:layout_alignParentRight="true"
-                                android:layout_centerVertical="true"
-                                android:orientation="horizontal">
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="40dp"
+                                    android:layout_gravity="left"
+                                    android:layout_marginLeft="20dp"
+                                    android:gravity="center_vertical"
+                                    android:background="#ffffff"
+                                    android:orientation="horizontal">
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Last Updates: "
+                                        android:textSize="13dp"
+                                        />
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:background="#ffffff"
+                                        android:gravity="left"
+                                        android:id="@+id/diff_tv"
+                                        android:layout_marginLeft="10dp"
+                                        android:text=""
+                                        android:textColor="@color/black"
+                                        android:textSize="12dp" />
 
-                                <TextView
-                                    android:id="@+id/last_tv"
+                                </LinearLayout>
+                            </LinearLayout>
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/full_rounded_white"
+                        android:orientation="vertical">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginRight="10dp"
+                            android:orientation="horizontal"
+                            android:weightSum="2"
+
+                            >
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:background="@drawable/full_rounded_white"
+                                >
+
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="40dp"
+                                    android:gravity="center"
+                                    android:layout_marginLeft="1dp"
+                                    android:layout_gravity="center_vertical">
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Vehicle:"
+                                        android:layout_marginLeft="10dp"
+                                        android:textSize="13dp"
+                                        />
+                                </LinearLayout>
+                                <LinearLayout
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_toLeftOf="@id/diff_tv"
-                                    android:text="Last Updated: "
-                                    android:textColor="@color/black"
-                                    android:typeface="serif" />
+                                    android:layout_gravity="center"
+                                    android:background="#ffffff"
+                                    android:orientation="horizontal">
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:background="#ffffff"
+                                        android:gravity="left"
+                                        android:id="@+id/project_name_tv"
+                                        android:layout_marginLeft="10dp"
+                                        android:text=""
+                                        android:textColor="@color/black"
+                                        android:textSize="13dp" />
 
-                                <TextView
-                                    android:id="@+id/diff_tv"
+                                </LinearLayout>
+
+                            </LinearLayout>
+                            <View
+                                android:layout_width="1dp"
+                                android:layout_height="match_parent"
+                                android:background="#E0E0E0"/>
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:background="@drawable/full_rounded_white"
+                                >
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="40dp"
+                                    android:layout_gravity="center"
+                                    android:layout_marginLeft="20dp"
+                                    android:gravity="center_vertical"
+                                    android:background="#ffffff"
+                                    android:orientation="horizontal">
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="20dp"
+                                        android:text="Uid: "
+                                        android:textSize="13dp"
+                                        />
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:background="#ffffff"
+                                        android:gravity="left"
+                                        android:id="@+id/uniqueid_tv"
+                                        android:layout_marginLeft="10dp"
+                                        android:text=""
+                                        android:textColor="@color/black"
+                                        android:textSize="12dp" />
+                                </LinearLayout>
+                            </LinearLayout>
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/full_rounded_white"
+                        android:orientation="vertical">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginRight="10dp"
+                            android:orientation="horizontal"
+                            android:weightSum="2"
+
+                            >
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:background="@drawable/full_rounded_white"
+                                >
+
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="40dp"
+                                    android:layout_marginLeft="1dp"
+                                    android:gravity="center"
+                                    android:layout_gravity="center_vertical">
+                                    <TextView
+                                        android:id="@+id/trackDeviceIcn"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Status"
+                                        android:layout_marginLeft="10dp" />
+                                </LinearLayout>
+                                <LinearLayout
+                                    android:id="@+id/track_ll"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_alignParentRight="true"
-                                    android:layout_marginLeft="5dp"
-                                    android:layout_marginRight="10dp"
-                                    android:text=""
-                                    android:textColor="@color/colorPrimary"
-                                    android:typeface="serif" />
-                            </RelativeLayout>
-                        </RelativeLayout>
+                                    android:layout_gravity="center"
+                                    android:background="#ffffff"
+                                    android:orientation="horizontal">
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:background="#ffffff"
+                                        android:gravity="left"
+                                        android:id="@+id/status_tv"
+                                        android:layout_marginLeft="10dp"
+                                        android:text=""
+                                        android:textColor="@color/black"
+                                        android:textSize="13dp" />
+
+                                </LinearLayout>
+
+                            </LinearLayout>
+                            <View
+                                android:layout_width="1dp"
+                                android:layout_height="match_parent"
+                                android:background="#E0E0E0"/>
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:background="@drawable/full_rounded_white"
+                                >
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="40dp"
+                                    android:layout_gravity="center"
+                                    android:gravity="center_vertical"
+                                    android:layout_marginLeft="20dp"
+                                    android:background="#ffffff"
+                                    android:orientation="horizontal">
+                                    <TextView
+                                        android:layout_width="50dp"
+                                        android:layout_height="20dp"
+                                        android:text="Speed: "
+                                        android:textSize="13dp"
+                                        />
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:background="#ffffff"
+                                        android:gravity="left"
+                                        android:id="@+id/speed_tv"
+                                        android:layout_marginLeft="10dp"
+                                        android:text=""
+                                        android:textColor="@color/black"
+                                        android:textSize="12dp" />
+                                </LinearLayout>
+                            </LinearLayout>
+                        </LinearLayout>
+
                     </LinearLayout>
 
                     <View
@@ -164,158 +394,17 @@
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/full_rounded_white">
-
-                        <RelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent">
-
-                            <TextView
-                                android:id="@+id/taskduration"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="4dp"
-                                android:layout_marginLeft="10dp"
-                                android:layout_marginRight="10dp"
-                                android:layout_marginTop="5dp"
-                                android:text="Vehicle Name"
-                                android:typeface="serif"
-                                android:textColor="@color/black"/>
-
-                            <TextView
-                                android:id="@+id/project_name_tv"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_below="@id/taskduration"
-                                android:layout_marginBottom="8dp"
-                                android:layout_marginLeft="10dp"
-                                android:layout_marginRight="10dp"
-                                android:layout_marginTop="5dp"
-                                android:inputType="text|textCapCharacters|textCapWords|textCapSentences|textAutoCorrect|textAutoComplete|textMultiLine|textImeMultiLine|textNoSuggestions|textUri|textEmailAddress|textEmailSubject|textShortMessage|textLongMessage|textPersonName|textPostalAddress|textPassword|textVisiblePassword|textWebEditText|textFilter|textPhonetic|textWebEmailAddress|textWebPassword|numberDecimal|phone"
-                                android:text=""
-                                android:textColor="@color/colorPrimary"
-                                android:typeface="serif" />
-
-                            <TextView
-                                android:id="@+id/taskcreate_tv"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentRight="true"
-                                android:layout_marginBottom="4dp"
-                                android:layout_marginLeft="10dp"
-                                android:layout_marginRight="10dp"
-                                android:layout_marginTop="5dp"
-                                android:text="Unique Id"
-                                android:textColor="@color/black"
-                                android:typeface="serif" />
-
-                            <TextView
-                                android:id="@+id/uniqueid_tv"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentRight="true"
-                                android:layout_below="@id/taskcreate_tv"
-                                android:layout_marginBottom="8dp"
-                                android:layout_marginLeft="10dp"
-                                android:layout_marginRight="10dp"
-                                android:layout_marginTop="5dp"
-                                android:inputType="text|textCapCharacters|textCapWords|textCapSentences|textAutoCorrect|textAutoComplete|textMultiLine|textImeMultiLine|textNoSuggestions|textUri|textEmailAddress|textEmailSubject|textShortMessage|textLongMessage|textPersonName|textPostalAddress|textPassword|textVisiblePassword|textWebEditText|textFilter|textPhonetic|textWebEmailAddress|textWebPassword|numberDecimal|phone"
-                                android:text=""
-                                android:textColor="@color/colorPrimary"
-                                android:typeface="serif" />
-                        </RelativeLayout>
-                    </LinearLayout>
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp" />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/full_rounded_white">
-
-                        <RelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent">
-
-                            <TextView
-                                android:id="@+id/statusduration"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="4dp"
-                                android:layout_marginLeft="10dp"
-                                android:layout_marginRight="10dp"
-                                android:layout_marginTop="5dp"
-                                android:text="Status"
-                                android:textColor="@color/black"
-                                android:typeface="serif" />
-
-                            <TextView
-                                android:id="@+id/status_tv"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_below="@id/statusduration"
-                                android:layout_marginBottom="8dp"
-                                android:layout_marginLeft="10dp"
-                                android:layout_marginRight="10dp"
-                                android:layout_marginTop="5dp"
-                                android:inputType="text|textCapCharacters|textCapWords|textCapSentences|textAutoCorrect|textAutoComplete|textMultiLine|textImeMultiLine|textNoSuggestions|textUri|textEmailAddress|textEmailSubject|textShortMessage|textLongMessage|textPersonName|textPostalAddress|textPassword|textVisiblePassword|textWebEditText|textFilter|textPhonetic|textWebEmailAddress|textWebPassword|numberDecimal|phone"
-                                android:text=""
-                                android:textColor="@color/colorPrimary"
-                                android:typeface="serif" />
-
-                            <TextView
-                                android:id="@+id/speedcreate_tv"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentRight="true"
-                                android:layout_marginBottom="4dp"
-                                android:layout_marginLeft="10dp"
-                                android:layout_marginRight="10dp"
-                                android:layout_marginTop="5dp"
-                                android:text="Speed"
-                                android:textColor="@color/black"
-                                android:typeface="serif" />
-
-                            <TextView
-                                android:id="@+id/speed_tv"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentRight="true"
-                                android:layout_below="@id/speedcreate_tv"
-                                android:layout_marginBottom="8dp"
-                                android:layout_marginLeft="10dp"
-                                android:layout_marginRight="10dp"
-                                android:layout_marginTop="5dp"
-                                android:inputType="text|textCapCharacters|textCapWords|textCapSentences|textAutoCorrect|textAutoComplete|textMultiLine|textImeMultiLine|textNoSuggestions|textUri|textEmailAddress|textEmailSubject|textShortMessage|textLongMessage|textPersonName|textPostalAddress|textPassword|textVisiblePassword|textWebEditText|textFilter|textPhonetic|textWebEmailAddress|textWebPassword|numberDecimal|phone"
-                                android:text=""
-                                android:textColor="@color/colorPrimary"
-                                android:typeface="serif" />
-                        </RelativeLayout>
-                    </LinearLayout>
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp" />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center_vertical"
                         android:background="@drawable/rounded_top"
-                        android:gravity="top|bottom|left|right|center_vertical|fill_vertical|center_horizontal|fill_horizontal|center|fill|start|end"
-                        android:orientation="horizontal"
-                        android:paddingBottom="8dp"
-                        android:paddingRight="8dp"
-                        android:paddingTop="8dp">
+                        android:orientation="horizontal">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="10dp"
+                            android:layout_marginLeft="21dp"
+                            android:layout_gravity="center_vertical"
                             android:text="Category :"
-                            android:textColor="@color/black"
                             android:textSize="12dp"
                             android:typeface="serif" />
 
@@ -323,9 +412,10 @@
                             android:id="@+id/category_tv"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="4dp"
+                            android:layout_marginLeft="5dp"
+                            android:layout_gravity="center_vertical"
                             android:text=""
-                            android:textColor="@color/colorPrimary"
+                            android:textColor="@color/black"
                             android:textSize="12dp"
                             android:typeface="serif" />
                     </LinearLayout>
@@ -356,9 +446,8 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_centerVertical="true"
-                                android:layout_marginLeft="10dp"
+                                android:layout_marginLeft="21dp"
                                 android:text="Location :"
-                                android:textColor="@color/black"
                                 android:textSize="12dp"
                                 android:typeface="serif" />
 
@@ -371,8 +460,7 @@
                                 android:layout_marginLeft="10dp"
                                 android:text=""
                                 android:maxLines="3"
-                                android:textColor="@color/colorPrimary"
-                                android:textSize="12dp"
+                                android:textColor="@color/black"                                android:textSize="12dp"
                                 android:typeface="serif" />
                         </LinearLayout>
                     </RelativeLayout>
