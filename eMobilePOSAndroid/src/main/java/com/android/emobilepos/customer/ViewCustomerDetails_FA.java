@@ -84,7 +84,29 @@ import static com.android.emobilepos.R.id.unregisterFingerprintbutton2;
 
 public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implements AdapterView.OnItemSelectedListener, RadioGroup.OnCheckedChangeListener, View.OnClickListener {
 
+    public static final String ACTION_USB_PERMISSION = "com.digitalpersona.uareu.dpfpddusbhost.USB_PERMISSION";
     private final int SPINNER_PRICELEVEL = 0, SPINNER_TAXES = 1;
+    public int billingSelectedCountry;
+    public int shippingSelectedCountry;
+    boolean isCustomerEdit = false;
+    Button fingerLeft1;
+    Button fingerLeft2;
+    Button fingerLeft3;
+    Button fingerLeft4;
+    Button fingerRight1;
+    Button fingerRight2;
+    Button fingerRight3;
+    Button fingerRight4;
+    EditText cardIdEditText;
+    EmobileBiometric biometric = new EmobileBiometric();
+    TextView fingerPrintScanningNotesTextView;
+    Handler handler;
+    List<String> taxes = new ArrayList<>();
+    List<String> priceLevel = new ArrayList<>();
+    RadioButton radioBillingResidential;
+    RadioButton radioBillingBusiness;
+    RadioButton radioShippingResidential;
+    RadioButton radioShippingBusiness;
     private Global global;
     private boolean hasBeenCreated = false;
     private Activity activity;
@@ -94,8 +116,6 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
     private ArrayList<Country> countries;
     private Spinner billingCountrySpinner;
     private Spinner shippingCountrySpinner;
-    public int billingSelectedCountry;
-    public int shippingSelectedCountry;
     private int taxSelected;
     private int priceLevelSelected;
     private TextView customerNameTextView;
@@ -109,7 +129,6 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
     private TextView taxableTextView;
     private TextView taxidTextView;
     private TextView emailTextView;
-    boolean isCustomerEdit = false;
     private TextView billingStr1;
     private TextView billingStr2;
     private TextView billingCity;
@@ -122,17 +141,7 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
     private TextView shippingZip;
     private Spinner pricesList;
     private Spinner taxesList;
-    Button fingerLeft1;
-    Button fingerLeft2;
-    Button fingerLeft3;
-    Button fingerLeft4;
-    Button fingerRight1;
-    Button fingerRight2;
-    Button fingerRight3;
-    Button fingerRight4;
-    EditText cardIdEditText;
     private Reader reader;
-    public static final String ACTION_USB_PERMISSION = "com.digitalpersona.uareu.dpfpddusbhost.USB_PERMISSION";
     private Engine engine;
     private int dpi;
     private int m_current_fmds_count;
@@ -145,18 +154,13 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
     private boolean m_success;
     private int m_templateSize;
     private Engine.EnrollmentCallback enrollThread;
-    EmobileBiometric biometric = new EmobileBiometric();
     private ProgressBar progressBar;
-    TextView fingerPrintScanningNotesTextView;
     private int progress;
     private ImageView fingerPrintimage;
     private String m_textString;
     private MyPreferences preferences;
-    Handler handler;
-    private boolean isReaderConnected=false;
+    private boolean isReaderConnected = false;
     private boolean isCreateCustomer;
-    List<String> taxes = new ArrayList<>();
-    List<String> priceLevel = new ArrayList<>();
     private List<String[]> priceLevelList;
     private List<Tax> taxList;
     private String[] isoCountries;
@@ -165,10 +169,6 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
     private DateDialog newFrag;
     private RadioGroup billingRadioGroup;
     private RadioGroup shippingRadioGroup;
-    RadioButton radioBillingResidential;
-    RadioButton radioBillingBusiness;
-    RadioButton radioShippingResidential;
-    RadioButton radioShippingBusiness;
 
     public static String QualityToString(Reader.CaptureResult result) {
         if (result == null) {
@@ -217,41 +217,9 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         }
     }
 
-    public enum Finger {
-        FINGER_ONE_LEFT(0), FINGER_TWO_LEFT(1), FINGER_THREE_LEFT(2), FINGER_FOUR_LEFT(3),
-        FINGER_ONE_RIGHT(4), FINGER_TWO_RIGHT(5), FINGER_THREE_RIGHT(6), FINGER_FOUR_RIGHT(7);
-
-        private int code;
-
-        Finger(int code) {
-            this.code = code;
-        }
-
-        public static Finger getByCode(int code) {
-            switch (code) {
-                case 0:
-                    return FINGER_ONE_LEFT;
-                case 1:
-                    return FINGER_TWO_LEFT;
-                case 2:
-                    return FINGER_THREE_LEFT;
-                case 3:
-                    return FINGER_FOUR_LEFT;
-                case 4:
-                    return FINGER_ONE_RIGHT;
-                case 5:
-                    return FINGER_TWO_RIGHT;
-                case 6:
-                    return FINGER_THREE_RIGHT;
-                case 7:
-                    return FINGER_FOUR_RIGHT;
-            }
-            return null;
-        }
-
-        public int getCode() {
-            return code;
-        }
+    public static int GetFirstDPI(Reader reader) {
+        Reader.Capabilities caps = reader.GetCapabilities();
+        return caps.resolutions[0];
     }
 
     @Override
@@ -279,45 +247,45 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         }
 
         hasBeenCreated = true;
-        contacTextView = (TextView) findViewById(R.id.customerContacttextView342);
-        phoneTextView = ((TextView) findViewById(R.id.customerPhonetextView343));
-        companyTextView = ((TextView) findViewById(R.id.customerCompanytextView34));
-        balanceTextView = ((TextView) findViewById(R.id.customerBalancetextView371));
-        limitTextView = ((TextView) findViewById(R.id.customerLimittextView372));
-        taxableTextView = ((TextView) findViewById(R.id.customerTaxabletextView373));
-        taxidTextView = ((TextView) findViewById(R.id.customerTaxIdtextView37));
-        emailTextView = ((TextView) findViewById(R.id.customerEmailtextView344));
-        radioBillingBusiness = (RadioButton) findViewById(R.id.radioBillingBusiness);
-        radioBillingResidential = (RadioButton) findViewById(R.id.radioBillingResidential);
-        radioShippingBusiness = (RadioButton) findViewById(R.id.radioShippingBusiness);
-        radioShippingResidential = (RadioButton) findViewById(R.id.radioShippingResidential);
+        contacTextView = findViewById(R.id.customerContacttextView342);
+        phoneTextView = findViewById(R.id.customerPhonetextView343);
+        companyTextView = findViewById(R.id.customerCompanytextView34);
+        balanceTextView = findViewById(R.id.customerBalancetextView371);
+        limitTextView = findViewById(R.id.customerLimittextView372);
+        taxableTextView = findViewById(R.id.customerTaxabletextView373);
+        taxidTextView = findViewById(R.id.customerTaxIdtextView37);
+        emailTextView = findViewById(R.id.customerEmailtextView344);
+        radioBillingBusiness = findViewById(R.id.radioBillingBusiness);
+        radioBillingResidential = findViewById(R.id.radioBillingResidential);
+        radioShippingBusiness = findViewById(R.id.radioShippingBusiness);
+        radioShippingResidential = findViewById(R.id.radioShippingResidential);
 
-        billingStr1 = (TextView) findViewById(R.id.newCustBillStr1);
-        billingStr2 = ((TextView) findViewById(R.id.newCustBillStr2));
-        billingCity = ((TextView) findViewById(R.id.newCustBillCity));
-        billingState = ((TextView) findViewById(R.id.newCustBillState));
-        billingZip = ((TextView) findViewById(R.id.newCustBillZip));
-        shippingStr1 = ((TextView) findViewById(R.id.newCustShippingStr1));
-        shippingStr2 = ((TextView) findViewById(R.id.newCustShippingStr2));
-        shippingCity = ((TextView) findViewById(R.id.newCustShippingCity));
-        shippingState = (TextView) findViewById(R.id.newCustShippingState);
-        shippingZip = ((TextView) findViewById(R.id.newCustShippingZip));
-        billingRadioGroup = (RadioGroup) findViewById(R.id.radioGroupBillingAddressType);
+        billingStr1 = findViewById(R.id.newCustBillStr1);
+        billingStr2 = findViewById(R.id.newCustBillStr2);
+        billingCity = findViewById(R.id.newCustBillCity);
+        billingState = findViewById(R.id.newCustBillState);
+        billingZip = findViewById(R.id.newCustBillZip);
+        shippingStr1 = findViewById(R.id.newCustShippingStr1);
+        shippingStr2 = findViewById(R.id.newCustShippingStr2);
+        shippingCity = findViewById(R.id.newCustShippingCity);
+        shippingState = findViewById(R.id.newCustShippingState);
+        shippingZip = findViewById(R.id.newCustShippingZip);
+        billingRadioGroup = findViewById(R.id.radioGroupBillingAddressType);
         billingRadioGroup.setOnCheckedChangeListener(this);
-        shippingRadioGroup = (RadioGroup) findViewById(R.id.radioGroupShippingAddressType);
+        shippingRadioGroup = findViewById(R.id.radioGroupShippingAddressType);
         shippingRadioGroup.setOnCheckedChangeListener(this);
-        fingerLeft1 = (Button) findViewById(R.id.fingerOneLeftbutton6);
-        fingerLeft2 = (Button) findViewById(R.id.fingerTwoLeftbutton5);
-        fingerLeft3 = (Button) findViewById(R.id.fingerThreeLeftbutton4);
-        fingerLeft4 = (Button) findViewById(R.id.fingerFourLeftbutton3);
-        fingerRight1 = (Button) findViewById(R.id.fingerOneRightbutton6);
-        fingerRight2 = (Button) findViewById(R.id.fingerTwoRightbutton5);
-        fingerRight3 = (Button) findViewById(R.id.fingerThreeRightbutton4);
-        fingerRight4 = (Button) findViewById(R.id.fingerFourRightbutton3);
-        pricesList = (Spinner) findViewById(R.id.newCustList1);
-        taxesList = (Spinner) findViewById(R.id.newCustList2);
-        billingCountrySpinner = (Spinner) findViewById(R.id.newCustBillCountry);
-        shippingCountrySpinner = (Spinner) findViewById(R.id.newCustShippingCountry);
+        fingerLeft1 = findViewById(R.id.fingerOneLeftbutton6);
+        fingerLeft2 = findViewById(R.id.fingerTwoLeftbutton5);
+        fingerLeft3 = findViewById(R.id.fingerThreeLeftbutton4);
+        fingerLeft4 = findViewById(R.id.fingerFourLeftbutton3);
+        fingerRight1 = findViewById(R.id.fingerOneRightbutton6);
+        fingerRight2 = findViewById(R.id.fingerTwoRightbutton5);
+        fingerRight3 = findViewById(R.id.fingerThreeRightbutton4);
+        fingerRight4 = findViewById(R.id.fingerFourRightbutton3);
+        pricesList = findViewById(R.id.newCustList1);
+        taxesList = findViewById(R.id.newCustList2);
+        billingCountrySpinner = findViewById(R.id.newCustBillCountry);
+        shippingCountrySpinner = findViewById(R.id.newCustShippingCountry);
         fingerLeft1.setOnClickListener(this);
 
         fingerLeft2.setOnClickListener(this);
@@ -327,9 +295,9 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         fingerRight2.setOnClickListener(this);
         fingerRight3.setOnClickListener(this);
         fingerRight4.setOnClickListener(this);
-        customerNameTextView = (TextView) findViewById(R.id.customerNametextView341);
-        customerLastNameTextView = (TextView) findViewById(R.id.customerLastNametextView341);
-        customerDOBTextView = (TextView) findViewById(R.id.customerDOBtextView371);
+        customerNameTextView = findViewById(R.id.customerNametextView341);
+        customerLastNameTextView = findViewById(R.id.customerLastNametextView341);
+        customerDOBTextView = findViewById(R.id.customerDOBtextView371);
 
         biometric = EmobileBiometricDAO.getBiometrics(cust_id, EmobileBiometric.UserType.CUSTOMER);
         setUI();
@@ -398,6 +366,7 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
             }
         }
     }
+
     private void setUI() {
         disableFields();
         if (isCustomerEdit) {
@@ -425,7 +394,7 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
             shippingState.setText(customer.getShippingAddress().getAddr_s_state());
             shippingZip.setText(customer.getShippingAddress().getAddr_s_zipcode());
 
-            TableLayout tableLayout = (TableLayout) findViewById(R.id.customerFinancialInfoTableLayout);
+            TableLayout tableLayout = findViewById(R.id.customerFinancialInfoTableLayout);
             for (CustomerCustomField field : customFields) {
                 View row = View.inflate(this, R.layout.customercustomfields_tablerow_layout, null);
                 row.setTag(field);
@@ -433,13 +402,13 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
                 ((EditText) row.findViewById(R.id.customerCustomFieldValueEditText)).setText(field.getCustValue());
                 tableLayout.addView(row);
                 if (field.getCustFieldId().equalsIgnoreCase("EMS_CARD_ID_NUM")) {
-                    cardIdEditText = ((EditText) row.findViewById(R.id.customerCustomFieldValueEditText));
+                    cardIdEditText = row.findViewById(R.id.customerCustomFieldValueEditText);
                 }
             }
 
 
         } else {
-            ((EditText) findViewById(R.id.customerDOBtextView371)).setOnTouchListener(new View.OnTouchListener() {
+            findViewById(R.id.customerDOBtextView371).setOnTouchListener(new View.OnTouchListener() {
 
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
@@ -707,7 +676,9 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         SalesTaxCodesHandler taxCodeHandler = new SalesTaxCodesHandler(this);
         Address addrData = new Address();
         MyPreferences myPref = new MyPreferences(this);
-        customer.setCust_name(getEditText(R.id.customerNametextView341).getText().toString());
+        customer.setCust_name(String.format("%s %s", getEditText(R.id.customerNametextView341).getText().toString(),
+                getEditText(R.id.customerLastNametextView341).getText().toString())); //field[CUST_ALIAS].getText().toString();
+//        customer.setCust_name(getEditText(R.id.customerNametextView341).getText().toString());
         customer.setCust_firstName(getEditText(R.id.customerNametextView341).getText().toString());
         customer.setCust_lastName(getEditText(R.id.customerLastNametextView341).getText().toString());
         customer.setCompanyName(getEditText(R.id.customerCompanytextView34).getText().toString());
@@ -796,15 +767,15 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCancelable(false);
         dialog.setContentView(R.layout.fingerprint_scanning_layout);
-        fingerPrintimage = (ImageView) dialog.findViewById(fingerPrintimageView);
-        Button fingerPrintCancelButton = (Button) dialog.findViewById(R.id.cancelScanningButton);
-        Button unregisterButton = (Button) dialog.findViewById(unregisterFingerprintbutton2);
+        fingerPrintimage = dialog.findViewById(fingerPrintimageView);
+        Button fingerPrintCancelButton = dialog.findViewById(R.id.cancelScanningButton);
+        Button unregisterButton = dialog.findViewById(unregisterFingerprintbutton2);
         fingerPrintCancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 m_reset = true;
                 try {
-                    if(reader.GetStatus().status == ReaderStatus.BUSY) {
+                    if (reader.GetStatus().status == ReaderStatus.BUSY) {
                         reader.CancelCapture();
                     }
                 } catch (UareUException e) {
@@ -822,7 +793,7 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
                 biometric = EmobileBiometricDAO.getBiometrics(cust_id, EmobileBiometric.UserType.CUSTOMER);
                 setFingerPrintUI();
                 try {
-                    if(reader.GetStatus().status == ReaderStatus.BUSY) {
+                    if (reader.GetStatus().status == ReaderStatus.BUSY) {
                         reader.CancelCapture();
                     }
                 } catch (UareUException e) {
@@ -835,10 +806,10 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
 
         dialog.show();
         startAnimation(fingerPrintimage, 0);
-        progressBar = (ProgressBar) dialog.findViewById(R.id.fingerprintScanningprogressBar3);
+        progressBar = dialog.findViewById(R.id.fingerprintScanningprogressBar3);
         progressBar.setMax(5);
         progressBar.setProgress(progress);
-        fingerPrintScanningNotesTextView = (TextView) dialog.findViewById(R.id.fingerPrintNotestextView);
+        fingerPrintScanningNotesTextView = dialog.findViewById(R.id.fingerPrintNotestextView);
         fingerPrintScanningNotesTextView.setText(R.string.fingerprint_enrollment);
         return dialog;
     }
@@ -962,11 +933,6 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         }
     }
 
-    public static int GetFirstDPI(Reader reader) {
-        Reader.Capabilities caps = reader.GetCapabilities();
-        return caps.resolutions[0];
-    }
-
     private void saveCustomer() {
         String cardNumber = cardIdEditText == null ? "" : cardIdEditText.getText().toString();
         CustomerCustomField customField = CustomerCustomFieldsDAO.findEMWSCardIdByCustomerId(cust_id);
@@ -992,6 +958,89 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
 //        handler.insertOneCustomer(customer);
     }
 
+    public enum Finger {
+        FINGER_ONE_LEFT(0), FINGER_TWO_LEFT(1), FINGER_THREE_LEFT(2), FINGER_FOUR_LEFT(3),
+        FINGER_ONE_RIGHT(4), FINGER_TWO_RIGHT(5), FINGER_THREE_RIGHT(6), FINGER_FOUR_RIGHT(7);
+
+        private int code;
+
+        Finger(int code) {
+            this.code = code;
+        }
+
+        public static Finger getByCode(int code) {
+            switch (code) {
+                case 0:
+                    return FINGER_ONE_LEFT;
+                case 1:
+                    return FINGER_TWO_LEFT;
+                case 2:
+                    return FINGER_THREE_LEFT;
+                case 3:
+                    return FINGER_FOUR_LEFT;
+                case 4:
+                    return FINGER_ONE_RIGHT;
+                case 5:
+                    return FINGER_TWO_RIGHT;
+                case 6:
+                    return FINGER_THREE_RIGHT;
+                case 7:
+                    return FINGER_FOUR_RIGHT;
+            }
+            return null;
+        }
+
+        public int getCode() {
+            return code;
+        }
+    }
+
+    public static class DateDialog extends DialogFragment implements DatePickerDialog.OnDateSetListener {
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+        }
+
+        @NonNull
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            final Calendar c = Calendar.getInstance();
+            int year = c.get(Calendar.YEAR);
+            int month = c.get(Calendar.MONTH);
+            int day = c.get(Calendar.DAY_OF_MONTH);
+
+            return new DatePickerDialog(getActivity(), this, year, month, day);
+
+        }
+
+        @Override
+        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+
+            // Do something after user selects the date...
+            StringBuilder sb = new StringBuilder();
+            sb.append(Integer.toString(year)).append(Integer.toString(monthOfYear + 1)).append(Integer.toString(dayOfMonth));
+            Calendar cal = Calendar.getInstance();
+            cal.set(year, monthOfYear, dayOfMonth);
+            TimeZone tz = cal.getTimeZone();
+
+            SimpleDateFormat sdf1 = new SimpleDateFormat("yyyyMd", Locale.getDefault());
+            sdf1.setTimeZone(tz);
+            SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
+
+            String dobDate = "";
+            try {
+
+                dobDate = sdf2.format(sdf1.parse(sb.toString()));
+            } catch (ParseException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
+            }
+            ((EditText) getActivity().findViewById(R.id.customerDOBtextView371)).setText(Global.formatToDisplayDate(dobDate, 1));
+
+        }
+    }
+
     private class CustomAdapter extends ArrayAdapter<String> {
 
         List<String> leftData = null;
@@ -1011,7 +1060,7 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             View view = super.getView(position, convertView, parent);
-            TextView text = (TextView) view.findViewById(android.R.id.text1);
+            TextView text = view.findViewById(android.R.id.text1);
             text.setTextColor(Color.BLACK);
             text.setPadding(35, 0, 0, 0);
             return view;
@@ -1025,9 +1074,9 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
                 row = inflater.inflate(R.layout.spinner_layout, parent, false);
             }
 
-            TextView taxName = (TextView) row.findViewById(R.id.taxName);
-            TextView taxValue = (TextView) row.findViewById(R.id.taxValue);
-            ImageView checked = (ImageView) row.findViewById(R.id.checkMark);
+            TextView taxName = row.findViewById(R.id.taxName);
+            TextView taxValue = row.findViewById(R.id.taxValue);
+            ImageView checked = row.findViewById(R.id.checkMark);
             checked.setVisibility(View.INVISIBLE);
             taxName.setText(leftData.get(position));
             int type = getItemViewType(position);
@@ -1190,52 +1239,6 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
             }
 
             return result;
-        }
-    }
-
-    public static class DateDialog extends DialogFragment implements DatePickerDialog.OnDateSetListener {
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-        }
-
-        @NonNull
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            final Calendar c = Calendar.getInstance();
-            int year = c.get(Calendar.YEAR);
-            int month = c.get(Calendar.MONTH);
-            int day = c.get(Calendar.DAY_OF_MONTH);
-
-            return new DatePickerDialog(getActivity(), this, year, month, day);
-
-        }
-
-        @Override
-        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-
-            // Do something after user selects the date...
-            StringBuilder sb = new StringBuilder();
-            sb.append(Integer.toString(year)).append(Integer.toString(monthOfYear + 1)).append(Integer.toString(dayOfMonth));
-            Calendar cal = Calendar.getInstance();
-            cal.set(year, monthOfYear, dayOfMonth);
-            TimeZone tz = cal.getTimeZone();
-
-            SimpleDateFormat sdf1 = new SimpleDateFormat("yyyyMd", Locale.getDefault());
-            sdf1.setTimeZone(tz);
-            SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
-
-            String dobDate = "";
-            try {
-
-                dobDate = sdf2.format(sdf1.parse(sb.toString()));
-            } catch (ParseException e) {
-                e.printStackTrace();
-                Crashlytics.logException(e);
-            }
-            ((EditText) getActivity().findViewById(R.id.customerDOBtextView371)).setText(Global.formatToDisplayDate(dobDate, 1));
-
         }
     }
 }

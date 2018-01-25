@@ -247,8 +247,14 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
             CustomersHandler handler = new CustomersHandler(getActivity());
             Customer customer = handler.getCustomer(myPref.getCustID());
             if (customer != null) {
-                selectedCust.setText(String.format("%s %s", StringUtil.nullStringToEmpty(customer.getCust_firstName())
-                        , StringUtil.nullStringToEmpty(customer.getCust_lastName())));
+                if (!TextUtils.isEmpty(customer.getCust_firstName())) {
+                    selectedCust.setText(String.format("%s %s", StringUtil.nullStringToEmpty(customer.getCust_firstName())
+                            , StringUtil.nullStringToEmpty(customer.getCust_lastName())));
+                } else if (!TextUtils.isEmpty(customer.getCompanyName())) {
+                    selectedCust.setText(customer.getCompanyName());
+                } else {
+                    selectedCust.setText(customer.getCust_name());
+                }
             }
         }
     }
