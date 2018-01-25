@@ -102,6 +102,7 @@ import java.util.List;
 
 import drivers.EMSBluetoothStarPrinter;
 import interfaces.PayWithLoyalty;
+import util.StringUtil;
 import util.json.JsonUtils;
 
 public class Receipt_FR extends Fragment implements OnClickListener,
@@ -2075,7 +2076,16 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         if (myPref.isCustSelected()) {
             CustomersHandler handler = new CustomersHandler(getActivity());
             Customer customer = handler.getCustomer(myPref.getCustID());
-            custName.setText(String.format("%s %s", customer.getCust_firstName(), customer.getCust_lastName()));
+            if (customer != null) {
+                if (!TextUtils.isEmpty(customer.getCust_firstName())) {
+                    custName.setText(String.format("%s %s", StringUtil.nullStringToEmpty(customer.getCust_firstName())
+                            , StringUtil.nullStringToEmpty(customer.getCust_lastName())));
+                } else if (!TextUtils.isEmpty(customer.getCompanyName())) {
+                    custName.setText(customer.getCompanyName());
+                } else {
+                    custName.setText(customer.getCust_name());
+                }
+            }
         }
     }
 
