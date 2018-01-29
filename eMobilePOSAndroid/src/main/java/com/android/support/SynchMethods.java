@@ -858,6 +858,12 @@ public class SynchMethods {
         Type listType = new com.google.gson.reflect.TypeToken<List<Shift>>() {
         }.getType();
         List<Shift> shifts = gson.fromJson(jsonRequest, listType);
+        for (Shift s : shifts) {
+            int assigneeId = s.getAssigneeId();
+            int clerkId = s.getClerkId();
+            s.setAssigneeId(clerkId);
+            s.setClerkId(assigneeId);
+        }
         ShiftDAO.insertOrUpdatePendingShift(shifts, Integer.parseInt(preferences.getClerkID()));
     }
 
