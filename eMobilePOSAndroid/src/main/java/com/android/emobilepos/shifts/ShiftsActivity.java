@@ -126,7 +126,7 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
     }
 
     private void enableCurrencies(boolean enable) {
-        LinearLayout currenciesLl = (LinearLayout) findViewById(R.id.currencieslinearLayout4);
+        LinearLayout currenciesLl = findViewById(R.id.currencieslinearLayout4);
         ArrayList<View> allChildren = getAllChildren(currenciesLl);
         for (View child : allChildren) {
             if (child instanceof Button || child instanceof EditText) {
@@ -445,61 +445,61 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
         } else {
             clerk = ClerkDAO.getByEmpId(shift.getClerkId());
         }
-        TextView clerkName = (TextView) findViewById(R.id.clerkNameShifttextView);
+        TextView clerkName = findViewById(R.id.clerkNameShifttextView);
         clerkName.setText(clerk == null ? "" : clerk.getEmpName());
-        endingCashAmounteditText = (TextView) findViewById(R.id.endingCashAmounteditText);
-        totalAmountEditText = (TextView) findViewById(R.id.totalAmounteditText);
-        shortOverStatusTextView = (TextView) findViewById(R.id.shortOverStatustextView23);
+        endingCashAmounteditText = findViewById(R.id.endingCashAmounteditText);
+        totalAmountEditText = findViewById(R.id.totalAmounteditText);
+        shortOverStatusTextView = findViewById(R.id.shortOverStatustextView23);
         shortOverStatusTextView.setVisibility(View.GONE);
-        openOnLbl = (TextView) findViewById(R.id.openOnLbltextView25);
-        openOnDate = (TextView) findViewById(R.id.openOnDatetextView26);
-        closeAmountLbl = (TextView) findViewById(R.id.closeAmountLbltextView21);
-        pettyCashLbl = (TextView) findViewById(R.id.pettyCashLbltextView27);
-        pettyCash = (TextView) findViewById(R.id.beginningPettyCashtextView);
+        openOnLbl = findViewById(R.id.openOnLbltextView25);
+        openOnDate = findViewById(R.id.openOnDatetextView26);
+        closeAmountLbl = findViewById(R.id.closeAmountLbltextView21);
+        pettyCashLbl = findViewById(R.id.pettyCashLbltextView27);
+        pettyCash = findViewById(R.id.beginningPettyCashtextView);
 
-        oneDollarEditText = (EditText) findViewById(R.id.oneDollareditText);
-        fiveDollarEditText = (EditText) findViewById(R.id.fiveDollareditText);
-        tenDollarEditText = (EditText) findViewById(R.id.tenDollareditText);
-        twentyDollarEditText = (EditText) findViewById(R.id.twentyDollareditText);
-        fiftyDollarEditText = (EditText) findViewById(R.id.fiftyDollareditText);
-        hundredDollarEditText = (EditText) findViewById(R.id.hundredDollareditText);
-        oneCentEditText = (EditText) findViewById(R.id.oneCenteditText);
-        fiveCentsEditText = (EditText) findViewById(R.id.fiveCentseditText);
-        tenCentsEditText = (EditText) findViewById(R.id.tenCentseditText);
-        quarterCentsEditText = (EditText) findViewById(R.id.quartesCentseditText);
+        oneDollarEditText = findViewById(R.id.oneDollareditText);
+        fiveDollarEditText = findViewById(R.id.fiveDollareditText);
+        tenDollarEditText = findViewById(R.id.tenDollareditText);
+        twentyDollarEditText = findViewById(R.id.twentyDollareditText);
+        fiftyDollarEditText = findViewById(R.id.fiftyDollareditText);
+        hundredDollarEditText = findViewById(R.id.hundredDollareditText);
+        oneCentEditText = findViewById(R.id.oneCenteditText);
+        fiveCentsEditText = findViewById(R.id.fiveCentseditText);
+        tenCentsEditText = findViewById(R.id.tenCentseditText);
+        quarterCentsEditText = findViewById(R.id.quartesCentseditText);
 
-        oneDollarTextView = (TextView) findViewById(R.id.oneDollarTotaltextView35);
-        fiveDollarTextView = (TextView) findViewById(R.id.fiveDollarTotaltextView35);
-        tenDollarTextView = (TextView) findViewById(R.id.tenDollarTotaltextView35);
-        twentyDollarTextView = (TextView) findViewById(R.id.twentyDollarTotaltextView35);
-        fiftyDollarTextView = (TextView) findViewById(R.id.fiftyDollarTotaltextView35);
-        hundredDollarTextView = (TextView) findViewById(R.id.hundredDollarTotaltextView35);
-        oneCentTextView = (TextView) findViewById(R.id.oneCentTotaltextView35);
-        fiveCentsTextView = (TextView) findViewById(R.id.fiveCentsTotaltextView35);
-        tenCentsTextView = (TextView) findViewById(R.id.tenCentsTotaltextView35);
-        quarterCentsTextView = (TextView) findViewById(R.id.quartesCentsTotaltextView35);
+        oneDollarTextView = findViewById(R.id.oneDollarTotaltextView35);
+        fiveDollarTextView = findViewById(R.id.fiveDollarTotaltextView35);
+        tenDollarTextView = findViewById(R.id.tenDollarTotaltextView35);
+        twentyDollarTextView = findViewById(R.id.twentyDollarTotaltextView35);
+        fiftyDollarTextView = findViewById(R.id.fiftyDollarTotaltextView35);
+        hundredDollarTextView = findViewById(R.id.hundredDollarTotaltextView35);
+        oneCentTextView = findViewById(R.id.oneCentTotaltextView35);
+        fiveCentsTextView = findViewById(R.id.fiveCentsTotaltextView35);
+        tenCentsTextView = findViewById(R.id.tenCentsTotaltextView35);
+        quarterCentsTextView = findViewById(R.id.quartesCentsTotaltextView35);
 
-        Button minusOneDollar = (Button) findViewById(R.id.oneDollarMinusbutton);
-        Button minusFiveDollar = (Button) findViewById(R.id.fiveDollarMinusbutton);
-        Button minusTenDollar = (Button) findViewById(R.id.tenDollarMinusbutton);
-        Button minusTwentyDollar = (Button) findViewById(R.id.twentyDollarMinusbutton);
-        Button minusFiftyDollar = (Button) findViewById(R.id.fiftyDollarMinusbutton);
-        Button minusHundredDollar = (Button) findViewById(R.id.hundredDollarMinusbutton);
-        Button minusOneCent = (Button) findViewById(R.id.oneCentMinusbutton);
-        Button minusFiveCent = (Button) findViewById(R.id.fiveCentsMinusbutton);
-        Button minusTenCent = (Button) findViewById(R.id.tenCentsMinusbutton);
-        Button minusQuarterCent = (Button) findViewById(R.id.quartesCentsMinusbutton);
-        Button plusOneDollar = (Button) findViewById(R.id.oneDollarPlusbutton);
-        Button plusFiveDollar = (Button) findViewById(R.id.fiveDollarPlusbutton);
-        Button plusTenDollar = (Button) findViewById(R.id.tenDollarPlusbutton);
-        Button plusTwentyDollar = (Button) findViewById(R.id.twentyDollarPlusbutton);
-        Button plusFiftyDollar = (Button) findViewById(R.id.fiftyDollarPlusbutton);
-        Button plusHundredDollar = (Button) findViewById(R.id.hundredDollarPlusbutton);
-        Button plusOneCent = (Button) findViewById(R.id.oneCentPlusbutton);
-        Button plusFiveCent = (Button) findViewById(R.id.fiveCentsPlusbutton);
-        Button plusTenCent = (Button) findViewById(R.id.tenCentsPlusbutton);
-        Button plusQuarterCent = (Button) findViewById(R.id.quartesCentsPlusbutton);
-        submitShiftbutton = (Button) findViewById(R.id.submitShiftbutton);
+        Button minusOneDollar = findViewById(R.id.oneDollarMinusbutton);
+        Button minusFiveDollar = findViewById(R.id.fiveDollarMinusbutton);
+        Button minusTenDollar = findViewById(R.id.tenDollarMinusbutton);
+        Button minusTwentyDollar = findViewById(R.id.twentyDollarMinusbutton);
+        Button minusFiftyDollar = findViewById(R.id.fiftyDollarMinusbutton);
+        Button minusHundredDollar = findViewById(R.id.hundredDollarMinusbutton);
+        Button minusOneCent = findViewById(R.id.oneCentMinusbutton);
+        Button minusFiveCent = findViewById(R.id.fiveCentsMinusbutton);
+        Button minusTenCent = findViewById(R.id.tenCentsMinusbutton);
+        Button minusQuarterCent = findViewById(R.id.quartesCentsMinusbutton);
+        Button plusOneDollar = findViewById(R.id.oneDollarPlusbutton);
+        Button plusFiveDollar = findViewById(R.id.fiveDollarPlusbutton);
+        Button plusTenDollar = findViewById(R.id.tenDollarPlusbutton);
+        Button plusTwentyDollar = findViewById(R.id.twentyDollarPlusbutton);
+        Button plusFiftyDollar = findViewById(R.id.fiftyDollarPlusbutton);
+        Button plusHundredDollar = findViewById(R.id.hundredDollarPlusbutton);
+        Button plusOneCent = findViewById(R.id.oneCentPlusbutton);
+        Button plusFiveCent = findViewById(R.id.fiveCentsPlusbutton);
+        Button plusTenCent = findViewById(R.id.tenCentsPlusbutton);
+        Button plusQuarterCent = findViewById(R.id.quartesCentsPlusbutton);
+        submitShiftbutton = findViewById(R.id.submitShiftbutton);
         submitShiftbutton.setOnClickListener(this);
         minusOneCent.setOnClickListener(this);
         minusFiveCent.setOnClickListener(this);
@@ -564,7 +564,6 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
 
         @Override
         protected Void doInBackground(Void... params) {
-            sendShifts();
             DBManager dbManager = new DBManager(ShiftsActivity.this);
             SynchMethods sm = new SynchMethods(dbManager);
             if (NetworkUtils.isConnectedToInternet(ShiftsActivity.this)) {
@@ -575,6 +574,7 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
                     Crashlytics.logException(e);
                 }
             }
+            sendShifts();
             return null;
         }
 

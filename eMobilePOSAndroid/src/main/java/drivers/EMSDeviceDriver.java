@@ -749,6 +749,25 @@ public class EMSDeviceDriver {
         cutPaper();
     }
 
+    public String getCustName() {
+        String name = "";
+        if (myPref.isCustSelected()) {
+            CustomersHandler handler = new CustomersHandler(activity);
+            Customer customer = handler.getCustomer(myPref.getCustID());
+            if (customer != null) {
+                if (!TextUtils.isEmpty(customer.getCust_firstName())) {
+                    name = String.format("%s %s", StringUtil.nullStringToEmpty(customer.getCust_firstName())
+                            , StringUtil.nullStringToEmpty(customer.getCust_lastName()));
+                } else if (!TextUtils.isEmpty(customer.getCompanyName())) {
+                    name = customer.getCompanyName();
+                } else {
+                    name = customer.getCust_name();
+                }
+            }
+        }
+        return name;
+    }
+
     protected void printReceipt(String ordID, int lineWidth, boolean fromOnHold, Global.OrderType type, boolean isFromHistory, EMVContainer emvContainer) {
         try {
             AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee(false);
@@ -787,13 +806,14 @@ public class EMSDeviceDriver {
             }
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_employee),
                     employee.getEmpName() + "(" + employee.getEmpId() + ")", lineWidth, 0));
-            String custName = null;
+            String custName = getCustName();
             if (myPref.isCustSelected()) {
-                CustomersHandler handler = new CustomersHandler(activity);
-                Customer customer = handler.getCustomer(myPref.getCustID());
-                if (customer != null) {
-                    custName = String.format("%s %s", customer.getCust_firstName(), customer.getCust_lastName());
-                }
+//                CustomersHandler handler = new CustomersHandler(activity);
+//                Customer customer = handler.getCustomer(myPref.getCustID());
+//                String name = getCustName();
+//                if (customer != null) {
+//                    custName = String.format("%s %s", customer.getCust_firstName(), customer.getCust_lastName());
+//                }
                 if (custName != null && !custName.isEmpty()) {
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer), custName,
                             lineWidth, 0));
