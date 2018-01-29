@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import android.util.Xml;
 
 import com.android.dao.AssignEmployeeDAO;
+import com.android.dao.ClerkDAO;
 import com.android.dao.CustomerCustomFieldsDAO;
 import com.android.dao.ShiftDAO;
 import com.android.dao.ShiftExpensesDAO;
@@ -28,6 +29,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
+import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.CustomerCustomField;
 import com.android.emobilepos.models.realms.OrderAttributes;
 import com.android.emobilepos.models.realms.Payment;
@@ -2027,6 +2029,7 @@ public class GenerateXML {
         String shiftID;
         for (Shift s : shifts) {
             try {
+                Clerk clerk = ClerkDAO.getByEmpId(s.getClerkId());
                 List<ShiftExpense> shiftExpenses = ShiftExpensesDAO.getShiftExpenses(s.getShiftId());
                 shiftID = s.getShiftId(); //c.getString(c.getColumnIndex("shift_id"));
                 serializer.startTag(empstr, "shift");
@@ -2037,13 +2040,13 @@ public class GenerateXML {
                 serializer.text(String.valueOf(s.getShiftStatusCode()));
                 serializer.endTag(empstr, "shift_status");
                 serializer.startTag(empstr, "assignee_id");
-                serializer.text(String.valueOf(s.getAssigneeId()));//c.getString(c.getColumnIndex("assignee_id")));
+                serializer.text(String.valueOf(s.getClerkId()));//c.getString(c.getColumnIndex("assignee_id")));
                 serializer.endTag(empstr, "assignee_id");
                 serializer.startTag(empstr, "clerk_id");
-                serializer.text(String.valueOf(s.getClerkId()));//c.getString(c.getColumnIndex("assignee_id")));
+                serializer.text(String.valueOf(s.getAssigneeId()));//c.getString(c.getColumnIndex("assignee_id")));
                 serializer.endTag(empstr, "clerk_id");
                 serializer.startTag(empstr, "assignee_name");
-                serializer.text(s.getAssigneeName());//c.getString(c.getColumnIndex("assignee_name")));
+                serializer.text(clerk.getEmpName());//c.getString(c.getColumnIndex("assignee_name")));
                 serializer.endTag(empstr, "assignee_name");
                 serializer.startTag(empstr, "creationDate");
                 serializer.text(DateUtils.getDateAsString(s.getCreationDate()));//c.getString(c.getColumnIndex("creationDate")));
