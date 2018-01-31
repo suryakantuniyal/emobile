@@ -45,6 +45,7 @@ import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.PaymentDetails;
 import com.android.emobilepos.models.SplittedOrder;
+import com.android.emobilepos.models.Tax;
 import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
@@ -95,8 +96,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import POSSDK.POSSDK;
@@ -248,20 +251,47 @@ public class EMSDeviceDriver {
     }
 
     private void addTaxesLine(List<DataTaxes> taxes, Order order, int lineWidth, StringBuilder sb) {
-//        for (OrderProduct product : order.getOrderProducts()) {
-//            taxableAmount = taxableAmount.add(product.getProductPriceTaxableAmountCalculated());
-//        }
-        for (DataTaxes tax : taxes) {
-//            BigDecimal taxableAmount = new BigDecimal(0);
-            BigDecimal taxAmount = new BigDecimal(0);
-            List<BigDecimal> rates = new ArrayList<>();
-            rates.add(new BigDecimal(tax.getTax_rate()));
+        if (myPref.isRetailTaxes()) {
+            HashMap<String, String[]> prodTaxes = new HashMap<>();
             for (OrderProduct product : order.getOrderProducts()) {
-//                taxableAmount = taxableAmount.add(product.getProductPriceTaxableAmountCalculated());
-                taxAmount = taxAmount.add(TaxesCalculator.calculateTax(product.getProductPriceTaxableAmountCalculated(), rates));
+                for (Tax tax : product.getTaxes()) {
+                    if (prodTaxes.containsKey(tax.getTaxRate())) {
+                        BigDecimal taxAmount = new BigDecimal(prodTaxes.get(tax.getTaxRate())[1]);
+                        taxAmount = taxAmount.add(TaxesCalculator.taxRounder(tax.getTaxAmount()));
+                        String[] arr = new String[2];
+                        arr[0] = tax.getTaxName();
+                        arr[1] = String.valueOf(taxAmount);
+                        prodTaxes.put(tax.getTaxRate(), arr);
+                    } else {
+                        BigDecimal taxAmount = TaxesCalculator.taxRounder(tax.getTaxAmount());
+                        String[] arr = new String[2];
+                        arr[0] = tax.getTaxName();
+                        arr[1] = String.valueOf(taxAmount);
+                        prodTaxes.put(tax.getTaxRate(), arr);
+                    }
+                }
             }
-            sb.append(textHandler.twoColumnLineWithLeftAlignedText(tax.getTax_name(),
-                    Global.getCurrencyFormat(String.valueOf(taxAmount)), lineWidth, 2));
+            Iterator it = prodTaxes.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry<String, String[]> pair = (Map.Entry<String, String[]>) it.next();
+
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(pair.getValue()[0],
+                        Global.getCurrencyFormat(String.valueOf(pair.getValue()[1])), lineWidth, 2));
+                it.remove();
+            }
+
+
+        } else {
+            for (DataTaxes tax : taxes) {
+                BigDecimal taxAmount = new BigDecimal(0);
+                List<BigDecimal> rates = new ArrayList<>();
+                rates.add(new BigDecimal(tax.getTax_rate()));
+                for (OrderProduct product : order.getOrderProducts()) {
+                    taxAmount = taxAmount.add(TaxesCalculator.calculateTax(product.getProductPriceTaxableAmountCalculated(), rates));
+                }
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(tax.getTax_name(),
+                        Global.getCurrencyFormat(String.valueOf(taxAmount)), lineWidth, 2));
+            }
         }
     }
 

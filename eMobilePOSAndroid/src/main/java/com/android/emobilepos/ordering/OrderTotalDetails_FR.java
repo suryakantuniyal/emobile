@@ -461,7 +461,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
 
         taxHandler = new TaxesHandler(activity);
         taxGroupHandler = new TaxesGroupHandler(activity);
-        taxList = taxHandler.getTaxes(myPref.getPreferences(MyPreferences.pref_show_only_group_taxes));
+        taxList = taxHandler.getProductTaxes(myPref.getPreferences(MyPreferences.pref_show_only_group_taxes));
         ProductsHandler handler2 = new ProductsHandler(activity);
         discountList = handler2.getDiscounts();
         int size = taxList.size();
@@ -688,6 +688,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                 Tax tax = taxSelected > 0 ? taxList.get(taxSelected - 1) : null;
                 if (myPref.isRetailTaxes()) {
                     getOrderingMainFa().global.order.setRetailTax(getActivity(), taxID);
+
                 }
                 totalDetails = getOrderingMainFa().global.order.getOrderTotalDetails(discount, tax, assignEmployee.isVAT(), getActivity());
                 gran_total = Global.getRoundBigDecimal(totalDetails.getGranTotal(), 2);

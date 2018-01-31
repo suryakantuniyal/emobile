@@ -1,14 +1,17 @@
 package com.android.emobilepos.models;
 
+import java.math.BigDecimal;
+
 /**
  * Created by Guarionex on 12/1/2015.
  */
-public class Tax {
+public class Tax implements Cloneable {
     private String taxName;
     private String taxId;
     private String taxRate;
     private String taxType;
     private String taxCodeId;
+    private BigDecimal taxAmount;
 
     public Tax() {
     }
@@ -64,5 +67,18 @@ public class Tax {
 
     public String getTaxCodeId() {
         return taxCodeId;
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+
+    public BigDecimal getTaxAmount() {
+        return taxAmount;
+    }
+
+    public void setTaxAmount(BigDecimal taxAmount) {
+        this.taxAmount = taxAmount;
     }
 }
