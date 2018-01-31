@@ -77,16 +77,15 @@ public class Order implements Cloneable {
     public String gran_total = "";
     public String cust_name = "";
     public String sync_id = "";
-    private String bixolonTransactionId;
     public Customer customer;
+    public String assignedTable;
 
     //private Global global;
-
-    public String assignedTable;
     public String associateID;
     public int numberOfSeats;
     public String ord_timeStarted;
     public List<OrderAttributes> orderAttributes;
+    private String bixolonTransactionId;
     private List<DataTaxes> listOrderTaxes;
     private List<OrderProduct> orderProducts = new ArrayList<>();
     private boolean retailTaxes;
@@ -228,7 +227,7 @@ public class Order implements Cloneable {
 //                    .setScale(2, RoundingMode.HALF_UP);
 //            totalTaxAmount = totalTaxAmount.add(taxAmount);
             taxes.add(new BigDecimal(tax.getTaxRate()));
-            totalTaxAmount = TaxesCalculator.calculateTax(orderProduct.getProductPriceTaxableAmountCalculated(), taxes);
+            totalTaxAmount = new BigDecimal(orderProduct.getTaxTotal());//TaxesCalculator.calculateTax(orderProduct.getProductPriceTaxableAmountCalculated(), taxes);
         } else {
             if (!Global.taxID.isEmpty()) {
                 tax = taxHandler.getTax(Global.taxID, "", Double.parseDouble(TextUtils.isEmpty(orderProduct.getProd_price()) ? "0" : orderProduct.getProd_price()));
@@ -277,16 +276,28 @@ public class Order implements Cloneable {
             if (taxID != null) {
                 tax = taxesHandler.getTax(taxID, product.getProd_taxId(),
                         Global.getBigDecimalNum(product.getFinalPrice()).doubleValue());
+                List<Tax> taxes = taxesHandler.getProductTaxes(taxID, product.getProd_taxId(),
+                        product);
+                product.setTaxes(taxes);
             } else {
                 tax = taxesHandler.getTax(product.getProd_taxcode(), product.getProd_taxId(),
                         Global.getBigDecimalNum(product.getFinalPrice()).doubleValue());
+                List<Tax> taxes = taxesHandler.getProductTaxes(taxID, product.getProd_taxId(),
+                        product);
+                product.setTaxes(taxes);
             }
             product.setTaxAmount(tax != null ? tax.getTaxRate() : "0");
 //            product.setProd_taxId(tax != null ? tax.getTaxId() : "");
             product.setProd_taxId(tax != null ? tax.getTaxType() : "");
-            BigDecimal taxTotal = Global.getBigDecimalNum(product.getFinalPrice())
-                    .multiply(Global.getBigDecimalNum(product.getOrdprod_qty()))
-                    .multiply(Global.getBigDecimalNum(tax.getTaxRate())).divide(new BigDecimal(100)).setScale(6, RoundingMode.HALF_UP);
+            List<BigDecimal> prodTaxesRates = new ArrayList<>();
+            for (Tax t : product.getTaxes()) {
+                prodTaxesRates.add(new BigDecimal(t.getTaxRate()));
+            }
+
+            BigDecimal taxTotal = TaxesCalculator.calculateTax(product.getProductPriceTaxableAmountCalculated(), prodTaxesRates);
+//                    Global.getBigDecimalNum(product.getFinalPrice())
+//                    .multiply(Global.getBigDecimalNum(product.getOrdprod_qty()))
+//                    .multiply(Global.getBigDecimalNum(tax.getTaxRate())).divide(new BigDecimal(100)).setScale(6, RoundingMode.HALF_UP);
             product.setTaxTotal(String.valueOf(taxTotal));
         }
     }

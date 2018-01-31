@@ -21,4 +21,19 @@ public class TaxesCalculator {
         return totalTaxAmount;
     }
 
+    public static BigDecimal calculateTax(BigDecimal taxableAmount, BigDecimal rate) {
+        BigDecimal totalTaxAmount = new BigDecimal(0);
+        BigDecimal taxAmount = taxableAmount
+                .multiply(rate
+                        .divide(new BigDecimal(100)))
+                .setScale(6, RoundingMode.HALF_UP);
+        totalTaxAmount = totalTaxAmount.add(Global.getRoundBigDecimal(Global.getRoundBigDecimal(taxAmount, 3), 2));
+
+        return totalTaxAmount;
+    }
+
+    public static BigDecimal taxRounder(BigDecimal amount) {
+        BigDecimal roundBigDecimal = Global.getRoundBigDecimal(Global.getRoundBigDecimal(amount, 3), 2);
+        return roundBigDecimal;
+    }
 }

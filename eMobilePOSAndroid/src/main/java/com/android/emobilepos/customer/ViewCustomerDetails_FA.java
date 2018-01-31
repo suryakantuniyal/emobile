@@ -460,7 +460,7 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         taxes.add("Select One");
         priceLevel.add("Select One");
         TaxesHandler handler = new TaxesHandler(this);
-        taxList = handler.getTaxes(preferences.getPreferences(MyPreferences.pref_show_only_group_taxes));
+        taxList = handler.getProductTaxes(preferences.getPreferences(MyPreferences.pref_show_only_group_taxes));
         PriceLevelHandler handler2 = new PriceLevelHandler();
         priceLevelList = handler2.getPriceLevel();
 

@@ -9,13 +9,16 @@ import com.android.dao.AssignEmployeeDAO;
 import com.android.emobilepos.models.Discount;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Product;
+import com.android.emobilepos.models.Tax;
 import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.google.gson.Gson;
 
 import net.sqlcipher.database.SQLiteStatement;
 
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -24,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import util.StringUtil;
+import util.json.JsonUtils;
 
 public class OrderProductsHandler {
 
@@ -71,13 +75,18 @@ public class OrderProductsHandler {
     private static final String seatGroupId = "seatGroupId";
     private static final String prodPricePoints = "prod_price_points";
     private static final String isGC = "isGC";
+    private static final String product_taxes_json = "product_taxes_json";
+    Type taxListType = new com.google.gson.reflect.TypeToken<List<Tax>>() {
+    }.getType();
+    Gson gson = JsonUtils.getInstance();
+
 
     public static final List<String> attr = Arrays.asList(addon, isAdded, isPrinted, item_void, ordprod_id,
             ord_id, prod_id, prod_sku, prod_upc, ordprod_qty, overwrite_price, reason_id, ordprod_name, ordprod_comment, ordprod_desc,
             pricelevel_id, prod_seq, uom_name, uom_conversion, uom_id, prod_taxId, prod_taxValue, discount_id,
             discount_value, prod_istaxable, discount_is_taxable, discount_is_fixed, onHand, imgURL, prod_price,
             prod_type, itemTotal, itemSubtotal, addon_section_name, addon_position, hasAddons, cat_id, cat_name, assignedSeat,
-            seatGroupId, addon_ordprod_id, prodPricePoints, isGC);
+            seatGroupId, addon_ordprod_id, prodPricePoints, isGC, product_taxes_json);
     public final String empStr = "";
     public HashMap<String, Integer> attrHash;
     private AssignEmployee assignEmployee;
@@ -127,101 +136,6 @@ public class OrderProductsHandler {
     private int index(String tag) {
         return attrHash.get(tag);
     }
-
-
-    public void insert(List<OrderProduct> orderProducts) {
-
-        DBManager.getDatabase().beginTransaction();
-        try {
-            boolean isRestaurantMode = myPref.isRestaurantMode();
-            SQLiteStatement sqlinsert;
-            String sql = "INSERT OR REPLACE INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")";
-            sqlinsert = DBManager.getDatabase().compileStatement(sql);
-            int size = orderProducts.size();
-            if (!orderProducts.isEmpty()) {
-                deleteAllOrdProd(orderProducts.get(0).getOrd_id());
-            }
-            for (int i = 0; i < size; i++) {
-                DBUtils dbUtils = DBUtils.getInstance(myPref.getAcctNumber(), sqlinsert, sql, DBUtils.DBChild.ORDER_PRODUCT);
-                OrderProduct prod = orderProducts.get(i);
-                dbUtils.bindString(index(addon), String.valueOf(prod.isAddon())); // addon
-                dbUtils.bindString(index(isAdded), String.valueOf(prod.isAdded())); // isAdded
-                dbUtils.bindString(index(isPrinted), String.valueOf(prod.isPrinted())); // isPrinted
-                dbUtils.bindString(index(item_void), TextUtils.isEmpty(prod.getItem_void()) ? "0" : prod.getItem_void()); // item_void
-                dbUtils.bindString(index(ordprod_id), prod.getOrdprod_id() == null ? "" : prod.getOrdprod_id()); // ordprod_id
-                dbUtils.bindString(index(ord_id), prod.getOrd_id() == null ? "" : prod.getOrd_id()); // ord_id
-                dbUtils.bindString(index(prod_id), prod.getProd_id() == null ? "" : prod.getProd_id()); // prod_id
-                dbUtils.bindString(index(prod_sku), prod.getProd_sku() == null ? "" : prod.getProd_sku()); // prod_sku
-                dbUtils.bindString(index(prod_upc), prod.getProd_upc() == null ? "" : prod.getProd_upc()); // prod_upc
-                dbUtils.bindString(index(ordprod_qty), TextUtils.isEmpty(prod.getOrdprod_qty()) ? "0" : prod.getOrdprod_qty()); // ordprod_qty
-                if (prod.getOverwrite_price() != null) {
-                    dbUtils.bindDouble(index(overwrite_price), prod.getOverwrite_price().doubleValue());
-                } else {
-                    dbUtils.bindNull(index(overwrite_price));
-                }
-                dbUtils.bindString(index(reason_id), prod.getReason_id() == null ? "" : prod.getReason_id()); // reason_id
-                dbUtils.bindString(index(ordprod_name), prod.getOrdprod_name() == null ? "" : prod.getOrdprod_name()); // ordprod_name
-                if (prod.getOrdprod_comment() != null && !prod.getOrdprod_comment().isEmpty())
-                    dbUtils.bindString(index(ordprod_desc),
-                            prod.getOrdprod_desc() == null ? "" : prod.getOrdprod_desc() + "-" + prod.getOrdprod_comment()); // ordprod_desc
-                else
-                    dbUtils.bindString(index(ordprod_desc), prod.getOrdprod_desc() == null ? "" : prod.getOrdprod_desc());
-                dbUtils.bindString(index(ordprod_comment), prod.getOrdprod_comment() == null ? "" : prod.getOrdprod_comment());
-                dbUtils.bindString(index(pricelevel_id), prod.getPricelevel_id() == null ? "" : prod.getPricelevel_id()); // pricelevel_id
-                dbUtils.bindString(index(prod_seq), TextUtils.isEmpty(prod.getProd_seq()) ? "1" : prod.getProd_seq()); // prod_seq
-                dbUtils.bindString(index(uom_name), prod.getUom_name() == null ? "" : prod.getUom_name()); // uom_name
-                dbUtils.bindString(index(uom_conversion), prod.getUom_conversion() == null ? "" : prod.getUom_conversion()); // uom_conversion
-                dbUtils.bindString(index(uom_id), prod.getUom_id() == null ? "" : prod.getUom_id()); // uom_id
-                dbUtils.bindString(index(prod_taxId), prod.getProd_taxId() == null ? "" : prod.getProd_taxId()); // prod_taxId
-                dbUtils.bindDouble(index(prod_taxValue),
-                        prod.getProd_taxValue() == null ? 0 : Double.valueOf(String.valueOf(Global.getRoundBigDecimal(prod.getProd_taxValue(), 2))));
-                dbUtils.bindString(index(discount_id), prod.getDiscount_id() == null ? "" : prod.getDiscount_id()); // discount_id
-                dbUtils.bindString(index(discount_value),
-                        TextUtils.isEmpty(prod.getDiscount_value()) ? "0" : prod.getDiscount_value()); // discount_value
-                dbUtils.bindString(index(prod_istaxable),
-                        TextUtils.isEmpty(prod.getProd_istaxable()) ? "0" : prod.getProd_istaxable()); // prod_istaxable
-                dbUtils.bindString(index(discount_is_taxable),
-                        TextUtils.isEmpty(prod.getDiscount_is_taxable()) ? "0" : prod.getDiscount_is_taxable()); // discount_is_taxable
-                dbUtils.bindString(index(discount_is_fixed),
-                        TextUtils.isEmpty(prod.getDiscount_is_fixed()) ? "0" : prod.getDiscount_is_fixed()); // discount_is_fixed
-                dbUtils.bindString(index(onHand), TextUtils.isEmpty(prod.getOnHand()) ? "0" : prod.getOnHand()); // onHand
-                dbUtils.bindString(index(imgURL), prod.getImgURL() == null ? "" : prod.getImgURL()); // imgURL
-                dbUtils.bindString(index(prod_price), TextUtils.isEmpty(prod.getProd_price()) ? "0" : prod.getProd_price()); // prod_price
-                dbUtils.bindString(index(prod_type), prod.getProd_type() == null ? "" : prod.getProd_type()); // prod_type
-                dbUtils.bindString(index(itemTotal), TextUtils.isEmpty(prod.getItemTotal()) ? "0" : prod.getItemTotal()); // itemTotal
-                dbUtils.bindString(index(itemSubtotal), String.valueOf(prod.getItemSubtotalCalculated() == null ?
-                        "0" : prod.getItemSubtotalCalculated())); // itemSubtotal
-                dbUtils.bindString(index(hasAddons), String.valueOf(prod.getHasAddons())); // hasAddons
-                dbUtils.bindString(index(addon_section_name),
-                        TextUtils.isEmpty(prod.getAddon_section_name()) ? "" : prod.getAddon_section_name());
-                dbUtils.bindString(index(addon_position),
-                        TextUtils.isEmpty(prod.getAddon_position()) ? "0" : prod.getAddon_position());
-                dbUtils.bindString(index(cat_id), prod.getCat_id() == null ? "" : prod.getCat_id());
-                dbUtils.bindString(index(cat_name), StringUtil.nullStringToEmpty(prod.getCat_name()));
-                dbUtils.bindString(index(addon_ordprod_id), prod.getAddon_ordprod_id() == null ? "" : prod.getAddon_ordprod_id());
-
-                dbUtils.bindString(index(assignedSeat), prod.getAssignedSeat() == null ? "" : prod.getAssignedSeat());
-                dbUtils.bindLong(index(seatGroupId), prod.getSeatGroupId());
-                dbUtils.bindLong(index(prodPricePoints), Double.valueOf(prod.getProd_price_points()).longValue());
-                dbUtils.bindString(index(isGC), String.valueOf(prod.isGC()));
-//                sqlinsert.execute();
-                dbUtils.executeAuditedDB();
-                sqlinsert.clearBindings();
-//                Log.d("Insert OrderProduct", prod.toString());
-                if (isRestaurantMode && !prod.addonsProducts.isEmpty()) {
-                    insertAddon(prod.getOrd_id(), sqlinsert, prod.addonsProducts);
-                }
-            }
-            sqlinsert.close();
-            DBManager.getDatabase().setTransactionSuccessful();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            DBManager.getDatabase().endTransaction();
-        }
-    }
-
 
     private void insertAddon(String ord_id, SQLiteStatement insert, List<OrderProduct> addonsProducts) {
 //        global.orderProductAddons = addonsProducts;
@@ -411,6 +325,100 @@ public class OrderProductsHandler {
         return orderProducts;
     }
 
+    public void insert(List<OrderProduct> orderProducts) {
+
+        DBManager.getDatabase().beginTransaction();
+        try {
+            boolean isRestaurantMode = myPref.isRestaurantMode();
+            SQLiteStatement sqlinsert;
+            String sql = "INSERT OR REPLACE INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")";
+            sqlinsert = DBManager.getDatabase().compileStatement(sql);
+            int size = orderProducts.size();
+            if (!orderProducts.isEmpty()) {
+                deleteAllOrdProd(orderProducts.get(0).getOrd_id());
+            }
+            for (int i = 0; i < size; i++) {
+                DBUtils dbUtils = DBUtils.getInstance(myPref.getAcctNumber(), sqlinsert, sql, DBUtils.DBChild.ORDER_PRODUCT);
+                OrderProduct prod = orderProducts.get(i);
+                dbUtils.bindString(index(addon), String.valueOf(prod.isAddon())); // addon
+                dbUtils.bindString(index(isAdded), String.valueOf(prod.isAdded())); // isAdded
+                dbUtils.bindString(index(isPrinted), String.valueOf(prod.isPrinted())); // isPrinted
+                dbUtils.bindString(index(item_void), TextUtils.isEmpty(prod.getItem_void()) ? "0" : prod.getItem_void()); // item_void
+                dbUtils.bindString(index(ordprod_id), prod.getOrdprod_id() == null ? "" : prod.getOrdprod_id()); // ordprod_id
+                dbUtils.bindString(index(ord_id), prod.getOrd_id() == null ? "" : prod.getOrd_id()); // ord_id
+                dbUtils.bindString(index(prod_id), prod.getProd_id() == null ? "" : prod.getProd_id()); // prod_id
+                dbUtils.bindString(index(prod_sku), prod.getProd_sku() == null ? "" : prod.getProd_sku()); // prod_sku
+                dbUtils.bindString(index(prod_upc), prod.getProd_upc() == null ? "" : prod.getProd_upc()); // prod_upc
+                dbUtils.bindString(index(ordprod_qty), TextUtils.isEmpty(prod.getOrdprod_qty()) ? "0" : prod.getOrdprod_qty()); // ordprod_qty
+                if (prod.getOverwrite_price() != null) {
+                    dbUtils.bindDouble(index(overwrite_price), prod.getOverwrite_price().doubleValue());
+                } else {
+                    dbUtils.bindNull(index(overwrite_price));
+                }
+                dbUtils.bindString(index(reason_id), prod.getReason_id() == null ? "" : prod.getReason_id()); // reason_id
+                dbUtils.bindString(index(ordprod_name), prod.getOrdprod_name() == null ? "" : prod.getOrdprod_name()); // ordprod_name
+                if (prod.getOrdprod_comment() != null && !prod.getOrdprod_comment().isEmpty())
+                    dbUtils.bindString(index(ordprod_desc),
+                            prod.getOrdprod_desc() == null ? "" : prod.getOrdprod_desc() + "-" + prod.getOrdprod_comment()); // ordprod_desc
+                else
+                    dbUtils.bindString(index(ordprod_desc), prod.getOrdprod_desc() == null ? "" : prod.getOrdprod_desc());
+                dbUtils.bindString(index(ordprod_comment), prod.getOrdprod_comment() == null ? "" : prod.getOrdprod_comment());
+                dbUtils.bindString(index(pricelevel_id), prod.getPricelevel_id() == null ? "" : prod.getPricelevel_id()); // pricelevel_id
+                dbUtils.bindString(index(prod_seq), TextUtils.isEmpty(prod.getProd_seq()) ? "1" : prod.getProd_seq()); // prod_seq
+                dbUtils.bindString(index(uom_name), prod.getUom_name() == null ? "" : prod.getUom_name()); // uom_name
+                dbUtils.bindString(index(uom_conversion), prod.getUom_conversion() == null ? "" : prod.getUom_conversion()); // uom_conversion
+                dbUtils.bindString(index(uom_id), prod.getUom_id() == null ? "" : prod.getUom_id()); // uom_id
+                dbUtils.bindString(index(prod_taxId), prod.getProd_taxId() == null ? "" : prod.getProd_taxId()); // prod_taxId
+                dbUtils.bindDouble(index(prod_taxValue),
+                        prod.getProd_taxValue() == null ? 0 : Double.valueOf(String.valueOf(Global.getRoundBigDecimal(prod.getProd_taxValue(), 2))));
+                dbUtils.bindString(index(discount_id), prod.getDiscount_id() == null ? "" : prod.getDiscount_id()); // discount_id
+                dbUtils.bindString(index(discount_value),
+                        TextUtils.isEmpty(prod.getDiscount_value()) ? "0" : prod.getDiscount_value()); // discount_value
+                dbUtils.bindString(index(prod_istaxable),
+                        TextUtils.isEmpty(prod.getProd_istaxable()) ? "0" : prod.getProd_istaxable()); // prod_istaxable
+                dbUtils.bindString(index(discount_is_taxable),
+                        TextUtils.isEmpty(prod.getDiscount_is_taxable()) ? "0" : prod.getDiscount_is_taxable()); // discount_is_taxable
+                dbUtils.bindString(index(discount_is_fixed),
+                        TextUtils.isEmpty(prod.getDiscount_is_fixed()) ? "0" : prod.getDiscount_is_fixed()); // discount_is_fixed
+                dbUtils.bindString(index(onHand), TextUtils.isEmpty(prod.getOnHand()) ? "0" : prod.getOnHand()); // onHand
+                dbUtils.bindString(index(imgURL), prod.getImgURL() == null ? "" : prod.getImgURL()); // imgURL
+                dbUtils.bindString(index(prod_price), TextUtils.isEmpty(prod.getProd_price()) ? "0" : prod.getProd_price()); // prod_price
+                dbUtils.bindString(index(prod_type), prod.getProd_type() == null ? "" : prod.getProd_type()); // prod_type
+                dbUtils.bindString(index(itemTotal), TextUtils.isEmpty(prod.getItemTotal()) ? "0" : prod.getItemTotal()); // itemTotal
+                dbUtils.bindString(index(itemSubtotal), String.valueOf(prod.getItemSubtotalCalculated() == null ?
+                        "0" : prod.getItemSubtotalCalculated())); // itemSubtotal
+                dbUtils.bindString(index(hasAddons), String.valueOf(prod.getHasAddons())); // hasAddons
+                dbUtils.bindString(index(addon_section_name),
+                        TextUtils.isEmpty(prod.getAddon_section_name()) ? "" : prod.getAddon_section_name());
+                dbUtils.bindString(index(addon_position),
+                        TextUtils.isEmpty(prod.getAddon_position()) ? "0" : prod.getAddon_position());
+                dbUtils.bindString(index(cat_id), prod.getCat_id() == null ? "" : prod.getCat_id());
+                dbUtils.bindString(index(product_taxes_json), StringUtil.nullStringToEmpty(gson.toJson(prod.getTaxes())));
+                dbUtils.bindString(index(cat_name), StringUtil.nullStringToEmpty(prod.getCat_name()));
+                dbUtils.bindString(index(addon_ordprod_id), prod.getAddon_ordprod_id() == null ? "" : prod.getAddon_ordprod_id());
+
+                dbUtils.bindString(index(assignedSeat), prod.getAssignedSeat() == null ? "" : prod.getAssignedSeat());
+                dbUtils.bindLong(index(seatGroupId), prod.getSeatGroupId());
+                dbUtils.bindLong(index(prodPricePoints), Double.valueOf(prod.getProd_price_points()).longValue());
+                dbUtils.bindString(index(isGC), String.valueOf(prod.isGC()));
+//                sqlinsert.execute();
+                dbUtils.executeAuditedDB();
+                sqlinsert.clearBindings();
+//                Log.d("Insert OrderProduct", prod.toString());
+                if (isRestaurantMode && !prod.addonsProducts.isEmpty()) {
+                    insertAddon(prod.getOrd_id(), sqlinsert, prod.addonsProducts);
+                }
+            }
+            sqlinsert.close();
+            DBManager.getDatabase().setTransactionSuccessful();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBManager.getDatabase().endTransaction();
+        }
+    }
+
     public OrderProduct getOrderProduct(Cursor cursor) {
         OrderProduct product = new OrderProduct();
         product.setAddon(Boolean.parseBoolean(cursor.getString(cursor.getColumnIndex(addon))));
@@ -422,6 +430,9 @@ public class OrderProductsHandler {
         product.setOrdprod_id(cursor.getString(cursor.getColumnIndex(ordprod_id)));
         product.setOrd_id(cursor.getString(cursor.getColumnIndex(ord_id)));
         product.setProd_id(cursor.getString(cursor.getColumnIndex(prod_id)));
+
+        String json = cursor.getString(cursor.getColumnIndex(product_taxes_json));
+        product.setTaxes((List<Tax>) gson.fromJson(json, taxListType));
         product.setProd_sku(cursor.getString(cursor.getColumnIndex(prod_sku)));
         product.setProd_upc(cursor.getString(cursor.getColumnIndex(prod_upc)));
         product.setOrdprod_qty(cursor.getString(cursor.getColumnIndex(ordprod_qty)));

@@ -5,10 +5,16 @@ import android.database.Cursor;
 
 import com.android.emobilepos.models.GroupTax;
 import com.android.emobilepos.models.Tax;
+import com.android.emobilepos.models.orders.OrderProduct;
+import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.TaxesCalculator;
+import com.crashlytics.android.Crashlytics;
 
 import net.sqlcipher.database.SQLiteStatement;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -30,17 +36,14 @@ public class TaxesHandler {
     private static final String prTax = "prTax";
     private static final String tax_default = "tax_default";
     private static final String tax_account = "tax_account";
-
+    private static final String table_name = "Taxes";
     private final List<String> attr = Arrays.asList(tax_id_key, tax_id, tax_name, tax_code_id, tax_code_name, tax_rate, tax_type,
             isactive, tax_update, prTax, tax_default, tax_account);
-
     private StringBuilder sb1, sb2;
     private HashMap<String, Integer> attrHash;
     private List<String[]> addrData;
     private MyPreferences myPref;
     private List<HashMap<String, Integer>> dictionaryListMap;
-
-    private static final String table_name = "Taxes";
 
     public TaxesHandler(Context activity) {
         attrHash = new HashMap<>();
@@ -129,7 +132,7 @@ public class TaxesHandler {
     }
 
 
-    public List<Tax> getTaxes(boolean onlyGroupTaxes) {
+    public List<Tax> getProductTaxes(boolean onlyGroupTaxes) {
 
         List<Tax> list = new ArrayList<>();
         Tax data = new Tax();
@@ -159,7 +162,7 @@ public class TaxesHandler {
         return list;
     }
 
-    public List<String[]> getTaxes(String taxId) {
+    public List<String[]> getProductTaxes(String taxId) {
         //SQLiteDatabase db = dbManager.openReadableDB();
 
         List<String[]> list = new ArrayList<String[]>();
@@ -261,6 +264,76 @@ public class TaxesHandler {
         }
         cursor.close();
         return tax;
+    }
+
+
+    public List<Tax> getProductTaxes(String taxID, String taxType, OrderProduct product) {
+        Tax tax = new Tax(taxID);
+        tax.setTaxType(taxType);
+        String taxRate;
+        List<Tax> taxes = new ArrayList<>();
+        String subquery1 = "SELECT tax_rate,tax_name, tax_type FROM ";
+        String subquery2 = " WHERE tax_id = '";
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(subquery1).append(table_name).append(subquery2).append(taxID).append("'");
+
+        if (myPref.isRetailTaxes()) {
+            sb.append(" AND tax_code_id IS NOT NULL AND tax_code_id != '' AND tax_code_id = '").append(taxType).append("'");
+        }
+
+        Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
+        boolean isGroupTax = false;
+        if (cursor.moveToFirst()) {
+            taxRate = cursor.getString(cursor.getColumnIndex("tax_rate"));
+            tax.setTaxRate(taxRate);
+            tax.setTaxName(cursor.getString(cursor.getColumnIndex("tax_name")));
+            if (cursor.getString(cursor.getColumnIndex("tax_type")).equals("G"))
+                isGroupTax = true;
+        }
+
+        cursor.close();
+
+        if (isGroupTax && myPref.isRetailTaxes() && !taxType.isEmpty()) {
+            sb.setLength(0);
+            sb.append("SELECT tax_rate,taxLowRange,taxHighRange FROM Taxes_Group WHERE taxgroupid= ? AND taxcode_id = ?");
+            cursor = DBManager.getDatabase().rawQuery(sb.toString(), new String[]{taxID, taxType});
+            if (cursor.moveToFirst()) {
+                int i_tax_rate = cursor.getColumnIndex("tax_rate");
+                int i_taxLowRange = cursor.getColumnIndex("taxLowRange");
+                int i_taxHighRange = cursor.getColumnIndex("taxHighRange");
+
+                double total_tax_rate = 0;
+                do {
+                    double lowRange = cursor.getDouble(i_taxLowRange);
+                    double highRange = cursor.getDouble(i_taxHighRange);
+
+                    double prodPrice = Double.parseDouble(product.getFinalPrice());
+                    if (prodPrice >= lowRange && prodPrice <= highRange)
+                        total_tax_rate = cursor.getDouble(i_tax_rate);
+                    taxRate = Double.toString(total_tax_rate);
+                    tax.setTaxRate(taxRate);
+                    List<BigDecimal> lb = new ArrayList<>();
+                    lb.add(new BigDecimal(taxRate));
+//                    BigDecimal taxTotal = TaxesCalculator.calculateTax(product.getProductPriceTaxableAmountCalculated(), lb);
+                    BigDecimal taxTotal = Global.getBigDecimalNum(product.getFinalPrice())
+                            .multiply(Global.getBigDecimalNum(product.getOrdprod_qty())
+                                    .multiply(Global.getBigDecimalNum(tax.getTaxRate()))
+                                    .divide(new BigDecimal(100))
+                                    .setScale(6, RoundingMode.HALF_UP));
+                    tax.setTaxAmount(taxTotal);
+                    try {
+                        taxes.add((Tax) tax.clone());
+                    } catch (CloneNotSupportedException e) {
+                        Crashlytics.logException(e);
+                        e.printStackTrace();
+                    }
+                } while (cursor.moveToNext());
+            }
+        }
+        cursor.close();
+        return taxes;
     }
 
 
