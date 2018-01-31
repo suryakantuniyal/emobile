@@ -40,7 +40,6 @@ import com.android.support.GenerateNewID;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
-import com.android.support.TaxesCalculator;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
@@ -165,7 +164,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
             String ordetTaxId = extras.getString("orderTaxId");
             int discountSelected = extras.getInt("discountSelected");
             TaxesHandler taxesHandler = new TaxesHandler(this);
-            List<Tax> taxList = taxesHandler.getTaxes(preferences.getPreferences(MyPreferences.pref_show_only_group_taxes));
+            List<Tax> taxList = taxesHandler.getProductTaxes(preferences.getPreferences(MyPreferences.pref_show_only_group_taxes));
             int idx = taxList.indexOf(new Tax(ordetTaxId));
             setTax(idx == -1 ? null : taxList.get(idx));
             ProductsHandler handler2 = new ProductsHandler(this);

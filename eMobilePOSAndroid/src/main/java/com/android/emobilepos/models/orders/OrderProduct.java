@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import com.android.database.ProductsHandler;
 import com.android.emobilepos.models.MixAndMatchDiscount;
 import com.android.emobilepos.models.Product;
+import com.android.emobilepos.models.Tax;
 import com.android.emobilepos.models.realms.ProductAttribute;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.support.Global;
@@ -97,6 +98,7 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     private String consignment_qty;
     private boolean attributesCompleted;
     private boolean GC;
+    private List<Tax> taxes;
 
     public OrderProduct(Product product) {
         this.setAssignedSeat(product.getAssignedSeat());
@@ -929,5 +931,13 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
 
     public void setGC(boolean GC) {
         this.GC = GC;
+    }
+
+    public void setTaxes(List<Tax> taxes) {
+        this.taxes = taxes;
+    }
+
+    public List<Tax> getTaxes() {
+        return taxes;
     }
 }
