@@ -1,7 +1,6 @@
 package com.android.emobilepos.adapters;
 
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.view.LayoutInflater;
@@ -12,13 +11,14 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
 
+import com.android.dao.ClerkDAO;
 import com.android.dao.ShiftDAO;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.Shift;
 import com.android.support.DateUtils;
 import com.android.support.Global;
 
-import java.util.Date;
 import java.util.List;
 
 
@@ -79,14 +79,14 @@ public class ReportsShiftAdapter extends BaseAdapter implements Filterable {
             switch (type) {
                 case 0: {
                     convertView = mInflater.inflate(R.layout.report_listviewheader, null);
-                    holder.top = (TextView) convertView.findViewById(R.id.reportHeader);
+                    holder.top = convertView.findViewById(R.id.reportHeader);
                     setHolderValues(type, position, holder);
                     break;
                 }
                 case 1:        //transaction divider
                 {
                     convertView = mInflater.inflate(R.layout.report_listviewdivider, null);
-                    holder.top = (TextView) convertView.findViewById(R.id.reportTitle);
+                    holder.top = convertView.findViewById(R.id.reportTitle);
                     setHolderValues(type, position, holder);
                     break;
                 }
@@ -94,8 +94,8 @@ public class ReportsShiftAdapter extends BaseAdapter implements Filterable {
                 {
                     convertView = mInflater.inflate(R.layout.report_shift_lv_adapter, null);
                     Shift shift = shifts.get(position - offset);
-                    holder.top = (TextView) convertView.findViewById(R.id.shiftPeriod);
-                    holder.bottom = (TextView) convertView.findViewById(R.id.clerkName);
+                    holder.top = convertView.findViewById(R.id.shiftPeriod);
+                    holder.bottom = convertView.findViewById(R.id.clerkName);
 
                     setHolderValues(type, position, holder);
                     break;
@@ -122,13 +122,14 @@ public class ReportsShiftAdapter extends BaseAdapter implements Filterable {
                 break;
             }
             case 2: {
+                Clerk clerk = ClerkDAO.getByEmpId(shifts.get(position - offset).getClerkId());
                 Shift shift = shifts.get(position - offset);
                 String temp = shift.getShiftStatus().name();
                 if (shift.getShiftStatus() == Shift.ShiftStatus.CLOSED)
                     temp = DateUtils.getDateAsString(shift.getEndTime(), DateUtils.DATE_yyyy_MM_dd);
                 holder.top.setText(DateUtils.getDateAsString(shift.getStartTime(), DateUtils.DATE_yyyy_MM_dd) + " - " + temp);
-                holder.bottom.setText(shift.getAssigneeName() + " - " +
-                        Global.formatDoubleStrToCurrency(shift.getBeginningPettyCash()));
+                holder.bottom.setText(clerk == null ? shift.getAssigneeName() : clerk.getEmpName() + " - " +
+                        Global.getCurrencyFormat(shift.getBeginningPettyCash()));
                 break;
             }
 

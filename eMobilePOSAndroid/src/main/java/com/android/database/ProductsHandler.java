@@ -171,7 +171,7 @@ public class ProductsHandler {
                             "ei.prod_onhand as 'local_prod_onhand',i.prod_img_name," +
                             "CASE WHEN p.prod_taxcode='' THEN '0' ELSE IFNULL(s.taxcode_istaxable,'1')  " +
                             "END AS 'prod_istaxable' ");
-            sb.append(",p.prod_taxcode,p.prod_taxtype, p.prod_type,p.cat_id, c.cat_name as 'cat_name' ");
+            sb.append(",p.prod_taxcode,p.prod_taxtype, p.prod_type,c.cat_id, c.cat_name as 'cat_name' ");
 
             if (myPref.isCustSelected() && myPref.getPreferences(MyPreferences.pref_filter_products_by_customer)) {
                 if (Global.isConsignment) {

@@ -625,18 +625,18 @@ public class Global extends MultiDexApplication {
         return NumberFormat.getCurrencyInstance(Locale.getDefault()).format(value);
     }
 
-    public static String formatDoubleStrToCurrency(String val) {
-        if (val == null || val.isEmpty())
-            return (Global.getCurrencyFormat(Global.formatNumToLocale(0.00)));
-        if (val.contains(".")) {
-            int decLen = val.substring(val.indexOf('.')).length();
-            if (decLen > 4) {
-                val = val.substring(0, val.indexOf('.') + 5);
-            }
-        }
-        return (Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(NumberUtils.cleanCurrencyFormatedNumber(val)))));
-
-    }
+//    public static String getCurrencyFormat(String val) {
+//        if (val == null || val.isEmpty())
+//            return (Global.getCurrencyFormat(Global.formatNumToLocale(0.00)));
+//        if (val.contains(".")) {
+//            int decLen = val.substring(val.indexOf('.')).length();
+//            if (decLen > 4) {
+//                val = val.substring(0, val.indexOf('.') + 5);
+//            }
+//        }
+//        return (Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(NumberUtils.cleanCurrencyFormatedNumber(val)))));
+//
+//    }
 
     public static double formatNumFromLocale(String val)// received as #,##
     // instead of #.##
@@ -1319,7 +1319,7 @@ public class Global extends MultiDexApplication {
 
         StringBuilder sb = new StringBuilder();
         String row1 = product.getProdName();
-        String row2 = sb.append(Global.formatDoubleStrToCurrency(product.getProdPrice())).toString();
+        String row2 = sb.append(Global.getCurrencyFormat(product.getProdPrice())).toString();
         TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
 
     }

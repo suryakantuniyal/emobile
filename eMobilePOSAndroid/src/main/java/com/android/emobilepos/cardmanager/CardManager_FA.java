@@ -468,7 +468,7 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
                         String temp = giftCardMap.get("overwrite_price") == null ? "-1"
                                 : giftCardMap.get("overwrite_price");
                         giftCardMap.put("overwrite_price", temp);
-                        labelAmount.setText(Global.formatDoubleStrToCurrency(temp));
+                        labelAmount.setText(Global.getCurrencyFormat(temp));
                         return true;
                     }
                 case CASE_BALANCE_INQUIRY:
@@ -625,7 +625,7 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
                 TextView labelAmount = (TextView) findViewById(R.id.labelAmount);
                 String temp = giftCardMap.get("overwrite_price") == null ? "-1" : giftCardMap.get("overwrite_price");
                 giftCardMap.put("overwrite_price", temp);
-                labelAmount.setText(Global.formatDoubleStrToCurrency(temp));
+                labelAmount.setText(Global.getCurrencyFormat(temp));
                 break;
         }
 

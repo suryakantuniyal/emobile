@@ -60,16 +60,16 @@ public class HistoryPayments_FA extends BaseFragmentActivityActionBar implements
 
         global = (Global) getApplication();
         isRefunds = getIntent().getExtras().getBoolean("isRefunds", false);
-        tabHost = (TabHost) findViewById(android.R.id.tabhost);
+        tabHost = findViewById(android.R.id.tabhost);
 
-        TextView headTitle = (TextView) findViewById(R.id.transHeaderTitle);
+        TextView headTitle = findViewById(R.id.transHeaderTitle);
 
         if (!isRefunds)
             headTitle.setText(getString(R.string.hist_payments));
         else
             headTitle.setText(getString(R.string.hist_refunds));
 
-        lView = (ListView) findViewById(R.id.listView);
+        lView = findViewById(R.id.listView);
         handler = new PaymentsHandler(this);
 
 
@@ -95,7 +95,7 @@ public class HistoryPayments_FA extends BaseFragmentActivityActionBar implements
         });
 
 
-        EditText field = (EditText) findViewById(R.id.searchField);
+        EditText field = findViewById(R.id.searchField);
         field.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 
             @Override
@@ -191,7 +191,7 @@ public class HistoryPayments_FA extends BaseFragmentActivityActionBar implements
 
         View indicator = LayoutInflater.from(activity).inflate(R.layout.tabs_layout, (ViewGroup) findViewById(android.R.id.tabs), false);
 
-        TextView tabLabel = (TextView) indicator.findViewById(R.id.tabTitle);
+        TextView tabLabel = indicator.findViewById(R.id.tabTitle);
 
         tabLabel.setText(label);
 
@@ -350,7 +350,7 @@ public class HistoryPayments_FA extends BaseFragmentActivityActionBar implements
             if (TextUtils.isEmpty(temp))
                 temp = "";
             else
-                temp = Global.formatDoubleStrToCurrency(temp);
+                temp = Global.getCurrencyFormat(temp);
 
             myHolder.amount.setText(temp);
 
@@ -371,7 +371,7 @@ public class HistoryPayments_FA extends BaseFragmentActivityActionBar implements
                 myHolder.voidText.setVisibility(View.VISIBLE);
                 myHolder.voidText.setText(getString(R.string.declined));
             }
-            myHolder.tip.setText(String.format("(Tip: %s)", Global.formatDoubleStrToCurrency(cursor.getString(myHolder.i_pay_tip))));
+            myHolder.tip.setText(String.format("(Tip: %s)", Global.getCurrencyFormat(cursor.getString(myHolder.i_pay_tip))));
 
 
         }
@@ -382,11 +382,11 @@ public class HistoryPayments_FA extends BaseFragmentActivityActionBar implements
             View retView = inflater.inflate(R.layout.histpay_lvadapter, parent, false);
 
             ViewHolder holder = new ViewHolder();
-            holder.title = (TextView) retView.findViewById(R.id.histpayTitle);
-            holder.amount = (TextView) retView.findViewById(R.id.histpaySubtitle);
-            holder.voidText = (TextView) retView.findViewById(R.id.histpayVoidText);
-            holder.iconImage = (ImageView) retView.findViewById(R.id.histpayIcon);
-            holder.tip = (TextView) retView.findViewById(R.id.histpayTipText);
+            holder.title = retView.findViewById(R.id.histpayTitle);
+            holder.amount = retView.findViewById(R.id.histpaySubtitle);
+            holder.voidText = retView.findViewById(R.id.histpayVoidText);
+            holder.iconImage = retView.findViewById(R.id.histpayIcon);
+            holder.tip = retView.findViewById(R.id.histpayTipText);
 
             holder.i_id = cursor.getColumnIndex("_id");
             holder.i_cust_name = cursor.getColumnIndex("cust_name");

@@ -115,9 +115,9 @@ public class ConsignmentHistory_FA extends BaseFragmentActivityActionBar
 				}
 			}
 			
-			holder.prod_price.setText(Global.formatDoubleStrToCurrency(tempPrice));
+			holder.prod_price.setText(Global.getCurrencyFormat(tempPrice));
 			total = Global.formatNumFromLocale(tempPrice)*Double.parseDouble(cursor.getString(holder.i_prod_qty));
-			holder.prod_total.setText(Global.formatDoubleStrToCurrency(Double.toString(total)));
+			holder.prod_total.setText(Global.getCurrencyFormat(Double.toString(total)));
 
 			
 		}

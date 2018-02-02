@@ -370,11 +370,11 @@ public class EMSAsura extends EMSDeviceDriver
 
             textBitmap = addLineTextImage(textBitmap,
                     textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
-                            Global.formatDoubleStrToCurrency(paymentDetails.getOrd_total()), LINE_WIDTH, 0),
+                            Global.getCurrencyFormat(paymentDetails.getOrd_total()), LINE_WIDTH, 0),
                     PRINT_TXT_SIZE, Align.ALIGN_LEFT);
             textBitmap = addLineTextImage(textBitmap,
                     textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_paid),
-                            Global.formatDoubleStrToCurrency(paymentDetails.getPay_amount()), LINE_WIDTH, 0),
+                            Global.getCurrencyFormat(paymentDetails.getPay_amount()), LINE_WIDTH, 0),
                     PRINT_TXT_SIZE, Align.ALIGN_LEFT);
 
             String change = paymentDetails.getChange();
@@ -386,7 +386,7 @@ public class EMSAsura extends EMSDeviceDriver
             sb.setLength(0);
             if (constantValue != null)
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(constantValue,
-                        Global.formatDoubleStrToCurrency(change), LINE_WIDTH, 0));
+                        Global.getCurrencyFormat(change), LINE_WIDTH, 0));
 
             textBitmap = addLineTextImage(textBitmap, sb.toString(), PRINT_TXT_SIZE, Align.ALIGN_LEFT);
 
@@ -605,11 +605,11 @@ public class EMSAsura extends EMSDeviceDriver
             for (int i = 0; i < size; i++) {
                 if (paymentMap.containsKey(payMethodsNames.get(i)[0])) {
                     // sb.append(textHandler.twoColumnLineWithLeftAlignedText(payMethodsNames.get(i)[1],
-                    // Global.formatDoubleStrToCurrency(paymentMap.get(payMethodsNames.get(i)[0])),
+                    // Global.getCurrencyFormat(paymentMap.get(payMethodsNames.get(i)[0])),
                     // LINE_WIDTH, 3));
                     textBitmap = addLineTextImage(textBitmap,
                             textHandler.twoColumnLineWithLeftAlignedText(payMethodsNames.get(i)[1],
-                                    Global.formatDoubleStrToCurrency(paymentMap.get(payMethodsNames.get(i)[0])),
+                                    Global.getCurrencyFormat(paymentMap.get(payMethodsNames.get(i)[0])),
                                     LINE_WIDTH, 3),
                             PRINT_TXT_SIZE, Align.ALIGN_LEFT);
                     payGranTotal += Double.parseDouble(paymentMap.get(payMethodsNames.get(i)[0]));
@@ -626,11 +626,11 @@ public class EMSAsura extends EMSDeviceDriver
                 if (refundMap.containsKey(payMethodsNames.get(i)[0])) {
                     refundBitmap = addLineTextImage(refundBitmap,
                             textHandler.twoColumnLineWithLeftAlignedText(payMethodsNames.get(i)[1],
-                                    Global.formatDoubleStrToCurrency(refundMap.get(payMethodsNames.get(i)[0])),
+                                    Global.getCurrencyFormat(refundMap.get(payMethodsNames.get(i)[0])),
                                     LINE_WIDTH, 3),
                             PRINT_TXT_SIZE, Align.ALIGN_LEFT);
                     // sb_refunds.append(textHandler.twoColumnLineWithLeftAlignedText(payMethodsNames.get(i)[1],
-                    // Global.formatDoubleStrToCurrency(refundMap.get(payMethodsNames.get(i)[0])),
+                    // Global.getCurrencyFormat(refundMap.get(payMethodsNames.get(i)[0])),
                     // LINE_WIDTH, 3));
                     refundGranTotal += Double.parseDouble(refundMap.get(payMethodsNames.get(i)[0]));
                 } else {
@@ -646,14 +646,14 @@ public class EMSAsura extends EMSDeviceDriver
             textBitmap = addLineTextImage(textBitmap, " ", PRINT_TXT_SIZE + (2 * 2), Align.ALIGN_LEFT);
             textBitmap = addLineTextImage(textBitmap,
                     textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
-                            Global.formatDoubleStrToCurrency(Double.toString(payGranTotal)), LINE_WIDTH, 4),
+                            Global.getCurrencyFormat(Double.toString(payGranTotal)), LINE_WIDTH, 4),
                     PRINT_TXT_SIZE, Align.ALIGN_LEFT);
             textBitmap = addLineTextImage(textBitmap, " ", PRINT_TXT_SIZE + (2 * 3), Align.ALIGN_LEFT);
 
             refundBitmap = addLineTextImage(refundBitmap, " ", PRINT_TXT_SIZE + (2 * 2), Align.ALIGN_LEFT);
             refundBitmap = addLineTextImage(refundBitmap,
                     textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
-                            Global.formatDoubleStrToCurrency(Double.toString(refundGranTotal)), LINE_WIDTH, 4),
+                            Global.getCurrencyFormat(Double.toString(refundGranTotal)), LINE_WIDTH, 4),
                     PRINT_TXT_SIZE, Align.ALIGN_LEFT);
 
             printer.printBitmapImage(textBitmap);
@@ -801,7 +801,7 @@ public class EMSAsura extends EMSDeviceDriver
                         sb.append(textHandler.twoColumnLineWithLeftAlignedText("New Qty:", myConsignment.get(i).ConsNew_Qty,
                                 LINE_WIDTH, 3));
                         sb.append(textHandler.twoColumnLineWithLeftAlignedText("Product Price:",
-                                Global.formatDoubleStrToCurrency(map.get("prod_price")), LINE_WIDTH, 5));
+                                Global.getCurrencyFormat(map.get("prod_price")), LINE_WIDTH, 5));
 
                         returnAmount = Global.formatNumFromLocale(myConsignment.get(i).ConsReturn_Qty)
                                 * Global.formatNumFromLocale(map.get("prod_price"));
@@ -812,7 +812,7 @@ public class EMSAsura extends EMSDeviceDriver
                         sb.append(textHandler.twoColumnLineWithLeftAlignedText("Credit Memo:",
                                 Global.formatDoubleToCurrency(returnAmount), LINE_WIDTH, 5));
                         sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total:",
-                                Global.formatDoubleStrToCurrency(myConsignment.get(i).invoice_total), LINE_WIDTH, 5))
+                                Global.getCurrencyFormat(myConsignment.get(i).invoice_total), LINE_WIDTH, 5))
                                 .append(textHandler.newLines(2));
 
                         totalSold += Double.parseDouble(myConsignment.get(i).ConsInvoice_Qty);
@@ -1146,17 +1146,17 @@ public class EMSAsura extends EMSDeviceDriver
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText("New Qty:",
                             c.getString(c.getColumnIndex("ConsNew_Qty")), LINE_WIDTH, 3));
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText("Product Price:",
-                            Global.formatDoubleStrToCurrency(c.getString(c.getColumnIndex("price"))), LINE_WIDTH, 5));
+                            Global.getCurrencyFormat(c.getString(c.getColumnIndex("price"))), LINE_WIDTH, 5));
 
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText("Subtotal:",
-                            Global.formatDoubleStrToCurrency(c.getString(c.getColumnIndex("item_subtotal"))),
+                            Global.getCurrencyFormat(c.getString(c.getColumnIndex("item_subtotal"))),
                             LINE_WIDTH, 5));
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText("Credit Memo:",
-                            Global.formatDoubleStrToCurrency(c.getString(c.getColumnIndex("credit_memo"))), LINE_WIDTH,
+                            Global.getCurrencyFormat(c.getString(c.getColumnIndex("credit_memo"))), LINE_WIDTH,
                             5));
 
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total:",
-                            Global.formatDoubleStrToCurrency(c.getString(c.getColumnIndex("item_total"))), LINE_WIDTH,
+                            Global.getCurrencyFormat(c.getString(c.getColumnIndex("item_total"))), LINE_WIDTH,
                             5)).append(textHandler.newLines(2));
                 } else {
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText("Original Qty:",
@@ -1183,7 +1183,7 @@ public class EMSAsura extends EMSDeviceDriver
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total Line Items", map.get("total_line_items"),
                         LINE_WIDTH, 0));
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText("Grand Total:",
-                        Global.formatDoubleStrToCurrency(map.get("total_grand_total")), LINE_WIDTH, 0));
+                        Global.getCurrencyFormat(map.get("total_grand_total")), LINE_WIDTH, 0));
             }
             sb.append(textHandler.newLines(3));
 

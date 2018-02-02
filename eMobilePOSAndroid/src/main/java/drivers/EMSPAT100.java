@@ -259,15 +259,15 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.paymentmethod_subtotal_amount),
                     Global.formatDoubleToCurrency(Global.subtotalAmount), LINE_WIDTH, 0));
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(paymentDetails.getTax1_name(),
-                    Global.formatDoubleStrToCurrency(paymentDetails.getTax1_amount()), LINE_WIDTH, 0));
+                    Global.getCurrencyFormat(paymentDetails.getTax1_amount()), LINE_WIDTH, 0));
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(paymentDetails.getTax2_name(),
-                    Global.formatDoubleStrToCurrency(paymentDetails.getTax2_amount()), LINE_WIDTH, 0));
+                    Global.getCurrencyFormat(paymentDetails.getTax2_amount()), LINE_WIDTH, 0));
         }
 
         sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
-                Global.formatDoubleStrToCurrency(paymentDetails.getOrd_total()), LINE_WIDTH, 0));
+                Global.getCurrencyFormat(paymentDetails.getOrd_total()), LINE_WIDTH, 0));
         sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_paid),
-                Global.formatDoubleStrToCurrency(Global.amountPaid), LINE_WIDTH, 0));
+                Global.getCurrencyFormat(Global.amountPaid), LINE_WIDTH, 0));
 
         String change = paymentDetails.getChange();
 
@@ -277,7 +277,7 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
         if (constantValue != null)
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(constantValue,
-                    Global.formatDoubleStrToCurrency(change), LINE_WIDTH, 0));
+                    Global.getCurrencyFormat(change), LINE_WIDTH, 0));
         else if (Double.parseDouble(paymentDetails.getPay_dueamount()) > Double.parseDouble(paymentDetails.getOrd_total())) {
             double chg = Double.parseDouble(paymentDetails.getPay_dueamount()) - Double.parseDouble(paymentDetails.getOrd_total());
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.changeLbl),
@@ -428,7 +428,7 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
             for (int i = 0; i < size; i++) {
                 if (paymentMap.containsKey(payMethodsNames.get(i)[0])) {
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(payMethodsNames.get(i)[1],
-                            Global.formatDoubleStrToCurrency(paymentMap.get(payMethodsNames.get(i)[0])), LINE_WIDTH,
+                            Global.getCurrencyFormat(paymentMap.get(payMethodsNames.get(i)[0])), LINE_WIDTH,
                             3));
 
                     payGranTotal += Double.parseDouble(paymentMap.get(payMethodsNames.get(i)[0]));
@@ -438,7 +438,7 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
                 if (refundMap.containsKey(payMethodsNames.get(i)[0])) {
                     sb_refunds.append(textHandler.twoColumnLineWithLeftAlignedText(payMethodsNames.get(i)[1],
-                            Global.formatDoubleStrToCurrency(refundMap.get(payMethodsNames.get(i)[0])), LINE_WIDTH, 3));
+                            Global.getCurrencyFormat(refundMap.get(payMethodsNames.get(i)[0])), LINE_WIDTH, 3));
                     refundGranTotal += Double.parseDouble(refundMap.get(payMethodsNames.get(i)[0]));
                 } else
                     sb_refunds.append(textHandler.twoColumnLineWithLeftAlignedText(payMethodsNames.get(i)[1],
@@ -447,12 +447,12 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
             sb.append(textHandler.newLines(1));
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
-                    Global.formatDoubleStrToCurrency(Double.toString(payGranTotal)), LINE_WIDTH, 4));
+                    Global.getCurrencyFormat(Double.toString(payGranTotal)), LINE_WIDTH, 4));
             sb.append(textHandler.newLines(1));
 
             sb_refunds.append(textHandler.newLines(1));
             sb_refunds.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
-                    Global.formatDoubleStrToCurrency(Double.toString(refundGranTotal)), LINE_WIDTH, 4));
+                    Global.getCurrencyFormat(Double.toString(refundGranTotal)), LINE_WIDTH, 4));
 
             printerApi.printData(sb.toString());
             printerApi.printData(sb_refunds.toString());

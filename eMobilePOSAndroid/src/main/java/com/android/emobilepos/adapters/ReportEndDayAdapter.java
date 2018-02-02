@@ -332,7 +332,7 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
         switch (viewType) {
             case TYPE_SUMMARY:
                 mHolder.tvLeftColumn.setText(listSummary.get(position).ord_type_name);
-                mHolder.tvRightColumn.setText(Global.formatDoubleStrToCurrency(listSummary.get(position).ord_total));
+                mHolder.tvRightColumn.setText(Global.getCurrencyFormat(listSummary.get(position).ord_total));
                 break;
             case TYPE_SHIFTS:
                 String name;
@@ -346,19 +346,19 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
                 mHolder.tvClerk.setText(name);
                 mHolder.tvFrom.setText(DateUtils.getDateAsString(listShifts.get(position - i_summary).getStartTime(), DateUtils.DATE_yyyy_MM_dd));
                 mHolder.tvTo.setText(DateUtils.getDateAsString(listShifts.get(position - i_summary).getEndTime(), DateUtils.DATE_yyyy_MM_dd));
-                mHolder.tvBeginningPetty.setText(Global.formatDoubleStrToCurrency(listShifts.get(position - i_summary).getBeginningPettyCash()));
-                mHolder.tvExpenses.setText(Global.formatDoubleStrToCurrency(listShifts.get(position - i_summary).getTotalExpenses()));
-//                mHolder.tvEndingPetty.setText(Global.formatDoubleStrToCurrency(listShifts.get(position - i_summary).getEndingPettyCash()));
-                mHolder.tvTotalTrans.setText(Global.formatDoubleStrToCurrency(listShifts.get(position - i_summary).getTotalTransactionsCash()));
-                mHolder.tvTotalEnding.setText(Global.formatDoubleStrToCurrency(listShifts.get(position - i_summary).getTotal_ending_cash()));
+                mHolder.tvBeginningPetty.setText(Global.getCurrencyFormat(listShifts.get(position - i_summary).getBeginningPettyCash()));
+                mHolder.tvExpenses.setText(Global.getCurrencyFormat(listShifts.get(position - i_summary).getTotalExpenses()));
+//                mHolder.tvEndingPetty.setText(Global.getCurrencyFormat(listShifts.get(position - i_summary).getEndingPettyCash()));
+                mHolder.tvTotalTrans.setText(Global.getCurrencyFormat(listShifts.get(position - i_summary).getTotalTransactionsCash()));
+                mHolder.tvTotalEnding.setText(Global.getCurrencyFormat(listShifts.get(position - i_summary).getTotal_ending_cash()));
                 mHolder.tvEnteredClose.setText(listShifts.get(position - i_summary).getEnteredCloseAmount());
                 break;
             case TYPE_ORD_TYPES:
                 mHolder.tvOrderType.setText(listOrdTypes.get(position - i_shifts).ord_type_name);
-                mHolder.tvOrdSubtTotal.setText(Global.formatDoubleStrToCurrency(listOrdTypes.get(position - i_shifts).ord_subtotal));
-                mHolder.tvOrdTax.setText(Global.formatDoubleStrToCurrency(listOrdTypes.get(position - i_shifts).ord_taxamount));
-                mHolder.tvOrdDiscount.setText(Global.formatDoubleStrToCurrency(listOrdTypes.get(position - i_shifts).ord_discount));
-                mHolder.tvOrdNetTotal.setText(Global.formatDoubleStrToCurrency(listOrdTypes.get(position - i_shifts).ord_total));
+                mHolder.tvOrdSubtTotal.setText(Global.getCurrencyFormat(listOrdTypes.get(position - i_shifts).ord_subtotal));
+                mHolder.tvOrdTax.setText(Global.getCurrencyFormat(listOrdTypes.get(position - i_shifts).ord_taxamount));
+                mHolder.tvOrdDiscount.setText(Global.getCurrencyFormat(listOrdTypes.get(position - i_shifts).ord_discount));
+                mHolder.tvOrdNetTotal.setText(Global.getCurrencyFormat(listOrdTypes.get(position - i_shifts).ord_total));
                 break;
             case TYPE_ITEMS_SOLD:
                 double qty = Double.parseDouble(listSold.get(position - i_ord_types).getOrdprod_qty());
@@ -368,7 +368,7 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
                 mHolder.tvProdName.setText(listSold.get(position - i_ord_types).getOrdprod_name());
                 mHolder.tvProdID.setText(listSold.get(position - i_ord_types).getProd_id());
                 mHolder.tvProdQty.setText(listSold.get(position - i_ord_types).getOrdprod_qty());
-                mHolder.tvProdTotal.setText(Global.formatDoubleStrToCurrency(itemTotal));
+                mHolder.tvProdTotal.setText(Global.getCurrencyFormat(itemTotal));
                 break;
             case TYPE_ITEMS_RETURNED:
                 qty = Double.parseDouble(listReturned.get(position - i_item_sold).getOrdprod_qty());
@@ -382,7 +382,7 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
             case TYPE_DEPT_SALES:
                 qty = Double.parseDouble(listDeptSales.get(position - i_item_returned).getOrdprod_qty());
                 price = Global.getBigDecimalNum(listDeptSales.get(position - i_item_returned).getFinalPrice());
-                price = price.multiply(BigDecimal.valueOf(qty));
+//                price = price.multiply(BigDecimal.valueOf(qty));
                 mHolder.tvProdName.setText(listDeptSales.get(position - i_item_returned).getCat_name());
                 mHolder.tvProdID.setText(listDeptSales.get(position - i_item_returned).getCat_id());
                 mHolder.tvProdQty.setText(listDeptSales.get(position - i_item_returned).getOrdprod_qty());
@@ -399,23 +399,23 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
                 break;
             case TYPE_PAYMENT:
                 mHolder.tvPayType.setText(listPayment.get(position - i_dept_returns).getCard_type());
-                mHolder.tvPayAmount.setText(Global.formatDoubleStrToCurrency(listPayment.get(position - i_dept_returns).getPay_amount()));
-                mHolder.tvPayTip.setText(Global.formatDoubleStrToCurrency(listPayment.get(position - i_dept_returns).getPay_tip()));
+                mHolder.tvPayAmount.setText(Global.getCurrencyFormat(listPayment.get(position - i_dept_returns).getPay_amount()));
+                mHolder.tvPayTip.setText(Global.getCurrencyFormat(listPayment.get(position - i_dept_returns).getPay_tip()));
                 break;
             case TYPE_VOID:
                 mHolder.tvPayType.setText(listVoid.get(position - i_payment).getCard_type());
-                mHolder.tvPayAmount.setText(Global.formatDoubleStrToCurrency(listVoid.get(position - i_payment).getPay_amount()));
-                mHolder.tvPayTip.setText(Global.formatDoubleStrToCurrency(listVoid.get(position - i_payment).getPay_tip()));
+                mHolder.tvPayAmount.setText(Global.getCurrencyFormat(listVoid.get(position - i_payment).getPay_amount()));
+                mHolder.tvPayTip.setText(Global.getCurrencyFormat(listVoid.get(position - i_payment).getPay_tip()));
                 break;
             case TYPE_REFUND:
                 mHolder.tvPayType.setText(listRefund.get(position - i_void).getCard_type());
-                mHolder.tvPayAmount.setText(Global.formatDoubleStrToCurrency(listRefund.get(position - i_void).getPay_amount()));
-                mHolder.tvPayTip.setText(Global.formatDoubleStrToCurrency(listRefund.get(position - i_void).getPay_tip()));
+                mHolder.tvPayAmount.setText(Global.getCurrencyFormat(listRefund.get(position - i_void).getPay_amount()));
+                mHolder.tvPayTip.setText(Global.getCurrencyFormat(listRefund.get(position - i_void).getPay_tip()));
                 break;
             case TYPE_AR_TRANS:
                 mHolder.tvPayType.setText(listARTrans.get(position - i_refund).ord_timecreated);
                 mHolder.tvPayAmount.setText(listARTrans.get(position - i_refund).cust_name);
-                mHolder.tvPayTip.setText(Global.formatDoubleStrToCurrency(listARTrans.get(position - i_refund).ord_total));
+                mHolder.tvPayTip.setText(Global.getCurrencyFormat(listARTrans.get(position - i_refund).ord_total));
                 break;
         }
 

@@ -297,7 +297,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         }
 
         String row1 = "Grand Total";
-        String row2 = Global.formatDoubleStrToCurrency(total);
+        String row2 = Global.getCurrencyFormat(total);
         TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
 
         if (Double.parseDouble(total) != 0) { // Only go to default payment method if there is a balance pending.

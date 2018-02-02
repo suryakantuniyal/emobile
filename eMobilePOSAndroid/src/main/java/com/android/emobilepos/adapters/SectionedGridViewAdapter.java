@@ -231,7 +231,7 @@ public class SectionedGridViewAdapter extends BaseAdapter implements
 						ImageView itemImage = (ImageView) child.findViewById(R.id.data_item_image);
 						ImageView itemIconImage = (ImageView)child.findViewById(R.id.data_item_image_icon);
 						productNameView.setText(c.getString(i_prod_name));
-						productPriceView.setText(Global.formatDoubleStrToCurrency(c.getString(i_master_price)));
+						productPriceView.setText(Global.getCurrencyFormat(c.getString(i_master_price)));
 						imageLoaderTest.DisplayImage(c.getString(i_prod_img_name), itemImage,true);
 						ButtonViewHolder holder = new ButtonViewHolder();
 						holder.sectionName = sectionID;

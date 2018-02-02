@@ -801,7 +801,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                 taxValue.setText(sb.toString());
             } else {
                 if (rightData.get(position - 1)[1].equals("Fixed")) {
-                    sb.append(Global.formatDoubleStrToCurrency(rightData.get(position - 1)[2]));
+                    sb.append(Global.getCurrencyFormat(rightData.get(position - 1)[2]));
                     taxValue.setText(sb.toString());
                 } else {
                     sb.append("%").append(rightData.get(position - 1)[2]);

@@ -683,8 +683,11 @@ public class OrderProductsHandler {
         List<OrderProduct> listOrdProd = new ArrayList<>();
 
         query.append(
-                "SELECT prod_price as 'prod_price', c.cat_name,op.cat_id, sum(ordprod_qty) as 'ordprod_qty',  sum(overwrite_price) 'overwrite_price'," +
-                        "date(o.ord_timecreated,'localtime') as 'date'  " +
+                "SELECT prod_price as 'prod_price', case when op.cat_name='' THEN 'Other' else  " +
+                        "op.cat_name end as cat_name,op.cat_id, sum(ordprod_qty) as 'ordprod_qty', " +
+                        "sum(CASE WHEN overwrite_price='' THEN prod_price " +
+                        "ELSE IFNULL(overwrite_price,prod_price)  END) as 'overwrite_price'," +
+                        "date(o.ord_timecreated,'localtime') as 'date'" +
                         "FROM " + table_name + " op ");
         query.append(
                 "LEFT JOIN Categories c ON op.cat_id = c.cat_id " +
@@ -709,7 +712,7 @@ public class OrderProductsHandler {
             where_values = new String[]{date};
         }
 
-        query.append(" GROUP BY op.cat_id, prod_price ORDER BY op.cat_id");
+        query.append(" GROUP BY op.cat_id ORDER BY op.cat_id");
 
         Cursor c = DBManager.getDatabase().rawQuery(query.toString(), where_values);
 

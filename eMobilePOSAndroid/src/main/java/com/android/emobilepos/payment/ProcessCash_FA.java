@@ -179,8 +179,8 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
             this.tipAmount.setText(Global.formatDoubleToCurrency(0.00));
 
         amountDue.setText(Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(extras.getString("amount")))));
-        tax1.setText(Global.formatDoubleStrToCurrency(extras.getString("Tax1_amount")));
-        tax2.setText(Global.formatDoubleStrToCurrency(extras.getString("Tax2_amount")));
+        tax1.setText(Global.getCurrencyFormat(extras.getString("Tax1_amount")));
+        tax2.setText(Global.getCurrencyFormat(extras.getString("Tax2_amount")));
 
 
         custidkey = extras.getString("custidkey");

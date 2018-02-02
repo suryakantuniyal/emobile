@@ -89,7 +89,7 @@ public class DinningTablesAdapter extends BaseAdapter implements Filterable {
             holder.time.setText(tableOrder.getElapsedTime());
             holder.guests.setText(String.format("%d/%d", tableOrder.getNumberOfGuest(), dinningTables.get(position).getSeats()));
             Order order = tableOrder.getOrder(activity);
-            holder.amount.setText(Global.formatDoubleStrToCurrency(order.ord_subtotal));
+            holder.amount.setText(Global.getCurrencyFormat(order.ord_subtotal));
         } else {
             holder.time.setBackgroundResource(R.color.seat12);
             holder.guests.setBackgroundResource(R.color.seat12);
