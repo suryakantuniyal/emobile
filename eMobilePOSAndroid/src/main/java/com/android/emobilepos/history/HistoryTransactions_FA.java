@@ -288,7 +288,7 @@ public class HistoryTransactions_FA extends BaseFragmentActivityActionBar implem
             myHolder.title.setText(cursor.getString(myHolder.i_ord_id));
             temp = cursor.getString(myHolder.i_cust_id);
             myHolder.clientName.setText(custHandler.getSpecificValue("cust_name", temp));
-            temp = Global.formatDoubleStrToCurrency(cursor.getString(myHolder.i_ord_total));
+            temp = Global.getCurrencyFormat(cursor.getString(myHolder.i_ord_total));
             myHolder.amount.setText(temp);
             if (cursor.getString(myHolder.i_ord_issync).equals("1")) //it is synched
                 myHolder.syncIcon.setImageResource(R.drawable.is_sync);

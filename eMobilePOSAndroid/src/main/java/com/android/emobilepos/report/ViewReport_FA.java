@@ -52,10 +52,10 @@ public class ViewReport_FA extends BaseFragmentActivityActionBar {
         global = (Global) this.getApplication();
         final Bundle extras = this.getIntent().getExtras();
         isShiftReport = extras.getBoolean("isShiftReport", false);
-        Button dateBut = (Button) findViewById(R.id.changeDateButton);
-        printBut = (Button) findViewById(R.id.reportPrintButton);
-        myListview = (ListView) findViewById(R.id.reportListView);
-        TextView headerTitle = (TextView) findViewById(R.id.headerTitle);
+        Button dateBut = findViewById(R.id.changeDateButton);
+        printBut = findViewById(R.id.reportPrintButton);
+        myListview = findViewById(R.id.reportListView);
+        TextView headerTitle = findViewById(R.id.headerTitle);
         dateBut.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -127,10 +127,11 @@ public class ViewReport_FA extends BaseFragmentActivityActionBar {
             curDate = DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss);
             dates[0] = Global.formatToDisplayDate(curDate, 0);
             dates[1] = Global.formatToDisplayDate(curDate, 4);
-            if (!isShiftReport)
-                mainAdapter = new ReportsMenuAdapter(ViewReport_FA.this, dates);
-            else
+            if (isShiftReport) {
                 shiftAdapter = new ReportsShiftAdapter(ViewReport_FA.this, dates);
+            } else {
+                mainAdapter = new ReportsMenuAdapter(ViewReport_FA.this, dates);
+            }
             return null;
         }
 
@@ -169,8 +170,8 @@ public class ViewReport_FA extends BaseFragmentActivityActionBar {
         dlog.setCancelable(false);
         dlog.setContentView(R.layout.dlog_btn_left_right_layout);
 
-        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+        TextView viewTitle = dlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = dlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_confirm);
 
         viewTitle.setText(R.string.dlog_title_error);
@@ -178,8 +179,8 @@ public class ViewReport_FA extends BaseFragmentActivityActionBar {
 
         dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
 
-        Button btnYes = (Button) dlog.findViewById(R.id.btnDlogLeft);
-        Button btnNo = (Button) dlog.findViewById(R.id.btnDlogRight);
+        Button btnYes = dlog.findViewById(R.id.btnDlogLeft);
+        Button btnNo = dlog.findViewById(R.id.btnDlogRight);
         btnYes.setText(R.string.button_yes);
         btnNo.setText(R.string.button_no);
 

@@ -147,7 +147,7 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
         TextView paid_amount = (TextView) headerView.findViewById(R.id.ordLVHeaderSubtitle);
         ImageView receipt = (ImageView) headerView.findViewById(R.id.ordTicketImg);
         name.setText(cust_name);
-        paid_amount.setText(Global.formatDoubleStrToCurrency(pay_amount));
+        paid_amount.setText(Global.getCurrencyFormat(pay_amount));
         String encodedImg = paymentDetails.getPay_signature();
         if (encodedImg != null && !encodedImg.isEmpty()) {
             Resources resources = activity.getResources();

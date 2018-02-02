@@ -121,7 +121,7 @@ public class TablesMapFragment extends Fragment implements View.OnClickListener,
                             timeTxt.setText(dinningTableOrder.getElapsedTime());
                             guestsTxt.setText(String.format("%d/%d", dinningTableOrder.getNumberOfGuest(), table.getSeats()));
                             Order order = dinningTableOrder.getOrder(getActivity());
-                            amountxt.setText(Global.formatDoubleStrToCurrency(order.ord_subtotal));
+                            amountxt.setText(Global.getCurrencyFormat(order.ord_subtotal));
                             tableItem.findViewById(R.id.table_map_container).setOnLongClickListener(TablesMapFragment.this);
                         } else {
                             timeTxt.setBackgroundResource(R.color.seat12);

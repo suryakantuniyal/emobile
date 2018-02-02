@@ -71,7 +71,7 @@ public class PickerAddonLV_Adapter extends CursorAdapter implements OnClickListe
             holder.prod_image.requestFocus();
         holder.itemPosition = position;
         holder.name.setText(c.getString(holder.i_prod_name));
-        holder.price.setText(Global.formatDoubleStrToCurrency(c.getString(holder.i_prod_price)));
+        holder.price.setText(Global.getCurrencyFormat(c.getString(holder.i_prod_price)));
         holder.prod_image.setTag(holder);
         holder.prod_image.setOnTouchListener(Global.opaqueImageOnClick());
         holder.prod_image.setOnClickListener(this);

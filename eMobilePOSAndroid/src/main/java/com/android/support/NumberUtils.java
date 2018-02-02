@@ -15,7 +15,7 @@ public class NumberUtils {
     static boolean formated = false;
 
     public static String cleanCurrencyFormatedNumber(String s) {
-        return s.replaceAll("[^[+-]?\\d\\,\\.]", "").trim();
+        return s.replaceAll("[^[+-]?\\d\\.]", "").trim();
     }
 
     public static String cleanCurrencyFormatedNumber(EditText s) {

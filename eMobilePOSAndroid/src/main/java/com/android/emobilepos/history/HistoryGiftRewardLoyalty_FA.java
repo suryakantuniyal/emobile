@@ -343,9 +343,9 @@ public class HistoryGiftRewardLoyalty_FA extends BaseFragmentActivityActionBar i
 			if(tempPayAmount==null)
 				tempPayAmount = empStr;
 //			else
-//				tempPayAmount = Global.formatDoubleStrToCurrency(tempPayAmount);
+//				tempPayAmount = Global.getCurrencyFormat(tempPayAmount);
 			
-			tempTipAmount = "(Tip: "+Global.formatDoubleStrToCurrency(cursor.getString(myHolder.i_pay_tip))+")";
+			tempTipAmount = "(Tip: "+Global.getCurrencyFormat(cursor.getString(myHolder.i_pay_tip))+")";
 			
 			
 			
@@ -365,7 +365,7 @@ public class HistoryGiftRewardLoyalty_FA extends BaseFragmentActivityActionBar i
 			case CASE_GIFTCARD:
 			case CASE_REWARD:
 				myHolder.title.setText(tempCustName);
-				myHolder.amount.setText(Global.formatDoubleStrToCurrency(tempPayAmount));
+				myHolder.amount.setText(Global.getCurrencyFormat(tempPayAmount));
 				myHolder.tip.setText(tempTipAmount);
 				break;
 			case CASE_LOYALTY:
