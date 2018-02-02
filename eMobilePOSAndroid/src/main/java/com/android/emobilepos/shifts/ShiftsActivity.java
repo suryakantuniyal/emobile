@@ -343,7 +343,7 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
         hundredDollarTextView.setText(Global.getCurrencyFormat(String.valueOf(hundredDollars * 100)));
         totalAmountEditText.setText(Global.getCurrencyFormat(total.toString()));
         if (shift != null && shift.getShiftStatus() == Shift.ShiftStatus.PENDING) {
-            BigDecimal totalEndingCash = new BigDecimal(shift.getTotal_ending_cash());
+            BigDecimal totalEndingCash = new BigDecimal(NumberUtils.cleanCurrencyFormatedNumber(shift.getTotal_ending_cash()));
             switch (total.compareTo(totalEndingCash.doubleValue())) {
                 case 1:
                     shortOverStatusTextView.setText(
