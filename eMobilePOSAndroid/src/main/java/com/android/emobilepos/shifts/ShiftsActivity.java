@@ -279,7 +279,7 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
         shift.setEndTime(now);
         shift.setEndTimeLocal(now);
         shift.setShiftStatus(Shift.ShiftStatus.CLOSED);
-        shift.setOver_short(String.valueOf(Double.parseDouble(shift.getTotal_ending_cash()) - total));
+        shift.setOver_short(String.valueOf(Double.parseDouble(NumberUtils.cleanCurrencyFormatedNumber(shift.getTotal_ending_cash())) - total));
         ShiftDAO.insertOrUpdate(shift);
         new SendShiftTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
@@ -316,7 +316,7 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
         shift.setAssigneeName(employee.getEmpName());
         shift.setClerkId(Integer.parseInt(preferences.getClerkID()));
         shift.setBeginningPettyCash(NumberUtils.cleanCurrencyFormatedNumber(totalAmountEditText.getText().toString()));
-        shift.setTotal_ending_cash(shift.getBeginningPettyCash());
+        shift.setTotal_ending_cash(NumberUtils.cleanCurrencyFormatedNumber(shift.getBeginningPettyCash()));
         shift.setCreationDate(now);
         shift.setStartTime(now);
         shift.setStartTimeLocal(now);
