@@ -11,9 +11,11 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.android.dao.ClerkDAO;
 import com.android.dao.ShiftDAO;
 import com.android.dao.ShiftExpensesDAO;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.Shift;
 import com.android.emobilepos.models.realms.ShiftExpense;
 import com.android.support.Global;
@@ -30,6 +32,7 @@ public class ShiftReportDetails_FA extends BaseFragmentActivityActionBar impleme
     private String shiftID;
     private Shift shift;
     private BigDecimal totalExpenses, safeDropTotal, cashDropTotal, cashInTotal, buyGoodsTotal, nonCashGratuityTotal;
+    private Clerk clerk;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -38,11 +41,12 @@ public class ShiftReportDetails_FA extends BaseFragmentActivityActionBar impleme
         activity = this;
         setContentView(R.layout.shift_details_layout);
         global = (Global) getApplication();
-        Button btnPrint = (Button) findViewById(R.id.btnPrint);
+        Button btnPrint = findViewById(R.id.btnPrint);
         btnPrint.setOnClickListener(this);
         Bundle extras = this.getIntent().getExtras();
         shiftID = extras.getString("shift_id");
         shift = ShiftDAO.getShift(shiftID);
+        clerk = ClerkDAO.getByEmpId(shift.getClerkId());
         totalExpenses = ShiftExpensesDAO.getShiftTotalExpenses(shiftID);
         safeDropTotal = ShiftExpensesDAO.getShiftTotalExpenses(shiftID, ShiftExpense.ExpenseProductId.SAFE_DROP);
         cashDropTotal = ShiftExpensesDAO.getShiftTotalExpenses(shiftID, ShiftExpense.ExpenseProductId.CASH_DROP);
@@ -56,19 +60,19 @@ public class ShiftReportDetails_FA extends BaseFragmentActivityActionBar impleme
     }
 
     private void loadUIInfo() {
-        ((TextView) findViewById(R.id.salesClerktextView26)).setText(shift.getAssigneeName());
-        ((TextView) findViewById(R.id.beginningPettyCashtextView26)).setText(Global.formatDoubleStrToCurrency(shift.getBeginningPettyCash()));
-        ((TextView) findViewById(R.id.totalExpensestextView26)).setText(Global.formatDoubleStrToCurrency(String.valueOf(totalExpenses)));
+        ((TextView) findViewById(R.id.salesClerktextView26)).setText(clerk.getEmpName());
+        ((TextView) findViewById(R.id.beginningPettyCashtextView26)).setText(Global.getCurrencyFormat(shift.getBeginningPettyCash()));
+        ((TextView) findViewById(R.id.totalExpensestextView26)).setText(Global.getCurrencyFormat(String.valueOf(totalExpenses)));
 //        ((TextView) findViewById(R.id.endingPettyCashtextView26)).setText(Global.formatDoubleStrToCurrency(shift.getEndingPettyCash()));
-        ((TextView) findViewById(R.id.totalTransactionCashtextView26)).setText(Global.formatDoubleStrToCurrency(shift.getTotalTransactionsCash()));
-        ((TextView) findViewById(R.id.totalEndingCashtextView26)).setText(Global.formatDoubleStrToCurrency(shift.getTotal_ending_cash()));
-        ((TextView) findViewById(R.id.enteredCloseAmounttextView26)).setText(Global.formatDoubleStrToCurrency(shift.getEnteredCloseAmount()));
-        ((TextView) findViewById(R.id.shortOverAmounttextView)).setText(Global.formatDoubleStrToCurrency(shift.getOver_short()));
-        ((TextView) findViewById(R.id.safeDropExpensestextView)).setText(Global.formatDoubleStrToCurrency(String.valueOf(safeDropTotal)));
-        ((TextView) findViewById(R.id.cashDropExpensestextView2)).setText(Global.formatDoubleStrToCurrency(String.valueOf(cashDropTotal)));
-        ((TextView) findViewById(R.id.cashInExpensestextView4)).setText(Global.formatDoubleStrToCurrency(String.valueOf(cashInTotal)));
-        ((TextView) findViewById(R.id.buyGoodsServicesExpensestextView6)).setText(Global.formatDoubleStrToCurrency(String.valueOf(buyGoodsTotal)));
-        ((TextView) findViewById(R.id.nonCashGratuityExpensestextVie8)).setText(Global.formatDoubleStrToCurrency(String.valueOf(nonCashGratuityTotal)));
+        ((TextView) findViewById(R.id.totalTransactionCashtextView26)).setText(Global.getCurrencyFormat(shift.getTotalTransactionsCash()));
+        ((TextView) findViewById(R.id.totalEndingCashtextView26)).setText(Global.getCurrencyFormat(shift.getTotal_ending_cash()));
+        ((TextView) findViewById(R.id.enteredCloseAmounttextView26)).setText(Global.getCurrencyFormat(shift.getEnteredCloseAmount()));
+        ((TextView) findViewById(R.id.shortOverAmounttextView)).setText(Global.getCurrencyFormat(shift.getOver_short()));
+        ((TextView) findViewById(R.id.safeDropExpensestextView)).setText(Global.getCurrencyFormat(String.valueOf(safeDropTotal)));
+        ((TextView) findViewById(R.id.cashDropExpensestextView2)).setText(Global.getCurrencyFormat(String.valueOf(cashDropTotal)));
+        ((TextView) findViewById(R.id.cashInExpensestextView4)).setText(Global.getCurrencyFormat(String.valueOf(cashInTotal)));
+        ((TextView) findViewById(R.id.buyGoodsServicesExpensestextView6)).setText(Global.getCurrencyFormat(String.valueOf(buyGoodsTotal)));
+        ((TextView) findViewById(R.id.nonCashGratuityExpensestextVie8)).setText(Global.getCurrencyFormat(String.valueOf(nonCashGratuityTotal)));
 
     }
 
@@ -113,8 +117,8 @@ public class ShiftReportDetails_FA extends BaseFragmentActivityActionBar impleme
         dlog.setCancelable(false);
         dlog.setContentView(R.layout.dlog_btn_left_right_layout);
 
-        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+        TextView viewTitle = dlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = dlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_confirm);
 
         viewTitle.setText(R.string.dlog_title_error);
@@ -122,8 +126,8 @@ public class ShiftReportDetails_FA extends BaseFragmentActivityActionBar impleme
 
         dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
 
-        Button btnYes = (Button) dlog.findViewById(R.id.btnDlogLeft);
-        Button btnNo = (Button) dlog.findViewById(R.id.btnDlogRight);
+        Button btnYes = dlog.findViewById(R.id.btnDlogLeft);
+        Button btnNo = dlog.findViewById(R.id.btnDlogRight);
         btnYes.setText(R.string.button_yes);
         btnNo.setText(R.string.button_no);
 

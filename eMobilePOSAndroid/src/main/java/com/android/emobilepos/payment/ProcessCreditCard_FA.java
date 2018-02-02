@@ -496,8 +496,8 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         TextView tax1Lbl = findViewById(R.id.tax1CreditCardLbl);
         TextView tax2Lbl = findViewById(R.id.tax2CreditCardLbl);
 
-        tax1.setText(Global.formatDoubleStrToCurrency(extras.getString("Tax1_amount")));
-        tax2.setText(Global.formatDoubleStrToCurrency(extras.getString("Tax2_amount")));
+        tax1.setText(Global.getCurrencyFormat(extras.getString("Tax1_amount")));
+        tax2.setText(Global.getCurrencyFormat(extras.getString("Tax2_amount")));
         List<OrderProduct> orderProducts = global.order == null
                 ? new ArrayList<OrderProduct>() : global.order.getOrderProducts();
         double subtotalDbl = 0;

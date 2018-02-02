@@ -29,6 +29,7 @@ import com.android.support.NetworkUtils;
 import com.android.support.NumberUtils;
 import com.android.support.SynchMethods;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.android.support.textwatcher.NumberFieldsTextWatcher;
 import com.crashlytics.android.Crashlytics;
 
 import java.math.BigDecimal;
@@ -36,7 +37,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 
-public class ShiftsActivity extends BaseFragmentActivityActionBar implements View.OnClickListener, TextWatcher {
+public class ShiftsActivity extends BaseFragmentActivityActionBar implements View.OnClickListener, TextWatcher, View.OnFocusChangeListener {
 
     Global global;
     private EditText oneDollarEditText;
@@ -109,7 +110,7 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
             pettyCash.setVisibility(View.VISIBLE);
             closeAmountLbl.setText(getString(R.string.entered_count_down_amount));
             openOnDate.setText(DateUtils.getDateAsString(shift.getCreationDate(), DateUtils.DATE_MMM_dd_yyyy_h_mm_a));
-            pettyCash.setText(Global.formatDoubleStrToCurrency(shift.getBeginningPettyCash()));
+            pettyCash.setText(Global.getCurrencyFormat(shift.getBeginningPettyCash()));
         } else if (shift.getShiftStatus() == Shift.ShiftStatus.PENDING) {
             enableCurrencies(true);
             submitShiftbutton.setText(getString(R.string.shift_close_shift));
@@ -119,8 +120,8 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
             pettyCash.setVisibility(View.VISIBLE);
             closeAmountLbl.setText(getString(R.string.entered_close_amount));
             openOnDate.setText(DateUtils.getDateAsString(shift.getCreationDate(), DateUtils.DATE_MMM_dd_yyyy_h_mm_a));
-            pettyCash.setText(Global.formatDoubleStrToCurrency(shift.getBeginningPettyCash()));
-            endingCashAmounteditText.setText(Global.formatDoubleStrToCurrency(shift.getTotal_ending_cash()));
+            pettyCash.setText(Global.getCurrencyFormat(shift.getBeginningPettyCash()));
+            endingCashAmounteditText.setText(Global.getCurrencyFormat(shift.getTotal_ending_cash()));
         }
 
     }
@@ -479,6 +480,29 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
         tenCentsTextView = findViewById(R.id.tenCentsTotaltextView35);
         quarterCentsTextView = findViewById(R.id.quartesCentsTotaltextView35);
 
+        oneDollarEditText.setOnFocusChangeListener(this);
+        fiveDollarEditText.setOnFocusChangeListener(this);
+        tenDollarEditText.setOnFocusChangeListener(this);
+        twentyDollarEditText.setOnFocusChangeListener(this);
+        hundredDollarEditText.setOnFocusChangeListener(this);
+        oneCentEditText.setOnFocusChangeListener(this);
+        fiveCentsEditText.setOnFocusChangeListener(this);
+        tenCentsEditText.setOnFocusChangeListener(this);
+        quarterCentsEditText.setOnFocusChangeListener(this);
+        fiftyDollarEditText.setOnFocusChangeListener(this);
+
+
+        oneDollarEditText.addTextChangedListener(new NumberFieldsTextWatcher(oneDollarEditText));
+        fiveDollarEditText.addTextChangedListener(new NumberFieldsTextWatcher(fiveDollarEditText));
+        tenDollarEditText.addTextChangedListener(new NumberFieldsTextWatcher(tenDollarEditText));
+        twentyDollarEditText.addTextChangedListener(new NumberFieldsTextWatcher(twentyDollarEditText));
+        hundredDollarEditText.addTextChangedListener(new NumberFieldsTextWatcher(hundredDollarEditText));
+        oneCentEditText.addTextChangedListener(new NumberFieldsTextWatcher(oneCentEditText));
+        fiveCentsEditText.addTextChangedListener(new NumberFieldsTextWatcher(fiveCentsEditText));
+        tenCentsEditText.addTextChangedListener(new NumberFieldsTextWatcher(tenCentsEditText));
+        quarterCentsEditText.addTextChangedListener(new NumberFieldsTextWatcher(quarterCentsEditText));
+        fiftyDollarEditText.addTextChangedListener(new NumberFieldsTextWatcher(fiftyDollarEditText));
+
         Button minusOneDollar = findViewById(R.id.oneDollarMinusbutton);
         Button minusFiveDollar = findViewById(R.id.fiveDollarMinusbutton);
         Button minusTenDollar = findViewById(R.id.tenDollarMinusbutton);
@@ -550,6 +574,20 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
         }
         return true;
     }
+
+    @Override
+    public void onFocusChange(final View view, boolean hasFocus) {
+        if (hasFocus) {
+            view.post(new Runnable() {
+                @Override
+                public void run() {
+                    ((EditText) view).setSelection(((EditText) view).getText().toString().length());
+                }
+            });
+//                    Selection.setSelection(oneDollarEditText.getText(), oneDollarEditText.getText().toString().length());
+        }
+    }
+
 
     private class GetShiftTask extends AsyncTask<Void, Void, Void> {
         ProgressDialog dialog;

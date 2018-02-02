@@ -254,7 +254,7 @@ public class ActivateCard_FA extends BaseFragmentActivityActionBar implements EM
                 TextView labelAmount = (TextView) findViewById(R.id.labelAmount);
                 String temp = giftCardMap.get("overwrite_price") == null ? "-1" : giftCardMap.get("overwrite_price");
                 giftCardMap.put("overwrite_price", temp);
-                labelAmount.setText(Global.formatDoubleStrToCurrency(temp));
+                labelAmount.setText(Global.getCurrencyFormat(temp));
                 return true;
             }
         } else if (giftCardMap.isEmpty())
@@ -338,7 +338,7 @@ public class ActivateCard_FA extends BaseFragmentActivityActionBar implements EM
         TextView labelAmount = (TextView) findViewById(R.id.labelAmount);
         String temp = giftCardMap.get("overwrite_price") == null ? "-1" : giftCardMap.get("overwrite_price");
         giftCardMap.put("overwrite_price", temp);
-        labelAmount.setText(Global.formatDoubleStrToCurrency(temp));
+        labelAmount.setText(Global.getCurrencyFormat(temp));
         wasReadFromReader = true;
     }
 

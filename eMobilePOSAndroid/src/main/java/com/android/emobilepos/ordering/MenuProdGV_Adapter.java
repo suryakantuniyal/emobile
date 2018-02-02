@@ -135,7 +135,7 @@ public class MenuProdGV_Adapter extends CursorAdapter {
                 }
                 final String prod_price = tempPrice;
                 final String prod_desc = cursor.getString(holder.i_prod_desc);
-                holder.amount.setText(Global.formatDoubleStrToCurrency(prod_price));
+                holder.amount.setText(Global.getCurrencyFormat(prod_price));
                 holder.detail.setText(prod_desc);
 
                 if (Global.isConsignment && holder.i_consignment_qty != -1) {

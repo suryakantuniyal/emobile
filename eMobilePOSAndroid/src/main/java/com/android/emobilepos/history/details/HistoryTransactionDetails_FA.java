@@ -363,7 +363,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
 
         switch (type) {
             case CASE_TOTAL:                //total
-                data = Global.formatDoubleStrToCurrency(order.ord_total);
+                data = Global.getCurrencyFormat(order.ord_total);
                 break;
             case CASE_OVERALL_PAID_AMOUNT:                //amount paid
                 int size = paymentMapList.size();
@@ -388,9 +388,9 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                 }
                 temp = Double.toString(Global.formatNumFromLocale(temp));
                 if (otherAmount.equals("0"))
-                    data = Global.formatDoubleStrToCurrency(temp);
+                    data = Global.getCurrencyFormat(temp);
                 else
-                    data = Global.formatDoubleStrToCurrency(temp) + " + " + otherAmount + " Points";
+                    data = Global.getCurrencyFormat(temp) + " + " + otherAmount + " Points";
                 break;
             case CASE_TIP_AMOUNT:                //Tip
                 int size1 = paymentMapList.size();
@@ -408,7 +408,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                     }
                 }
                 temp1 = Double.toString(Global.formatNumFromLocale(temp1));
-                data = Global.formatDoubleStrToCurrency(temp1);
+                data = Global.getCurrencyFormat(temp1);
                 break;
             case CASE_CLERK_ID:
                 data = order.clerk_id;
@@ -439,7 +439,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                 data = paymentMapList.get(position).getPay_id();
                 break;
             case CASE_PAID_AMOUNT:
-                data = Global.formatDoubleStrToCurrency(paymentMapList.get(position).getPay_amount());
+                data = Global.getCurrencyFormat(paymentMapList.get(position).getPay_amount());
                 break;
             case CASE_PO:
                 data = order.ord_po;
@@ -793,7 +793,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                         holder.textLine1.setText(orderedProd.get(ind).getOrdprod_name());
                         holder.textLine2.setText(orderedProd.get(ind).getOrdprod_desc());
                         holder.ordProdQty.setText(String.format("%s x", orderedProd.get(ind).getOrdprod_qty()));
-                        holder.ordProdPrice.setText(Global.formatDoubleStrToCurrency(orderedProd.get(ind).getFinalPrice()));
+                        holder.ordProdPrice.setText(Global.getCurrencyFormat(orderedProd.get(ind).getFinalPrice()));
                         break;
                     }
                     case 3: {
@@ -845,7 +845,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                 holder.textLine1.setText(orderedProd.get(ind).getOrdprod_name());
                 holder.textLine2.setText(orderedProd.get(ind).getOrdprod_desc());
                 holder.ordProdQty.setText(String.format("%s x", orderedProd.get(ind).getOrdprod_qty()));
-                holder.ordProdPrice.setText(Global.formatDoubleStrToCurrency(orderedProd.get(ind).getFinalPrice()));
+                holder.ordProdPrice.setText(Global.getCurrencyFormat(orderedProd.get(ind).getFinalPrice()));
                 imageLoader.displayImage(imgHandler.getSpecificLink("I", orderedProd.get(ind).getProd_id()), holder.iconImage, options);
             }
 

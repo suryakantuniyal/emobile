@@ -490,7 +490,7 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
             String cardName = TextUtils.isEmpty(p.getCard_type()) ? getString(R.string.card_credit_card) : p.getCard_type();
             holder.title.setText(cardName +
                     "  (" +
-                    Global.formatDoubleStrToCurrency(p.getPay_amount()) +
+                    Global.getCurrencyFormat(p.getPay_amount()) +
                     ")");
             holder.subtitle.setText(p.getPay_name());
         }

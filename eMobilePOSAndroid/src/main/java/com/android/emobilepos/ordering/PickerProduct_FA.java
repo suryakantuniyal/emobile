@@ -916,7 +916,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             orderProduct.setOrdprod_desc(sb.toString());
         }
         String row1 = orderProduct.getOrdprod_name();
-        String row2 = Global.formatDoubleStrToCurrency(orderProduct.getFinalPrice());
+        String row2 = Global.getCurrencyFormat(orderProduct.getFinalPrice());
         TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
         if (OrderingMain_FA.returnItem) {
             OrderingMain_FA.returnItem = !OrderingMain_FA.returnItem;
@@ -996,7 +996,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                 } else {
                     priceLevelName = listData_LV.get(position - 1)[0];
                     priceLevelID = listData_LV.get(position - 1)[1];
-                    sb.append(Global.formatDoubleStrToCurrency(listData_LV.get(position - 1)[2]));
+                    sb.append(Global.getCurrencyFormat(listData_LV.get(position - 1)[2]));
                     sb.append(" <").append(listData_LV.get(position - 1)[0]).append(">");
                     rightTitle[INDEX_PRICE_LEVEL] = sb.toString();
                     prLevTotal = Global.formatNumToLocale(Double.parseDouble(listData_LV.get(position - 1)[2]));
@@ -1017,7 +1017,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                 } else if (listData_LV.get(position - 1)[1].equals("Fixed")) {
 
                     discount_id = listData_LV.get(position - 1)[4];
-                    sb.append(Global.formatDoubleStrToCurrency(listData_LV.get(position - 1)[2])).append(" <")
+                    sb.append(Global.getCurrencyFormat(listData_LV.get(position - 1)[2])).append(" <")
                             .append(listData_LV.get(position - 1)[0]).append(">");
                     rightTitle[INDEX_DISCOUNT] = sb.toString();
 
@@ -1091,7 +1091,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                     if (listType == INDEX_PRICE_LEVEL + OFFSET) // Price Level
                     {
                         holder.leftText.setText(R.string.base_price_lbl);
-                        holder.rightText.setText(Global.formatDoubleStrToCurrency(basePrice));
+                        holder.rightText.setText(Global.getCurrencyFormat(basePrice));
 
                     } else if (listType == INDEX_DISCOUNT + OFFSET) // Discount
                     {
@@ -1112,12 +1112,12 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
                     if (listType == INDEX_PRICE_LEVEL + OFFSET) // Price Level
                     {
-                        String total = Global.formatDoubleStrToCurrency(listData_LV.get(position - 1)[2]);
+                        String total = Global.getCurrencyFormat(listData_LV.get(position - 1)[2]);
                         holder.rightText.setText(total);
                     } else if (listType == INDEX_DISCOUNT + OFFSET) // discount
                     {
                         if (listData_LV.get(position - 1)[1].equals("Fixed")) {
-                            holder.rightText.setText(Global.formatDoubleStrToCurrency(listData_LV.get(position - 1)[2]));
+                            holder.rightText.setText(Global.getCurrencyFormat(listData_LV.get(position - 1)[2]));
 
                         } else {
                             holder.rightText.setText(String.format("%s%%", listData_LV.get(position - 1)[2]));

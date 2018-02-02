@@ -288,8 +288,8 @@ public class InvoicesHandler {
 				arrayVal[0] = cursor.getString(cursor.getColumnIndex("cust_name"));
 				arrayVal[1] = cursor.getString(cursor.getColumnIndex(inv_id));
 				arrayVal[2] = cursor.getString(cursor.getColumnIndex(txnID));
-				arrayVal[3] = Global.formatDoubleStrToCurrency(cursor.getString(cursor.getColumnIndex(inv_total)));
-				arrayVal[4] = Global.formatDoubleStrToCurrency(cursor.getString(cursor.getColumnIndex(inv_balance)));
+				arrayVal[3] = Global.getCurrencyFormat(cursor.getString(cursor.getColumnIndex(inv_total)));
+				arrayVal[4] = Global.getCurrencyFormat(cursor.getString(cursor.getColumnIndex(inv_balance)));
 				arrayVal[5] = Global.formatToDisplayDate(cursor.getString(cursor.getColumnIndex(inv_timecreated)),
 						 0);
 				arrayVal[6] = Global.formatToDisplayDate(cursor.getString(cursor.getColumnIndex(inv_duedate)),

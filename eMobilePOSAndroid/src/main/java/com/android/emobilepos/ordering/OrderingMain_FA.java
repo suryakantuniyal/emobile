@@ -298,7 +298,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             orderProduct.setOrdprod_desc(sb.toString());
         }
         String row1 = orderProduct.getOrdprod_name();
-        String row2 = Global.formatDoubleStrToCurrency(orderProduct.getFinalPrice());
+        String row2 = Global.getCurrencyFormat(orderProduct.getFinalPrice());
         TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
         global.order.getOrderProducts().add(orderProduct);
     }
