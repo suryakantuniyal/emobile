@@ -4,6 +4,7 @@
     android:layout_height="match_parent">
 
     <LinearLayout
+        android:id="@+id/mainContainerLinearLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#FFFFFF"
@@ -362,5 +363,43 @@
 
         </TableLayout>
 
+        <LinearLayout
+            android:id="@+id/deptSalesLinearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingEnd="8dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingStart="8dp">
+
+            <TextView
+                android:id="@+id/textView67"
+                style="@style/black_text_appearance_unbold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/gray_flat_headers"
+                android:text="@string/eod_report_dept_sales"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/deptReturnsLinearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingEnd="8dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingStart="8dp">
+
+            <TextView
+                android:id="@+id/textView67a"
+                style="@style/black_text_appearance_unbold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/gray_flat_headers"
+                android:text="@string/eod_report_return"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>

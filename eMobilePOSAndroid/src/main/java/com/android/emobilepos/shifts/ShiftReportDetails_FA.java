@@ -1,44 +1,49 @@
 package com.android.emobilepos.shifts;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.dao.ClerkDAO;
 import com.android.dao.ShiftDAO;
 import com.android.dao.ShiftExpensesDAO;
+import com.android.database.OrderProductsHandler;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.Shift;
 import com.android.emobilepos.models.realms.ShiftExpense;
+import com.android.support.DateUtils;
 import com.android.support.Global;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public class ShiftReportDetails_FA extends BaseFragmentActivityActionBar implements View.OnClickListener {
 
     private Global global;
     private ProgressDialog myProgressDialog;
-    private Activity activity;
     private boolean hasBeenCreated = false;
     private String shiftID;
     private Shift shift;
     private BigDecimal totalExpenses, safeDropTotal, cashDropTotal, cashInTotal, buyGoodsTotal, nonCashGratuityTotal;
     private Clerk clerk;
+    private LayoutInflater inflater;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
-        activity = this;
+        inflater = LayoutInflater.from(this);
         setContentView(R.layout.shift_details_layout);
         global = (Global) getApplication();
         Button btnPrint = findViewById(R.id.btnPrint);
@@ -73,7 +78,41 @@ public class ShiftReportDetails_FA extends BaseFragmentActivityActionBar impleme
         ((TextView) findViewById(R.id.cashInExpensestextView4)).setText(Global.getCurrencyFormat(String.valueOf(cashInTotal)));
         ((TextView) findViewById(R.id.buyGoodsServicesExpensestextView6)).setText(Global.getCurrencyFormat(String.valueOf(buyGoodsTotal)));
         ((TextView) findViewById(R.id.nonCashGratuityExpensestextVie8)).setText(Global.getCurrencyFormat(String.valueOf(nonCashGratuityTotal)));
+        loadDeptSales();
+    }
 
+    private void loadDeptSales() {
+        LinearLayout deptSalesLinearLayout = findViewById(R.id.deptSalesLinearLayout);
+        LinearLayout deptReturnsLinearLayout = findViewById(R.id.deptReturnsLinearLayout);
+
+        OrderProductsHandler orderProductsHandler = new OrderProductsHandler(this);
+        String date = DateUtils.getDateAsString(shift.getCreationDate(), "yyyy-MM-dd");
+        List<OrderProduct> listDeptSales = orderProductsHandler.getDepartmentDayReport(true, String.valueOf(shift.getClerkId()), date);
+        List<OrderProduct> listDeptReturns = orderProductsHandler.getDepartmentDayReport(false, String.valueOf(shift.getClerkId()), date);
+        for (OrderProduct orderProduct : listDeptSales) {
+            LinearLayout rowLinearLayout = (LinearLayout) inflater.inflate(R.layout.adapter_report_items, null, false);
+            TextView prodName = rowLinearLayout.findViewById(R.id.tvProdName);
+            TextView prodID = rowLinearLayout.findViewById(R.id.tvProdID);
+            TextView prodQty = rowLinearLayout.findViewById(R.id.tvProdQty);
+            TextView prodTotal = rowLinearLayout.findViewById(R.id.tvProdTotal);
+            prodName.setText(orderProduct.getCat_name());
+            prodID.setText(orderProduct.getCat_id());
+            prodQty.setText(orderProduct.getOrdprod_qty());
+            prodTotal.setText(Global.getCurrencyFormat(orderProduct.getFinalPrice()));
+            deptSalesLinearLayout.addView(rowLinearLayout);
+        }
+        for (OrderProduct orderProduct : listDeptReturns) {
+            LinearLayout rowLinearLayout = (LinearLayout) inflater.inflate(R.layout.adapter_report_items, null, false);
+            TextView prodName = rowLinearLayout.findViewById(R.id.tvProdName);
+            TextView prodID = rowLinearLayout.findViewById(R.id.tvProdID);
+            TextView prodQty = rowLinearLayout.findViewById(R.id.tvProdQty);
+            TextView prodTotal = rowLinearLayout.findViewById(R.id.tvProdTotal);
+            prodName.setText(orderProduct.getCat_name());
+            prodID.setText(orderProduct.getCat_id());
+            prodQty.setText(orderProduct.getOrdprod_qty());
+            prodTotal.setText(Global.getCurrencyFormat(orderProduct.getFinalPrice()));
+            deptReturnsLinearLayout.addView(rowLinearLayout);
+        }
     }
 
     @Override
@@ -112,7 +151,7 @@ public class ShiftReportDetails_FA extends BaseFragmentActivityActionBar impleme
     }
 
     private void showPrintDlg() {
-        final Dialog dlog = new Dialog(activity, R.style.Theme_TransparentTest);
+        final Dialog dlog = new Dialog(this, R.style.Theme_TransparentTest);
         dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dlog.setCancelable(false);
         dlog.setContentView(R.layout.dlog_btn_left_right_layout);
@@ -154,7 +193,7 @@ public class ShiftReportDetails_FA extends BaseFragmentActivityActionBar impleme
 
         @Override
         protected void onPreExecute() {
-            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog = new ProgressDialog(ShiftReportDetails_FA.this);
             myProgressDialog.setMessage("Printing...");
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);

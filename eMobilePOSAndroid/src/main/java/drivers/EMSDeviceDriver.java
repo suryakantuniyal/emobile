@@ -2668,7 +2668,35 @@ public class EMSDeviceDriver {
         sb.append(textHandler.twoColumnLineWithLeftAlignedText(activity.getString(R.string.total_transactions_cash), Global.getCurrencyFormat(shift.getTotalTransactionsCash()), lineWidth, 0));
         sb.append(textHandler.twoColumnLineWithLeftAlignedText(activity.getString(R.string.total_ending_cash), Global.getCurrencyFormat(shift.getTotal_ending_cash()), lineWidth, 0));
         sb.append(textHandler.twoColumnLineWithLeftAlignedText(activity.getString(R.string.entered_close_amount), Global.getCurrencyFormat(shift.getEnteredCloseAmount()), lineWidth, 0));
-        sb.append(textHandler.newLines(2));
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText(activity.getString(R.string.shortage_overage_amount), Global.getCurrencyFormat(shift.getOver_short()), lineWidth, 0));
+        sb.append(textHandler.newLines(1));
+
+        OrderProductsHandler orderProductsHandler = new OrderProductsHandler(activity);
+        String date = DateUtils.getDateAsString(shift.getCreationDate(), "yyyy-MM-dd");
+        List<OrderProduct> listDeptSales = orderProductsHandler.getDepartmentDayReport(true,
+                String.valueOf(shift.getClerkId()), date);
+        List<OrderProduct> listDeptReturns = orderProductsHandler.getDepartmentDayReport(false,
+                String.valueOf(shift.getClerkId()), date);
+        if (!listDeptSales.isEmpty()) {
+            sb.append(textHandler.centeredString(activity.getString(R.string.eod_report_dept_sales), lineWidth));
+            for (OrderProduct product : listDeptSales) {
+                sb.append(textHandler.threeColumnLineItem(product.getCat_name(), 60,
+                        product.getOrdprod_qty(), 20,
+                        product.getFinalPrice(),
+                        20, lineWidth, 0));
+            }
+        }
+        sb.append(textHandler.newLines(1));
+        if (!listDeptReturns.isEmpty()) {
+            sb.append(textHandler.centeredString(activity.getString(R.string.eod_report_return), lineWidth));
+            for (OrderProduct product : listDeptReturns) {
+                sb.append(textHandler.threeColumnLineItem(product.getCat_name(), 60,
+                        product.getOrdprod_qty(), 20,
+                        Global.getCurrencyFormat(product.getFinalPrice()),
+                        20, lineWidth, 0));
+            }
+        }
+        sb.append(textHandler.newLines(1));
         sb.append(textHandler.centeredString(activity.getString(R.string.endShiftReport), lineWidth));
         sb.append(textHandler.newLines(4));
         print(sb.toString(), FORMAT);
