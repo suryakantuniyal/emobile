@@ -21,6 +21,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.ReportEndDayAdapter;
 import com.android.support.DateUtils;
 import com.android.support.Global;
+import com.android.support.MyPreferences;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import java.text.SimpleDateFormat;
@@ -48,13 +49,14 @@ public class ViewEndOfDayReport_FA extends BaseFragmentActivityActionBar impleme
         activity = this;
         global = (Global) activity.getApplication();
         curDate = DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss);
-        btnDate = (Button) findViewById(R.id.btnDate);
-        Button btnPrint = (Button) findViewById(R.id.btnPrint);
+        btnDate = findViewById(R.id.btnDate);
+        Button btnPrint = findViewById(R.id.btnPrint);
         btnDate.setOnClickListener(this);
         btnPrint.setOnClickListener(this);
         mDate = Global.formatToDisplayDate(curDate, 0);
         btnDate.setText(mDate);
-        StickyListHeadersListView myListview = (StickyListHeadersListView) findViewById(R.id.listView);
+        MyPreferences preferences = new MyPreferences(this);
+        StickyListHeadersListView myListview = findViewById(R.id.listView);
         myListview.setAreHeadersSticky(false);
         adapter = new ReportEndDayAdapter(this, Global.formatToDisplayDate(curDate, 4), null);
         myListview.setAdapter(adapter);
@@ -99,15 +101,15 @@ public class ViewEndOfDayReport_FA extends BaseFragmentActivityActionBar impleme
         dlog.setCancelable(true);
         dlog.setCanceledOnTouchOutside(true);
         dlog.setContentView(R.layout.dlog_btn_left_right_layout);
-        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+        TextView viewTitle = dlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = dlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_confirm);
         viewTitle.setText(R.string.dlog_title_error);
         viewMsg.setText(R.string.dlog_msg_failed_print);
         dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
-        Button btnYes = (Button) dlog.findViewById(R.id.btnDlogLeft);
-        Button btnNo = (Button) dlog.findViewById(R.id.btnDlogRight);
-        Button btnCancel = (Button) dlog.findViewById(R.id.btnDlogCancel);
+        Button btnYes = dlog.findViewById(R.id.btnDlogLeft);
+        Button btnNo = dlog.findViewById(R.id.btnDlogRight);
+        Button btnCancel = dlog.findViewById(R.id.btnDlogCancel);
         btnYes.setText(R.string.button_yes);
         btnNo.setText(R.string.button_no);
 
@@ -140,13 +142,13 @@ public class ViewEndOfDayReport_FA extends BaseFragmentActivityActionBar impleme
         dlog.setCancelable(true);
         dlog.setCanceledOnTouchOutside(true);
         dlog.setContentView(R.layout.dlog_btn_left_right_layout);
-        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+        TextView viewTitle = dlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = dlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_print_details);
         viewMsg.setText(R.string.dlog_msg_print_details);
-        Button btnYes = (Button) dlog.findViewById(R.id.btnDlogLeft);
-        Button btnNo = (Button) dlog.findViewById(R.id.btnDlogRight);
-        Button btnCancel = (Button) dlog.findViewById(R.id.btnDlogCancel);
+        Button btnYes = dlog.findViewById(R.id.btnDlogLeft);
+        Button btnNo = dlog.findViewById(R.id.btnDlogRight);
+        Button btnCancel = dlog.findViewById(R.id.btnDlogCancel);
         btnYes.setText(R.string.button_yes);
         btnNo.setText(R.string.button_no);
         btnCancel.setOnClickListener(new OnClickListener() {

@@ -563,6 +563,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     }
 
     public void automaticAddOrder(Product product) {
+        getOrderingMainFa().disableCheckoutButton();
         OrderingMain_FA.automaticAddOrder(getActivity(), false, global, new OrderProduct(product), ((OrderingMain_FA) getActivity()).getSelectedSeatNumber(),((OrderingMain_FA) getActivity()).mTransType);
         refreshListView();
         callBackRefreshView.refreshView();

@@ -15,7 +15,6 @@ import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.OrderAttributes;
 import com.android.emobilepos.models.realms.ProductAttribute;
-import com.android.support.Customer;
 import com.android.support.DateUtils;
 import com.android.support.GenerateNewID;
 import com.android.support.Global;
@@ -345,6 +344,18 @@ public class OrdersHandler {
         }
         cursor.close();
         return order;
+    }
+
+    public boolean existsOrder(String orderId) {
+        String sb = "SELECT count(*) as count FROM " + table_name + " WHERE ord_id = '" +
+                orderId + "'";
+        Cursor cursor = DBManager.getDatabase().rawQuery(sb, null);
+        int count = 0;
+        if (cursor.moveToFirst()) {
+            count = cursor.getInt(cursor.getColumnIndex("count"));
+        }
+        cursor.close();
+        return count > 0;
     }
 
     private List<Order> getOrders(Cursor cursor) {
