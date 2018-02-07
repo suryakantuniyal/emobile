@@ -24,10 +24,8 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
@@ -230,15 +228,12 @@ public class ViewEndOfDayReport_FA extends BaseFragmentActivityActionBar impleme
 
         @Override
         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-            // Do something after user selects the date...
-            StringBuilder sb = new StringBuilder();
-            sb.append(Integer.toString(year)).append(Integer.toString(monthOfYear + 1)).append(Integer.toString(dayOfMonth));
             Calendar cal = Calendar.getInstance();
             cal.set(year, monthOfYear, dayOfMonth);
-            SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
-            curDate = sdf2.format(cal.getTime());
-            adapter.setNewDate(Global.formatToDisplayDate(curDate, 4));
-            mDate = Global.formatToDisplayDate(curDate, 0);
+//            SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            curDate = DateUtils.getDateAsString(cal.getTime(), DateUtils.DATE_yyyy_MM_dd);
+            adapter.setNewDate(curDate);
+            mDate = DateUtils.getDateAsString(cal.getTime(), "MMM dd, yyyy");
             activity.btnDate.setText(mDate);
         }
     }
