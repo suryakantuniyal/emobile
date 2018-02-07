@@ -125,36 +125,12 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
 
 
     public static void startDefault(Activity activity, Global.TransactionType type) {
-        if (activity != null && type != null) {
-            Intent intent = new Intent(activity, OrderingMain_FA.class);
-            intent.putExtra("option_number", type);
-            activity.startActivityForResult(intent, 0);
-//            int transType;
-//            try {
-////                if (type == null)
-////                    type = "-1";
-//                transType = Integer.parseInt(type);
-//            } catch (NumberFormatException e) {
-//                Crashlytics.logException(e);
-//                transType = -1;
-//            }
-
-
-//            if (transType != -1) {
-//                switch (type) {
-//                    case SALE_RECEIPT:
-//                        intent = new Intent(activity, OrderingMain_FA.class);
-//                        intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
-//                        activity.startActivityForResult(intent, 0);
-//                        break;
-//                    case 2:
-//                        intent = new Intent(activity, OrderingMain_FA.class);
-//                        intent.putExtra("option_number", Global.TransactionType.RETURN);
-//                        activity.startActivityForResult(intent, 0);
-//                        break;
-//                }
-//            }
-        }
+        if (validateClerkShift(type, activity))
+            if (activity != null && type != null) {
+                Intent intent = new Intent(activity, OrderingMain_FA.class);
+                intent.putExtra("option_number", type);
+                activity.startActivityForResult(intent, 0);
+            }
 
     }
 
@@ -165,12 +141,12 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
         myPref = new MyPreferences(getActivity());
         myPref.setLogIn(true);
         SettingListActivity.loadDefaultValues(getActivity());
-        myListview = (GridView) view.findViewById(R.id.salesGridLayout);
+        myListview = view.findViewById(R.id.salesGridLayout);
         emsCallBack = this;
         thisContext = getActivity();
-        selectedCust = (TextView) view.findViewById(R.id.salesCustomerName);
-        salesInvoices = (Button) view.findViewById(R.id.invoiceButton);
-        hiddenField = (EditText) view.findViewById(R.id.hiddenField);
+        selectedCust = view.findViewById(R.id.salesCustomerName);
+        salesInvoices = view.findViewById(R.id.invoiceButton);
+        hiddenField = view.findViewById(R.id.hiddenField);
         hiddenField.addTextChangedListener(textWatcher());
         Collection<UsbDevice> usbDevices = DeviceUtils.getUSBDevices(getActivity());
         isReaderConnected = usbDevices != null && usbDevices.size() > 0;
@@ -190,7 +166,7 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
         }
         myAdapter = new SalesMenuAdapter(getActivity(), isCustomerSelected);
 
-        LinearLayout customersBut = (LinearLayout) view.findViewById(R.id.salesCustomerBut);
+        LinearLayout customersBut = view.findViewById(R.id.salesCustomerBut);
 
         customersBut.setOnClickListener(new View.OnClickListener() {
 
@@ -201,7 +177,7 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
             }
         });
 
-        ImageButton clear = (ImageButton) view.findViewById(R.id.clearCustomerBut);
+        ImageButton clear = view.findViewById(R.id.clearCustomerBut);
         clear.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -617,7 +593,7 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
-                        if (validateClerkShift(Global.TransactionType.getByCode(pos))) {
+                        if (validateClerkShift(Global.TransactionType.getByCode(pos),getActivity())) {
                             if (myPref.isCustomerRequired()) {
                                 Global.showPrompt(getActivity(), R.string.dlog_title_error, getString(R.string.dlog_msg_select_customer));
                             } else {
@@ -644,7 +620,7 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                             SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
-                        if (validateClerkShift(Global.TransactionType.getByCode(pos))) {
+                        if (validateClerkShift(Global.TransactionType.getByCode(pos),getActivity())) {
                             if (myPref.isCustomerRequired()) {
                                 Global.showPrompt(getActivity(), R.string.dlog_title_error, getString(R.string.dlog_msg_select_customer));
                             } else {
@@ -666,7 +642,7 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                             SecurityManager.SecurityAction.TAKE_PAYMENT);
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
-                        if (validateClerkShift(Global.TransactionType.getByCode(pos))) {
+                        if (validateClerkShift(Global.TransactionType.getByCode(pos),getActivity())) {
                             if (myPref.isCustomerRequired()) {
                                 Global.showPrompt(getActivity(), R.string.dlog_title_error, getString(R.string.dlog_msg_select_customer));
                             } else {
@@ -691,7 +667,7 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                             SecurityManager.SecurityAction.TAKE_PAYMENT);
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
-                        if (validateClerkShift(Global.TransactionType.getByCode(pos))) {
+                        if (validateClerkShift(Global.TransactionType.getByCode(pos),getActivity())) {
                             intent = new Intent(getActivity(), GiftCard_FA.class);
                             startActivity(intent);
                         }
@@ -708,7 +684,7 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                             SecurityManager.SecurityAction.TAKE_PAYMENT);
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
-                        if (validateClerkShift(Global.TransactionType.getByCode(pos))) {
+                        if (validateClerkShift(Global.TransactionType.getByCode(pos),getActivity())) {
                             intent = new Intent(getActivity(), LoyaltyCard_FA.class);
                             startActivity(intent);
                         }
@@ -725,7 +701,7 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                             SecurityManager.SecurityAction.TAKE_PAYMENT);
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
-                        if (validateClerkShift(Global.TransactionType.getByCode(pos))) {
+                        if (validateClerkShift(Global.TransactionType.getByCode(pos),getActivity())) {
                             intent = new Intent(getActivity(), RewardCard_FA.class);
                             startActivity(intent);
                         }
@@ -742,7 +718,7 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                             SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
-                        if (validateClerkShift(Global.TransactionType.getByCode(pos))) {
+                        if (validateClerkShift(Global.TransactionType.getByCode(pos),getActivity())) {
 
                             intent = new Intent(getActivity(), SelectPayMethod_FA.class);
                             intent.putExtra("salesrefund", true);
@@ -767,7 +743,7 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
-                        if (validateClerkShift(Global.TransactionType.getByCode(pos))) {
+                        if (validateClerkShift(Global.TransactionType.getByCode(pos),getActivity())) {
                             intent = new Intent(getActivity(), OnHoldActivity.class);
                             getActivity().startActivity(intent);
                         }
@@ -787,7 +763,7 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                             SecurityManager.SecurityAction.TIP_ADJUSTMENT);
                     if (hasPermissions) {
 //                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
-                        if (validateClerkShift(Global.TransactionType.getByCode(pos))) {
+                        if (validateClerkShift(Global.TransactionType.getByCode(pos),getActivity())) {
                             intent = new Intent(getActivity(), TipAdjustmentFA.class);
                             startActivity(intent);
                         }
@@ -803,7 +779,7 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.SHIFT_CLERK);
                     if (hasPermissions) {
-                        if (myPref.isUseClerks() && validateClerkShift(Global.TransactionType.getByCode(pos))) {
+                        if (myPref.isUseClerks() && validateClerkShift(Global.TransactionType.getByCode(pos),getActivity())) {
                             intent = new Intent(getActivity(), ShiftsActivity.class);
                             startActivity(intent);
                         } else if (!myPref.isUseClerks()) {
@@ -818,7 +794,7 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.NO_SALE);
                     if (hasPermissions) {
-                        if (myPref.isUseClerks() && validateClerkShift(Global.TransactionType.getByCode(pos))) {
+                        if (myPref.isUseClerks() && validateClerkShift(Global.TransactionType.getByCode(pos),getActivity())) {
                             intent = new Intent(getActivity(), ShiftExpensesList_FA.class);
                             startActivity(intent);
                         } else if (!myPref.isUseClerks()) {
@@ -838,17 +814,17 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCancelable(true);
         dialog.setContentView(R.layout.dlog_field_single_layout);
-        final EditText viewField = (EditText) dialog.findViewById(R.id.dlogFieldSingle);
+        final EditText viewField = dialog.findViewById(R.id.dlogFieldSingle);
         viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        TextView viewTitle = (TextView) dialog.findViewById(R.id.dlogTitle);
-        final TextView viewMsg = (TextView) dialog.findViewById(R.id.dlogMessage);
-        Button systemLoginButton = (Button) dialog.findViewById(R.id.systemLoginbutton2);
-        TextView infoSystemLogin = (TextView) dialog.findViewById(R.id.infotextView23);
+        TextView viewTitle = dialog.findViewById(R.id.dlogTitle);
+        final TextView viewMsg = dialog.findViewById(R.id.dlogMessage);
+        Button systemLoginButton = dialog.findViewById(R.id.systemLoginbutton2);
+        TextView infoSystemLogin = dialog.findViewById(R.id.infotextView23);
         systemLoginButton.setVisibility(View.GONE);
         infoSystemLogin.setVisibility(View.GONE);
         viewTitle.setText(R.string.dlog_title_enter_clerk_manager_password);
-        Button btnOk = (Button) dialog.findViewById(R.id.btnDlogSingle);
-        Button btnCancel = (Button) dialog.findViewById(R.id.btnCancelDlogSingle);
+        Button btnOk = dialog.findViewById(R.id.btnDlogSingle);
+        Button btnCancel = dialog.findViewById(R.id.btnCancelDlogSingle);
         btnOk.setText(R.string.button_ok);
 
         btnCancel.setOnClickListener(new View.OnClickListener() {
@@ -870,7 +846,7 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                         myPref.setClerkID(String.valueOf(clerk.getEmpId()));
                         myPref.setClerkName(clerk.getEmpName());
                     }
-                    if (validateClerkShift(transactionType)) {
+                    if (validateClerkShift(transactionType,getActivity())) {
                         switch (transactionType) {
                             case SHIFTS: {
                                 Intent intent = new Intent(getActivity(), ShiftsActivity.class);
@@ -890,15 +866,15 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
         dialog.show();
     }
 
-    private boolean validateClerkShift(Global.TransactionType transactionType) {
-        SecurityManager.SecurityResponse response = SecurityManager.validateClerkShift(getActivity(), transactionType);
+    private static boolean validateClerkShift(Global.TransactionType transactionType, Context context) {
+        SecurityManager.SecurityResponse response = SecurityManager.validateClerkShift(context, transactionType);
         switch (response) {
             case CHECK_USER_CLERK_REQUIRED_SETTING:
-                Global.showPrompt(getActivity(), R.string.dlog_title_error, getString(R.string.use_clerk_check_required));
+                Global.showPrompt(context, R.string.dlog_title_error, context.getString(R.string.use_clerk_check_required));
                 return false;
             case OPEN_SHIFT_REQUIRED:
                 if (transactionType != Global.TransactionType.SHIFTS) {
-                    Global.showPrompt(getActivity(), R.string.dlog_title_error, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
+                    Global.showPrompt(context, R.string.dlog_title_error, context.getString(R.string.dlog_msg_error_shift_needs_to_be_open));
                     return false;
                 }
                 break;
@@ -908,8 +884,8 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                 if (openShift != null) {
                     clerk = ClerkDAO.getByEmpId(openShift.getClerkId());
                 }
-                Global.showPrompt(getActivity(), R.string.dlog_title_error,
-                        String.format(getString(R.string.dlog_msg_error_shift_already_open), clerk != null ? clerk.getEmpName() : ""));
+                Global.showPrompt(context, R.string.dlog_title_error,
+                        String.format(context.getString(R.string.dlog_msg_error_shift_already_open), clerk != null ? clerk.getEmpName() : ""));
                 return false;
         }
         return true;
@@ -921,8 +897,8 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
         popDlog.setCancelable(true);
         popDlog.setCanceledOnTouchOutside(true);
         popDlog.setContentView(R.layout.dlog_ask_togo_eatin_layout);
-        Button toGoBtn = (Button) popDlog.findViewById(R.id.toGobutton);
-        Button eatInBtn = (Button) popDlog.findViewById(R.id.eatInbutton);
+        Button toGoBtn = popDlog.findViewById(R.id.toGobutton);
+        Button eatInBtn = popDlog.findViewById(R.id.eatInbutton);
         toGoBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -1019,9 +995,9 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
         popDlog.setCancelable(true);
         popDlog.setCanceledOnTouchOutside(true);
         popDlog.setContentView(R.layout.dlog_ask_table_seats_amount_layout);
-        TextView title = (TextView) popDlog.findViewById(R.id.dlogTitle);
+        TextView title = popDlog.findViewById(R.id.dlogTitle);
         title.setText(R.string.select_number_guests);
-        GridView gridView = (GridView) popDlog.findViewById(R.id.tablesGridLayout);
+        GridView gridView = popDlog.findViewById(R.id.tablesGridLayout);
         final DinningTableSeatsAdapter adapter = new DinningTableSeatsAdapter(getActivity(), seats);
         gridView.setAdapter(adapter);
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -1101,8 +1077,8 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
         globalDlog.setCanceledOnTouchOutside(false);
         globalDlog.setContentView(R.layout.dlog_btn_left_right_layout);
 
-        TextView viewTitle = (TextView) globalDlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) globalDlog.findViewById(R.id.dlogMessage);
+        TextView viewTitle = globalDlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = globalDlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_confirm);
 
         String sb = "Locations selected for transfer:\n" +
@@ -1111,9 +1087,9 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
         viewMsg.setText(sb);
         globalDlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
 
-        Button btnOk = (Button) globalDlog.findViewById(R.id.btnDlogLeft);
+        Button btnOk = globalDlog.findViewById(R.id.btnDlogLeft);
         btnOk.setText(R.string.button_ok);
-        Button btnCancel = (Button) globalDlog.findViewById(R.id.btnDlogRight);
+        Button btnCancel = globalDlog.findViewById(R.id.btnDlogRight);
         btnCancel.setText(R.string.button_cancel);
         btnCancel.setOnClickListener(new View.OnClickListener() {
 
@@ -1207,9 +1183,9 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
             dialog.setCancelable(true);
             dialog.setCanceledOnTouchOutside(true);
             dialog.setContentView(R.layout.pre_dialog_layout);
-            Button withCust = (Button) dialog.findViewById(R.id.withCustBut);
-            Button withoutCust = (Button) dialog.findViewById(R.id.withOutCustBut);
-            Button cancel = (Button) dialog.findViewById(R.id.cancelPredialogBut);
+            Button withCust = dialog.findViewById(R.id.withCustBut);
+            Button withoutCust = dialog.findViewById(R.id.withOutCustBut);
+            Button cancel = dialog.findViewById(R.id.cancelPredialogBut);
 
             withCust.setOnClickListener(new View.OnClickListener() {
 

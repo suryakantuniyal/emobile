@@ -3,7 +3,6 @@ package com.android.dao;
 import com.android.emobilepos.models.realms.Shift;
 import com.android.support.DateUtils;
 import com.android.support.Global;
-import com.android.support.NumberUtils;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -173,6 +172,28 @@ public class ShiftDAO {
             r.beginTransaction();
             r.commitTransaction();
             RealmResults<Shift> shifts = r.where(Shift.class).findAll();
+            for (Shift shift : shifts) {
+                String creationDate = DateUtils.getDateAsString(shift.getCreationDate(), DateUtils.DATE_yyyy_MM_dd);
+                String filterDate = DateUtils.getDateAsString(date, DateUtils.DATE_yyyy_MM_dd);
+                if (creationDate.equalsIgnoreCase(filterDate)) {
+                    list.add(shift);
+                }
+            }
+            return r.copyFromRealm(list);
+        } finally {
+            r.close();
+        }
+    }
+
+    public static List<Shift> getShift(Date date, int clerkId) {
+        List<Shift> list = new ArrayList<>();
+        Realm r = Realm.getDefaultInstance();
+        try {
+            r.beginTransaction();
+            r.commitTransaction();
+            RealmResults<Shift> shifts = r.where(Shift.class)
+                    .equalTo("clerkId", clerkId)
+                    .findAll();
             for (Shift shift : shifts) {
                 String creationDate = DateUtils.getDateAsString(shift.getCreationDate(), DateUtils.DATE_yyyy_MM_dd);
                 String filterDate = DateUtils.getDateAsString(date, DateUtils.DATE_yyyy_MM_dd);

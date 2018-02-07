@@ -15,6 +15,7 @@ import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.realms.Payment;
+import com.android.emobilepos.models.realms.ShiftExpense;
 import com.android.internal.misccomm.MsrApiContext;
 import com.android.internal.misccomm.MsrManager;
 import com.android.support.CardParser;
@@ -454,6 +455,11 @@ public class EMSPAT215 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     @Override
     public void printClockInOut(List<ClockInOut> timeClocks, String clerkID) {
         super.printClockInOut(timeClocks, LINE_WIDTH, clerkID);
+    }
+
+    @Override
+    public void printExpenseReceipt(ShiftExpense expense) {
+        printExpenseReceipt(LINE_WIDTH, expense);
     }
 
     @Override

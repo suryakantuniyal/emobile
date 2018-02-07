@@ -71,6 +71,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
     private TaxesGroupHandler taxGroupHandler;
     private AssignEmployee assignEmployee;
     private boolean isToGo;
+    private static ReCalculate recalculateTask;
 
     public static OrderTotalDetails_FR init(int val) {
         OrderTotalDetails_FR frag = new OrderTotalDetails_FR();
@@ -656,7 +657,9 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             return;
         }
         if (getOrderingMainFa() != null) {
-            new ReCalculate().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, orderProducts);
+            recalculateTask = new ReCalculate(getActivity());
+            recalculateTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, orderProducts);
+//            new ReCalculate().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, orderProducts);
         }
     }
 
@@ -665,11 +668,19 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         reCalculate(getOrderingMainFa().global.order.getOrderProducts());
     }
 
-    private class ReCalculate extends AsyncTask<List<OrderProduct>, Void, OrderTotalDetails> {
+    private static class ReCalculate extends AsyncTask<List<OrderProduct>, Void, OrderTotalDetails> {
+
+        private OrderingMain_FA activity;
+        MyPreferences myPref;
+
+        public ReCalculate(Activity activity) {
+            myPref = new MyPreferences(activity);
+            this.activity = (OrderingMain_FA) activity;
+        }
 
         @Override
         protected void onPreExecute() {
-            Global.lockOrientation(getActivity());
+            Global.lockOrientation(activity);
         }
 
         @Override
@@ -678,19 +689,21 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             try {
                 List<OrderProduct> orderProducts = params[0];
                 if (myPref.isMixAnMatch() && orderProducts != null && !orderProducts.isEmpty()) {
-                    boolean isGroupBySKU = myPref.isGroupReceiptBySku(isToGo);//myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku) && isToGo;
+                    boolean isGroupBySKU = myPref.isGroupReceiptBySku(activity.isToGo);//myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku) && isToGo;
                     calculateMixAndMatch(orderProducts, isGroupBySKU);
                 }
-                Discount discount = discountSelected > 0 ? discountList.get(discountSelected - 1) : null;
-                getOrderingMainFa().global.order.setRetailTaxes(myPref.isRetailTaxes());
-                getOrderingMainFa().global.order.ord_globalDiscount = String.valueOf(discount_amount);
-                getOrderingMainFa().global.order.setListOrderTaxes(getOrderingMainFa().getListOrderTaxes());
-                Tax tax = taxSelected > 0 ? taxList.get(taxSelected - 1) : null;
+                Discount discount = activity.getLeftFragment().orderTotalDetailsFr.discountSelected > 0 ?
+                        activity.getLeftFragment().orderTotalDetailsFr.discountList.get(activity.getLeftFragment().orderTotalDetailsFr.discountSelected - 1) : null;
+                activity.global.order.setRetailTaxes(myPref.isRetailTaxes());
+                activity.global.order.ord_globalDiscount = String.valueOf(discount_amount);
+                activity.global.order.setListOrderTaxes(activity.getListOrderTaxes());
+                Tax tax = activity.getLeftFragment().orderTotalDetailsFr.taxSelected > 0 ?
+                        activity.getLeftFragment().orderTotalDetailsFr.taxList.get(activity.getLeftFragment().orderTotalDetailsFr.taxSelected - 1) : null;
                 if (myPref.isRetailTaxes()) {
-                    getOrderingMainFa().global.order.setRetailTax(getActivity(), taxID);
+                    activity.global.order.setRetailTax(activity, taxID);
 
                 }
-                totalDetails = getOrderingMainFa().global.order.getOrderTotalDetails(discount, tax, assignEmployee.isVAT(), getActivity());
+                totalDetails = activity.global.order.getOrderTotalDetails(discount, tax, activity.getLeftFragment().orderTotalDetailsFr.assignEmployee.isVAT(), activity);
                 gran_total = Global.getRoundBigDecimal(totalDetails.getGranTotal(), 2);
                 sub_total = totalDetails.getSubtotal();
                 tax_amount = Global.getRoundBigDecimal(totalDetails.getTax(), 2);
@@ -707,20 +720,20 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             if (totalDetails != null) {
                 Global.loyaltyCharge = String.valueOf(totalDetails.getPointsSubTotal());
                 Global.loyaltyPointsAvailable = String.valueOf(totalDetails.getPointsAvailable());
-                subTotal.setText(Global.getCurrencyFrmt(String.valueOf(sub_total)));
-                granTotal.setText(Global.getCurrencyFrmt(String.valueOf(gran_total)));
-                globalTax.setText(Global.getCurrencyFrmt(String.valueOf(tax_amount)));
-                globalDiscount.setText(Global.getCurrencyFrmt(String.valueOf(discount_amount)));
-                if (getOrderingMainFa().getLoyaltyFragment() != null) {
-                    getOrderingMainFa().getLoyaltyFragment().recalculatePoints(String.valueOf(totalDetails.getPointsSubTotal()), String.valueOf(totalDetails.getPointsInUse()),
+                activity.getLeftFragment().orderTotalDetailsFr.subTotal.setText(Global.getCurrencyFrmt(String.valueOf(sub_total)));
+                activity.getLeftFragment().orderTotalDetailsFr.granTotal.setText(Global.getCurrencyFrmt(String.valueOf(gran_total)));
+                activity.getLeftFragment().orderTotalDetailsFr.globalTax.setText(Global.getCurrencyFrmt(String.valueOf(tax_amount)));
+                activity.getLeftFragment().orderTotalDetailsFr.globalDiscount.setText(Global.getCurrencyFrmt(String.valueOf(discount_amount)));
+                if (activity.getLoyaltyFragment() != null) {
+                    activity.getLoyaltyFragment().recalculatePoints(String.valueOf(totalDetails.getPointsSubTotal()), String.valueOf(totalDetails.getPointsInUse()),
                             String.valueOf(totalDetails.getPointsAcumulable()), gran_total.toString());
                 }
-                if (getOrderingMainFa().getLeftFragment().orderRewardsFr != null) {
-                    getOrderingMainFa().getLeftFragment().orderRewardsFr.setRewardSubTotal(discountable_sub_total.toString());
+                if (activity.getLeftFragment().orderRewardsFr != null) {
+                    activity.getLeftFragment().orderRewardsFr.setRewardSubTotal(discountable_sub_total.toString());
                 }
-                getOrderingMainFa().enableCheckoutButton();
-                getOrderingMainFa().getLeftFragment().mainLVAdapter.notifyDataSetChanged();
-                getOrderingMainFa().getLeftFragment().receiptListView.setSelection(getOrderingMainFa().getLeftFragment().mainLVAdapter.selectedPosition);
+                activity.enableCheckoutButton();
+                activity.getLeftFragment().mainLVAdapter.notifyDataSetChanged();
+                activity.getLeftFragment().receiptListView.setSelection(activity.getLeftFragment().mainLVAdapter.selectedPosition);
             }
         }
     }

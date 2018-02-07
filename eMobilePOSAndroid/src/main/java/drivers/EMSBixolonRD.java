@@ -22,6 +22,7 @@ import com.android.emobilepos.models.realms.BixolonTax;
 import com.android.emobilepos.models.realms.BixolonTransaction;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.PaymentMethod;
+import com.android.emobilepos.models.realms.ShiftExpense;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
 import com.android.support.DateUtils;
@@ -455,6 +456,11 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
     @Override
     public void printClockInOut(List<ClockInOut> clockInOuts, String clerkID) {
         super.printClockInOut(clockInOuts, LINE_WIDTH, clerkID);
+    }
+
+    @Override
+    public void printExpenseReceipt(ShiftExpense expense) {
+        printExpenseReceipt(LINE_WIDTH, expense);
     }
 
     public boolean sendDateTimeCommand(Date date) {
