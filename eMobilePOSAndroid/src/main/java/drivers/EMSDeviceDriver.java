@@ -2466,7 +2466,7 @@ public class EMSDeviceDriver {
         }
         print(sb.toString());
         sb.setLength(0);
-        List<Shift> listShifts = ShiftDAO.getShift(DateUtils.getDateStringAsDate(curDate,DateUtils.DATE_yyyy_MM_dd));
+        List<Shift> listShifts = ShiftDAO.getShift(DateUtils.getDateStringAsDate(curDate, DateUtils.DATE_yyyy_MM_dd));
         if (listShifts.size() > 0) {
             sb.append(textHandler.newLines(1));
             sb.append(textHandler.centeredString("Totals By Shift", lineWidth));
@@ -2701,6 +2701,33 @@ public class EMSDeviceDriver {
         }
         sb.append(textHandler.newLines(1));
         sb.append(textHandler.centeredString(activity.getString(R.string.endShiftReport), lineWidth));
+        sb.append(textHandler.newLines(4));
+        print(sb.toString(), FORMAT);
+        cutPaper();
+    }
+
+
+    protected void printExpenseReceipt(int lineWidth, ShiftExpense expense) {
+        AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee(false);
+        startReceipt();
+        StringBuilder sb = new StringBuilder();
+        EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
+        sb.append(textHandler.centeredString(activity.getString(R.string.shift_expense), lineWidth));
+        Shift shift = ShiftDAO.getShift(expense.getShiftId());
+        Clerk clerk = ClerkDAO.getByEmpId(shift.getClerkId());
+        sb.append(textHandler.newLines(1));
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText(activity.getString(R.string.sales_clerk), clerk == null ?
+                shift.getAssigneeName() : clerk.getEmpName(), lineWidth, 0));
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText(activity.getString(R.string.receipt_employee), employee.getEmpName(), lineWidth, 0));
+        sb.append(textHandler.newLines(1));
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText(activity.getString(R.string.date), DateUtils.getDateAsString(expense.getCreationDate()), lineWidth, 0));
+
+        sb.append(textHandler.newLines(1));
+
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText(expense.getProductName(),
+                Global.getCurrencyFormat(expense.getCashAmount()), lineWidth, 3));
+        sb.append(textHandler.centeredString(activity.getString(R.string.receipt_description), lineWidth));
+        sb.append(textHandler.oneColumnLineWithLeftAlignedText(expense.getProductDescription(),lineWidth,0));
         sb.append(textHandler.newLines(4));
         print(sb.toString(), FORMAT);
         cutPaper();

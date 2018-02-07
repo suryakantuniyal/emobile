@@ -15,6 +15,7 @@ import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.realms.Payment;
+import com.android.emobilepos.models.realms.ShiftExpense;
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
 import com.android.support.CardParser;
 import com.android.support.ConsignmentTransaction;
@@ -296,6 +297,11 @@ public class EMSMagtekSwiper extends EMSDeviceDriver implements EMSDeviceManager
 
     @Override
     public void printClockInOut(List<ClockInOut> timeClocks, String clerkID) {
+    }
+
+    @Override
+    public void printExpenseReceipt(ShiftExpense expense) {
+
     }
 
     private class SCRAHandlerCallback implements Handler.Callback {
