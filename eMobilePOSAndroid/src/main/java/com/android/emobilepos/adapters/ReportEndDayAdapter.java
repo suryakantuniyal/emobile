@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.android.dao.ClerkDAO;
 import com.android.dao.ShiftDAO;
+import com.android.dao.ShiftExpensesDAO;
 import com.android.database.OrderProductsHandler;
 import com.android.database.OrdersHandler;
 import com.android.database.PaymentsHandler;
@@ -19,6 +20,7 @@ import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.Shift;
+import com.android.emobilepos.models.realms.ShiftExpense;
 import com.android.support.DateUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -63,6 +65,7 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
 //        shiftHandler = new ShiftPeriodsDBHandler(activity);
         ordProdHandler = new OrderProductsHandler(activity);
         paymentHandler = new PaymentsHandler(activity);
+        this.clerk_id = clerk_id;
 
         getReportData();
     }
@@ -170,7 +173,12 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
     }
 
     private void getShifts() {
-        listShifts = ShiftDAO.getShift(DateUtils.getDateStringAsDate(mDate, DateUtils.DATE_yyyy_MM_dd));
+        if (TextUtils.isEmpty(clerk_id)) {
+            listShifts = ShiftDAO.getShift(DateUtils.getDateStringAsDate(mDate, DateUtils.DATE_yyyy_MM_dd));
+        } else {
+            listShifts = ShiftDAO.getShift(DateUtils.getDateStringAsDate(mDate, DateUtils.DATE_yyyy_MM_dd)
+                    , Integer.parseInt(clerk_id));
+        }
         i_shifts = i_summary + listShifts.size();
         i_ord_types = i_shifts + listOrdTypes.size();
     }
@@ -277,48 +285,55 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
             case TYPE_SUMMARY:
                 convertView = inflater.inflate(R.layout.adapter_report_two_column, parent, false);
 
-                mHolder.tvLeftColumn = (TextView) convertView.findViewById(R.id.tvLeftColumn);
-                mHolder.tvRightColumn = (TextView) convertView.findViewById(R.id.tvRightColumn);
+                mHolder.tvLeftColumn = convertView.findViewById(R.id.tvLeftColumn);
+                mHolder.tvRightColumn = convertView.findViewById(R.id.tvRightColumn);
                 break;
             case TYPE_SHIFTS:
                 convertView = inflater.inflate(R.layout.adapter_report_shift, parent, false);
-                mHolder.tvClerk = (TextView) convertView.findViewById(R.id.tvClerkName);
-                mHolder.tvFrom = (TextView) convertView.findViewById(R.id.tvFrom);
-                mHolder.tvTo = (TextView) convertView.findViewById(R.id.tvTo);
-                mHolder.tvBeginningPetty = (TextView) convertView.findViewById(R.id.tvBeginningPetty);
-                mHolder.tvExpenses = (TextView) convertView.findViewById(R.id.tvExpenses);
+                mHolder.tvClerk = convertView.findViewById(R.id.tvClerkName);
+                mHolder.tvFrom = convertView.findViewById(R.id.tvFrom);
+                mHolder.tvTo = convertView.findViewById(R.id.tvTo);
+                mHolder.tvBeginningPetty = convertView.findViewById(R.id.tvBeginningPetty);
+                mHolder.tvExpenses = convertView.findViewById(R.id.tvExpenses);
 //                mHolder.tvEndingPetty = (TextView) convertView.findViewById(R.id.tvEndingPetty);
-                mHolder.tvTotalTrans = (TextView) convertView.findViewById(R.id.tvTotalTrans);
-                mHolder.tvTotalEnding = (TextView) convertView.findViewById(R.id.tvTotalEnding);
-                mHolder.tvEnteredClose = (TextView) convertView.findViewById(R.id.tvEnteredClose);
+                mHolder.tvTotalTrans = convertView.findViewById(R.id.tvTotalTrans);
+                mHolder.tvTotalEnding = convertView.findViewById(R.id.tvTotalEnding);
+                mHolder.tvEnteredClose = convertView.findViewById(R.id.tvEnteredClose);
+
+                mHolder.tvSafeDrop = convertView.findViewById(R.id.safeDropExpensestextView);
+                mHolder.tvCashDrop = convertView.findViewById(R.id.cashDropExpensestextView2);
+                mHolder.tvCashIn = convertView.findViewById(R.id.cashInExpensestextView4);
+                mHolder.tvBuyGoods = convertView.findViewById(R.id.buyGoodsServicesExpensestextView6);
+                mHolder.tvNonCashGratuity = convertView.findViewById(R.id.nonCashGratuityExpensestextVie8);
+                mHolder.tvTotalExpenses = convertView.findViewById(R.id.totalExpensestextView26);
 
                 break;
             case TYPE_ORD_TYPES:
                 convertView = inflater.inflate(R.layout.adapter_report_ord_type, parent, false);
-                mHolder.tvOrderType = (TextView) convertView.findViewById(R.id.tvOrderType);
-                mHolder.tvOrdSubtTotal = (TextView) convertView.findViewById(R.id.tvSubTotal);
-                mHolder.tvOrdTax = (TextView) convertView.findViewById(R.id.tvTaxTotal);
-                mHolder.tvOrdDiscount = (TextView) convertView.findViewById(R.id.tvDiscountTotal);
-                mHolder.tvOrdNetTotal = (TextView) convertView.findViewById(R.id.tvNetTotal);
+                mHolder.tvOrderType = convertView.findViewById(R.id.tvOrderType);
+                mHolder.tvOrdSubtTotal = convertView.findViewById(R.id.tvSubTotal);
+                mHolder.tvOrdTax = convertView.findViewById(R.id.tvTaxTotal);
+                mHolder.tvOrdDiscount = convertView.findViewById(R.id.tvDiscountTotal);
+                mHolder.tvOrdNetTotal = convertView.findViewById(R.id.tvNetTotal);
                 break;
             case TYPE_ITEMS_SOLD:
             case TYPE_ITEMS_RETURNED:
             case TYPE_DEPT_SALES:
             case TYPE_DEPT_RETURNS:
                 convertView = inflater.inflate(R.layout.adapter_report_items, parent, false);
-                mHolder.tvProdName = (TextView) convertView.findViewById(R.id.tvProdName);
-                mHolder.tvProdID = (TextView) convertView.findViewById(R.id.tvProdID);
-                mHolder.tvProdQty = (TextView) convertView.findViewById(R.id.tvProdQty);
-                mHolder.tvProdTotal = (TextView) convertView.findViewById(R.id.tvProdTotal);
+                mHolder.tvProdName = convertView.findViewById(R.id.tvProdName);
+                mHolder.tvProdID = convertView.findViewById(R.id.tvProdID);
+                mHolder.tvProdQty = convertView.findViewById(R.id.tvProdQty);
+                mHolder.tvProdTotal = convertView.findViewById(R.id.tvProdTotal);
                 break;
             case TYPE_PAYMENT:
             case TYPE_VOID:
             case TYPE_REFUND:
             case TYPE_AR_TRANS:
                 convertView = inflater.inflate(R.layout.adapter_report_payment, parent, false);
-                mHolder.tvPayType = (TextView) convertView.findViewById(R.id.tvPayType);
-                mHolder.tvPayAmount = (TextView) convertView.findViewById(R.id.tvPayAmount);
-                mHolder.tvPayTip = (TextView) convertView.findViewById(R.id.tvPayTip);
+                mHolder.tvPayType = convertView.findViewById(R.id.tvPayType);
+                mHolder.tvPayAmount = convertView.findViewById(R.id.tvPayAmount);
+                mHolder.tvPayTip = convertView.findViewById(R.id.tvPayTip);
                 break;
         }
 
@@ -336,6 +351,7 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
                 break;
             case TYPE_SHIFTS:
                 String name;
+                String shiftId = listShifts.get(position - i_summary).getShiftId();
                 Clerk clerk = ClerkDAO.getByEmpId(listShifts.get(position - i_summary).getClerkId());
                 name = clerk == null ? activity.getString(R.string.unknown) : clerk.getEmpName();
 //                if (preferences.isUseClerks()) {
@@ -343,6 +359,19 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
 //                } else {
 //                    name = ClerkDAO.getByEmpId(listShifts.get(position - i_summary).getClerkId(), false).getEmpName();
 //                }
+                BigDecimal totalExpenses = ShiftExpensesDAO.getShiftTotalExpenses(shiftId);
+                BigDecimal safeDropTotal = ShiftExpensesDAO.getShiftTotalExpenses(shiftId, ShiftExpense.ExpenseProductId.SAFE_DROP);
+                BigDecimal cashDropTotal = ShiftExpensesDAO.getShiftTotalExpenses(shiftId, ShiftExpense.ExpenseProductId.CASH_DROP);
+                BigDecimal cashInTotal = ShiftExpensesDAO.getShiftTotalExpenses(shiftId, ShiftExpense.ExpenseProductId.CASH_IN);
+                BigDecimal buyGoodsTotal = ShiftExpensesDAO.getShiftTotalExpenses(shiftId, ShiftExpense.ExpenseProductId.BUY_GOODS_SERVICES);
+                BigDecimal nonCashGratuityTotal = ShiftExpensesDAO.getShiftTotalExpenses(shiftId, ShiftExpense.ExpenseProductId.NON_CASH_GRATUITY);
+
+                mHolder.tvSafeDrop.setText(Global.getCurrencyFormat(String.valueOf(safeDropTotal)));
+                mHolder.tvCashDrop.setText(Global.getCurrencyFormat(String.valueOf(cashDropTotal)));
+                mHolder.tvCashIn.setText(Global.getCurrencyFormat(String.valueOf(cashInTotal)));
+                mHolder.tvBuyGoods.setText(Global.getCurrencyFormat(String.valueOf(buyGoodsTotal)));
+                mHolder.tvNonCashGratuity.setText(Global.getCurrencyFormat(String.valueOf(nonCashGratuityTotal)));
+                mHolder.tvTotalExpenses.setText(Global.getCurrencyFormat(String.valueOf(totalExpenses)));
                 mHolder.tvClerk.setText(name);
                 mHolder.tvFrom.setText(DateUtils.getDateAsString(listShifts.get(position - i_summary).getStartTime(), DateUtils.DATE_yyyy_MM_dd));
                 mHolder.tvTo.setText(DateUtils.getDateAsString(listShifts.get(position - i_summary).getEndTime(), DateUtils.DATE_yyyy_MM_dd));
@@ -427,7 +456,7 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
         if (convertView == null) {
             mHeaderHolder = new HeaderViewHolder();
             convertView = inflater.inflate(R.layout.adapter_day_report_header, parent, false);
-            mHeaderHolder.tvHeaderTitle = (TextView) convertView.findViewById(R.id.tvHeader);
+            mHeaderHolder.tvHeaderTitle = convertView.findViewById(R.id.tvHeader);
 
             convertView.setTag(mHeaderHolder);
         } else
@@ -503,6 +532,7 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
     private class ViewHolder {
         TextView tvLeftColumn, tvRightColumn;
         TextView tvClerk, tvFrom, tvTo, tvBeginningPetty, tvExpenses, tvTotalTrans, tvTotalEnding, tvEnteredClose;
+        TextView tvSafeDrop, tvCashIn, tvCashDrop, tvBuyGoods, tvNonCashGratuity, tvTotalExpenses;
         TextView tvOrderType, tvOrdSubtTotal, tvOrdDiscount, tvOrdTax, tvOrdNetTotal;
         TextView tvProdName, tvProdID, tvProdQty, tvProdTotal;
         TextView tvPayType, tvPayAmount, tvPayTip;

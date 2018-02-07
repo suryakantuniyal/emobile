@@ -28,11 +28,11 @@ public class ReportTab_FR extends Fragment implements OnClickListener {
         View view = inflater.inflate(R.layout.reports_main_layout, container, false);
         boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.PRINT_REPORTS);
         MyPreferences preferences = new MyPreferences(getActivity());
-        Button btnDaySummary = (Button) view.findViewById(R.id.btnReportDaySummary);
-        Button btnPerShift = (Button) view.findViewById(R.id.btnReportPerShift);
-        Button btnEndOfDay = (Button) view.findViewById(R.id.btnEndOfDay);
-        Button btnReportZ = (Button) view.findViewById(R.id.bixolonPrintReportZ);
-        Button btnReportX = (Button) view.findViewById(R.id.bixolonPrintReportX);
+        Button btnDaySummary = view.findViewById(R.id.btnReportDaySummary);
+        Button btnPerShift = view.findViewById(R.id.btnReportPerShift);
+        Button btnEndOfDay = view.findViewById(R.id.btnEndOfDay);
+        Button btnReportZ = view.findViewById(R.id.bixolonPrintReportZ);
+        Button btnReportX = view.findViewById(R.id.bixolonPrintReportX);
         if (preferences.isBixolonRD()) {
             btnReportX.setVisibility(View.VISIBLE);
             btnReportZ.setVisibility(View.VISIBLE);

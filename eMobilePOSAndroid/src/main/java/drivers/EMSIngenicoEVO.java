@@ -16,6 +16,7 @@ import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.realms.Payment;
+import com.android.emobilepos.models.realms.ShiftExpense;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
 import com.android.support.Global;
@@ -366,6 +367,11 @@ public class EMSIngenicoEVO extends EMSDeviceDriver implements EMSDeviceManagerP
 
     @Override
     public void printClockInOut(List<ClockInOut> timeClocks, String clerkID) {
+
+    }
+
+    @Override
+    public void printExpenseReceipt(ShiftExpense expense) {
 
     }
 

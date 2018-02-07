@@ -18,6 +18,7 @@ import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.realms.Payment;
+import com.android.emobilepos.models.realms.ShiftExpense;
 import com.android.emobilepos.settings.SettingListActivity;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
@@ -414,6 +415,11 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
 
     @Override
     public void printClockInOut(List<ClockInOut> timeClocks, String clerkID) {
+
+    }
+
+    @Override
+    public void printExpenseReceipt(ShiftExpense expense) {
 
     }
 

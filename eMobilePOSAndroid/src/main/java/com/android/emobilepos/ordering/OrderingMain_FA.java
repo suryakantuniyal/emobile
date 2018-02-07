@@ -214,11 +214,14 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         if (!Global.lastOrdID.isEmpty()) {
 
             OrdersHandler dbOrders = new OrdersHandler(activity);
-            if (order.ord_id.isEmpty()) {
+            boolean existsOrder = dbOrders.existsOrder(order.ord_id);
+            if (!existsOrder && order.getOrderProducts().isEmpty()) {
+                return;
+            } else if (!existsOrder && !order.getOrderProducts().isEmpty()) {
                 Global global = (Global) activity.getApplication();
                 order = Receipt_FR.buildOrder(activity, global, "", "", ((OrderingMain_FA) activity).getSelectedDinningTableNumber(),
                         ((OrderingMain_FA) activity).getAssociateId(), ((OrderingMain_FA) activity).getOrderAttributes(),
-                        ((OrderingMain_FA) activity).getListOrderTaxes(), global.order.getOrderProducts());
+                        ((OrderingMain_FA) activity).getListOrderTaxes(), order.getOrderProducts());
                 OrderProductsHandler dbOrdProd = new OrderProductsHandler(activity);
                 OrderProductsAttr_DB dbOrdAttr = new OrderProductsAttr_DB(activity);
                 dbOrders.insert(order);

@@ -8,6 +8,7 @@ import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.realms.Payment;
+import com.android.emobilepos.models.realms.ShiftExpense;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
 import com.android.support.Global;
@@ -96,4 +97,6 @@ public interface EMSDeviceManagerPrinterDelegate {
     boolean isConnected();
 
     void printClockInOut(List<ClockInOut> clockInOuts, String clerkID);
+
+    void printExpenseReceipt(ShiftExpense expense);
 }

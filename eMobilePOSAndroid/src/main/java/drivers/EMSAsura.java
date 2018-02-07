@@ -41,6 +41,7 @@ import com.android.emobilepos.models.PaymentDetails;
 import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Payment;
+import com.android.emobilepos.models.realms.ShiftExpense;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
 import com.android.support.DateUtils;
@@ -1319,6 +1320,11 @@ public class EMSAsura extends EMSDeviceDriver
     @Override
     public void printClockInOut(List<ClockInOut> timeClocks, String clerkID) {
         super.printClockInOut(timeClocks, LINE_WIDTH, clerkID);
+    }
+
+    @Override
+    public void printExpenseReceipt(ShiftExpense expense) {
+        printExpenseReceipt(LINE_WIDTH, expense);
     }
 
     @Override
