@@ -11,13 +11,14 @@ public class TaxesCalculator {
 
     public static BigDecimal calculateTax(BigDecimal taxableAmount, List<BigDecimal> rates) {
         BigDecimal totalTaxAmount = new BigDecimal(0);
+        BigDecimal taxRateGlobal = new BigDecimal(0);
         for (BigDecimal rate : rates) {
-            BigDecimal taxAmount = taxableAmount
-                    .multiply(rate
-                            .divide(new BigDecimal(100)))
-                    .setScale(6, RoundingMode.HALF_UP);
-            totalTaxAmount = totalTaxAmount.add(Global.getRoundBigDecimal(Global.getRoundBigDecimal(taxAmount, 3), 2));
+            taxRateGlobal = taxRateGlobal.add(rate);
         }
+        BigDecimal taxAmount = taxableAmount
+                .multiply(taxRateGlobal.divide(new BigDecimal(100)))
+                .setScale(2, RoundingMode.HALF_UP);
+        totalTaxAmount = totalTaxAmount.add(Global.getRoundBigDecimal(Global.getRoundBigDecimal(taxAmount, 2), 2));
         return totalTaxAmount;
     }
 
@@ -26,8 +27,8 @@ public class TaxesCalculator {
         BigDecimal taxAmount = taxableAmount
                 .multiply(rate
                         .divide(new BigDecimal(100)))
-                .setScale(6, RoundingMode.HALF_UP);
-        totalTaxAmount = totalTaxAmount.add(Global.getRoundBigDecimal(Global.getRoundBigDecimal(taxAmount, 3), 2));
+                .setScale(2, RoundingMode.HALF_UP);
+        totalTaxAmount = totalTaxAmount.add(Global.getRoundBigDecimal(Global.getRoundBigDecimal(taxAmount, 2), 2));
 
         return totalTaxAmount;
     }
