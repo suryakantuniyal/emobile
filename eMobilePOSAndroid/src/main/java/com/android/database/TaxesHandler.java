@@ -242,14 +242,18 @@ public class TaxesHandler {
 
         if (isGroupTax && myPref.isRetailTaxes() && !taxType.isEmpty()) {
             sb.setLength(0);
-            sb.append("SELECT tax_rate,taxLowRange,taxHighRange FROM Taxes_Group WHERE taxgroupid= ? AND taxcode_id = ?");
+            sb.append("SELECT tg.tax_rate, tg.taxLowRange, tg.taxHighRange, t.tax_name " +
+                    " FROM Taxes_Group tg " +
+                    " INNER JOIN Taxes t ON tg.taxId = t.tax_id AND tg.taxcode_id = t.tax_code_id " +
+                    " WHERE taxgroupid= ? AND taxcode_id = ?");
             cursor = DBManager.getDatabase().rawQuery(sb.toString(), new String[]{taxID, taxType});
             if (cursor.moveToFirst()) {
                 int i_tax_rate = cursor.getColumnIndex("tax_rate");
                 int i_taxLowRange = cursor.getColumnIndex("taxLowRange");
                 int i_taxHighRange = cursor.getColumnIndex("taxHighRange");
-
+                int i_taxName = cursor.getColumnIndex("tax_name");
                 double total_tax_rate = 0;
+                tax.setTaxName(cursor.getString(i_taxName));
                 do {
                     double lowRange = cursor.getDouble(i_taxLowRange);
                     double highRange = cursor.getDouble(i_taxHighRange);
@@ -260,6 +264,7 @@ public class TaxesHandler {
 
                 taxRate = Double.toString(total_tax_rate);
                 tax.setTaxRate(taxRate);
+
             }
         }
         cursor.close();
@@ -272,7 +277,7 @@ public class TaxesHandler {
         tax.setTaxType(taxType);
         String taxRate;
         List<Tax> taxes = new ArrayList<>();
-        String subquery1 = "SELECT tax_rate,tax_name, tax_type FROM ";
+        String subquery1 = "SELECT tax_rate,tax_name, tax_code_id, tax_type, tax_code_name FROM ";
         String subquery2 = " WHERE tax_id = '";
 
         StringBuilder sb = new StringBuilder();
@@ -288,7 +293,8 @@ public class TaxesHandler {
         if (cursor.moveToFirst()) {
             taxRate = cursor.getString(cursor.getColumnIndex("tax_rate"));
             tax.setTaxRate(taxRate);
-            tax.setTaxName(cursor.getString(cursor.getColumnIndex("tax_name")));
+            tax.setTaxCodeId(cursor.getString(cursor.getColumnIndex("tax_code_id")));
+            tax.setTaxName(cursor.getString(cursor.getColumnIndex("tax_code_name")));
             if (cursor.getString(cursor.getColumnIndex("tax_type")).equals("G"))
                 isGroupTax = true;
         }
@@ -297,18 +303,22 @@ public class TaxesHandler {
 
         if (isGroupTax && myPref.isRetailTaxes() && !taxType.isEmpty()) {
             sb.setLength(0);
-            sb.append("SELECT tax_rate,taxLowRange,taxHighRange FROM Taxes_Group WHERE taxgroupid= ? AND taxcode_id = ?");
+//            sb.append("SELECT tax_rate,taxLowRange,taxHighRange FROM Taxes_Group WHERE taxgroupid= ? AND taxcode_id = ?");
+            sb.append("SELECT tg.tax_rate, tg.taxLowRange, tg.taxHighRange, t.tax_name " +
+                    " FROM Taxes_Group tg " +
+                    " INNER JOIN Taxes t ON tg.taxId = t.tax_id AND tg.taxcode_id = t.tax_code_id " +
+                    " WHERE taxgroupid= ? AND taxcode_id = ?");
             cursor = DBManager.getDatabase().rawQuery(sb.toString(), new String[]{taxID, taxType});
             if (cursor.moveToFirst()) {
                 int i_tax_rate = cursor.getColumnIndex("tax_rate");
                 int i_taxLowRange = cursor.getColumnIndex("taxLowRange");
                 int i_taxHighRange = cursor.getColumnIndex("taxHighRange");
-
+                int i_taxName = cursor.getColumnIndex("tax_name");
                 double total_tax_rate = 0;
                 do {
                     double lowRange = cursor.getDouble(i_taxLowRange);
                     double highRange = cursor.getDouble(i_taxHighRange);
-
+                    tax.setTaxName(cursor.getString(i_taxName));
                     double prodPrice = Double.parseDouble(product.getFinalPrice());
                     if (prodPrice >= lowRange && prodPrice <= highRange)
                         total_tax_rate = cursor.getDouble(i_tax_rate);
