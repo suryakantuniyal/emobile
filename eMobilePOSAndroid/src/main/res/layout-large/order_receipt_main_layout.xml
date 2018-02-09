@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -26,9 +25,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_marginEnd="5dp"
-                android:layout_marginRight="5dp"
-                android:padding="5dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginRight="20dp"
+                android:paddingBottom="10dp"
+                android:paddingEnd="10dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="10dp"
+                android:paddingStart="20dp"
+                android:paddingTop="10dp"
                 android:src="@drawable/add_blue" />
 
             <TextView
@@ -62,7 +66,7 @@
                 android:gravity="right"
                 android:text="@string/gift_balance"
                 android:textAppearance="@style/white_text_appearance"
-                android:textSize="@dimen/about_small_text_size" />
+                android:textSize="@dimen/field_general_txt_size" />
 
             <TextView
                 android:id="@+id/giftBalancetextView44"
@@ -71,7 +75,7 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginStart="10dp"
                 android:textAppearance="@style/white_text_appearance"
-                android:textSize="@dimen/about_small_text_size"
+                android:textSize="@dimen/field_general_txt_size"
                 tools:text="@string/amount_zero_lbl" />
         </LinearLayout>
 
@@ -89,8 +93,6 @@
                 android:layout_margin="5dp"
                 android:layout_weight="1"
                 android:background="@drawable/action_button_selector"
-                android:minHeight="0dp"
-                android:minWidth="0dp"
                 android:text="@string/button_add_prod_serv"
                 android:textAppearance="@style/black_text_appearance"
                 android:textSize="@dimen/add_orders_button_text_size" />
@@ -101,8 +103,7 @@
                 android:layout_width="0dp"
                 android:layout_height="@dimen/add_orders_button_height"
                 android:layout_margin="5dp"
-                android:minHeight="0dp"
-                android:minWidth="0dp"
+
                 android:layout_weight="1"
                 android:background="@drawable/action_button_selector"
                 android:text="@string/addseat_btn"
@@ -141,11 +142,12 @@
             android:id="@+id/receiptListView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginBottom="@dimen/add_orders_slider_semiclosed_size"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:background="@drawable/bg_white_page"
             android:cacheColorHint="@android:color/transparent"
-            android:clipToPadding="true"
+            android:paddingBottom="5dp"
             android:stackFromBottom="false"
             android:transcriptMode="normal"
             tools:listitem="@layout/product_receipt_adapter" />
@@ -161,7 +163,8 @@
             custom:allowSingleTap="true"
             custom:content="@+id/contentLayout"
             custom:handle="@+id/slideButton"
-            custom:orientation="vertical">
+            custom:orientation="vertical"
+            custom:semiClosedContentSize="@dimen/add_orders_slider_semiclosed_size">
 
             <Button
                 android:id="@+id/slideButton"
@@ -211,8 +214,6 @@
             android:layout_weight="1"
 
             android:background="@drawable/blue_button_selector"
-            android:maxWidth="0dp"
-            android:minHeight="0dp"
             android:text="@string/return_tag"
             android:textAppearance="@style/white_text_appearance"
             android:textColor="#FFFFFF"
@@ -228,8 +229,6 @@
             android:layout_marginTop="5dp"
             android:layout_weight="1"
             android:background="@drawable/blue_button_selector"
-            android:maxWidth="0dp"
-            android:minHeight="0dp"
             android:text="@string/button_hold"
             android:textAppearance="@style/white_text_appearance"
             android:textColor="#FFFFFF"
@@ -245,8 +244,6 @@
             android:layout_marginTop="5dp"
             android:layout_weight="1"
             android:background="@drawable/blue_button_selector"
-            android:maxWidth="0dp"
-            android:minHeight="0dp"
             android:text="@string/button_details"
             android:textAppearance="@style/white_text_appearance"
             android:textColor="#FFFFFF"
@@ -261,8 +258,6 @@
             android:layout_marginTop="5dp"
             android:layout_weight="1"
             android:background="@drawable/blue_button_selector"
-            android:maxWidth="0dp"
-            android:minHeight="0dp"
             android:text="@string/button_sign"
             android:textAppearance="@style/white_text_appearance"
             android:textColor="#FFFFFF"
@@ -280,8 +275,6 @@
 
             android:layout_marginTop="5dp"
             android:background="@drawable/blue_button_selector"
-            android:maxWidth="0dp"
-            android:minHeight="0dp"
             android:text="@string/button_template"
             android:textAppearance="@style/white_text_appearance"
             android:textColor="#FFFFFF"
@@ -309,8 +302,6 @@
             android:layout_height="match_parent"
             android:layout_gravity="right"
             android:background="@drawable/image_button_selector"
-            android:maxWidth="0dp"
-            android:minHeight="0dp"
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
             android:src="@drawable/ic_action_previous_white"
@@ -322,8 +313,6 @@
             android:layout_height="match_parent"
             android:layout_gravity="right"
             android:background="@drawable/image_button_selector"
-            android:maxWidth="0dp"
-            android:minHeight="0dp"
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
             android:src="@drawable/ic_action_next_white" />

@@ -16,24 +16,25 @@
             android:id="@+id/headerTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:gravity="center_vertical|center_horizontal"
-            android:padding="@dimen/header_txt_padding"
             android:text="@string/sales_receipt_title"
             android:textAppearance="@style/white_text_appearance"
-            android:textSize="@dimen/header_bar_text_size"
-            android:layout_weight="1" />
+            android:textSize="@dimen/header_bar_text_size" />
 
         <Button
             android:id="@+id/btnCheckOut"
             style="@style/action_button_text_appearance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="5dp"
             android:background="@drawable/action_button_selector"
+            android:minHeight="0dp"
+            android:minWidth="0dp"
             android:paddingLeft="5dp"
             android:paddingRight="14dp"
             android:text="@string/button_checkout"
-            android:textSize="@dimen/large_button_text_size"
-            android:layout_margin="5dp" />
+            android:textSize="@dimen/large_button_text_size" />
 
     </LinearLayout>
     <EditText

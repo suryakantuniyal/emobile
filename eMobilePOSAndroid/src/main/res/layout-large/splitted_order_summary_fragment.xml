@@ -9,9 +9,12 @@
         android:id="@+id/splitedOrderSummarygridView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:columnWidth="500dp"
         android:gravity="center"
-        android:numColumns="1"
-        android:paddingLeft="5dp"
+        android:horizontalSpacing="5dp"
+        android:numColumns="auto_fit"
+        android:padding="5dp"
         android:stretchMode="columnWidth"
-        tools:listitem="@layout/splitted_order_summary_listitem" />
+        android:verticalSpacing="5dp"
+        tools:listitem="@layout/splitted_order_summary_listitem"></GridView>
 </LinearLayout>
