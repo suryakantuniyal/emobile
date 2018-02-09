@@ -167,7 +167,8 @@
         <activity
             android:name=".ordering.SplittedOrderSummary_FA"
             android:configChanges="orientation|screenSize"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="sensorLandscape" />
         <activity
             android:name=".OrderDetailsActivity"
             android:configChanges="orientation|screenSize"
@@ -344,7 +345,7 @@
             android:name=".mainmenu.restaurant.DinningTablesActivity"
             android:configChanges="orientation|screenSize"
             android:exported="false"
-            android:screenOrientation="sensorLandscape" />
+          />
         <activity
             android:name=".ordering.OrderAttrEdit_FA"
             android:configChanges="orientation|screenSize"

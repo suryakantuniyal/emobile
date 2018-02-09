@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.TypedValue;
@@ -422,13 +423,13 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         isToGo = ((OrderingMain_FA) getActivity()).isToGo;
         taxSelected = 0;
         discountSelected = 0;
-        subTotal = (EditText) view.findViewById(R.id.subtotalField);
-        taxSpinner = (Spinner) view.findViewById(R.id.globalTaxSpinner);
-        globalTax = (EditText) view.findViewById(R.id.globalTaxField);
-        discountSpinner = (Spinner) view.findViewById(R.id.globalDiscountSpinner);
-        globalDiscount = (EditText) view.findViewById(R.id.globalDiscountField);
-        granTotal = (TextView) view.findViewById(R.id.grandTotalValue);
-        LinearLayout leftHolder = (LinearLayout) view.findViewById(R.id.leftColumnHolder);
+        subTotal = view.findViewById(R.id.subtotalField);
+        taxSpinner = view.findViewById(R.id.globalTaxSpinner);
+        globalTax = view.findViewById(R.id.globalTaxField);
+        discountSpinner = view.findViewById(R.id.globalDiscountSpinner);
+        globalDiscount = view.findViewById(R.id.globalDiscountField);
+        granTotal = view.findViewById(R.id.grandTotalValue);
+        LinearLayout leftHolder = view.findViewById(R.id.leftColumnHolder);
         activity = getActivity();
         myPref = new MyPreferences(activity);
 
@@ -437,8 +438,13 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         }
 //        else if (myPref.isTablet() && leftHolder != null)
 //            itemCount = (TextView) view.findViewById(R.id.itemCount);
-        initSpinners();
+
         return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        initSpinners();
     }
 
     public void initSpinners() {
@@ -768,7 +774,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             View view = super.getView(position, convertView, parent);
 
             // we know that simple_spinner_item has android.R.id.text1 TextView:
-            TextView text = (TextView) view.findViewById(android.R.id.text1);
+            TextView text = view.findViewById(android.R.id.text1);
             text.setTextAppearance(activity, R.style.black_text_appearance);// choose your color
             text.setTextSize(TypedValue.COMPLEX_UNIT_PX,
                     activity.getResources().getDimension(R.dimen.ordering_checkout_btn_txt_size));
@@ -783,9 +789,9 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                 row = inflater.inflate(R.layout.spinner_layout, parent, false);
             }
 
-            TextView taxName = (TextView) row.findViewById(R.id.taxName);
-            TextView taxValue = (TextView) row.findViewById(R.id.taxValue);
-            ImageView checked = (ImageView) row.findViewById(R.id.checkMark);
+            TextView taxName = row.findViewById(R.id.taxName);
+            TextView taxValue = row.findViewById(R.id.taxValue);
+            ImageView checked = row.findViewById(R.id.checkMark);
             checked.setVisibility(View.INVISIBLE);
             taxName.setText(leftData.get(position));
             int type = getItemViewType(position);

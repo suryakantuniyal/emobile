@@ -2,6 +2,7 @@ package com.android.emobilepos.mainmenu.restaurant;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -53,12 +54,18 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
     }
 
     public void refresh(int page) {
-        setmSectionsPagerAdapter(new SectionsPagerAdapter(getFragmentManager()));
-        ViewPager mViewPager = (ViewPager) findViewById(R.id.container);
-        PageIndicator titlePageIndicator = (TitlePageIndicator) findViewById(R.id.indicator);
-        mViewPager.setAdapter(getmSectionsPagerAdapter());
-        titlePageIndicator.setViewPager(mViewPager);
-        mViewPager.setCurrentItem(page);
+        if(findViewById(R.id.indicator)!=null) {
+            setmSectionsPagerAdapter(new SectionsPagerAdapter(getFragmentManager()));
+            ViewPager mViewPager = findViewById(R.id.container);
+            PageIndicator titlePageIndicator = (TitlePageIndicator) findViewById(R.id.indicator);
+            mViewPager.setAdapter(getmSectionsPagerAdapter());
+            titlePageIndicator.setViewPager(mViewPager);
+            mViewPager.setCurrentItem(page);
+        }else{
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            ft.add(R.id.container, new TablesGridFragment());
+            ft.commit();
+        }
     }
 
     /**
@@ -142,46 +149,6 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
             return null;
         }
     }
-//
-//    private class SynchOnHoldOrders extends AsyncTask<Void, String, Void> {
-//        ProgressDialog progressDialog;
-//
-//        @Override
-//        protected void onPreExecute() {
-//            progressDialog = new ProgressDialog(DinningTablesActivity.this);
-//            progressDialog.setMessage(getString(R.string.loading_orders));
-//            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-//            progressDialog.setCancelable(false);
-//            progressDialog.show();
-//        }
-//
-//        @Override
-//        protected Void doInBackground(Void... params) {
-//            try {
-//                if (NetworkUtils.isConnectedToInternet(DinningTablesActivity.this)) {
-//                    SynchMethods.synchSalesAssociateDinnindTablesConfiguration(DinningTablesActivity.this);
-//                    updateProgress(getString(R.string.sync_dload_ordersonhold));
-//                    SynchMethods.synchOrdersOnHoldList(DinningTablesActivity.this);
-//                }
-//            } catch (SAXException e) {
-//                e.printStackTrace();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//            return null;
-//        }
-//
-//        public void updateProgress(String msg) {
-//            publishProgress(msg);
-//        }
-//
-//        @Override
-//        protected void onPostExecute(Void aVoid) {
-//            progressDialog.dismiss();
-//            refresh(0);
-//        }
-//    }
-
     public class OpenOnHoldOrderTask extends AsyncTask<Object, Void, Boolean> {
 
         DinningTableOrder tableOrder;

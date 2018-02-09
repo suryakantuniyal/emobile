@@ -990,7 +990,7 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
 
     private void selectSeatAmount() {
         final int[] seats = this.getResources().getIntArray(R.array.dinningTableSeatsArray);
-        final Dialog popDlog = new Dialog(getActivity(), R.style.TransparentDialogFullScreen);
+        final Dialog popDlog = new Dialog(getActivity(), R.style.TransparentDialogFullScreen) ;
         popDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         popDlog.setCancelable(true);
         popDlog.setCanceledOnTouchOutside(true);
