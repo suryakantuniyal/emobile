@@ -14,6 +14,7 @@
         android:layout_height="wrap_content"
         android:background="@drawable/blue_gradient_header_horizontal"
         android:gravity="center"
+        android:padding="5dp"
         android:textAppearance="@style/white_text_appearance"
         android:textSize="@dimen/header_bar_text_size"
         tools:text="Per-Shift" />
@@ -36,6 +37,7 @@
             android:background="@drawable/action_button_selector"
             android:minHeight="0dp"
             android:minWidth="0dp"
+            android:padding="5dp"
             android:text="@string/date"
             android:textStyle="bold" />
 
@@ -49,6 +51,7 @@
             android:background="@drawable/action_button_selector"
             android:minHeight="0dp"
             android:minWidth="0dp"
+            android:padding="5dp"
             android:text="@string/button_print"
             android:textStyle="bold" />
 

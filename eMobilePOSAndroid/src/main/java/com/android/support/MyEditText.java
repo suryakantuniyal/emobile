@@ -16,7 +16,7 @@ import android.widget.EditText;
 import com.android.emobilepos.R;
 
 
-public class MyEditText extends android.support.v7.widget.AppCompatEditText{
+public class MyEditText extends EditText{
  
     //The image we are going to use for the Clear button
 	private Drawable imgCloseButton = getResources().getDrawable(R.drawable.ic_action_clear);

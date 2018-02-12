@@ -7,9 +7,9 @@
     android:orientation="vertical">
 
     <LinearLayout
-        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:padding="5dp">
 
         <LinearLayout
@@ -17,6 +17,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_gravity="center"
+            android:layout_marginRight="5dp"
             android:layout_weight="1"
             android:background="@drawable/grey_shadow_button_layer"
             android:gravity="center"
@@ -26,16 +27,14 @@
                 android:id="@+id/clearCustomerBut"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
                 android:background="@drawable/image_button_selector"
-
                 android:src="@drawable/ic_action_clear" />
 
             <TextView
                 android:id="@+id/salesCustomerName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
                 android:singleLine="true"
                 android:text="@string/no_customer"
                 android:textAppearance="@style/blue_txt_appearance_unbold"
@@ -50,11 +49,10 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_gravity="center"
+            android:layout_marginLeft="5dp"
             android:layout_weight="1"
             android:background="@drawable/grey_shadow_button_layer"
             android:gravity="center"
-            android:minHeight="0dp"
-            android:minWidth="0dp"
             android:orientation="horizontal"
             android:text="@string/selectinvoices"
             android:textAppearance="@style/blue_txt_appearance_unbold"
@@ -76,16 +74,15 @@
         android:id="@+id/salesGridLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:columnWidth="300dp"
         android:gravity="center"
-        android:horizontalSpacing="2dp"
-        android:numColumns="1"
+        android:horizontalSpacing="5dp"
+        android:numColumns="auto_fit"
+        android:stretchMode="columnWidth"
+        android:verticalSpacing="5dp"
         android:paddingLeft="5dp"
         android:paddingRight="5dp"
-        android:stretchMode="columnWidth"
-        android:verticalSpacing="2dp"
-        tools:listitem="@layout/main_menu_listviewadapter" />
-
-
+        tools:listitem="@layout/main_menu_listviewadapter"></GridView>
 
 
 </LinearLayout>

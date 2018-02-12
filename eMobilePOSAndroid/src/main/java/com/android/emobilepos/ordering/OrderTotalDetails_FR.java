@@ -429,13 +429,12 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         discountSpinner = view.findViewById(R.id.globalDiscountSpinner);
         globalDiscount = view.findViewById(R.id.globalDiscountField);
         granTotal = view.findViewById(R.id.grandTotalValue);
-        LinearLayout leftHolder = view.findViewById(R.id.leftColumnHolder);
         activity = getActivity();
         myPref = new MyPreferences(activity);
 
-        if (!myPref.isTablet() && leftHolder != null) {
-            leftHolder.setVisibility(View.GONE);
-        }
+//        if (!myPref.isTablet() && leftHolder != null) {
+//            leftHolder.setVisibility(View.GONE);
+//        }
 //        else if (myPref.isTablet() && leftHolder != null)
 //            itemCount = (TextView) view.findViewById(R.id.itemCount);
 
