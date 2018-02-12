@@ -14,28 +14,17 @@
         android:background="@drawable/blue_gradient_header_horizontal"
         >
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/imageView4"
-            android:src="@drawable/logo"
-            android:layout_gravity="center_vertical"
-            android:layout_alignBottom="@+id/tvHeader"
-            android:layout_alignParentLeft="true" />
-
         <TextView
             android:id="@+id/tvHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="@dimen/header_txt_padding"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
             android:text="@string/header_title_method"
             android:textAppearance="@style/white_text_appearance"
-            android:textSize="@dimen/header_txt_size"
-            android:gravity="center"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true" />
+            android:textSize="@dimen/about_small_text_size" />
     </RelativeLayout>
-
 
 
     <LinearLayout
@@ -43,23 +32,21 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:orientation="vertical"
-        android:paddingBottom="10dp" >
+        android:orientation="vertical">
 
         <LinearLayout
             android:id="@+id/topLayoutHolder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
             android:baselineAligned="false"
-            android:orientation="horizontal" >
+            android:orientation="horizontal">
 
             <LinearLayout
                 android:layout_width="0dip"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:orientation="vertical" >
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/totalValue"
@@ -67,7 +54,7 @@
                     android:layout_height="wrap_content"
                     android:text=""
                     android:textAppearance="@style/black_text_appearance"
-                    android:textSize="20sp"
+                    android:textSize="@dimen/about_small_text_size"
                     android:textStyle="bold" />
 
                 <TextView
@@ -76,7 +63,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/payment_view_total"
                     android:textAppearance="@style/black_text_appearance"
-                    android:textSize="15sp" />
+                    android:textSize="@dimen/about_small_text_size" />
             </LinearLayout>
 
             <LinearLayout
@@ -84,7 +71,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:orientation="vertical" >
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/paidValue"
@@ -92,7 +79,7 @@
                     android:layout_height="wrap_content"
                     android:text=""
                     android:textAppearance="@style/black_text_appearance"
-                    android:textSize="20sp"
+                    android:textSize="@dimen/about_small_text_size"
                     android:textStyle="bold" />
 
                 <TextView
@@ -101,7 +88,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/payment_view_paid"
                     android:textAppearance="@style/black_text_appearance"
-                    android:textSize="15sp" />
+                    android:textSize="@dimen/about_small_text_size" />
             </LinearLayout>
 
             <LinearLayout
@@ -109,7 +96,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:orientation="vertical" >
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/tipValue"
@@ -117,7 +104,7 @@
                     android:layout_height="wrap_content"
                     android:text=""
                     android:textAppearance="@style/black_text_appearance"
-                    android:textSize="20sp"
+                    android:textSize="@dimen/about_small_text_size"
                     android:textStyle="bold" />
 
                 <TextView
@@ -126,16 +113,16 @@
                     android:layout_height="wrap_content"
                     android:text="@string/payment_view_tip"
                     android:textAppearance="@style/black_text_appearance"
-                    android:textSize="15sp" />
+                    android:textSize="@dimen/about_small_text_size" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="vertical"
+                android:layout_gravity="center"
                 android:layout_weight="1"
-                android:layout_gravity="center">
+                android:gravity="center"
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/dueValue"
@@ -143,7 +130,7 @@
                     android:layout_height="wrap_content"
                     android:text=""
                     android:textAppearance="@style/black_text_appearance"
-                    android:textSize="20sp"
+                    android:textSize="@dimen/about_small_text_size"
                     android:textStyle="bold" />
 
                 <TextView
@@ -152,7 +139,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/payment_view_due"
                     android:textAppearance="@style/black_text_appearance"
-                    android:textSize="15sp"
+                    android:textSize="@dimen/about_small_text_size"
                     android:textStyle="bold" />
 
             </LinearLayout>

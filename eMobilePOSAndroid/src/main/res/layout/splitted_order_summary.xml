@@ -11,7 +11,8 @@
         android:layout_height="wrap_content"
         android:background="@drawable/blue_gradient_header_horizontal"
         android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:padding="2dp">
 
         <Spinner
             android:id="@+id/splitTypesSpinner"
@@ -56,8 +57,8 @@
             android:id="@+id/printAllReceiptbutton3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:text="@string/print_all_button" />
+            android:text="@string/print_all_button"
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/printReceiptbutton2"
