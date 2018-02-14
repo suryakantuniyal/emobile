@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -1198,8 +1199,15 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             myProgressDialog = new ProgressDialog(SelectPayMethod_FA.this);
             myProgressDialog.setMessage(getString(R.string.printing_message));
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
+            myProgressDialog.setCancelable(true);
+            myProgressDialog.setCanceledOnTouchOutside(true);
             myProgressDialog.show();
+            myProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialog) {
+                    cancel(true);
+                }
+            });
 
         }
 
@@ -1220,12 +1228,22 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 }
             } catch (Exception e) {
                 Crashlytics.logException(e);
+                printSuccessful = false;
             }
             return null;
         }
 
         @Override
+        protected void onCancelled() {
+           finishTransaction();
+        }
+
+        @Override
         protected void onPostExecute(String unused) {
+           finishTransaction();
+        }
+
+        private void finishTransaction() {
             Global.dismissDialog(SelectPayMethod_FA.this, myProgressDialog);
             if (printSuccessful) {
                 if (overAllRemainingBalance <= 0 || (typeOfProcedure == Global.FROM_JOB_INVOICE
