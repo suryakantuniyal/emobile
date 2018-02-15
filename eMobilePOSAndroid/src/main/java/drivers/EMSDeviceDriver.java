@@ -779,11 +779,11 @@ public class EMSDeviceDriver {
         cutPaper();
     }
 
-    public String getCustName() {
+    public String getCustName(String custId) {
         String name = "";
-        if (myPref.isCustSelected()) {
+        if (!TextUtils.isEmpty(custId)) {
             CustomersHandler handler = new CustomersHandler(activity);
-            Customer customer = handler.getCustomer(myPref.getCustID());
+            Customer customer = handler.getCustomer(custId);
             if (customer != null) {
                 if (!TextUtils.isEmpty(customer.getCust_firstName())) {
                     name = String.format("%s %s", StringUtil.nullStringToEmpty(customer.getCust_firstName())
@@ -836,7 +836,7 @@ public class EMSDeviceDriver {
             }
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_employee),
                     employee.getEmpName() + "(" + employee.getEmpId() + ")", lineWidth, 0));
-            String custName = getCustName();
+            String custName = getCustName(anOrder.cust_id);
             if (myPref.isCustSelected()) {
 //                CustomersHandler handler = new CustomersHandler(activity);
 //                Customer customer = handler.getCustomer(myPref.getCustID());
