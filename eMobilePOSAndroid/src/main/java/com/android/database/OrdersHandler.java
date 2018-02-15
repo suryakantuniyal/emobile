@@ -682,7 +682,7 @@ public class OrdersHandler {
                 anOrder.ord_HoldName = getValue(cursor.getString(cursor.getColumnIndex(ord_HoldName)));
                 anOrder.clerk_id = getValue(cursor.getString(cursor.getColumnIndex(clerk_id)));
                 anOrder.ord_comment = getValue(cursor.getString(cursor.getColumnIndex(ord_comment)));
-                anOrder.cust_id = getValue(cursor.getString(cursor.getColumnIndex("AccountNumnber")));
+                anOrder.cust_id = getValue(cursor.getString(cursor.getColumnIndex(cust_id)));
                 anOrder.isVoid = getValue(cursor.getString(cursor.getColumnIndex(isVoid)));
                 List<OrderProduct> orderProducts = productsHandler.getOrderProducts(ordID);
                 anOrder.setOrderProducts(orderProducts);
