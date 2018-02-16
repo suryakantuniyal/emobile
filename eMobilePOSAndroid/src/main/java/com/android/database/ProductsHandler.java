@@ -65,6 +65,8 @@ public class ProductsHandler {
     private HashMap<String, Integer> attrHash;
     private MyPreferences myPref;
 
+    public enum SearchField {PRODUCT_UPC, PRODUCT_ID}
+
     public ProductsHandler(Context activity) {
         attrHash = new HashMap<>();
         sb1 = new StringBuilder();
@@ -366,7 +368,11 @@ public class ProductsHandler {
 
     }
 
-    public Product getUPCProducts(String value) {
+    public Product getUPCProducts(String value, boolean includeSearchById) {
+        String byIdCondition = "";
+        if (includeSearchById) {
+            byIdCondition = " OR p.prod_id = '" + value + "' ";
+        }
         if (value.indexOf('\n') >= 0)
             value = new StringBuffer(value).deleteCharAt(value.indexOf('\n')).toString();
         if (value.indexOf('\r') >= 0)
@@ -413,10 +419,11 @@ public class ProductsHandler {
                             .append("' AND p.prod_type != 'Discount' ");
                 if (Global.consignmentType == Global.OrderType.ORDER)
                     sb.append("AND ci.qty>0 ");
-                sb2.append("AND (pa.prod_alias = ? OR p.prod_upc = ? OR p.prod_sku = ?)");
+                sb2.append("AND (pa.prod_alias = ? OR p.prod_upc = ? OR p.prod_sku = ? " + byIdCondition + ")");
             } else
                 sb2.append(
-                        "WHERE p.prod_type != 'Discount' AND ch.cust_chain = ? AND (pa.prod_alias = ? OR p.prod_upc = ?  OR p.prod_sku = ?) ");
+                        "WHERE p.prod_type != 'Discount' AND ch.cust_chain = ? " +
+                                "AND (pa.prod_alias = ? OR p.prod_upc = ?  OR p.prod_sku = ? " + byIdCondition + ") ");
         } else {
             sb2.append("AND ch.cust_chain = ? ");
             if (Global.isConsignment) {
@@ -431,28 +438,16 @@ public class ProductsHandler {
                             .append("' AND p.prod_type != 'Discount' ");
                 if (Global.consignmentType == Global.OrderType.ORDER)
                     sb2.append("AND ci.qty>0 ");
-                sb2.append("AND (pa.prod_alias = ? OR p.prod_upc = ? OR p.prod_sku = ?) ");
+                sb2.append("AND (pa.prod_alias = ? OR p.prod_upc = ? OR p.prod_sku = ? " + byIdCondition + ") ");
             } else
                 sb2.append("WHERE p.prod_type != 'Discount' AND " +
-                        " (p.prod_sku = ? OR pa.prod_alias = ? OR p.prod_upc = ? )" +
+                        " (p.prod_sku = ? OR pa.prod_alias = ? OR p.prod_upc = ?  " + byIdCondition + ")" +
                         " AND (i.type = 'I' OR i.type is NULL )" +
                         " AND ( vp.minQty is NULL OR vp.maxQty is NULL OR ('1' BETWEEN vp.minQty AND vp.maxQty)) "
                 );
 
         }
 
-//        sb.append(
-//                "FROM Products p " +
-//                        " LEFT OUTER JOIN EmpInv ei ON ei.prod_id = p.prod_id " +
-//                        " LEFT OUTER JOIN VolumePrices vp ON p.prod_id = vp.prod_id  AND vp.pricelevel_id = ? " +
-//                        " LEFT OUTER JOIN PriceLevelItems pli ON p.prod_id = pli.pricelevel_prod_id  AND pli.pricelevel_id = ? " +
-//                        " LEFT OUTER JOIN PriceLevel pl ON pl.pricelevel_id = pli.pricelevel_id " +
-//                        " LEFT OUTER JOIN Products_Images i ON p.prod_id = i.prod_id " +
-//                        " LEFT OUTER JOIN Categories c ON c.cat_id = p.cat_id " +
-//                        " LEFT OUTER JOIN SalesTaxCodes s ON p.prod_taxcode = s.taxcode_id " +
-//                        " LEFT OUTER JOIN ProductChainXRef ch ON ch.prod_id = p.prod_id ");
-//
-//        sb.append("LEFT JOIN ProductAliases pa ON p.prod_id = pa.prod_id ");
         if (myPref.getPreferences(MyPreferences.pref_enable_multi_category)) {
             sb.append(
                     "FROM Products p " +

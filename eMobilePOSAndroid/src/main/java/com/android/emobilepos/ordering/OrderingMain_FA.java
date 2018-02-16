@@ -773,7 +773,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             List<OrderProduct> list = new ArrayList<>();
             list.addAll(global.order.getOrderProducts());
             for (OrderProduct orderProduct : list) {
-                Product product = productsHandler.getUPCProducts(orderProduct.getProd_upc());//populateDataForIntent(myCursor);
+                Product product = productsHandler.getUPCProducts(orderProduct.getProd_id(), true);//populateDataForIntent(myCursor);
                 getCatalogFr().automaticAddOrder(product);
                 toRemove.add(orderProduct);
             }
@@ -995,7 +995,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     Global.rewardCardInfo = cardInfoManager;
                 swiperField.setText(cardInfoManager.getCardNumUnencrypted());
             } else {
-                Product product = handler.getUPCProducts(data);
+                Product product = handler.getUPCProducts(data,false);
 
                 if (product.getId() != null) {
 
@@ -1120,7 +1120,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     }
                     String upc = invisibleSearchMain.getText().toString().trim().replace("\n", "").replace("\r", "");
 //                    upc = invisibleSearchMain.getText().toString().trim().replace("\r", "");
-                    Product product = handler.getUPCProducts(upc);
+                    Product product = handler.getUPCProducts(upc, false);
                     if (product.getId() != null) {
                         if (myPref.getPreferences(MyPreferences.pref_fast_scanning_mode)) {
                             if (validAutomaticAddQty(product)) {
@@ -1202,7 +1202,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     private void scanAddItem(String upc) {
         ProductsHandler handler = new ProductsHandler(this);
-        Product product = handler.getUPCProducts(upc);
+        Product product = handler.getUPCProducts(upc, false);
         if (product.getId() != null) {
 
             if (myPref.getPreferences(MyPreferences.pref_fast_scanning_mode)) {
