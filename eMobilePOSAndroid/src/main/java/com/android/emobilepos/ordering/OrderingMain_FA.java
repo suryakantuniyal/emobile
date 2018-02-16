@@ -768,6 +768,17 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             }
 
             prefetchLoyalty(true);
+            ProductsHandler productsHandler = new ProductsHandler(this);
+            List<OrderProduct> toRemove = new ArrayList<>();
+            List<OrderProduct> list = new ArrayList<>();
+            list.addAll(global.order.getOrderProducts());
+            for (OrderProduct orderProduct : list) {
+                Product product = productsHandler.getUPCProducts(orderProduct.getProd_upc());//populateDataForIntent(myCursor);
+                getCatalogFr().automaticAddOrder(product);
+                toRemove.add(orderProduct);
+            }
+            global.order.getOrderProducts().removeAll(toRemove);
+
 
         } else if (resultCode == -1 || resultCode == 3) // Void transaction from
         // Sales Receipt

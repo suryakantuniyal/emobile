@@ -385,7 +385,7 @@ public class ProductsHandler {
         }
 
         sb.append(
-                "SELECT  p.prod_id as '_id',p.prod_price as 'master_price'," +
+                "SELECT  p.prod_id as '_id',p.prod_price as 'master_price',p.prod_upc as 'prod_upc'," +
                         "p.prod_prices_group_id as prod_prices_group_id, vp.price as 'volume_price', " +
                         "ch.over_price_net as 'chain_price',");
         sb.append(
@@ -489,7 +489,7 @@ public class ProductsHandler {
             sb.append(" LIMIT 1");
         }
 
-        String[] parameters = new String[]{priceLevelID,priceLevelID, priceLevelID, myPref.getCustID(), value, value, value};
+        String[] parameters = new String[]{priceLevelID, priceLevelID, priceLevelID, myPref.getCustID(), value, value, value};
         query = sb.toString();
 
         Cursor cursor = DBManager.getDatabase().rawQuery(query, parameters);
@@ -512,7 +512,7 @@ public class ProductsHandler {
                 }
             }
             product.setProdPrice(temp);
-
+            product.setProd_upc(cursor.getString(cursor.getColumnIndex(prod_upc)));
             product.setProdDesc(cursor.getString(cursor.getColumnIndex("prod_desc")));
 
             temp = cursor.getString(cursor.getColumnIndex("local_prod_onhand"));
