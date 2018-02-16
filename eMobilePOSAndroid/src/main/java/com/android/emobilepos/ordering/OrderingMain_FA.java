@@ -778,7 +778,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 toRemove.add(orderProduct);
             }
             global.order.getOrderProducts().removeAll(toRemove);
-
+            getLeftFragment().orderTotalDetailsFr.initSpinners();
 
         } else if (resultCode == -1 || resultCode == 3) // Void transaction from
         // Sales Receipt

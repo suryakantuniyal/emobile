@@ -75,8 +75,8 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
         activity = this;
         myPref = new MyPreferences(activity);
         global = (Global) getApplication();
-        myListView = (ListView) findViewById(R.id.customerSelectionLV);
-        search = (EditText) findViewById(R.id.searchCustomer);
+        myListView = findViewById(R.id.customerSelectionLV);
+        search = findViewById(R.id.searchCustomer);
         Collection<UsbDevice> usbDevices = DeviceUtils.getUSBDevices(this);
         isReaderConnected = usbDevices != null && usbDevices.size() > 0;
         handler = new CustomersHandler(this);
@@ -84,7 +84,7 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
         adap2 = new CustomCursorAdapter(this, myCursor, CursorAdapter.NO_SELECTION);
         myListView.setAdapter(adap2);
 
-        Button addNewCust = (Button) findViewById(R.id.addCustButton);
+        Button addNewCust = findViewById(R.id.addCustButton);
         if (myPref.getPreferences(MyPreferences.pref_allow_customer_creation))
             addNewCust.setOnClickListener(this);
         else
@@ -186,6 +186,7 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
         myPref.setCustName(name);
         myPref.setCustIDKey(myCursor.getString(myCursor.getColumnIndex("custidkey")));
         myPref.setCustSelected(true);
+        myPref.setCustTaxCode(myCursor.getString(myCursor.getColumnIndex("cust_salestaxcode")));
         myPref.setCustPriceLevel(myCursor.getString(myCursor.getColumnIndex("pricelevel_id")));
         myPref.setCustEmail(myCursor.getString(myCursor.getColumnIndex("cust_email")));
         setResult(1, results);
@@ -311,14 +312,14 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
             dlog.setCanceledOnTouchOutside(true);
             dlog.setContentView(R.layout.dlog_cust_select);
 
-            TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
-            TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+            TextView viewTitle = dlog.findViewById(R.id.dlogTitle);
+            TextView viewMsg = dlog.findViewById(R.id.dlogMessage);
             viewTitle.setText(R.string.dlog_title_choose_action);
             viewMsg.setVisibility(View.GONE);
-            Button btnSelectCust = (Button) dlog.findViewById(R.id.btnDlogOne);
-            Button btnDialPhone = (Button) dlog.findViewById(R.id.btnDlogTwo);
-            Button btnMapView = (Button) dlog.findViewById(R.id.btnDlogThree);
-            Button btnTrans = (Button) dlog.findViewById(R.id.btnDlogFour);
+            Button btnSelectCust = dlog.findViewById(R.id.btnDlogOne);
+            Button btnDialPhone = dlog.findViewById(R.id.btnDlogTwo);
+            Button btnMapView = dlog.findViewById(R.id.btnDlogThree);
+            Button btnTrans = dlog.findViewById(R.id.btnDlogFour);
             btnSelectCust.setText(R.string.cust_dlog_select_cust);
             btnDialPhone.setText(R.string.cust_dlog_dial);
             btnMapView.setText(R.string.cust_dlog_map);
@@ -428,12 +429,12 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
         public View newView(Context context, Cursor cursor, ViewGroup parent) {
             final View retView = inflater.inflate(R.layout.custselec_lvadapter, null);
             ViewHolder holder = new ViewHolder();
-            holder.cust_name = (TextView) retView.findViewById(R.id.custSelecName);
-            holder.CompanyName = (TextView) retView.findViewById(R.id.custSelecCompanyName);
-            holder.cust_id = (TextView) retView.findViewById(R.id.custSelecID);
-            holder.cust_phone = (TextView) retView.findViewById(R.id.custSelecPhone);
-            holder.pricelevel_name = (TextView) retView.findViewById(R.id.custSelecPriceLevel);
-            holder.moreInfoIcon = (ImageView) retView.findViewById(R.id.custSelecIcon);
+            holder.cust_name = retView.findViewById(R.id.custSelecName);
+            holder.CompanyName = retView.findViewById(R.id.custSelecCompanyName);
+            holder.cust_id = retView.findViewById(R.id.custSelecID);
+            holder.cust_phone = retView.findViewById(R.id.custSelecPhone);
+            holder.pricelevel_name = retView.findViewById(R.id.custSelecPriceLevel);
+            holder.moreInfoIcon = retView.findViewById(R.id.custSelecIcon);
             holder.i_cust_id = cursor.getColumnIndex("_id");
             holder.i_account_number = cursor.getColumnIndex("AccountNumnber");
             holder.i_cust_name = cursor.getColumnIndex("cust_name");

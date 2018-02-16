@@ -255,43 +255,43 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         callBackAddProd = (AddProductBtnCallback) getActivity();
         callBackUpdateHeaderTitle = (UpdateHeaderTitleCallback) getActivity();
 
-        custName = (TextView) view.findViewById(R.id.membersField);
-        receiptListView = (ListView) view.findViewById(R.id.receiptListView);
-        slidingDrawer = (SemiClosedSlidingDrawer) view
+        custName = view.findViewById(R.id.membersField);
+        receiptListView = view.findViewById(R.id.receiptListView);
+        slidingDrawer = view
                 .findViewById(R.id.slideDrawer);
 
-        ViewPager viewPager = (ViewPager) view.findViewById(R.id.orderViewPager);
+        ViewPager viewPager = view.findViewById(R.id.orderViewPager);
         pagerAdapter = new ReceiptPagerAdapter(getFragmentManager());
         viewPager.setAdapter(pagerAdapter);
-        CirclePageIndicator pagerIndicator = (CirclePageIndicator) view
+        CirclePageIndicator pagerIndicator = view
                 .findViewById(R.id.indicator);
         pagerIndicator.setViewPager(viewPager);
         pagerIndicator.setCurrentItem(0);
 
         orientation = getResources().getConfiguration().orientation;
 
-        Button addProd = (Button) view.findViewById(R.id.addProdButton);
+        Button addProd = view.findViewById(R.id.addProdButton);
         addProd.setOnClickListener(this);
         if (myPref.isTablet()
                 && orientation == Configuration.ORIENTATION_LANDSCAPE) {
             addProd.setVisibility(View.GONE);
         }
 
-        Button addSeatButton = (Button) view.findViewById(R.id.addSeatButton);
+        Button addSeatButton = view.findViewById(R.id.addSeatButton);
         addSeatButton.setOnClickListener(this);
         if (!myPref.isRestaurantMode() || !myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
             addSeatButton.setVisibility(View.GONE);
         }
-        ImageView plusBut = (ImageView) view.findViewById(R.id.plusButton);
+        ImageView plusBut = view.findViewById(R.id.plusButton);
 //        plusBut.setOnClickListener(this);
 
-        LinearLayout customerLinearLayout = (LinearLayout) view.findViewById(R.id.customerLinearLayout);
+        LinearLayout customerLinearLayout = view.findViewById(R.id.customerLinearLayout);
         customerLinearLayout.setOnClickListener(this);
 
-        btnTemplate = (Button) view.findViewById(R.id.templateButton);
+        btnTemplate = view.findViewById(R.id.templateButton);
         btnTemplate.setOnClickListener(this);
 
-        btnHold = (Button) view.findViewById(R.id.holdButton);
+        btnHold = view.findViewById(R.id.holdButton);
         btnHold.setOnClickListener(this);
         if (myPref.isRestaurantMode()) {
             btnHold.setText(getString(R.string.button_send));
@@ -299,19 +299,19 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             btnHold.setText(getString(R.string.button_hold));
         }
 
-        btnDetails = (Button) view.findViewById(R.id.detailsButton);
+        btnDetails = view.findViewById(R.id.detailsButton);
         btnDetails.setOnClickListener(this);
 
-        btnSign = (Button) view.findViewById(R.id.signButton);
+        btnSign = view.findViewById(R.id.signButton);
         btnSign.setOnClickListener(this);
 
-        btnReturn = (Button) view.findViewById(R.id.btnReturn);
+        btnReturn = view.findViewById(R.id.btnReturn);
         btnReturn.setOnClickListener(this);
 
-        btnScrollLeft = (ImageButton) view.findViewById(R.id.btnScrollLeft);
+        btnScrollLeft = view.findViewById(R.id.btnScrollLeft);
         btnScrollLeft.setOnClickListener(this);
 
-        btnScrollRight = (ImageButton) view.findViewById(R.id.btnScrollRight);
+        btnScrollRight = view.findViewById(R.id.btnScrollRight);
         btnScrollRight.setOnClickListener(this);
 
         if (typeOfProcedure != Global.TransactionType.SALE_RECEIPT) {
@@ -398,7 +398,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 }
             }
         } else {
-            if ((Global.TransactionType) extras.get("option_number") != null) {
+            if (extras.get("option_number") != null) {
                 switch ((Global.TransactionType) extras.get("option_number")) {
                     case SALE_RECEIPT: {
                         caseSelected = Global.TransactionType.SALE_RECEIPT;
@@ -799,15 +799,15 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         dialog.setCanceledOnTouchOutside(false);
         dialog.setContentView(R.layout.checkout_dialog_layout);
         //edit text comments of dialog box
-        final EditText editTextDialogComments = (EditText) dialog.findViewById(R.id.fieldComments);
+        final EditText editTextDialogComments = dialog.findViewById(R.id.fieldComments);
         //set the comments to previously entered comments in details section
         if (!getOrderingMainFa().global.getSelectedComments().isEmpty()) {
             editTextDialogComments.setText(getOrderingMainFa().global.getSelectedComments());
         }
-        final EditText emailInput = (EditText) dialog.findViewById(R.id.emailTxt);
-        final EditText phoneNum = (EditText) dialog
+        final EditText emailInput = dialog.findViewById(R.id.emailTxt);
+        final EditText phoneNum = dialog
                 .findViewById(R.id.phoneNumField);
-        Button done = (Button) dialog.findViewById(R.id.OKButton);
+        Button done = dialog.findViewById(R.id.OKButton);
         //if skip email phone enabled then hide fields
         if (myPref.isSkipEmailPhone()) {
             emailInput.setVisibility(View.GONE);
@@ -891,12 +891,12 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         dlog.setCancelable(true);
         dlog.setCanceledOnTouchOutside(true);
         dlog.setContentView(R.layout.dlog_btn_left_right_layout);
-        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+        TextView viewTitle = dlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = dlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_confirm);
         viewMsg.setText(R.string.dlog_msg_add_more_products);
-        Button btnYes = (Button) dlog.findViewById(R.id.btnDlogLeft);
-        Button btnNo = (Button) dlog.findViewById(R.id.btnDlogRight);
+        Button btnYes = dlog.findViewById(R.id.btnDlogLeft);
+        Button btnNo = dlog.findViewById(R.id.btnDlogRight);
         dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
         btnYes.setText(R.string.button_yes);
         btnNo.setText(R.string.button_no);
@@ -1537,18 +1537,18 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         globalDlog.setCancelable(true);
         globalDlog.setContentView(R.layout.dlog_field_single_two_btn);
-        final EditText viewField = (EditText) globalDlog
+        final EditText viewField = globalDlog
                 .findViewById(R.id.dlogFieldSingle);
         viewField.setInputType(InputType.TYPE_CLASS_TEXT
                 | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        TextView viewTitle = (TextView) globalDlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) globalDlog.findViewById(R.id.dlogMessage);
+        TextView viewTitle = globalDlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = globalDlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_confirm);
         if (!validPassword)
             viewMsg.setText(R.string.invalid_password);
         else
             viewMsg.setText(R.string.dlog_title_enter_manager_password);
-        Button cancelBtn = (Button) globalDlog.findViewById(R.id.btnDlogRight);
+        Button cancelBtn = globalDlog.findViewById(R.id.btnDlogRight);
         cancelBtn.setText(R.string.button_cancel);
         cancelBtn.setOnClickListener(new OnClickListener() {
             @Override
@@ -1557,7 +1557,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             }
         });
 
-        Button btnOk = (Button) globalDlog.findViewById(R.id.btnDlogLeft);
+        Button btnOk = globalDlog.findViewById(R.id.btnDlogLeft);
         btnOk.setText(R.string.button_ok);
         btnOk.setOnClickListener(new View.OnClickListener() {
 
@@ -1593,17 +1593,17 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         globalDlog.setCancelable(false);
         globalDlog.setContentView(R.layout.dlog_field_single_layout);
-        final EditText viewField = (EditText) globalDlog
+        final EditText viewField = globalDlog
                 .findViewById(R.id.dlogFieldSingle);
         viewField.setInputType(InputType.TYPE_CLASS_TEXT);
-        TextView viewTitle = (TextView) globalDlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) globalDlog.findViewById(R.id.dlogMessage);
+        TextView viewTitle = globalDlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = globalDlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_confirm);
         viewMsg.setText(R.string.enter_name);
         if (!isToGo && getOrderingMainFa().getSelectedDinningTableNumber() != null) {
             viewField.setText(String.format("%s %s", getString(R.string.restaurant_table), getOrderingMainFa().getSelectedDinningTableNumber()));
         }
-        Button btnCancel = (Button) globalDlog.findViewById(R.id.btnCancelDlogSingle);
+        Button btnCancel = globalDlog.findViewById(R.id.btnCancelDlogSingle);
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -1611,7 +1611,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 globalDlog.dismiss();
             }
         });
-        Button btnOk = (Button) globalDlog.findViewById(R.id.btnDlogSingle);
+        Button btnOk = globalDlog.findViewById(R.id.btnDlogSingle);
         btnOk.setText(R.string.button_ok);
         btnOk.setOnClickListener(new View.OnClickListener() {
 
@@ -1675,8 +1675,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dlog.setCancelable(false);
         dlog.setContentView(R.layout.dlog_btn_left_right_layout);
-        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+        TextView viewTitle = dlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = dlog.findViewById(R.id.dlogMessage);
         if (isRetry) {
             viewTitle.setText(R.string.dlog_title_error);
             viewMsg.setText(R.string.dlog_msg_failed_print);
@@ -1685,8 +1685,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             viewMsg.setText(R.string.dlog_msg_want_to_print);
         }
         dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
-        Button btnYes = (Button) dlog.findViewById(R.id.btnDlogLeft);
-        Button btnNo = (Button) dlog.findViewById(R.id.btnDlogRight);
+        Button btnYes = dlog.findViewById(R.id.btnDlogLeft);
+        Button btnNo = dlog.findViewById(R.id.btnDlogRight);
         btnYes.setText(R.string.button_yes);
         btnNo.setText(R.string.button_no);
         btnYes.setOnClickListener(new View.OnClickListener() {
@@ -1740,12 +1740,12 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         dlog.setCancelable(false);
         dlog.setContentView(R.layout.dlog_btn_left_right_layout);
 
-        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+        TextView viewTitle = dlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = dlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_confirm);
         viewMsg.setText(R.string.dlog_msg_want_to_make_refund);
-        Button btnYes = (Button) dlog.findViewById(R.id.btnDlogLeft);
-        Button btnNo = (Button) dlog.findViewById(R.id.btnDlogRight);
+        Button btnYes = dlog.findViewById(R.id.btnDlogLeft);
+        Button btnNo = dlog.findViewById(R.id.btnDlogRight);
         dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
         btnYes.setText(R.string.button_yes);
         btnNo.setText(R.string.button_no);
@@ -1802,13 +1802,13 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dlog.setCancelable(false);
         dlog.setContentView(R.layout.dlog_btn_left_right_layout);
-        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+        TextView viewTitle = dlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = dlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_confirm);
         viewMsg.setText(R.string.take_payment_now);
         dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
-        Button btnYes = (Button) dlog.findViewById(R.id.btnDlogLeft);
-        Button btnNo = (Button) dlog.findViewById(R.id.btnDlogRight);
+        Button btnYes = dlog.findViewById(R.id.btnDlogLeft);
+        Button btnNo = dlog.findViewById(R.id.btnDlogRight);
         btnYes.setText(R.string.button_yes);
         btnNo.setText(R.string.button_no);
 
@@ -1882,15 +1882,15 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             dlog.setCanceledOnTouchOutside(true);
             dlog.setContentView(R.layout.dlog_btn_left_right_layout);
 
-            TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
-            TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+            TextView viewTitle = dlog.findViewById(R.id.dlogTitle);
+            TextView viewMsg = dlog.findViewById(R.id.dlogMessage);
             viewTitle.setText(R.string.dlog_title_choose_action);
             viewMsg.setVisibility(View.GONE);
-            Button btnSave = (Button) dlog.findViewById(R.id.btnDlogLeft);
-            Button btnLoad = (Button) dlog.findViewById(R.id.btnDlogRight);
+            Button btnSave = dlog.findViewById(R.id.btnDlogLeft);
+            Button btnLoad = dlog.findViewById(R.id.btnDlogRight);
             btnSave.setText(R.string.button_save);
             btnLoad.setText(R.string.button_load);
-            Button btnCancel = (Button) dlog.findViewById(R.id.btnDlogCancel);
+            Button btnCancel = dlog.findViewById(R.id.btnDlogCancel);
             btnCancel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
