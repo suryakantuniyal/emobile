@@ -798,6 +798,18 @@ public class EMSDeviceDriver {
         return name;
     }
 
+    public String getCustAccount(String custId) {
+        String name = "";
+        if (!TextUtils.isEmpty(custId)) {
+            CustomersHandler handler = new CustomersHandler(activity);
+            Customer customer = handler.getCustomer(custId);
+            if (customer != null) {
+                return customer.getCustAccountNumber();
+            }
+        }
+        return "";
+    }
+
     protected void printReceipt(String ordID, int lineWidth, boolean fromOnHold, Global.OrderType type, boolean isFromHistory, EMVContainer emvContainer) {
         try {
             AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee(false);
@@ -849,7 +861,7 @@ public class EMSDeviceDriver {
                             lineWidth, 0));
                 }
             }
-            custName = anOrder.cust_id;
+            custName = getCustAccount(anOrder.cust_id);
             if (printPref.contains(MyPreferences.print_customer_id) && custName != null && !custName.isEmpty())
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer_id),
                         custName, lineWidth, 0));

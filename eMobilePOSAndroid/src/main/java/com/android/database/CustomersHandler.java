@@ -428,7 +428,7 @@ public class CustomersHandler {
         customer.setBillingAddress(new Address());
         if (customerId != null && !customerId.isEmpty()) {
             String sb = ("SELECT c.*, " +
-                    " b.addr_b_str1,b.addr_b_str2,b.addr_b_str3,b.addr_b_city,b.cust_id," +
+                    " b.addr_b_str1,b.addr_b_str2,b.addr_b_str3,b.addr_b_city,b.cust_id,AccountNumnber," +
                     " b.addr_b_state,b.addr_b_country,") +
                     " b.addr_b_zipcode,b.addr_s_str1,b.addr_s_str2,b.addr_s_str3,b.addr_s_city,b.addr_s_state,b.addr_s_country," +
                     " b.addr_s_zipcode" +
@@ -438,6 +438,7 @@ public class CustomersHandler {
 
             if (cursor.moveToFirst()) {
                 customer.setCust_id(customerId);
+                customer.setCustAccountNumber(cursor.getString(cursor.getColumnIndex(AccountNumnber)));
                 customer.setCust_name(cursor.getString(cursor.getColumnIndex(cust_name)));
                 customer.setCust_firstName(cursor.getString(cursor.getColumnIndex(cust_firstName)));
                 customer.setCust_lastName(cursor.getString(cursor.getColumnIndex(cust_lastName)));
