@@ -131,7 +131,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
         this.setFinishOnTouchOutside(true);
         if (OrderingMain_FA.returnItem) {
-            TextView tvHeaderTitle = (TextView) findViewById(R.id.HeaderTitle);
+            TextView tvHeaderTitle = findViewById(R.id.HeaderTitle);
             tvHeaderTitle.setText(R.string.return_title);
             tvHeaderTitle.setBackgroundColor(Color.RED);
         }
@@ -145,13 +145,13 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
         LayoutInflater inflater = LayoutInflater.from(this);
         View header = inflater.inflate(R.layout.catalog_picker_header, (ViewGroup) findViewById(R.id.header_layout_root));
-        lView = (ListView) findViewById(R.id.pickerLV);
-        headerProductID = (TextView) header.findViewById(R.id.pickerHeaderID);
-        headerOnHand = (TextView) header.findViewById(R.id.pickerHeaderQty);
-        headerImage = (ImageView) header.findViewById(R.id.itemHeaderImg);
+        lView = findViewById(R.id.pickerLV);
+        headerProductID = header.findViewById(R.id.pickerHeaderID);
+        headerOnHand = header.findViewById(R.id.pickerHeaderQty);
+        headerImage = header.findViewById(R.id.itemHeaderImg);
         headerImage.setOnClickListener(this);
 
-        Button headerAddButton = (Button) header.findViewById(R.id.pickerHeaderButton);
+        Button headerAddButton = header.findViewById(R.id.pickerHeaderButton);
         headerAddButton.setOnClickListener(this);
 
 
@@ -397,7 +397,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
     private void addAttributeButton(View header, String tag) {
 
-        LinearLayout test = (LinearLayout) header.findViewById(R.id.catalog_picker_attributes_holder);
+        LinearLayout test = header.findViewById(R.id.catalog_picker_attributes_holder);
         LayoutInflater inf = LayoutInflater.from(this);
 
         View vw = inf.inflate(R.layout.catalog_picker_attributes_adapter, null);
@@ -405,8 +405,8 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         vw.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
 
-        TextView attributeTitle = (TextView) vw.findViewById(R.id.attribute_title);
-        TextView attributeValue = (TextView) vw.findViewById(R.id.attribute_value);
+        TextView attributeTitle = vw.findViewById(R.id.attribute_title);
+        TextView attributeValue = vw.findViewById(R.id.attribute_value);
 
         attributeTitle.setText(tag);
         attributeValue.setText(attributesSelected.get(tag));
@@ -426,7 +426,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
     private void generateAttributePrompt(View view) {
         final String key = (String) view.getTag();
 
-        final TextView attributeValue = (TextView) view.findViewById(R.id.attribute_value);
+        final TextView attributeValue = view.findViewById(R.id.attribute_value);
 
         ListView listView = new ListView(this);
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
@@ -439,7 +439,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             public View getView(int position, View convertView, @NonNull ViewGroup parent) {
                 View row = super.getView(position, convertView, parent);
                 // Here we get the textview and set the color
-                TextView tv = (TextView) row.findViewById(android.R.id.text1);
+                TextView tv = row.findViewById(android.R.id.text1);
                 tv.setTextColor(Color.BLACK);
                 return row;
             }
@@ -603,28 +603,28 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         dlog.setCancelable(true);
         dlog.setContentView(R.layout.dlog_field_single_layout);
 
-        final EditText viewField = (EditText) dlog.findViewById(R.id.dlogFieldSingle);
+        final EditText viewField = dlog.findViewById(R.id.dlogFieldSingle);
 
         if (myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities))
             viewField.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
         else
             viewField.setInputType(InputType.TYPE_CLASS_NUMBER);
-        final TextView qty = (TextView) v.findViewById(R.id.pickerQty);
+        final TextView qty = v.findViewById(R.id.pickerQty);
         viewField.setText(qty.getText().toString());
         viewField.setSelection(qty.getText().toString().length());
 
-        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+        TextView viewTitle = dlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = dlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_confirm);
         viewMsg.setText(R.string.dlog_msg_enter_qty);
-        Button btnCancel = (Button) dlog.findViewById(R.id.btnCancelDlogSingle);
+        Button btnCancel = dlog.findViewById(R.id.btnCancelDlogSingle);
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dlog.dismiss();
             }
         });
-        Button btnOk = (Button) dlog.findViewById(R.id.btnDlogSingle);
+        Button btnOk = dlog.findViewById(R.id.btnDlogSingle);
         btnOk.setText(R.string.button_ok);
         btnOk.setOnClickListener(new View.OnClickListener() {
 
@@ -649,7 +649,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         dlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
         View view = inflater.inflate(R.layout.dialog_listview_layout, null, false);
         dlg.setContentView(view);
-        ListView dlgListView = (ListView) dlg.findViewById(R.id.dlgListView);
+        ListView dlgListView = dlg.findViewById(R.id.dlgListView);
         List<String[]> listData_LV = new ArrayList<>();
         List<UOM> uoms;
         switch (type) {
@@ -723,17 +723,17 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         final Dialog dialog = new Dialog(this, R.style.Theme_TransparentTest);
         dialog.setContentView(R.layout.comments_dialog_layout);
         dialog.setCancelable(true);
-        EditText cmt = (EditText) dialog.findViewById(R.id.commentEditText);
-        final TextView txt = (TextView) v.findViewWithTag(leftTitle[INDEX_CMT]);
-        Button done = (Button) dialog.findViewById(R.id.doneButton);
-        Button clear = (Button) dialog.findViewById(R.id.clearButton);
+        EditText cmt = dialog.findViewById(R.id.commentEditText);
+        final TextView txt = v.findViewWithTag(leftTitle[INDEX_CMT]);
+        Button done = dialog.findViewById(R.id.doneButton);
+        Button clear = dialog.findViewById(R.id.clearButton);
         cmt.setText(txt.getText().toString());
         cmt.setSelection(txt.getText().toString().length());
         done.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                EditText curComment = (EditText) dialog.findViewById(R.id.commentEditText);
+                EditText curComment = dialog.findViewById(R.id.commentEditText);
                 rightTitle[INDEX_CMT] = curComment.getText().toString();
                 _ordprod_comment = curComment.getText().toString().trim();
                 txt.setText(rightTitle[INDEX_CMT]);
@@ -744,7 +744,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
             @Override
             public void onClick(View v) {
-                EditText curComment = (EditText) dialog.findViewById(R.id.commentEditText);
+                EditText curComment = dialog.findViewById(R.id.commentEditText);
                 curComment.setText("");
                 rightTitle[INDEX_CMT] = curComment.getText().toString();
                 txt.setText(rightTitle[INDEX_CMT]);
@@ -1074,8 +1074,8 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             if (convertView == null) {
                 holder = new ViewHolder();
                 convertView = myInflater.inflate(R.layout.dialog_listview_adapter, null);
-                holder.leftText = (TextView) convertView.findViewById(R.id.leftText);
-                holder.rightText = (TextView) convertView.findViewById(R.id.rightText);
+                holder.leftText = convertView.findViewById(R.id.leftText);
+                holder.rightText = convertView.findViewById(R.id.rightText);
                 setValues(holder, position, type);
                 convertView.setTag(holder);
             } else {
@@ -1228,8 +1228,8 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                 switch (type) {
                     case 0: {
                         convertView = myInflater.inflate(R.layout.catalog_picker_adapter1, null);
-                        holder.leftText = (TextView) convertView.findViewById(R.id.itemNameLabel);
-                        holder.leftSubtitle = (TextView) convertView.findViewById(R.id.itemName);
+                        holder.leftText = convertView.findViewById(R.id.itemNameLabel);
+                        holder.leftSubtitle = convertView.findViewById(R.id.itemName);
 
                         if (position == 0) {
                             holder.leftText.setText(R.string.catalog_name);
@@ -1249,9 +1249,9 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                     case 1: {
                         convertView = myInflater.inflate(R.layout.catalog_picker_adapter2, null);
 
-                        holder.rightText = (TextView) convertView.findViewById(R.id.pickerQty);
-                        holder.add = (Button) convertView.findViewById(R.id.addItemQty);
-                        holder.delete = (Button) convertView.findViewById(R.id.deleteItemQty);
+                        holder.rightText = convertView.findViewById(R.id.pickerQty);
+                        holder.add = convertView.findViewById(R.id.addItemQty);
+                        holder.delete = convertView.findViewById(R.id.deleteItemQty);
 
                         holder.add.setFocusable(false);
                         holder.delete.setFocusable(false);
@@ -1302,8 +1302,8 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                     }
                     case 2: {
                         convertView = myInflater.inflate(R.layout.catalog_picker_adapter3, null);
-                        holder.leftText = (TextView) convertView.findViewById(R.id.leftText);
-                        holder.rightText = (TextView) convertView.findViewById(R.id.rightText);
+                        holder.leftText = convertView.findViewById(R.id.leftText);
+                        holder.rightText = convertView.findViewById(R.id.rightText);
 
                         holder.rightText.setTag(leftTitle[position - MAIN_OFFSET]);
 
@@ -1313,7 +1313,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                     }
                     case 3: {
                         convertView = myInflater.inflate(R.layout.catalog_picker_adapter4, null);
-                        holder.leftText = (TextView) convertView.findViewById(R.id.leftText);
+                        holder.leftText = convertView.findViewById(R.id.leftText);
                         holder.leftText.setText(leftTitle2[position - (leftTitle.length + MAIN_OFFSET)]);
                         break;
                     }
