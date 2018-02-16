@@ -1,5 +1,6 @@
 package com.android.support;
 
+import android.content.Context;
 import android.text.TextUtils;
 
 import com.android.emobilepos.models.orders.OrderProduct;
@@ -124,5 +125,9 @@ public class OrderProductUtils {
             }
         }
         return false;
+    }
+
+    public static void setOrderProductsCustomerValues(Context context, List<OrderProduct> orderProducts){
+
     }
 }
