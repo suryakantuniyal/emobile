@@ -779,11 +779,11 @@ public class EMSDeviceDriver {
         cutPaper();
     }
 
-    public String getCustName() {
+    public String getCustName(String custId) {
         String name = "";
-        if (myPref.isCustSelected()) {
+        if (!TextUtils.isEmpty(custId)) {
             CustomersHandler handler = new CustomersHandler(activity);
-            Customer customer = handler.getCustomer(myPref.getCustID());
+            Customer customer = handler.getCustomer(custId);
             if (customer != null) {
                 if (!TextUtils.isEmpty(customer.getCust_firstName())) {
                     name = String.format("%s %s", StringUtil.nullStringToEmpty(customer.getCust_firstName())
@@ -796,6 +796,18 @@ public class EMSDeviceDriver {
             }
         }
         return name;
+    }
+
+    public String getCustAccount(String custId) {
+        String name = "";
+        if (!TextUtils.isEmpty(custId)) {
+            CustomersHandler handler = new CustomersHandler(activity);
+            Customer customer = handler.getCustomer(custId);
+            if (customer != null) {
+                return customer.getCustAccountNumber();
+            }
+        }
+        return "";
     }
 
     protected void printReceipt(String ordID, int lineWidth, boolean fromOnHold, Global.OrderType type, boolean isFromHistory, EMVContainer emvContainer) {
@@ -836,7 +848,7 @@ public class EMSDeviceDriver {
             }
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_employee),
                     employee.getEmpName() + "(" + employee.getEmpId() + ")", lineWidth, 0));
-            String custName = getCustName();
+            String custName = getCustName(anOrder.cust_id);
             if (myPref.isCustSelected()) {
 //                CustomersHandler handler = new CustomersHandler(activity);
 //                Customer customer = handler.getCustomer(myPref.getCustID());
@@ -849,7 +861,7 @@ public class EMSDeviceDriver {
                             lineWidth, 0));
                 }
             }
-            custName = anOrder.cust_id;
+            custName = getCustAccount(anOrder.cust_id);
             if (printPref.contains(MyPreferences.print_customer_id) && custName != null && !custName.isEmpty())
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer_id),
                         custName, lineWidth, 0));

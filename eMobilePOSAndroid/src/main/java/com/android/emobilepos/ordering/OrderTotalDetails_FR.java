@@ -447,7 +447,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
     }
 
     public void initSpinners() {
-
+        taxSelected = 0;
         listMapTaxes = new ArrayList<>();
         List<String> taxes = new ArrayList<>();
         List<String> discount = new ArrayList<>();
