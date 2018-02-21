@@ -568,7 +568,9 @@ public class EMSDeviceDriver {
     }
 
     private void printStar(String str, boolean isLargeFont) throws StarIOPortException, UnsupportedEncodingException {
-
+        if (port == null) {
+            return;
+        }
         if (!isPOSPrinter) {
             port.writePort(new byte[]{0x1d, 0x57, (byte) 0x80, 0x31}, 0, 4);
             port.writePort(new byte[]{0x1d, 0x21, 0x00}, 0, 3);
@@ -2739,7 +2741,7 @@ public class EMSDeviceDriver {
         sb.append(textHandler.twoColumnLineWithLeftAlignedText(expense.getProductName(),
                 Global.getCurrencyFormat(expense.getCashAmount()), lineWidth, 3));
         sb.append(textHandler.centeredString(activity.getString(R.string.receipt_description), lineWidth));
-        sb.append(textHandler.oneColumnLineWithLeftAlignedText(expense.getProductDescription(),lineWidth,0));
+        sb.append(textHandler.oneColumnLineWithLeftAlignedText(expense.getProductDescription(), lineWidth, 0));
         sb.append(textHandler.newLines(4));
         print(sb.toString(), FORMAT);
         cutPaper();
