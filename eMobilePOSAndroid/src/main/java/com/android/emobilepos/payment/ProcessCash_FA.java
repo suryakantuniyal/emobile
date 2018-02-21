@@ -33,6 +33,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.models.GroupTax;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Payment;
+import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NumberUtils;
@@ -909,6 +910,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
                 global.getGlobalDlog().dismiss();
             global.promptForMandatoryLogin(this);
         }
+        DeviceUtils.registerFingerPrintReader(this);
         super.onResume();
     }
 
@@ -920,6 +922,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         if (!isScreenOn)
             Global.loggedIn = false;
         global.startActivityTransitionTimer();
+        DeviceUtils.unregisterFingerPrintReader(this);
     }
 
     @Override

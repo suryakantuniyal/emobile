@@ -23,6 +23,7 @@ import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.Shift;
 import com.android.support.DateUtils;
+import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NetworkUtils;
@@ -381,6 +382,7 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
                 global.getGlobalDlog().dismiss();
             global.promptForMandatoryLogin(this);
         }
+        DeviceUtils.registerFingerPrintReader(this);
         super.onResume();
     }
 
@@ -391,6 +393,7 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
         boolean isScreenOn = powerManager.isScreenOn();
         if (!isScreenOn)
             Global.loggedIn = false;
+        DeviceUtils.unregisterFingerPrintReader(this);
         global.startActivityTransitionTimer();
     }
 
@@ -602,6 +605,7 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
 
         @Override
         protected Void doInBackground(Void... params) {
+            DeviceUtils.connectStarTS650BT(ShiftsActivity.this);
             DBManager dbManager = new DBManager(ShiftsActivity.this);
             SynchMethods sm = new SynchMethods(dbManager);
             if (NetworkUtils.isConnectedToInternet(ShiftsActivity.this)) {

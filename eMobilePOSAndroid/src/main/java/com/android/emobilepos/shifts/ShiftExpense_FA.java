@@ -25,6 +25,7 @@ import com.android.dao.ShiftExpensesDAO;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.realms.Shift;
 import com.android.emobilepos.models.realms.ShiftExpense;
+import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NumberUtils;
@@ -187,7 +188,7 @@ public class ShiftExpense_FA extends BaseFragmentActivityActionBar implements Vi
         if (global.isApplicationSentToBackground())
             Global.loggedIn = false;
         global.stopActivityTransitionTimer();
-
+        DeviceUtils.registerFingerPrintReader(this);
         if (!Global.loggedIn) {
             if (global.getGlobalDlog() != null)
                 global.getGlobalDlog().dismiss();
@@ -204,6 +205,7 @@ public class ShiftExpense_FA extends BaseFragmentActivityActionBar implements Vi
         if (!isScreenOn)
             Global.loggedIn = false;
         global.startActivityTransitionTimer();
+        DeviceUtils.unregisterFingerPrintReader(this);
     }
 
 

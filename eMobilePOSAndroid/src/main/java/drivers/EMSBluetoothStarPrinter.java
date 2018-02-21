@@ -598,7 +598,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
             releasePrinter();
         } catch (StarIOPortException e) {
             Crashlytics.logException(e);
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             Crashlytics.logException(e);
             e.printStackTrace();
         }
@@ -816,11 +816,11 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 public void run() {
                     try {
                         port = StarIOPort.getPort(getPortName(), portSettings, 30000, activity);
-                    } catch (StarIOPortException e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                         try {
                             port = StarIOPort.getPort(getPortName(), portSettings, 30000, activity);
-                        } catch (StarIOPortException e1) {
+                        } catch (Exception e1) {
                             e1.printStackTrace();
                         }
                     } finally {
@@ -833,7 +833,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
             synchronized (portSettings) {
                 try {
                     portSettings.wait();
-                } catch (InterruptedException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
