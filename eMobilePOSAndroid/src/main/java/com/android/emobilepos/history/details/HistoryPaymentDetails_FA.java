@@ -42,6 +42,7 @@ import com.android.payments.EMSPayGate_Default;
 import com.android.payments.EMSPayGate_Default.EAction;
 import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.CreditCardInfo;
+import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
@@ -194,6 +195,7 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
                 global.getGlobalDlog().dismiss();
             global.promptForMandatoryLogin(activity);
         }
+        DeviceUtils.registerFingerPrintReader(this);
         super.onResume();
     }
 
@@ -204,6 +206,7 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
         boolean isScreenOn = powerManager.isScreenOn();
         if (!isScreenOn)
             Global.loggedIn = false;
+        DeviceUtils.unregisterFingerPrintReader(this);
         global.startActivityTransitionTimer();
     }
 

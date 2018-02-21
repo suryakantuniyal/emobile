@@ -1,18 +1,20 @@
 package com.android.support;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
-import android.os.Looper;
+import android.os.AsyncTask;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.android.dao.DeviceTableDAO;
+import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.models.realms.Device;
 import com.crashlytics.android.Crashlytics;
@@ -29,7 +31,6 @@ import java.util.List;
 
 import drivers.EMSBluetoothStarPrinter;
 import drivers.EMSDeviceDriver;
-import drivers.EMSMagtekSwiper;
 import drivers.EMSPowaPOS;
 import drivers.EMSmePOS;
 import main.EMSDeviceManager;
@@ -255,17 +256,28 @@ public class DeviceUtils {
         final IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("android.hardware.usb.action.USB_DEVICE_ATTACHED");
         intentFilter.addAction("android.hardware.usb.action.USB_DEVICE_DETACHED");
+        final Context activity = context;
 
         fingerPrintbroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 boolean connected;
+                MyPreferences preferences = new MyPreferences(context);
                 if (intent.getAction().contains("ATTACHED")) {
                     Toast.makeText(context, "USB connected", Toast.LENGTH_SHORT).show();
                     connected = true;
+                    if (activity != null && activity instanceof Activity &&
+                            preferences.getPrinterType() == Global.STAR &&
+                            preferences.getPrinterName().toUpperCase().startsWith("USB")) {
+//                        DeviceUtils.connectStarTS650BT(activity);
+                        new ReconnectUSBStarPrinterTask((Activity) activity).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    }
                 } else if (intent.getAction().contains("DETACHED")) {
                     Toast.makeText(context, "USB disconnected", Toast.LENGTH_SHORT).show();
                     connected = false;
+                    if (preferences.getPrinterType() == Global.STAR && preferences.getPrinterName().toUpperCase().startsWith("USB")) {
+                        Toast.makeText(context, context.getString(R.string.usb_disconnected), Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         };
@@ -300,5 +312,35 @@ public class DeviceUtils {
     public static void sendBroadcastDeviceConnected(Context context) {
         Intent intent = new Intent(MainMenu_FA.NOTIFICATION_DEVICES_LOADED);
         context.sendBroadcast(intent);
+    }
+
+    private static class ReconnectUSBStarPrinterTask extends AsyncTask<Void, Void, Void> {
+        ProgressDialog progressDialog;
+        private Activity activity;
+
+        public ReconnectUSBStarPrinterTask(Activity activity) {
+            this.activity = activity;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            progressDialog = new ProgressDialog(activity);
+            progressDialog.setTitle(R.string.connecting_devices);
+            progressDialog.setMessage(activity.getString(R.string.connecting_devices));
+            progressDialog.setCanceledOnTouchOutside(true);
+            progressDialog.setCancelable(true);
+            progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... none) {
+            DeviceUtils.connectStarTS650BT(activity);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            Global.dismissDialog(activity, progressDialog);
+        }
     }
 }

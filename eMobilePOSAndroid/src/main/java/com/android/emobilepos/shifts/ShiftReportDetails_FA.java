@@ -22,6 +22,7 @@ import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.Shift;
 import com.android.emobilepos.models.realms.ShiftExpense;
 import com.android.support.DateUtils;
+import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
@@ -127,6 +128,7 @@ public class ShiftReportDetails_FA extends BaseFragmentActivityActionBar impleme
                 global.getGlobalDlog().dismiss();
             global.promptForMandatoryLogin(this);
         }
+        DeviceUtils.registerFingerPrintReader(this);
         super.onResume();
     }
 
@@ -138,6 +140,7 @@ public class ShiftReportDetails_FA extends BaseFragmentActivityActionBar impleme
         if (!isScreenOn)
             Global.loggedIn = false;
         global.startActivityTransitionTimer();
+        DeviceUtils.unregisterFingerPrintReader(this);
     }
 
 
