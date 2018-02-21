@@ -1390,5 +1390,6 @@
     <string name="gift_balance">Gift Balance:</string>
     <string name="backup_data_fail">Cloud Backup data has fail</string>
     <string name="backup_data_success">Coud Backup data success</string>
+    <string name="usb_disconnected">USB printer disconnected. Verify your Star Printer USB cable connection.</string>
 
 </resources>

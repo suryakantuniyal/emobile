@@ -55,6 +55,7 @@ import com.android.ivu.MersenneTwisterFast;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.CreditCardInfo;
+import com.android.support.DeviceUtils;
 import com.android.support.GenerateNewID;
 import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
@@ -332,6 +333,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
     @Override
     public void onResume() {
+        DeviceUtils.registerFingerPrintReader(this);
 //        Toast.makeText(this, "Resume:"+String.valueOf(skipLogin), Toast.LENGTH_LONG).show();
         if (global.isApplicationSentToBackground() && !skipLogin)
             Global.loggedIn = false;
@@ -359,6 +361,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
     public void onPause() {
         myListview.setOnItemClickListener(null);
         super.onPause();
+        DeviceUtils.unregisterFingerPrintReader(this);
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         boolean isScreenOn;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT_WATCH) {
