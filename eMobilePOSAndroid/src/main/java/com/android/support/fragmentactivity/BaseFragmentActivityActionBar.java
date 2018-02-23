@@ -1,12 +1,16 @@
 package com.android.support.fragmentactivity;
 
 import android.app.ActionBar;
+import android.app.ProgressDialog;
+import android.content.pm.ActivityInfo;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
+import android.widget.Toast;
 
 import com.android.dao.ClerkDAO;
 import com.android.emobilepos.OnHoldActivity;
@@ -14,8 +18,12 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.ordering.OrderingMain_FA;
+import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+
+import drivers.EMSsnbc;
+import main.EMSDeviceManager;
 
 /**
  * Created by Guarionex on 12/9/2015.
@@ -129,6 +137,82 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
     @Override
     protected void onResume() {
         invalidateOptionsMenu();
+        DeviceUtils.registerFingerPrintReader(this);
         super.onResume();
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        DeviceUtils.unregisterFingerPrintReader(this);
+    }
+
+
+    public class AutoConnectPrinter extends AsyncTask<String, String, String> {
+        boolean isUSB = false;
+        private boolean loadMultiPrinter;
+        ProgressDialog driversProgressDialog;
+        @Override
+        protected void onPreExecute() {
+            setRequestedOrientation(Global.getScreenOrientation(BaseFragmentActivityActionBar.this));
+            loadMultiPrinter = (Global.multiPrinterManager == null
+                    || Global.multiPrinterManager.size() == 0)
+                    && (Global.mainPrinterManager == null
+                    || Global.mainPrinterManager.getCurrentDevice() == null)
+                    && (Global.btSwiper == null || Global.btSwiper.getCurrentDevice() == null);
+
+            if (loadMultiPrinter) {
+                showProgressDialog();
+            }
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            String autoConnect = "";
+            autoConnect = DeviceUtils.autoConnect(BaseFragmentActivityActionBar.this, loadMultiPrinter);
+            if (myPref.getPrinterType() == Global.POWA || myPref.getPrinterType() == Global.MEPOS
+                    || myPref.getPrinterType() == Global.ELOPAYPOINT) {
+                isUSB = true;
+            }
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null &&
+                    Global.mainPrinterManager.getCurrentDevice() instanceof EMSsnbc) {
+                ((EMSsnbc) Global.mainPrinterManager.getCurrentDevice()).closeUsbInterface();
+            }
+            return autoConnect;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            if (!isUSB && result.toString().length() > 0)
+                Toast.makeText(BaseFragmentActivityActionBar.this, result.toString(), Toast.LENGTH_LONG).show();
+            else if (isUSB && (Global.mainPrinterManager == null ||
+                    Global.mainPrinterManager.getCurrentDevice() == null)
+                    || myPref.getPrinterType() == Global.MIURA) {
+//                if (global.getGlobalDlog() != null)
+//                    global.getGlobalDlog().dismiss();
+                EMSDeviceManager edm = new EMSDeviceManager();
+                Global.mainPrinterManager = edm.getManager();
+                Global.mainPrinterManager.loadMultiDriver(BaseFragmentActivityActionBar.this, myPref.getPrinterType(), 0, true, "", "");
+            }
+            if (!BaseFragmentActivityActionBar.this.isFinishing()) {
+                dismissProgressDialog();
+            }
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+        }
+        private void showProgressDialog() {
+            if (driversProgressDialog == null) {
+                driversProgressDialog = new ProgressDialog(BaseFragmentActivityActionBar.this);
+                driversProgressDialog.setMessage(getString(R.string.connecting_devices));
+                driversProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                driversProgressDialog.setCancelable(true);
+            }
+            driversProgressDialog.show();
+        }
+        private void dismissProgressDialog() {
+            if (driversProgressDialog != null && driversProgressDialog.isShowing()) {
+                driversProgressDialog.dismiss();
+            }
+        }
+    }
+
 }

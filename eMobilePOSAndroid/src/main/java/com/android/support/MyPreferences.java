@@ -1011,11 +1011,10 @@ public class MyPreferences {
         return prefs.getBoolean(device_powa, false);
     }
 
-    public boolean setIsPOWA(boolean value) {
+    public void setIsPOWA(boolean value) {
         String device_powa = "device_powa";
         prefEditor.putBoolean(device_powa, value);
         prefEditor.commit();
-        return false;
     }
 
     public boolean isKDC425() {
@@ -1461,6 +1460,17 @@ public class MyPreferences {
 
     public boolean isPayWithCardOnFile() {
         return getPreferences(MyPreferences.pref_pay_with_card_on_file);
+    }
+
+    public void setSNBC(boolean SNBC) {
+        String device_snbc = "device_snbc";
+        prefEditor.putBoolean(device_snbc, SNBC);
+        prefEditor.commit();
+    }
+
+    public boolean isSNBC() {
+        String device_snbc = "device_snbc";
+        return prefs.getBoolean(device_snbc, false);
     }
 
     public enum PrinterPreviewWidth {SMALL, MEDIUM, LARGE}

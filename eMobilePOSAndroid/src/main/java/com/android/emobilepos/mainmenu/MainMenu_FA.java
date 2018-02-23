@@ -248,7 +248,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
             startPollingService();
         }
         registerReceiver(messageReceiver, new IntentFilter(NOTIFICATION_RECEIVED));
-        DeviceUtils.registerFingerPrintReader(this);
+//        DeviceUtils.registerFingerPrintReader(this);
         if (global.isApplicationSentToBackground()) {
             Global.loggedIn = false;
         }
@@ -311,15 +311,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         return super.onKeyDown(keyCode, event);
     }
 
-    private void showProgressDialog() {
-        if (driversProgressDialog == null) {
-            driversProgressDialog = new ProgressDialog(MainMenu_FA.this);
-            driversProgressDialog.setMessage(getString(R.string.connecting_devices));
-            driversProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            driversProgressDialog.setCancelable(true);
-        }
-        driversProgressDialog.show();
-    }
+
 
     private void dismissProgressDialog() {
         if (driversProgressDialog != null && driversProgressDialog.isShowing()) {
@@ -331,7 +323,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
     public void onPause() {
         super.onPause();
         unregisterReceiver(messageReceiver);
-        DeviceUtils.unregisterFingerPrintReader(this);
+//        DeviceUtils.unregisterFingerPrintReader(this);
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         boolean isScreenOn = powerManager.isScreenOn();
         if (!isScreenOn)
@@ -367,72 +359,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         return synchTextView;
     }
 
-    private class AutoConnectPrinter extends AsyncTask<String, String, String> {
-        boolean isUSB = false;
-        private boolean loadMultiPrinter;
 
-        @Override
-        protected void onPreExecute() {
-            setRequestedOrientation(Global.getScreenOrientation(MainMenu_FA.this));
-            loadMultiPrinter = (Global.multiPrinterManager == null
-                    || Global.multiPrinterManager.size() == 0)
-                    && (Global.mainPrinterManager == null
-                    || Global.mainPrinterManager.getCurrentDevice() == null)
-                    && (Global.btSwiper == null || Global.btSwiper.getCurrentDevice() == null);
-
-            if (loadMultiPrinter) {
-                showProgressDialog();
-            }
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            String autoConnect = "";
-
-//            activity.runOnUiThread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    DeviceUtils.autoConnect(activity, loadMultiPrinter);
-//                }
-//            });
-//            synchronized (activity) {
-//                try {
-//                    activity.wait(30000);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-            autoConnect = DeviceUtils.autoConnect(MainMenu_FA.this, loadMultiPrinter);
-            if (myPref.getPrinterType() == Global.POWA || myPref.getPrinterType() == Global.MEPOS
-                    || myPref.getPrinterType() == Global.ELOPAYPOINT) {
-                isUSB = true;
-            }
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null &&
-                    Global.mainPrinterManager.getCurrentDevice() instanceof EMSsnbc) {
-                ((EMSsnbc) Global.mainPrinterManager.getCurrentDevice()).closeUsbInterface();
-            }
-            return autoConnect;
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            if (!isUSB && result.toString().length() > 0)
-                Toast.makeText(MainMenu_FA.this, result.toString(), Toast.LENGTH_LONG).show();
-            else if (isUSB && (Global.mainPrinterManager == null ||
-                    Global.mainPrinterManager.getCurrentDevice() == null)
-                    || myPref.getPrinterType() == Global.MIURA) {
-                if (global.getGlobalDlog() != null)
-                    global.getGlobalDlog().dismiss();
-                EMSDeviceManager edm = new EMSDeviceManager();
-                Global.mainPrinterManager = edm.getManager();
-                Global.mainPrinterManager.loadMultiDriver(MainMenu_FA.this, myPref.getPrinterType(), 0, true, "", "");
-            }
-            if (!MainMenu_FA.this.isFinishing()) {
-                dismissProgressDialog();
-            }
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-        }
-    }
 
     private class AdapterTabs extends FragmentPagerAdapter
             implements ActionBar.TabListener, ViewPager.OnPageChangeListener {

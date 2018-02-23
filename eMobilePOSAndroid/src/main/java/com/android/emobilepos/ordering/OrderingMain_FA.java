@@ -778,7 +778,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 toRemove.add(orderProduct);
             }
             global.order.getOrderProducts().removeAll(toRemove);
-            getLeftFragment().orderTotalDetailsFr.initSpinners();
+            if (getLeftFragment().orderTotalDetailsFr != null) {
+                getLeftFragment().orderTotalDetailsFr.initSpinners();
+            }
 
         } else if (resultCode == -1 || resultCode == 3) // Void transaction from
         // Sales Receipt
@@ -995,7 +997,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     Global.rewardCardInfo = cardInfoManager;
                 swiperField.setText(cardInfoManager.getCardNumUnencrypted());
             } else {
-                Product product = handler.getUPCProducts(data,false);
+                Product product = handler.getUPCProducts(data, false);
 
                 if (product.getId() != null) {
 

@@ -382,7 +382,7 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
                 global.getGlobalDlog().dismiss();
             global.promptForMandatoryLogin(this);
         }
-        DeviceUtils.registerFingerPrintReader(this);
+//        DeviceUtils.registerFingerPrintReader(this);
         super.onResume();
     }
 
@@ -393,7 +393,7 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
         boolean isScreenOn = powerManager.isScreenOn();
         if (!isScreenOn)
             Global.loggedIn = false;
-        DeviceUtils.unregisterFingerPrintReader(this);
+//        DeviceUtils.unregisterFingerPrintReader(this);
         global.startActivityTransitionTimer();
     }
 
