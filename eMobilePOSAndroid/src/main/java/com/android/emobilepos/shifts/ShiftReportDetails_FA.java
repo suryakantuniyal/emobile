@@ -128,7 +128,7 @@ public class ShiftReportDetails_FA extends BaseFragmentActivityActionBar impleme
                 global.getGlobalDlog().dismiss();
             global.promptForMandatoryLogin(this);
         }
-        DeviceUtils.registerFingerPrintReader(this);
+//        DeviceUtils.registerFingerPrintReader(this);
         super.onResume();
     }
 
@@ -140,7 +140,7 @@ public class ShiftReportDetails_FA extends BaseFragmentActivityActionBar impleme
         if (!isScreenOn)
             Global.loggedIn = false;
         global.startActivityTransitionTimer();
-        DeviceUtils.unregisterFingerPrintReader(this);
+//        DeviceUtils.unregisterFingerPrintReader(this);
     }
 
 

@@ -33,6 +33,7 @@ import drivers.EMSBluetoothStarPrinter;
 import drivers.EMSDeviceDriver;
 import drivers.EMSPowaPOS;
 import drivers.EMSmePOS;
+import drivers.EMSsnbc;
 import main.EMSDeviceManager;
 
 /**
@@ -76,6 +77,9 @@ public class DeviceUtils {
             myPref.setIsMEPOS(false);
             myPref.setIsPOWA(true);
         }
+//        if (myPref.isSNBC() && usbDevice != null) {
+//            connectSNBCUSB(activity, usbDevice);
+//        }
         String _portName;
         String _peripheralName;
         if (myPref.getSwiperType() != -1)
@@ -242,6 +246,9 @@ public class DeviceUtils {
                 case 9220:
                     preferences.setIsMEPOS(true);
                     return new EMSmePOS();
+                case 5455:
+                    preferences.setSNBC(true);
+                    return new EMSsnbc();
             }
         }
         return null;
@@ -267,16 +274,29 @@ public class DeviceUtils {
                     Toast.makeText(context, "USB connected", Toast.LENGTH_SHORT).show();
                     connected = true;
                     if (activity != null && activity instanceof Activity &&
-                            preferences.getPrinterType() == Global.STAR &&
-                            preferences.getPrinterName().toUpperCase().startsWith("USB")) {
+                            ((preferences.getPrinterType() == Global.STAR &&
+                                    preferences.getPrinterName().toUpperCase().startsWith("USB")) ||
+                                    (preferences.isSNBC())
+                            )) {
 //                        DeviceUtils.connectStarTS650BT(activity);
-                        new ReconnectUSBStarPrinterTask((Activity) activity).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                        if (preferences.isSNBC()) {
+                            DeviceUtils.connectStarTS650BT(activity);
+                            EMSDeviceDriver usbDeviceDriver = getUSBDeviceDriver((Activity) activity);
+                            if (preferences.isSNBC() && usbDeviceDriver != null) {
+                                connectSNBCUSB(activity, usbDeviceDriver);
+                            }
+                        }
+                        new ReconnectUSBPrinterTask((Activity) activity).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                     }
                 } else if (intent.getAction().contains("DETACHED")) {
                     Toast.makeText(context, "USB disconnected", Toast.LENGTH_SHORT).show();
                     connected = false;
                     if (preferences.getPrinterType() == Global.STAR && preferences.getPrinterName().toUpperCase().startsWith("USB")) {
                         Toast.makeText(context, context.getString(R.string.usb_disconnected), Toast.LENGTH_SHORT).show();
+                    }
+                    if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null &&
+                            Global.mainPrinterManager.getCurrentDevice() instanceof EMSsnbc) {
+//                        ((EMSsnbc) Global.mainPrinterManager.getCurrentDevice()).closeUsbInterface();
                     }
                 }
             }
@@ -309,16 +329,37 @@ public class DeviceUtils {
         }
     }
 
+    public static void connectSNBCUSB(Context context, EMSDeviceDriver usbDevice) {
+        try {
+//            autoConnect((Activity) context, true);
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                EMSsnbc ssnbc = (EMSsnbc) usbDevice;
+                ssnbc.openUsbInterface();
+            } else {
+                MyPreferences preferences = new MyPreferences(context);
+                preferences.setPrinterType(Global.SNBC);
+                preferences.posPrinter(false, true);
+                preferences.printerAreaSize(false, 48);
+                EMSDeviceManager edm = new EMSDeviceManager();
+                Global.mainPrinterManager = edm.getManager();
+                Global.mainPrinterManager.loadDrivers(context, Global.SNBC, EMSDeviceManager.PrinterInterfase.USB);
+//                usbDevice.autoConnect((Activity) context, edm, 48, true, "", "");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void sendBroadcastDeviceConnected(Context context) {
         Intent intent = new Intent(MainMenu_FA.NOTIFICATION_DEVICES_LOADED);
         context.sendBroadcast(intent);
     }
 
-    private static class ReconnectUSBStarPrinterTask extends AsyncTask<Void, Void, Void> {
+    private static class ReconnectUSBPrinterTask extends AsyncTask<Void, Void, Void> {
         ProgressDialog progressDialog;
         private Activity activity;
 
-        public ReconnectUSBStarPrinterTask(Activity activity) {
+        public ReconnectUSBPrinterTask(Activity activity) {
             this.activity = activity;
         }
 
@@ -334,12 +375,14 @@ public class DeviceUtils {
 
         @Override
         protected Void doInBackground(Void... none) {
+//            autoConnect(activity,true);
             DeviceUtils.connectStarTS650BT(activity);
             return null;
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
+
             Global.dismissDialog(activity, progressDialog);
         }
     }
