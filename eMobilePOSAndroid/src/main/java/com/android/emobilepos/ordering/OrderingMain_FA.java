@@ -768,17 +768,19 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             }
 
             prefetchLoyalty(true);
-//            ProductsHandler productsHandler = new ProductsHandler(this);
-//            List<OrderProduct> toRemove = new ArrayList<>();
-//            List<OrderProduct> list = new ArrayList<>();
-//            list.addAll(global.order.getOrderProducts());
-//            for (OrderProduct orderProduct : list) {
-//                Product product = productsHandler.getUPCProducts(orderProduct.getProd_id(), true);//populateDataForIntent(myCursor);
-//                getCatalogFr().automaticAddOrder(product);
-//                toRemove.add(orderProduct);
-//            }
-//            global.order.getOrderProducts().removeAll(toRemove);
-//            getLeftFragment().orderTotalDetailsFr.initSpinners();
+            ProductsHandler productsHandler = new ProductsHandler(this);
+            List<OrderProduct> toRemove = new ArrayList<>();
+            List<OrderProduct> list = new ArrayList<>();
+            list.addAll(global.order.getOrderProducts());
+            for (OrderProduct orderProduct : list) {
+                Product product = productsHandler.getUPCProducts(orderProduct.getProd_id(), true);//populateDataForIntent(myCursor);
+                getCatalogFr().automaticAddOrder(product);
+                toRemove.add(orderProduct);
+            }
+            global.order.getOrderProducts().removeAll(toRemove);
+            if (getLeftFragment().orderTotalDetailsFr != null) {
+                getLeftFragment().orderTotalDetailsFr.initSpinners();
+            }
 
         } else if (resultCode == -1 || resultCode == 3) // Void transaction from
         // Sales Receipt
@@ -995,7 +997,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     Global.rewardCardInfo = cardInfoManager;
                 swiperField.setText(cardInfoManager.getCardNumUnencrypted());
             } else {
-                Product product = handler.getUPCProducts(data,false);
+                Product product = handler.getUPCProducts(data, false);
 
                 if (product.getId() != null) {
 
