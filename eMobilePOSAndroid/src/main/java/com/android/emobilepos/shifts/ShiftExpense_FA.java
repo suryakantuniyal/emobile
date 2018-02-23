@@ -188,7 +188,7 @@ public class ShiftExpense_FA extends BaseFragmentActivityActionBar implements Vi
         if (global.isApplicationSentToBackground())
             Global.loggedIn = false;
         global.stopActivityTransitionTimer();
-        DeviceUtils.registerFingerPrintReader(this);
+//        DeviceUtils.registerFingerPrintReader(this);
         if (!Global.loggedIn) {
             if (global.getGlobalDlog() != null)
                 global.getGlobalDlog().dismiss();
@@ -205,7 +205,7 @@ public class ShiftExpense_FA extends BaseFragmentActivityActionBar implements Vi
         if (!isScreenOn)
             Global.loggedIn = false;
         global.startActivityTransitionTimer();
-        DeviceUtils.unregisterFingerPrintReader(this);
+//        DeviceUtils.unregisterFingerPrintReader(this);
     }
 
 

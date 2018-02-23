@@ -910,7 +910,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
                 global.getGlobalDlog().dismiss();
             global.promptForMandatoryLogin(this);
         }
-        DeviceUtils.registerFingerPrintReader(this);
+//        DeviceUtils.registerFingerPrintReader(this);
         super.onResume();
     }
 
@@ -922,7 +922,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         if (!isScreenOn)
             Global.loggedIn = false;
         global.startActivityTransitionTimer();
-        DeviceUtils.unregisterFingerPrintReader(this);
+//        DeviceUtils.unregisterFingerPrintReader(this);
     }
 
     @Override
