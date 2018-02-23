@@ -195,7 +195,7 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
                 global.getGlobalDlog().dismiss();
             global.promptForMandatoryLogin(activity);
         }
-        DeviceUtils.registerFingerPrintReader(this);
+//        DeviceUtils.registerFingerPrintReader(this);
         super.onResume();
     }
 
@@ -206,7 +206,7 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
         boolean isScreenOn = powerManager.isScreenOn();
         if (!isScreenOn)
             Global.loggedIn = false;
-        DeviceUtils.unregisterFingerPrintReader(this);
+//        DeviceUtils.unregisterFingerPrintReader(this);
         global.startActivityTransitionTimer();
     }
 

@@ -36,8 +36,8 @@ import interfaces.EMSDeviceManagerPrinterDelegate;
 import main.EMSDeviceManager;
 
 public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
-    private static POSSDK pos_usb;
-    private static POSInterfaceAPI interface_usb;
+    public static POSSDK pos_usb;
+    public static POSInterfaceAPI interface_usb;
     private final int LINE_WIDTH = 42;
     //Returned Value Statement
     private final int POS_SUCCESS = 1000;        //success
@@ -74,7 +74,7 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
             interface_usb = new POSUSBAPI(activity);
         } else {
             try {
-                interface_usb.CloseDevice();
+                closeUsbInterface();
             } catch (Exception e) {
                 Crashlytics.logException(e);
                 e.printStackTrace();
@@ -247,7 +247,7 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
                 didConnect = true;
         } else if (error_code == ERR_PROCESSING) {
             int _time_out = 0;
-            while (error_code == ERR_PROCESSING || _time_out <= 10) {
+            while (error_code == ERR_PROCESSING && _time_out <= 10) {
                 error_code = interface_usb.OpenDevice();
                 try {
                     Thread.sleep(1000);
@@ -470,13 +470,20 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 
         @Override
         protected String doInBackground(Integer... params) {
+            int retries = 0;
+            do {
+                error_code = interface_usb.OpenDevice();
+                retries++;
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
 
-
-            error_code = interface_usb.OpenDevice();
-            if (error_code == POS_SUCCESS) {
-                if (pos_usb == null) {
-                    pos_usb = new POSSDK(interface_usb);
                 }
+            } while (error_code != POS_SUCCESS && retries < 10);
+            if (error_code == POS_SUCCESS) {
+//                if (pos_usb == null) {
+                pos_usb = new POSSDK(interface_usb);
+//                }
                 pos_sdk = pos_usb;
 
                 if (setupPrinter())
@@ -490,10 +497,10 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
         protected void onPostExecute(String unused) {
             myProgressDialog.dismiss();
             if (didConnect) {
-                edm.driverDidConnectToDevice(thisInstance, true, activity);
+                edm.driverDidConnectToDevice(thisInstance, false, activity);
             } else {
 
-                edm.driverDidNotConnectToDevice(thisInstance, msg, true, activity);
+                edm.driverDidNotConnectToDevice(thisInstance, msg, false, activity);
             }
 
         }
