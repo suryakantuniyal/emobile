@@ -487,7 +487,7 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
 
         @Override
         protected void onPostExecute(String unused) {
-            myProgressDialog.dismiss();
+            Global.dismissDialog((Activity) activity, myProgressDialog);
 
             if (didConnect) {
                 edm.driverDidConnectToDevice(thisInstance, true, activity);
