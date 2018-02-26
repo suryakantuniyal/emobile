@@ -111,7 +111,6 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
     private boolean hasBeenCreated = false;
     private Activity activity;
     private String cust_id;
-    private List<CustomerCustomField> customFields;
     private Customer customer;
     private ArrayList<Country> countries;
     private Spinner billingCountrySpinner;
@@ -157,10 +156,8 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
     private ProgressBar progressBar;
     private int progress;
     private ImageView fingerPrintimage;
-    private String m_textString;
     private MyPreferences preferences;
     private boolean isReaderConnected = false;
-    private boolean isCreateCustomer;
     private List<String[]> priceLevelList;
     private List<Tax> taxList;
     private String[] isoCountries;
@@ -237,7 +234,7 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         if (extras != null && extras.containsKey("cust_id")) {
             isCustomerEdit = true;
             cust_id = extras.getString("cust_id");
-            customFields = CustomerCustomFieldsDAO.getCustomFields(cust_id);
+//            customFields = CustomerCustomFieldsDAO.getCustomFields(cust_id);
             customer = custHandler.getCustomer(cust_id);
         } else {
             isCustomerEdit = false;
@@ -401,15 +398,27 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
                 ((TextView) row.findViewById(R.id.customerCustomFieldLabelTextView)).setText(field.getCustFieldName());
                 ((EditText) row.findViewById(R.id.customerCustomFieldValueEditText)).setText(field.getCustValue());
                 tableLayout.addView(row);
-                if (field.getCustFieldId().equalsIgnoreCase("EMS_CARD_ID_NUM")) {
+                if (field.getCustFieldId().equalsIgnoreCase(getString(R.string.ems_card_id_num))) {
                     cardIdEditText = row.findViewById(R.id.customerCustomFieldValueEditText);
                 }
             }
 
 
         } else {
-            findViewById(R.id.customerDOBtextView371).setOnTouchListener(new View.OnTouchListener() {
+            TableLayout tableLayout = findViewById(R.id.customerFinancialInfoTableLayout);
+            CustomerCustomField field = new CustomerCustomField();
+            field.setCustId(customer.getCust_id());
+            field.setCustFieldId(getString(R.string.ems_card_id_num));
+            field.setCustValue("");
+            field.setCustFieldName(getString(R.string.cardId));
+            View row = View.inflate(this, R.layout.customercustomfields_tablerow_layout, null);
+            row.setTag(field);
+            ((TextView) row.findViewById(R.id.customerCustomFieldLabelTextView)).setText(R.string.cardId);
+            ((EditText) row.findViewById(R.id.customerCustomFieldValueEditText)).setText(field.getCustValue());
+            tableLayout.addView(row);
+            cardIdEditText = row.findViewById(R.id.customerCustomFieldValueEditText);
 
+            findViewById(R.id.customerDOBtextView371).setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
                     if (newFrag == null) {
@@ -735,7 +744,7 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
 
         CustomerCustomField customField = new CustomerCustomField();
         customField.setCustId(customer.getCust_id());
-        customField.setCustFieldId("EMS_CARD_ID_NUM");
+        customField.setCustFieldId(getString(R.string.ems_card_id_num));
         customField.setCustFieldName("ID");
         customField.setCustValue(cardNumber);
         CustomerCustomFieldsDAO.upsert(customField);
@@ -946,7 +955,7 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         CustomerCustomFieldsDAO.upsert(customField);
         CustomersHandler handler = new CustomersHandler(ViewCustomerDetails_FA.this);
         handler.updateSyncStatus(cust_id, false);
-        customFields = CustomerCustomFieldsDAO.getCustomFields(cust_id);
+//        customFields = CustomerCustomFieldsDAO.getCustomFields(cust_id);
         Toast.makeText(this, R.string.information_saved, Toast.LENGTH_LONG).show();
 
 //        customer.setCust_phone(phoneTextView.getText().toString());
