@@ -1391,7 +1391,7 @@
     <string name="backup_data_fail">Cloud Backup data has fail</string>
     <string name="backup_data_success">Coud Backup data success</string>
     <string name="usb_disconnected">USB printer disconnected. Verify your Printer USB cable connection.</string>
-    <string name="cardId">Card ID</string>
-    <string name="ems_card_id_num">EMS_CARD_ID_NUM</string>
+    <string name="cardId" translatable="false">Card ID</string>
+    <string name="ems_card_id_num" translatable="false">EMS_CARD_ID_NUM</string>
 
 </resources>
