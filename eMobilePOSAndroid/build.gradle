@@ -267,6 +267,7 @@ dependencies {
     compile files('libs/coresdk_1_4_2.jar')
     compile files('libs/dpuareu.jar')
     compile files('libs/TfhkaAndroid.jar')
+    compile files('libs/bbdevice-android-3.4.2.jar')
     compile 'com.android.support:design:27.0.1'
 }
 
