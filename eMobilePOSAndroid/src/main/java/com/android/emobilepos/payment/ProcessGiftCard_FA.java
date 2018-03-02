@@ -397,6 +397,8 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
                 cardInfoManager.setCardLast4(last4Digits);
             }
             cardInfoManager.setCardNumAESEncrypted(encrypt.encryptWithAES(fieldCardNum.getText().toString()));
+            cardInfoManager.setCardNumUnencrypted(fieldCardNum.getText().toString());
+
         }
     }
 
@@ -500,6 +502,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
                 generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ChargeGiftCardAction, cardInfoManager.getWasSwiped(), cardType,
                         cardInfoManager);
             } else if (cardType.equalsIgnoreCase("REWARD")) {
+                Global.rewardCardInfo=cardInfoManager;
                 generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ChargeRewardAction, cardInfoManager.getWasSwiped(), cardType,
                         cardInfoManager);
             }
@@ -623,6 +626,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         bundle.putString("total_amount", Double.toString(Global
                 .formatNumFromLocale(payment.getOriginalTotalAmount())));
         bundle.putString("pay_dueamount", payment.getPay_dueamount());
+        bundle.putString("pay_amount", payment.getPay_amount());
         bundle.putString("pay_amount", payment.getPay_amount());
         Global.amountPaid = payment.getPay_amount();
         data.putExtras(bundle);
