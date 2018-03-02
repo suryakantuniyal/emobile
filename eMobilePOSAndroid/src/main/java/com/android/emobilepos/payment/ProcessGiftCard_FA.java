@@ -39,6 +39,7 @@ import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.CustomerCustomField;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.StoreAndForward;
+import com.android.emobilepos.ordering.MyBBDeviceControllerListener;
 import com.android.ivu.MersenneTwisterFast;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
@@ -50,6 +51,7 @@ import com.android.support.NumberUtils;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.android.support.textwatcher.GiftCardTextWatcher;
+import com.bbpos.bbdevice.BBDeviceController;
 import com.crashlytics.android.Crashlytics;
 
 import org.xml.sax.InputSource;
@@ -81,7 +83,8 @@ import drivers.EMSUniMagDriver;
 import interfaces.EMSCallBack;
 import util.json.UIUtils;
 
-public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener {
+public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements EMSCallBack,
+        OnClickListener, MyBBDeviceControllerListener.BarcodeCallback {
 
     private static final String DATA_STRING_TAG = "com.motorolasolutions.emdk.datawedge.data_string";
     private CheckBox cardSwipe, redeemAll;
@@ -107,6 +110,11 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
     private EMSIDTechUSB _msrUsbSams;
     private GiftCardTextWatcher msrTextWatcher;
     private AssignEmployee assignEmployee;
+
+    private Button btnScan;
+    private BBDeviceController bbDeviceController;
+    private MyBBDeviceControllerListener listener;
+
 
 
     @Override
@@ -182,6 +190,21 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         setUpCardReader();
         hasBeenCreated = true;
         fieldHidden.requestFocus();
+
+        btnScan = findViewById(R.id.btnScan);
+        btnScan.setOnClickListener(this);
+
+        listener = new MyBBDeviceControllerListener(this, ProcessGiftCard_FA.this);
+        bbDeviceController = BBDeviceController.getInstance(
+                getApplicationContext(), listener);
+        bbDeviceController.startBarcodeReader();
+//        Toast.makeText(ProcessGiftCard_FA.this, "startBarcodeReader", Toast.LENGTH_LONG).show();
+
+    }
+
+    @Override
+    public void onDataScanned(String data) {
+        fieldCardNum.setText(data);
     }
 
     @Override
@@ -226,6 +249,14 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         }
 
         super.onDestroy();
+
+        bbDeviceController.stopBarcodeReader();
+//        Toast.makeText(ProcessGiftCard_FA.this, "stopBarcodeReader", Toast.LENGTH_LONG).show();
+
+        bbDeviceController.releaseBBDeviceController();
+        bbDeviceController = null;
+        listener = null;
+//        Toast.makeText(ProcessGiftCard_FA.this, "releaseBBDeviceController", Toast.LENGTH_LONG).show();
     }
 
     private TextWatcher getTextWatcher(final EditText editText) {
@@ -713,6 +744,10 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
                 case R.id.processButton:
                     if (validatePaymentData())
                         processPayment();
+                    break;
+                case R.id.btnScan:
+                    bbDeviceController.getBarcode();
+//                    Toast.makeText(ProcessGiftCard_FA.this, "getBarcode", Toast.LENGTH_LONG).show();
                     break;
             }
         }

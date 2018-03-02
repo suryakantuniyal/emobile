@@ -314,7 +314,19 @@
 
                 </LinearLayout>
 
-              
+                <Button
+                    android:id="@+id/btnScan"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="20dp"
+                    android:layout_marginTop="20dp"
+                    android:minHeight="0dp"
+                    android:minWidth="0dp"
+                    android:padding="10dp"
+                    android:text="Scan"
+                    android:textSize="36sp" />
+
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

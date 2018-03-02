@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Environment;
 import android.provider.Settings.Secure;
 import android.text.TextUtils;
+import android.util.Base64;
 
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -15,7 +16,6 @@ import net.sqlcipher.Cursor;
 import net.sqlcipher.database.SQLiteDatabase;
 
 import org.apache.commons.io.FileUtils;
-import org.kobjects.base64.Base64;
 
 import java.io.File;
 import java.io.IOException;
@@ -444,7 +444,7 @@ public class DBManager {
         try {
             digester = MessageDigest.getInstance("MD5");
             digester.update(android_id.getBytes());
-            md5 = Base64.encode(digester.digest());
+            md5 = Base64.encodeToString(digester.digest(), Base64.NO_WRAP);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
             return PASSWORD;
