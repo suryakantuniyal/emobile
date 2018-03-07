@@ -34,6 +34,7 @@ import com.android.emobilepos.firebase.PollingNotificationService;
 import com.android.emobilepos.firebase.RegistrationIntentService;
 import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.security.SecurityManager;
+import com.android.emobilepos.service.SyncConfigServerService;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -247,6 +248,8 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         if ((myPref.isPollingHoldsEnable() || myPref.isAutoSyncEnable()) && !PollingNotificationService.isServiceRunning(this)) {
             startPollingService();
         }
+        Intent service = new Intent(this, SyncConfigServerService.class);
+        startService(service);
         registerReceiver(messageReceiver, new IntentFilter(NOTIFICATION_RECEIVED));
 //        DeviceUtils.registerFingerPrintReader(this);
         if (global.isApplicationSentToBackground()) {
