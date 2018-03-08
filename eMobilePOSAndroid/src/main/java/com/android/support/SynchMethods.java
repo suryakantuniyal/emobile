@@ -105,6 +105,8 @@ import java.io.StringReader;
 import java.lang.reflect.Type;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -248,7 +250,6 @@ public class SynchMethods {
     }
 
     public static void synchSalesAssociateDinnindTablesConfiguration(Context activity) throws SAXException {
-        oauthclient.HttpClient client = new oauthclient.HttpClient();
         Gson gson = JsonUtils.getInstance();
         if (OAuthManager.isExpired(activity)) {
             getOAuthManager(activity);
@@ -257,7 +258,7 @@ public class SynchMethods {
 //            String s = client.getString(context.getString(R.string.sync_enablermobile_mesasconfig), oauthClient);
         List<DinningLocationConfiguration> configurations = new ArrayList<>();
         try {
-            InputStream inputStream = client.get(activity.getString(R.string.sync_enablermobile_mesasconfig), oauthClient);
+            InputStream inputStream = oauthclient.HttpClient.get(activity.getString(R.string.sync_enablermobile_mesasconfig), oauthClient);
             JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
             reader.beginArray();
             String defaultLocation = AssignEmployeeDAO.getAssignEmployee(false).getDefaultLocation();
@@ -283,6 +284,10 @@ public class SynchMethods {
         } catch (IOException e) {
             e.printStackTrace();
             Crashlytics.logException(e);
+        } catch (NoSuchAlgorithmException e) {
+
+        } catch (KeyManagementException e) {
+
         }
     }
 
@@ -291,17 +296,17 @@ public class SynchMethods {
     }
 
 
-    public static void synchOrdersOnHoldList(Context context) throws SAXException, IOException {
+    public static void synchOrdersOnHoldList(Context context) throws SAXException, IOException, KeyManagementException, NoSuchAlgorithmException {
         MyPreferences preferences = new MyPreferences(context);
         Gson gson = JsonUtils.getInstance();
         GenerateXML xml = new GenerateXML(context);
         String json;
         if (preferences.isUse_syncplus_services()) {
-            String url = String.format(context.getString(R.string.sync_enablermobile_local_getonholdlist), preferences.getSyncPlusIPAddress(), preferences.getSyncPlusPort());
-            json = new HttpClient().httpJsonRequest(url);
+            String url = String.format(context.getString(R.string   .sync_enablermobile_local_holds), preferences.getSyncPlusIPAddress(), preferences.getSyncPlusPort());
+            json = oauthclient.HttpClient.getString(url,null);
         } else {
-            json = new HttpClient().httpJsonRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                    xml.downloadAll("GetOrdersOnHoldList"));
+            json = oauthclient.HttpClient.getString(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                    xml.downloadAll("GetOrdersOnHoldList"),null);
         }
         Type listType = new com.google.gson.reflect.TypeToken<List<Order>>() {
         }.getType();
@@ -330,13 +335,12 @@ public class SynchMethods {
         ordersHandler.deleteOnHoldsOrders(ordersToDelete);
     }
 
-    public static void synchOrdersOnHoldDetails(Context activity, String ordID) throws SAXException, IOException {
-        HttpClient client = new HttpClient();
+    public static void synchOrdersOnHoldDetails(Context activity, String ordID) throws SAXException, IOException, NoSuchAlgorithmException, KeyManagementException {
         Gson gson = JsonUtils.getInstance();
         List<OrderProduct> orderProducts = new ArrayList<>();
         GenerateXML xml = new GenerateXML(activity);
-        String json = client.httpJsonRequest(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                xml.getOnHold(Global.S_ORDERS_ON_HOLD_DETAILS, ordID));
+        String json = oauthclient.HttpClient.getString(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                xml.getOnHold(Global.S_ORDERS_ON_HOLD_DETAILS, ordID),null);
         JSONArray jsonArray;
         try {
             jsonArray = new JSONArray(json);
@@ -847,11 +851,11 @@ public class SynchMethods {
 //        }
 //    }
 
-    private void synchClerkPersmissions() throws IOException, SAXException {
+    private void synchClerkPersmissions() throws IOException, SAXException, KeyManagementException, NoSuchAlgorithmException {
         Gson gson = JsonUtils.getInstance();
         GenerateXML xml = new GenerateXML(context);
-        String jsonRequest = client.httpJsonRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                xml.downloadAll("ClerkPermissions"));
+        String jsonRequest = oauthclient.HttpClient.getString(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                xml.downloadAll("ClerkPermissions"),null);
         ClerkEmployeePermissionResponse response = gson.fromJson(jsonRequest, ClerkEmployeePermissionResponse.class);
         EmployeePermissionDAO.truncate();
         ClerkDAO.truncate();
@@ -859,11 +863,11 @@ public class SynchMethods {
         EmployeePermissionDAO.insertOrUpdate(response.getEmployeePersmissions());
     }
 
-    public void synchShifts() throws IOException, SAXException {
+    public void synchShifts() throws IOException, SAXException, KeyManagementException, NoSuchAlgorithmException {
         Gson gson = JsonUtils.getInstance();
         GenerateXML xml = new GenerateXML(context);
-        String jsonRequest = client.httpJsonRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                xml.downloadAll("Shifts"));
+        String jsonRequest = oauthclient.HttpClient.getString(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                xml.downloadAll("Shifts"),null);
         Type listType = new com.google.gson.reflect.TypeToken<List<Shift>>() {
         }.getType();
         List<Shift> shifts = gson.fromJson(jsonRequest, listType);
