@@ -245,6 +245,34 @@
             android:title="@string/config_enable_location_inventory" />
     </PreferenceCategory>
     <PreferenceCategory
+        android:layout="@layout/settings_custom_header_layout"
+        android:title="@string/config_syncplus_settings">
+        <CheckBoxPreference
+            android:key="pref_use_syncplus_services"
+            android:title="@string/config_use_syncplus_services" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:dependency="pref_use_syncplus_services"
+            android:key="pref_syncplus_mode"
+            android:switchTextOff="@string/automatic"
+            android:switchTextOn="@string/manual"
+            android:title="@string/syncplus_connection_mode" />
+        <EditTextPreference
+            android:key="pref_syncplus_ip"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:dependency="pref_syncplus_mode"
+            android:title="@string/dlog_star_ip" />
+        <EditTextPreference
+            android:defaultValue="8001"
+            android:key="pref_syncplus_port"
+            android:selectAllOnFocus="true"
+            android:dependency="pref_syncplus_mode"
+            android:singleLine="true"
+            android:title="@string/dlog_star_port" />
+
+    </PreferenceCategory>
+    <PreferenceCategory
         android:key="payment_section"
         android:layout="@layout/settings_custom_header_layout"
         android:title="@string/config_hard_code_payments">

@@ -7,8 +7,8 @@ import android.net.wifi.WifiManager;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.android.dao.SyncServerConfigurationDAO;
 import com.android.emobilepos.models.realms.SyncServerConfiguration;
+import com.android.support.MyPreferences;
 
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -46,11 +46,14 @@ public class SyncConfigServerService extends Service {
         multicastLock.release();
         String senderIP = packet.getAddress().getHostAddress();
         String message = new String(packet.getData()).trim();
-        if(lastMessage.equalsIgnoreCase(message)) {
+        if (android.text.TextUtils.isEmpty(lastMessage) || !lastMessage.equalsIgnoreCase(message)) {
             SyncServerConfiguration serverConfiguration = SyncServerConfiguration.getInstance(message);
-            SyncServerConfigurationDAO.insert(serverConfiguration);
+            MyPreferences preferences = new MyPreferences(this);
+            preferences.setSyncPlusIPAddress(serverConfiguration.getIpAddress());
+            preferences.setSyncPlusPort(serverConfiguration.getPort());
+            lastMessage = message;
         }
-        
+
         Log.e("UDP", "Got UDB broadcast from " + senderIP + ", message: " + message);
 
         broadcastIntent(senderIP, message);
@@ -96,7 +99,6 @@ public class SyncConfigServerService extends Service {
 
     }
 
-    ;
 
     @Override
     public void onDestroy() {
@@ -115,5 +117,15 @@ public class SyncConfigServerService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    public static void startService(Context context) {
+        Intent service = new Intent(context, SyncConfigServerService.class);
+        context.startService(service);
+    }
+
+    public static void stopService(Context context) {
+        Intent stopIntent = new Intent(context, SyncConfigServerService.class);
+        context.stopService(stopIntent);
     }
 }

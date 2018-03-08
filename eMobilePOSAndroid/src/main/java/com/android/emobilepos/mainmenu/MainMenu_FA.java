@@ -248,8 +248,11 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         if ((myPref.isPollingHoldsEnable() || myPref.isAutoSyncEnable()) && !PollingNotificationService.isServiceRunning(this)) {
             startPollingService();
         }
-        Intent service = new Intent(this, SyncConfigServerService.class);
-        startService(service);
+        if(myPref.isUse_syncplus_services() && myPref.isSyncplus_AutoScan()) {
+            SyncConfigServerService.startService(this);
+        }
+//        Intent service = new Intent(this, SyncConfigServerService.class);
+//        startService(service);
         registerReceiver(messageReceiver, new IntentFilter(NOTIFICATION_RECEIVED));
 //        DeviceUtils.registerFingerPrintReader(this);
         if (global.isApplicationSentToBackground()) {
