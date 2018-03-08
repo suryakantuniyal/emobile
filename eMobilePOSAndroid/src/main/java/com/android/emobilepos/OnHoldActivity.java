@@ -51,6 +51,8 @@ import com.crashlytics.android.Crashlytics;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -456,6 +458,12 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                 e.printStackTrace();
                 Crashlytics.logException(e);
             } catch (IOException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
+            } catch (KeyManagementException e) {
                 e.printStackTrace();
                 Crashlytics.logException(e);
             }

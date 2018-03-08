@@ -186,7 +186,7 @@ public class SynchMethods {
         OAuthClient authClient = OAuthManager.getOAuthClient(context);
         oauthclient.HttpClient httpClient = new oauthclient.HttpClient();
         try {
-            String response = httpClient.getString(url.toString(), authClient);
+            String response = oauthclient.HttpClient.getString(url.toString(), authClient);
             Type listType = new com.google.gson.reflect.TypeToken<List<EmobileBiometric>>() {
             }.getType();
             Gson gson = JsonUtils.getInstance();
@@ -197,6 +197,10 @@ public class SynchMethods {
         } catch (IOException e) {
             e.printStackTrace();
             Crashlytics.logException(e);
+        } catch (NoSuchAlgorithmException e) {
+
+        } catch (KeyManagementException e) {
+
         }
     }
 
@@ -302,11 +306,11 @@ public class SynchMethods {
         GenerateXML xml = new GenerateXML(context);
         String json;
         if (preferences.isUse_syncplus_services()) {
-            String url = String.format(context.getString(R.string   .sync_enablermobile_local_holds), preferences.getSyncPlusIPAddress(), preferences.getSyncPlusPort());
-            json = oauthclient.HttpClient.getString(url,null);
+            String url = String.format(context.getString(R.string.sync_enablermobile_local_holds), preferences.getSyncPlusIPAddress(), preferences.getSyncPlusPort());
+            json = oauthclient.HttpClient.getString(url, null);
         } else {
             json = oauthclient.HttpClient.getString(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                    xml.downloadAll("GetOrdersOnHoldList"),null);
+                    xml.downloadAll("GetOrdersOnHoldList"), null);
         }
         Type listType = new com.google.gson.reflect.TypeToken<List<Order>>() {
         }.getType();
@@ -340,7 +344,7 @@ public class SynchMethods {
         List<OrderProduct> orderProducts = new ArrayList<>();
         GenerateXML xml = new GenerateXML(activity);
         String json = oauthclient.HttpClient.getString(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                xml.getOnHold(Global.S_ORDERS_ON_HOLD_DETAILS, ordID),null);
+                xml.getOnHold(Global.S_ORDERS_ON_HOLD_DETAILS, ordID), null);
         JSONArray jsonArray;
         try {
             jsonArray = new JSONArray(json);
@@ -855,7 +859,7 @@ public class SynchMethods {
         Gson gson = JsonUtils.getInstance();
         GenerateXML xml = new GenerateXML(context);
         String jsonRequest = oauthclient.HttpClient.getString(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                xml.downloadAll("ClerkPermissions"),null);
+                xml.downloadAll("ClerkPermissions"), null);
         ClerkEmployeePermissionResponse response = gson.fromJson(jsonRequest, ClerkEmployeePermissionResponse.class);
         EmployeePermissionDAO.truncate();
         ClerkDAO.truncate();
@@ -867,7 +871,7 @@ public class SynchMethods {
         Gson gson = JsonUtils.getInstance();
         GenerateXML xml = new GenerateXML(context);
         String jsonRequest = oauthclient.HttpClient.getString(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                xml.downloadAll("Shifts"),null);
+                xml.downloadAll("Shifts"), null);
         Type listType = new com.google.gson.reflect.TypeToken<List<Shift>>() {
         }.getType();
         List<Shift> shifts = gson.fromJson(jsonRequest, listType);
@@ -976,11 +980,11 @@ public class SynchMethods {
 //        tempFile.delete();
 //    }
 
-    private void synchCustomers() throws IOException, SAXException {
+    private void synchCustomers() throws IOException, SAXException, NoSuchAlgorithmException, KeyManagementException {
         Gson gson = JsonUtils.getInstance();
         GenerateXML xml = new GenerateXML(context);
-        InputStream inputStream = client.httpInputStreamRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                xml.downloadAll("Customers"));
+        InputStream inputStream = oauthclient.HttpClient.get(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                xml.downloadAll("Customers"), null);
         JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
         List<Customer> customers = new ArrayList<>();
         CustomersHandler handler = new CustomersHandler(context);
@@ -1027,11 +1031,11 @@ public class SynchMethods {
         tempFile.delete();
     }
 
-    private void synchPaymentMethods() throws IOException, SAXException {
+    private void synchPaymentMethods() throws IOException, SAXException, NoSuchAlgorithmException, KeyManagementException {
         Gson gson = JsonUtils.getInstance();
         GenerateXML xml = new GenerateXML(context);
-        InputStream inputStream = client.httpInputStreamRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                xml.downloadAll("PayMethods"));
+        InputStream inputStream = oauthclient.HttpClient.get(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                xml.downloadAll("PayMethods"), null);
         JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
         List<PaymentMethod> methods = new ArrayList<>();
         PayMethodsHandler payMethodsHandler = new PayMethodsHandler(context);
@@ -1053,11 +1057,11 @@ public class SynchMethods {
         reader.close();
     }
 
-    private void synchPriceLevel() throws IOException, SAXException {
+    private void synchPriceLevel() throws IOException, SAXException, NoSuchAlgorithmException, KeyManagementException {
         Gson gson = JsonUtils.getInstance();
         GenerateXML xml = new GenerateXML(context);
-        InputStream inputStream = client.httpInputStreamRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                xml.downloadAll("PriceLevel"));
+        InputStream inputStream = oauthclient.HttpClient.get(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                xml.downloadAll("PriceLevel"), null);
         JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
         List<PriceLevel> priceLevels = new ArrayList<>();
         PriceLevelHandler priceLevelHandler = new PriceLevelHandler();
@@ -1079,11 +1083,11 @@ public class SynchMethods {
         reader.close();
     }
 
-    private void synchCustomerCustomFields() throws IOException, SAXException {
+    private void synchCustomerCustomFields() throws IOException, SAXException, NoSuchAlgorithmException, KeyManagementException {
         Gson gson = JsonUtils.getInstance();
         GenerateXML xml = new GenerateXML(context);
-        InputStream inputStream = client.httpInputStreamRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                xml.downloadAll("CustomerCustomFields"));
+        InputStream inputStream = oauthclient.HttpClient.get(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                xml.downloadAll("CustomerCustomFields"), null);
         JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
         List<CustomerCustomField> customFields = new ArrayList<>();
         CustomerCustomFieldsDAO.emptyTable();
@@ -1105,11 +1109,11 @@ public class SynchMethods {
     }
 
 
-    private void synchItemsPriceLevel() throws IOException, SAXException {
+    private void synchItemsPriceLevel() throws IOException, SAXException, NoSuchAlgorithmException, KeyManagementException {
         Gson gson = JsonUtils.getInstance();
         GenerateXML xml = new GenerateXML(context);
-        InputStream inputStream = client.httpInputStreamRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                xml.downloadAll("PriceLevelItems"));
+        InputStream inputStream = oauthclient.HttpClient.get(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                xml.downloadAll("PriceLevelItems"), null);
         JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
         List<ItemPriceLevel> itemPriceLevels = new ArrayList<>();
         PriceLevelItemsHandler levelItemsHandler = new PriceLevelItemsHandler(context);
@@ -1131,11 +1135,11 @@ public class SynchMethods {
         reader.close();
     }
 
-    private void synchPrinters() throws IOException, SAXException {
+    private void synchPrinters() throws IOException, SAXException, KeyManagementException, NoSuchAlgorithmException {
         client = new HttpClient();
         GenerateXML xml = new GenerateXML(context);
-        String jsonRequest = client.httpJsonRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                xml.downloadAll("Printers"));
+        String jsonRequest = oauthclient.HttpClient.getString(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                xml.downloadAll("Printers"), null);
         try {
             DeviceTableDAO.truncate();
             DeviceTableDAO.insert(jsonRequest);
@@ -1160,11 +1164,11 @@ public class SynchMethods {
         tempFile.delete();
     }
 
-    private void synchProdAddon() throws IOException, SAXException {
+    private void synchProdAddon() throws IOException, SAXException, NoSuchAlgorithmException, KeyManagementException {
         Gson gson = JsonUtils.getInstance();
         GenerateXML xml = new GenerateXML(context);
-        InputStream inputStream = client.httpInputStreamRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                xml.downloadAll("Product_addons"));
+        InputStream inputStream = oauthclient.HttpClient.get(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                xml.downloadAll("Product_addons"), null);
         JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
         List<ProductAddons> addonses = new ArrayList<>();
         ProductAddonsHandler addonsHandler = new ProductAddonsHandler(context);
@@ -1186,12 +1190,12 @@ public class SynchMethods {
         reader.close();
     }
 
-    private void synchProducts() throws IOException, SAXException {
+    private void synchProducts() throws IOException, SAXException, NoSuchAlgorithmException, KeyManagementException {
         ProductsHandler productsHandler = new ProductsHandler(context);
         Gson gson = JsonUtils.getInstance();
         GenerateXML xml = new GenerateXML(context);
-        InputStream inputStream = client.httpInputStreamRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                xml.downloadAll("Products"));
+        InputStream inputStream = oauthclient.HttpClient.get(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                xml.downloadAll("Products"), null);
         JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
         List<Product> products = new ArrayList<>();
         productsHandler.emptyTable();
@@ -1213,11 +1217,11 @@ public class SynchMethods {
 
     }
 
-    private void synchOrderAttributes() throws IOException, SAXException {
+    private void synchOrderAttributes() throws IOException, SAXException, NoSuchAlgorithmException, KeyManagementException {
         Gson gson = JsonUtils.getInstance();
         GenerateXML xml = new GenerateXML(context);
-        InputStream inputStream = client.httpInputStreamRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                xml.downloadAll("OrderAttributes"));
+        InputStream inputStream = oauthclient.HttpClient.get(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                xml.downloadAll("OrderAttributes"), null);
         JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
         List<OrderAttributes> orderAttributes = new ArrayList<>();
         reader.beginArray();
@@ -1252,12 +1256,12 @@ public class SynchMethods {
         }
     }
 
-    private void synchProductAliases() throws IOException, SAXException {
+    private void synchProductAliases() throws IOException, SAXException, NoSuchAlgorithmException, KeyManagementException {
         ProductAliases_DB productAliasesDB = new ProductAliases_DB(context);
         Gson gson = JsonUtils.getInstance();
         GenerateXML xml = new GenerateXML(context);
-        InputStream inputStream = client.httpInputStreamRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                xml.downloadAll("ProductAliases"));
+        InputStream inputStream = oauthclient.HttpClient.get(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                xml.downloadAll("ProductAliases"), null);
         JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
         List<ProductAlias> productAliases = new ArrayList<>();
         productAliasesDB.emptyTable();
@@ -1435,11 +1439,11 @@ public class SynchMethods {
         return text.toString();
     }
 
-    private void synchDownloadDinnerTable() throws SAXException, IOException {
+    private void synchDownloadDinnerTable() throws SAXException, IOException, KeyManagementException, NoSuchAlgorithmException {
         client = new HttpClient();
         GenerateXML xml = new GenerateXML(context);
-        String jsonRequest = client.httpJsonRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                xml.getDinnerTables());
+        String jsonRequest = oauthclient.HttpClient.getString(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                xml.getDinnerTables(), null);
         try {
             DinningTableDAO.truncate();
             DinningTableDAO.insert(jsonRequest);
@@ -1448,11 +1452,11 @@ public class SynchMethods {
         }
     }
 
-    private void synchDownloadMixMatch() throws SAXException, IOException {
+    private void synchDownloadMixMatch() throws SAXException, IOException, NoSuchAlgorithmException, KeyManagementException {
         client = new HttpClient();
         GenerateXML xml = new GenerateXML(context);
-        InputStream inputStream = client.httpInputStreamRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                xml.getMixMatch());
+        InputStream inputStream = oauthclient.HttpClient.get(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                xml.getMixMatch(), null);
         JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
         List<MixMatch> mixMatches = new ArrayList<MixMatch>();
         MixMatchDAO.truncate();
@@ -1473,11 +1477,11 @@ public class SynchMethods {
         reader.close();
     }
 
-    private void synchDownloadSalesAssociate() throws SAXException, IOException {
+    private void synchDownloadSalesAssociate() throws SAXException, IOException, KeyManagementException, NoSuchAlgorithmException {
         client = new HttpClient();
         GenerateXML xml = new GenerateXML(context);
-        String jsonRequest = client.httpJsonRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                xml.getSalesAssociate());
+        String jsonRequest = oauthclient.HttpClient.getString(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                xml.getSalesAssociate(), null);
         try {
             ClerkDAO.truncate();
             ClerkDAO.insert(jsonRequest);
@@ -1486,27 +1490,27 @@ public class SynchMethods {
         }
     }
 
-    private void synchDownloadTermsAndConditions() throws SAXException, IOException {
+    private void synchDownloadTermsAndConditions() throws SAXException, IOException, KeyManagementException, NoSuchAlgorithmException {
         GenerateXML xml = new GenerateXML(context);
-        String jsonRequest = client.httpJsonRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                xml.downloadAll("TermsAndConditions"));
+        String jsonRequest = oauthclient.HttpClient.getString(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                xml.downloadAll("TermsAndConditions"),null);
         TermsNConditionsDAO.insert(jsonRequest);
     }
 
-    private void synchUoM() throws IOException, SAXException {
+    private void synchUoM() throws IOException, SAXException, KeyManagementException, NoSuchAlgorithmException {
         client = new HttpClient();
         GenerateXML xml = new GenerateXML(context);
-        String jsonRequest = client.httpJsonRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                xml.downloadAll("UoM"));
+        String jsonRequest = oauthclient.HttpClient.getString(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                xml.downloadAll("UoM"),null);
         UomDAO.truncate();
         UomDAO.insert(jsonRequest);
     }
 
-    private void synchGetOrdProdAttr() throws IOException, SAXException {
+    private void synchGetOrdProdAttr() throws IOException, SAXException, KeyManagementException, NoSuchAlgorithmException {
         client = new HttpClient();
         GenerateXML xml = new GenerateXML(context);
-        String jsonRequest = client.httpJsonRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                xml.downloadAll("GetOrderProductsAttr"));
+        String jsonRequest = oauthclient.HttpClient.getString(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                xml.downloadAll("GetOrderProductsAttr"),null);
         OrderProductAttributeDAO.truncate();
         OrderProductAttributeDAO.insert(jsonRequest);
     }

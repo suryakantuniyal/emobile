@@ -28,23 +28,24 @@ public class HttpClient {
         return convertStreamToString(inputStream);
     }
 
-    public static HttpsURLConnection getHttpsURLConnection(String urlAddress, HTTPMethod method) throws NoSuchAlgorithmException, KeyManagementException, IOException {
+    public static HttpURLConnection getHttpsURLConnection(String urlAddress, HTTPMethod method) throws NoSuchAlgorithmException, KeyManagementException, IOException {
         URL url = new URL(urlAddress);
-//        HttpsURLConnection httpURLConnection = (HttpsURLConnection) url.openConnection();
-//        httpURLConnection.setRequestMethod(method.name());
-//        httpURLConnection.setSSLSocketFactory(new TLSSocketFactory());
         return getHttpsURLConnection(url, method);
     }
 
-    public static HttpsURLConnection getHttpsURLConnection(URL url, HTTPMethod method) throws NoSuchAlgorithmException, KeyManagementException, IOException {
-        HttpsURLConnection httpURLConnection = (HttpsURLConnection) url.openConnection();
+    public static HttpURLConnection getHttpsURLConnection(URL url, HTTPMethod method) throws NoSuchAlgorithmException, KeyManagementException, IOException {
+        boolean isSSL = url.getProtocol().equalsIgnoreCase("https");
+        HttpURLConnection httpURLConnection = isSSL ?
+                (HttpsURLConnection) url.openConnection() : (HttpURLConnection) url.openConnection();
         httpURLConnection.setRequestMethod(method.name());
-        httpURLConnection.setSSLSocketFactory(new TLSSocketFactory());
+        if(isSSL) {
+            ((HttpsURLConnection)httpURLConnection).setSSLSocketFactory(new TLSSocketFactory());
+        }
         return httpURLConnection;
     }
 
     public static InputStream get(String urlAddress, OAuthClient authClient) throws IOException, KeyManagementException, NoSuchAlgorithmException {
-        HttpsURLConnection httpURLConnection = getHttpsURLConnection(urlAddress, HTTPMethod.GET);//(HttpsURLConnection) url.openConnection();
+        HttpURLConnection httpURLConnection = getHttpsURLConnection(urlAddress, HTTPMethod.GET);//(HttpsURLConnection) url.openConnection();
         httpURLConnection.setRequestProperty("Content-Type", "application/json");
         if (authClient != null) {
             httpURLConnection.setRequestProperty("Authorization", "Bearer " + authClient.getAccessToken());
@@ -53,7 +54,7 @@ public class HttpClient {
     }
 
     public static InputStream get(String urlAddress, String json, OAuthClient authClient) throws IOException, KeyManagementException, NoSuchAlgorithmException {
-        HttpsURLConnection httpURLConnection = getHttpsURLConnection(urlAddress, HTTPMethod.GET);//(HttpsURLConnection) url.openConnection();
+        HttpURLConnection httpURLConnection = getHttpsURLConnection(urlAddress, HTTPMethod.GET);//(HttpsURLConnection) url.openConnection();
         httpURLConnection.setRequestProperty("Content-Type", "application/json");
         httpURLConnection.setDoInput(true);
         httpURLConnection.setDoOutput(true);
@@ -112,7 +113,7 @@ public class HttpClient {
     public static String post(String urlAddress, String rawData, OAuthClient authClient)
             throws Exception {
 //        URL url = new URL(urlAddress);
-        HttpsURLConnection httpURLConnection = getHttpsURLConnection(urlAddress, HTTPMethod.POST);//(HttpsURLConnection) url.openConnection();
+        HttpURLConnection httpURLConnection = getHttpsURLConnection(urlAddress, HTTPMethod.POST);//(HttpsURLConnection) url.openConnection();
 //        httpURLConnection.setRequestMethod("POST");
         if (authClient != null) {
             httpURLConnection.setRequestProperty("Authorization", "Bearer " + authClient.getAccessToken());
@@ -179,7 +180,6 @@ public class HttpClient {
         }
         return sb.toString();
     }
-
 
 
 }

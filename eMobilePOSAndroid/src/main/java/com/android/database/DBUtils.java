@@ -77,7 +77,7 @@ public class DBUtils {
                 @Override
                 public void run() {
                     try {
-                        String response = httpClient.httpJsonRequest(url + dbChild.name() + ".json", record.toJson());
+                        String response = oauthclient.HttpClient.getString(url + dbChild.name() + ".json", record.toJson(), null);
                     } catch (Exception e) {
 
                     }
