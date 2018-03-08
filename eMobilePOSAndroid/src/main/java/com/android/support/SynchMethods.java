@@ -292,32 +292,41 @@ public class SynchMethods {
 
 
     public static void synchOrdersOnHoldList(Context context) throws SAXException, IOException {
+        MyPreferences preferences = new MyPreferences(context);
         Gson gson = JsonUtils.getInstance();
         GenerateXML xml = new GenerateXML(context);
-        String json = new HttpClient().httpJsonRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                xml.downloadAll("GetOrdersOnHoldList"));
+        String json;
+        if (preferences.isUse_syncplus_services()) {
+            String url = String.format(context.getString(R.string.sync_enablermobile_local_getonholdlist), preferences.getSyncPlusIPAddress(), preferences.getSyncPlusPort());
+            json = new HttpClient().httpJsonRequest(url);
+        } else {
+            json = new HttpClient().httpJsonRequest(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                    xml.downloadAll("GetOrdersOnHoldList"));
+        }
         Type listType = new com.google.gson.reflect.TypeToken<List<Order>>() {
         }.getType();
         List<Order> orders = gson.fromJson(json, listType);
         OrdersHandler ordersHandler = new OrdersHandler(context);
         List<Order> ordersToDelete = ordersHandler.getOrdersOnHold();
         int i = 0;
-        for (Order order : orders) {
-            order.ord_issync = "1";
-            order.isOnHold = "1";
-            Order onHoldOrder = ordersHandler.getOrder(order.ord_id);
-            if (onHoldOrder == null || TextUtils.isEmpty(onHoldOrder.ord_id) || onHoldOrder.isOnHold.equals("1")) {
-                ordersToDelete.remove(order);
-                i++;
+        if (orders != null) {
+            for (Order order : orders) {
+                order.ord_issync = "1";
+                order.isOnHold = "1";
+                Order onHoldOrder = ordersHandler.getOrder(order.ord_id);
+                if (onHoldOrder == null || TextUtils.isEmpty(onHoldOrder.ord_id) || onHoldOrder.isOnHold.equals("1")) {
+                    ordersToDelete.remove(order);
+                    i++;
+                }
+                if (i == 1000) {
+                    ordersHandler.insert(orders);
+                    orders.clear();
+                    i = 0;
+                }
+                synchOrdersOnHoldDetails(context, order.ord_id);
             }
-            if (i == 1000) {
-                ordersHandler.insert(orders);
-                orders.clear();
-                i = 0;
-            }
-            synchOrdersOnHoldDetails(context, order.ord_id);
+            ordersHandler.insert(orders);
         }
-        ordersHandler.insert(orders);
         ordersHandler.deleteOnHoldsOrders(ordersToDelete);
     }
 
