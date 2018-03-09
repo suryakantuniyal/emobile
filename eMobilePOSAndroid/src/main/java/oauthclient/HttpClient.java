@@ -28,24 +28,24 @@ public class HttpClient {
         return convertStreamToString(inputStream);
     }
 
-    public static HttpURLConnection getHttpsURLConnection(String urlAddress, HTTPMethod method) throws NoSuchAlgorithmException, KeyManagementException, IOException {
+    public static HttpURLConnection getHttpURLConnection(String urlAddress, HTTPMethod method) throws NoSuchAlgorithmException, KeyManagementException, IOException {
         URL url = new URL(urlAddress);
-        return getHttpsURLConnection(url, method);
+        return getHttpURLConnection(url, method);
     }
 
-    public static HttpURLConnection getHttpsURLConnection(URL url, HTTPMethod method) throws NoSuchAlgorithmException, KeyManagementException, IOException {
+    public static HttpURLConnection getHttpURLConnection(URL url, HTTPMethod method) throws NoSuchAlgorithmException, KeyManagementException, IOException {
         boolean isSSL = url.getProtocol().equalsIgnoreCase("https");
         HttpURLConnection httpURLConnection = isSSL ?
                 (HttpsURLConnection) url.openConnection() : (HttpURLConnection) url.openConnection();
         httpURLConnection.setRequestMethod(method.name());
-        if(isSSL) {
-            ((HttpsURLConnection)httpURLConnection).setSSLSocketFactory(new TLSSocketFactory());
+        if (isSSL) {
+            ((HttpsURLConnection) httpURLConnection).setSSLSocketFactory(new TLSSocketFactory());
         }
         return httpURLConnection;
     }
 
     public static InputStream get(String urlAddress, OAuthClient authClient) throws IOException, KeyManagementException, NoSuchAlgorithmException {
-        HttpURLConnection httpURLConnection = getHttpsURLConnection(urlAddress, HTTPMethod.GET);//(HttpsURLConnection) url.openConnection();
+        HttpURLConnection httpURLConnection = getHttpURLConnection(urlAddress, HTTPMethod.GET);//(HttpsURLConnection) url.openConnection();
         httpURLConnection.setRequestProperty("Content-Type", "application/json");
         if (authClient != null) {
             httpURLConnection.setRequestProperty("Authorization", "Bearer " + authClient.getAccessToken());
@@ -54,7 +54,7 @@ public class HttpClient {
     }
 
     public static InputStream get(String urlAddress, String json, OAuthClient authClient) throws IOException, KeyManagementException, NoSuchAlgorithmException {
-        HttpURLConnection httpURLConnection = getHttpsURLConnection(urlAddress, HTTPMethod.GET);//(HttpsURLConnection) url.openConnection();
+        HttpURLConnection httpURLConnection = getHttpURLConnection(urlAddress, HTTPMethod.GET);//(HttpsURLConnection) url.openConnection();
         httpURLConnection.setRequestProperty("Content-Type", "application/json");
         httpURLConnection.setDoInput(true);
         httpURLConnection.setDoOutput(true);
@@ -106,14 +106,14 @@ public class HttpClient {
 //        return null;
 //    }
 
-    public String post(String urlAddress, String rawData) throws Exception {
-        return post(urlAddress, rawData, null);
+    public String post(String urlAddress, String rawData, boolean isJsonContentType) throws Exception {
+        return post(urlAddress, rawData, null, isJsonContentType);
     }
 
-    public static String post(String urlAddress, String rawData, OAuthClient authClient)
+    public static String post(String urlAddress, String rawData, OAuthClient authClient, boolean isJsonContentType)
             throws Exception {
 //        URL url = new URL(urlAddress);
-        HttpURLConnection httpURLConnection = getHttpsURLConnection(urlAddress, HTTPMethod.POST);//(HttpsURLConnection) url.openConnection();
+        HttpURLConnection httpURLConnection = getHttpURLConnection(urlAddress, HTTPMethod.POST);//(HttpsURLConnection) url.openConnection();
 //        httpURLConnection.setRequestMethod("POST");
         if (authClient != null) {
             httpURLConnection.setRequestProperty("Authorization", "Bearer " + authClient.getAccessToken());
@@ -121,7 +121,13 @@ public class HttpClient {
         httpURLConnection.setDoInput(true);
         httpURLConnection.setDoOutput(true);
         httpURLConnection.setUseCaches(false);
-        httpURLConnection.setRequestProperty("Content-Type", "application/json");
+        if (isJsonContentType) {
+            httpURLConnection.setRequestProperty("Content-Type", "application/json");
+            httpURLConnection.setRequestProperty("Accept", "application/json");
+        } else {
+            httpURLConnection.setRequestProperty("Content-Type", "text/xml");
+            httpURLConnection.setRequestProperty("Accept", "text/xml");
+        }
         DataOutputStream out = new DataOutputStream(httpURLConnection.getOutputStream());
         out.write(rawData.getBytes());
         out.flush();
@@ -134,7 +140,7 @@ public class HttpClient {
     public String postAuthorizationHeader(String urlAddress, String rawData, String authorization)
             throws Exception {
 //        URL url = new URL(urlAddress);
-        HttpURLConnection httpURLConnection = getHttpsURLConnection(urlAddress, HTTPMethod.POST);//(HttpURLConnection) url.openConnection();
+        HttpURLConnection httpURLConnection = getHttpURLConnection(urlAddress, HTTPMethod.POST);//(HttpURLConnection) url.openConnection();
 //        httpURLConnection.setRequestMethod("POST");
         httpURLConnection.setRequestProperty("Content-Type", "application/json");
         httpURLConnection.setRequestProperty("Accept", "application/json");

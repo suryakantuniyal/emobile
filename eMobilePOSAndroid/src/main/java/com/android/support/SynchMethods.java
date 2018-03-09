@@ -68,6 +68,7 @@ import com.android.emobilepos.models.realms.Shift;
 import com.android.emobilepos.models.response.ClerkEmployeePermissionResponse;
 import com.android.emobilepos.models.salesassociates.DinningLocationConfiguration;
 import com.android.emobilepos.ordering.OrderingMain_FA;
+import com.android.emobilepos.service.SyncConfigServerService;
 import com.android.saxhandler.SAXParserPost;
 import com.android.saxhandler.SAXPostHandler;
 import com.android.saxhandler.SAXPostTemplates;
@@ -230,7 +231,7 @@ public class SynchMethods {
         Gson gson = JsonUtils.getInstance();
         String json = gson.toJson(configurations);
         oauthclient.HttpClient httpClient = new oauthclient.HttpClient();
-        httpClient.post(url.toString(), json, authClient);
+        httpClient.post(url.toString(), json, authClient, true);
     }
 
     public static void postEmobileBiometrics(Context context) throws Exception {
@@ -250,7 +251,7 @@ public class SynchMethods {
         Gson gson = JsonUtils.getInstance();
         String json = gson.toJson(emobileBiometrics);
         oauthclient.HttpClient httpClient = new oauthclient.HttpClient();
-        String response = httpClient.post(url.toString(), json, authClient);
+        String response = httpClient.post(url.toString(), json, authClient, true);
     }
 
     public static void synchSalesAssociateDinnindTablesConfiguration(Context activity) throws SAXException {
@@ -306,7 +307,7 @@ public class SynchMethods {
         GenerateXML xml = new GenerateXML(context);
         String json;
         if (preferences.isUse_syncplus_services()) {
-            String url = String.format(context.getString(R.string.sync_enablermobile_local_holds), preferences.getSyncPlusIPAddress(), preferences.getSyncPlusPort());
+            String url = SyncConfigServerService.getUrl(context.getString(R.string.sync_enablermobile_local_holds), context);
             json = oauthclient.HttpClient.getString(url, null);
         } else {
             json = oauthclient.HttpClient.getString(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
@@ -526,6 +527,7 @@ public class SynchMethods {
                 err_msg = sendOrdersOnHold();
                 if (err_msg.isEmpty()) {
                     if (checkoutOnHold) {
+
                         post.postData(Global.S_CHECKOUT_ON_HOLD, ord_id);
                     }
                 } else
@@ -930,12 +932,21 @@ public class SynchMethods {
      * Send On Holds
      ************************************/
 
-    private String sendOrdersOnHold() throws IOException, SAXException, ParserConfigurationException {
+    private String sendOrdersOnHold() throws Exception {
         SAXSynchOrdPostHandler handler = new SAXSynchOrdPostHandler();
         OrdersHandler ordersHandler = new OrdersHandler(context);
+        GenerateXML generateXML = new GenerateXML(context);
         if (ordersHandler.getNumUnsyncOrdersOnHold() > 0) {
-//            task.updateProgress(context.getString(R.string.sync_sending_orders));
-            xml = post.postData(Global.S_SUBMIT_ON_HOLD, "");
+            String postLink;
+            if (preferences.isUse_syncplus_services()) {
+                postLink = SyncConfigServerService.getUrl(context.getString(R.string.sync_enablermobile_local_holds), context);
+            } else {
+                postLink = context.getString(R.string.sync_enabler_submitordersonhold);
+            }
+            String entity = generateXML.synchOrders(true);
+            oauthclient.HttpClient.HTTPMethod httpMethod = oauthclient.HttpClient.HTTPMethod.POST;
+            xml = oauthclient.HttpClient.post(postLink, entity, null, false);
+//          xml = this.post.postData(Global.S_SUBMIT_ON_HOLD, "");
             if (xml.contains("error")) {
                 return getTagValue(xml, "error");
             } else {
@@ -1493,7 +1504,7 @@ public class SynchMethods {
     private void synchDownloadTermsAndConditions() throws SAXException, IOException, KeyManagementException, NoSuchAlgorithmException {
         GenerateXML xml = new GenerateXML(context);
         String jsonRequest = oauthclient.HttpClient.getString(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                xml.downloadAll("TermsAndConditions"),null);
+                xml.downloadAll("TermsAndConditions"), null);
         TermsNConditionsDAO.insert(jsonRequest);
     }
 
@@ -1501,7 +1512,7 @@ public class SynchMethods {
         client = new HttpClient();
         GenerateXML xml = new GenerateXML(context);
         String jsonRequest = oauthclient.HttpClient.getString(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                xml.downloadAll("UoM"),null);
+                xml.downloadAll("UoM"), null);
         UomDAO.truncate();
         UomDAO.insert(jsonRequest);
     }
@@ -1510,7 +1521,7 @@ public class SynchMethods {
         client = new HttpClient();
         GenerateXML xml = new GenerateXML(context);
         String jsonRequest = oauthclient.HttpClient.getString(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                xml.downloadAll("GetOrderProductsAttr"),null);
+                xml.downloadAll("GetOrderProductsAttr"), null);
         OrderProductAttributeDAO.truncate();
         OrderProductAttributeDAO.insert(jsonRequest);
     }

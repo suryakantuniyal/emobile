@@ -105,7 +105,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         activity = this;
         global = (Global) activity.getApplication();
         myPref = new MyPreferences(activity);
-        ListView listView = (ListView) findViewById(R.id.onHoldListView);
+        ListView listView = findViewById(R.id.onHoldListView);
         OrdersHandler ordersHandler = new OrdersHandler(activity);
         myCursor = ordersHandler.getOrdersOnHoldCursor();
         long unsyncOrdersOnHold = ordersHandler.getNumUnsyncOrdersOnHold();
@@ -191,14 +191,14 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         dlog.setCanceledOnTouchOutside(true);
         dlog.setContentView(R.layout.dlog_btn_left_right_layout);
 
-        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+        TextView viewTitle = dlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = dlog.findViewById(R.id.dlogMessage);
 
         viewTitle.setText(R.string.dlog_title_error);
         viewMsg.setText(R.string.dlog_msg_failed_print);
 
-        Button btnYes = (Button) dlog.findViewById(R.id.btnDlogLeft);
-        Button btnNo = (Button) dlog.findViewById(R.id.btnDlogRight);
+        Button btnYes = dlog.findViewById(R.id.btnDlogLeft);
+        Button btnNo = dlog.findViewById(R.id.btnDlogRight);
         dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
         btnYes.setText(R.string.button_yes);
         btnNo.setText(R.string.button_no);
@@ -230,12 +230,12 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         dlog.setCanceledOnTouchOutside(true);
         dlog.setContentView(R.layout.dlog_btn_left_right_layout);
 
-        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+        TextView viewTitle = dlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = dlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(isInternetConnected ? R.string.dlog_title_claimed_hold : R.string.dlog_msg_no_internet_access);
         viewMsg.setText(R.string.dlog_msg_claimed_hold);
-        Button btnOpen = (Button) dlog.findViewById(R.id.btnDlogLeft);
-        Button btnCancel = (Button) dlog.findViewById(R.id.btnDlogRight);
+        Button btnOpen = dlog.findViewById(R.id.btnDlogLeft);
+        Button btnCancel = dlog.findViewById(R.id.btnDlogRight);
         btnOpen.setText(R.string.button_open);
         btnCancel.setText(R.string.button_cancel);
         dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
@@ -268,16 +268,16 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         globalDlog.setCanceledOnTouchOutside(true);
         globalDlog.setContentView(R.layout.dlog_field_single_layout);
 
-        final EditText viewField = (EditText) globalDlog.findViewById(R.id.dlogFieldSingle);
+        final EditText viewField = globalDlog.findViewById(R.id.dlogFieldSingle);
         viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        TextView viewTitle = (TextView) globalDlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) globalDlog.findViewById(R.id.dlogMessage);
+        TextView viewTitle = globalDlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = globalDlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_confirm);
         if (!validPassword)
             viewMsg.setText(R.string.invalid_password);
         else
             viewMsg.setText(R.string.dlog_title_enter_manager_password);
-        Button btnCancel = (Button) globalDlog.findViewById(R.id.btnCancelDlogSingle);
+        Button btnCancel = globalDlog.findViewById(R.id.btnCancelDlogSingle);
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -285,7 +285,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             }
         });
 
-        Button btnOk = (Button) globalDlog.findViewById(R.id.btnDlogSingle);
+        Button btnOk = globalDlog.findViewById(R.id.btnDlogSingle);
         btnOk.setText(R.string.button_ok);
         btnOk.setOnClickListener(new View.OnClickListener() {
 
@@ -316,13 +316,13 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         dlog.setCanceledOnTouchOutside(true);
         dlog.setContentView(R.layout.dlog_btn_left_right_layout);
         myCursor.moveToPosition(selectedPos);
-        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+        TextView viewTitle = dlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = dlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_choose_action);
         viewMsg.setVisibility(View.GONE);
-        Button btnOpen = (Button) dlog.findViewById(R.id.btnDlogLeft);
-        Button btnPrint = (Button) dlog.findViewById(R.id.btnDlogRight);
-        Button btnCancel = (Button) dlog.findViewById(R.id.btnDlogCancel);
+        Button btnOpen = dlog.findViewById(R.id.btnDlogLeft);
+        Button btnPrint = dlog.findViewById(R.id.btnDlogRight);
+        Button btnCancel = dlog.findViewById(R.id.btnDlogCancel);
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -353,17 +353,17 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                         popDlog.setCancelable(true);
                         popDlog.setCanceledOnTouchOutside(false);
                         popDlog.setContentView(R.layout.dlog_field_single_layout);
-                        final EditText viewField = (EditText) popDlog.findViewById(R.id.dlogFieldSingle);
+                        final EditText viewField = popDlog.findViewById(R.id.dlogFieldSingle);
                         viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-                        TextView viewTitle = (TextView) popDlog.findViewById(R.id.dlogTitle);
-                        final TextView viewMsg = (TextView) popDlog.findViewById(R.id.dlogMessage);
+                        TextView viewTitle = popDlog.findViewById(R.id.dlogTitle);
+                        final TextView viewMsg = popDlog.findViewById(R.id.dlogMessage);
                         viewTitle.setText(R.string.dlog_title_enter_manager_password);
                         if (!validPassword)
                             viewMsg.setText(R.string.invalid_password);
                         else
                             viewMsg.setText(R.string.enter_password);
-                        Button btnOk = (Button) popDlog.findViewById(R.id.btnDlogSingle);
-                        Button btnCancel = (Button) popDlog.findViewById(R.id.btnCancelDlogSingle);
+                        Button btnOk = popDlog.findViewById(R.id.btnDlogSingle);
+                        Button btnCancel = popDlog.findViewById(R.id.btnCancelDlogSingle);
 
                         btnOk.setText(R.string.button_ok);
                         btnOk.setOnClickListener(new View.OnClickListener() {
@@ -627,51 +627,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         }
     }
 
-//    public static void addOrderProducts(Activity activity, Cursor c) {
-//        OrderProductsHandler orderProductsHandler = new OrderProductsHandler(activity);
-//        c.moveToFirst();
-//        List<OrderProduct> orderProducts = orderProductsHandler.getOrderProducts(c.getString(c.getColumnIndex("ord_id")));
-//        ProductAddonsHandler prodAddonHandler = new ProductAddonsHandler(activity);
-//        ProductsHandler prodHandler = new ProductsHandler(activity);
-//        String[] discountInfo;
-//        double total;
-//        Global global = (Global) activity.getApplication();
-////        global.order.setOrderProducts(new ArrayList<OrderProduct>());
-//
-//        for (OrderProduct ord : orderProducts) {
-//            double discAmount = 0;
-//            total = (Double.parseDouble(ord.getOrdprod_qty())) * Double.parseDouble(ord.getFinalPrice());
-//            discountInfo = prodHandler.getDiscount(ord.getDiscount_id(), ord.getFinalPrice());
-//            if (discountInfo != null) {
-//                if (discountInfo[1] != null && discountInfo[1].equals("Fixed")) {
-//                    ord.setDiscount_is_fixed("1");
-//                }
-//                if (discountInfo[2] != null) {
-//                    discAmount = Double.parseDouble(discountInfo[4]);
-//                }
-//                if (discountInfo[3] != null) {
-//                    ord.setDiscount_is_taxable(discountInfo[3]);
-//                }
-//                if (discountInfo[4] != null) {
-//                    ord.setDisTotal(discountInfo[4]);
-//                    discAmount = Double.parseDouble(discountInfo[4]);
-//                    ord.setDiscount_value(discountInfo[4]);
-//                }
-//            }
-//            ord.setDisAmount(ord.getDisAmount());
-//            ord.setItemTotal(Double.toString(total - discAmount));
-//            ord.setItemSubtotal(Double.toString(total));
-//            if (ord.isAddon()) {
-//                int pos = global.order.getOrderProducts().size();
-//                if (pos > 0) {
-//                    String[] tempVal = prodAddonHandler.getAddonDetails(ord.getAddon_ordprod_id(), ord.getProd_id());
-//                }
-//            } else {
-//                global.order.getOrderProducts().add(ord);
-//            }
-//        }
-//    }
-
     private class printAsync extends AsyncTask<Void, Void, Void> {
         private boolean printSuccessful = true;
         private ProgressDialog myProgressDialog;
@@ -758,13 +713,13 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             View retView;
             retView = inflater.inflate(R.layout.onhold_listview_adapter, parent, false);
             ViewHolder holder = new ViewHolder();
-            holder.holdID = (TextView) retView.findViewById(R.id.onHoldID);
-            holder.tableTextView = (TextView) retView.findViewById(R.id.restaurantTabletextView);
-            holder.holdName = (TextView) retView.findViewById(R.id.onHoldName);
-            holder.guestsNumber = (TextView) retView.findViewById(R.id.guestNumbertextView);
-            holder.orderTotal = (TextView) retView.findViewById(R.id.orderTotaltextView);
-            holder.timeOnSite = (TextView) retView.findViewById(R.id.timeOnSitetextView);
-            holder.offlineFlag = (TextView) retView.findViewById(R.id.onHoldOfflineFlag);
+            holder.holdID = retView.findViewById(R.id.onHoldID);
+            holder.tableTextView = retView.findViewById(R.id.restaurantTabletextView);
+            holder.holdName = retView.findViewById(R.id.onHoldName);
+            holder.guestsNumber = retView.findViewById(R.id.guestNumbertextView);
+            holder.orderTotal = retView.findViewById(R.id.orderTotaltextView);
+            holder.timeOnSite = retView.findViewById(R.id.timeOnSitetextView);
+            holder.offlineFlag = retView.findViewById(R.id.onHoldOfflineFlag);
             holder.i_holdID = cursor.getColumnIndex("_id");
             holder.i_holdName = cursor.getColumnIndex("ord_HoldName");
             holder.i_issync = cursor.getColumnIndex("ord_issync");

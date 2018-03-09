@@ -128,4 +128,9 @@ public class SyncConfigServerService extends Service {
         Intent stopIntent = new Intent(context, SyncConfigServerService.class);
         context.stopService(stopIntent);
     }
+
+    public static String getUrl(String urlFormat, Context Context) {
+        MyPreferences preferences = new MyPreferences(Context);
+        return String.format(urlFormat, preferences.getSyncPlusIPAddress(), preferences.getSyncPlusPort());
+    }
 }

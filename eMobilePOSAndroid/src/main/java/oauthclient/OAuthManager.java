@@ -100,7 +100,7 @@ public class OAuthManager {
             @Override
             public void run() {
                 try {
-                    requestToken[0] = httpClient.post(requestTokenUrl, oauthUrl);
+                    requestToken[0] = httpClient.post(requestTokenUrl, oauthUrl,true);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
