@@ -2699,7 +2699,7 @@ public class EMSDeviceDriver {
             for (OrderProduct product : listDeptSales) {
                 sb.append(textHandler.threeColumnLineItem(product.getCat_name(), 60,
                         product.getOrdprod_qty(), 20,
-                        product.getFinalPrice(),
+                        Global.getCurrencyFormat(product.getFinalPrice()),
                         20, lineWidth, 0));
             }
         }
