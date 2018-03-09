@@ -241,24 +241,24 @@ public class Post {
             case Global.S_ORDERS_ON_HOLD_DETAILS:
                 url.append(baseURL + (xml.getOnHold(type, varyingVariable)));
                 isShortResponse = false;
-                httpMethod = HttpClient.HTTPMethod.POST;
+                httpMethod = HttpClient.HTTPMethod.GET;
                 break;
             case Global.S_GET_TIME_CLOCK:
                 url.append(baseURL + (xml.getTimeClock()));
                 isShortResponse = true;
-                httpMethod = HttpClient.HTTPMethod.POST;
+                httpMethod = HttpClient.HTTPMethod.GET;
                 break;
             case Global.S_CHECK_STATUS_ON_HOLD:
             case Global.S_UPDATE_STATUS_ON_HOLD:
             case Global.S_CHECKOUT_ON_HOLD:
                 url.append(baseURL + (xml.getOnHold(type, varyingVariable)));
                 isShortResponse = true;
-                httpMethod = HttpClient.HTTPMethod.POST;
+                httpMethod = HttpClient.HTTPMethod.GET;
                 break;
             case Global.S_GET_SERVER_TIME:
                 url.append(baseURL + (xml.getServerTime()));
                 isShortResponse = true;
-                httpMethod = HttpClient.HTTPMethod.POST;
+                httpMethod = HttpClient.HTTPMethod.GET;
                 break;
             case Global.S_SUBMIT_TIP_ADJUSTMENT:
                 postLink = context.getString(R.string.genius_token_url);//"https://epay.enablermobile.com/index.ashx";

@@ -47,6 +47,8 @@ public class HttpClient {
     public static InputStream get(String urlAddress, OAuthClient authClient) throws IOException, KeyManagementException, NoSuchAlgorithmException {
         HttpURLConnection httpURLConnection = getHttpURLConnection(urlAddress, HTTPMethod.GET);//(HttpsURLConnection) url.openConnection();
         httpURLConnection.setRequestProperty("Content-Type", "application/json");
+        httpURLConnection.setRequestProperty("Accept", "application/json");
+
         if (authClient != null) {
             httpURLConnection.setRequestProperty("Authorization", "Bearer " + authClient.getAccessToken());
         }
@@ -56,6 +58,7 @@ public class HttpClient {
     public static InputStream get(String urlAddress, String json, OAuthClient authClient) throws IOException, KeyManagementException, NoSuchAlgorithmException {
         HttpURLConnection httpURLConnection = getHttpURLConnection(urlAddress, HTTPMethod.GET);//(HttpsURLConnection) url.openConnection();
         httpURLConnection.setRequestProperty("Content-Type", "application/json");
+        httpURLConnection.setRequestProperty("Accept", "application/json");
         httpURLConnection.setDoInput(true);
         httpURLConnection.setDoOutput(true);
         DataOutputStream out = new DataOutputStream(httpURLConnection.getOutputStream());

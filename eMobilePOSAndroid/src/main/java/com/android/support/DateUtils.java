@@ -66,11 +66,16 @@ public class DateUtils {
 
 
     public static Map<TimeUnit, Long> computeDiff(Date date1, Date date2) {
-        long diffInMilliSeconds = date2.getTime() - date1.getTime();
+        Map<TimeUnit, Long> result = new LinkedHashMap<>();
         List<TimeUnit> units = new ArrayList<>(EnumSet.allOf(TimeUnit.class));
         Collections.reverse(units);
-        Map<TimeUnit, Long> result = new LinkedHashMap<>();
-        long milliSecondsRest = diffInMilliSeconds;
+        if (date1 == null || date2 == null) {
+            for (TimeUnit unit : units) {
+                result.put(unit, (long) 0);
+            }
+            return result;
+        }
+        long milliSecondsRest = date2.getTime() - date1.getTime();
         for (TimeUnit unit : units) {
             long diff = unit.convert(milliSecondsRest, TimeUnit.MILLISECONDS);
             long diffInMilliSecondsForUnit = unit.toMillis(diff);
