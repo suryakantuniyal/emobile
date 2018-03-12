@@ -365,12 +365,14 @@ public class DeviceUtils {
 
         @Override
         protected void onPreExecute() {
-            progressDialog = new ProgressDialog(activity);
-            progressDialog.setTitle(R.string.connecting_devices);
-            progressDialog.setMessage(activity.getString(R.string.connecting_devices));
-            progressDialog.setCanceledOnTouchOutside(true);
-            progressDialog.setCancelable(true);
-            progressDialog.show();
+            if(!Global.isActivityDestroyed(activity)) {
+                progressDialog = new ProgressDialog(activity);
+                progressDialog.setTitle(R.string.connecting_devices);
+                progressDialog.setMessage(activity.getString(R.string.connecting_devices));
+                progressDialog.setCanceledOnTouchOutside(true);
+                progressDialog.setCancelable(true);
+                progressDialog.show();
+            }
         }
 
         @Override
