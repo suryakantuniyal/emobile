@@ -178,7 +178,7 @@ public class PaymentsHandler {
         getDatabase().beginTransaction();
         try {
             SQLiteStatement sqlinsert;
-            String sql="INSERT INTO " + table_name + " (" + sb1.toString() + ")" +
+            String sql = "INSERT INTO " + table_name + " (" + sb1.toString() + ")" +
                     "VALUES (" + sb2.toString() + ")";
             sqlinsert = getDatabase().compileStatement(sql);
             DBUtils dbUtils = DBUtils.getInstance(myPref.getAcctNumber(), sqlinsert, sql, DBUtils.DBChild.PAYMENTS);
@@ -305,6 +305,13 @@ public class PaymentsHandler {
                 Payment payment = getPayment(cursor);
                 if (!TextUtils.isEmpty(payment.getPay_signature())) {
                     payments.add(payment);
+                } else {
+                    List<SAXSyncPaySignaturePostHandler.Response> responses = new ArrayList<>();
+                    SAXSyncPaySignaturePostHandler.Response response = new SAXSyncPaySignaturePostHandler().new Response();
+                    response.setStatus("0");
+                    response.setTransId(payment.getPay_transid());
+                    responses.add(response);
+                    updateSignatureIsSync(responses);
                 }
             } while (cursor.moveToNext());
         }
@@ -418,7 +425,11 @@ public class PaymentsHandler {
         ContentValues args = new ContentValues();
 
         args.put(pay_signature, encodedImage);
-        args.put(pay_signature_issync, "0");
+        if (TextUtils.isEmpty(encodedImage)) {
+            args.put(pay_signature_issync, "1");
+        } else {
+            args.put(pay_signature_issync, "0");
+        }
         getDatabase().update(table_name, args, sb.toString(), new String[]{payID});
         sb.setLength(0);
         sb.append("SELECT pay_amount FROM Payments WHERE pay_id = '").append(payID).append("'");
@@ -442,7 +453,7 @@ public class PaymentsHandler {
         ContentValues args = new ContentValues();
         args.put(pay_signature_issync, "1");
         for (SAXSyncPaySignaturePostHandler.Response response : responses) {
-            if(response.getStatus().equalsIgnoreCase("0")) {
+            if (response.getStatus().equalsIgnoreCase("0")) {
                 getDatabase().update(table_name, args, pay_transid + " = ?", new String[]{response.getTransId()});
             }
         }
