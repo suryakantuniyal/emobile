@@ -179,15 +179,22 @@ public class HttpClient {
         progressDialog.setMax(100);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         progressDialog.show();
+        progressDialog.setCancelable(true);
+        progressDialog.setCanceledOnTouchOutside(true);
+//        mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+//        mBuilder = new NotificationCompat.Builder(context)
+//                .setSmallIcon(R.drawable.ic_file_download_black_18dp)
+//                .setContentTitle(context.getString(R.string.app_name))
+//                .setContentText(context.getString(R.string.downloadig_update));
         Message handlerMsg = handler.obtainMessage();
         handlerMsg.what = COPY_STARTED;
         handlerMsg.arg1 = 1;
         handler.sendMessage(handlerMsg);
         final DownloadFileTask downloadFileTask = new DownloadFileTask();
         downloadFileTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, urlAddress, path);
-        progressDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+        progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
-            public void onDismiss(DialogInterface dialog) {
+            public void onCancel(DialogInterface dialog) {
                 downloadFileTask.cancel(true);
                 downloadCancelled = true;
                 new File(path).delete();

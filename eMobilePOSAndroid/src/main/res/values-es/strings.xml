@@ -1353,4 +1353,5 @@
     <string name="backup_data_fail">Backup data has fail</string>
     <string name="backup_data_success">Backup data success</string>
     <string name="usb_disconnected">Se desconectó la impresora. Verificar la conexión USB de la impresora Star.</string>
+    <string name="check_update_stop">La actualización fue cancelada.</string>
 </resources>
