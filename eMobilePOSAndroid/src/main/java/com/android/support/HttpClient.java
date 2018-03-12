@@ -2,6 +2,7 @@ package com.android.support;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
@@ -26,6 +27,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,7 +54,7 @@ public class HttpClient {
     Handler handler;
     ProgressDialog progressDialog;
     private DownloadFileCallBack callback;
-    private Context context;
+    private boolean downloadCancelled = false;
 
     private static String convertStreamToString(InputStream is) {
         /*
@@ -134,6 +136,9 @@ public class HttpClient {
             long total = 0;
             int count;
             while ((count = input.read(data)) != -1) {
+                if (downloadCancelled) {
+                    break;
+                }
                 // allow canceling with back button
 //                if (isCancelled()) {
 //                    input.close();
@@ -274,9 +279,8 @@ public class HttpClient {
         return null;
     }
 
-    public void downloadFileAsync(String urlAddress, String path, DownloadFileCallBack callBack, Context context) {
+    public void downloadFileAsync(String urlAddress, final String path, final DownloadFileCallBack callBack, Context context) {
         this.callback = callBack;
-        this.context = context;
         setHandler();
         progressDialog = new ProgressDialog(context);
         progressDialog.setIndeterminate(false);
@@ -285,6 +289,8 @@ public class HttpClient {
         progressDialog.setMax(100);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         progressDialog.show();
+        progressDialog.setCancelable(true);
+        progressDialog.setCanceledOnTouchOutside(true);
 //        mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 //        mBuilder = new NotificationCompat.Builder(context)
 //                .setSmallIcon(R.drawable.ic_file_download_black_18dp)
@@ -294,7 +300,17 @@ public class HttpClient {
         handlerMsg.what = COPY_STARTED;
         handlerMsg.arg1 = 1;
         handler.sendMessage(handlerMsg);
-        new DownloadFileTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, urlAddress, path);
+        final DownloadFileTask downloadFileTask = new DownloadFileTask();
+        downloadFileTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, urlAddress, path);
+        progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                downloadFileTask.cancel(true);
+                downloadCancelled = true;
+                new File(path).delete();
+                callBack.downloadCancelled();
+            }
+        });
     }
 
     private void setHandler() {
@@ -338,12 +354,19 @@ public class HttpClient {
     }
 
     public interface DownloadFileCallBack {
-        public void downloadCompleted(String path);
+        void downloadCompleted(String path);
 
-        public void downloadFail();
+        void downloadFail();
+
+        void downloadCancelled();
     }
 
     private class DownloadFileTask extends AsyncTask<Object, Void, String> {
+
+        @Override
+        protected void onPreExecute() {
+            downloadCancelled = false;
+        }
 
         @Override
         protected String doInBackground(Object... params) {
