@@ -1489,6 +1489,11 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
         }
 
         @Override
+        public void downloadCancelled() {
+            Global.showPrompt(getActivity(), R.string.dlog_title_error, getString(R.string.check_update_stop));
+        }
+
+        @Override
         public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
 //            if (resultCode == 1) {

@@ -2,6 +2,7 @@ package com.android.support;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
@@ -16,6 +17,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,6 +38,7 @@ public class HttpClient {
     private Handler handler;
     private ProgressDialog progressDialog;
     private DownloadFileCallBack callback;
+    private boolean downloadCancelled = false;
 
     private static String convertStreamToString(InputStream is) {
         /*
@@ -117,6 +120,9 @@ public class HttpClient {
             long total = 0;
             int count;
             while ((count = input.read(data)) != -1) {
+                if (downloadCancelled) {
+                    break;
+                }
                 // allow canceling with back button
 //                if (isCancelled()) {
 //                    input.close();
@@ -163,7 +169,7 @@ public class HttpClient {
         return path;
     }
 
-    public void downloadFileAsync(String urlAddress, String path, DownloadFileCallBack callBack, Context context) {
+    public void downloadFileAsync(String urlAddress, final String path, final DownloadFileCallBack callBack, Context context) {
         this.callback = callBack;
         setHandler();
         progressDialog = new ProgressDialog(context);
@@ -177,7 +183,17 @@ public class HttpClient {
         handlerMsg.what = COPY_STARTED;
         handlerMsg.arg1 = 1;
         handler.sendMessage(handlerMsg);
-        new DownloadFileTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, urlAddress, path);
+        final DownloadFileTask downloadFileTask = new DownloadFileTask();
+        downloadFileTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, urlAddress, path);
+        progressDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                downloadFileTask.cancel(true);
+                downloadCancelled = true;
+                new File(path).delete();
+                callBack.downloadCancelled();
+            }
+        });
     }
 
     private void setHandler() {
@@ -201,10 +217,18 @@ public class HttpClient {
 
     public interface DownloadFileCallBack {
         void downloadCompleted(String path);
+
         void downloadFail();
+
+        void downloadCancelled();
     }
 
     private class DownloadFileTask extends AsyncTask<Object, Void, String> {
+
+        @Override
+        protected void onPreExecute() {
+            downloadCancelled = false;
+        }
 
         @Override
         protected String doInBackground(Object... params) {

@@ -1397,5 +1397,6 @@
     <string name="config_use_syncplus_services">Use Sync Plus Services</string>
     <string name="syncplus_connection_mode">Connection Mode</string>
     <string name="automatic">Automatic</string>
+    <string name="check_update_stop">Application update was cancelled.</string>
 
 </resources>
