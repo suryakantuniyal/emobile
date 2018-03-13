@@ -181,7 +181,7 @@ public class PollingNotificationService extends Service {
                         URLEncoder.encode(accountNumber, "utf-8"),
                         URLEncoder.encode(DateUtils.getDateAsString(lastPolled), "utf-8"));
 
-                InputStream inputStream = oauthclient.HttpClient.get(sb,null);
+                InputStream inputStream = oauthclient.HttpClient.get(sb, null, true);
                 JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
                 reader.beginArray();
 

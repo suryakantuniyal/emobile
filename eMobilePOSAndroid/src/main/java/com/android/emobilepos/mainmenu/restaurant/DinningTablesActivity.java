@@ -30,6 +30,9 @@ import com.viewpagerindicator.IconPagerAdapter;
 import com.viewpagerindicator.PageIndicator;
 import com.viewpagerindicator.TitlePageIndicator;
 
+import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 public class DinningTablesActivity extends BaseFragmentActivityActionBar {
@@ -170,7 +173,16 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
             tableOrder = (DinningTableOrder) params[0];
             table = (DinningTable) params[1];
             if (NetworkUtils.isConnectedToInternet(DinningTablesActivity.this)) {
-                boolean claimRequired = OnHoldsManager.isOnHoldAdminClaimRequired(tableOrder.getCurrentOrderId(), DinningTablesActivity.this);
+                boolean claimRequired = false;
+                try {
+                    claimRequired = OnHoldsManager.isOnHoldAdminClaimRequired(tableOrder.getCurrentOrderId(), DinningTablesActivity.this);
+                } catch (NoSuchAlgorithmException e) {
+
+                } catch (IOException e) {
+
+                } catch (KeyManagementException e) {
+
+                }
                 if (claimRequired) {
                     return false;
                 } else {

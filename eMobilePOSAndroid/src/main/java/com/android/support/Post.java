@@ -315,9 +315,9 @@ public class Post {
 //                initSSL();
             }
             HttpsURLConnection.setFollowRedirects(false);
-            urlConnection = (HttpsURLConnection) url.openConnection();
+            urlConnection = (HttpsURLConnection) HttpClient.getHttpURLConnection(url.toString(), HttpClient.HTTPMethod.GET);//(HttpsURLConnection) url.openConnection();
 //            urlConnection.setSSLSocketFactory(sslContext.getSocketFactory());
-            urlConnection.setRequestMethod("GET");
+//            urlConnection.setRequestMethod("GET");
             if (isJsonContentType) {
                 urlConnection.setRequestProperty("Content-Type", "application/json");
             }
@@ -354,6 +354,10 @@ public class Post {
 
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+
+        } catch (KeyManagementException e) {
+
         }
         return "";
     }
