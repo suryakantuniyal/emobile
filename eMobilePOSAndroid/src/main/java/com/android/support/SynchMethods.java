@@ -187,7 +187,7 @@ public class SynchMethods {
         OAuthClient authClient = OAuthManager.getOAuthClient(context);
         oauthclient.HttpClient httpClient = new oauthclient.HttpClient();
         try {
-            String response = oauthclient.HttpClient.getString(url.toString(), authClient,true);
+            String response = oauthclient.HttpClient.getString(url.toString(), authClient, true);
             Type listType = new com.google.gson.reflect.TypeToken<List<EmobileBiometric>>() {
             }.getType();
             Gson gson = JsonUtils.getInstance();
@@ -263,7 +263,7 @@ public class SynchMethods {
 //            String s = client.getString(context.getString(R.string.sync_enablermobile_mesasconfig), oauthClient);
         List<DinningLocationConfiguration> configurations = new ArrayList<>();
         try {
-            InputStream inputStream = oauthclient.HttpClient.get(activity.getString(R.string.sync_enablermobile_mesasconfig), oauthClient,true);
+            InputStream inputStream = oauthclient.HttpClient.get(activity.getString(R.string.sync_enablermobile_mesasconfig), oauthClient, true);
             JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
             reader.beginArray();
             String defaultLocation = AssignEmployeeDAO.getAssignEmployee(false).getDefaultLocation();
@@ -308,10 +308,10 @@ public class SynchMethods {
         String json;
         if (preferences.isUse_syncplus_services()) {
             String url = SyncConfigServerService.getUrl(context.getString(R.string.sync_enablermobile_local_holds), context);
-            json = oauthclient.HttpClient.getString(url, null,true);
+            json = oauthclient.HttpClient.getString(url, null, true);
         } else {
             json = oauthclient.HttpClient.getString(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                    xml.downloadAll("GetOrdersOnHoldList"), null,false);
+                    xml.downloadAll("GetOrdersOnHoldList"), null, false);
         }
         Type listType = new com.google.gson.reflect.TypeToken<List<Order>>() {
         }.getType();
@@ -340,15 +340,26 @@ public class SynchMethods {
         ordersHandler.deleteOnHoldsOrders(ordersToDelete);
     }
 
-    public static void synchOrdersOnHoldDetails(Context activity, String ordID) throws SAXException, IOException, NoSuchAlgorithmException, KeyManagementException {
+    public static void synchOrdersOnHoldDetails(Context context, String ordID) throws SAXException, IOException, NoSuchAlgorithmException, KeyManagementException {
         Gson gson = JsonUtils.getInstance();
+        MyPreferences preferences = new MyPreferences(context);
         List<OrderProduct> orderProducts = new ArrayList<>();
-        GenerateXML xml = new GenerateXML(activity);
-        String json = oauthclient.HttpClient.getString(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                xml.getOnHold(Global.S_ORDERS_ON_HOLD_DETAILS, ordID), null,true);
+        GenerateXML xml = new GenerateXML(context);
+        String json;
+        if (preferences.isUse_syncplus_services()) {
+            String url = SyncConfigServerService.getUrl(context.getString(R.string.sync_enablermobile_local_detailholds), context) + ordID;
+            json = oauthclient.HttpClient.getString(url, null, true);
+        } else {
+            json = oauthclient.HttpClient.getString(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                    xml.getOnHold(Global.S_ORDERS_ON_HOLD_DETAILS, ordID), null, true);
+        }
+
         JSONArray jsonArray;
         try {
-            jsonArray = new JSONArray(json);
+            jsonArray = new JSONObject(json).getJSONArray("table");
+            if (jsonArray == null) {
+                jsonArray = new JSONArray(json);
+            }
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 String seatGroupId = jsonObject.optString("seatGroupId");
@@ -360,18 +371,12 @@ public class SynchMethods {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-//        Type listType = new com.google.gson.reflect.TypeToken<List<OrderProduct>>() {
-//        }.getType();
-//        JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
-//        List<OrderProduct> orderProducts = gson.fromJson(jsonArray, listType);
-        OrderProductsHandler orderProductsHandler = new OrderProductsHandler(activity);
-//        reader.beginArray();
-//        int i = 0;
-        ProductsHandler productsHandler = new ProductsHandler(activity);
+
+        OrderProductsHandler orderProductsHandler = new OrderProductsHandler(context);
+
+        ProductsHandler productsHandler = new ProductsHandler(context);
         for (OrderProduct product : orderProducts) {
-//            while (reader.hasNext()) {
             double discAmount = 0;
-//            OrderProduct product = gson.fromJson(reader, OrderProduct.class);
             double total = (Double.parseDouble(product.getOrdprod_qty())) * Double.parseDouble(product.getFinalPrice());
             String[] discountInfo = productsHandler.getDiscount(product.getDiscount_id(), product.getFinalPrice());
             if (discountInfo != null) {
@@ -392,18 +397,9 @@ public class SynchMethods {
             }
             product.setDisAmount(String.valueOf(discAmount));
             product.setItemTotal(Double.toString(total - discAmount));
-//                product.setItemSubtotal(Double.toString(total));
-//                orderProducts.add(product);
-//                i++;
-//                if (i == 1000) {
-//                    OrderProductUtils.assignAddonsOrderProduct(orderProducts);
-//                    orderProductsHandler.insert(orderProducts);
-//                    orderProducts.clear();
-//                    i = 0;
-//                }
         }
         OrderProductUtils.assignAddonsOrderProduct(orderProducts);
-        orderProductsHandler.completeProductFields(orderProducts, activity);
+        orderProductsHandler.completeProductFields(orderProducts, context);
         orderProductsHandler.insert(orderProducts);
 //            reader.endArray();
 //            reader.close();
@@ -861,7 +857,7 @@ public class SynchMethods {
         Gson gson = JsonUtils.getInstance();
         GenerateXML xml = new GenerateXML(context);
         String jsonRequest = oauthclient.HttpClient.getString(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                xml.downloadAll("ClerkPermissions"), null,true);
+                xml.downloadAll("ClerkPermissions"), null, true);
         ClerkEmployeePermissionResponse response = gson.fromJson(jsonRequest, ClerkEmployeePermissionResponse.class);
         EmployeePermissionDAO.truncate();
         ClerkDAO.truncate();
@@ -873,7 +869,7 @@ public class SynchMethods {
         Gson gson = JsonUtils.getInstance();
         GenerateXML xml = new GenerateXML(context);
         String jsonRequest = oauthclient.HttpClient.getString(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                xml.downloadAll("Shifts"), null,true);
+                xml.downloadAll("Shifts"), null, true);
         Type listType = new com.google.gson.reflect.TypeToken<List<Shift>>() {
         }.getType();
         List<Shift> shifts = gson.fromJson(jsonRequest, listType);
@@ -944,7 +940,6 @@ public class SynchMethods {
                 postLink = context.getString(R.string.sync_enabler_submitordersonhold);
             }
             String entity = generateXML.synchOrders(true);
-            oauthclient.HttpClient.HTTPMethod httpMethod = oauthclient.HttpClient.HTTPMethod.POST;
             xml = oauthclient.HttpClient.post(postLink, entity, null, false);
 //          xml = this.post.postData(Global.S_SUBMIT_ON_HOLD, "");
             if (xml.contains("error")) {
@@ -995,7 +990,7 @@ public class SynchMethods {
         Gson gson = JsonUtils.getInstance();
         GenerateXML xml = new GenerateXML(context);
         InputStream inputStream = oauthclient.HttpClient.get(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                xml.downloadAll("Customers"), null,true);
+                xml.downloadAll("Customers"), null, true);
         JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
         List<Customer> customers = new ArrayList<>();
         CustomersHandler handler = new CustomersHandler(context);
@@ -1046,7 +1041,7 @@ public class SynchMethods {
         Gson gson = JsonUtils.getInstance();
         GenerateXML xml = new GenerateXML(context);
         InputStream inputStream = oauthclient.HttpClient.get(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                xml.downloadAll("PayMethods"), null,true);
+                xml.downloadAll("PayMethods"), null, true);
         JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
         List<PaymentMethod> methods = new ArrayList<>();
         PayMethodsHandler payMethodsHandler = new PayMethodsHandler(context);
@@ -1072,7 +1067,7 @@ public class SynchMethods {
         Gson gson = JsonUtils.getInstance();
         GenerateXML xml = new GenerateXML(context);
         InputStream inputStream = oauthclient.HttpClient.get(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                xml.downloadAll("PriceLevel"), null,true);
+                xml.downloadAll("PriceLevel"), null, true);
         JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
         List<PriceLevel> priceLevels = new ArrayList<>();
         PriceLevelHandler priceLevelHandler = new PriceLevelHandler();
@@ -1098,7 +1093,7 @@ public class SynchMethods {
         Gson gson = JsonUtils.getInstance();
         GenerateXML xml = new GenerateXML(context);
         InputStream inputStream = oauthclient.HttpClient.get(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                xml.downloadAll("CustomerCustomFields"), null,true);
+                xml.downloadAll("CustomerCustomFields"), null, true);
         JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
         List<CustomerCustomField> customFields = new ArrayList<>();
         CustomerCustomFieldsDAO.emptyTable();
@@ -1124,7 +1119,7 @@ public class SynchMethods {
         Gson gson = JsonUtils.getInstance();
         GenerateXML xml = new GenerateXML(context);
         InputStream inputStream = oauthclient.HttpClient.get(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                xml.downloadAll("PriceLevelItems"), null,true);
+                xml.downloadAll("PriceLevelItems"), null, true);
         JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
         List<ItemPriceLevel> itemPriceLevels = new ArrayList<>();
         PriceLevelItemsHandler levelItemsHandler = new PriceLevelItemsHandler(context);
@@ -1150,7 +1145,7 @@ public class SynchMethods {
         client = new HttpClient();
         GenerateXML xml = new GenerateXML(context);
         String jsonRequest = oauthclient.HttpClient.getString(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                xml.downloadAll("Printers"), null,true);
+                xml.downloadAll("Printers"), null, true);
         try {
             DeviceTableDAO.truncate();
             DeviceTableDAO.insert(jsonRequest);
@@ -1179,7 +1174,7 @@ public class SynchMethods {
         Gson gson = JsonUtils.getInstance();
         GenerateXML xml = new GenerateXML(context);
         InputStream inputStream = oauthclient.HttpClient.get(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                xml.downloadAll("Product_addons"), null,true);
+                xml.downloadAll("Product_addons"), null, true);
         JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
         List<ProductAddons> addonses = new ArrayList<>();
         ProductAddonsHandler addonsHandler = new ProductAddonsHandler(context);
@@ -1206,7 +1201,7 @@ public class SynchMethods {
         Gson gson = JsonUtils.getInstance();
         GenerateXML xml = new GenerateXML(context);
         InputStream inputStream = oauthclient.HttpClient.get(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                xml.downloadAll("Products"), null,true);
+                xml.downloadAll("Products"), null, true);
         JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
         List<Product> products = new ArrayList<>();
         productsHandler.emptyTable();
@@ -1232,7 +1227,7 @@ public class SynchMethods {
         Gson gson = JsonUtils.getInstance();
         GenerateXML xml = new GenerateXML(context);
         InputStream inputStream = oauthclient.HttpClient.get(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                xml.downloadAll("OrderAttributes"), null,true);
+                xml.downloadAll("OrderAttributes"), null, true);
         JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
         List<OrderAttributes> orderAttributes = new ArrayList<>();
         reader.beginArray();
@@ -1272,7 +1267,7 @@ public class SynchMethods {
         Gson gson = JsonUtils.getInstance();
         GenerateXML xml = new GenerateXML(context);
         InputStream inputStream = oauthclient.HttpClient.get(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                xml.downloadAll("ProductAliases"), null,true);
+                xml.downloadAll("ProductAliases"), null, true);
         JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
         List<ProductAlias> productAliases = new ArrayList<>();
         productAliasesDB.emptyTable();
@@ -1454,7 +1449,7 @@ public class SynchMethods {
         client = new HttpClient();
         GenerateXML xml = new GenerateXML(context);
         String jsonRequest = oauthclient.HttpClient.getString(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                xml.getDinnerTables(), null,true);
+                xml.getDinnerTables(), null, true);
         try {
             DinningTableDAO.truncate();
             DinningTableDAO.insert(jsonRequest);
@@ -1467,7 +1462,7 @@ public class SynchMethods {
         client = new HttpClient();
         GenerateXML xml = new GenerateXML(context);
         InputStream inputStream = oauthclient.HttpClient.get(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                xml.getMixMatch(), null,true);
+                xml.getMixMatch(), null, true);
         JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
         List<MixMatch> mixMatches = new ArrayList<MixMatch>();
         MixMatchDAO.truncate();
@@ -1492,7 +1487,7 @@ public class SynchMethods {
         client = new HttpClient();
         GenerateXML xml = new GenerateXML(context);
         String jsonRequest = oauthclient.HttpClient.getString(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                xml.getSalesAssociate(), null,true);
+                xml.getSalesAssociate(), null, true);
         try {
             ClerkDAO.truncate();
             ClerkDAO.insert(jsonRequest);
@@ -1504,7 +1499,7 @@ public class SynchMethods {
     private void synchDownloadTermsAndConditions() throws SAXException, IOException, KeyManagementException, NoSuchAlgorithmException {
         GenerateXML xml = new GenerateXML(context);
         String jsonRequest = oauthclient.HttpClient.getString(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                xml.downloadAll("TermsAndConditions"), null,true);
+                xml.downloadAll("TermsAndConditions"), null, true);
         TermsNConditionsDAO.insert(jsonRequest);
     }
 
@@ -1512,7 +1507,7 @@ public class SynchMethods {
         client = new HttpClient();
         GenerateXML xml = new GenerateXML(context);
         String jsonRequest = oauthclient.HttpClient.getString(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                xml.downloadAll("UoM"), null,true);
+                xml.downloadAll("UoM"), null, true);
         UomDAO.truncate();
         UomDAO.insert(jsonRequest);
     }
@@ -1521,7 +1516,7 @@ public class SynchMethods {
         client = new HttpClient();
         GenerateXML xml = new GenerateXML(context);
         String jsonRequest = oauthclient.HttpClient.getString(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                xml.downloadAll("GetOrderProductsAttr"), null,true);
+                xml.downloadAll("GetOrderProductsAttr"), null, true);
         OrderProductAttributeDAO.truncate();
         OrderProductAttributeDAO.insert(jsonRequest);
     }

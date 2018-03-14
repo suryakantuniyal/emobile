@@ -790,7 +790,8 @@ public class ProductsHandler {
         Cursor cursor = DBManager.getDatabase().rawQuery("SELECT p.prod_name,p.prod_disc_type,p.prod_price," +
                 "IFNULL(s.taxcode_istaxable,1) as 'taxcode_istaxable'" + ",p.prod_id " +
                 "FROM Products p LEFT OUTER JOIN SalesTaxCodes s ON p.prod_taxcode = s.taxcode_id " +
-                "WHERE p.prod_type = 'Discount' AND prod_id LIKE ? ORDER BY p.prod_name ASC", new String[]{discount_id});
+                "WHERE p.prod_type = 'Discount' AND prod_id LIKE ? ORDER BY p.prod_name ASC",
+                new String[]{StringUtil.nullStringToEmpty(discount_id)});
         if (cursor.moveToFirst()) {
             data.setProductName(cursor.getString(cursor.getColumnIndex(prod_name)));
             data.setProductDiscountType(cursor.getString(cursor.getColumnIndex(prod_disc_type)));

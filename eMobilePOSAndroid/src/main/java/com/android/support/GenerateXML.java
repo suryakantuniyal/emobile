@@ -150,7 +150,12 @@ public class GenerateXML {
         StringBuilder sb = new StringBuilder();
         switch (type) {
             case Global.S_ORDERS_ON_HOLD_DETAILS:
-                sb.append("getXMLOrdersOnHoldDetail.ashx");
+                if (myPref.isUse_syncplus_services()) {
+                    String s = context.getString(R.string.sync_enablermobile_local_detailholds) + ordID;
+                    sb.append(s);
+                } else {
+                    sb.append("getXMLOrdersOnHoldDetail.ashx");
+                }
                 break;
             case Global.S_CHECK_STATUS_ON_HOLD:
                 if (myPref.isUse_syncplus_services()) {

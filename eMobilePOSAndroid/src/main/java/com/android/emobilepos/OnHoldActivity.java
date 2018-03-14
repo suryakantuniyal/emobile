@@ -130,6 +130,9 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         if (myPref.isPollingHoldsEnable() && !PollingNotificationService.isServiceRunning(this)) {
             PollingNotificationService.start(this, PollingNotificationService.PollingServicesFlag.ONHOLDS.getCode() | PollingNotificationService.PollingServicesFlag.DINING_TABLES.getCode());
         }
+        if(myPref.isUse_syncplus_services()){
+            new RefreshHolds().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }
 
     }
 
