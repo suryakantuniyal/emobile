@@ -425,7 +425,11 @@ public class PaymentsHandler {
         ContentValues args = new ContentValues();
 
         args.put(pay_signature, encodedImage);
-        args.put(pay_signature_issync, "0");
+        if (TextUtils.isEmpty(encodedImage)) {
+            args.put(pay_signature_issync, "1");
+        } else {
+            args.put(pay_signature_issync, "0");
+        }
         getDatabase().update(table_name, args, sb.toString(), new String[]{payID});
         sb.setLength(0);
         sb.append("SELECT pay_amount FROM Payments WHERE pay_id = '").append(payID).append("'");
