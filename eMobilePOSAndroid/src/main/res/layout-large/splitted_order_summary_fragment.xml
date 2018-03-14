@@ -16,5 +16,5 @@
         android:padding="5dp"
         android:stretchMode="columnWidth"
         android:verticalSpacing="5dp"
-        tools:listitem="@layout/splitted_order_summary_listitem"></GridView>
+        tools:listitem="@layout/splitted_order_summary_listitem" />
 </LinearLayout>

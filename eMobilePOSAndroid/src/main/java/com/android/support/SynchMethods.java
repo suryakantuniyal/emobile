@@ -311,7 +311,7 @@ public class SynchMethods {
             json = oauthclient.HttpClient.getString(url, null, true);
         } else {
             json = oauthclient.HttpClient.getString(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                    xml.downloadAll("GetOrdersOnHoldList"), null, false);
+                    xml.downloadAll("GetOrdersOnHoldList"), null, true);
         }
         Type listType = new com.google.gson.reflect.TypeToken<List<Order>>() {
         }.getType();
@@ -523,8 +523,8 @@ public class SynchMethods {
                 err_msg = sendOrdersOnHold();
                 if (err_msg.isEmpty()) {
                     if (checkoutOnHold) {
-
-                        post.postData(Global.S_CHECKOUT_ON_HOLD, ord_id);
+                        OnHoldsManager.checkoutOnHold(ord_id,activity);
+//                        post.postData(Global.S_CHECKOUT_ON_HOLD, ord_id);
                     }
                 } else
                     isError = true;
@@ -1836,17 +1836,7 @@ public class SynchMethods {
         protected void onPreExecute() {
 
             int orientation = context.getResources().getConfiguration().orientation;
-//            context.setRequestedOrientation(Global.getScreenOrientation(context));
 
-//            myProgressDialog = new ProgressDialog(context);
-//            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-//            myProgressDialog.setCancelable(false);
-//            myProgressDialog.show();
-        }
-
-        @Override
-        protected void onProgressUpdate(String... params) {
-//            myProgressDialog.setMessage(params[0]);
         }
 
         public void updateProgress(String msg) {
