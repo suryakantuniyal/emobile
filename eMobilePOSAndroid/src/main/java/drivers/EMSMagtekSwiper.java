@@ -14,9 +14,9 @@ import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplittedOrder;
+import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.ShiftExpense;
-import com.android.emobilepos.payment.ProcessCreditCard_FA;
 import com.android.support.CardParser;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
@@ -24,9 +24,7 @@ import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.magtek.mobile.android.libDynamag.MagTeklibDynamag;
-import com.magtek.mobile.android.mtlib.MTConnectionType;
 import com.magtek.mobile.android.mtlib.MTEMVEvent;
-import com.magtek.mobile.android.mtlib.MTSCRA;
 import com.magtek.mobile.android.mtlib.MTSCRAEvent;
 
 import java.util.HashMap;
@@ -79,7 +77,17 @@ public class EMSMagtekSwiper extends EMSDeviceDriver implements EMSDeviceManager
     }
 
     @Override
+    public boolean printTransaction(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
+        return true;
+    }
+
+    @Override
     public boolean printTransaction(String ordID, Global.OrderType type, boolean isFromHistory, boolean fromOnHold) {
+        return true;
+    }
+
+    @Override
+    public boolean printTransaction(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
         return true;
     }
 
@@ -179,7 +187,7 @@ public class EMSMagtekSwiper extends EMSDeviceDriver implements EMSDeviceManager
         msrCallBack = callBack;
         if (dynamag == null) {
             m_scraHandler = new Handler(new SCRAHandlerCallback());
-            dynamag = new MagTeklibDynamag(activity,m_scraHandler);
+            dynamag = new MagTeklibDynamag(activity, m_scraHandler);
             dynamag.clearCardData();
             dynamag.openDevice();
 //            m_scraHandler = new Handler(new SCRAHandlerCallback());

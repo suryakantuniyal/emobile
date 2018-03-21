@@ -1394,5 +1394,6 @@
     <string name="cardId" translatable="false">Card ID</string>
     <string name="ems_card_id_num" translatable="false">EMS_CARD_ID_NUM</string>
     <string name="check_update_stop">Application update was cancelled.</string>
+    <string name="clerk_login">Use clerk password</string>
 
 </resources>

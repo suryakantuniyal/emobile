@@ -813,6 +813,12 @@ public class EMSDeviceDriver {
     }
 
     protected void printReceipt(String ordID, int lineWidth, boolean fromOnHold, Global.OrderType type, boolean isFromHistory, EMVContainer emvContainer) {
+        OrdersHandler orderHandler = new OrdersHandler(activity);
+        Order anOrder = orderHandler.getPrintedOrder(ordID);
+        printReceipt(anOrder,lineWidth,fromOnHold,type,isFromHistory,emvContainer);
+    }
+
+    protected void printReceipt(Order anOrder, int lineWidth, boolean fromOnHold, Global.OrderType type, boolean isFromHistory, EMVContainer emvContainer) {
         try {
             AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee(false);
             Clerk clerk = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()));
@@ -821,12 +827,9 @@ public class EMSDeviceDriver {
             printPref = myPref.getPrintingPreferences();
             OrderProductsHandler orderProductsHandler = new OrderProductsHandler(activity);
             OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB();
-
-            List<DataTaxes> listOrdTaxes = ordTaxesDB.getOrderTaxes(ordID);
-            List<OrderProduct> orderProducts = orderProductsHandler.getOrderProducts(ordID);
-
-            OrdersHandler orderHandler = new OrdersHandler(activity);
-            Order anOrder = orderHandler.getPrintedOrder(ordID);
+//            Order anOrder = orderHandler.getPrintedOrder(ordID);
+            List<DataTaxes> listOrdTaxes = anOrder.getListOrderTaxes();//ordTaxesDB.getOrderTaxes(anOrder.ord_id);
+            List<OrderProduct> orderProducts = anOrder.getOrderProducts();//orderProductsHandler.getOrderProducts(ordID);
 
             boolean payWithLoyalty = false;
             StringBuilder sb = new StringBuilder();
@@ -1003,9 +1006,9 @@ public class EMSDeviceDriver {
                     Global.getCurrencyFormat(granTotal), lineWidth, 0));
             sb.append("\n");
             PaymentsHandler payHandler = new PaymentsHandler(activity);
-            List<PaymentDetails> detailsList = payHandler.getPaymentForPrintingTransactions(ordID);
+            List<PaymentDetails> detailsList = payHandler.getPaymentForPrintingTransactions(anOrder.ord_id);
             if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
-                detailsList.addAll(StoredPaymentsDAO.getPaymentForPrintingTransactions(ordID));
+                detailsList.addAll(StoredPaymentsDAO.getPaymentForPrintingTransactions(anOrder.ord_id));
             }
             String receiptSignature;
             size = detailsList.size();

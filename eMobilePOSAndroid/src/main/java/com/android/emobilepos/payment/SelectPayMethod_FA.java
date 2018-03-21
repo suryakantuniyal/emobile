@@ -55,7 +55,6 @@ import com.android.ivu.MersenneTwisterFast;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.CreditCardInfo;
-import com.android.support.DeviceUtils;
 import com.android.support.GenerateNewID;
 import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
@@ -132,6 +131,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 dlog.dismiss();
         }
     };
+    private Order order;
 
     public static void voidTransaction(Activity activity, String job_id, String orderType) {
         OrdersHandler handler = new OrdersHandler(activity);
@@ -741,8 +741,8 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             } else {
                 boolean isReturn = false;
                 if (job_id != null && !job_id.isEmpty()) {
-                    ordersHandler.updateIsProcessed(job_id, "1");
-                    Order order = ordersHandler.getOrder(job_id);
+                    order = ordersHandler.updateIsProcessed(job_id, "1");
+//                    order = ordersHandler.getOrder(job_id);
                     if (!TextUtils.isEmpty(order.ord_type)
                             && Global.OrderType.getByCode(Integer.parseInt(order.ord_type)) == Global.OrderType.RETURN) {
                         isReturn = true;
@@ -1225,9 +1225,15 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                                     emvContainer.getGeniusResponse().getStatus().equalsIgnoreCase("DECLINED")))
                         printSuccessful = Global.mainPrinterManager.getCurrentDevice().printPaymentDetails(PaymentsHandler.getLastPaymentInserted().getPay_id(), 1,
                                 wasReprint, emvContainer);
-                    else
-                        printSuccessful = Global.mainPrinterManager.getCurrentDevice().printTransaction(job_id, orderType,
-                                wasReprint, false, emvContainer);
+                    else {
+                        if(order==null) {
+                            printSuccessful = Global.mainPrinterManager.getCurrentDevice().printTransaction(job_id, orderType,
+                                    wasReprint, false, emvContainer);
+                        }else{
+                            printSuccessful = Global.mainPrinterManager.getCurrentDevice().printTransaction(order, orderType,
+                                    wasReprint, false, emvContainer);
+                        }
+                    }
                 }
             } catch (Exception e) {
                 Crashlytics.logException(e);
@@ -1238,12 +1244,12 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
         @Override
         protected void onCancelled() {
-           finishTransaction();
+            finishTransaction();
         }
 
         @Override
         protected void onPostExecute(String unused) {
-           finishTransaction();
+            finishTransaction();
         }
 
         private void finishTransaction() {

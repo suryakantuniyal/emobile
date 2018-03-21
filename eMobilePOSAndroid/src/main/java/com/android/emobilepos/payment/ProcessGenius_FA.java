@@ -775,6 +775,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                 payment.setPaymethod_id(PayMethodsHandler.getPayMethodID(parsedMap.get("CardType")));
                 payment.setCard_type(parsedMap.get("CardType"));
                 payment.setCcnum_last4(parsedMap.get("CCLast4"));
+                payment.setPay_transid(parsedMap.get("CreditCardTransID"));
                 saveApprovedPayment(parsedMap, payment);
                 showPrintDlg(false);
             } else {

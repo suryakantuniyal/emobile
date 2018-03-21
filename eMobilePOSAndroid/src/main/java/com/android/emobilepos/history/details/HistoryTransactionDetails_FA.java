@@ -127,19 +127,19 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         global = (Global) getApplication();
         activity = this;
         myPref = new MyPreferences(activity);
-        ListView myListView = (ListView) findViewById(R.id.orderDetailsLV);
-        btnPrint = (Button) findViewById(R.id.printButton);
+        ListView myListView = findViewById(R.id.orderDetailsLV);
+        btnPrint = findViewById(R.id.printButton);
         boolean hasRePrintPermissions = SecurityManager.hasPermissions(this, SecurityManager.SecurityAction.REPRINT_ORDER);
         boolean hasVoidPermissions = SecurityManager.hasPermissions(this, SecurityManager.SecurityAction.VOID_ORDER);
         btnPrint.setEnabled(hasRePrintPermissions);
-        btnVoid = (Button) findViewById(R.id.btnVoid);
+        btnVoid = findViewById(R.id.btnVoid);
         btnVoid.setOnClickListener(this);
-        TextView headerTitle = (TextView) findViewById(R.id.ordDetailsHeaderTitle);
+        TextView headerTitle = findViewById(R.id.ordDetailsHeaderTitle);
         headerTitle.setText(getString(R.string.trans_details_title));
         View headerView = getLayoutInflater().inflate(R.layout.orddetails_lvheader_adapter, (ViewGroup) findViewById(R.id.order_header_root));
-        custNameView = (TextView) headerView.findViewById(R.id.ordLVHeaderTitle);
-        TextView date = (TextView) headerView.findViewById(R.id.ordLVHeaderSubtitle);
-        ImageView receipt = (ImageView) headerView.findViewById(R.id.ordTicketImg);
+        custNameView = headerView.findViewById(R.id.ordLVHeaderTitle);
+        TextView date = headerView.findViewById(R.id.ordLVHeaderSubtitle);
+        ImageView receipt = headerView.findViewById(R.id.ordTicketImg);
         allInfoLeft = Arrays.asList(getString(R.string.trans_details_total), getString(R.string.trans_details_amount_paid),
                 getString(R.string.trans_details_tip), getString(R.string.trans_details_clerk_id), getString(R.string.trans_details_comment),
                 getString(R.string.trans_details_ship_via), getString(R.string.trans_details_terms), getString(R.string.trans_details_delivery),
@@ -148,9 +148,9 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         OrdersHandler ordersHandler = new OrdersHandler(activity);
         order_id = extras.getString("ord_id");
         order = ordersHandler.getOrder(order_id);
-        OrderProductsHandler orderProductsHandler = new OrderProductsHandler(activity);
-        orderedProd = orderProductsHandler.getOrderProducts(order_id);
-        CustomersHandler customersHandler = new CustomersHandler(activity);
+//        OrderProductsHandler orderProductsHandler = new OrderProductsHandler(activity);
+        orderedProd = order.getOrderProducts();//orderProductsHandler.getOrderProducts(order_id);
+//        CustomersHandler customersHandler = new CustomersHandler(activity);
         PaymentsHandler paymentHandler = new PaymentsHandler(activity);
         paymentMapList = paymentHandler.getPaymentDetailsForTransactions(order_id);
         String encodedImg = order.ord_signature;
@@ -164,11 +164,11 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
             layered.setLayerInset(1, 100, 30, 50, 60);
             receipt.setImageDrawable(layered);
         }
-        custNameView.setText(customersHandler.getSpecificValue("cust_name", order.cust_id));
+        custNameView.setText(order.customer.getCust_name());//(customersHandler.getSpecificValue("cust_name", order.cust_id));
         date.setText(getCaseData(CASE_TOTAL, 0) + " on " + order.ord_timecreated);
         myListView.addHeaderView(headerView);
         View footerView = getLayoutInflater().inflate(R.layout.orddetails_lvfooter_adapter, (ViewGroup) findViewById(R.id.order_footer_root));
-        final ImageView mapImg = (ImageView) footerView.findViewById(R.id.ordDetailsMapImg);
+        final ImageView mapImg = footerView.findViewById(R.id.ordDetailsMapImg);
         DisplayMetrics displayMetrics = new DisplayMetrics();
         activity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         final int width = displayMetrics.widthPixels;
@@ -333,13 +333,13 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dlog.setCancelable(false);
         dlog.setContentView(R.layout.dlog_btn_left_right_layout);
-        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+        TextView viewTitle = dlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = dlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_error);
         viewMsg.setText(R.string.dlog_msg_failed_print);
         dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
-        Button btnYes = (Button) dlog.findViewById(R.id.btnDlogLeft);
-        Button btnNo = (Button) dlog.findViewById(R.id.btnDlogRight);
+        Button btnYes = dlog.findViewById(R.id.btnDlogLeft);
+        Button btnNo = dlog.findViewById(R.id.btnDlogRight);
         btnYes.setText(R.string.button_yes);
         btnNo.setText(R.string.button_no);
         btnYes.setOnClickListener(new View.OnClickListener() {
@@ -484,14 +484,14 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         globalDlog.setCancelable(true);
         globalDlog.setContentView(R.layout.dlog_field_single_layout);
 
-        final EditText viewField = (EditText) globalDlog.findViewById(R.id.dlogFieldSingle);
+        final EditText viewField = globalDlog.findViewById(R.id.dlogFieldSingle);
         viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        TextView viewTitle = (TextView) globalDlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) globalDlog.findViewById(R.id.dlogMessage);
+        TextView viewTitle = globalDlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = globalDlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_confirm);
         viewMsg.setText(R.string.dlog_title_enter_manager_password);
 
-        Button btnOk = (Button) globalDlog.findViewById(R.id.btnDlogSingle);
+        Button btnOk = globalDlog.findViewById(R.id.btnDlogSingle);
         btnOk.setText(R.string.button_ok);
         btnOk.setOnClickListener(new View.OnClickListener() {
 
@@ -520,12 +520,12 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         dlog.setCanceledOnTouchOutside(true);
         dlog.setContentView(R.layout.dlog_btn_left_right_layout);
 
-        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+        TextView viewTitle = dlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = dlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_confirm);
         viewMsg.setVisibility(View.GONE);
-        Button btnVoid = (Button) dlog.findViewById(R.id.btnDlogRight);
-        Button btnCancel = (Button) dlog.findViewById(R.id.btnDlogLeft);
+        Button btnVoid = dlog.findViewById(R.id.btnDlogRight);
+        Button btnCancel = dlog.findViewById(R.id.btnDlogLeft);
         dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
 
         btnVoid.setText(R.string.button_void);
@@ -635,7 +635,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
             if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
                 if (Global.OrderType.getByCode(Integer.parseInt(trans_type)) != Global.OrderType.CONSIGNMENT_FILLUP
                         && Global.OrderType.getByCode(Integer.parseInt(trans_type)) != Global.OrderType.CONSIGNMENT_PICKUP) {
-                    printSuccessful = Global.mainPrinterManager.getCurrentDevice().printTransaction(order_id, Global.OrderType.getByCode(Integer.parseInt(trans_type)), true, false);
+                    printSuccessful = Global.mainPrinterManager.getCurrentDevice().printTransaction(order, Global.OrderType.getByCode(Integer.parseInt(trans_type)), true, false);
                 }
             }
             return null;
@@ -762,8 +762,8 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                     case 0: // divider
                     {
                         convertView = myInflater.inflate(R.layout.orddetails_lvdivider_adapter, null);
-                        holder.textLine1 = (TextView) convertView.findViewById(R.id.orderDivLeft);
-                        holder.textLine2 = (TextView) convertView.findViewById(R.id.orderDivRight);
+                        holder.textLine1 = convertView.findViewById(R.id.orderDivLeft);
+                        holder.textLine2 = convertView.findViewById(R.id.orderDivRight);
                         if (position == 0)
                             holder.textLine1.setText(R.string.info);
                         else if (position == allInfoLeft.size() + 1)
@@ -777,8 +777,8 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                     case 1: // content in info divider
                     {
                         convertView = myInflater.inflate(R.layout.orddetails_lvinfo_adapter, null);
-                        holder.textLine1 = (TextView) convertView.findViewById(R.id.ordInfoLeft);
-                        holder.textLine2 = (TextView) convertView.findViewById(R.id.ordInfoRight);
+                        holder.textLine1 = convertView.findViewById(R.id.ordInfoLeft);
+                        holder.textLine2 = convertView.findViewById(R.id.ordInfoRight);
                         holder.textLine1.setText(allInfoLeft.get(position - 1));
                         String temp = getCaseData((position - 1), 0);
                         if (temp != null && !temp.isEmpty())
@@ -787,11 +787,11 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                     }
                     case 2: {
                         convertView = myInflater.inflate(R.layout.orddetails_lvproducts_adapter, null);
-                        holder.textLine1 = (TextView) convertView.findViewById(R.id.ordProdTitle);
-                        holder.textLine2 = (TextView) convertView.findViewById(R.id.ordProdSubtitle);
-                        holder.ordProdPrice = (TextView) convertView.findViewById(R.id.ordProdPrice);
-                        holder.ordProdQty = (TextView) convertView.findViewById(R.id.ordProdQty);
-                        holder.iconImage = (ImageView) convertView.findViewById(R.id.prodIcon);
+                        holder.textLine1 = convertView.findViewById(R.id.ordProdTitle);
+                        holder.textLine2 = convertView.findViewById(R.id.ordProdSubtitle);
+                        holder.ordProdPrice = convertView.findViewById(R.id.ordProdPrice);
+                        holder.ordProdQty = convertView.findViewById(R.id.ordProdQty);
+                        holder.iconImage = convertView.findViewById(R.id.prodIcon);
                         int ind = position - allInfoLeft.size() - 2;
                         holder.textLine1.setText(orderedProd.get(ind).getOrdprod_name());
                         holder.textLine2.setText(orderedProd.get(ind).getOrdprod_desc());
@@ -801,8 +801,8 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                     }
                     case 3: {
                         convertView = myInflater.inflate(R.layout.orddetails_lvpayment_adapter, null);
-                        holder.textLine1 = (TextView) convertView.findViewById(R.id.paidAmount);
-                        holder.moreDetails = (ImageView) convertView.findViewById(R.id.paymentMoreDetailsIcon);
+                        holder.textLine1 = convertView.findViewById(R.id.paidAmount);
+                        holder.moreDetails = convertView.findViewById(R.id.paymentMoreDetailsIcon);
                         int listIndex = position - offsetForPayment;
                         String paymethodName = getCaseData(CASE_PAYMETHOD_NAME, listIndex);
                         if (paymethodName != null && !paymethodName.isEmpty()) {

@@ -94,7 +94,7 @@ public class OrderTaxes_DB {
 	public List<DataTaxes> getOrderTaxes(String _ord_id)
 	{
 		//SQLiteDatabase db = dbManager.openReadableDB();
-		List<DataTaxes>list = new ArrayList<DataTaxes>();
+		List<DataTaxes>list = new ArrayList<>();
 		DataTaxes dataTaxes;
 
 		Cursor c = DBManager.getDatabase().rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE ord_id = ?", new String[]{_ord_id});
