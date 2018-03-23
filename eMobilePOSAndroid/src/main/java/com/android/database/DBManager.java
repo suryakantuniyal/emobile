@@ -23,7 +23,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class DBManager {
-    public static final int VERSION = 61;
+    public static final int VERSION = 66;
     public static final String DB_NAME_OLD = "emobilepos.sqlite";
     private static final String CIPHER_DB_NAME = "emobilepos.sqlcipher";
     private static final String PASSWORD = "em0b1l3p05";
@@ -37,17 +37,21 @@ public class DBManager {
             "CREATE INDEX IF NOT EXISTS orderproduct_isAdded_index ON OrderProduct (isAdded)",
             "CREATE INDEX IF NOT EXISTS orderproduct_prod_taxId_index ON OrderProduct (prod_taxId)",
             "CREATE INDEX IF NOT EXISTS orderproduct_prod_sku_index ON OrderProduct (prod_sku)",
+            "CREATE INDEX IF NOT EXISTS orderproduct_addon_ordprod_id_index ON OrderProduct (addon_ordprod_id)",
             "CREATE INDEX IF NOT EXISTS orderproduct_prod_ord_id_index ON OrderProduct (ord_id)",
-            "CREATE INDEX IF NOT EXISTS ordertaxes_ord_id_index ON OrderProduct (ord_id)",
+            "CREATE INDEX IF NOT EXISTS ordertaxes_ord_id_index ON OrderTaxes (ord_id)",
             "CREATE INDEX IF NOT EXISTS orders_cust_id_index ON Orders (cust_id)",
             "CREATE INDEX IF NOT EXISTS OrderProductsAttr_ordprod_id_index ON OrderProduct (ordprod_id)",
             "CREATE INDEX IF NOT EXISTS Payments_paymethod_id_index ON Payments (paymethod_id)",
+            "CREATE INDEX IF NOT EXISTS Payments_job_id_index ON Payments (job_id)",
             "CREATE INDEX IF NOT EXISTS Product_addons_prod_id_index ON Product_addons (prod_id)",
             "CREATE INDEX IF NOT EXISTS Taxes_tax_id_index ON Taxes (tax_id)",
             "CREATE INDEX IF NOT EXISTS Taxes_tax_code_id_index ON Taxes (tax_code_id)",
             "CREATE INDEX IF NOT EXISTS Taxes_Group_taxGroupId_index ON Taxes_Group (taxGroupId)",
             "CREATE INDEX IF NOT EXISTS Taxes_Group_taxId_index ON Taxes_Group (taxId)",
             "CREATE INDEX IF NOT EXISTS Taxes_Group_taxcode_id_index ON Taxes_Group (taxcode_id)",
+            "CREATE INDEX IF NOT EXISTS Orders_ord_issync_index ON Orders (ord_issync)",
+            "CREATE INDEX IF NOT EXISTS VoidTransactions_is_sync_index ON VoidTransactions (is_sync)",
 
             "CREATE INDEX IF NOT EXISTS VolumePrices_prod_id_index ON VolumePrices (prod_id)",
             "CREATE INDEX IF NOT EXISTS minQty_index ON VolumePrices (minQty)",
@@ -60,6 +64,8 @@ public class DBManager {
             "CREATE INDEX IF NOT EXISTS prod_name_index ON Products (prod_name)",
             "CREATE INDEX IF NOT EXISTS prod_type_index ON Products (prod_type)",
             "CREATE INDEX IF NOT EXISTS prod_taxcode_index ON Products (prod_taxcode)",
+            "CREATE INDEX IF NOT EXISTS Categories_parentID_index ON Categories (parentID)",
+
             "CREATE INDEX IF NOT EXISTS productchainxref_prod_id_index ON ProductChainXRef (prod_id)",
             "CREATE INDEX IF NOT EXISTS cust_chain_index ON ProductChainXRef (cust_chain)",
             "CREATE INDEX IF NOT EXISTS productaliases_alias_index ON ProductAliases (prod_alias)",

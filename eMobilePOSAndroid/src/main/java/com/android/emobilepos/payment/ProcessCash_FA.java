@@ -33,10 +33,10 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.models.GroupTax;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Payment;
-import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NumberUtils;
+import com.android.support.TaxesCalculator;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -45,8 +45,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import util.json.UIUtils;
 
@@ -79,6 +81,8 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
     private Bundle extras;
     private Button btnProcess;
     private List<GroupTax> groupTaxRate;
+    private TextView tax1Lbl;
+    private TextView tax2Lbl;
 
     public static void setTaxLabels(List<GroupTax> groupTaxRate, TextView tax1Lbl, TextView tax2Lbl) {
         Collections.sort(groupTaxRate, new Comparator<GroupTax>() {
@@ -133,10 +137,10 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         groupTaxRate = new TaxesHandler(this).getGroupTaxRate(custTaxCode);
         if (!myPref.getPreferences(MyPreferences.pref_show_tips_for_cash)) {
             showTipField = false;
-            LinearLayout layout = (LinearLayout) findViewById(R.id.tipFieldMainHolder);
+            LinearLayout layout = findViewById(R.id.tipFieldMainHolder);
             layout.setVisibility(View.GONE);
         }
-        TextView headerTitle = (TextView) findViewById(R.id.HeaderTitle);
+        TextView headerTitle = findViewById(R.id.HeaderTitle);
         extras = this.getIntent().getExtras();
         isFromSalesReceipt = extras.getBoolean("isFromSalesReceipt");
         isFromMainMenu = extras.getBoolean("isFromMainMenu");
@@ -152,25 +156,25 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         } else if (extras.getBoolean("salesinvoice")) {
             headerTitle.setText(R.string.cash_invoice_lbl);
         }
-        orderSubTotal = extras.getString("subTotal", "0");
-        amountDue = (EditText) findViewById(R.id.amountDueCashEdit);
-        reference = (EditText) findViewById(R.id.referenceNumber);
-        tipAmount = (EditText) findViewById(R.id.tipAmountField);
-        subtotal = (EditText) findViewById(R.id.subtotalCashEdit);
-        tax1 = (EditText) findViewById(R.id.tax1CashEdit);
-        tax2 = (EditText) findViewById(R.id.tax2CashEdit);
-        TextView tax1Lbl = (TextView) findViewById(R.id.tax1CashLbl);
-        TextView tax2Lbl = (TextView) findViewById(R.id.tax2CashLbl);
+        orderSubTotal = extras.getString("ord_subtotal", "0");
+        amountDue = findViewById(R.id.amountDueCashEdit);
+        reference = findViewById(R.id.referenceNumber);
+        tipAmount = findViewById(R.id.tipAmountField);
+        subtotal = findViewById(R.id.subtotalCashEdit);
+        tax1 = findViewById(R.id.tax1CashEdit);
+        tax2 = findViewById(R.id.tax2CashEdit);
+        tax1Lbl = findViewById(R.id.tax1CashLbl);
+        tax2Lbl = findViewById(R.id.tax2CashLbl);
         setTaxLabels(groupTaxRate, tax1Lbl, tax2Lbl);
-        customerNameField = (EditText) findViewById(R.id.processCashName);
-        customerEmailField = (EditText) findViewById(R.id.processCashEmail);
-        phoneNumberField = (EditText) findViewById(R.id.processCashPhone);
+        customerNameField = findViewById(R.id.processCashName);
+        customerEmailField = findViewById(R.id.processCashEmail);
+        phoneNumberField = findViewById(R.id.processCashPhone);
 
 
-        Button btnFive = (Button) findViewById(R.id.btnFive);
-        Button btnTen = (Button) findViewById(R.id.btnTen);
-        Button btnTwenty = (Button) findViewById(R.id.btnTwenty);
-        Button btnFifty = (Button) findViewById(R.id.btnFifty);
+        Button btnFive = findViewById(R.id.btnFive);
+        Button btnTen = findViewById(R.id.btnTen);
+        Button btnTwenty = findViewById(R.id.btnTwenty);
+        Button btnFifty = findViewById(R.id.btnFifty);
         btnFive.setOnClickListener(this);
         btnTen.setOnClickListener(this);
         btnTwenty.setOnClickListener(this);
@@ -180,10 +184,20 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
             this.tipAmount.setText(Global.formatDoubleToCurrency(0.00));
 
         amountDue.setText(Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(extras.getString("amount")))));
-        tax1.setText(Global.getCurrencyFormat(extras.getString("Tax1_amount")));
-        tax2.setText(Global.getCurrencyFormat(extras.getString("Tax2_amount")));
-
-
+        if (!isFromMainMenu) {
+            HashMap<String, String[]> orderTaxes = TaxesCalculator.getOrderTaxes(this, global.order.getListOrderTaxes(), global.order);
+            int i = 0;
+            Iterator it = orderTaxes.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry<String, String[]> map = (Map.Entry<String, String[]>) it.next();
+                if (i == 0) {
+                    tax1.setText(Global.getCurrencyFormat(map.getValue()[1]));
+                } else if (i == 1) {
+                    tax2.setText(Global.getCurrencyFormat(map.getValue()[1]));
+                }
+                i++;
+            }
+        }
         custidkey = extras.getString("custidkey");
         if (custidkey == null)
             custidkey = "";
@@ -192,7 +206,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
             amountDue.setEnabled(false);
         }
 
-        this.paid = (EditText) findViewById(R.id.paidCashEdit);
+        this.paid = findViewById(R.id.paidCashEdit);
 
         this.paid.setText(Global.formatDoubleToCurrency(0.00));
         this.paid.setSelection(5);
@@ -219,10 +233,10 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
             }
         });
 
-        change = (TextView) findViewById(R.id.changeCashText);
+        change = findViewById(R.id.changeCashText);
 
-        Button exactBut = (Button) findViewById(R.id.exactAmountBut);
-        btnProcess = (Button) findViewById(R.id.processCashBut);
+        Button exactBut = findViewById(R.id.exactAmountBut);
+        btnProcess = findViewById(R.id.processCashBut);
 
         if (extras.getBoolean("histinvoices")) {
             isMultiInvoice = extras.getBoolean("isMultipleInvoice");
@@ -334,9 +348,9 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         } else {
             setIVUPOSFieldListeners();
         }
-        subtotal.setText(Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(extras.getString("amount")))));
+        subtotal.setText(Global.getCurrencyFormat(orderSubTotal));
         if (showTipField) {
-            Button tipButton = (Button) findViewById(R.id.tipAmountBut);
+            Button tipButton = findViewById(R.id.tipAmountBut);
             tipButton.setOnClickListener(new View.OnClickListener() {
 
                 @Override
@@ -405,7 +419,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         subtotal.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
 //                NumberUtils.parseInputedCurrency(s, subtotal);
-                if (!isFromSalesReceipt) {
+                if (isFromMainMenu) {
                     calculateTaxes(groupTaxRate, subtotal, tax1, tax2);
                     calculateAmountDue(subtotal, tax1, tax2, amountDue);
                 }
@@ -488,21 +502,21 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         } else {
             subTotal = Double.parseDouble(orderSubTotal);
         }
-        Button tenPercent = (Button) dialogLayout.findViewById(R.id.tenPercent);
-        Button fifteenPercent = (Button) dialogLayout.findViewById(R.id.fifteenPercent);
-        Button twentyPercent = (Button) dialogLayout.findViewById(R.id.twentyPercent);
-        dlogGrandTotal = (TextView) dialogLayout.findViewById(R.id.grandTotalView);
+        Button tenPercent = dialogLayout.findViewById(R.id.tenPercent);
+        Button fifteenPercent = dialogLayout.findViewById(R.id.fifteenPercent);
+        Button twentyPercent = dialogLayout.findViewById(R.id.twentyPercent);
+        dlogGrandTotal = dialogLayout.findViewById(R.id.grandTotalView);
         dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
 
 
-        promptTipField = (EditText) dialogLayout.findViewById(R.id.otherTipAmountField);
+        promptTipField = dialogLayout.findViewById(R.id.otherTipAmountField);
         promptTipField.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
         promptTipField.setText("");
 
-        Button cancelTip = (Button) dialogLayout.findViewById(R.id.cancelTipButton);
-        Button saveTip = (Button) dialogLayout.findViewById(R.id.acceptTipButton);
-        Button noneButton = (Button) dialogLayout.findViewById(R.id.noneButton);
-        final TextView totalAmountView = (TextView) dialogLayout.findViewById(R.id.totalAmountView);
+        Button cancelTip = dialogLayout.findViewById(R.id.cancelTipButton);
+        Button saveTip = dialogLayout.findViewById(R.id.acceptTipButton);
+        Button noneButton = dialogLayout.findViewById(R.id.noneButton);
+        final TextView totalAmountView = dialogLayout.findViewById(R.id.totalAmountView);
         totalAmountView.setText(String.format(Locale.getDefault(), getString(R.string.total_plus_tip),
                 Global.formatDoubleToCurrency(subTotal), Global.formatDoubleToCurrency(0)));
         promptTipField.addTextChangedListener(new TextWatcher() {
@@ -655,12 +669,12 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         String taxAmnt2 = null;
         if (Global.isIvuLoto) {
 
-            if (!extras.getString("Tax1_amount").isEmpty()) {
-                taxAmnt1 = extras.getString("Tax1_amount");
-                taxName1 = extras.getString("Tax1_name");
+            if (!tax1.getText().toString().isEmpty()) {
+                taxAmnt1 = NumberUtils.cleanCurrencyFormatedNumber(tax1);
+                taxName1 = tax1Lbl.getText().toString();
 
-                taxAmnt2 = extras.getString("Tax2_amount");
-                taxName2 = extras.getString("Tax2_name");
+                taxAmnt2 = NumberUtils.cleanCurrencyFormatedNumber(tax2);
+                taxName2 = tax2Lbl.getText().toString();
             } else {
                 taxAmnt1 = Double.toString(Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(tax1)));
                 if (groupTaxRate.size() > 0)
@@ -714,8 +728,8 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
 
     private Payment processMultiInvoicePayment() {
         InvoicePaymentsHandler invHandler = new InvoicePaymentsHandler(activity);
-        List<Double> appliedAmount = new ArrayList<Double>();
-        List<String[]> contentList = new ArrayList<String[]>();
+        List<Double> appliedAmount = new ArrayList<>();
+        List<String[]> contentList = new ArrayList<>();
         String[] content = new String[4];
 
         int size = inv_id_array.length;
@@ -828,8 +842,8 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         dlog.setCancelable(false);
         dlog.setContentView(R.layout.dlog_btn_left_right_layout);
 
-        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+        TextView viewTitle = dlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = dlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_confirm);
         if (isRetry) {
             viewTitle.setText(R.string.dlog_title_error);
@@ -837,8 +851,8 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         }
         dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
 
-        Button btnYes = (Button) dlog.findViewById(R.id.btnDlogLeft);
-        Button btnNo = (Button) dlog.findViewById(R.id.btnDlogRight);
+        Button btnYes = dlog.findViewById(R.id.btnDlogLeft);
+        Button btnNo = dlog.findViewById(R.id.btnDlogRight);
         btnYes.setText(R.string.button_yes);
         btnNo.setText(R.string.button_no);
 
@@ -874,12 +888,12 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
             dlog.setCancelable(false);
             dlog.setContentView(R.layout.dlog_btn_single_layout);
 
-            TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
-            TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+            TextView viewTitle = dlog.findViewById(R.id.dlogTitle);
+            TextView viewMsg = dlog.findViewById(R.id.dlogMessage);
             viewTitle.setText(R.string.dlog_title_confirm);
             //sb.append(getString(R.string.dlog_msg_print_cust_copy)).append("\n\n");
             viewMsg.setText(String.format(Locale.getDefault(), "%s%s", getString(R.string.changeLbl), change.getText().toString()));
-            Button btnOK = (Button) dlog.findViewById(R.id.btnDlogSingle);
+            Button btnOK = dlog.findViewById(R.id.btnDlogSingle);
             btnOK.setText(R.string.button_ok);
 
             btnOK.setOnClickListener(new View.OnClickListener() {

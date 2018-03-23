@@ -281,7 +281,7 @@ public class EMSDeviceDriver {
             }
 
 
-        } else {
+        } else if (taxes != null) {
             for (DataTaxes tax : taxes) {
                 BigDecimal taxAmount = new BigDecimal(0);
                 List<BigDecimal> rates = new ArrayList<>();
@@ -815,7 +815,7 @@ public class EMSDeviceDriver {
     protected void printReceipt(String ordID, int lineWidth, boolean fromOnHold, Global.OrderType type, boolean isFromHistory, EMVContainer emvContainer) {
         OrdersHandler orderHandler = new OrdersHandler(activity);
         Order anOrder = orderHandler.getPrintedOrder(ordID);
-        printReceipt(anOrder,lineWidth,fromOnHold,type,isFromHistory,emvContainer);
+        printReceipt(anOrder, lineWidth, fromOnHold, type, isFromHistory, emvContainer);
     }
 
     protected void printReceipt(Order anOrder, int lineWidth, boolean fromOnHold, Global.OrderType type, boolean isFromHistory, EMVContainer emvContainer) {
@@ -1218,7 +1218,7 @@ public class EMSDeviceDriver {
     }
 
     private void printIVULoto(String ivuLottoNumber, int lineWidth) {
-        print(("\n" + textHandler.ivuLines(2 * lineWidth / 3) + "\n" + activity.getString(R.string.ivuloto_control_label) + ivuLottoNumber + "\n" + getString(R.string.enabler_prefix) + "\n" + getString(R.string.powered_by_enabler) + "\n" + textHandler.ivuLines(2 * lineWidth / 3) + "\n").getBytes());
+        print((textHandler.ivuLines(2 * lineWidth / 3) + "\n" + activity.getString(R.string.ivuloto_control_label) + ivuLottoNumber + "\n" + getString(R.string.enabler_prefix) + "\n" + getString(R.string.powered_by_enabler) + "\n" + textHandler.ivuLines(2 * lineWidth / 3)).getBytes());
     }
 
     private void printEnablerWebSite(int lineWidth) {

@@ -335,8 +335,8 @@ public class OrdersHandler {
     }
 
     public Order getOrder(String orderId) {
-        String sb = "SELECT " + sb1.toString() + " FROM " + table_name + " WHERE ord_id = '" +
-                orderId + "'";
+//        String sb = "SELECT " + sb1.toString() + " FROM " + table_name + " WHERE ord_id = '" +
+//                orderId + "'";
 //        Cursor cursor = DBManager.getDatabase().rawQuery(sb, null);
         Cursor cursor = DBManager.getDatabase().query(table_name, attr, "ord_id=?",
                 new String[]{orderId}, null, null, null);
