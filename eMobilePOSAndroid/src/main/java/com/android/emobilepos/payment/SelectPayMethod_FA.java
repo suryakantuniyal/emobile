@@ -131,6 +131,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 dlog.dismiss();
         }
     };
+    private Order order;
 
     public static void voidTransaction(Activity activity, String job_id, String orderType) {
         OrdersHandler handler = new OrdersHandler(activity);
@@ -238,7 +239,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.card_list_layout);
-        myListview = (GridView) findViewById(R.id.cardsListview);
+        myListview = findViewById(R.id.cardsListview);
         global = (Global) getApplication();
         extras = this.getIntent().getExtras();
         myPref = new MyPreferences(this);
@@ -320,10 +321,10 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
     }
 
     private void initHeaderSection() {
-        TextView totalView = (TextView) findViewById(R.id.totalValue);
-        TextView paidView = (TextView) findViewById(R.id.paidValue);
-        TextView tipView = (TextView) findViewById(R.id.tipValue);
-        TextView dueView = (TextView) findViewById(R.id.dueValue);
+        TextView totalView = findViewById(R.id.totalValue);
+        TextView paidView = findViewById(R.id.paidValue);
+        TextView tipView = findViewById(R.id.tipValue);
+        TextView dueView = findViewById(R.id.dueValue);
         totalView.setText(Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(total))));
         paidView.setText(Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(paid))));
         dueView.setText(Global.getCurrencyFormat(Global.formatNumToLocale(overAllRemainingBalance)));
@@ -393,14 +394,14 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 dialog.setCancelable(true);
                 dialog.setContentView(R.layout.void_dialog_layout);
-                TextView msg1 = (TextView) dialog.findViewById(R.id.message1textView);
-                TextView msg2 = (TextView) dialog.findViewById(R.id.message2textView2);
+                TextView msg1 = dialog.findViewById(R.id.message1textView);
+                TextView msg2 = dialog.findViewById(R.id.message2textView2);
                 String to = orderType.toTitleCase();
                 msg1.setText(String.format(getString(R.string.void_confirmation_message1), to));
                 msg2.setText(String.format(getString(R.string.void_confirmation_message2), to));
 
-                Button voidBut = (Button) dialog.findViewById(R.id.voidBut);
-                Button notVoid = (Button) dialog.findViewById(R.id.notVoidBut);
+                Button voidBut = dialog.findViewById(R.id.voidBut);
+                Button notVoid = dialog.findViewById(R.id.notVoidBut);
 
                 voidBut.setOnClickListener(new OnClickListener() {
 
@@ -537,34 +538,36 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                         intent.putExtra("Tax1_amount", tempRate.toPlainString());
                         intent.putExtra("Tax1_name", groupTax.size() == 1 ? "" : groupTax.get(1).getTaxName());
                     }
-                } else {
-                    BigDecimal tempRate;
-                    tempRate = new BigDecimal(subtotal * 0.06).setScale(2, BigDecimal.ROUND_UP);
-                    intent.putExtra("Tax1_amount", tempRate.toPlainString());
-                    intent.putExtra("Tax1_name", "Estatal");
-
-                    tempRate = new BigDecimal(subtotal * 0.01).setScale(2, BigDecimal.ROUND_UP);
-                    intent.putExtra("Tax2_amount", tempRate.toPlainString());
-                    intent.putExtra("Tax2_name", "Municipal");
                 }
-            } else {
-                BigDecimal tempRate;
-                double tempAmount = Double.parseDouble(payingAmount);
-                if (tempAmount > 0) {
-                    tempRate = new BigDecimal(tempAmount * 0.06).setScale(2, BigDecimal.ROUND_UP);
-                    intent.putExtra("Tax1_amount", tempRate.toPlainString());
-                    intent.putExtra("Tax1_name", "Estatal");
-
-                    tempRate = new BigDecimal(tempAmount * 0.01).setScale(2, BigDecimal.ROUND_UP);
-                    intent.putExtra("Tax2_amount", tempRate.toPlainString());
-                    intent.putExtra("Tax2_name", "Municipal");
-                } else {
-                    intent.putExtra("Tax1_amount", "");
-                    intent.putExtra("Tax1_name", "");
-                    intent.putExtra("Tax2_amount", "");
-                    intent.putExtra("Tax2_name", "");
-                }
+//                else {
+//                    BigDecimal tempRate;
+//                    tempRate = new BigDecimal(subtotal * 0.06).setScale(2, BigDecimal.ROUND_UP);
+//                    intent.putExtra("Tax1_amount", tempRate.toPlainString());
+//                    intent.putExtra("Tax1_name", "Estatal");
+//
+//                    tempRate = new BigDecimal(subtotal * 0.01).setScale(2, BigDecimal.ROUND_UP);
+//                    intent.putExtra("Tax2_amount", tempRate.toPlainString());
+//                    intent.putExtra("Tax2_name", "Municipal");
+//                }
             }
+//            else {
+//                BigDecimal tempRate;
+//                double tempAmount = Double.parseDouble(payingAmount);
+//                if (tempAmount > 0) {
+//                    tempRate = new BigDecimal(tempAmount * 0.06).setScale(2, BigDecimal.ROUND_UP);
+//                    intent.putExtra("Tax1_amount", tempRate.toPlainString());
+//                    intent.putExtra("Tax1_name", "Estatal");
+//
+//                    tempRate = new BigDecimal(tempAmount * 0.01).setScale(2, BigDecimal.ROUND_UP);
+//                    intent.putExtra("Tax2_amount", tempRate.toPlainString());
+//                    intent.putExtra("Tax2_name", "Municipal");
+//                } else {
+//                    intent.putExtra("Tax1_amount", "");
+//                    intent.putExtra("Tax1_name", "");
+//                    intent.putExtra("Tax2_amount", "");
+//                    intent.putExtra("Tax2_name", "");
+//                }
+//            }
         }
 
         intent.putExtra("amount", payingAmount);
@@ -592,8 +595,8 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         dlog.setCancelable(false);
         dlog.setContentView(R.layout.dlog_btn_left_right_layout);
 
-        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+        TextView viewTitle = dlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = dlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_confirm);
 
         if (isRetry) {
@@ -606,8 +609,8 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 viewMsg.setText(R.string.dlog_msg_want_to_print);
         }
 
-        Button btnYes = (Button) dlog.findViewById(R.id.btnDlogLeft);
-        Button btnNo = (Button) dlog.findViewById(R.id.btnDlogRight);
+        Button btnYes = dlog.findViewById(R.id.btnDlogLeft);
+        Button btnNo = dlog.findViewById(R.id.btnDlogRight);
         dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
 
         btnYes.setText(R.string.button_yes);
@@ -645,21 +648,21 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         globalDlog.setCancelable(true);
         globalDlog.setContentView(R.layout.dlog_field_single_layout);
 
-        final EditText viewField = (EditText) globalDlog.findViewById(R.id.dlogFieldSingle);
+        final EditText viewField = globalDlog.findViewById(R.id.dlogFieldSingle);
         viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        TextView viewTitle = (TextView) globalDlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) globalDlog.findViewById(R.id.dlogMessage);
+        TextView viewTitle = globalDlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = globalDlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_confirm);
 
         viewMsg.setText(R.string.dlog_title_enter_manager_password);
-        Button btnCancel = (Button) globalDlog.findViewById(R.id.btnCancelDlogSingle);
+        Button btnCancel = globalDlog.findViewById(R.id.btnCancelDlogSingle);
         btnCancel.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 globalDlog.dismiss();
             }
         });
-        Button btnOk = (Button) globalDlog.findViewById(R.id.btnDlogSingle);
+        Button btnOk = globalDlog.findViewById(R.id.btnDlogSingle);
         btnOk.setText(R.string.button_ok);
         btnOk.setOnClickListener(new OnClickListener() {
 
@@ -740,8 +743,8 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             } else {
                 boolean isReturn = false;
                 if (job_id != null && !job_id.isEmpty()) {
-                    ordersHandler.updateIsProcessed(job_id, "1");
-                    Order order = ordersHandler.getOrder(job_id);
+                    order = ordersHandler.updateIsProcessed(job_id, "1");
+//                    order = ordersHandler.getOrder(job_id);
                     if (!TextUtils.isEmpty(order.ord_type)
                             && Global.OrderType.getByCode(Integer.parseInt(order.ord_type)) == Global.OrderType.RETURN) {
                         isReturn = true;
@@ -765,10 +768,10 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         dlog.setCanceledOnTouchOutside(true);
         dlog.setContentView(R.layout.dlog_btn_top_bottom_layout);
 
-        TextView title = (TextView) dlog.findViewById(R.id.dlogTitle);
-        TextView msg = (TextView) dlog.findViewById(R.id.dlogMessage);
-        Button btnTapPay = (Button) dlog.findViewById(R.id.btnDlogTop);
-        Button btnManual = (Button) dlog.findViewById(R.id.btnDlogBottom);
+        TextView title = dlog.findViewById(R.id.dlogTitle);
+        TextView msg = dlog.findViewById(R.id.dlogMessage);
+        Button btnTapPay = dlog.findViewById(R.id.btnDlogTop);
+        Button btnManual = dlog.findViewById(R.id.btnDlogBottom);
         btnTapPay.setOnClickListener(this);
         btnManual.setOnClickListener(this);
         btnTapPay.setText(R.string.tap_and_pay);
@@ -944,11 +947,11 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dlog.setContentView(R.layout.dlog_btn_single_layout);
         dlog.setCancelable(false);
-        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+        TextView viewTitle = dlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = dlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_confirm);
         viewMsg.setText(msg);
-        Button btnOk = (Button) dlog.findViewById(R.id.btnDlogSingle);
+        Button btnOk = dlog.findViewById(R.id.btnDlogSingle);
         btnOk.setText(R.string.button_ok);
         btnOk.setOnClickListener(new OnClickListener() {
 
@@ -1099,8 +1102,8 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
                 convertView = myInflater.inflate(R.layout.card_listrow2_adapter, null);
 
-                holder.textLine2 = (TextView) convertView.findViewById(R.id.cardsListname);
-                holder.ivPayIcon = (ImageView) convertView.findViewById(R.id.ivCardIcon);
+                holder.textLine2 = convertView.findViewById(R.id.cardsListname);
+                holder.ivPayIcon = convertView.findViewById(R.id.ivCardIcon);
                 String key = payTypeList.get(position).getPaymentmethod_type();
                 String name = payTypeList.get(position).getPaymethod_name();
                 String img_url = payTypeList.get(position).getImage_url();
@@ -1230,9 +1233,15 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                                     emvContainer.getGeniusResponse().getStatus().equalsIgnoreCase("DECLINED")))
                         printSuccessful = Global.mainPrinterManager.getCurrentDevice().printPaymentDetails(PaymentsHandler.getLastPaymentInserted().getPay_id(), 1,
                                 wasReprint, emvContainer);
-                    else
-                        printSuccessful = Global.mainPrinterManager.getCurrentDevice().printTransaction(job_id, orderType,
-                                wasReprint, false, emvContainer);
+                    else {
+                        if(order==null) {
+                            printSuccessful = Global.mainPrinterManager.getCurrentDevice().printTransaction(job_id, orderType,
+                                    wasReprint, false, emvContainer);
+                        }else{
+                            printSuccessful = Global.mainPrinterManager.getCurrentDevice().printTransaction(order, orderType,
+                                    wasReprint, false, emvContainer);
+                        }
+                    }
                 }
             } catch (Exception e) {
                 Crashlytics.logException(e);

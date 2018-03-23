@@ -1,8 +1,19 @@
 package com.android.support;
 
+import android.content.Context;
+
+import com.android.emobilepos.models.DataTaxes;
+import com.android.emobilepos.models.Tax;
+import com.android.emobilepos.models.orders.Order;
+import com.android.emobilepos.models.orders.OrderProduct;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Guarionex on 2/3/2016.
@@ -36,5 +47,56 @@ public class TaxesCalculator {
     public static BigDecimal taxRounder(BigDecimal amount) {
         BigDecimal roundBigDecimal = Global.getRoundBigDecimal(Global.getRoundBigDecimal(amount, 3), 2);
         return roundBigDecimal;
+    }
+
+    public static HashMap<String, String[]> getOrderTaxes(Context context, List<DataTaxes> taxes, Order order) {
+        MyPreferences preferences = new MyPreferences(context);
+        HashMap<String, String[]> prodTaxes = new HashMap<>();
+        if (preferences.isRetailTaxes()) {
+            for (OrderProduct product : order.getOrderProducts()) {
+                for (Tax tax : product.getTaxes()) {
+                    if (prodTaxes.containsKey(tax.getTaxRate())) {
+                        BigDecimal taxAmount = new BigDecimal(prodTaxes.get(tax.getTaxRate())[1]);
+                        taxAmount = taxAmount.add(TaxesCalculator.taxRounder(tax.getTaxAmount()));
+                        String[] arr = new String[2];
+                        arr[0] = tax.getTaxName();
+                        arr[1] = String.valueOf(taxAmount);
+                        prodTaxes.put(tax.getTaxRate(), arr);
+                    } else {
+                        BigDecimal taxAmount = TaxesCalculator.taxRounder(tax.getTaxAmount());
+                        String[] arr = new String[2];
+                        arr[0] = tax.getTaxName();
+                        arr[1] = String.valueOf(taxAmount);
+                        prodTaxes.put(tax.getTaxRate(), arr);
+                    }
+                }
+            }
+            Iterator it = prodTaxes.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry<String, String[]> pair = (Map.Entry<String, String[]>) it.next();
+
+//                sb.append(textHandler.twoColumnLineWithLeftAlignedText(pair.getValue()[0],
+//                        Global.getCurrencyFormat(String.valueOf(pair.getValue()[1])), lineWidth, 2));
+                it.remove();
+            }
+
+
+        } else {
+            for (DataTaxes tax : taxes) {
+                BigDecimal taxAmount = new BigDecimal(0);
+                List<BigDecimal> rates = new ArrayList<>();
+                rates.add(new BigDecimal(tax.getTax_rate()));
+                for (OrderProduct product : order.getOrderProducts()) {
+                    taxAmount = taxAmount.add(TaxesCalculator.calculateTax(product.getProductPriceTaxableAmountCalculated(), rates));
+                }
+                String[] arr = new String[2];
+                arr[0] = tax.getTax_name();
+                arr[1] = String.valueOf(taxAmount);
+                prodTaxes.put(tax.getTax_rate(), arr);
+//                sb.append(textHandler.twoColumnLineWithLeftAlignedText(tax.getTax_name(),
+//                        Global.getCurrencyFormat(String.valueOf(taxAmount)), lineWidth, 2));
+            }
+        }
+        return prodTaxes;
     }
 }

@@ -1398,5 +1398,6 @@
     <string name="syncplus_connection_mode">Connection Mode</string>
     <string name="automatic">Automatic</string>
     <string name="check_update_stop">Application update was cancelled.</string>
+    <string name="clerk_login">Use clerk password</string>
 
 </resources>

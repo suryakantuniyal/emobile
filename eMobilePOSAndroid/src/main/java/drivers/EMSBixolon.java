@@ -14,6 +14,7 @@ import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplittedOrder;
+import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.ShiftExpense;
 import com.android.support.ConsignmentTransaction;
@@ -214,9 +215,21 @@ public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrint
     }
 
     @Override
+    public boolean printTransaction(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
+        printReceipt(order, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, emvContainer);
+        return true;
+    }
+
+    @Override
     public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
 //        setPaperWidth(LINE_WIDTH);
         return printTransaction(ordID, saleTypes, isFromHistory, fromOnHold, null);
+    }
+
+    @Override
+    public boolean printTransaction(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
+        printReceipt(order, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, null);
+        return true;
     }
 
     @Override

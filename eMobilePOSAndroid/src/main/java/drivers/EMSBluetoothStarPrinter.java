@@ -26,6 +26,7 @@ import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplittedOrder;
+import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.ShiftExpense;
@@ -287,6 +288,28 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     }
 
     @Override
+    public boolean printTransaction(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
+        try {
+            setPaperWidth(LINE_WIDTH);
+            if (!BuildConfig.USE_DUMMY_START_PRINTER) {
+                setStartIOPort();
+                if (port == null) {
+                    verifyConnectivity();
+                }
+            }
+            Thread.sleep(1000);
+            printReceipt(order, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, emvContainer);
+            releasePrinter();
+        } catch (StarIOPortException e) {
+            return false;
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
+
+    @Override
     public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
         try {
             setPaperWidth(LINE_WIDTH);
@@ -313,6 +336,15 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         setPaperWidth(LINE_WIDTH);
         setStartIOPort();
         boolean printTransaction = printTransaction(ordID, type, isFromHistory, fromOnHold, null);
+        releasePrinter();
+        return printTransaction;
+    }
+
+    @Override
+    public boolean printTransaction(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
+        setPaperWidth(LINE_WIDTH);
+        setStartIOPort();
+        boolean printTransaction = printTransaction(order, saleTypes, isFromHistory, fromOnHold, null);
         releasePrinter();
         return printTransaction;
     }

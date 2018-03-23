@@ -1358,4 +1358,5 @@
     <string name="config_use_syncplus_services">Usar Servicios Sync Plus</string>
     <string name="syncplus_connection_mode">Tipo de Conección</string>
     <string name="automatic">Automático</string>
+    <string name="clerk_login">Usar contraseña de Clerk</string>
 </resources>

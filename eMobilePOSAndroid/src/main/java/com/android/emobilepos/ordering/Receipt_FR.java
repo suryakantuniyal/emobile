@@ -1731,7 +1731,15 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             intent.putExtra("cust_id", myPref.getCustID());
             intent.putExtra("custidkey", myPref.getCustIDKey());
         }
-
+        intent.putExtra(
+                "amount",
+                String.valueOf(Global.getRoundBigDecimal(OrderTotalDetails_FR.gran_total
+                        .compareTo(new BigDecimal(0)) == -1 ? OrderTotalDetails_FR.gran_total
+                        .negate() : OrderTotalDetails_FR.gran_total, 2)));
+        intent.putExtra("paid", "0.00");
+        intent.putExtra("ord_subtotal", getOrderingMainFa().global.order.ord_subtotal);
+        intent.putExtra("ord_taxID", OrderTotalDetails_FR.taxID);
+        intent.putExtra("ord_email", order_email);
         startActivityForResult(intent, 0);
     }
 

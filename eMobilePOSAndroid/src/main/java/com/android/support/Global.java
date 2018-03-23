@@ -536,11 +536,11 @@ public class Global extends MultiDexApplication {
         popDlog.setCanceledOnTouchOutside(false);
         popDlog.setContentView(R.layout.dlog_btn_single_layout);
 
-        TextView viewTitle = (TextView) popDlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) popDlog.findViewById(R.id.dlogMessage);
+        TextView viewTitle = popDlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = popDlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(title);
         viewMsg.setText(Html.fromHtml(msg == null ? "" : msg));
-        Button btnOk = (Button) popDlog.findViewById(R.id.btnDlogSingle);
+        Button btnOk = popDlog.findViewById(R.id.btnDlogSingle);
         btnOk.setText(R.string.button_ok);
         btnOk.setOnClickListener(new View.OnClickListener() {
 
@@ -1536,16 +1536,21 @@ public class Global extends MultiDexApplication {
             ((TextView) globalDlog.findViewById(R.id.versionNumbertextView)).setText(BuildConfig.VERSION_NAME);
         }
         final MyPreferences myPref = new MyPreferences(activity);
-        final EditText viewField = (EditText) globalDlog.findViewById(R.id.dlogFieldSingle);
+        final EditText viewField = globalDlog.findViewById(R.id.dlogFieldSingle);
         viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        final TextView viewMsg = (TextView) globalDlog.findViewById(R.id.dlogMessage);
-        final TextView loginInstructionTextView = (TextView) globalDlog.findViewById(R.id.loginInstructionstextView28);
-        Button systemLoginButton = (Button) globalDlog.findViewById(R.id.systemLoginbutton2);
+        final TextView viewMsg = globalDlog.findViewById(R.id.dlogMessage);
+        final TextView loginInstructionTextView = globalDlog.findViewById(R.id.loginInstructionstextView28);
+        final Button systemLoginButton = globalDlog.findViewById(R.id.systemLoginbutton2);
         if (myPref.isUseClerks()) {
-            systemLoginButton.setVisibility(View.VISIBLE);
+            systemLoginButton.setText(R.string.useSystemPassword);
             loginInstructionTextView.setText(getString(R.string.login_clerk_instructions));
         } else {
-            systemLoginButton.setVisibility(View.GONE);
+            if(myPref.getIsPersistClerk()){
+                systemLoginButton.setVisibility(View.VISIBLE);
+            }else {
+                systemLoginButton.setVisibility(View.GONE);
+            }
+            systemLoginButton.setText(R.string.clerk_login);
             loginInstructionTextView.setText(getString(R.string.login_system_instructions));
         }
         viewMsg.setText(R.string.password);
@@ -1605,13 +1610,14 @@ public class Global extends MultiDexApplication {
                 public void onClick(View v) {
                     globalDlog.dismiss();
                     loggedIn = false;
-                    myPref.setPreferences("pref_use_clerks", false);
+                    myPref.setPreferences("pref_use_clerks",
+                            systemLoginButton.getText().toString().equalsIgnoreCase(getString(R.string.clerk_login)));
                     myPref.setClerkID("0");
                     myPref.setClerkName("");
                     promptForMandatoryLogin(activity);
                 }
             });
-            Button btnOk = (Button) globalDlog.findViewById(R.id.btnDlogSingle);
+            Button btnOk = globalDlog.findViewById(R.id.btnDlogSingle);
             btnOk.setText(R.string.button_ok);
             btnOk.setOnClickListener(new View.OnClickListener() {
 

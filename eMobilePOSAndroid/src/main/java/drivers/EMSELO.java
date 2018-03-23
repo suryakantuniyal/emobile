@@ -17,6 +17,7 @@ import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplittedOrder;
+import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.ShiftExpense;
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
@@ -204,9 +205,36 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     }
 
     @Override
+    public boolean printTransaction(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
+        try {
+            if (DeviceManager.getPlatformInfo().eloPlatform == EloPlatform.PAYPOINT_REFRESH) {
+                eloPrinterRefresh = DeviceManager.getInstance(DeviceManager.getPlatformInfo().eloPlatform, activity).getPrinter();
+                printReceipt(order, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, emvContainer);
+            } else {
+                SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
+                eloPrinterApi = new PrinterAPI(eloPrinterPort);
+                printReceipt(order, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, emvContainer);
+                eloPrinterPort.getInputStream().close();
+                eloPrinterPort.getOutputStream().close();
+                eloPrinterPort.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
     public boolean printTransaction(String ordID, Global.OrderType type, boolean isFromHistory, boolean fromOnHold) {
         printTransaction(ordID, type, isFromHistory, fromOnHold, null);
         return true;
+    }
+
+    @Override
+    public boolean printTransaction(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
+        return printTransaction(order, saleTypes, isFromHistory, fromOnHold, null);
     }
 
     @Override

@@ -231,7 +231,7 @@ public class ViewEndOfDayReport_FA extends BaseFragmentActivityActionBar impleme
             Calendar cal = Calendar.getInstance();
             cal.set(year, monthOfYear, dayOfMonth);
 //            SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-            curDate = DateUtils.getDateAsString(cal.getTime(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss);
+            curDate = DateUtils.getDateAsString(cal.getTime(), DateUtils.DATE_yyyy_MM_dd);
             adapter.setNewDate(curDate);
             mDate = DateUtils.getDateAsString(cal.getTime(), "MMM dd, yyyy");
             activity.btnDate.setText(mDate);
