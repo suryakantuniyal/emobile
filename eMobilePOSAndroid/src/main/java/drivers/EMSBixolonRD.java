@@ -190,6 +190,11 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
         return cmd;
     }
 
+    @Override
+    public boolean printTransaction(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
+        return printTransaction(order.ord_id,saleTypes,isFromHistory,fromOnHold,emvContainer);
+    }
+
 
     private String getRegisteredMachineNumber() {
         if (printerTFHKA instanceof TfhkaAndroid) {
@@ -268,6 +273,12 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
         setPaperWidth(LINE_WIDTH);
         printReceipt(ordID, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, null);
         //        return printTransaction(ordID, null, false, false, null);
+        return true;
+    }
+
+    @Override
+    public boolean printTransaction(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
+        printReceipt(order.ord_id, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, null);
         return true;
     }
 

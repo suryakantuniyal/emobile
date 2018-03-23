@@ -36,14 +36,11 @@ import com.android.support.MyPreferences;
 import com.android.support.NetworkUtils;
 import com.android.support.SynchMethods;
 import com.thefactoryhka.android.controls.PrinterException;
-import com.thefactoryhka.android.pa.S1PrinterData;
-
-import java.util.List;
-
-import drivers.EMSBixolonRD;
 
 import java.util.List;
 import java.util.Set;
+
+import drivers.EMSBixolonRD;
 
 public class SyncTab_FR extends Fragment implements View.OnClickListener {
     public static Handler syncTabHandler;
@@ -76,10 +73,10 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        setViewData(view);
-        Button syncSendButton = (Button) view.findViewById(R.id.syncSendButton);
-        Button syncReceiveButton = (Button) view.findViewById(R.id.syncReceiveButton);
-        Button bixolonFailedReviewButton = (Button) view.findViewById(R.id.bixolonFailedReviewbutton);
+//        setViewData(view);
+        Button syncSendButton = view.findViewById(R.id.syncSendButton);
+        Button syncReceiveButton = view.findViewById(R.id.syncReceiveButton);
+        Button bixolonFailedReviewButton = view.findViewById(R.id.bixolonFailedReviewbutton);
         bixolonFailedReviewButton.setOnClickListener(this);
         syncSendButton.setOnClickListener(this);
         syncReceiveButton.setOnClickListener(this);
@@ -134,17 +131,17 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
     private void setViewData(View view) {
         if (view != null) {
             MyPreferences preferences = new MyPreferences(getActivity());
-            TextView syncPaymentsQty = (TextView) view.findViewById(R.id.syncPaymentsQty);
-            TextView sync_salesQty = (TextView) view.findViewById(R.id.sync_salesQty);
-            TextView syncSignaturesQty = (TextView) view.findViewById(R.id.syncSignaturesQty);
-            TextView syncConsignmentsQty = (TextView) view.findViewById(R.id.syncConsignmentsQty);
-            TextView syncTemplatesQty = (TextView) view.findViewById(R.id.syncTemplatesQty);
-            TextView syncCustomersQty = (TextView) view.findViewById(R.id.syncCustomersQty);
-            TextView syncVoidsQty = (TextView) view.findViewById(R.id.syncVoidsQty);
-            TextView syncTransfersQty = (TextView) view.findViewById(R.id.syncTransfersQty);
-            TextView synchFeedText = (TextView) view.findViewById(R.id.synchFeedText);
-            TextView synchSendDate = (TextView) view.findViewById(R.id.synchSendDate);
-            TextView synchReceiveDate = (TextView) view.findViewById(R.id.synchReceiveDate);
+            TextView syncPaymentsQty = view.findViewById(R.id.syncPaymentsQty);
+            TextView sync_salesQty = view.findViewById(R.id.sync_salesQty);
+            TextView syncSignaturesQty = view.findViewById(R.id.syncSignaturesQty);
+            TextView syncConsignmentsQty = view.findViewById(R.id.syncConsignmentsQty);
+            TextView syncTemplatesQty = view.findViewById(R.id.syncTemplatesQty);
+            TextView syncCustomersQty = view.findViewById(R.id.syncCustomersQty);
+            TextView syncVoidsQty = view.findViewById(R.id.syncVoidsQty);
+            TextView syncTransfersQty = view.findViewById(R.id.syncTransfersQty);
+            TextView synchFeedText = view.findViewById(R.id.synchFeedText);
+            TextView synchSendDate = view.findViewById(R.id.synchSendDate);
+            TextView synchReceiveDate = view.findViewById(R.id.synchReceiveDate);
 
             PaymentsHandler paymentHandler = new PaymentsHandler(getActivity());
             int unsyncPayments = (int) paymentHandler.getNumUnsyncPayments();
@@ -303,5 +300,4 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
             dialog.dismiss();
         }
     }
-
 }

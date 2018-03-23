@@ -60,10 +60,10 @@ public class HistoryTransactions_FA extends BaseFragmentActivityActionBar implem
         setContentView(R.layout.history_transactions_layout);
         global = (Global) getApplication();
         activity = this;
-        tabHost = (TabHost) findViewById(android.R.id.tabhost);
-        TextView headTitle = (TextView) findViewById(R.id.transHeaderTitle);
+        tabHost = findViewById(android.R.id.tabhost);
+        TextView headTitle = findViewById(R.id.transHeaderTitle);
         headTitle.setText(getString(R.string.hist_transac));
-        lView = (ListView) findViewById(R.id.listView);
+        lView = findViewById(R.id.listView);
         ordersHandler = new OrdersHandler(this);
         final Bundle extras = getIntent().getExtras();
         if (extras != null)
@@ -83,7 +83,7 @@ public class HistoryTransactions_FA extends BaseFragmentActivityActionBar implem
                 startActivityForResult(intent, 0);
             }
         });
-        EditText field = (EditText) findViewById(R.id.searchField);
+        EditText field = findViewById(R.id.searchField);
         field.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 
             @Override
@@ -174,7 +174,7 @@ public class HistoryTransactions_FA extends BaseFragmentActivityActionBar implem
 
     private TabSpec newTab(String tag, String label, int tabView) {
         View indicator = LayoutInflater.from(activity).inflate(R.layout.tabs_layout, (ViewGroup) findViewById(android.R.id.tabs), false);
-        TextView tabLabel = (TextView) indicator.findViewById(R.id.tabTitle);
+        TextView tabLabel = indicator.findViewById(R.id.tabTitle);
         tabLabel.setText(label);
         TabSpec tabSpec = tabHost.newTabSpec(tag);
         tabSpec.setIndicator(indicator);
@@ -310,11 +310,11 @@ public class HistoryTransactions_FA extends BaseFragmentActivityActionBar implem
         public View newView(Context context, Cursor cursor, ViewGroup parent) {
             View retView = inflater.inflate(R.layout.trans_lvadapter, parent, false);
             ViewHolder holder = new ViewHolder();
-            holder.title = (TextView) retView.findViewById(R.id.transLVtitle);
-            holder.clientName = (TextView) retView.findViewById(R.id.transLVid);
-            holder.amount = (TextView) retView.findViewById(R.id.transLVamount);
-            holder.voidText = (TextView) retView.findViewById(R.id.transVoidText);
-            holder.syncIcon = (ImageView) retView.findViewById(R.id.transIcon);
+            holder.title = retView.findViewById(R.id.transLVtitle);
+            holder.clientName = retView.findViewById(R.id.transLVid);
+            holder.amount = retView.findViewById(R.id.transLVamount);
+            holder.voidText = retView.findViewById(R.id.transVoidText);
+            holder.syncIcon = retView.findViewById(R.id.transIcon);
             holder.i_ord_id = cursor.getColumnIndex("_id");
             holder.i_cust_id = cursor.getColumnIndex("cust_id");
             holder.i_ord_total = cursor.getColumnIndex("ord_total");

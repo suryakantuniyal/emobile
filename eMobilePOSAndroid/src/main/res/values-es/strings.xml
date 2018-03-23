@@ -1354,4 +1354,5 @@
     <string name="backup_data_success">Backup data success</string>
     <string name="usb_disconnected">Se desconectó la impresora. Verificar la conexión USB de la impresora Star.</string>
     <string name="check_update_stop">La actualización fue cancelada.</string>
+    <string name="clerk_login">Usar contraseña de Clerk</string>
 </resources>
