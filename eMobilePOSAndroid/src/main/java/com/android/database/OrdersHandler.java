@@ -83,13 +83,13 @@ public class OrdersHandler {
     private final static String VAT = "VAT";
     private final static String bixolonTransactionId = "bixolonTransactionId";
     private static String ord_timeStarted = "ord_timeStarted";
-    private final static List<String> attr = Arrays.asList(ord_id, qbord_id, emp_id, cust_id, clerk_id, c_email,
+    private final static String[] attr = {ord_id, qbord_id, emp_id, cust_id, clerk_id, c_email,
             ord_signature, ord_po, total_lines, total_lines_pay, ord_total, ord_comment, ord_delivery, ord_timecreated,
             ord_timesync, qb_synctime, emailed, processed, ord_type, ord_claimnumber, ord_rganumber, ord_returns_pu,
             ord_inventory, ord_issync, tax_id, ord_shipvia, ord_shipto, ord_terms, ord_custmsg, ord_class, ord_subtotal,
             ord_taxamount, ord_discount, ord_discount_id, ord_latitude, ord_longitude, tipAmount, isVoid, custidkey,
             isOnHold, ord_HoldName, is_stored_fwd, VAT, assignedTable, numberOfSeats, associateID,
-            ord_timeStarted, orderAttributes, bixolonTransactionId);
+            ord_timeStarted, orderAttributes, bixolonTransactionId};
     private static CustomersHandler custHandler;
     private static OrderTaxes_DB taxes_db;
     private static OrderProductsHandler orderProductsHandler;
@@ -207,14 +207,14 @@ public class OrdersHandler {
     }
 
     public void initDictionary() {
-        int size = attr.size();
+        int size = attr.length;
         for (int i = 0; i < size; i++) {
-            attrHash.put(attr.get(i), i + 1);
+            attrHash.put(attr[i], i + 1);
             if ((i + 1) < size) {
-                sb1.append(attr.get(i)).append(",");
+                sb1.append(attr[i]).append(",");
                 sb2.append("?").append(",");
             } else {
-                sb1.append(attr.get(i));
+                sb1.append(attr[i]);
                 sb2.append("?");
             }
         }
@@ -335,9 +335,12 @@ public class OrdersHandler {
     }
 
     public Order getOrder(String orderId) {
-        String sb = "SELECT " + sb1.toString() + " FROM " + table_name + " WHERE ord_id = '" +
-                orderId + "'";
-        Cursor cursor = DBManager.getDatabase().rawQuery(sb, null);
+//        String sb = "SELECT " + sb1.toString() + " FROM " + table_name + " WHERE ord_id = '" +
+//                orderId + "'";
+//        Cursor cursor = DBManager.getDatabase().rawQuery(sb, null);
+        Cursor cursor = DBManager.getDatabase().query(table_name, attr, "ord_id=?",
+                new String[]{orderId}, null, null, null);
+
         Order order = new Order(this.activity);
         if (cursor.moveToFirst()) {
             order = getOrder(cursor, activity);
@@ -594,12 +597,14 @@ public class OrdersHandler {
         return dateCreated;
     }
 
-    public void updateIsProcessed(String orderID, String updateValue) {
+    public Order updateIsProcessed(String orderID, String updateValue) {
         ContentValues args = new ContentValues();
         args.put(processed, updateValue);
         args.put(isOnHold, "0");
         DBManager.getDatabase().update(table_name, args, ord_id + " = ?", new String[]{orderID});
-        DinningTableOrderDAO.deleteByNumber(getOrder(orderID).assignedTable);
+        Order order = getOrder(orderID);
+        DinningTableOrderDAO.deleteByNumber(order.assignedTable);
+        return order;
     }
 
     public void updateOrderTypeToInvoice(String orderID) {

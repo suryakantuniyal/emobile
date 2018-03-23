@@ -632,7 +632,8 @@ public class PaymentsHandler {
                 "SELECT p.isVoid as 'isVoid',p.paymethod_id as 'paymethod_id',p.pay_transid as 'pay_transid', p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip','Genius' AS  'paymethod_name', amount_tender," +
                 "p.pay_id AS 'pay_id', p.pay_type as 'pay_type' FROM Payments p WHERE p.paymethod_id = 'Genius' " + " AND pay_type != '1' AND p.job_id = '" +
                 jobID + "' UNION " + "SELECT p.isVoid as 'isVoid',p.paymethod_id as 'paymethod_id',p.pay_transid as 'pay_transid', p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip'," +
-                "'Genius' AS  'paymethod_name', amount_tender, p.pay_id AS 'pay_id', p.pay_type as 'pay_type' FROM Payments p WHERE p.paymethod_id = '' " +
+                "'Genius' AS  'paymethod_name', amount_tender, p.pay_id AS 'pay_id', p.pay_type as 'pay_type' " +
+                "FROM Payments p WHERE p.paymethod_id = '' " +
                 " AND pay_type != '1' AND p.job_id = '" + jobID + "'", null);
         if (cursor.moveToFirst()) {
             do {

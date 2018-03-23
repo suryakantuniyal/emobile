@@ -14,6 +14,7 @@ import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplittedOrder;
+import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.ShiftExpense;
 import com.android.internal.misccomm.MsrApiContext;
@@ -161,7 +162,17 @@ public class EMSPAT215 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     }
 
     @Override
+    public boolean printTransaction(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
+        return true;
+    }
+
+    @Override
     public boolean printTransaction(String ordID, Global.OrderType type, boolean isFromHistory, boolean fromOnHold) {
+        return true;
+    }
+
+    @Override
+    public boolean printTransaction(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
         return true;
     }
 
@@ -273,7 +284,7 @@ public class EMSPAT215 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
         int setMsrEnable = msrApiContext.setMsrEnable();
         int startReadData = msrApiContext.startReadData();
-        ((Activity)activity).runOnUiThread(doUpdateDidConnect);
+        ((Activity) activity).runOnUiThread(doUpdateDidConnect);
     }
 
     private Runnable doUpdateDidConnect = new Runnable() {

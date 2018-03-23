@@ -17,6 +17,7 @@ import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplittedOrder;
+import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.ShiftExpense;
 import com.android.support.CardParser;
@@ -176,7 +177,17 @@ public class EMSKDC425 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     }
 
     @Override
+    public boolean printTransaction(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
+        return false;
+    }
+
+    @Override
     public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
+        return false;
+    }
+
+    @Override
+    public boolean printTransaction(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
         return false;
     }
 
@@ -311,7 +322,7 @@ public class EMSKDC425 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
         // Enable KDCReader to decrypt MSR data using AES Key from KDC Device.
         if (key != null && kdc425Reader.EnableDecryptMSRData(true, key, length)) {
-            ((Activity)activity).runOnUiThread(new Runnable() {
+            ((Activity) activity).runOnUiThread(new Runnable() {
 
                 @Override
                 public void run() {
@@ -672,11 +683,11 @@ public class EMSKDC425 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         protected void onPostExecute(Boolean result) {
             boolean isDestroyed = false;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                if (((Activity)activity).isDestroyed()) {
+                if (((Activity) activity).isDestroyed()) {
                     isDestroyed = true;
                 }
             }
-            if (!((Activity)activity).isFinishing() && !isDestroyed && myProgressDialog.isShowing()) {
+            if (!((Activity) activity).isFinishing() && !isDestroyed && myProgressDialog.isShowing()) {
                 myProgressDialog.dismiss();
             }
         }
