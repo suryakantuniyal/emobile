@@ -411,7 +411,9 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                                     @Override
                                     public boolean onPreferenceChange(Preference preference, Object newValue) {
                                         if (newValue instanceof Boolean) {
-                                            if ((Boolean) newValue) {
+                                            if ((Boolean) newValue && myPref.isSyncplus_AutoScan()) {
+                                                SyncConfigServerService.startService(getActivity());
+                                            }else{
                                                 SyncConfigServerService.stopService(getActivity());
                                             }
                                         }
