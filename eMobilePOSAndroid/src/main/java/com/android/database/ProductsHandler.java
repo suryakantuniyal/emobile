@@ -788,11 +788,11 @@ public class ProductsHandler {
     public Discount getDiscounts(String discount_id) {
         Discount data = new Discount();
         Cursor cursor = DBManager.getDatabase().rawQuery("SELECT p.prod_name,p.prod_disc_type,p.prod_price," +
-                "IFNULL(s.taxcode_istaxable,1) as 'taxcode_istaxable'" + ",p.prod_id " +
-                "FROM Products p " +
-                "LEFT OUTER JOIN SalesTaxCodes s ON p.prod_taxcode = s.taxcode_id " +
-                "WHERE p.prod_type = 'Discount' AND prod_id LIKE ? " +
-                "ORDER BY p.prod_name ASC",
+                        "IFNULL(s.taxcode_istaxable,1) as 'taxcode_istaxable'" + ",p.prod_id " +
+                        "FROM Products p " +
+                        "LEFT OUTER JOIN SalesTaxCodes s ON p.prod_taxcode = s.taxcode_id " +
+                        "WHERE p.prod_type = 'Discount' AND prod_id LIKE ? " +
+                        "ORDER BY p.prod_name ASC",
                 new String[]{StringUtil.nullStringToEmpty(discount_id)});
         if (cursor.moveToFirst()) {
             data.setProductName(cursor.getString(cursor.getColumnIndex(prod_name)));
@@ -834,7 +834,7 @@ public class ProductsHandler {
             AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
             priceLevelID = StringUtil.nullStringToEmpty(assignEmployee.getPricelevelId());
         }
-
+        search = search.replace("'", "''");
         sb.append(
                 "SELECT CASE WHEN  p.prod_name LIKE '" + search + "%' THEN '0' ELSE '1' END as weight, " +
                         "p.prod_id as '_id', p.prod_prices_group_id as 'prod_prices_group_id', p.prod_price as 'master_price'," +

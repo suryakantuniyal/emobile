@@ -2226,7 +2226,7 @@ public class GenerateXML {
                 serializer.text(String.valueOf(s.getAssigneeId()));//c.getString(c.getColumnIndex("assignee_id")));
                 serializer.endTag(empstr, "clerk_id");
                 serializer.startTag(empstr, "assignee_name");
-                serializer.text(clerk.getEmpName());//c.getString(c.getColumnIndex("assignee_name")));
+                serializer.text(clerk == null ? "" : clerk.getEmpName());//c.getString(c.getColumnIndex("assignee_name")));
                 serializer.endTag(empstr, "assignee_name");
                 serializer.startTag(empstr, "creationDate");
                 serializer.text(DateUtils.getDateAsString(s.getCreationDate()));//c.getString(c.getColumnIndex("creationDate")));

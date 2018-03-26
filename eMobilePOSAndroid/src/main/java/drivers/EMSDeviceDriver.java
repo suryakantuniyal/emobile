@@ -254,20 +254,22 @@ public class EMSDeviceDriver {
         if (myPref.isRetailTaxes()) {
             HashMap<String, String[]> prodTaxes = new HashMap<>();
             for (OrderProduct product : order.getOrderProducts()) {
-                for (Tax tax : product.getTaxes()) {
-                    if (prodTaxes.containsKey(tax.getTaxRate())) {
-                        BigDecimal taxAmount = new BigDecimal(prodTaxes.get(tax.getTaxRate())[1]);
-                        taxAmount = taxAmount.add(TaxesCalculator.taxRounder(tax.getTaxAmount()));
-                        String[] arr = new String[2];
-                        arr[0] = tax.getTaxName();
-                        arr[1] = String.valueOf(taxAmount);
-                        prodTaxes.put(tax.getTaxRate(), arr);
-                    } else {
-                        BigDecimal taxAmount = TaxesCalculator.taxRounder(tax.getTaxAmount());
-                        String[] arr = new String[2];
-                        arr[0] = tax.getTaxName();
-                        arr[1] = String.valueOf(taxAmount);
-                        prodTaxes.put(tax.getTaxRate(), arr);
+                if(product.getTaxes()!=null) {
+                    for (Tax tax : product.getTaxes()) {
+                        if (prodTaxes.containsKey(tax.getTaxRate())) {
+                            BigDecimal taxAmount = new BigDecimal(prodTaxes.get(tax.getTaxRate())[1]);
+                            taxAmount = taxAmount.add(TaxesCalculator.taxRounder(tax.getTaxAmount()));
+                            String[] arr = new String[2];
+                            arr[0] = tax.getTaxName();
+                            arr[1] = String.valueOf(taxAmount);
+                            prodTaxes.put(tax.getTaxRate(), arr);
+                        } else {
+                            BigDecimal taxAmount = TaxesCalculator.taxRounder(tax.getTaxAmount());
+                            String[] arr = new String[2];
+                            arr[0] = tax.getTaxName();
+                            arr[1] = String.valueOf(taxAmount);
+                            prodTaxes.put(tax.getTaxRate(), arr);
+                        }
                     }
                 }
             }
