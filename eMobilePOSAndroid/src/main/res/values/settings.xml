@@ -4,7 +4,7 @@
     <string name="sync_enablermobile_local_holds" translatable="false">http://%s:%s/api/orders/holds</string>
     <string name="sync_enablermobile_local_checkstatusholds" translatable="false">http://%s:%s/api/orders/holds/status/</string>
     <string name="sync_enablermobile_local_detailholds" translatable="false">http://%s:%s/api/orders/holds/detail/</string>
-
+    <string name="sync_enablermobile_local_polling" translatable="false">http://%s:%s/api/</string>
     <string name="sync_enablermobile_deviceasxmltrans" translatable="false">https://sync.enablermobile.com/deviceASXMLTrans/</string>
     <string name="sync_enablermobile_getxmlorders" translatable="false">https://sync.enablermobile.com/deviceASXMLTrans/getXMLOrders.aspx</string>
     <string name="sync_enablermobile_getxmlsalesassociate" translatable="false">getXMLSalesAssociate.ashx</string>
