@@ -254,7 +254,7 @@ public class EMSDeviceDriver {
         if (myPref.isRetailTaxes()) {
             HashMap<String, String[]> prodTaxes = new HashMap<>();
             for (OrderProduct product : order.getOrderProducts()) {
-                if(product.getTaxes()!=null) {
+                if (product.getTaxes() != null) {
                     for (Tax tax : product.getTaxes()) {
                         if (prodTaxes.containsKey(tax.getTaxRate())) {
                             BigDecimal taxAmount = new BigDecimal(prodTaxes.get(tax.getTaxRate())[1]);
@@ -1003,7 +1003,12 @@ public class EMSDeviceDriver {
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_itemsQtyTotal),
                     String.valueOf(totalItemstQty), lineWidth, 0));
             sb.append("\n");
-            String granTotal = (anOrder.gran_total.isEmpty() ? new BigDecimal(0) : new BigDecimal(anOrder.gran_total)).toString();
+            String granTotal = "0";
+            if (!TextUtils.isEmpty(anOrder.gran_total)) {
+                granTotal = anOrder.gran_total;
+            } else if (!TextUtils.isEmpty(anOrder.ord_total)) {
+                granTotal = anOrder.ord_total;
+            }
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_grandtotal),
                     Global.getCurrencyFormat(granTotal), lineWidth, 0));
             sb.append("\n");
