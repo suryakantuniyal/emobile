@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
+import interfaces.EMSCallBack;
+
 /**
  * Created by Luis Camayd on 3/2/2018.
  */
@@ -19,16 +21,16 @@ import java.util.List;
 public class MyBBDeviceControllerListener implements BBDeviceControllerListener {
 
     private Context context;
-    private BarcodeCallback callback;
+    private EMSCallBack callback;
 
-    public MyBBDeviceControllerListener(Context context, BarcodeCallback callback) {
+    public MyBBDeviceControllerListener(Context context, EMSCallBack callback) {
         this.context = context;
         this.callback = callback;
     }
 
-    public interface BarcodeCallback {
-        void onDataScanned(String data);
-    }
+//    public interface BarcodeCallback {
+//        void onDataScanned(String data);
+//    }
 
     @Override
     public void onBarcodeReaderConnected() {
@@ -43,7 +45,7 @@ public class MyBBDeviceControllerListener implements BBDeviceControllerListener 
     @Override
     public void onReturnBarcode(String s) {
         toastIt("@@@@@@@@ DATA: " + s);
-        callback.onDataScanned(s);
+        callback.scannerWasRead(s);
     }
 
     @Override

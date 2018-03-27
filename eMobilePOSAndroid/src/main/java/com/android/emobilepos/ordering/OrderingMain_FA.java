@@ -73,6 +73,7 @@ import com.android.support.OrderProductUtils;
 import com.android.support.Post;
 import com.android.support.TerminalDisplay;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.bbpos.bbdevice.BBDeviceController;
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 import com.honeywell.decodemanager.DecodeManager;
@@ -94,6 +95,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -208,6 +211,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             }
         }
     };
+    private BBDeviceController bbDeviceController;
+    private MyBBDeviceControllerListener listener;
 
 
     public static void voidTransaction(Activity activity, Order order, List<ProductAttribute> ordProdAttr) {
@@ -399,6 +404,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             global.resetOrderDetailsValues();
             global.clearListViewData();
         }
+        listener = new MyBBDeviceControllerListener(this, this);
+        bbDeviceController = BBDeviceController.getInstance(
+                getApplicationContext(), listener);
         callBackMSR = this;
 //        setReceiptListHandler();
         handler = new ProductsHandler(this);
@@ -660,12 +668,31 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             case R.id.toggleEloBCR: {
                 if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
                     Global.mainPrinterManager.getCurrentDevice().toggleBarcodeReader();
+                } else {
+                    if (bbDeviceController != null) {
+                        scannerInDecodeMode = true;
+                        bbDeviceController.startBarcodeReader();
+                        bbDeviceController.getBarcode();
+                    }
                 }
                 break;
             }
         }
         return super.onOptionsItemSelected(item);
     }
+
+//    private void startBBPOSBCR() {
+//        bbDeviceController.getBarcode();
+//        bcrScanning
+////        bcrTimer = new Timer();
+////        bcrTimer.schedule(new TimerTask() {
+////            @Override
+////            public void run() {
+////                bbDeviceController.stopBarcodeReader();
+////                bbDeviceController.startBarcodeReader();
+////            }
+////        }, BuildConfig.BCR_TIMEOUT);
+//    }
 
     private void showSeatHeaderPopMenu(final View v) {
         final OrderSeatProduct orderSeatProduct = (OrderSeatProduct) v.getTag();
@@ -803,7 +830,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        if (keyCode == 0) {
+        if (keyCode == 0 || keyCode == 138) {
             fragOnKeyDown(keyCode);
             return true;
         }
@@ -869,6 +896,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             if (Global.btSled != null && Global.btSled.getCurrentDevice() != null)
                 Global.btSled.getCurrentDevice().loadScanner(callBackMSR);
         }
+        if (bbDeviceController != null) {
+            bbDeviceController.startBarcodeReader();
+        }
         super.onResume();
     }
 
@@ -886,6 +916,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if (bbDeviceController != null) {
+            bbDeviceController.stopBarcodeReader();
+        }
         if (myPref.getPreferencesValue(MyPreferences.pref_default_transaction).equals("-1")
                 || (!myPref.getPreferencesValue(MyPreferences.pref_default_transaction).equals("-1")
                 && orderingAction == OrderingAction.BACK_PRESSED)) {
@@ -1187,6 +1220,28 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 }
             } else
                 DoScan();
+        } else if (key_code == 138) {
+            if (scannerInDecodeMode) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        bbDeviceController.stopBarcodeReader();
+                        bbDeviceController.startBarcodeReader();
+                    }
+                }).start();
+                scannerInDecodeMode = false;
+
+            } else {
+                scannerInDecodeMode = true;
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        bbDeviceController.startBarcodeReader();
+                        bbDeviceController.getBarcode();
+                    }
+                }).start();
+            }
+
         }
     }
 
@@ -1618,6 +1673,15 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     @Override
     public void scannerWasRead(String data) {
+        if (bbDeviceController != null) {
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    bbDeviceController.getBarcode();
+                }
+            }, 2000);
+
+        }
         if (!data.isEmpty()) {
             scanAddItem(data);
         }

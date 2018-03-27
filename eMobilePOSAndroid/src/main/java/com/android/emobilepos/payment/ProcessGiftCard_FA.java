@@ -84,7 +84,7 @@ import interfaces.EMSCallBack;
 import util.json.UIUtils;
 
 public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements EMSCallBack,
-        OnClickListener, MyBBDeviceControllerListener.BarcodeCallback {
+        OnClickListener {
 
     private static final String DATA_STRING_TAG = "com.motorolasolutions.emdk.datawedge.data_string";
     private CheckBox cardSwipe, redeemAll;
@@ -114,7 +114,6 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
     private Button btnScan;
     private BBDeviceController bbDeviceController;
     private MyBBDeviceControllerListener listener;
-
 
 
     @Override
@@ -202,10 +201,10 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
 
     }
 
-    @Override
-    public void onDataScanned(String data) {
-        fieldCardNum.setText(data);
-    }
+//    @Override
+//    public void onDataScanned(String data) {
+//        fieldCardNum.setText(data);
+//    }
 
     @Override
     public void onResume() {
@@ -533,7 +532,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
                 generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ChargeGiftCardAction, cardInfoManager.getWasSwiped(), cardType,
                         cardInfoManager);
             } else if (cardType.equalsIgnoreCase("REWARD")) {
-                Global.rewardCardInfo=cardInfoManager;
+                Global.rewardCardInfo = cardInfoManager;
                 generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ChargeRewardAction, cardInfoManager.getWasSwiped(), cardType,
                         cardInfoManager);
             }
@@ -714,7 +713,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
 
     @Override
     public void scannerWasRead(String data) {
-
+        fieldCardNum.setText(data);
     }
 
     @Override

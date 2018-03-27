@@ -299,6 +299,7 @@
         <activity
             android:name=".customer.ViewCustomerDetails_FA"
             android:exported="false"
+            android:configChanges="orientation|screenSize"
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
             android:name=".ShowProductImageActivity"

@@ -90,7 +90,7 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
         } else if (showNavigationbar) {
             menu.findItem(R.id.menu_back).setVisible(true);
         }
-        if (this instanceof OrderingMain_FA && isNavigationBarModel()) {
+        if (this instanceof OrderingMain_FA) {
             menu.findItem(R.id.toggleEloBCR).setVisible(true);
         } else {
             menu.findItem(R.id.toggleEloBCR).setVisible(false);
