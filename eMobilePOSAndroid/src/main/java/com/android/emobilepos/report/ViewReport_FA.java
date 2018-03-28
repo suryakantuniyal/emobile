@@ -149,7 +149,7 @@ public class ViewReport_FA extends BaseFragmentActivityActionBar {
             }
             MyPreferences myPref = new MyPreferences(ViewReport_FA.this);
             if (myPref.getPreferences(MyPreferences.pref_enable_printing)) {
-                printBut.setEnabled(false);
+                printBut.setEnabled(true);
 //                printBut.setBackgroundResource(R.drawable.tab_button_selector);
                 printBut.setOnClickListener(new View.OnClickListener() {
 
@@ -160,6 +160,7 @@ public class ViewReport_FA extends BaseFragmentActivityActionBar {
                     }
                 });
             } else {
+                printBut.setEnabled(false);
 //                printBut.setBackgroundResource(R.drawable.tab_disabled_button_selector);
             }
         }
