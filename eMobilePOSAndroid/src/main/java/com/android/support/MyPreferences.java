@@ -42,6 +42,7 @@ public class MyPreferences {
     //    private final String zone_id = "zone_id";
 //    private final String VAT = "VAT";
     public static final String pref_show_only_group_taxes = "pref_show_only_group_taxes";
+    public static final String pref_remove_leading_zeros = "pref_remove_leading_zeros";
     public static final String pref_mix_match = "pref_mix_match";
     public static final String pref_holds_polling_service = "pref_holds_polling_service";
     public static final String pref_clear_customer = "pref_clear_customer";
@@ -129,7 +130,7 @@ public class MyPreferences {
     private static final String pref_retail_taxes = "pref_retail_taxes";
     private static final String pref_use_clerks = "pref_use_clerks";
     private static final String pref_use_syncplus_services = "pref_use_syncplus_services";
-    private static final String pref_syncplus_mode="pref_syncplus_mode";
+    private static final String pref_syncplus_mode = "pref_syncplus_mode";
     private final String MY_SHARED_PREF = "MY_SHARED_PREF";
     private final String db_path = "db_path";
     //    private final String emp_id = "emp_id";
@@ -868,12 +869,12 @@ public class MyPreferences {
         prefEditor.commit();
     }
 
-	/*
+    /*
      * public void setIsMagtekReader(boolean val) {
-	 * prefEditor.putBoolean("isMagtekReader", val); prefEditor.commit(); }
-	 * public boolean getisMagtekReader() { return
-	 * prefs.getBoolean("isMagtekReader", false); }
-	 */
+     * prefEditor.putBoolean("isMagtekReader", val); prefEditor.commit(); }
+     * public boolean getisMagtekReader() { return
+     * prefs.getBoolean("isMagtekReader", false); }
+     */
 
     public boolean isET1(boolean isGet, boolean value) {
         String device_et1 = "device_et1";
@@ -1509,4 +1510,9 @@ public class MyPreferences {
     public boolean isSyncplus_AutoScan() {
         return !getPreferences(MyPreferences.pref_syncplus_mode);
     }
+
+    public boolean isRemoveLeadingZerosFromUPC() {
+        return getPreferences(MyPreferences.pref_remove_leading_zeros);
+    }
+
 }

@@ -232,7 +232,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
     @Override
     protected void onDestroy() {
         cardReaderConnected = false;
-        if(bbDeviceController!=null){
+        if (bbDeviceController != null) {
             bbDeviceController.stopBarcodeReader();
         }
         if (uniMagReader != null)
@@ -713,6 +713,9 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
 
     @Override
     public void scannerWasRead(String data) {
+        if (myPref.isRemoveLeadingZerosFromUPC()) {
+            data = NumberUtils.removeLeadingZeros(data);
+        }
         fieldCardNum.setText(data);
     }
 

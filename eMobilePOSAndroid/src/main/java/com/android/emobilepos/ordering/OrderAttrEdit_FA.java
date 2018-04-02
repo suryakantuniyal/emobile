@@ -32,6 +32,7 @@ import com.android.support.CreditCardInfo;
 import com.android.support.Global;
 import com.android.support.MyEditText;
 import com.android.support.MyPreferences;
+import com.android.support.NumberUtils;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.android.support.textwatcher.GiftCardTextWatcher;
 import com.crashlytics.android.Crashlytics;
@@ -431,6 +432,9 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
     @Override
     public void scannerWasRead(String data) {
         if (!data.isEmpty()) {
+            if (myPref.isRemoveLeadingZerosFromUPC()) {
+                data = NumberUtils.removeLeadingZeros(data);
+            }
             if (!isCardInfo)
                 fieldComment.setText(data);
         }

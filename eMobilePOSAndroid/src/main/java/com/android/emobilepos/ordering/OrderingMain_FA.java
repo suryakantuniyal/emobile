@@ -69,8 +69,10 @@ import com.android.support.GenerateNewID;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NetworkUtils;
+import com.android.support.NumberUtils;
 import com.android.support.OrderProductUtils;
 import com.android.support.Post;
+import com.android.support.StringUtils;
 import com.android.support.TerminalDisplay;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.bbpos.bbdevice.BBDeviceController;
@@ -175,6 +177,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     DecodeResult decodeResult = (DecodeResult) msg.obj;
 
                     strDecodeResult = decodeResult.barcodeData.trim();
+                    if(myPref.isRemoveLeadingZerosFromUPC()){
+                        strDecodeResult= NumberUtils.removeLeadingZeros(strDecodeResult);
+                    }
                     if (!strDecodeResult.isEmpty()) {
                         soundManager.playSound(1, 1);
                         scanAddItem(strDecodeResult);
@@ -1155,6 +1160,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     }
                     String upc = invisibleSearchMain.getText().toString().trim().replace("\n", "").replace("\r", "");
 //                    upc = invisibleSearchMain.getText().toString().trim().replace("\r", "");
+                    upc = NumberUtils.removeLeadingZeros(upc);
                     Product product = handler.getUPCProducts(upc, false);
                     if (product.getId() != null) {
                         if (myPref.getPreferences(MyPreferences.pref_fast_scanning_mode)) {
@@ -1682,6 +1688,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
         }
         if (!data.isEmpty()) {
+            if(myPref.isRemoveLeadingZerosFromUPC()){
+                data= NumberUtils.removeLeadingZeros(data);
+            }
             scanAddItem(data);
         }
     }

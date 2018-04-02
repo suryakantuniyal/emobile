@@ -1399,5 +1399,6 @@
     <string name="automatic">Automatic</string>
     <string name="check_update_stop">Application update was cancelled.</string>
     <string name="clerk_login">Use clerk password</string>
+    <string name="config_remove_leading_zeros">Remove leading zeros from UPC/SKU</string>
 
 </resources>
