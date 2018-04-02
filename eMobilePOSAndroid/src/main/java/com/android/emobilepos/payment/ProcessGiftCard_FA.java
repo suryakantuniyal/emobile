@@ -39,7 +39,7 @@ import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.CustomerCustomField;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.StoreAndForward;
-import com.android.emobilepos.ordering.MyBBDeviceControllerListener;
+import com.android.emobilepos.ordering.BBPosShelpaDeviceDriver;
 import com.android.ivu.MersenneTwisterFast;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
@@ -111,9 +111,9 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
     private GiftCardTextWatcher msrTextWatcher;
     private AssignEmployee assignEmployee;
 
-    private Button btnScan;
     private BBDeviceController bbDeviceController;
-    private MyBBDeviceControllerListener listener;
+    private BBPosShelpaDeviceDriver listener;
+    private boolean bcrScanning;
 
 
     @Override
@@ -131,20 +131,20 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         setContentView(R.layout.process_giftcard_layout);
         groupTaxRate = new TaxesHandler(this).getGroupTaxRate(assignEmployee.getTaxDefault());
         cardInfoManager = new CreditCardInfo();
-        cardSwipe = (CheckBox) findViewById(R.id.checkboxCardSwipe);
-        redeemAll = (CheckBox) findViewById(R.id.checkboxRedeemAll);
-        fieldAmountDue = (EditText) findViewById(R.id.amountDueGiftCard);
+        cardSwipe = findViewById(R.id.checkboxCardSwipe);
+        redeemAll = findViewById(R.id.checkboxRedeemAll);
+        fieldAmountDue = findViewById(R.id.amountDueGiftCard);
         fieldAmountDue.addTextChangedListener(getTextWatcher(fieldAmountDue));
         fieldAmountDue.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
-        fieldAmountTendered = (EditText) findViewById(R.id.amountTendered);
+        fieldAmountTendered = findViewById(R.id.amountTendered);
         fieldAmountTendered.addTextChangedListener(getTextWatcher(fieldAmountTendered));
-        fieldCardNum = (EditText) findViewById(R.id.cardNumEdit);
-        fieldHidden = (EditText) findViewById(R.id.hiddenField);
-        subtotal = (EditText) findViewById(R.id.subtotalGiftAmount);
-        tax1 = (EditText) findViewById(R.id.tax1GiftAmount);
-        tax2 = (EditText) findViewById(R.id.tax2GiftAmount);
-        TextView tax1Lbl = (TextView) findViewById(R.id.tax1GiftCardLbl);
-        TextView tax2Lbl = (TextView) findViewById(R.id.tax2GiftCardLbl);
+        fieldCardNum = findViewById(R.id.cardNumEdit);
+        fieldHidden = findViewById(R.id.hiddenField);
+        subtotal = findViewById(R.id.subtotalGiftAmount);
+        tax1 = findViewById(R.id.tax1GiftAmount);
+        tax2 = findViewById(R.id.tax2GiftAmount);
+        TextView tax1Lbl = findViewById(R.id.tax1GiftCardLbl);
+        TextView tax2Lbl = findViewById(R.id.tax2GiftCardLbl);
         msrTextWatcher = new GiftCardTextWatcher(activity, fieldHidden, fieldCardNum, cardInfoManager, Global.isEncryptSwipe);
         if (!Global.isIvuLoto || isFromSalesReceipt) {
             findViewById(R.id.row1Gift).setVisibility(View.GONE);
@@ -180,8 +180,8 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         tax2.setText(
                 Global.getCurrencyFormat(Global.formatNumToLocale(0.00)));
         fieldHidden.addTextChangedListener(msrTextWatcher);
-        Button btnExact = (Button) findViewById(R.id.exactAmountBut);
-        Button btnProcess = (Button) findViewById(R.id.processButton);
+        Button btnExact = findViewById(R.id.exactAmountBut);
+        Button btnProcess = findViewById(R.id.processButton);
         btnExact.setOnClickListener(this);
         btnProcess.setOnClickListener(this);
 
@@ -190,10 +190,8 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         hasBeenCreated = true;
         fieldHidden.requestFocus();
 
-        btnScan = findViewById(R.id.btnScan);
-        btnScan.setOnClickListener(this);
 
-        listener = new MyBBDeviceControllerListener(this, ProcessGiftCard_FA.this);
+        listener = new BBPosShelpaDeviceDriver(this, ProcessGiftCard_FA.this);
         bbDeviceController = BBDeviceController.getInstance(
                 getApplicationContext(), listener);
         bbDeviceController.startBarcodeReader();
@@ -234,7 +232,9 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
     @Override
     protected void onDestroy() {
         cardReaderConnected = false;
-
+        if(bbDeviceController!=null){
+            bbDeviceController.stopBarcodeReader();
+        }
         if (uniMagReader != null)
             uniMagReader.release();
         else if (magtekReader != null)
@@ -287,7 +287,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
     }
 
     private void setupHeaderTitle() {
-        TextView headerTitle = (TextView) findViewById(R.id.HeaderTitle);
+        TextView headerTitle = findViewById(R.id.HeaderTitle);
         Bundle extras = getIntent().getExtras();
         if (extras.getBoolean("salespayment")) {
             headerTitle.setText(getString(R.string.card_payment_title));
@@ -628,11 +628,11 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
             dlog.setCancelable(false);
             dlog.setContentView(R.layout.dlog_btn_single_layout);
 
-            TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
-            TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+            TextView viewTitle = dlog.findViewById(R.id.dlogTitle);
+            TextView viewMsg = dlog.findViewById(R.id.dlogMessage);
             viewTitle.setText(R.string.dlog_title_confirm);
             viewMsg.setText(msg);
-            Button btnOk = (Button) dlog.findViewById(R.id.btnDlogSingle);
+            Button btnOk = dlog.findViewById(R.id.btnDlogSingle);
             btnOk.setText(R.string.button_ok);
             btnOk.setOnClickListener(new View.OnClickListener() {
 
@@ -744,12 +744,35 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
                     if (validatePaymentData())
                         processPayment();
                     break;
-                case R.id.btnScan:
-                    bbDeviceController.getBarcode();
-//                    Toast.makeText(ProcessGiftCard_FA.this, "getBarcode", Toast.LENGTH_LONG).show();
-                    break;
             }
         }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == 138) {
+            if (bcrScanning) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        bbDeviceController.stopBarcodeReader();
+                        bbDeviceController.startBarcodeReader();
+                    }
+                }).start();
+                bcrScanning = false;
+
+            } else {
+                bcrScanning = true;
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        bbDeviceController.startBarcodeReader();
+                        bbDeviceController.getBarcode();
+                    }
+                }).start();
+            }
+        }
+        return true;
     }
 
     private boolean validatePaymentData() {

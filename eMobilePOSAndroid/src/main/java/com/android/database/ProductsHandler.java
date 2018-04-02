@@ -398,12 +398,15 @@ public class ProductsHandler {
                 "CASE WHEN pl.pricelevel_type = 'FixedPercentage' THEN " +
                         "(p.prod_price+(p.prod_price*(pl.pricelevel_fixedpct/100))) ");
         sb.append(
-                "ELSE pli.pricelevel_price END AS 'pricelevel_price',p.prod_price_points,p.prod_value_points," +
-                        "p.prod_name,p.prod_desc,p.prod_extradesc,p.prod_onhand as 'master_prod_onhand'," +
-                        "ei.prod_onhand as 'local_prod_onhand',i.prod_img_name," +
+                "ELSE pli.pricelevel_price END AS 'pricelevel_price',p.prod_price_points as 'prod_price_points'" +
+                        ",p.prod_value_points as 'prod_value_points'," +
+                        "p.prod_name as 'prod_name',p.prod_desc as 'prod_desc',p.prod_extradesc as 'prod_extradesc'" +
+                        ",p.prod_onhand as 'master_prod_onhand'," +
+                        "ei.prod_onhand as 'local_prod_onhand',i.prod_img_name as 'prod_img_name'," +
                         "CASE WHEN p.prod_taxcode='' THEN '0' " +
                         "ELSE IFNULL(s.taxcode_istaxable,'1')  END AS 'prod_istaxable' ");
-        sb.append(",p.prod_taxcode,p.prod_taxtype, p.prod_type,c.cat_id, c.cat_name as 'cat_name' ");
+        sb.append(",p.prod_taxcode as 'prod_taxcode',p.prod_taxtype as 'prod_taxtype', p.prod_type as 'prod_type'" +
+                ",c.cat_id as 'cat_id', c.cat_name as 'cat_name' ");
 
         if (myPref.isCustSelected() && myPref.getPreferences(MyPreferences.pref_filter_products_by_customer)) {
 
@@ -450,7 +453,12 @@ public class ProductsHandler {
 
         if (myPref.getPreferences(MyPreferences.pref_enable_multi_category)) {
             sb.append(
-                    "FROM Products p " +
+                    "FROM " +
+                            "(select p.* " +
+                            "from products p " +
+                            "LEFT JOIN ProductAliases pa ON p.prod_id = pa.prod_id "+
+                            "where prod_type != 'Discount' AND  " +
+                            "(prod_sku = '"+value+"'  OR prod_upc = '"+value+"'  )) p " +
                             "INNER JOIN ProdCatXref xr ON p.prod_id = xr.prod_id  " +
                             "INNER JOIN Categories c ON c.cat_id = xr.cat_id " +
                             "LEFT OUTER JOIN EmpInv ei ON ei.prod_id = p.prod_id " +
@@ -458,7 +466,12 @@ public class ProductsHandler {
                             "BETWEEN vp.minQty AND vp.maxQty  AND ");
         } else {
             sb.append(
-                    "FROM Products p " +
+                    "FROM " +
+                            "(select p.* " +
+                            "from products p " +
+                            "LEFT JOIN ProductAliases pa ON p.prod_id = pa.prod_id "+
+                            "where prod_type != 'Discount' AND  " +
+                            "(prod_sku = '"+value+"'  OR prod_upc = '"+value+"'  )) p " +
                             "LEFT OUTER JOIN Categories c ON c.cat_id = p.cat_id " +
                             "LEFT OUTER JOIN EmpInv ei ON ei.prod_id = p.prod_id " +
                             "LEFT OUTER JOIN VolumePrices vp ON p.prod_id = vp.prod_id AND '1' " +

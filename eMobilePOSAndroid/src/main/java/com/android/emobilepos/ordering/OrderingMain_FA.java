@@ -212,7 +212,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
     };
     private BBDeviceController bbDeviceController;
-    private MyBBDeviceControllerListener listener;
+    private BBPosShelpaDeviceDriver listener;
 
 
     public static void voidTransaction(Activity activity, Order order, List<ProductAttribute> ordProdAttr) {
@@ -404,7 +404,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             global.resetOrderDetailsValues();
             global.clearListViewData();
         }
-        listener = new MyBBDeviceControllerListener(this, this);
+        listener = new BBPosShelpaDeviceDriver(this, this);
         bbDeviceController = BBDeviceController.getInstance(
                 getApplicationContext(), listener);
         callBackMSR = this;
@@ -1241,7 +1241,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     }
                 }).start();
             }
-
         }
     }
 
