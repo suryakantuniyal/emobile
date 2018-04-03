@@ -327,7 +327,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         TextView dueView = findViewById(R.id.dueValue);
         totalView.setText(Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(total))));
         paidView.setText(Global.getCurrencyFormat(Global.formatNumToLocale(Global.overallPaidAmount)));
-        dueView.setText(Global.getCurrencyFormat(Global.formatNumToLocale(overAllRemainingBalance)));
+        dueView.setText(Global.getCurrencyFormat(Global.formatNumToLocale(overAllRemainingBalance < 0 ? 0 : overAllRemainingBalance)));
         tipView.setText(Global.getCurrencyFormat(Global.formatNumToLocale(tipPaidAmount)));
     }
 
@@ -1234,10 +1234,10 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                         printSuccessful = Global.mainPrinterManager.getCurrentDevice().printPaymentDetails(PaymentsHandler.getLastPaymentInserted().getPay_id(), 1,
                                 wasReprint, emvContainer);
                     else {
-                        if(order==null) {
+                        if (order == null) {
                             printSuccessful = Global.mainPrinterManager.getCurrentDevice().printTransaction(job_id, orderType,
                                     wasReprint, false, emvContainer);
-                        }else{
+                        } else {
                             printSuccessful = Global.mainPrinterManager.getCurrentDevice().printTransaction(order, orderType,
                                     wasReprint, false, emvContainer);
                         }
