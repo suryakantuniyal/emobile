@@ -13,87 +13,87 @@
         android:layout_weight="1">
 
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_centerHorizontal="true"
             android:layout_below="@+id/frameLayout"
+            android:layout_centerHorizontal="true"
             android:gravity="center_vertical"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp">
+            android:orientation="horizontal">
 
             <Button
                 android:id="@+id/acceptBut"
                 style="@style/action_button_text_appearance"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@string/draw_receipt_accept"
-                android:background="@drawable/action_button_selector"
-                android:paddingLeft="10dp"
-                android:paddingRight="15dp"
-                android:textSize="@dimen/button_text_size"
                 android:layout_centerVertical="true"
                 android:layout_toLeftOf="@+id/clearBut"
                 android:layout_weight="1"
-                android:singleLine="true" />
+                android:background="@drawable/action_button_selector"
+                android:minHeight="0dp"
+                android:minWidth="0dp"
+                android:padding="5dp"
+                android:singleLine="true"
+                android:text="@string/draw_receipt_accept"
+                android:textSize="@dimen/about_small_text_size" />
 
             <Button
                 android:id="@+id/clearBut"
                 style="@style/action_button_text_appearance"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@string/draw_receipt_clear"
-                android:background="@drawable/action_button_selector"
-                android:paddingLeft="10dp"
-                android:paddingRight="15dp"
-                android:textSize="@dimen/button_text_size"
                 android:layout_centerInParent="true"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:background="@drawable/action_button_selector"
+                android:minHeight="0dp"
+                android:minWidth="0dp"
+                android:padding="5dp"
+                android:text="@string/draw_receipt_clear"
+                android:textSize="@dimen/about_small_text_size" />
 
             <Button
-                style="@style/action_button_text_appearance"
                 android:id="@+id/cancelBut"
+                style="@style/action_button_text_appearance"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@string/draw_receipt_cancel"
-                android:background="@drawable/action_button_selector"
-                android:paddingLeft="10dp"
-                android:paddingRight="15dp"
-                android:textSize="@dimen/button_text_size"
                 android:layout_alignTop="@+id/clearBut"
                 android:layout_toRightOf="@+id/clearBut"
                 android:layout_weight="1"
-                android:singleLine="true" />
+                android:background="@drawable/action_button_selector"
+                android:minHeight="0dp"
+                android:minWidth="0dp"
+                android:padding="5dp"
+                android:singleLine="true"
+                android:text="@string/draw_receipt_cancel"
+                android:textSize="@dimen/about_small_text_size" />
         </LinearLayout>
 
         <FrameLayout
+            android:id="@+id/frameLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
-            android:id="@+id/frameLayout"
-            android:layout_margin="10dp">
+            android:layout_alignParentTop="true">
 
             <TextView
+                android:id="@+id/amountSignReceipttextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/card_amount"
-                android:id="@+id/amountSignReceipttextView"
-                android:textAppearance="@style/white_text_appearance"
-                android:textSize="@dimen/about_main_text_size"
                 android:layout_alignParentTop="true"
                 android:layout_centerHorizontal="true"
-                android:layout_gravity="center" />
+                android:layout_gravity="center"
+                android:text="@string/card_amount"
+                android:textAppearance="@style/white_text_appearance"
+                android:textSize="@dimen/about_main_text_size" />
 
             <ImageView
+                android:id="@+id/cardLogoSignReceiptimageView3"
                 android:layout_width="wrap_content"
                 android:layout_height="50dp"
-                android:id="@+id/cardLogoSignReceiptimageView3"
-                android:src="@drawable/debitcard"
-                android:layout_alignParentTop="true"
                 android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
                 android:layout_gravity="top"
-                android:layout_marginLeft="10dp" />
+                android:layout_marginLeft="10dp"
+                android:src="@drawable/debitcard" />
         </FrameLayout>
     </RelativeLayout>
 
@@ -101,12 +101,9 @@
         android:id="@+id/signatureReceiptView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_margin="10dp"
+        android:layout_weight="1.5"
         android:background="#FFFFFF"
-        android:layout_marginLeft="50dp"
-        android:layout_marginRight="50dp"
-        android:layout_marginBottom="30dp"
-        android:orientation="horizontal"
-        android:layout_weight="1.5">
-     </LinearLayout>
+        android:orientation="horizontal"></LinearLayout>
 
 </LinearLayout>

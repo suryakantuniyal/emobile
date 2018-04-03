@@ -21,6 +21,8 @@ import com.microsoft.windowsazure.notifications.NotificationsHandler;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * Created by guarionex on 11/25/16.
@@ -50,6 +52,12 @@ public class NotificationHandler extends NotificationsHandler {
                                     e.printStackTrace();
                                     Crashlytics.logException(e);
                                 } catch (IOException e) {
+                                    e.printStackTrace();
+                                    Crashlytics.logException(e);
+                                } catch (NoSuchAlgorithmException e) {
+                                    e.printStackTrace();
+                                    Crashlytics.logException(e);
+                                } catch (KeyManagementException e) {
                                     e.printStackTrace();
                                     Crashlytics.logException(e);
                                 }

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_white_page"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp">
+
+        <LinearLayout
+            android:id="@+id/salesCustomerBut"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:background="@drawable/grey_shadow_button_layer"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/clearCustomerBut"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/image_button_selector"
+
+                android:src="@drawable/ic_action_clear" />
+
+            <TextView
+                android:id="@+id/salesCustomerName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:singleLine="true"
+                android:text="@string/no_customer"
+                android:textAppearance="@style/blue_txt_appearance_unbold"
+                android:textColor="#0071E3"
+                android:textSize="@dimen/small_button_text_size"></TextView>
+
+        </LinearLayout>
+
+
+        <Button
+            android:id="@+id/invoiceButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:background="@drawable/grey_shadow_button_layer"
+            android:gravity="center"
+            android:minHeight="0dp"
+            android:minWidth="0dp"
+            android:orientation="horizontal"
+            android:text="@string/selectinvoices"
+            android:textAppearance="@style/blue_txt_appearance_unbold"
+            android:textColor="#0071E3"
+            android:textSize="@dimen/small_button_text_size" />
+
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/hiddenField"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:textColor="#000000">
+
+        <requestFocus />
+    </EditText>
+
+    <GridView
+        android:id="@+id/salesGridLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:horizontalSpacing="2dp"
+        android:numColumns="2"
+        android:paddingLeft="2dp"
+        android:paddingRight="2dp"
+        android:stretchMode="columnWidth"
+        android:verticalSpacing="2dp"
+        tools:listitem="@layout/main_menu_listviewadapter" />
+
+
+
+
+</LinearLayout>

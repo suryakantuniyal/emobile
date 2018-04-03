@@ -28,6 +28,9 @@ public class MyPreferences {
     public static final String pref_enable_togo_eatin = "pref_enable_togo_eatin";
     //    public static final String pref_require_waiter_signin = "pref_require_waiter_signin";
     //    private Global global;
+
+    public static final String pref_syncplus_ip = "pref_syncplus_ip";
+    public static final String pref_syncplus_port = "pref_syncplus_port";
     public static final String pref_enable_table_selection = "pref_enable_table_selection";
     public static final String pref_ask_seats = "pref_ask_seats";
     public static final String pref_use_navigationbar = "pref_use_navigationbar";
@@ -39,6 +42,7 @@ public class MyPreferences {
     //    private final String zone_id = "zone_id";
 //    private final String VAT = "VAT";
     public static final String pref_show_only_group_taxes = "pref_show_only_group_taxes";
+    public static final String pref_remove_leading_zeros = "pref_remove_leading_zeros";
     public static final String pref_mix_match = "pref_mix_match";
     public static final String pref_holds_polling_service = "pref_holds_polling_service";
     public static final String pref_clear_customer = "pref_clear_customer";
@@ -125,6 +129,8 @@ public class MyPreferences {
     private static final String pref_restaurant_mode = "pref_restaurant_mode";
     private static final String pref_retail_taxes = "pref_retail_taxes";
     private static final String pref_use_clerks = "pref_use_clerks";
+    private static final String pref_use_syncplus_services = "pref_use_syncplus_services";
+    private static final String pref_syncplus_mode = "pref_syncplus_mode";
     private final String MY_SHARED_PREF = "MY_SHARED_PREF";
     private final String db_path = "db_path";
     //    private final String emp_id = "emp_id";
@@ -666,6 +672,12 @@ public class MyPreferences {
         return sharedPref.getString(key, "");
     }
 
+    public void setPreferencesValue(String key, String value) {
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(key, value);
+        editor.commit();
+    }
+
     public String getEmpIdFromPreferences() {
         return prefs.getString("emp_id", "");
     }
@@ -857,12 +869,12 @@ public class MyPreferences {
         prefEditor.commit();
     }
 
-	/*
+    /*
      * public void setIsMagtekReader(boolean val) {
-	 * prefEditor.putBoolean("isMagtekReader", val); prefEditor.commit(); }
-	 * public boolean getisMagtekReader() { return
-	 * prefs.getBoolean("isMagtekReader", false); }
-	 */
+     * prefEditor.putBoolean("isMagtekReader", val); prefEditor.commit(); }
+     * public boolean getisMagtekReader() { return
+     * prefs.getBoolean("isMagtekReader", false); }
+     */
 
     public boolean isET1(boolean isGet, boolean value) {
         String device_et1 = "device_et1";
@@ -1474,5 +1486,33 @@ public class MyPreferences {
     }
 
     public enum PrinterPreviewWidth {SMALL, MEDIUM, LARGE}
+
+    public String getSyncPlusIPAddress() {
+        return getPreferencesValue(pref_syncplus_ip);
+    }
+
+    public void setSyncPlusIPAddress(String val) {
+        setPreferencesValue(pref_syncplus_ip, val);
+    }
+
+    public String getSyncPlusPort() {
+        return getPreferencesValue(pref_syncplus_port);
+    }
+
+    public void setSyncPlusPort(String value) {
+        setPreferencesValue(pref_syncplus_port, value);
+    }
+
+    public boolean isUse_syncplus_services() {
+        return getPreferences(MyPreferences.pref_use_syncplus_services);
+    }
+
+    public boolean isSyncplus_AutoScan() {
+        return !getPreferences(MyPreferences.pref_syncplus_mode);
+    }
+
+    public boolean isRemoveLeadingZerosFromUPC() {
+        return getPreferences(MyPreferences.pref_remove_leading_zeros);
+    }
 
 }

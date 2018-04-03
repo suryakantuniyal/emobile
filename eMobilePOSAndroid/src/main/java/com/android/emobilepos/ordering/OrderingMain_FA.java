@@ -69,10 +69,12 @@ import com.android.support.GenerateNewID;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NetworkUtils;
+import com.android.support.NumberUtils;
 import com.android.support.OrderProductUtils;
 import com.android.support.Post;
 import com.android.support.TerminalDisplay;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.bbpos.bbdevice.BBDeviceController;
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 import com.honeywell.decodemanager.DecodeManager;
@@ -172,6 +174,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     DecodeResult decodeResult = (DecodeResult) msg.obj;
 
                     strDecodeResult = decodeResult.barcodeData.trim();
+                    if (myPref.isRemoveLeadingZerosFromUPC()) {
+                        strDecodeResult = NumberUtils.removeLeadingZeros(strDecodeResult);
+                    }
                     if (!strDecodeResult.isEmpty()) {
                         soundManager.playSound(1, 1);
                         scanAddItem(strDecodeResult);
@@ -208,6 +213,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             }
         }
     };
+    private BBDeviceController bbDeviceController;
+    private BBPosShelpaDeviceDriver listener;
 
 
     public static void voidTransaction(Activity activity, Order order, List<ProductAttribute> ordProdAttr) {
@@ -399,6 +406,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             global.resetOrderDetailsValues();
             global.clearListViewData();
         }
+        listener = new BBPosShelpaDeviceDriver(this, this);
+        bbDeviceController = BBDeviceController.getInstance(
+                this, listener);
         callBackMSR = this;
 //        setReceiptListHandler();
         handler = new ProductsHandler(this);
@@ -660,12 +670,31 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             case R.id.toggleEloBCR: {
                 if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
                     Global.mainPrinterManager.getCurrentDevice().toggleBarcodeReader();
+                } else {
+                    if (bbDeviceController != null) {
+                        scannerInDecodeMode = true;
+                        bbDeviceController.startBarcodeReader();
+                        bbDeviceController.getBarcode();
+                    }
                 }
                 break;
             }
         }
         return super.onOptionsItemSelected(item);
     }
+
+//    private void startBBPOSBCR() {
+//        bbDeviceController.getBarcode();
+//        bcrScanning
+////        bcrTimer = new Timer();
+////        bcrTimer.schedule(new TimerTask() {
+////            @Override
+////            public void run() {
+////                bbDeviceController.stopBarcodeReader();
+////                bbDeviceController.startBarcodeReader();
+////            }
+////        }, BuildConfig.BCR_TIMEOUT);
+//    }
 
     private void showSeatHeaderPopMenu(final View v) {
         final OrderSeatProduct orderSeatProduct = (OrderSeatProduct) v.getTag();
@@ -806,10 +835,47 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         if (keyCode == 0) {
             fragOnKeyDown(keyCode);
             return true;
+        } else if (keyCode == 138) {
+            if (bbDeviceController != null) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        bbDeviceController.stopBarcodeReader();
+                        bbDeviceController.startBarcodeReader();
+                    }
+                }).start();
+            }
         }
 
         return super.onKeyUp(keyCode, event);
     }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == 138) {
+            event.startTracking();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public boolean onKeyLongPress(int keyCode, KeyEvent event) {
+        if (keyCode == 138) {
+            if (bbDeviceController != null) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        bbDeviceController.startBarcodeReader();
+                        bbDeviceController.getBarcode();
+                    }
+                }).start();
+            }
+            return true;
+        }
+        return super.onKeyLongPress(keyCode, event);
+    }
+
 
     private void reloadDefaultTransaction() {
         if (myPref.getPreferencesValue(MyPreferences.pref_default_transaction).equals("-1"))
@@ -837,6 +903,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     @Override
     public void onResume() {
+        soundManager.initSounds(this);
+        soundManager.loadSounds();
         buildOrderStarted = false;
         if (global.isApplicationSentToBackground())
             Global.loggedIn = false;
@@ -851,8 +919,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         if (myPref.isDolphin(true, false) && mDecodeManager == null) {
             mDecodeManager = new DecodeManager(this, ScanResultHandler);
             try {
-                soundManager.initSounds(this);
-                soundManager.loadSounds();
                 mDecodeManager.disableSymbology(CommonDefine.SymbologyID.SYM_CODE39);
                 mDecodeManager.setSymbologyDefaults(CommonDefine.SymbologyID.SYM_UPCA);
             } catch (RemoteException e) {
@@ -868,6 +934,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 Global.mainPrinterManager.getCurrentDevice().loadScanner(callBackMSR);
             if (Global.btSled != null && Global.btSled.getCurrentDevice() != null)
                 Global.btSled.getCurrentDevice().loadScanner(callBackMSR);
+        }
+        if (bbDeviceController != null) {
+            bbDeviceController.startBarcodeReader();
         }
         super.onResume();
     }
@@ -886,6 +955,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if (bbDeviceController != null) {
+            bbDeviceController.stopBarcodeReader();
+        }
         if (myPref.getPreferencesValue(MyPreferences.pref_default_transaction).equals("-1")
                 || (!myPref.getPreferencesValue(MyPreferences.pref_default_transaction).equals("-1")
                 && orderingAction == OrderingAction.BACK_PRESSED)) {
@@ -1122,6 +1194,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     }
                     String upc = invisibleSearchMain.getText().toString().trim().replace("\n", "").replace("\r", "");
 //                    upc = invisibleSearchMain.getText().toString().trim().replace("\r", "");
+                    upc = NumberUtils.removeLeadingZeros(upc);
                     Product product = handler.getUPCProducts(upc, false);
                     if (product.getId() != null) {
                         if (myPref.getPreferences(MyPreferences.pref_fast_scanning_mode)) {
@@ -1187,6 +1260,27 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 }
             } else
                 DoScan();
+        } else if (key_code == 138) {
+//            if (scannerInDecodeMode) {
+//                new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        bbDeviceController.stopBarcodeReader();
+//                        bbDeviceController.startBarcodeReader();
+//                    }
+//                }).start();
+//                scannerInDecodeMode = false;
+//
+//            } else {
+//                scannerInDecodeMode = true;
+//                new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        bbDeviceController.startBarcodeReader();
+//                        bbDeviceController.getBarcode();
+//                    }
+//                }).start();
+//            }
         }
     }
 
@@ -1367,6 +1461,43 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         if (_msrUsbSams != null && _msrUsbSams.isDeviceOpen() && !_msrUsbSams.isDeviceReading())
             _msrUsbSams.StartReadingThread();
 
+        bbDeviceController = BBDeviceController.getInstance(this,
+                new MyBBDeviceControllerListener(this, new EMSCallBack() {
+                    @Override
+                    public void cardWasReadSuccessfully(boolean read, CreditCardInfo cardManager) {
+
+                    }
+
+                    @Override
+                    public void readerConnectedSuccessfully(boolean value) {
+
+                    }
+
+                    @Override
+                    public void scannerWasRead(String data) {
+                        swiperField.setText(data);
+                    }
+
+                    @Override
+                    public void startSignature() {
+
+                    }
+
+                    @Override
+                    public void nfcWasRead(String nfcUID) {
+
+                    }
+                }));
+        if (bbDeviceController != null) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    bbDeviceController.startBarcodeReader();
+                    bbDeviceController.getBarcode();
+                }
+            }).start();
+
+        }
         dlogMSR = new Dialog(this, R.style.Theme_TransparentTest);
         dlogMSR.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dlogMSR.setCancelable(false);
@@ -1394,7 +1525,16 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             @Override
             public void onClick(View v) {
                 dlogMSR.dismiss();
-
+                if (bbDeviceController != null) {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            bbDeviceController.stopBarcodeReader();
+                            bbDeviceController.startBarcodeReader();
+                            reloadBBPosBCR();
+                        }
+                    }).start();
+                }
                 String temp = swiperField.getText().toString().trim();
                 if (temp.length() > 0) {
                     processBalanceInquiry(isLoyaltyCard, temp);
@@ -1406,6 +1546,16 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             @Override
             public void onClick(View v) {
                 dlogMSR.dismiss();
+                if (bbDeviceController != null) {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            bbDeviceController.stopBarcodeReader();
+                            bbDeviceController.startBarcodeReader();
+                            reloadBBPosBCR();
+                        }
+                    }).start();
+                }
                 if (_msrUsbSams != null && _msrUsbSams.isDeviceOpen() && _msrUsbSams.isDeviceReading())
                     _msrUsbSams.StopReadingThread();
             }
@@ -1416,6 +1566,14 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         else {
             swiperLabel.setText(R.string.connected);
             swiperLabel.setTextColor(Color.BLUE);
+        }
+    }
+
+    private void reloadBBPosBCR() {
+        if (bbDeviceController != null) {
+            bbDeviceController = BBDeviceController.getInstance(
+                    this, listener);
+            bbDeviceController.startBarcodeReader();
         }
     }
 
@@ -1618,7 +1776,21 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     @Override
     public void scannerWasRead(String data) {
+//        if (bbDeviceController != null) {
+//            new Timer().schedule(new TimerTask() {
+//                @Override
+//                public void run() {
+//                    bbDeviceController.getBarcode();
+//                }
+//            }, 2000);
+//
+//        }
+        soundManager.playSound(1, 1);
+        scannerInDecodeMode = false;
         if (!data.isEmpty()) {
+            if (myPref.isRemoveLeadingZerosFromUPC()) {
+                data = NumberUtils.removeLeadingZeros(data);
+            }
             scanAddItem(data);
         }
     }

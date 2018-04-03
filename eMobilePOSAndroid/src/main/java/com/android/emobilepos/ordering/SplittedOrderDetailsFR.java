@@ -69,41 +69,48 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                 container, false);
         this.inflater = inflater;
         myPref = new MyPreferences(getActivity());
+
+        return detailView;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
-        LinearLayout previewContainer = (LinearLayout) detailView.findViewById(R.id.receiptPreviewContainer);
+        LinearLayout previewContainer = view.findViewById(R.id.receiptPreviewContainer);
         ViewGroup.LayoutParams params = previewContainer.getLayoutParams();
         params.width = myPref.getPrintPreviewLayoutWidth();
         previewContainer.setLayoutParams(params);
         MemoTextHandler handler = new MemoTextHandler(getActivity());
         String[] header = handler.getHeader();
         String[] footer = handler.getFooter();
-        Button checkoutBtn = (Button) detailView.findViewById(R.id.checkoutbutton);
-        Button printReceiptBtn = (Button) detailView.findViewById(R.id.printReceiptbutton2);
-        Button printAllReceiptBtn = (Button) getActivity().findViewById(R.id.printAllReceiptbutton3);
+        Button checkoutBtn = getActivity().findViewById(R.id.checkoutbutton);
+        Button printReceiptBtn = getActivity().findViewById(R.id.printReceiptbutton2);
+        Button printAllReceiptBtn = getActivity().findViewById(R.id.printAllReceiptbutton3);
         printAllReceiptBtn.setOnClickListener(this);
         checkoutBtn.setOnClickListener(this);
         printReceiptBtn.setOnClickListener(this);
         File imgFile = new File(myPref.getAccountLogoPath());
         if (imgFile.exists()) {
             Bitmap bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-            ImageView imageView = (ImageView) detailView.findViewById(R.id.logoimageView);
+            ImageView imageView = getActivity().findViewById(R.id.logoimageView);
             imageView.setImageBitmap(bitmap);
         }
-        TextView header1 = (TextView) detailView.findViewById(R.id.memo_headerLine1textView);
-        TextView header2 = (TextView) detailView.findViewById(R.id.memo_headerLine2textView16);
-        TextView header3 = (TextView) detailView.findViewById(R.id.memo_headerLine3textView18);
-        orderId = (TextView) detailView.findViewById(R.id.orderIdtextView16);
-        TextView orderDate = (TextView) detailView.findViewById(R.id.orderDatetextView21);
-        TextView deviceName = (TextView) detailView.findViewById(R.id.deviceNametextView23);
-        subtotal = (TextView) detailView.findViewById(R.id.subtotaltextView);
-        lineItemDiscountTotal = (TextView) detailView.findViewById(R.id.lineitem_discounttextView);
-        globalDiscountTextView = (TextView) detailView.findViewById(R.id.globaldiscounttextView);
-        taxTotal = (TextView) detailView.findViewById(R.id.taxtotaltextView14a);
-        granTotal = (TextView) detailView.findViewById(R.id.granTotaltextView16);
-        TextView footer1 = (TextView) detailView.findViewById(R.id.footerLine1textView);
-        TextView footer2 = (TextView) detailView.findViewById(R.id.footerLine2textView);
-        TextView footer3 = (TextView) detailView.findViewById(R.id.footerLine3textView);
-        orderProductSection = (LinearLayout) detailView.findViewById(R.id.order_products_section_linearlayout);
+        TextView header1 = getActivity().findViewById(R.id.memo_headerLine1textView);
+        TextView header2 = getActivity().findViewById(R.id.memo_headerLine2textView16);
+        TextView header3 = getActivity().findViewById(R.id.memo_headerLine3textView18);
+        orderId = getActivity().findViewById(R.id.orderIdtextView16);
+        TextView orderDate = getActivity().findViewById(R.id.orderDatetextView21);
+        TextView deviceName = getActivity().findViewById(R.id.deviceNametextView23);
+        subtotal = getActivity().findViewById(R.id.subtotaltextView);
+        lineItemDiscountTotal = getActivity().findViewById(R.id.lineitem_discounttextView);
+        globalDiscountTextView = getActivity().findViewById(R.id.globaldiscounttextView);
+        taxTotal = getActivity().findViewById(R.id.taxtotaltextView14a);
+        granTotal = view.findViewById(R.id.granTotaltextView16);
+        TextView footer1 = getActivity().findViewById(R.id.footerLine1textView);
+        TextView footer2 = getActivity().findViewById(R.id.footerLine2textView);
+        TextView footer3 = getActivity().findViewById(R.id.footerLine3textView);
+        orderProductSection = getActivity().findViewById(R.id.order_products_section_linearlayout);
         deviceName.setText(String.format("%s(%s)", assignEmployee.getEmpName(), String.valueOf(assignEmployee.getEmpId())));
         orderDate.setText(DateUtils.getDateAsString(new Date(), "MMM/dd/yyyy"));
 
@@ -138,12 +145,6 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         } else {
             footer3.setVisibility(View.GONE);
         }
-        return detailView;
-    }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
     }
 
     private void addProductLine(String leftString, String rightString, int indentedTabs) {
@@ -159,8 +160,8 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                 itemLL = (LinearLayout) inflater.inflate(R.layout.twocols_leftweight_margin2_layout_item, null, false);
                 break;
         }
-        TextView leftText = (TextView) itemLL.findViewById(R.id.lefttextView);
-        TextView rightText = (TextView) itemLL.findViewById(R.id.righttextView);
+        TextView leftText = itemLL.findViewById(R.id.lefttextView);
+        TextView rightText = itemLL.findViewById(R.id.righttextView);
         if (rightString == null) {
             rightText.setVisibility(View.GONE);
         } else {
@@ -238,7 +239,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
 //                    .multiply(orderSummaryFa.getGlobalDiscountPercentge().setScale(6, RoundingMode.HALF_UP)));
 //            itemDiscountTotal = itemDiscountTotal.add(Global.getBigDecimalNum(product.getDiscount_value()));
             ((TextView) productSectionLL.findViewById(R.id.productNametextView)).setText(String.format("%sx %s", product.getOrdprod_qty(), product.getOrdprod_name()));
-            productAddonsSection = (LinearLayout) productSectionLL.findViewById(R.id.productAddonSectionLinearLayout);
+            productAddonsSection = productSectionLL.findViewById(R.id.productAddonSectionLinearLayout);
             for (OrderProduct addon : addons) {
                 addProductLine("- " + addon.getOrdprod_name(),
                         Global.getCurrencyFormat(addon.getFinalPrice()), 3);

@@ -32,10 +32,10 @@ public class LoyaltyCard_FA extends BaseFragmentActivityActionBar implements OnI
         global = (Global) getApplication();
         MyPreferences myPref = new MyPreferences(this);
         setContentView(R.layout.gift_loyal_reward_main_layout);
-        TextView headerTitle = (TextView) findViewById(R.id.HeaderTitle);
+        TextView headerTitle = findViewById(R.id.HeaderTitle);
         headerTitle.setText(String.format(getString(R.string.default_unit_name_format), myPref.getDefaultUnitsName()));
 
-        ListView lView = (ListView) findViewById(R.id.listView);
+        ListView lView = findViewById(R.id.listView);
         GiftLoyaltyRewardLV_Adapter adapter = new GiftLoyaltyRewardLV_Adapter(this, 1);
         lView.setAdapter(adapter);
         lView.setOnItemClickListener(this);
@@ -72,25 +72,6 @@ public class LoyaltyCard_FA extends BaseFragmentActivityActionBar implements OnI
 
     @Override
     public void onItemClick(AdapterView<?> arg0, View arg1, int pos, long arg3) {
-        // TODO Auto-generated method stub
-//		Intent intent = null;
-//		switch(pos)
-//		{
-//		case ACTIVATE:
-//			intent = new Intent(this,ActivateCard_FA.class);
-//			intent.putExtra("case", ActivateCard_FA.CASE_LOYALTY);
-//			break;
-//		case BALANCE_INQUIRY:
-//			intent = new Intent(this,BalanceInquiry_FA.class);
-//			intent.putExtra("case", BalanceInquiry_FA.CASE_LOYALTY);
-//			break;
-//		case MANUAL_BALANCE:
-//			intent = new Intent(this,ManualAddBalance_FA.class);
-//			intent.putExtra("case", ManualAddBalance_FA.CASE_LOYALTY);
-//			break;
-//		}
-//		startActivity(intent);
-
         Intent intent = new Intent(this, CardManager_FA.class);
         intent.putExtra("CARD_TYPE", CardManager_FA.CASE_LOYALTY);
         switch (pos) {
@@ -118,21 +99,21 @@ public class LoyaltyCard_FA extends BaseFragmentActivityActionBar implements OnI
 
 
         final MyPreferences myPref = new MyPreferences(this);
-        final EditText viewField = (EditText) globalDlog.findViewById(R.id.dlogFieldSingle);
+        final EditText viewField = globalDlog.findViewById(R.id.dlogFieldSingle);
         viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        TextView viewTitle = (TextView) globalDlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) globalDlog.findViewById(R.id.dlogMessage);
+        TextView viewTitle = globalDlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = globalDlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_confirm);
 
         viewMsg.setText(R.string.dlog_title_enter_manager_password);
-        Button btnCancel = (Button) globalDlog.findViewById(R.id.btnCancelDlogSingle);
+        Button btnCancel = globalDlog.findViewById(R.id.btnCancelDlogSingle);
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 globalDlog.dismiss();
             }
         });
-        Button btnOk = (Button) globalDlog.findViewById(R.id.btnDlogSingle);
+        Button btnOk = globalDlog.findViewById(R.id.btnDlogSingle);
         btnOk.setText(R.string.button_ok);
         btnOk.setOnClickListener(new View.OnClickListener() {
 

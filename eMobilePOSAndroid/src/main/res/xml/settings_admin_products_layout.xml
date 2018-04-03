@@ -9,6 +9,10 @@
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_allow_decimal_quantities" />
         <CheckBoxPreference
+            android:key="pref_remove_leading_zeros"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_remove_leading_zeros" />
+        <CheckBoxPreference
             android:key="pref_group_receipt_by_sku"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_group_receipt_by_sku" />

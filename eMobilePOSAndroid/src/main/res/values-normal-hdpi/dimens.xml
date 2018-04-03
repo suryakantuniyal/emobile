@@ -49,7 +49,7 @@
     <dimen name = "add_orders_button_text_size">10.2sp</dimen>
     <dimen name = "add_orders_header_text_size">17sp</dimen>
     <dimen name = "add_orders_bottom_section_size">45dp</dimen>
-    <dimen name = "add_orders_sliding_drawer_size">200dp</dimen>
+    <dimen name = "add_orders_sliding_drawer_size">160dp</dimen>
     <dimen name = "add_orders_drawer_content_size">25dp</dimen>
     
         <dimen name = "add_orders_total_field_text_size">20sp</dimen>

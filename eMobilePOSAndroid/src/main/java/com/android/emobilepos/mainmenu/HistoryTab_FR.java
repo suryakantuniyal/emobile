@@ -28,7 +28,7 @@ public class HistoryTab_FR extends Fragment {
 
 		View view = inflater.inflate(R.layout.history_layout, container, false);
 
-		myListview = (GridView) view.findViewById(R.id.historyListView);
+		myListview = view.findViewById(R.id.historyListView);
 		myAdapter = new HistoryMenuAdapter(getActivity());
 		return view;
 

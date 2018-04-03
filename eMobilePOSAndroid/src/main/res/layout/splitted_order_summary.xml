@@ -11,53 +11,83 @@
         android:layout_height="wrap_content"
         android:background="@drawable/blue_gradient_header_horizontal"
         android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:padding="2dp">
 
         <Spinner
             android:id="@+id/splitTypesSpinner"
-            style="@style/action_button_text_appearance"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_margin="5dp"
-            android:layout_weight="0.40"
+            android:layout_marginEnd="5dp"
+            android:layout_marginRight="5dp"
             android:background="@drawable/action_button_selector"
             android:entries="@array/salesReceiptSplitTypes"
+            android:minHeight="0dp"
+            android:minWidth="0dp"
             android:textAppearance="@style/black_text_appearance" />
 
 
         <Button
             android:id="@+id/splitEquallyQtyeditButton"
-            style="@style/action_button_text_appearance"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="5dp"
-            android:layout_weight="0.20"
             android:background="@drawable/action_button_selector"
+            android:minHeight="0dp"
+            android:minWidth="0dp"
+            android:paddingEnd="5dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:paddingStart="5dp"
             android:text="2" />
 
 
         <TextView
             android:id="@+id/headerTitle"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="false"
             android:layout_centerInParent="true"
             android:layout_weight="1"
             android:gravity="center_vertical|center_horizontal"
-            android:padding="@dimen/header_txt_padding"
             android:text="@string/splited_order_summary"
-            android:textAppearance="@style/white_text_appearance"
-            android:textSize="@dimen/header_bar_text_size" />
+            android:textAppearance="@style/white_text_appearance" />
 
         <Button
             android:id="@+id/printAllReceiptbutton3"
-            style="@style/action_button_text_appearance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="5dp"
-            android:layout_weight="0.20"
+            android:text="@string/print_all_button"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/printReceiptbutton2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:background="@drawable/action_button_selector"
-            android:text="@string/print_all_button" />
+            android:minHeight="0dp"
+            android:minWidth="0dp"
+            android:paddingEnd="5dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:paddingStart="5dp"
+            android:text="@string/button_print" />
+
+        <Button
+            android:id="@+id/checkoutbutton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:background="@drawable/action_button_selector"
+            android:minHeight="0dp"
+            android:minWidth="0dp"
+            android:paddingEnd="5dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:paddingStart="5dp"
+            android:text="@string/button_checkout" />
+
 
     </LinearLayout>
 
@@ -71,8 +101,10 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_gravity="center_vertical"
-            android:layout_weight="0.50"
-            android:background="@drawable/bg_white_page"></FrameLayout>
+            android:layout_weight=".40"
+            android:background="@drawable/bg_white_page"
+
+            />
 
         <FrameLayout
             android:id="@+id/splitedOrderDetailFrameLayout"

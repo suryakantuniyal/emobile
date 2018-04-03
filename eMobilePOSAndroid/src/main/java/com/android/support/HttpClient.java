@@ -16,16 +16,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -44,15 +34,9 @@ public class HttpClient {
     protected static final int ID = 0;
     private static final int COPY_STARTED = 0;
     private static final int UPDATE_PROGRESS = 1;
-    public static int incr;
-    org.apache.http.client.HttpClient client = new DefaultHttpClient();
-    HttpPost post;
-    StringEntity stringEntity;
-    JSONObject jsono;
-    HttpResponse response;
-    HttpEntity entity;
-    Handler handler;
-    ProgressDialog progressDialog;
+    private static int incr;
+    private Handler handler;
+    private ProgressDialog progressDialog;
     private DownloadFileCallBack callback;
     private boolean downloadCancelled = false;
 
@@ -69,7 +53,7 @@ public class HttpClient {
         String line;
         try {
             while ((line = reader.readLine()) != null) {
-                sb.append(line + "\n");
+                sb.append(line).append("\n");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -185,100 +169,6 @@ public class HttpClient {
         return path;
     }
 
-    public InputStream httpInputStreamRequest(String url) throws ClientProtocolException,
-            IOException {
-        HttpGet httpGet = new HttpGet(url);
-        httpGet.setHeader("Content-Type", "application/json");
-        response = client.execute(httpGet);
-        entity = response.getEntity();
-        if (entity != null) {
-            return entity.getContent();
-        }
-        return null;
-    }
-
-    /**
-     * @param url
-     * @return
-     * @throws org.apache.http.client.ClientProtocolException
-     * @throws java.io.IOException
-     */
-    public String httpJsonRequest(String url) throws ClientProtocolException,
-            IOException {
-        HttpGet httpGet = new HttpGet(url);
-        httpGet.setHeader("Content-Type", "application/json");
-        response = client.execute(httpGet);
-        entity = response.getEntity();
-        if (entity != null) {
-            String convertStreamToString = convertStreamToString(entity.getContent());
-            return convertStreamToString;
-        }
-        return null;
-    }
-
-    /**
-     * @param url
-     * @param jsonObject
-     * @return
-     * @throws Exception
-     */
-    public String httpJsonRequest(String url, JSONArray jsonObject)
-            throws Exception {
-
-        post = new HttpPost(url);
-
-//		String encrypt = ciphers.encrypt(Ciphers.DEFAULT_SEED,
-//				jsonObject.toString());
-//		String decrypt = ciphers.decrypt(Ciphers.DEFAULT_SEED, encrypt);
-        stringEntity = new StringEntity(jsonObject.toString(), "UTF-8");
-        post.setHeader("Content-Type", "application/json");
-        post.setEntity(stringEntity);
-        response = client.execute(post);
-        entity = response.getEntity();
-        if (entity != null) {
-            String convertStreamToString = convertStreamToString(entity
-                    .getContent());
-            return convertStreamToString;
-        }
-        return null;
-    }
-
-    public String httpJsonRequest(String url, JSONObject jsonObject)
-            throws Exception {
-
-        post = new HttpPost(url);
-//		String encrypt = ciphers.encrypt(Ciphers.DEFAULT_SEED,
-//				jsonObject.toString());
-//		String decrypt = ciphers.decrypt(Ciphers.DEFAULT_SEED, encrypt);
-        stringEntity = new StringEntity(jsonObject.toString(), "UTF-8");
-        post.setHeader("Content-Type", "application/json");
-        post.setEntity(stringEntity);
-        response = client.execute(post);
-        entity = response.getEntity();
-        if (entity != null) {
-            String convertStreamToString = convertStreamToString(entity
-                    .getContent());
-            return convertStreamToString;
-        }
-        return null;
-    }
-
-    public String httpJsonRequest(String url, String json)
-            throws Exception {
-        post = new HttpPost(url);
-        stringEntity = new StringEntity(json, "UTF-8");
-        post.setHeader("Content-Type", "application/json");
-        post.setEntity(stringEntity);
-        response = client.execute(post);
-        entity = response.getEntity();
-        if (entity != null) {
-            String convertStreamToString = convertStreamToString(entity
-                    .getContent());
-            return convertStreamToString;
-        }
-        return null;
-    }
-
     public void downloadFileAsync(String urlAddress, final String path, final DownloadFileCallBack callBack, Context context) {
         this.callback = callBack;
         setHandler();
@@ -320,33 +210,12 @@ public class HttpClient {
                 incr = msg.arg1;
 
                 if (incr < 100) {
-                    // Sets the progress indicator to a max value, the
-                    // current completion percentage, and "determinate"
-                    // state
                     progressDialog.setProgress(incr);
-
-//                    mBuilder.setProgress(100, incr, false);
-                    // Displays the progress bar for the first time.
-//                    mNotificationManager.notify(0, mBuilder.build());
-                    // Sleeps the thread, simulating an operation
-                    // that takes time
-
                 } else {
-                    if (incr == 999) {
-                        // When the loop is finished, updates the notification
-//                        mBuilder.setContentText("Download fail.")
-//                                // Removes the progress bar
-//                                .setProgress(0, 0, false);
-//                        mNotificationManager.notify(ID, mBuilder.build());
-                    } else {
+                    if (incr != 999) {
                         // When the loop is finished, updates the notification
                         progressDialog.setProgress(100);
                         progressDialog.dismiss();
-//                        mBuilder.setContentText(
-//                                "Download completed.")
-//                                // Removes the progress bar
-//                                .setProgress(0, 0, false);
-//                        mNotificationManager.notify(ID, mBuilder.build());
                     }
                 }
             }

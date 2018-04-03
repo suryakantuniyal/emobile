@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.TypedValue;
@@ -428,17 +429,21 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         discountSpinner = view.findViewById(R.id.globalDiscountSpinner);
         globalDiscount = view.findViewById(R.id.globalDiscountField);
         granTotal = view.findViewById(R.id.grandTotalValue);
-        LinearLayout leftHolder = view.findViewById(R.id.leftColumnHolder);
         activity = getActivity();
         myPref = new MyPreferences(activity);
 
-        if (!myPref.isTablet() && leftHolder != null) {
-            leftHolder.setVisibility(View.GONE);
-        }
+//        if (!myPref.isTablet() && leftHolder != null) {
+//            leftHolder.setVisibility(View.GONE);
+//        }
 //        else if (myPref.isTablet() && leftHolder != null)
 //            itemCount = (TextView) view.findViewById(R.id.itemCount);
-        initSpinners();
+
         return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        initSpinners();
     }
 
     public void initSpinners() {

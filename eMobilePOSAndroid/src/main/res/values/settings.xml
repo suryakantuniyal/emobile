@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="genius_token_url" translatable="false">https://epay.enablermobile.com/index.ashx</string>
+    <string name="sync_enablermobile_local_holds" translatable="false">http://%s:%s/api/orders/holds</string>
+    <string name="sync_enablermobile_local_checkstatusholds" translatable="false">http://%s:%s/api/orders/holds/status/</string>
+    <string name="sync_enablermobile_local_detailholds" translatable="false">http://%s:%s/api/orders/holds/detail/</string>
+    <string name="sync_enablermobile_local_polling" translatable="false">http://%s:%s/api/</string>
     <string name="sync_enablermobile_deviceasxmltrans" translatable="false">https://sync.enablermobile.com/deviceASXMLTrans/</string>
     <string name="sync_enablermobile_getxmlorders" translatable="false">https://sync.enablermobile.com/deviceASXMLTrans/getXMLOrders.aspx</string>
     <string name="sync_enablermobile_getxmlsalesassociate" translatable="false">getXMLSalesAssociate.ashx</string>
     <string name="sync_enablermobile_getxmlmixmatch" translatable="false">getXMLMixAndMatch.ashx</string>
     <string name="sync_enablermobile_getxmldinnertables" translatable="false">getXMLMesas.ashx</string>
     <string name="sync_enabler_submitordersonhold" translatable="false">https://sync.enablermobile.com/deviceASXMLTrans/submitOrdersOnHold.ashx</string>
+    <string name="sync_enabler_local_submitordersonhold" translatable="false">https://%s:%s/orders/holds/submitOrdersOnHold.ashx</string>
+
     <string name="sync_enabler_submitpayments" translatable="false">https://sync.enablermobile.com/deviceASXMLTrans/submitPayments.aspx</string>
     <string name="sync_enabler_submitpaymentsignatures" translatable="false">https://sync.enablermobile.com/deviceASXMLTrans/submitPaymentSignatures.aspx</string>
     <string name="sync_enabler_submittimeclock" translatable="false">https://sync.enablermobile.com/deviceASXMLTrans/submitTimeClock.ashx</string>

@@ -76,9 +76,9 @@ public class HistoryOpenInvoices_FA extends BaseFragmentActivityActionBar implem
         global = (Global) getApplication();
         activity = this;
 
-        myListView = (ListView) findViewById(R.id.invoiceLV);
-        TextView headerTitle = (TextView) findViewById(R.id.invoicesHeaderTitle);
-        Button payButton = (Button) findViewById(R.id.payInvoiceButton);
+        myListView = findViewById(R.id.invoiceLV);
+        TextView headerTitle = findViewById(R.id.invoicesHeaderTitle);
+        Button payButton = findViewById(R.id.payInvoiceButton);
         headerTitle.setText(getResources().getString(R.string.hist_open_inv));
         this.handler = new InvoicesHandler(this);
 
@@ -96,7 +96,7 @@ public class HistoryOpenInvoices_FA extends BaseFragmentActivityActionBar implem
         }
 
 
-        EditText field = (EditText) findViewById(R.id.searchField);
+        EditText field = findViewById(R.id.searchField);
         field.setOnEditorActionListener(getEditorActionListener());
         field.addTextChangedListener(getTextChangedListener());
 
@@ -302,13 +302,13 @@ public class HistoryOpenInvoices_FA extends BaseFragmentActivityActionBar implem
         dlog.setCanceledOnTouchOutside(true);
         dlog.setContentView(R.layout.dlog_btn_left_right_layout);
 
-        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+        TextView viewTitle = dlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = dlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_choose_action);
         viewMsg.setVisibility(View.GONE);
-        Button btnPrint = (Button) dlog.findViewById(R.id.btnDlogLeft);
-        Button btnPay = (Button) dlog.findViewById(R.id.btnDlogRight);
-        Button btnCancel = (Button) dlog.findViewById(R.id.btnDlogCancel);
+        Button btnPrint = dlog.findViewById(R.id.btnDlogLeft);
+        Button btnPay = dlog.findViewById(R.id.btnDlogRight);
+        Button btnCancel = dlog.findViewById(R.id.btnDlogCancel);
         btnCancel.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -349,16 +349,16 @@ public class HistoryOpenInvoices_FA extends BaseFragmentActivityActionBar implem
         dlog.setCancelable(false);
         dlog.setContentView(R.layout.dlog_btn_left_right_layout);
 
-        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+        TextView viewTitle = dlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = dlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_confirm);
 
         viewTitle.setText(R.string.dlog_title_error);
         viewMsg.setText(R.string.dlog_msg_failed_print);
 
         dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
-        Button btnYes = (Button) dlog.findViewById(R.id.btnDlogLeft);
-        Button btnNo = (Button) dlog.findViewById(R.id.btnDlogRight);
+        Button btnYes = dlog.findViewById(R.id.btnDlogLeft);
+        Button btnNo = dlog.findViewById(R.id.btnDlogRight);
         btnYes.setText(R.string.button_yes);
         btnNo.setText(R.string.button_no);
 
@@ -455,27 +455,27 @@ public class HistoryOpenInvoices_FA extends BaseFragmentActivityActionBar implem
         public void bindView(View view, Context context, Cursor cursor) {
 
             StringBuilder sb = new StringBuilder();
-            TextView clientName = (TextView) view
+            TextView clientName = view
                     .findViewById(R.id.invoiceClientName);
-            TextView txnID = (TextView) view.findViewById(R.id.invoiceTXNID);
-            final TextView uid = (TextView) view.findViewById(R.id.invoiceUID);
-            TextView createdDate = (TextView) view
+            TextView txnID = view.findViewById(R.id.invoiceTXNID);
+            final TextView uid = view.findViewById(R.id.invoiceUID);
+            TextView createdDate = view
                     .findViewById(R.id.invoiceCreatedContent);
-            TextView dueDate = (TextView) view
+            TextView dueDate = view
                     .findViewById(R.id.invoiceDueContent);
-            TextView shipDate = (TextView) view
+            TextView shipDate = view
                     .findViewById(R.id.invoiceShipContent);
-            TextView total = (TextView) view
+            TextView total = view
                     .findViewById(R.id.invoiceTotalContent);
-            TextView balance = (TextView) view
+            TextView balance = view
                     .findViewById(R.id.invoiceBalanceContent);
-            TextView isPaidTag = (TextView) view
+            TextView isPaidTag = view
                     .findViewById(R.id.invoicePaidTitle);
 
-            ImageView moreDetails = (ImageView) view
+            ImageView moreDetails = view
                     .findViewById(R.id.invoiceMoreDetailIcon);
 
-            CheckBox checkBox = (CheckBox) view.findViewById(R.id.invoiceCheckBox);
+            CheckBox checkBox = view.findViewById(R.id.invoiceCheckBox);
             if (isFromMainMenu) {
 
                 checkBox.setTag(cursor.getPosition());

@@ -27,6 +27,8 @@
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE"/>
+
 
     <permission
         android:name="android.permission.MSR_OPERATION"
@@ -86,7 +88,6 @@
         </activity>
         <activity
             android:name=".mainmenu.MainMenu_FA"
-            android:configChanges="orientation|screenSize"
             android:windowSoftInputMode="stateAlwaysHidden">
             <intent-filter>
                 <action android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED" />
@@ -167,7 +168,8 @@
         <activity
             android:name=".ordering.SplittedOrderSummary_FA"
             android:configChanges="orientation|screenSize"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="sensorLandscape" />
         <activity
             android:name=".OrderDetailsActivity"
             android:configChanges="orientation|screenSize"
@@ -297,6 +299,7 @@
         <activity
             android:name=".customer.ViewCustomerDetails_FA"
             android:exported="false"
+            android:configChanges="orientation|screenSize"
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
             android:name=".ShowProductImageActivity"
@@ -344,7 +347,7 @@
             android:name=".mainmenu.restaurant.DinningTablesActivity"
             android:configChanges="orientation|screenSize"
             android:exported="false"
-            android:screenOrientation="sensorLandscape" />
+          />
         <activity
             android:name=".ordering.OrderAttrEdit_FA"
             android:configChanges="orientation|screenSize"
@@ -518,6 +521,12 @@
             android:name=".security.ClerkManagementDetailActivity"
             android:label="@string/config_clerk_management" />
         <activity android:name=".restore.RestoreActivity" />
+            android:label="@string/title_activity_bixolon_transactions" />
+
+        <service
+            android:name=".service.SyncConfigServerService"
+            android:enabled="true"
+            android:exported="true" />
     </application>
 
 </manifest>

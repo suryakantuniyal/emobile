@@ -16,9 +16,9 @@ import com.android.database.DBManager;
 import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
+import com.android.emobilepos.service.SyncConfigServerService;
 import com.android.support.DateUtils;
 import com.android.support.Global;
-import com.android.support.HttpClient;
 import com.android.support.MyPreferences;
 import com.android.support.NetworkUtils;
 import com.android.support.SynchMethods;
@@ -56,6 +56,7 @@ public class PollingNotificationService extends Service {
     private Timer timer;
     private Date lastPolled;
     private String accountNumber;
+    MyPreferences preferences;
 
     public static boolean isServiceRunning(Context context) {
         ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
@@ -85,7 +86,8 @@ public class PollingNotificationService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        accountNumber = new MyPreferences(this).getAcctNumber();
+        preferences = new MyPreferences(this);
+        accountNumber = preferences.getAcctNumber();
         lastPolled = new Date(0);
     }
 
@@ -173,15 +175,22 @@ public class PollingNotificationService extends Service {
         try {
             if (NetworkUtils.isConnectedToInternet(context)) {
                 Date tempPollDate = new Date();
-                HttpClient client = new HttpClient();
                 Gson gson = JsonUtils.getInstance();
-
-                String sb = String.format("%spollnotification.ashx?RegID=%s&fromdate=%s",
-                        context.getString(R.string.sync_enablermobile_deviceasxmltrans),
+                String baseUrl;
+                String pattern;
+                if (preferences.isUse_syncplus_services()) {
+                    baseUrl = SyncConfigServerService.getUrl(context.getString(R.string.sync_enablermobile_local_polling), context);
+                    pattern="%spollnotification?RegID=%s&fromdate=%s";
+                } else {
+                    baseUrl = context.getString(R.string.sync_enablermobile_deviceasxmltrans);
+                    pattern="%spollnotification.ashx?RegID=%s&fromdate=%s";
+                }
+                String sb = String.format(pattern,
+                        baseUrl,
                         URLEncoder.encode(accountNumber, "utf-8"),
                         URLEncoder.encode(DateUtils.getDateAsString(lastPolled), "utf-8"));
 
-                InputStream inputStream = client.httpInputStreamRequest(sb);
+                InputStream inputStream = oauthclient.HttpClient.get(sb, null, true);
                 JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
                 reader.beginArray();
 

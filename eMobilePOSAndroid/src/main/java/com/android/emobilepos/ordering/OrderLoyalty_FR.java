@@ -20,7 +20,6 @@ public class OrderLoyalty_FR extends Fragment implements OnClickListener {
 
     private TextView tapTxtLabel;
     private ImageButton btnTap;
-//    private OrderLoyalty_FR myFrag;
     private SwiperLoyaltyCallback callBackLoyaltySwiper;
     private EditText fieldPointBalance, fieldPointsSubTotal, fieldPointsInUse,
             fieldPointsAvailable, fieldPointsAcumulable;
@@ -39,14 +38,9 @@ public class OrderLoyalty_FR extends Fragment implements OnClickListener {
         Bundle args = new Bundle();
         args.putInt("val", val);
         frag.setArguments(args);
-//        myFrag = frag;
         return frag;
     }
 
-
-//    public static OrderLoyalty_FR getFrag() {
-//        return myFrag;
-//    }
 
 
     @Override
@@ -62,27 +56,18 @@ public class OrderLoyalty_FR extends Fragment implements OnClickListener {
 //        myFrag = this;
 
         callBackLoyaltySwiper = (SwiperLoyaltyCallback) getActivity();
-        btnTap = (ImageButton) view.findViewById(R.id.btnTapLoyalty);
+        btnTap = view.findViewById(R.id.btnTapLoyalty);
         btnTap.setOnClickListener(this);
-        tapTxtLabel = (TextView) view.findViewById(R.id.tapLabel);
+        tapTxtLabel = view.findViewById(R.id.tapLabel);
 
-        fieldPointBalance = (EditText) view.findViewById(R.id.fieldPointsBalance);
-        fieldPointsSubTotal = (EditText) view.findViewById(R.id.fieldPointsSubTotal);
-        fieldPointsInUse = (EditText) view.findViewById(R.id.fieldPointsInUse);
-        fieldPointsAvailable = (EditText) view.findViewById(R.id.fieldPointsAvailable);
-        fieldPointsAcumulable = (EditText) view.findViewById(R.id.fieldPointsAcumulable);
-        grandTotalValue = (TextView) view.findViewById(R.id.grandTotalValue);
-
-
-//        if (savedInstanceState == null && OrderTotalDetails_FR.getFrag() != null && OrderTotalDetails_FR.getFrag().getActivity() != null) {
-//            Global global = (Global) OrderLoyalty_FR.this.getActivity().getApplication();
-//            OrderTotalDetails_FR.getFrag().reCalculate(global.order.getOrderProducts());
-//        }
+        fieldPointBalance = view.findViewById(R.id.fieldPointsBalance);
+        fieldPointsSubTotal = view.findViewById(R.id.fieldPointsSubTotal);
+        fieldPointsInUse = view.findViewById(R.id.fieldPointsInUse);
+        fieldPointsAvailable = view.findViewById(R.id.fieldPointsAvailable);
+        fieldPointsAcumulable = view.findViewById(R.id.fieldPointsAcumulable);
+        grandTotalValue = view.findViewById(R.id.grandTotalValue);
         new PrefetchLoyaltyPointTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-//        callBackLoyaltySwiper.prefetchLoyaltyPoints();
-
         return view;
-
     }
 
 

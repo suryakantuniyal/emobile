@@ -55,5 +55,42 @@
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_enable_location_inventory" />
     </PreferenceCategory>
+    <PreferenceCategory
+        android:layout="@layout/settings_custom_header_layout"
+        android:title="@string/config_syncplus_settings">
+        <CheckBoxPreference
+            android:key="pref_use_syncplus_services"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_use_syncplus_services" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:layout="@layout/settings_custom_layout"
+            android:dependency="pref_use_syncplus_services"
+            android:key="pref_syncplus_mode"
+            android:switchTextOff="@string/automatic"
+            android:switchTextOn="@string/manual"
+            android:title="@string/syncplus_connection_mode" />
+        <EditTextPreference
+            android:dependency="pref_syncplus_mode"
+            android:layout="@layout/settings_custom_layout"
+            android:digits="0123456789."
+            android:inputType="number"
+            android:key="pref_syncplus_ip"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:summary="0.0.0.0"
+            android:title="@string/dlog_star_ip" />
+        <EditTextPreference
+            android:layout="@layout/settings_custom_layout"
+            android:defaultValue="8001"
+            android:dependency="pref_syncplus_mode"
+            android:inputType="number"
+            android:key="pref_syncplus_port"
+            android:numeric="integer"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:summary="8001"
+            android:title="@string/dlog_star_port" />
 
+    </PreferenceCategory>
 </PreferenceScreen>

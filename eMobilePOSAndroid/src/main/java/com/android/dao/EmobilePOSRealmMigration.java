@@ -9,6 +9,7 @@ import com.android.emobilepos.models.realms.CustomerCustomField;
 import com.android.emobilepos.models.realms.EmobileBiometric;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.PaymentMethod;
+import com.android.emobilepos.models.realms.SyncServerConfiguration;
 import com.crashlytics.android.Crashlytics;
 
 import java.util.Date;
@@ -124,6 +125,13 @@ public class EmobilePOSRealmMigration implements io.realm.RealmMigration {
                             .addRealmListField("bixolontaxes", schema.get(BixolonTax.class.getSimpleName()))
                             .addRealmListField("paymentMethods", schema.get(BixolonPaymentMethod.class.getSimpleName()))
                             .addField("merchantName", String.class);
+                    oldVersion++;
+                }
+                if (oldVersion == 6) {
+                    schema.create(SyncServerConfiguration.class.getSimpleName()).
+                            addField("servername", String.class, FieldAttribute.PRIMARY_KEY)
+                            .addField("ipAddress", String.class)
+                            .addField("port", String.class);
                     oldVersion++;
                 }
                 if (oldVersion == 7) {

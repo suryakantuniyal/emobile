@@ -2,6 +2,7 @@ package com.android.support;
 
 import android.app.Activity;
 
+import com.android.emobilepos.service.SyncConfigServerService;
 import com.android.saxhandler.SAXdownloadHandler;
 
 import org.xml.sax.InputSource;
@@ -10,6 +11,8 @@ import org.xml.sax.XMLReader;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -25,12 +28,23 @@ public class OnHoldsManager {
         return new Post(activity).postData(Global.S_CHECK_STATUS_ON_HOLD, orderId);
     }
 
-    public static boolean isOnHoldAdminClaimRequired(String orderId, Activity activity) {
+    public static boolean isOnHoldAdminClaimRequired(String orderId, Activity activity) throws NoSuchAlgorithmException, IOException, KeyManagementException {
         boolean requiredClaim = true;
         boolean timedOut = false;
+        GenerateXML generateXML = new GenerateXML(activity);
+        MyPreferences preferences = new MyPreferences(activity);
         SAXParserFactory spf = SAXParserFactory.newInstance();
         SAXdownloadHandler handler = new SAXdownloadHandler(activity);
-        String xml = new Post(activity).postData(Global.S_CHECK_STATUS_ON_HOLD, orderId);
+        String xml;
+        if (preferences.isUse_syncplus_services()) {
+            String baseUrl = generateXML.getOnHold(Global.S_CHECK_STATUS_ON_HOLD, orderId);
+//            baseUrl = activity.getString(R.string.sync_enablermobile_local_checkstatusholds) + orderId;
+            String url = SyncConfigServerService.getUrl(baseUrl, activity);
+            xml = oauthclient.HttpClient.getString(url, null, false);
+        } else {
+            xml = new Post(activity).postData(Global.S_CHECK_STATUS_ON_HOLD, orderId);
+        }
+
         switch (xml) {
             case Global.TIME_OUT:
                 timedOut = true;
@@ -48,7 +62,7 @@ public class OnHoldsManager {
 
                     String[] returnedPost = new String[0];
                     if (temp != null && temp.size() > 0) {
-                        returnedPost = new String[handler.getEmpData().size()];
+
                         returnedPost = handler.getEmpData().get(0);
                     }
                     if (returnedPost != null && returnedPost.length > 0 && returnedPost[1].equals("0")) {
@@ -66,8 +80,33 @@ public class OnHoldsManager {
         return requiredClaim;
     }
 
-    public static String updateStatusOnHold(String orderId, Activity activity) {
-        return new Post(activity).postData(Global.S_UPDATE_STATUS_ON_HOLD, orderId);
+    public static String updateStatusOnHold(String orderId, Activity activity) throws Exception {
+        MyPreferences preferences = new MyPreferences(activity);
+        GenerateXML generateXML = new GenerateXML(activity);
+        String xml;
+        if (preferences.isUse_syncplus_services()) {
+            String baseUrl = generateXML.getOnHold(Global.S_UPDATE_STATUS_ON_HOLD, orderId);
+//            baseUrl = activity.getString(R.string.sync_enablermobile_local_checkstatusholds) + orderId;
+            String url = SyncConfigServerService.getUrl(baseUrl, activity);
+            xml = oauthclient.HttpClient.put(url, null, null, false);
+        } else {
+            xml = new Post(activity).postData(Global.S_UPDATE_STATUS_ON_HOLD, orderId);
+        }
+        return xml;
+    }
+
+    public static String checkoutOnHold(String orderId, Activity activity) throws Exception {
+        MyPreferences preferences = new MyPreferences(activity);
+        GenerateXML generateXML = new GenerateXML(activity);
+        String xml;
+        if (preferences.isUse_syncplus_services()) {
+            String baseUrl = generateXML.getOnHold(Global.S_CHECKOUT_ON_HOLD, orderId);
+            String url = SyncConfigServerService.getUrl(baseUrl, activity);
+            xml = oauthclient.HttpClient.delete(url, null, false);
+        } else {
+            xml = new Post(activity).postData(Global.S_CHECKOUT_ON_HOLD, orderId);
+        }
+        return xml;
     }
 
     public static void synchOrdersOnHoldDetails(Activity activity, String orderId) throws IOException, SAXException {

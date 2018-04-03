@@ -84,12 +84,13 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NetworkUtils;
 import com.android.support.NumberUtils;
+import com.android.support.OnHoldsManager;
 import com.android.support.OrderProductUtils;
-import com.android.support.Post;
 import com.android.support.SemiClosedSlidingDrawer;
 import com.android.support.SemiClosedSlidingDrawer.OnDrawerCloseListener;
 import com.android.support.SemiClosedSlidingDrawer.OnDrawerOpenListener;
 import com.android.support.SynchMethods;
+import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.viewpagerindicator.CirclePageIndicator;
@@ -2161,15 +2162,27 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         protected Boolean doInBackground(Object... arg0) {
 
             if (NetworkUtils.isConnectedToInternet(getActivity())) {
-                Post httpClient = new Post(getActivity());
+//                Post httpClient = new Post(getActivity());
                 switch ((Integer) arg0[0]) {
                     case UPDATE_HOLD_STATUS:
-                        httpClient.postData(Global.S_UPDATE_STATUS_ON_HOLD,
-                                Global.lastOrdID);
+                        try {
+                            OnHoldsManager.updateStatusOnHold(Global.lastOrdID, getActivity());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Crashlytics.logException(e);
+                        }
+//                        httpClient.postData(Global.S_UPDATE_STATUS_ON_HOLD,
+//                                Global.lastOrdID);
                         break;
                     case CHECK_OUT_HOLD:
-                        httpClient.postData(Global.S_CHECKOUT_ON_HOLD,
-                                Global.lastOrdID);
+                        try {
+                            OnHoldsManager.checkoutOnHold(Global.lastOrdID, getActivity());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Crashlytics.logException(e);
+                        }
+//                        httpClient.postData(Global.S_CHECKOUT_ON_HOLD,
+//                                Global.lastOrdID);
                         break;
                 }
             }

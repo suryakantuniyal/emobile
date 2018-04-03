@@ -12,14 +12,14 @@
         android:padding="5dp">
 
         <TextView
+            android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/textView"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
             android:text="@string/table_number"
             android:textAppearance="@style/black_text_appearance_unbold"
-            android:textSize="@dimen/about_main_text_size"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true" />
+            android:textSize="@dimen/about_small_text_size" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -32,72 +32,68 @@
             android:layout_marginLeft="5dp" />
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="4"
             android:id="@+id/splited_order_seatnumber_itemtextView"
-            android:textAppearance="@style/black_text_appearance_unbold"
-            android:textSize="@dimen/about_main_text_size"
-            android:layout_gravity="center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_above="@+id/textView10"
-            android:layout_alignLeft="@+id/splited_order_tablenumber_itemtextView" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/seatNumber"
-            android:id="@+id/textView12"
+            android:layout_alignLeft="@+id/splited_order_tablenumber_itemtextView"
+            android:layout_gravity="center_vertical"
+            android:text="4"
             android:textAppearance="@style/black_text_appearance_unbold"
-            android:textSize="@dimen/about_main_text_size"
-            android:layout_gravity="center"
-            android:layout_below="@+id/textView20"
-            android:layout_alignLeft="@+id/textView20"
-            android:layout_marginTop="5dp" />
+            android:textSize="@dimen/about_small_text_size" />
 
         <TextView
+            android:id="@+id/textView12"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/textView20"
+            android:layout_below="@+id/textView20"
+            android:layout_gravity="center"
+            android:text="@string/seatNumber"
+            android:textAppearance="@style/black_text_appearance_unbold"
+            android:textSize="@dimen/about_small_text_size" />
+
+        <TextView
+            android:id="@+id/splited_order_price_itemtextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/textView12"
+            android:layout_alignLeft="@+id/splited_order_tablenumber_itemtextView"
+            android:layout_gravity="center_vertical"
             android:text="$23.95"
             android:textAppearance="@style/black_text_appearance_unbold"
-            android:textSize="@dimen/about_main_text_size"
-            android:id="@+id/splited_order_price_itemtextView"
-            android:layout_gravity="center_vertical"
-            android:layout_above="@+id/textView12"
-            android:layout_alignLeft="@+id/splited_order_tablenumber_itemtextView" />
+            android:textSize="@dimen/about_small_text_size" />
 
         <TextView
+            android:id="@+id/textView20"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/splited_order_price"
-            android:layout_gravity="center"
-            android:textAppearance="@style/black_text_appearance_unbold"
-            android:textSize="@dimen/about_main_text_size"
-            android:id="@+id/textView20"
-            android:layout_below="@+id/splited_order_tablenumber_itemtextView"
             android:layout_alignLeft="@+id/textView"
-            android:layout_marginTop="5dp" />
+            android:layout_below="@+id/splited_order_tablenumber_itemtextView"
+            android:layout_gravity="center"
+            android:text="@string/splited_order_price"
+            android:textAppearance="@style/black_text_appearance_unbold"
+            android:textSize="@dimen/about_small_text_size" />
 
         <TextView
+            android:id="@+id/splited_order_productsTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/black_text_appearance_unbold"
-            android:textSize="@dimen/about_main_text_size"
-            android:text="Mozzarella Sticks, Hotwings"
-            android:id="@+id/splited_order_productsTextView"
-            android:layout_below="@+id/textView10"
             android:layout_alignLeft="@+id/textView10"
-            android:layout_marginTop="5dp" />
+            android:layout_below="@+id/textView10"
+            android:text="Mozzarella Sticks, Hotwings"
+            android:textAppearance="@style/black_text_appearance_unbold"
+            android:textSize="@dimen/about_small_text_size" />
 
         <TextView
+            android:id="@+id/textView10"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/textView"
+            android:layout_below="@+id/textView12"
             android:text="@string/items"
             android:textAppearance="@style/black_text_appearance_unbold"
-            android:textSize="@dimen/about_main_text_size"
-            android:id="@+id/textView10"
-            android:layout_below="@+id/textView12"
-            android:layout_alignLeft="@+id/textView"
-            android:layout_marginTop="5dp" />
+            android:textSize="@dimen/about_small_text_size" />
     </RelativeLayout>
 
 </LinearLayout>

@@ -33,22 +33,27 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.history.HistoryTransactions_FA;
 import com.android.emobilepos.models.realms.BiometricFid;
 import com.android.emobilepos.models.realms.EmobileBiometric;
+import com.android.emobilepos.ordering.BBPosShelpaDeviceDriver;
 import com.android.emobilepos.security.SecurityManager;
+import com.android.soundmanager.SoundManager;
+import com.android.support.CreditCardInfo;
 import com.android.support.Customer;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.bbpos.bbdevice.BBDeviceController;
 
 import java.util.Collection;
 
 import drivers.digitalpersona.DigitalPersona;
 import interfaces.BCRCallbacks;
 import interfaces.BiometricCallbacks;
+import interfaces.EMSCallBack;
 import util.StringUtil;
 import util.json.UIUtils;
 
-public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements BiometricCallbacks, OnClickListener, OnItemClickListener, BCRCallbacks {
+public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements BiometricCallbacks, OnClickListener, OnItemClickListener, BCRCallbacks, EMSCallBack {
     boolean isManualEntry = true;
     private ListView myListView;
     private Context thisContext = this;
@@ -65,13 +70,18 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
 
     private boolean isReaderConnected;
     private DigitalPersona digitalPersona;
+    private BBDeviceController bbDeviceController;
+    private BBPosShelpaDeviceDriver listener;
+    private SoundManager soundManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.custselec_listview_layout);
         digitalPersona = new DigitalPersona(getApplicationContext(), this, EmobileBiometric.UserType.CUSTOMER);
-
+        soundManager = SoundManager.getInstance();
+        soundManager.initSounds(this);
+        soundManager.loadSounds();
         activity = this;
         myPref = new MyPreferences(activity);
         global = (Global) getApplication();
@@ -93,8 +103,6 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
         search.setOnEditorActionListener(getSearchActionListener());
         search.addTextChangedListener(getSearchTextWatcher());
         search.setOnKeyListener(new View.OnKeyListener() {
-            public long startTyping;
-            public long stopTyping;
 
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -105,9 +113,55 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
         });
         myListView.setOnItemClickListener(this);
         hasBeenCreated = true;
-
+        listener = new BBPosShelpaDeviceDriver(this, this);
+        bbDeviceController = BBDeviceController.getInstance(
+                this, listener);
+        if (bbDeviceController != null) {
+            bbDeviceController.startBarcodeReader();
+        }
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == 138) {
+            event.startTracking();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public boolean onKeyLongPress(int keyCode, KeyEvent event) {
+        if (keyCode == 138) {
+            if (bbDeviceController != null) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        bbDeviceController.startBarcodeReader();
+                        bbDeviceController.getBarcode();
+                    }
+                }).start();
+            }
+            return true;
+        }
+        return super.onKeyLongPress(keyCode, event);
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        if (keyCode == 138) {
+            if (bbDeviceController != null) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        bbDeviceController.stopBarcodeReader();
+                        bbDeviceController.startBarcodeReader();
+                    }
+                }).start();
+            }
+        }
+        return super.onKeyUp(keyCode, event);
+    }
 
     @Override
     public void onDestroy() {
@@ -195,7 +249,7 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
 
     private void selectCustomer() {
         Intent results = new Intent();
-        CustomersHandler handler =new CustomersHandler(this);
+        CustomersHandler handler = new CustomersHandler(this);
         Customer customer = handler.getCustomer(myPref.getCustID());
         results.putExtra("customer_name", String.format("%s %s", customer.getCust_name()
                 , customer.getCust_lastName()));
@@ -368,6 +422,33 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
 
     @Override
     public void biometricsUnregister(ViewCustomerDetails_FA.Finger finger) {
+
+    }
+
+    @Override
+    public void cardWasReadSuccessfully(boolean read, CreditCardInfo cardManager) {
+
+    }
+
+    @Override
+    public void readerConnectedSuccessfully(boolean value) {
+
+    }
+
+    @Override
+    public void scannerWasRead(String data) {
+        soundManager.playSound(1, 1);
+        search.setText(data);
+        executeBCR();
+    }
+
+    @Override
+    public void startSignature() {
+
+    }
+
+    @Override
+    public void nfcWasRead(String nfcUID) {
 
     }
 

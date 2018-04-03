@@ -1,6 +1,7 @@
 package com.android.support;
 
 import android.text.Selection;
+import android.text.TextUtils;
 import android.widget.EditText;
 
 import java.math.BigDecimal;
@@ -12,7 +13,7 @@ import java.util.Locale;
  * Created by tirizar on 12/3/2015.
  */
 public class NumberUtils {
-    static boolean formated = false;
+    private static boolean formated = false;
 
     public static String cleanCurrencyFormatedNumber(String s) {
         return s.replaceAll("[^[+-]?\\d\\.]", "").trim();
@@ -29,9 +30,9 @@ public class NumberUtils {
     public static void parseInputedCurrency(CharSequence s, EditText editText) {
         DecimalFormat format = (DecimalFormat) DecimalFormat.getInstance(Locale.getDefault());
         DecimalFormatSymbols sym = format.getDecimalFormatSymbols();
-        StringBuilder sb = new StringBuilder();
+        /*StringBuilder sb = new StringBuilder();
         sb.append("^\\").append(sym.getCurrencySymbol()).append("\\s(\\d{1,3}(\\").append(sym.getGroupingSeparator()).append("\\d{3})*|(\\d+))(");
-        sb.append(sym.getDecimalSeparator()).append("\\d{2})?$");
+        sb.append(sym.getDecimalSeparator()).append("\\d{2})?$");*/
 
         if (!formated) {
 //        if (!s.toString().matches(sb.toString())) {
@@ -50,5 +51,12 @@ public class NumberUtils {
         }
         Selection.setSelection(editText.getText(), editText.getText().length());
         formated = false;
+    }
+
+    public static String removeLeadingZeros(String value) {
+        if (!TextUtils.isEmpty(value)) {
+            return value.replaceFirst("^0+(?!$)", "");
+        }
+        return value;
     }
 }
