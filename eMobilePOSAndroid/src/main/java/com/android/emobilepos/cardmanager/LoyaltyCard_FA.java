@@ -72,25 +72,6 @@ public class LoyaltyCard_FA extends BaseFragmentActivityActionBar implements OnI
 
     @Override
     public void onItemClick(AdapterView<?> arg0, View arg1, int pos, long arg3) {
-        // TODO Auto-generated method stub
-//		Intent intent = null;
-//		switch(pos)
-//		{
-//		case ACTIVATE:
-//			intent = new Intent(this,ActivateCard_FA.class);
-//			intent.putExtra("case", ActivateCard_FA.CASE_LOYALTY);
-//			break;
-//		case BALANCE_INQUIRY:
-//			intent = new Intent(this,BalanceInquiry_FA.class);
-//			intent.putExtra("case", BalanceInquiry_FA.CASE_LOYALTY);
-//			break;
-//		case MANUAL_BALANCE:
-//			intent = new Intent(this,ManualAddBalance_FA.class);
-//			intent.putExtra("case", ManualAddBalance_FA.CASE_LOYALTY);
-//			break;
-//		}
-//		startActivity(intent);
-
         Intent intent = new Intent(this, CardManager_FA.class);
         intent.putExtra("CARD_TYPE", CardManager_FA.CASE_LOYALTY);
         switch (pos) {

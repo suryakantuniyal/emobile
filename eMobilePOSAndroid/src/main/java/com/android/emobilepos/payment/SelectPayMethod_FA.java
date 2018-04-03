@@ -326,7 +326,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         TextView tipView = findViewById(R.id.tipValue);
         TextView dueView = findViewById(R.id.dueValue);
         totalView.setText(Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(total))));
-        paidView.setText(Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(paid))));
+        paidView.setText(Global.getCurrencyFormat(Global.formatNumToLocale(Global.overallPaidAmount)));
         dueView.setText(Global.getCurrencyFormat(Global.formatNumToLocale(overAllRemainingBalance)));
         tipView.setText(Global.getCurrencyFormat(Global.formatNumToLocale(tipPaidAmount)));
     }

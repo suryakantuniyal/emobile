@@ -72,7 +72,6 @@ import com.android.support.NetworkUtils;
 import com.android.support.NumberUtils;
 import com.android.support.OrderProductUtils;
 import com.android.support.Post;
-import com.android.support.StringUtils;
 import com.android.support.TerminalDisplay;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.bbpos.bbdevice.BBDeviceController;
@@ -97,8 +96,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.UUID;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -177,8 +174,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     DecodeResult decodeResult = (DecodeResult) msg.obj;
 
                     strDecodeResult = decodeResult.barcodeData.trim();
-                    if(myPref.isRemoveLeadingZerosFromUPC()){
-                        strDecodeResult= NumberUtils.removeLeadingZeros(strDecodeResult);
+                    if (myPref.isRemoveLeadingZerosFromUPC()) {
+                        strDecodeResult = NumberUtils.removeLeadingZeros(strDecodeResult);
                     }
                     if (!strDecodeResult.isEmpty()) {
                         soundManager.playSound(1, 1);
@@ -411,7 +408,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
         listener = new BBPosShelpaDeviceDriver(this, this);
         bbDeviceController = BBDeviceController.getInstance(
-                getApplicationContext(), listener);
+                this, listener);
         callBackMSR = this;
 //        setReceiptListHandler();
         handler = new ProductsHandler(this);
@@ -1427,6 +1424,43 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         if (_msrUsbSams != null && _msrUsbSams.isDeviceOpen() && !_msrUsbSams.isDeviceReading())
             _msrUsbSams.StartReadingThread();
 
+        bbDeviceController = BBDeviceController.getInstance(this,
+                new MyBBDeviceControllerListener(this, new EMSCallBack() {
+                    @Override
+                    public void cardWasReadSuccessfully(boolean read, CreditCardInfo cardManager) {
+
+                    }
+
+                    @Override
+                    public void readerConnectedSuccessfully(boolean value) {
+
+                    }
+
+                    @Override
+                    public void scannerWasRead(String data) {
+                        swiperField.setText(data);
+                    }
+
+                    @Override
+                    public void startSignature() {
+
+                    }
+
+                    @Override
+                    public void nfcWasRead(String nfcUID) {
+
+                    }
+                }));
+        if (bbDeviceController != null) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    bbDeviceController.startBarcodeReader();
+                    bbDeviceController.getBarcode();
+                }
+            }).start();
+
+        }
         dlogMSR = new Dialog(this, R.style.Theme_TransparentTest);
         dlogMSR.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dlogMSR.setCancelable(false);
@@ -1454,7 +1488,16 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             @Override
             public void onClick(View v) {
                 dlogMSR.dismiss();
-
+                if (bbDeviceController != null) {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            bbDeviceController.stopBarcodeReader();
+                            bbDeviceController.startBarcodeReader();
+                            reloadBBPosBCR();
+                        }
+                    }).start();
+                }
                 String temp = swiperField.getText().toString().trim();
                 if (temp.length() > 0) {
                     processBalanceInquiry(isLoyaltyCard, temp);
@@ -1466,6 +1509,16 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             @Override
             public void onClick(View v) {
                 dlogMSR.dismiss();
+                if (bbDeviceController != null) {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            bbDeviceController.stopBarcodeReader();
+                            bbDeviceController.startBarcodeReader();
+                            reloadBBPosBCR();
+                        }
+                    }).start();
+                }
                 if (_msrUsbSams != null && _msrUsbSams.isDeviceOpen() && _msrUsbSams.isDeviceReading())
                     _msrUsbSams.StopReadingThread();
             }
@@ -1476,6 +1529,14 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         else {
             swiperLabel.setText(R.string.connected);
             swiperLabel.setTextColor(Color.BLUE);
+        }
+    }
+
+    private void reloadBBPosBCR() {
+        if (bbDeviceController != null) {
+            bbDeviceController = BBDeviceController.getInstance(
+                    this, listener);
+            bbDeviceController.startBarcodeReader();
         }
     }
 
@@ -1678,18 +1739,19 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     @Override
     public void scannerWasRead(String data) {
-        if (bbDeviceController != null) {
-            new Timer().schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    bbDeviceController.getBarcode();
-                }
-            }, 2000);
-
-        }
+//        if (bbDeviceController != null) {
+//            new Timer().schedule(new TimerTask() {
+//                @Override
+//                public void run() {
+//                    bbDeviceController.getBarcode();
+//                }
+//            }, 2000);
+//
+//        }
+        scannerInDecodeMode = false;
         if (!data.isEmpty()) {
-            if(myPref.isRemoveLeadingZerosFromUPC()){
-                data= NumberUtils.removeLeadingZeros(data);
+            if (myPref.isRemoveLeadingZerosFromUPC()) {
+                data = NumberUtils.removeLeadingZeros(data);
             }
             scanAddItem(data);
         }
