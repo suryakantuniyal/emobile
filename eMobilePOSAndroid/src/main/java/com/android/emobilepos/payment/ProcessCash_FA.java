@@ -184,7 +184,8 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
             this.tipAmount.setText(Global.formatDoubleToCurrency(0.00));
 
         amountDue.setText(Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(extras.getString("amount")))));
-        if (!isFromMainMenu) {
+
+        if (!isFromMainMenu && global.order != null) {
             HashMap<String, String[]> orderTaxes = TaxesCalculator.getOrderTaxes(this, global.order.getListOrderTaxes(), global.order);
             int i = 0;
             Iterator it = orderTaxes.entrySet().iterator();

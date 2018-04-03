@@ -1,0 +1,30 @@
+<!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"--><!--xmlns:tools="http://schemas.android.com/tools"--><!--android:layout_width="wrap_content"--><!--android:layout_height="wrap_content"--><!--android:orientation="vertical"--><!--tools:context="com.android.emobilepos.mainmenu.restaurant.DinningTablesActivity">-->
+
+<!--<android.support.v4.view.ViewPager xmlns:tools="http://schemas.android.com/tools"--><!--android:id="@+id/container"--><!--android:layout_width="wrap_content"--><!--android:layout_height="wrap_content"--><!--tools:context="com.android.emobilepos.mainmenu.restaurant.DinningTablesActivity" />-->
+
+<!--<com.viewpagerindicator.TitlePageIndicator--><!--android:id="@+id/v"--><!--android:layout_width="fill_parent"--><!--android:layout_height="wrap_content"--><!--android:padding="5dip" />--><!--</LinearLayout>-->
+
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <com.viewpagerindicator.TitlePageIndicator
+        android:id="@+id/indicator"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/blue_flat"
+        app:selectedBold="true"
+        app:selectedColor="@color/black"
+        android:padding="10dip" />
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/container"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+
+        android:layout_weight="1" />
+
+</LinearLayout>

@@ -58,7 +58,7 @@ public class GenerateXML {
     private AssignEmployee assignEmployee;
     private MyPreferences info;
     private StringBuilder ending = new StringBuilder();
-    private Context thisActivity;
+    private Context context;
     private MyPreferences myPref;
 
     public GenerateXML(Context activity) {
@@ -78,8 +78,8 @@ public class GenerateXML {
             }
         }
 
-        thisActivity = activity;
-        if (thisActivity instanceof ClockInOut_FA) {
+        context = activity;
+        if (context instanceof ClockInOut_FA) {
             try {
                 ending.append("&EmpID=")
                         .append(URLEncoder.encode(info.getClerkID(), UTF_8));
@@ -150,16 +150,37 @@ public class GenerateXML {
         StringBuilder sb = new StringBuilder();
         switch (type) {
             case Global.S_ORDERS_ON_HOLD_DETAILS:
-                sb.append("getXMLOrdersOnHoldDetail.ashx");
+                if (myPref.isUse_syncplus_services()) {
+                    String s = context.getString(R.string.sync_enablermobile_local_detailholds) + ordID;
+                    sb.append(s);
+                } else {
+                    sb.append("getXMLOrdersOnHoldDetail.ashx");
+                }
                 break;
             case Global.S_CHECK_STATUS_ON_HOLD:
-                sb.append("getXMLCheckStatusOnHold.ashx");
+                if (myPref.isUse_syncplus_services()) {
+                    String s = context.getString(R.string.sync_enablermobile_local_checkstatusholds) + ordID;
+                    sb.append(s);
+                } else {
+                    sb.append("getXMLCheckStatusOnHold.ashx");
+                }
                 break;
             case Global.S_UPDATE_STATUS_ON_HOLD:
-                sb.append("getXMLUpdateStatusOnHold.ashx");
+                if (myPref.isUse_syncplus_services()) {
+                    String s = context.getString(R.string.sync_enablermobile_local_checkstatusholds) + ordID;
+                    sb.append(s);
+                } else {
+                    sb.append("getXMLUpdateStatusOnHold.ashx");
+                }
+
                 break;
             case Global.S_CHECKOUT_ON_HOLD:
-                sb.append("getXMLCheckOutOnHold.ashx");
+                if (myPref.isUse_syncplus_services()) {
+                    String s = context.getString(R.string.sync_enablermobile_local_holds) + "/" + ordID;
+                    sb.append(s);
+                } else {
+                    sb.append("getXMLCheckOutOnHold.ashx");
+                }
                 break;
         }
 
@@ -178,7 +199,7 @@ public class GenerateXML {
         sb.append("getXMLTimeClock.ashx?RegID=");
         try {
             sb.append(URLEncoder.encode(info.getAcctNumber(), UTF_8));
-            sb.append("&empid=").append(URLEncoder.encode(((ClockInOut_FA) (thisActivity)).getClerkID(), UTF_8));
+            sb.append("&empid=").append(URLEncoder.encode(((ClockInOut_FA) (context)).getClerkID(), UTF_8));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -228,7 +249,7 @@ public class GenerateXML {
     public String getDinnerTables() {
         StringBuilder sb = new StringBuilder();
         try {
-            sb.append(thisActivity.getString(R.string.sync_enablermobile_getxmldinnertables)).append("?regid=")
+            sb.append(context.getString(R.string.sync_enablermobile_getxmldinnertables)).append("?regid=")
                     .append(URLEncoder.encode(info.getAcctNumber(), UTF_8));
             sb.append(ending.toString());
         } catch (UnsupportedEncodingException e) {
@@ -241,7 +262,7 @@ public class GenerateXML {
     public String getSalesAssociate() {
         StringBuilder sb = new StringBuilder();
         try {
-            sb.append(thisActivity.getString(R.string.sync_enablermobile_getxmlsalesassociate)).append("?regid=")
+            sb.append(context.getString(R.string.sync_enablermobile_getxmlsalesassociate)).append("?regid=")
                     .append(URLEncoder.encode(info.getAcctNumber(), UTF_8));
             sb.append(ending.toString());
         } catch (UnsupportedEncodingException e) {
@@ -254,7 +275,7 @@ public class GenerateXML {
     public String getMixMatch() {
         StringBuilder sb = new StringBuilder();
         try {
-            sb.append(thisActivity.getString(R.string.sync_enablermobile_getxmlmixmatch)).append("?regid=")
+            sb.append(context.getString(R.string.sync_enablermobile_getxmlmixmatch)).append("?regid=")
                     .append(URLEncoder.encode(info.getAcctNumber(), UTF_8));
             sb.append(ending.toString());
         } catch (UnsupportedEncodingException e) {
@@ -397,7 +418,7 @@ public class GenerateXML {
     }
 
     public void buildNewCustomer(XmlSerializer serializer) {
-        CustomersHandler custHandler = new CustomersHandler(thisActivity);
+        CustomersHandler custHandler = new CustomersHandler(context);
         Cursor cursor = custHandler.getUnsynchCustomers();
         cursor.moveToFirst();
         int size = cursor.getCount();
@@ -487,7 +508,7 @@ public class GenerateXML {
     }
 
     public void buildCustomerAddress(XmlSerializer serializer, String custID) {
-        AddressHandler addrHandler = new AddressHandler(thisActivity);
+        AddressHandler addrHandler = new AddressHandler(context);
         Cursor cursor = addrHandler.getCursorAddress(custID);
         cursor.moveToFirst();
         int size = cursor.getCount();
@@ -602,8 +623,8 @@ public class GenerateXML {
     }
 
     public void buildOrder(XmlSerializer serializer, boolean isOnHold) {
-        OrdersHandler ordersHandler = new OrdersHandler(thisActivity);
-        CustomersHandler custHandler = new CustomersHandler(thisActivity);
+        OrdersHandler ordersHandler = new OrdersHandler(context);
+        CustomersHandler custHandler = new CustomersHandler(context);
         HashMap<String, String> custInfo;
         List<Order> orders;
         if (!isOnHold) {
@@ -1063,6 +1084,10 @@ public class GenerateXML {
         buildOrderProducts(serializer, order.ord_id, myPref.isRestaurantMode(),
                 isOnHold);
         serializer.endTag(empstr, "OrderProducts");
+        serializer.startTag(empstr, "Payments");
+        buildOrderPayments(serializer, order);
+        serializer.endTag(empstr, "Payments");
+
         serializer.endTag(empstr, "Order");
 
     }
@@ -1102,7 +1127,7 @@ public class GenerateXML {
     }
 
     public void buildOrderProducts(XmlSerializer serializer, String limiter, boolean isRestMode, boolean isOnHold) {
-        OrderProductsHandler orderProductsHandler = new OrderProductsHandler(thisActivity);
+        OrderProductsHandler orderProductsHandler = new OrderProductsHandler(context);
         Cursor cursor = orderProductsHandler.getCursorData(limiter);
         cursor.moveToFirst();
         int size = cursor.getCount();
@@ -1255,7 +1280,7 @@ public class GenerateXML {
     }
 
     private void buildOrdProdAttr(XmlSerializer serializer, String value) {
-        OrderProductsAttr_DB handler = new OrderProductsAttr_DB(thisActivity);
+        OrderProductsAttr_DB handler = new OrderProductsAttr_DB(context);
         Cursor c = handler.getOrdProdAttr(value);
         c.moveToFirst();
         int size = c.getCount();
@@ -1296,7 +1321,7 @@ public class GenerateXML {
 
             buildAccountInformation(serializer);
             serializer.startTag(empstr, "Payments");
-            buildPayments(serializer);
+            buildUnsyncPayments(serializer);
             serializer.endTag(empstr, "Payments");
             serializer.endDocument();
             String xml = writer.toString();
@@ -1310,7 +1335,7 @@ public class GenerateXML {
 
     public String syncPaymentSignatures() {
         int count = 0;
-        PaymentsHandler handler = new PaymentsHandler(thisActivity);
+        PaymentsHandler handler = new PaymentsHandler(context);
         List<Payment> unsyncPayments = handler.getUnsyncPaymentSignatures();
 
         XmlSerializer serializer = Xml.newSerializer();
@@ -1349,130 +1374,126 @@ public class GenerateXML {
         }
     }
 
-    public void buildPayments(XmlSerializer serializer) {
-        PaymentsHandler handler = new PaymentsHandler(thisActivity);
-        List<Payment> unsyncPayments = handler.getUnsyncPayments();
-        int size = unsyncPayments.size();
-        String payID;
-        for (int i = 0; i < size && i < 10; i++) {
+    private void buildPaymentXml(XmlSerializer serializer, List<Payment> payments) {
+        for (Payment p : payments) {
             try {
                 serializer.startTag(empstr, "Payment");
-                payID = unsyncPayments.get(i).getPay_id();
+                String payID = p.getPay_id();
                 serializer.startTag(empstr, "pay_id");
                 serializer.text(payID);
                 serializer.endTag(empstr, "pay_id");
                 serializer.startTag(empstr, "group_pay_id");
-                serializer.text(unsyncPayments.get(i).getGroup_pay_id());
+                serializer.text(p.getGroup_pay_id());
                 serializer.endTag(empstr, "group_pay_id");
                 serializer.startTag(empstr, "cust_id");
-                serializer.text(unsyncPayments.get(i).getCust_id());
+                serializer.text(p.getCust_id());
                 serializer.endTag(empstr, "cust_id");
                 serializer.startTag(empstr, "pay_latitude");
-                serializer.text(unsyncPayments.get(i).getPay_latitude());
+                serializer.text(p.getPay_latitude());
                 serializer.endTag(empstr, "pay_latitude");
                 serializer.startTag(empstr, "pay_longitude");
-                serializer.text(unsyncPayments.get(i).getPay_longitude());
+                serializer.text(p.getPay_longitude());
                 serializer.endTag(empstr, "pay_longitude");
                 serializer.startTag(empstr, "emp_id");
-                serializer.text(unsyncPayments.get(i).getEmp_id());
+                serializer.text(p.getEmp_id());
                 serializer.endTag(empstr, "emp_id");
                 serializer.startTag(empstr, "paymethod_id");
-                serializer.text(unsyncPayments.get(i).getPaymethod_id());
+                serializer.text(p.getPaymethod_id());
                 serializer.endTag(empstr, "paymethod_id");
                 serializer.startTag(empstr, "pay_check");
-                serializer.text(unsyncPayments.get(i).getPay_check());
+                serializer.text(p.getPay_check());
                 serializer.endTag(empstr, "pay_check");
                 serializer.startTag(empstr, "pay_receipt");
-                serializer.text(unsyncPayments.get(i).getPay_receipt());
+                serializer.text(p.getPay_receipt());
                 serializer.endTag(empstr, "pay_receipt");
                 serializer.startTag(empstr, "pay_amount");
-                serializer.text(unsyncPayments.get(i).getPay_amount());
+                serializer.text(p.getPay_amount());
                 serializer.endTag(empstr, "pay_amount");
                 serializer.startTag(empstr, "tipAmount");
-                serializer.text(unsyncPayments.get(i).getPay_tip());
+                serializer.text(p.getPay_tip());
                 serializer.endTag(empstr, "tipAmount");
                 serializer.startTag(empstr, "pay_comment");
-                serializer.text(unsyncPayments.get(i).getPay_comment());
+                serializer.text(p.getPay_comment());
                 serializer.endTag(empstr, "pay_comment");
                 serializer.startTag(empstr, "pay_timecreated");
-                serializer.text(unsyncPayments.get(i).getPay_timecreated());
+                serializer.text(p.getPay_timecreated());
                 serializer.endTag(empstr, "pay_timecreated");
                 serializer.startTag(empstr, "pay_timesync");
-                serializer.text(unsyncPayments.get(i).getPay_timesync());
+                serializer.text(p.getPay_timesync());
                 serializer.endTag(empstr, "pay_timesync");
                 serializer.startTag(empstr, "account_id");
-                serializer.text(unsyncPayments.get(i).getAccount_id());
+                serializer.text(p.getAccount_id());
                 serializer.endTag(empstr, "account_id");
                 serializer.startTag(empstr, "pay_issync");
-                serializer.text(unsyncPayments.get(i).getPay_issync());
+                serializer.text(p.getPay_issync());
                 serializer.endTag(empstr, "pay_issync");
                 serializer.startTag(empstr, "pay_name");
-                serializer.text(unsyncPayments.get(i).getPay_name());
+                serializer.text(p.getPay_name());
                 serializer.endTag(empstr, "pay_name");
                 serializer.startTag(empstr, "processed");
-                serializer.text(unsyncPayments.get(i).getProcessed());
+                serializer.text(p.getProcessed());
                 serializer.endTag(empstr, "processed");
                 serializer.startTag(empstr, "pay_poscode");
-                serializer.text(unsyncPayments.get(i).getPay_poscode());
+                serializer.text(p.getPay_poscode());
                 serializer.endTag(empstr, "pay_poscode");
                 serializer.startTag(empstr, "pay_seccode");
-                serializer.text(unsyncPayments.get(i).getPay_seccode());
+                serializer.text(p.getPay_seccode());
                 serializer.endTag(empstr, "pay_seccode");
                 serializer.startTag(empstr, "pay_resultcode");
-                serializer.text(unsyncPayments.get(i).getPay_resultcode());
+                serializer.text(p.getPay_resultcode());
                 serializer.endTag(empstr, "pay_resultcode");
                 serializer.startTag(empstr, "pay_resultmessage");
-                serializer.text(unsyncPayments.get(i).getPay_resultmessage());
+                serializer.text(p.getPay_resultmessage());
                 serializer.endTag(empstr, "pay_resultmessage");
                 serializer.startTag(empstr, "pay_result");
-                serializer.text(unsyncPayments.get(i).getPay_result());
+                serializer.text(p.getPay_result());
                 serializer.endTag(empstr, "pay_result");
                 serializer.startTag(empstr, "pay_date");
-                serializer.text(unsyncPayments.get(i).getPay_date());
+                serializer.text(p.getPay_date());
                 serializer.endTag(empstr, "pay_date");
                 serializer.startTag(empstr, "recordnumber");
-                serializer.text(unsyncPayments.get(i).getRecordnumber());
+                serializer.text(p.getRecordnumber());
                 serializer.endTag(empstr, "recordnumber");
                 serializer.startTag(empstr, "authcode");
-                serializer.text(unsyncPayments.get(i).getAuthcode());
+                serializer.text(p.getAuthcode());
                 serializer.endTag(empstr, "authcode");
                 serializer.startTag(empstr, "pay_transid");
-                serializer.text(unsyncPayments.get(i).getPay_transid());
+                serializer.text(p.getPay_transid());
                 serializer.endTag(empstr, "pay_transid");
                 serializer.startTag(empstr, "status");
-                serializer.text(unsyncPayments.get(i).getStatus());
+                serializer.text(p.getStatus());
                 serializer.endTag(empstr, "status");
                 serializer.startTag(empstr, "job_id");
-                serializer.text(unsyncPayments.get(i).getJob_id());
+                serializer.text(p.getJob_id());
                 serializer.endTag(empstr, "job_id");
                 serializer.startTag(empstr, "inv_id");
-                serializer.text(unsyncPayments.get(i).getInv_id());
+                serializer.text(p.getInv_id());
                 serializer.endTag(empstr, "inv_id");
                 serializer.startTag(empstr, "clerk_id");
-                serializer.text(unsyncPayments.get(i).getClerk_id());
+                serializer.text(p.getClerk_id());
                 serializer.endTag(empstr, "clerk_id");
                 serializer.startTag(empstr, "pay_ccfournum");
-                serializer.text(unsyncPayments.get(i).getPay_ccnum());
+                serializer.text(p.getPay_ccnum());
                 serializer.endTag(empstr, "pay_ccfournum");
                 serializer.startTag(empstr, "pay_cardtype");
-                serializer.text(unsyncPayments.get(i).getCard_type());
+                serializer.text(p.getCard_type());
                 serializer.endTag(empstr, "pay_cardtype");
                 serializer.startTag(empstr, "trans_type");
-                serializer.text(unsyncPayments.get(i).getPay_type());
+                serializer.text(p.getPay_type());
                 serializer.endTag(empstr, "trans_type");
                 serializer.startTag(empstr, "refNumber");
-                serializer.text(unsyncPayments.get(i).getPay_refnum());
+                serializer.text(p.getPay_refnum());
                 serializer.endTag(empstr, "refNumber");
                 serializer.startTag(empstr, "email");
-                serializer.text(unsyncPayments.get(i).getPay_email());
+                serializer.text(p.getPay_email());
                 serializer.endTag(empstr, "email");
                 serializer.startTag(empstr, "phone");
-                serializer.text(unsyncPayments.get(i).getPay_phone());
+                serializer.text(p.getPay_phone());
                 serializer.endTag(empstr, "phone");
-                if (!unsyncPayments.get(i).getOriginal_pay_id().isEmpty()) {
+                if (!p.getOriginal_pay_id().isEmpty()) {
                     serializer.startTag(empstr, "VoidBlock");
                     serializer.startTag(empstr, "original_pay_id");
-                    serializer.text(unsyncPayments.get(i).getOriginal_pay_id());
+                    serializer.text(p.getOriginal_pay_id());
                     serializer.endTag(empstr, "original_pay_id");
                     serializer.endTag(empstr, "VoidBlock");
                 }
@@ -1480,16 +1501,16 @@ public class GenerateXML {
                 if (Global.isIvuLoto) {
                     serializer.startTag(empstr, "ivuLotto");
                     serializer.startTag(empstr, "ivuLottoDrawDate");
-                    serializer.text(unsyncPayments.get(i).getIvuLottoDrawDate());
+                    serializer.text(p.getIvuLottoDrawDate());
                     serializer.endTag(empstr, "ivuLottoDrawDate");
                     serializer.startTag(empstr, "ivuLottoNumber");
-                    serializer.text(unsyncPayments.get(i).getIvuLottoNumber());
+                    serializer.text(p.getIvuLottoNumber());
                     serializer.endTag(empstr, "ivuLottoNumber");
                     serializer.startTag(empstr, "Tax1");
-                    serializer.text(unsyncPayments.get(i).getTax1_amount());
+                    serializer.text(p.getTax1_amount());
                     serializer.endTag(empstr, "Tax1");
                     serializer.startTag(empstr, "Tax2");
-                    serializer.text(unsyncPayments.get(i).getTax2_amount());
+                    serializer.text(p.getTax2_amount());
                     serializer.endTag(empstr, "Tax2");
                     serializer.endTag(empstr, "ivuLotto");
                 }
@@ -1501,8 +1522,167 @@ public class GenerateXML {
         }
     }
 
+    public void buildOrderPayments(XmlSerializer serializer, Order order) {
+        PaymentsHandler handler = new PaymentsHandler(context);
+        List<Payment> orderPayments = handler.getOrderPayments(order.ord_id);
+        buildPaymentXml(serializer, orderPayments);
+    }
+
+    public void buildUnsyncPayments(XmlSerializer serializer) {
+        PaymentsHandler handler = new PaymentsHandler(context);
+        List<Payment> unsyncPayments = handler.getUnsyncPayments();
+        buildPaymentXml(serializer, unsyncPayments);
+//        int size = unsyncPayments.size();
+//        String payID;
+//        for (Payment p : unsyncPayments) {
+//            try {
+//                serializer.startTag(empstr, "Payment");
+//                payID = p.getPay_id();
+//                serializer.startTag(empstr, "pay_id");
+//                serializer.text(payID);
+//                serializer.endTag(empstr, "pay_id");
+//                serializer.startTag(empstr, "group_pay_id");
+//                serializer.text(p.getGroup_pay_id());
+//                serializer.endTag(empstr, "group_pay_id");
+//                serializer.startTag(empstr, "cust_id");
+//                serializer.text(p.getCust_id());
+//                serializer.endTag(empstr, "cust_id");
+//                serializer.startTag(empstr, "pay_latitude");
+//                serializer.text(p.getPay_latitude());
+//                serializer.endTag(empstr, "pay_latitude");
+//                serializer.startTag(empstr, "pay_longitude");
+//                serializer.text(p.getPay_longitude());
+//                serializer.endTag(empstr, "pay_longitude");
+//                serializer.startTag(empstr, "emp_id");
+//                serializer.text(p.getEmp_id());
+//                serializer.endTag(empstr, "emp_id");
+//                serializer.startTag(empstr, "paymethod_id");
+//                serializer.text(p.getPaymethod_id());
+//                serializer.endTag(empstr, "paymethod_id");
+//                serializer.startTag(empstr, "pay_check");
+//                serializer.text(p.getPay_check());
+//                serializer.endTag(empstr, "pay_check");
+//                serializer.startTag(empstr, "pay_receipt");
+//                serializer.text(p.getPay_receipt());
+//                serializer.endTag(empstr, "pay_receipt");
+//                serializer.startTag(empstr, "pay_amount");
+//                serializer.text(p.getPay_amount());
+//                serializer.endTag(empstr, "pay_amount");
+//                serializer.startTag(empstr, "tipAmount");
+//                serializer.text(p.getPay_tip());
+//                serializer.endTag(empstr, "tipAmount");
+//                serializer.startTag(empstr, "pay_comment");
+//                serializer.text(p.getPay_comment());
+//                serializer.endTag(empstr, "pay_comment");
+//                serializer.startTag(empstr, "pay_timecreated");
+//                serializer.text(p.getPay_timecreated());
+//                serializer.endTag(empstr, "pay_timecreated");
+//                serializer.startTag(empstr, "pay_timesync");
+//                serializer.text(p.getPay_timesync());
+//                serializer.endTag(empstr, "pay_timesync");
+//                serializer.startTag(empstr, "account_id");
+//                serializer.text(p.getAccount_id());
+//                serializer.endTag(empstr, "account_id");
+//                serializer.startTag(empstr, "pay_issync");
+//                serializer.text(p.getPay_issync());
+//                serializer.endTag(empstr, "pay_issync");
+//                serializer.startTag(empstr, "pay_name");
+//                serializer.text(p.getPay_name());
+//                serializer.endTag(empstr, "pay_name");
+//                serializer.startTag(empstr, "processed");
+//                serializer.text(p.getProcessed());
+//                serializer.endTag(empstr, "processed");
+//                serializer.startTag(empstr, "pay_poscode");
+//                serializer.text(p.getPay_poscode());
+//                serializer.endTag(empstr, "pay_poscode");
+//                serializer.startTag(empstr, "pay_seccode");
+//                serializer.text(p.getPay_seccode());
+//                serializer.endTag(empstr, "pay_seccode");
+//                serializer.startTag(empstr, "pay_resultcode");
+//                serializer.text(p.getPay_resultcode());
+//                serializer.endTag(empstr, "pay_resultcode");
+//                serializer.startTag(empstr, "pay_resultmessage");
+//                serializer.text(p.getPay_resultmessage());
+//                serializer.endTag(empstr, "pay_resultmessage");
+//                serializer.startTag(empstr, "pay_result");
+//                serializer.text(p.getPay_result());
+//                serializer.endTag(empstr, "pay_result");
+//                serializer.startTag(empstr, "pay_date");
+//                serializer.text(p.getPay_date());
+//                serializer.endTag(empstr, "pay_date");
+//                serializer.startTag(empstr, "recordnumber");
+//                serializer.text(p.getRecordnumber());
+//                serializer.endTag(empstr, "recordnumber");
+//                serializer.startTag(empstr, "authcode");
+//                serializer.text(p.getAuthcode());
+//                serializer.endTag(empstr, "authcode");
+//                serializer.startTag(empstr, "pay_transid");
+//                serializer.text(p.getPay_transid());
+//                serializer.endTag(empstr, "pay_transid");
+//                serializer.startTag(empstr, "status");
+//                serializer.text(p.getStatus());
+//                serializer.endTag(empstr, "status");
+//                serializer.startTag(empstr, "job_id");
+//                serializer.text(p.getJob_id());
+//                serializer.endTag(empstr, "job_id");
+//                serializer.startTag(empstr, "inv_id");
+//                serializer.text(p.getInv_id());
+//                serializer.endTag(empstr, "inv_id");
+//                serializer.startTag(empstr, "clerk_id");
+//                serializer.text(p.getClerk_id());
+//                serializer.endTag(empstr, "clerk_id");
+//                serializer.startTag(empstr, "pay_ccfournum");
+//                serializer.text(p.getPay_ccnum());
+//                serializer.endTag(empstr, "pay_ccfournum");
+//                serializer.startTag(empstr, "pay_cardtype");
+//                serializer.text(p.getCard_type());
+//                serializer.endTag(empstr, "pay_cardtype");
+//                serializer.startTag(empstr, "trans_type");
+//                serializer.text(p.getPay_type());
+//                serializer.endTag(empstr, "trans_type");
+//                serializer.startTag(empstr, "refNumber");
+//                serializer.text(p.getPay_refnum());
+//                serializer.endTag(empstr, "refNumber");
+//                serializer.startTag(empstr, "email");
+//                serializer.text(p.getPay_email());
+//                serializer.endTag(empstr, "email");
+//                serializer.startTag(empstr, "phone");
+//                serializer.text(p.getPay_phone());
+//                serializer.endTag(empstr, "phone");
+//                if (!p.getOriginal_pay_id().isEmpty()) {
+//                    serializer.startTag(empstr, "VoidBlock");
+//                    serializer.startTag(empstr, "original_pay_id");
+//                    serializer.text(p.getOriginal_pay_id());
+//                    serializer.endTag(empstr, "original_pay_id");
+//                    serializer.endTag(empstr, "VoidBlock");
+//                }
+//
+//                if (Global.isIvuLoto) {
+//                    serializer.startTag(empstr, "ivuLotto");
+//                    serializer.startTag(empstr, "ivuLottoDrawDate");
+//                    serializer.text(p.getIvuLottoDrawDate());
+//                    serializer.endTag(empstr, "ivuLottoDrawDate");
+//                    serializer.startTag(empstr, "ivuLottoNumber");
+//                    serializer.text(p.getIvuLottoNumber());
+//                    serializer.endTag(empstr, "ivuLottoNumber");
+//                    serializer.startTag(empstr, "Tax1");
+//                    serializer.text(p.getTax1_amount());
+//                    serializer.endTag(empstr, "Tax1");
+//                    serializer.startTag(empstr, "Tax2");
+//                    serializer.text(p.getTax2_amount());
+//                    serializer.endTag(empstr, "Tax2");
+//                    serializer.endTag(empstr, "ivuLotto");
+//                }
+//                buildInvoicePayment(serializer, payID);
+//                serializer.endTag(empstr, "Payment");
+//            } catch (Exception e) {
+//                throw new RuntimeException(e);
+//            }
+//        }
+    }
+
     private void buildInvoicePayment(XmlSerializer serializer, String payID) {
-        InvoicePaymentsHandler invPayHandler = new InvoicePaymentsHandler(thisActivity);
+        InvoicePaymentsHandler invPayHandler = new InvoicePaymentsHandler(context);
         List<String[]> list = invPayHandler.getInvoicesPaymentsList(payID);
         int size = list.size();
         if (size > 0) {
@@ -1615,7 +1795,7 @@ public class GenerateXML {
 
     private void buildTemplate(XmlSerializer serializer) {
 
-        TemplateHandler handler = new TemplateHandler(thisActivity);
+        TemplateHandler handler = new TemplateHandler(context);
         Cursor cursor = handler.getUnsyncTemplates();
         cursor.moveToFirst();
         int size = cursor.getCount();
@@ -1695,7 +1875,7 @@ public class GenerateXML {
     }
 
     private void buildCustomerInventory(XmlSerializer serializer) {
-        CustomerInventoryHandler handler = new CustomerInventoryHandler(thisActivity);
+        CustomerInventoryHandler handler = new CustomerInventoryHandler(context);
         Cursor cursor = handler.getUnsychedItems();
         cursor.moveToFirst();
         int size = cursor.getCount();
@@ -1759,7 +1939,7 @@ public class GenerateXML {
 
     private void buildConsignmentTransaction(XmlSerializer serializer) {
 
-        ConsignmentTransactionHandler handler = new ConsignmentTransactionHandler(thisActivity);
+        ConsignmentTransactionHandler handler = new ConsignmentTransactionHandler(context);
         Cursor cursor = handler.getUnsychedItems();
         cursor.moveToFirst();
         int size = cursor.getCount();
@@ -1867,7 +2047,7 @@ public class GenerateXML {
 
     private void buildTimeClock(XmlSerializer serializer) {
 
-        TimeClockHandler tcHandler = new TimeClockHandler(thisActivity);
+        TimeClockHandler tcHandler = new TimeClockHandler(context);
         Cursor cursor = tcHandler.getAllUnsync();
         cursor.moveToFirst();
         int size = cursor.getCount();
@@ -1930,7 +2110,7 @@ public class GenerateXML {
     }
 
     private void buildUpdateInventory(XmlSerializer serializer) {
-        TransferLocations_DB handler = new TransferLocations_DB(thisActivity);
+        TransferLocations_DB handler = new TransferLocations_DB(context);
         Cursor c = handler.getUnsyncTransfers();
         c.moveToFirst();
         int size = c.getCount();
@@ -2046,7 +2226,7 @@ public class GenerateXML {
                 serializer.text(String.valueOf(s.getAssigneeId()));//c.getString(c.getColumnIndex("assignee_id")));
                 serializer.endTag(empstr, "clerk_id");
                 serializer.startTag(empstr, "assignee_name");
-                serializer.text(clerk.getEmpName());//c.getString(c.getColumnIndex("assignee_name")));
+                serializer.text(clerk == null ? "" : clerk.getEmpName());//c.getString(c.getColumnIndex("assignee_name")));
                 serializer.endTag(empstr, "assignee_name");
                 serializer.startTag(empstr, "creationDate");
                 serializer.text(DateUtils.getDateAsString(s.getCreationDate()));//c.getString(c.getColumnIndex("creationDate")));
@@ -2130,9 +2310,9 @@ public class GenerateXML {
     }
 
     private void builderWalletOrder(XmlSerializer serializer) {
-        OrdersHandler handler = new OrdersHandler(thisActivity);
-        MemoTextHandler memoHandler = new MemoTextHandler(thisActivity);
-        CustomersHandler custHandler = new CustomersHandler(thisActivity);
+        OrdersHandler handler = new OrdersHandler(context);
+        MemoTextHandler memoHandler = new MemoTextHandler(context);
+        CustomersHandler custHandler = new CustomersHandler(context);
         HashMap<String, String> custInfo;
         HashMap<String, String> orderInfo = memoHandler.getOrderInfo();
         Cursor c = handler.getTupyxOrders();
@@ -2637,7 +2817,7 @@ public class GenerateXML {
 
     private void walletOrderProducts(XmlSerializer serializer, String ordID)
             throws IllegalArgumentException, IllegalStateException, IOException {
-        OrderProductsHandler handler = new OrderProductsHandler(thisActivity);
+        OrderProductsHandler handler = new OrderProductsHandler(context);
         Cursor c = handler.getWalletOrdProd(ordID);
         c.moveToFirst();
         int size = c.getCount();

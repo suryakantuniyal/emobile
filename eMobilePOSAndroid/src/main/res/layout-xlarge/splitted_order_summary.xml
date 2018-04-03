@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/headerTitleContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/blue_gradient_header_horizontal"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <Spinner
+            android:id="@+id/splitTypesSpinner"
+            style="@style/action_button_text_appearance"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_margin="5dp"
+            android:layout_weight="0.40"
+            android:background="@drawable/action_button_selector"
+            android:entries="@array/salesReceiptSplitTypes"
+            android:textAppearance="@style/black_text_appearance" />
+
+
+        <Button
+            android:id="@+id/splitEquallyQtyeditButton"
+            style="@style/action_button_text_appearance"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:layout_weight="0.20"
+            android:background="@drawable/action_button_selector"
+            android:text="2" />
+
+
+        <TextView
+            android:id="@+id/headerTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="false"
+            android:layout_centerInParent="true"
+            android:layout_weight="1"
+            android:gravity="center_vertical|center_horizontal"
+            android:padding="@dimen/header_txt_padding"
+            android:text="@string/splited_order_summary"
+            android:textAppearance="@style/white_text_appearance"
+            android:textSize="@dimen/header_bar_text_size" />
+
+        <Button
+            android:id="@+id/printAllReceiptbutton3"
+            style="@style/action_button_text_appearance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:layout_weight="0.20"
+            android:background="@drawable/action_button_selector"
+            android:text="@string/print_all_button" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <FrameLayout
+            android:id="@+id/splitedOrderSummaryFrameLayout"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="0.50"
+            android:background="@drawable/bg_white_page"></FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/splitedOrderDetailFrameLayout"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"></FrameLayout>
+    </LinearLayout>
+
+</LinearLayout>

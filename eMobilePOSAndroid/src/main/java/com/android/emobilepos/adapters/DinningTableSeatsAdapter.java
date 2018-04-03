@@ -31,8 +31,8 @@ public class DinningTableSeatsAdapter extends BaseAdapter implements Filterable 
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.main_menu_listviewadapter, null);
             holder = new ViewHolder();
-            holder.textLine = (TextView) convertView.findViewById(R.id.salesText);
-            holder.iconLine = (ImageView) convertView.findViewById(R.id.salesIcon);
+            holder.textLine = convertView.findViewById(R.id.salesText);
+            holder.iconLine = convertView.findViewById(R.id.salesIcon);
             convertView.setTag(holder);
 
         } else {

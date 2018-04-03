@@ -50,8 +50,8 @@ public class GiftLoyaltyRewardLV_Adapter extends BaseAdapter {
 		if (view == null) {
 			view = inflater.inflate(R.layout.adapter_two_column_with_icon, null);
 			holder = new ViewHolder();
-			holder.label = (TextView) view.findViewById(R.id.twoColumnRightText);
-			holder.icon = (ImageView) view.findViewById(R.id.twoColumnLeftIcon);
+			holder.label = view.findViewById(R.id.twoColumnRightText);
+			holder.icon = view.findViewById(R.id.twoColumnLeftIcon);
 			holder.giftCardActions = giftCardActions[pos];
 			view.setTag(holder);
 		} else {

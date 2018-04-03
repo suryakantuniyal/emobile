@@ -1,0 +1,405 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/blue_gradient_header_horizontal"
+        android:gravity="center_vertical|center_horizontal"
+        android:orientation="horizontal"
+        android:padding="2dp">
+
+        <Button
+            android:id="@+id/checkoutbutton"
+            style="@style/action_button_text_appearance"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="1dp"
+            android:layout_marginRight="1dp"
+            android:layout_weight="1"
+            android:background="@drawable/action_button_selector"
+            android:text="@string/button_checkout" />
+
+        <Button
+            android:id="@+id/printReceiptbutton2"
+            style="@style/action_button_text_appearance"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="1dp"
+            android:layout_marginStart="1dp"
+            android:layout_weight="1"
+            android:background="@drawable/action_button_selector"
+            android:text="@string/button_print" />
+
+
+    </LinearLayout>
+
+    <ScrollView
+        android:id="@+id/scrollView2"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/linearLayout2"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_width="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/receiptPreviewContainer"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/bg_btn_white"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:paddingRight="20dp"
+            android:paddingLeft="10dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:layout_width="400dp">
+
+            <ImageView
+                android:id="@+id/logoimageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="40dp"
+                android:layout_marginRight="40dp"
+                android:src="@drawable/logo" />
+
+            <com.android.support.TextViewSansSerifMedium
+                android:id="@+id/memo_headerLine1textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-8dp"
+                android:text="Header 1"
+                android:textColor="#000" />
+
+            <com.android.support.TextViewSansSerifMedium
+                android:id="@+id/memo_headerLine2textView16"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-8dp"
+                android:text="Header 2"
+                android:textColor="#000" />
+
+            <com.android.support.TextViewSansSerifMedium
+                android:id="@+id/memo_headerLine3textView18"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-8dp"
+                android:text="header 3"
+                android:textColor="#000" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-8dp"
+                android:orientation="horizontal">
+
+                <com.android.support.TextViewSansSerifMedium
+                    android:id="@+id/transactionTypetextView14"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/sales_receipt"
+                    android:textColor="#000"
+                    android:textStyle="normal" />
+
+                <com.android.support.TextViewSansSerifMedium
+                    android:id="@+id/orderIdtextView16"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="5-00123-2016"
+                    android:textColor="#000"
+                    android:textStyle="normal" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-8dp"
+                android:orientation="horizontal">
+
+                <com.android.support.TextViewSansSerifMedium
+                    android:id="@+id/textView18"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/receipt_date"
+                    android:textColor="#000"
+                    android:textStyle="normal" />
+
+                <com.android.support.TextViewSansSerifMedium
+                    android:id="@+id/orderDatetextView21"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Feb/12/2016"
+                    android:textColor="#000"
+                    android:textStyle="normal" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="-8dp"
+                android:orientation="horizontal">
+
+                <com.android.support.TextViewSansSerifMedium
+                    android:id="@+id/textView22"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:singleLine="true"
+                    android:text="@string/receipt_employee"
+                    android:textColor="#000"
+                    android:textStyle="normal" />
+
+                <com.android.support.TextViewSansSerifMedium
+                    android:id="@+id/deviceNametextView23"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Android Employee 1(5)"
+                    android:textColor="#000"
+                    android:textStyle="normal" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/order_products_section_linearlayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-8dp"
+                android:layout_gravity="center_horizontal"
+                android:orientation="vertical">
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-8dp"
+                android:orientation="horizontal">
+
+                <com.android.support.TextViewSansSerifMedium
+                    android:id="@+id/textView14"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:singleLine="true"
+                    android:text="@string/subtotal_receipt"
+                    android:textColor="#000"
+                    android:textStyle="normal" />
+
+                <com.android.support.TextViewSansSerifMedium
+                    android:id="@+id/subtotaltextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="$0.00"
+                    android:textColor="#000"
+                    android:textStyle="normal" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-8dp"
+                android:orientation="horizontal">
+
+                <com.android.support.TextViewSansSerifMedium
+                    android:id="@+id/textView14a"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:singleLine="true"
+                    android:text="@string/receipt_discount_line_item"
+                    android:textColor="#000"
+                    android:textStyle="normal" />
+
+                <com.android.support.TextViewSansSerifMedium
+                    android:id="@+id/lineitem_discounttextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="$0.00"
+                    android:textColor="#000"
+                    android:textStyle="normal" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-8dp"
+                android:orientation="horizontal">
+
+                <com.android.support.TextViewSansSerifMedium
+                    android:id="@+id/textView14b"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:singleLine="true"
+                    android:text="@string/receipt_global_discount"
+                    android:textColor="#000"
+                    android:textStyle="normal" />
+
+                <com.android.support.TextViewSansSerifMedium
+                    android:id="@+id/globaldiscounttextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="$0.00"
+                    android:textColor="#000"
+                    android:textStyle="normal" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-8dp"
+                android:orientation="horizontal">
+
+                <com.android.support.TextViewSansSerifMedium
+                    android:id="@+id/textView15"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:singleLine="true"
+                    android:text="@string/receipt_tax"
+                    android:textColor="#000"
+                    android:textStyle="normal" />
+
+                <com.android.support.TextViewSansSerifMedium
+                    android:id="@+id/taxtotaltextView14a"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="$0.00"
+                    android:textColor="#000"
+                    android:textStyle="normal" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/taxes_section_linearlayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:orientation="vertical"></LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-8dp"
+                android:orientation="horizontal">
+
+                <com.android.support.TextViewSansSerifMedium
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:singleLine="true"
+                    android:text="@string/receipt_grandtotal"
+                    android:textColor="#000"
+                    android:textStyle="normal" />
+
+                <com.android.support.TextViewSansSerifMedium
+                    android:id="@+id/granTotaltextView16"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="$0.00"
+                    android:textColor="#000"
+                    android:textStyle="normal" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal"
+                android:gravity="bottom">
+
+                <com.android.support.TextViewSansSerifMedium
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:text="@string/receipt_tip"
+                    android:textColor="#000"
+                    android:textStyle="normal"
+                    android:layout_weight="1" />
+
+                <View
+                    android:layout_width="110dp"
+                    android:layout_height="2dip"
+                    android:background="@color/black"
+                    android:layout_weight="0.16" />
+
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal"
+                android:gravity="bottom"
+                android:layout_marginBottom="10dp">
+
+                <com.android.support.TextViewSansSerifMedium
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:text="@string/receipt_total"
+                    android:textColor="#000"
+                    android:textStyle="normal"
+                    android:layout_weight="1" />
+
+                <View
+                    android:layout_width="110dp"
+                    android:layout_height="2dip"
+                    android:background="@color/black"
+                    android:layout_weight="0.16" />
+
+
+            </LinearLayout>
+
+
+            <com.android.support.TextViewSansSerifMedium
+                android:id="@+id/footerLine1textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-8dp"
+                android:text="Footer 1"
+                android:textColor="#000"
+                android:textStyle="normal" />
+
+            <com.android.support.TextViewSansSerifMedium
+                android:id="@+id/footerLine2textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-8dp"
+                android:text="footer 2"
+                android:textColor="#000"
+                android:textStyle="normal" />
+
+            <com.android.support.TextViewSansSerifMedium
+                android:id="@+id/footerLine3textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-8dp"
+                android:text="footer 3"
+                android:textColor="#000"
+                android:textStyle="normal" />
+
+            <com.android.support.TextViewSansSerifMedium
+                android:id="@+id/enabler_weblinktextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="@string/enabler_website"
+                android:textColor="#000"
+                android:textStyle="normal" />
+
+
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

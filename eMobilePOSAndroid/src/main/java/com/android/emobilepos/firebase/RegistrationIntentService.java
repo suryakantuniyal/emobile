@@ -112,7 +112,7 @@ public class RegistrationIntentService extends IntentService {
             Gson gson = JsonUtils.getInstance();
             try {
                 if (NetworkUtils.isConnectedToInternet(this)) {
-                    String response = httpClient.post(url, gson.toJson(request), authClient);
+                    String response = httpClient.post(url, gson.toJson(request), authClient,true);
                     FirebaseDAO.saveHUBRegistrationStatus(NotificationSettings.HUBRegistrationStatus.SUCCEED);
                 } else {
                     FirebaseDAO.saveHUBRegistrationStatus(NotificationSettings.HUBRegistrationStatus.UNKNOWN);

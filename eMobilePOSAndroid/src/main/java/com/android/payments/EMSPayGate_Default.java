@@ -306,7 +306,7 @@ public class EMSPayGate_Default {
 
                     generateERP();
                     generateAmountBlock();
-
+                    generateOrderBlock(payment.getJob_id());
                     generateContactInfoBlock(payment.getCust_id());
 
                     if (isSwipe)

@@ -27,37 +27,38 @@
             android:textAppearance="@style/black_text_appearance_unbold"
             android:textSize="@dimen/dlog_msg_size"
              />
-        
-        
-    <Button
-        style="@style/action_button_text_appearance"
-        android:id="@+id/btnDlogOne"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:background="@drawable/action_button_selector"
-        android:textSize="@dimen/dlog_btn_size"
-        android:ems="10"
-        />
 
-    <Button
-        style="@style/action_button_text_appearance"
-        android:id="@+id/btnDlogTwo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/action_button_selector"
-        android:textSize="@dimen/dlog_btn_size"
-        android:ems="10"
-        />
-    <Button
-        style="@style/action_button_text_appearance"
-        android:id="@+id/btnDlogThree"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/action_button_selector"
-        android:textSize="@dimen/dlog_btn_size"
-        android:ems="10"
-        />
+
+     <Button
+         android:id="@+id/btnDlogOne"
+         style="@style/action_button_text_appearance"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_marginBottom="1dp"
+         android:layout_marginTop="30dp"
+         android:background="@drawable/action_button_selector"
+         android:ems="10"
+         android:textSize="@dimen/dlog_btn_size" />
+
+     <Button
+         android:id="@+id/btnDlogTwo"
+         style="@style/action_button_text_appearance"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_marginBottom="1dp"
+         android:background="@drawable/action_button_selector"
+         android:ems="10"
+         android:textSize="@dimen/dlog_btn_size" />
+
+     <Button
+         android:id="@+id/btnDlogThree"
+         style="@style/action_button_text_appearance"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_marginBottom="1dp"
+         android:background="@drawable/action_button_selector"
+         android:ems="10"
+         android:textSize="@dimen/dlog_btn_size" />
         <Button
             style="@style/action_button_text_appearance"
             android:id="@+id/btnDlogFour"

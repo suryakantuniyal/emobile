@@ -25,6 +25,7 @@ import android.support.multidex.MultiDexApplication;
 import android.text.Html;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
@@ -41,7 +42,6 @@ import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.ClerkDAO;
 import com.android.dao.EmobilePOSRealmMigration;
 import com.android.dao.RealmModule;
-import com.android.database.DBManager;
 import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.R;
@@ -1373,7 +1373,7 @@ public class Global extends MultiDexApplication {
         Crashlytics.log(String.format(Locale.getDefault(), "Account: %s. Realm database file size:%d", preferences.getAcctNumber(), realmFile.length()));
 
         Answers.getInstance().logCustom(new CustomEvent("Realm DB File Monitoring")
-                .putCustomAttribute("filesize",realmFile.length()));
+                .putCustomAttribute("filesize", realmFile.length()));
 
         Realm.setDefaultConfiguration(config);
         AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
@@ -1414,6 +1414,7 @@ public class Global extends MultiDexApplication {
 
         ord_type = null;
         cat_id = "0";
+        Global.overallPaidAmount = 0;
         Global.isFromOnHold = false;
         isConsignment = false;
         isInventoryTransfer = false;
@@ -1545,9 +1546,9 @@ public class Global extends MultiDexApplication {
             systemLoginButton.setText(R.string.useSystemPassword);
             loginInstructionTextView.setText(getString(R.string.login_clerk_instructions));
         } else {
-            if(myPref.getIsPersistClerk()){
+            if (myPref.getIsPersistClerk()) {
                 systemLoginButton.setVisibility(View.VISIBLE);
-            }else {
+            } else {
                 systemLoginButton.setVisibility(View.GONE);
             }
             systemLoginButton.setText(R.string.clerk_login);
@@ -1619,20 +1620,32 @@ public class Global extends MultiDexApplication {
             });
             Button btnOk = globalDlog.findViewById(R.id.btnDlogSingle);
             btnOk.setText(R.string.button_ok);
+            viewField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                    loginAction(viewField, activity, myPref, viewMsg);
+                    return true;
+                }
+
+            });
             btnOk.setOnClickListener(new View.OnClickListener() {
 
                 @Override
                 public void onClick(View v) {
-                    String enteredPass = viewField.getText().toString().trim();
-                    File restoreDB = new File(Environment.getExternalStorageDirectory() + "/emobilepos.db");
-                    if (restoreDB.exists() && enteredPass.equalsIgnoreCase("enablerrestore2319")) {
-                        startRestore(activity);
-                    }else{
-                        validateLogin(activity, myPref, enteredPass, viewField, viewMsg);
-                    }
+                    loginAction(viewField, activity, myPref, viewMsg);
                 }
             });
             globalDlog.show();
+        }
+    }
+
+    private void loginAction(EditText viewField, Context activity, MyPreferences myPref, TextView viewMsg) {
+        String enteredPass = viewField.getText().toString().trim();
+        File restoreDB = new File(Environment.getExternalStorageDirectory() + "/emobilepos.db");
+        if (restoreDB.exists() && enteredPass.equalsIgnoreCase("enablerrestore2319")) {
+            startRestore(activity);
+        } else {
+            validateLogin(activity, myPref, enteredPass, viewField, viewMsg);
         }
     }
 
@@ -1671,6 +1684,7 @@ public class Global extends MultiDexApplication {
             context.sendBroadcast(intent);
         }
     }
+
     public boolean isApplicationSentToBackground() {
         return wasInBackground;
     }

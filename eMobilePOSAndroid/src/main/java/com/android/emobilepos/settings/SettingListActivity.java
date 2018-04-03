@@ -11,6 +11,7 @@ import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -18,6 +19,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.PowerManager;
 import android.preference.CheckBoxPreference;
+import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
@@ -58,6 +60,7 @@ import com.android.emobilepos.mainmenu.SettingsTab_FR;
 import com.android.emobilepos.models.realms.PaymentMethod;
 import com.android.emobilepos.security.ClerkManagementActivity;
 import com.android.emobilepos.security.SecurityManager;
+import com.android.emobilepos.service.SyncConfigServerService;
 import com.android.support.DateUtils;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
@@ -242,7 +245,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
         }
     }
 
-    public static class PrefsFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener, HttpClient.DownloadFileCallBack {
+    public static class PrefsFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener, HttpClient.DownloadFileCallBack, SharedPreferences.OnSharedPreferenceChangeListener {
         private Dialog promptDialog;
         private AlertDialog.Builder dialogBuilder;
         private MyPreferences myPref;
@@ -403,6 +406,36 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     }
                     prefManager.findPreference("pref_clear_images_cache").setOnPreferenceClickListener(this);
                     if (settingsType == SettingsTab_FR.SettingsRoles.ADMIN) {
+                        prefManager.findPreference("pref_use_syncplus_services")
+                                .setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                                    @Override
+                                    public boolean onPreferenceChange(Preference preference, Object newValue) {
+                                        if (newValue instanceof Boolean) {
+                                            if ((Boolean) newValue && myPref.isSyncplus_AutoScan()) {
+                                                SyncConfigServerService.startService(getActivity());
+                                            }else{
+                                                SyncConfigServerService.stopService(getActivity());
+                                            }
+                                        }
+                                        return true;
+                                    }
+                                });
+                        prefManager.findPreference("pref_syncplus_mode")
+                                .setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                                    @Override
+                                    public boolean onPreferenceChange(Preference preference, Object newValue) {
+                                        if (newValue instanceof Boolean) {
+                                            if ((Boolean) newValue) {
+                                                SyncConfigServerService.stopService(getActivity());
+                                            } else {
+                                                SyncConfigServerService.startService(getActivity());
+                                            }
+                                        }
+                                        return true;
+                                    }
+                                });
+
+
                         CheckBoxPreference _cbp_use_location_inv = (CheckBoxPreference) prefManager
                                 .findPreference("pref_enable_location_inventory");
                         _cbp_use_location_inv.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
@@ -465,6 +498,55 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
             addPreferencesFromResource(layoutId);
             prefManager = getPreferenceManager();
             setPrefManager(section, prefManager);
+            initSummary(getPreferenceScreen());
+        }
+
+        @Override
+        public void onResume() {
+            super.onResume();
+            getPreferenceScreen().getSharedPreferences()
+                    .registerOnSharedPreferenceChangeListener(this);
+        }
+
+        @Override
+        public void onPause() {
+            super.onPause();
+            getPreferenceScreen().getSharedPreferences()
+                    .unregisterOnSharedPreferenceChangeListener(this);
+        }
+
+        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+            updatePrefSummary(findPreference(key));
+        }
+
+        private void initSummary(Preference p) {
+            if (p instanceof PreferenceGroup) {
+                PreferenceGroup pGrp = (PreferenceGroup) p;
+                for (int i = 0; i < pGrp.getPreferenceCount(); i++) {
+                    initSummary(pGrp.getPreference(i));
+                }
+            } else {
+                updatePrefSummary(p);
+            }
+        }
+
+        private void updatePrefSummary(Preference p) {
+            if (p instanceof ListPreference) {
+                ListPreference listPref = (ListPreference) p;
+                p.setSummary(listPref.getEntry());
+            }
+            if (p instanceof EditTextPreference) {
+                EditTextPreference editTextPref = (EditTextPreference) p;
+                if (p.getTitle().toString().toLowerCase().contains("password")) {
+                    p.setSummary("******");
+                } else {
+                    p.setSummary(editTextPref.getText());
+                }
+            }
+//            if (p instanceof MultiSelectListPreference) {
+//                MultiSelectListPreference editTextPref = (MultiSelectListPreference) p;
+//                p.setSummary(editTextPref.());
+//            }
         }
 
         @Override

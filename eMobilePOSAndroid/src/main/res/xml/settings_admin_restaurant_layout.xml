@@ -1,31 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory
-        android:layout="@layout/settings_custom_header_layout"
-        android:title="@string/config_restaurant_settings">
+    <PreferenceCategory android:title="@string/config_restaurant_settings">
         <CheckBoxPreference
             android:key="pref_restaurant_mode"
-            android:layout="@layout/settings_custom_layout"
             android:title="@string/config_restaurant_mode" />
         <CheckBoxPreference
+            android:dependency="pref_restaurant_mode"
             android:key="pref_enable_togo_eatin"
-            android:layout="@layout/settings_custom_layout"
             android:title="@string/config_enable_togo_eatin" />
         <CheckBoxPreference
-            android:key="pref_require_waiter_signin"
-            android:layout="@layout/settings_custom_layout"
-            android:title="@string/config_require_waiter_signin" />
-        <CheckBoxPreference
+            android:dependency="pref_enable_togo_eatin"
             android:key="pref_enable_table_selection"
-            android:layout="@layout/settings_custom_layout"
             android:title="@string/config_enable_table_selection" />
         <CheckBoxPreference
+            android:dependency="pref_enable_togo_eatin"
             android:key="pref_ask_seats"
-            android:layout="@layout/settings_custom_layout"
             android:title="@string/config_ask_numbers_seats" />
         <Preference
+            android:dependency="pref_enable_togo_eatin"
             android:key="pref_salesassociate_config"
-            android:layout="@layout/settings_custom_layout"
             android:title="@string/config_salesassociate_config" />
     </PreferenceCategory>
 </PreferenceScreen>

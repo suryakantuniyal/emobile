@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@drawable/bg_dlog"
     android:orientation="vertical">
 
@@ -22,13 +23,11 @@
         android:id="@+id/tablesGridLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:columnWidth="100dp"
         android:gravity="center"
         android:horizontalSpacing="5dp"
-        android:numColumns="auto_fit"
+        android:padding="5dp"
         android:stretchMode="columnWidth"
         android:verticalSpacing="5dp"
-        android:padding="5dp"
-        ></GridView>
+        tools:listitem="@layout/main_menu_listviewadapter" />
 
 </LinearLayout>

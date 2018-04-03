@@ -3,6 +3,7 @@ package com.android.support;
 import android.content.Context;
 
 import com.android.emobilepos.R;
+import com.android.emobilepos.service.SyncConfigServerService;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -32,12 +33,14 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 
+import oauthclient.HttpClient;
+
 public class Post {
 
     private String entity = "";
     private Context context;
     private boolean isShortResponse = false;
-    private boolean isPost = false;
+    private HttpClient.HTTPMethod httpMethod = HttpClient.HTTPMethod.GET;
     private static InputStream keyStoreInputStream;
     private static KeyStore trustStore;
     private static TrustManagerFactory tmf;
@@ -47,10 +50,12 @@ public class Post {
     private GenerateXML xml;
     private StringBuilder url = new StringBuilder();
     private String baseURL;
+    MyPreferences preferences;
 
     public Post(Context context) {
         xml = new GenerateXML(context);
         this.context = context;
+        preferences = new MyPreferences(context);
         baseURL = context.getString(R.string.sync_enablermobile_deviceasxmltrans);
     }
 
@@ -129,146 +134,146 @@ public class Post {
                 // the table
                 // name
                 isShortResponse = false;
-                isPost = false;
+                httpMethod = HttpClient.HTTPMethod.GET;
                 break;
             }
             case Global.S_GET_XML_DINNER_TABLES: {
 
                 url.append(baseURL + (xml.getDinnerTables()));
                 isShortResponse = true;
-                isPost = false;
+                httpMethod = HttpClient.HTTPMethod.GET;
                 break;
             }
             case Global.S_GET_XML_SALES_ASSOCIATE: {
                 url.append(baseURL + (xml.getSalesAssociate()));
                 isShortResponse = true;
-                isPost = false;
+                httpMethod = HttpClient.HTTPMethod.GET;
                 break;
             }
             case Global.S_GET_XML_ORDERS: {
                 postLink = context.getString(R.string.sync_enablermobile_getxmlorders);
                 entity = xml.synchOrders(false);
-                isPost = true;
+                httpMethod = HttpClient.HTTPMethod.POST;
 
                 break;
             }
             case Global.S_SUBMIT_ON_HOLD: {
                 postLink = context.getString(R.string.sync_enabler_submitordersonhold);
                 entity = xml.synchOrders(true);
-                isPost = true;
+                httpMethod = HttpClient.HTTPMethod.POST;
 
                 break;
             }
             case Global.S_SUBMIT_PAYMENTS: {
                 postLink = context.getString(R.string.sync_enabler_submitpayments);
                 entity = xml.synchPayments();
-                isPost = true;
+                httpMethod = HttpClient.HTTPMethod.POST;
                 break;
             }
             case Global.S_SUBMIT_PAYMENT_SIGNATURES: {
                 postLink = context.getString(R.string.sync_enabler_submitpaymentsignatures);
                 entity = xml.syncPaymentSignatures();
-                isPost = true;
+                httpMethod = HttpClient.HTTPMethod.POST;
                 break;
             }
             case Global.S_SUBMIT_TIME_CLOCK: {
                 postLink = context.getString(R.string.sync_enabler_submittimeclock);
                 entity = xml.synchTimeClock();
-                isPost = true;
+                httpMethod = HttpClient.HTTPMethod.POST;
                 break;
             }
             case Global.S_SUBMIT_VOID_TRANSACTION: {
                 postLink = context.getString(R.string.sync_enabler_submitvoidtrans);
                 entity = xml.syncVoidTransactions();
-                isPost = true;
+                httpMethod = HttpClient.HTTPMethod.POST;
                 break;
             }
             case 11: {
                 url.append(varyingVariable);
-                isPost = false;
+                httpMethod = HttpClient.HTTPMethod.GET;
                 break;
             }
             case Global.S_SUBMIT_CUSTOMER:
                 postLink = context.getString(R.string.sync_enabler_submitcustomer);
                 entity = xml.synchNewCustomer();
-                isPost = true;
+                httpMethod = HttpClient.HTTPMethod.POST;
                 break;
             case 13:
                 postLink = context.getString(R.string.genius_token_url);//"https://epay.enablermobile.com/index.ashx";
                 entity = varyingVariable;
-                isPost = true;
+                httpMethod = HttpClient.HTTPMethod.POST;
                 break;
             case Global.S_SUBMIT_TUPYX:
                 postLink = context.getString(R.string.epay_enablermobile_tupix);
                 entity = varyingVariable;
-                isPost = true;
+                httpMethod = HttpClient.HTTPMethod.POST;
                 break;
             case Global.S_SUBMIT_TEMPLATES:
                 postLink = context.getString(R.string.sync_enabler_submittempletes);
                 entity = xml.synchTemplates();
-                isPost = true;
+                httpMethod = HttpClient.HTTPMethod.POST;
                 break;
             case Global.S_SUBMIT_CONSIGNMENT_TRANSACTION:
                 postLink = context.getString(R.string.sync_enablersubmitconsignmenttransaction);
                 entity = xml.synchConsignmentTransaction();
-                isPost = true;
+                httpMethod = HttpClient.HTTPMethod.POST;
                 break;
             case Global.S_SUBMIT_CUSTOMER_INVENTORY:
                 postLink = context.getString(R.string.sync_enabler_submitcustomerinventory);
                 entity = xml.synchCustomerInventory();
-                isPost = true;
+                httpMethod = HttpClient.HTTPMethod.POST;
                 break;
             case Global.S_SUBMIT_SHIFT:
                 postLink = context.getString(R.string.sync_enabler_submitshiftperiods);
                 entity = xml.synchShift();
-                isPost = true;
+                httpMethod = HttpClient.HTTPMethod.POST;
                 break;
             case Global.S_SUBMIT_LOCATIONS_INVENTORY:
                 postLink = context.getString(R.string.sync_enabler_submitlocationinventory);
                 entity = xml.synchInventoryTransfer();
-                isPost = true;
+                httpMethod = HttpClient.HTTPMethod.POST;
                 break;
             case Global.S_SUBMIT_WALLET_RECEIPTS:
                 postLink = context.getString(R.string.sync_enabler_submitwalletreceipt);
                 entity = xml.synchWalletReceipts();
-                isPost = true;
+                httpMethod = HttpClient.HTTPMethod.POST;
                 break;
             case Global.S_ORDERS_ON_HOLD_DETAILS:
                 url.append(baseURL + (xml.getOnHold(type, varyingVariable)));
                 isShortResponse = false;
-                isPost = false;
+                httpMethod = HttpClient.HTTPMethod.GET;
                 break;
             case Global.S_GET_TIME_CLOCK:
                 url.append(baseURL + (xml.getTimeClock()));
                 isShortResponse = true;
-                isPost = false;
+                httpMethod = HttpClient.HTTPMethod.GET;
                 break;
             case Global.S_CHECK_STATUS_ON_HOLD:
             case Global.S_UPDATE_STATUS_ON_HOLD:
             case Global.S_CHECKOUT_ON_HOLD:
                 url.append(baseURL + (xml.getOnHold(type, varyingVariable)));
                 isShortResponse = true;
-                isPost = false;
+                httpMethod = HttpClient.HTTPMethod.GET;
                 break;
             case Global.S_GET_SERVER_TIME:
                 url.append(baseURL + (xml.getServerTime()));
                 isShortResponse = true;
-                isPost = false;
+                httpMethod = HttpClient.HTTPMethod.GET;
                 break;
             case Global.S_SUBMIT_TIP_ADJUSTMENT:
                 postLink = context.getString(R.string.genius_token_url);//"https://epay.enablermobile.com/index.ashx";
                 entity = varyingVariable;
-                isPost = true;
+                httpMethod = HttpClient.HTTPMethod.POST;
                 break;
             case Global.S_UPDATE_SYNC_TIME:
                 url.append(baseURL + (xml.updateSyncTime(varyingVariable)));
-                isPost = false;
+                httpMethod = HttpClient.HTTPMethod.GET;
                 isShortResponse = true;
                 break;
             case Global.S_SUBMIT_WORKINGKEY_REQUEST:
                 postLink = context.getString(R.string.genius_token_url);//"https://epay.enablermobile.com/index.ashx";
                 entity = varyingVariable;
-                isPost = true;
+                httpMethod = HttpClient.HTTPMethod.POST;
                 break;
         }
 //Testing png download with the 2016 ssl cert
@@ -278,7 +283,7 @@ public class Post {
 //		} catch (MalformedURLException e1) {
 //			e1.printStackTrace();
 //		}
-        if (!isPost) {
+        if (httpMethod == HttpClient.HTTPMethod.GET) {
             try {
                 if (type != 11)
                     if (type == Global.S_GET_XML_SALES_ASSOCIATE
@@ -310,9 +315,9 @@ public class Post {
 //                initSSL();
             }
             HttpsURLConnection.setFollowRedirects(false);
-            urlConnection = (HttpsURLConnection) url.openConnection();
+            urlConnection = (HttpsURLConnection) HttpClient.getHttpURLConnection(url.toString(), HttpClient.HTTPMethod.GET);//(HttpsURLConnection) url.openConnection();
 //            urlConnection.setSSLSocketFactory(sslContext.getSocketFactory());
-            urlConnection.setRequestMethod("GET");
+//            urlConnection.setRequestMethod("GET");
             if (isJsonContentType) {
                 urlConnection.setRequestProperty("Content-Type", "application/json");
             }
@@ -349,6 +354,10 @@ public class Post {
 
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+
+        } catch (KeyManagementException e) {
+
         }
         return "";
     }
@@ -386,7 +395,8 @@ public class Post {
                 if (sslContext == null) {
 //                    initSSL();
                 }
-                urlConnection = (HttpsURLConnection) url.openConnection();
+                urlConnection = (HttpsURLConnection) HttpClient.getHttpURLConnection(url, HttpClient.HTTPMethod.POST);
+//                urlConnection = (HttpsURLConnection) url.openConnection();
 //                urlConnection.setSSLSocketFactory(sslContext.getSocketFactory());
                 urlConnection.setRequestMethod("POST");
                 HttpURLConnection.setFollowRedirects(true);

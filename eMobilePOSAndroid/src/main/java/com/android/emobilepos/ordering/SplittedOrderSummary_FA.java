@@ -176,10 +176,10 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
             }
         }
         boolean hasPermissions = SecurityManager.hasPermissions(this, SecurityManager.SecurityAction.SPLIT_ORDER);
-        splitTypeSpinner = (Spinner) findViewById(R.id.splitTypesSpinner);
+        splitTypeSpinner = findViewById(R.id.splitTypesSpinner);
         splitTypeSpinner.setOnItemSelectedListener(this);
         splitTypeSpinner.setEnabled(hasPermissions);
-        splitEquallyQtyBtn = (Button) findViewById(R.id.splitEquallyQtyeditButton);
+        splitEquallyQtyBtn = findViewById(R.id.splitEquallyQtyeditButton);
         splitEquallyQtyBtn.setVisibility(View.GONE);
         splitEquallyQtyBtn.setOnClickListener(this);
         global = (Global) getApplication();
@@ -658,8 +658,8 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCancelable(true);
         dialog.setContentView(R.layout.void_dialog_layout);
-        Button voidBut = (Button) dialog.findViewById(R.id.voidBut);
-        Button notVoid = (Button) dialog.findViewById(R.id.notVoidBut);
+        Button voidBut = dialog.findViewById(R.id.voidBut);
+        Button notVoid = dialog.findViewById(R.id.notVoidBut);
 
         voidBut.setOnClickListener(new View.OnClickListener() {
 
@@ -691,21 +691,21 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
         globalDlog.setCancelable(true);
         globalDlog.setContentView(R.layout.dlog_field_single_layout);
 
-        final EditText viewField = (EditText) globalDlog.findViewById(R.id.dlogFieldSingle);
+        final EditText viewField = globalDlog.findViewById(R.id.dlogFieldSingle);
         viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        TextView viewTitle = (TextView) globalDlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) globalDlog.findViewById(R.id.dlogMessage);
+        TextView viewTitle = globalDlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = globalDlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_confirm);
 
         viewMsg.setText(R.string.dlog_title_enter_manager_password);
-        Button btnCancel = (Button) globalDlog.findViewById(R.id.btnCancelDlogSingle);
+        Button btnCancel = globalDlog.findViewById(R.id.btnCancelDlogSingle);
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 globalDlog.dismiss();
             }
         });
-        Button btnOk = (Button) globalDlog.findViewById(R.id.btnDlogSingle);
+        Button btnOk = globalDlog.findViewById(R.id.btnDlogSingle);
         btnOk.setText(R.string.button_ok);
         btnOk.setOnClickListener(new View.OnClickListener() {
 
