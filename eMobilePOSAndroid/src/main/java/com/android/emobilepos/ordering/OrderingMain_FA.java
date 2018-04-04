@@ -1194,7 +1194,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     }
                     String upc = invisibleSearchMain.getText().toString().trim().replace("\n", "").replace("\r", "");
 //                    upc = invisibleSearchMain.getText().toString().trim().replace("\r", "");
-                    upc = NumberUtils.removeLeadingZeros(upc);
+                    if(myPref.isRemoveLeadingZerosFromUPC()) {
+                        upc = NumberUtils.removeLeadingZeros(upc);
+                    }
                     Product product = handler.getUPCProducts(upc, false);
                     if (product.getId() != null) {
                         if (myPref.getPreferences(MyPreferences.pref_fast_scanning_mode)) {
