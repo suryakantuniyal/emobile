@@ -346,42 +346,49 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                     break;
                 }
                 case SALE_RECEIPT: {
-                    boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
+//                    boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
+//                    if (hasPermissions) {
+//                        if (myPref.isCustomerRequired()) {
+//                            if (myPref.isRestaurantMode() &&
+//                                    myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
+//                                askEatInToGo();
+//                            } else {
+//                                intent = new Intent(getActivity(), OrderingMain_FA.class);
+//                                intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.TO_GO);
+//                                intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
+//                                startActivityForResult(intent, 0);
+//                            }
+//
+//                        } else {
+//                            promptWithCustomer();
+//                        }
+//                    } else {
+//                        Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
+//                    }
+                    boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
+                            SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
-//                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
-                        if (myPref.isCustomerRequired()) {
+                        if (validateClerkShift(Global.TransactionType.getByCode(pos), getActivity())) {
                             if (myPref.isRestaurantMode() &&
                                     myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
                                 askEatInToGo();
                             } else {
                                 intent = new Intent(getActivity(), OrderingMain_FA.class);
-                                intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.TO_GO);
                                 intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
                                 startActivityForResult(intent, 0);
                             }
-
-                        } else {
-                            promptWithCustomer();
                         }
-//                        } else {
-//                            Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
-//                        }
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                     }
-
                     break;
                 }
                 case ORDERS: {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
-//                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                         intent = new Intent(getActivity(), OrderingMain_FA.class);
                         intent.putExtra("option_number", Global.TransactionType.ORDERS);
                         startActivityForResult(intent, 0);
-//                        } else {
-//                            Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
-//                        }
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                     }
@@ -390,13 +397,9 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                 case RETURN: {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
-//                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                         intent = new Intent(getActivity(), OrderingMain_FA.class);
                         intent.putExtra("option_number", Global.TransactionType.RETURN);
                         startActivityForResult(intent, 0);
-//                        } else {
-//                            Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
-//                        }
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                     }
@@ -405,13 +408,9 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                 case INVOICE: {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
-//                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                         intent = new Intent(getActivity(), OrderingMain_FA.class);
                         intent.putExtra("option_number", Global.TransactionType.INVOICE);
                         startActivityForResult(intent, 0);
-//                        } else {
-//                            Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
-//                        }
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                     }
@@ -420,13 +419,9 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                 case ESTIMATE: {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
-//                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                         intent = new Intent(getActivity(), OrderingMain_FA.class);
                         intent.putExtra("option_number", Global.TransactionType.ESTIMATE);
                         startActivityForResult(intent, 0);
-//                        } else {
-//                            Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
-//                        }
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                     }
@@ -436,7 +431,6 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.TAKE_PAYMENT);
                     if (hasPermissions) {
-//                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                         intent = new Intent(getActivity(), SelectPayMethod_FA.class);
                         intent.putExtra("salespayment", true);
                         intent.putExtra("amount", "0.00");
@@ -447,11 +441,7 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                             intent.putExtra("cust_id", myPref.getCustID());
                             intent.putExtra("custidkey", myPref.getCustIDKey());
                         }
-
                         startActivity(intent);
-//                        } else {
-//                            Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
-//                        }
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                     }
@@ -461,53 +451,42 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.TAKE_PAYMENT);
                     if (hasPermissions) {
-//                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                         intent = new Intent(getActivity(), GiftCard_FA.class);
                         startActivity(intent);
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                     }
-//                    } else {
-//                        Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
-//                    }
+
                     break;
                 }
                 case LOYALTY_CARD: {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.TAKE_PAYMENT);
                     if (hasPermissions) {
-//                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                         intent = new Intent(getActivity(), LoyaltyCard_FA.class);
                         startActivity(intent);
                     } else {
                         Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
                     }
-//                    } else {
-//                        Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
-//                    }
+
                     break;
                 }
                 case REWARD_CARD: {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.TAKE_PAYMENT);
                     if (hasPermissions) {
-//                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                         intent = new Intent(getActivity(), RewardCard_FA.class);
                         startActivity(intent);
                     } else {
                         Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
                     }
-//                    } else {
-//                        Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
-//                    }
+
                     break;
                 }
                 case REFUND: {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
-//                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
-                        //EasyTracker.getTracker().sendEvent("ui_action", "button_press", "Refund", null);
                         intent = new Intent(getActivity(), SelectPayMethod_FA.class);
                         intent.putExtra("salesrefund", true);
                         intent.putExtra("amount", "0.00");
@@ -518,9 +497,7 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                             intent.putExtra("custidkey", myPref.getCustIDKey());
                         }
                         startActivity(intent);
-//                        } else {
-//                            Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
-//                        }
+
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                     }
@@ -532,54 +509,74 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                 case ON_HOLD: {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
-//                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                         intent = new Intent(getActivity(), OnHoldActivity.class);
                         getActivity().startActivity(intent);
                     } else {
                         Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
                     }
-//                    } else {
-//                        Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
-//                    }
+
                     break;
                 }
                 case CONSIGNMENT: {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
-//                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                         intent = new Intent(getActivity(), ConsignmentMain_FA.class);
                         startActivity(intent);
                     } else {
                         Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
                     }
-//                    } else {
-//                        Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
-//                    }
+
                     break;
                 }
                 case LOCATION:
                     pickLocations(true);
                     break;
                 case SHIFTS: {
-                    boolean hasPermissions = myPref.isUseClerks() && SecurityManager.hasPermissions(getActivity(),
+//                    boolean hasPermissions = myPref.isUseClerks() && SecurityManager.hasPermissions(getActivity(),
+//                            SecurityManager.SecurityAction.SHIFT_CLERK);
+//                    if (hasPermissions) {
+//                        intent = new Intent(getActivity(), ShiftsActivity.class);
+//                        startActivity(intent);
+//                    } else {
+//                        Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
+//                    }
+//                    break;
+                    boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.SHIFT_CLERK);
                     if (hasPermissions) {
-                        intent = new Intent(getActivity(), ShiftsActivity.class);
-                        startActivity(intent);
+                        if (myPref.isUseClerks() && validateClerkShift(Global.TransactionType.getByCode(pos), getActivity())) {
+                            intent = new Intent(getActivity(), ShiftsActivity.class);
+                            startActivity(intent);
+                        } else if (!myPref.isUseClerks()) {
+                            promptClerkLogin(Global.TransactionType.getByCode(pos));
+                        }
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                     }
                     break;
                 }
                 case SHIFT_EXPENSES: {
-                    boolean hasPermissions = myPref.isUseClerks() && SecurityManager.hasPermissions(getActivity(),
+//                    boolean hasPermissions = myPref.isUseClerks() && SecurityManager.hasPermissions(getActivity(),
+//                            SecurityManager.SecurityAction.NO_SALE);
+//                    if (hasPermissions) {
+//                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen()) {
+//                            intent = new Intent(getActivity(), ShiftExpensesList_FA.class);
+//                            startActivity(intent);
+//                        } else {
+//                            Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
+//                        }
+//                    } else {
+//                        Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
+//                    }
+//                    break;
+                    boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.NO_SALE);
                     if (hasPermissions) {
-                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen()) {
+                        if (myPref.isUseClerks() && validateClerkShift(Global.TransactionType.getByCode(pos), getActivity())) {
                             intent = new Intent(getActivity(), ShiftExpensesList_FA.class);
                             startActivity(intent);
-                        } else {
-                            Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
+                        } else if (!myPref.isUseClerks()) {
+                            promptClerkLogin(Global.TransactionType.getByCode(pos));
                         }
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
@@ -608,9 +605,6 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                                 }
                             }
                         }
-//                        } else {
-//                            Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
-//                        }
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                     }
@@ -620,7 +614,6 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
-//                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                         if (validateClerkShift(Global.TransactionType.getByCode(pos), getActivity())) {
                             if (myPref.isCustomerRequired()) {
                                 Global.showPrompt(getActivity(), R.string.dlog_title_error, getString(R.string.dlog_msg_select_customer));
@@ -630,9 +623,7 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                                 startActivityForResult(intent, 0);
                             }
                         }
-//                        } else {
-//                            Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
-//                        }
+
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                     }
@@ -642,7 +633,6 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.TAKE_PAYMENT);
                     if (hasPermissions) {
-//                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                         if (validateClerkShift(Global.TransactionType.getByCode(pos), getActivity())) {
                             if (myPref.isCustomerRequired()) {
                                 Global.showPrompt(getActivity(), R.string.dlog_title_error, getString(R.string.dlog_msg_select_customer));
@@ -655,9 +645,6 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                                 startActivity(intent);
                             }
                         }
-//                        } else {
-//                            Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
-//                        }
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                     }
@@ -667,7 +654,6 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.TAKE_PAYMENT);
                     if (hasPermissions) {
-//                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                         if (validateClerkShift(Global.TransactionType.getByCode(pos), getActivity())) {
                             intent = new Intent(getActivity(), GiftCard_FA.class);
                             startActivity(intent);
@@ -675,16 +661,13 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                     } else {
                         Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
                     }
-//                    } else {
-//                        Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
-//                    }
+
                     break;
                 }
                 case LOYALTY_CARD: {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.TAKE_PAYMENT);
                     if (hasPermissions) {
-//                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                         if (validateClerkShift(Global.TransactionType.getByCode(pos), getActivity())) {
                             intent = new Intent(getActivity(), LoyaltyCard_FA.class);
                             startActivity(intent);
@@ -692,16 +675,13 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                     } else {
                         Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
                     }
-//                    } else {
-//                        Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
-//                    }
+
                     break;
                 }
                 case REWARD_CARD: {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.TAKE_PAYMENT);
                     if (hasPermissions) {
-//                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                         if (validateClerkShift(Global.TransactionType.getByCode(pos), getActivity())) {
                             intent = new Intent(getActivity(), RewardCard_FA.class);
                             startActivity(intent);
@@ -709,16 +689,13 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                     } else {
                         Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
                     }
-//                    } else {
-//                        Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
-//                    }
+
                     break;
                 }
                 case REFUND: {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
-//                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                         if (validateClerkShift(Global.TransactionType.getByCode(pos), getActivity())) {
 
                             intent = new Intent(getActivity(), SelectPayMethod_FA.class);
@@ -732,9 +709,7 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                             }
                             startActivity(intent);
                         }
-//                        } else {
-//                            Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
-//                        }
+
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                     }
@@ -743,14 +718,11 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                 case ON_HOLD: {
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
-//                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                         if (validateClerkShift(Global.TransactionType.getByCode(pos), getActivity())) {
                             intent = new Intent(getActivity(), OnHoldActivity.class);
                             getActivity().startActivity(intent);
                         }
-//                        } else {
-//                            Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
-//                        }
+
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                     }
@@ -763,7 +735,6 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                     boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.TIP_ADJUSTMENT);
                     if (hasPermissions) {
-//                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen(myPref.getClerkID())) {
                         if (validateClerkShift(Global.TransactionType.getByCode(pos), getActivity())) {
                             intent = new Intent(getActivity(), TipAdjustmentFA.class);
                             startActivity(intent);
@@ -771,9 +742,7 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                     } else {
                         Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
                     }
-//                    } else {
-//                        Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
-//                    }
+
                     break;
                 }
                 case SHIFTS: {
