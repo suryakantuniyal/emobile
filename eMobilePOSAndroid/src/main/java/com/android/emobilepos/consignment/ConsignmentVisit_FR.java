@@ -228,7 +228,8 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
             ord.setProd_id(Global.consignSummaryMap.get(Global.consignMapKey.get(pos)).get("prod_id"));
             ord.setProd_price(Global.consignSummaryMap.get(Global.consignMapKey.get(pos)).get("prod_price"));
             ord.setOrd_id(Global.consignment_order.ord_id);
-
+            BigDecimal itemTotal = new BigDecimal(ord.getOrdprod_qty()).multiply(new BigDecimal(ord.getFinalPrice()));
+            ord.setItemTotal(String.valueOf(itemTotal));
 
             if (global.order.getOrderProducts() == null) {
                 global.order.setOrderProducts(new ArrayList<OrderProduct>());
@@ -338,6 +339,7 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
         for (OrderProduct product : Global.consignment_products) {
             HashMap<String, String> hash = Global.consignSummaryMap.get(product.getProd_id());
             product.setOrdprod_qty(hash.get("invoice"));
+            product.setItemTotal(hash.get("invoice_total"));
         }
         orderProductsHandler.insert(Global.consignment_products);
         if (global.order.getListOrderTaxes() != null
