@@ -16,7 +16,6 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -454,7 +453,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         String custTaxCode;
         if (myPref.isCustSelected()) {
             custTaxCode = myPref.getCustTaxCode();
-            if (custTaxCode == null) {
+            if (TextUtils.isEmpty(custTaxCode)) {
                 custTaxCode = assignEmployee.getTaxDefault();
             }
         } else if (Global.isFromOnHold && !TextUtils.isEmpty(Global.taxID))
