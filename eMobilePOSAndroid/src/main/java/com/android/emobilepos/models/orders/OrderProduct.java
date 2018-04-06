@@ -894,7 +894,7 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     }
 
     public boolean isTaxable() {
-        return prod_istaxable.equals("1");
+        return !TextUtils.isEmpty(prod_istaxable) && prod_istaxable.equals("1");
     }
 
     public boolean isDiscountTaxable() {

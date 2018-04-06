@@ -499,8 +499,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
             payment.setIvuLottoNumber(ivuLottoNum);
             payment.setIvuLottoDrawDate(drawDate);
             payment.setIvuLottoQR(Global.base64QRCode(ivuLottoNum, drawDate));
-
-            if (!extras.getString("Tax1_amount").isEmpty()) {
+            if (!TextUtils.isEmpty(extras.getString("Tax1_amount"))) {
                 payment.setTax1_amount(extras.getString("Tax1_amount"));
                 payment.setTax1_name(extras.getString("Tax1_name"));
 
@@ -774,8 +773,9 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
                     }
                 }).start();
             }
+            return true;
         }
-        return true;
+        return super.onKeyDown(keyCode, event);
     }
 
     private boolean validatePaymentData() {

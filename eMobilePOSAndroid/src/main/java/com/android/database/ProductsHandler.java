@@ -370,6 +370,9 @@ public class ProductsHandler {
 
     public Product getUPCProducts(String value, boolean includeSearchById) {
         String byIdCondition = "";
+        if (value == null) {
+            value = "";
+        }
         if (includeSearchById) {
             byIdCondition = " OR p.prod_id = '" + value + "' ";
         }
@@ -456,9 +459,9 @@ public class ProductsHandler {
                     "FROM " +
                             "(select p.* " +
                             "from products p " +
-                            "LEFT JOIN ProductAliases pa ON p.prod_id = pa.prod_id "+
+                            "LEFT JOIN ProductAliases pa ON p.prod_id = pa.prod_id " +
                             "where prod_type != 'Discount' AND  " +
-                            "(prod_sku = '"+value+"'  OR prod_upc = '"+value+"'  )) p " +
+                            "(prod_sku = '" + value + "'  OR prod_upc = '" + value + "'  )) p " +
                             "INNER JOIN ProdCatXref xr ON p.prod_id = xr.prod_id  " +
                             "INNER JOIN Categories c ON c.cat_id = xr.cat_id " +
                             "LEFT OUTER JOIN EmpInv ei ON ei.prod_id = p.prod_id " +
@@ -469,9 +472,9 @@ public class ProductsHandler {
                     "FROM " +
                             "(select p.* " +
                             "from products p " +
-                            "LEFT JOIN ProductAliases pa ON p.prod_id = pa.prod_id "+
+                            "LEFT JOIN ProductAliases pa ON p.prod_id = pa.prod_id " +
                             "where prod_type != 'Discount' AND  " +
-                            "(prod_sku = '"+value+"'  OR prod_upc = '"+value+"'  )) p " +
+                            "(prod_sku = '" + value + "'  OR prod_upc = '" + value + "'  )) p " +
                             "LEFT OUTER JOIN Categories c ON c.cat_id = p.cat_id " +
                             "LEFT OUTER JOIN EmpInv ei ON ei.prod_id = p.prod_id " +
                             "LEFT OUTER JOIN VolumePrices vp ON p.prod_id = vp.prod_id AND '1' " +
