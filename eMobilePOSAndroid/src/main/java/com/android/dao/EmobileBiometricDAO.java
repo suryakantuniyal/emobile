@@ -22,6 +22,7 @@ public class EmobileBiometricDAO {
         Realm realm = Realm.getDefaultInstance();
         try {
             realm.beginTransaction();
+            biometric.setSync(false);
             realm.insertOrUpdate(biometric);
         } finally {
             realm.commitTransaction();
@@ -166,6 +167,36 @@ public class EmobileBiometricDAO {
             realm.commitTransaction();
         } finally {
             realm.close();
+        }
+    }
+
+    public static void updateSyncFlag(boolean isSync, List<EmobileBiometric> emobileBiometrics) {
+        Realm realm = Realm.getDefaultInstance();
+        try {
+            for (EmobileBiometric biometric : emobileBiometrics) {
+                biometric.setSync(isSync);
+            }
+            realm.beginTransaction();
+            realm.insertOrUpdate(emobileBiometrics);
+            realm.commitTransaction();
+        } finally {
+            realm.close();
+        }
+    }
+
+    public static List<EmobileBiometric> getUnsyncBiometrics() {
+        Realm realm = Realm.getDefaultInstance();
+        List<EmobileBiometric> all = null;
+        try {
+            all = realm.where(EmobileBiometric.class)
+                    .equalTo("isSync", false)
+                    .findAll();
+            if (all != null) {
+                all = realm.copyFromRealm(all);
+            }
+        } finally {
+            realm.close();
+            return all;
         }
     }
 }

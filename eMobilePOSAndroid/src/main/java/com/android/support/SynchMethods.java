@@ -235,7 +235,10 @@ public class SynchMethods {
     }
 
     public static void postEmobileBiometrics(Context context) throws Exception {
-        List<EmobileBiometric> emobileBiometrics = EmobileBiometricDAO.getBiometrics();
+        List<EmobileBiometric> emobileBiometrics = EmobileBiometricDAO.getUnsyncBiometrics();
+        if (emobileBiometrics.isEmpty()) {
+            return;
+        }
         AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
         MyPreferences preferences = new MyPreferences(context);
         StringBuilder url = new StringBuilder(context.getString(R.string.sync_enablermobile_biometrics));
@@ -252,6 +255,7 @@ public class SynchMethods {
         String json = gson.toJson(emobileBiometrics);
         oauthclient.HttpClient httpClient = new oauthclient.HttpClient();
         String response = httpClient.post(url.toString(), json, authClient, true);
+        EmobileBiometricDAO.updateSyncFlag(true, emobileBiometrics);
     }
 
     public static void synchSalesAssociateDinnindTablesConfiguration(Context activity) throws SAXException {
@@ -523,7 +527,7 @@ public class SynchMethods {
                 err_msg = sendOrdersOnHold();
                 if (err_msg.isEmpty()) {
                     if (checkoutOnHold) {
-                        OnHoldsManager.checkoutOnHold(ord_id,activity);
+                        OnHoldsManager.checkoutOnHold(ord_id, activity);
 //                        post.postData(Global.S_CHECKOUT_ON_HOLD, ord_id);
                     }
                 } else
