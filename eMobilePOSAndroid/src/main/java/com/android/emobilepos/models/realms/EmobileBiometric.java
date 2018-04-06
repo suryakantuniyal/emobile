@@ -29,6 +29,9 @@ public class EmobileBiometric extends RealmObject {
     @Expose
     @Index
     private String regid;
+    @Expose(serialize = false, deserialize = false)
+    @Index
+    private boolean isSync;
 
     public String getEntityid() {
         return entityid;
@@ -79,6 +82,14 @@ public class EmobileBiometric extends RealmObject {
 
     public void setRegid(String regid) {
         this.regid = regid;
+    }
+
+    public boolean isSync() {
+        return isSync;
+    }
+
+    public void setSync(boolean sync) {
+        isSync = sync;
     }
 
     public enum UserType {
