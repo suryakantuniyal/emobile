@@ -52,8 +52,8 @@ public class HistoryConsignmentDetails_FA extends BaseFragmentActivityActionBar 
         extras = this.getIntent().getExtras();
         activity = this;
         global = (Global) getApplication();
-        lView = (StickyListHeadersListView) findViewById(R.id.consignmentDetailsListView);
-        Button printButton = (Button) findViewById(R.id.printButton);
+        lView = findViewById(R.id.consignmentDetailsListView);
+        Button printButton = findViewById(R.id.printButton);
         printButton.setOnClickListener(this);
 
         LayoutInflater inflater = LayoutInflater.from(this);
@@ -100,9 +100,9 @@ public class HistoryConsignmentDetails_FA extends BaseFragmentActivityActionBar 
 
     private void setupListViewHeader() {
 
-        TextView custName = (TextView) lvHeaderView.findViewById(R.id.ordLVHeaderTitle);
-        TextView consignDate = (TextView) lvHeaderView.findViewById(R.id.ordLVHeaderSubtitle);
-        ImageView consignSignature = (ImageView) lvHeaderView.findViewById(R.id.ordTicketImg);
+        TextView custName = lvHeaderView.findViewById(R.id.ordLVHeaderTitle);
+        TextView consignDate = lvHeaderView.findViewById(R.id.ordLVHeaderSubtitle);
+        ImageView consignSignature = lvHeaderView.findViewById(R.id.ordTicketImg);
 
         String encodedImg = dataMap.get("encoded_signature");
         dataMap.put("cust_name", extras.getString("cust_name"));
@@ -127,7 +127,6 @@ public class HistoryConsignmentDetails_FA extends BaseFragmentActivityActionBar 
 
     @Override
     public void onClick(View v) {
-        // TODO Auto-generated method stub
         switch (v.getId()) {
             case R.id.printButton:
                 new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -153,8 +152,6 @@ public class HistoryConsignmentDetails_FA extends BaseFragmentActivityActionBar 
 
         @Override
         protected Void doInBackground(Void... params) {
-            // TODO Auto-generated method stub
-
             if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
                 printSuccessful = Global.mainPrinterManager.getCurrentDevice().printConsignmentHistory(dataMap, c, extras.getBoolean("isPickup"));
             }
@@ -178,16 +175,16 @@ public class HistoryConsignmentDetails_FA extends BaseFragmentActivityActionBar 
         dlog.setCancelable(false);
         dlog.setContentView(R.layout.dlog_btn_left_right_layout);
 
-        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+        TextView viewTitle = dlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = dlog.findViewById(R.id.dlogMessage);
 
 
         viewTitle.setText(R.string.dlog_title_error);
         viewMsg.setText(R.string.dlog_msg_failed_print);
 
         dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
-        Button btnYes = (Button) dlog.findViewById(R.id.btnDlogLeft);
-        Button btnNo = (Button) dlog.findViewById(R.id.btnDlogRight);
+        Button btnYes = dlog.findViewById(R.id.btnDlogLeft);
+        Button btnNo = dlog.findViewById(R.id.btnDlogRight);
         btnYes.setText(R.string.button_yes);
         btnNo.setText(R.string.button_no);
 
@@ -195,7 +192,6 @@ public class HistoryConsignmentDetails_FA extends BaseFragmentActivityActionBar 
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
@@ -204,7 +200,6 @@ public class HistoryConsignmentDetails_FA extends BaseFragmentActivityActionBar 
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
             }
         });
