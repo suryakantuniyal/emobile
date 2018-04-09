@@ -214,15 +214,15 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
     }
 
     private int getNumberOfLastInvoice() {
-        if (printerTFHKA instanceof TfhkaAndroid) {
-            try {
-                return ((TfhkaAndroid) printerTFHKA).getXReport().getNumberOfLastInvoice();
-            } catch (PrinterException e) {
-                Crashlytics.logException(e);
-            }
-        } else {
-//            return ((com.thefactoryhka.android.rd.TfhkaAndroid)printerTFHKA).getS1PrinterData().getNumberOfLastInvoice();
-        }
+//        if (printerTFHKA instanceof TfhkaAndroid) {
+//            try {
+//                return ((TfhkaAndroid) printerTFHKA).getXReport().getNumberOfLastInvoice();
+//            } catch (PrinterException e) {
+//                Crashlytics.logException(e);
+//            }
+//        } else {
+////            return ((com.thefactoryhka.android.rd.TfhkaAndroid)printerTFHKA).getS1PrinterData().getNumberOfLastInvoice();
+//        }
         return 0;
     }
 
