@@ -126,23 +126,27 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     }
 
     private boolean setupPrinter() {
-        error_code = pos_sdk.textStandardModeAlignment(0);
-        if (error_code != POS_SUCCESS)
+        try {
+            error_code = pos_sdk.textStandardModeAlignment(0);
+            if (error_code != POS_SUCCESS)
+                return false;
+            // set the horizontal and vertical motion units
+            pos_sdk.systemSetMotionUnit(100, 100);
+
+            // set line height
+            pos_sdk.textSetLineHeight(10);
+            int FontStyle = 0;
+            int FontType = 0;
+
+            // set character font
+            pos_sdk.textSelectFont(FontType, FontStyle);
+
+            // set character size
+            pos_sdk.textSelectFontMagnifyTimes(1, 1);
+        } catch (Exception e) {
+            Crashlytics.logException(e);
             return false;
-        // set the horizontal and vertical motion units
-        pos_sdk.systemSetMotionUnit(100, 100);
-
-        // set line height
-        pos_sdk.textSetLineHeight(10);
-        int FontStyle = 0;
-        int FontType = 0;
-
-        // set character font
-        pos_sdk.textSelectFont(FontType, FontStyle);
-
-        // set character size
-        pos_sdk.textSelectFontMagnifyTimes(1, 1);
-
+        }
         return true;
     }
 
