@@ -5,7 +5,7 @@ import io.realm.RealmObject;
 /**
  * Created by Guarionex on 5/24/2016.
  */
-public class SyncServerConfiguration extends RealmObject {
+public class SyncServerConfiguration  {
     private String servername;
     private String ipAddress;
     private String port;
