@@ -23,7 +23,7 @@ import io.realm.RealmSchema;
  * Created by Guarionex on 4/13/2016.
  */
 public class EmobilePOSRealmMigration implements io.realm.RealmMigration {
-    public static int REALM_SCHEMA_VERSION = 11;
+    public static int REALM_SCHEMA_VERSION = 12;
 
     @Override
     public void migrate(DynamicRealm realm, long oldVersion, long newVersion) {
@@ -150,6 +150,12 @@ public class EmobilePOSRealmMigration implements io.realm.RealmMigration {
                     if (!schema.get(EmobileBiometric.class.getSimpleName()).hasField("isSync")) {
                         schema.get(EmobileBiometric.class.getSimpleName()).addField("isSync",
                                 boolean.class, FieldAttribute.INDEXED);
+                    }
+                    oldVersion++;
+                }
+                if (oldVersion == 11) {
+                    if (schema.contains(SyncServerConfiguration.class.getSimpleName())) {
+                        schema.remove(SyncServerConfiguration.class.getSimpleName());
                     }
                     oldVersion++;
                 }
