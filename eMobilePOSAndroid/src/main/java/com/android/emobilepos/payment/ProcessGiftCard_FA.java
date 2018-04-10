@@ -548,6 +548,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         } else {
             new processLivePaymentAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, generatedURL);
         }
+
     }
 
     private void processStoreForward(String payment_xml, Payment payment) {
@@ -743,8 +744,12 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
                     fieldAmountTendered.setText(fieldAmountDue.getText().toString());
                     break;
                 case R.id.processButton:
-                    if (validatePaymentData())
+                    v.setEnabled(false);
+                    if (validatePaymentData()) {
                         processPayment();
+                    } else {
+                        v.setEnabled(true);
+                    }
                     break;
             }
         }
@@ -903,7 +908,6 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         @Override
         protected void onPostExecute(String unused) {
             myProgressDialog.dismiss();
-
             if (wasProcessed) // payment processing succeeded
             {
                 payment.setPay_resultcode(parsedMap.get("pay_resultcode"));
@@ -919,6 +923,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
                 showBalancePrompt("Status: " + parsedMap.get("epayStatusCode") + "\n" + "Auth. Amount: " + (parsedMap.get("AuthorizedAmount") == null ? "0.00" : parsedMap.get("AuthorizedAmount")) + "\n" + "Card Balance: " + Global.getCurrencyFrmt(parsedMap.get("CardBalance")) + "\n");
             } else // payment processing failed
             {
+                findViewById(R.id.processButton).setEnabled(true);
                 Global.showPrompt(activity, R.string.dlog_title_error, errorMsg);
             }
         }
