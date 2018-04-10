@@ -114,6 +114,8 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
     private BBDeviceController bbDeviceController;
     private BBPosShelpaDeviceDriver listener;
     private boolean bcrScanning;
+    private String email;
+    private String phone;
 
 
     @Override
@@ -172,7 +174,8 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
                 }
             }
         }
-
+        email = extras.getString("ord_email", "");
+        phone = extras.getString("ord_phone", "");
         subtotal.setText(
                 Global.formatDoubleToCurrency(0.00));
         tax1.setText(
@@ -447,7 +450,8 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         payment.setPay_id(extras.getString("pay_id"));
 
         payment.setEmp_id(String.valueOf(assignEmployee.getEmpId()));
-
+        payment.setPay_email(email);
+        payment.setPay_phone(phone);
         if (!extras.getBoolean("histinvoices")) {
             payment.setJob_id(inv_id);
         } else {
