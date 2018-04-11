@@ -1151,7 +1151,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     } else {
                         OrdersHandler.deleteTransaction(OrderingMain_FA.this, global.order.ord_id);
                     }
-                    global.resetOrderDetailsValues();
+
                     global.clearListViewData();
                     msrWasLoaded = false;
                     cardReaderConnected = false;
