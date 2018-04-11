@@ -180,8 +180,14 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 
     @Override
     public boolean printPaymentDetails(String payID, int type, boolean isReprint, EMVContainer emvContainer) {
-        openUsbInterface();
-        printPaymentDetailsReceipt(payID, type, isReprint, LINE_WIDTH, emvContainer);
+        try {
+            openUsbInterface();
+            if (isUSBConnected()) {
+                printPaymentDetailsReceipt(payID, type, isReprint, LINE_WIDTH, emvContainer);
+            }
+        } catch (Exception e) {
+            Crashlytics.logException(e);
+        }
         return true;
     }
 
@@ -338,7 +344,13 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
         openUsbInterface();
         new Thread(new Runnable() {
             public void run() {
-                pos_sdk.cashdrawerOpen(0, 100, 100);
+                try {
+                    if (isUSBConnected()) {
+                        pos_sdk.cashdrawerOpen(0, 100, 100);
+                    }
+                } catch (Exception e) {
+                    Crashlytics.logException(e);
+                }
             }
         }).start();
 

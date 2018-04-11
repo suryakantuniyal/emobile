@@ -144,6 +144,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     private UpdateHeaderTitleCallback callBackUpdateHeaderTitle;
     private String order_email = "";
     private Bundle extras;
+    private String order_phone;
 
     public Receipt_FR() {
 
@@ -818,9 +819,14 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         if (!myPref.getPreferences(MyPreferences.pref_ask_order_comments)) {
             editTextDialogComments.setVisibility(View.GONE);
         }
-        if (myPref.isCustSelected())
-            emailInput.setText(myPref.getCustEmail());
+        if (myPref.isCustSelected()) {
+            CustomersHandler customersHandler = new CustomersHandler(getActivity());
+            Customer customer = customersHandler.getCustomer(myPref.getCustID());
+            emailInput.setText(customer.getCust_email());
+            phoneNum.setText(customer.getCust_phone());
+        }
         done.setOnClickListener(new View.OnClickListener() {
+
 
             @Override
             public void onClick(View v) {
@@ -829,6 +835,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 if (!editTextDialogComments.getText().toString().isEmpty()) {
                     getOrderingMainFa().global.setSelectedComments(editTextDialogComments.getText().toString());
                 }
+                order_email=emailInput.getText().toString();
+                order_phone = phoneNum.getText().toString();
                 if (!emailInput.getText().toString().isEmpty()) {
                     if (checkEmail(emailInput.getText().toString())) {
                         if (isToGo) {
@@ -1523,6 +1531,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         intent.putExtra("ord_taxID", OrderTotalDetails_FR.taxID);
         intent.putExtra("ord_type", Global.ord_type);
         intent.putExtra("ord_email", order_email);
+        intent.putExtra("ord_phone", order_phone);
 
         if (myPref.isCustSelected()) {
             intent.putExtra("cust_id", myPref.getCustID());

@@ -114,6 +114,8 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
     private BBDeviceController bbDeviceController;
     private BBPosShelpaDeviceDriver listener;
     private boolean bcrScanning;
+    private String email;
+    private String phone;
 
 
     @Override
@@ -172,7 +174,8 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
                 }
             }
         }
-
+        email = extras.getString("ord_email", "");
+        phone = extras.getString("ord_phone", "");
         subtotal.setText(
                 Global.formatDoubleToCurrency(0.00));
         tax1.setText(
@@ -447,7 +450,8 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         payment.setPay_id(extras.getString("pay_id"));
 
         payment.setEmp_id(String.valueOf(assignEmployee.getEmpId()));
-
+        payment.setPay_email(email);
+        payment.setPay_phone(phone);
         if (!extras.getBoolean("histinvoices")) {
             payment.setJob_id(inv_id);
         } else {
@@ -548,6 +552,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         } else {
             new processLivePaymentAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, generatedURL);
         }
+
     }
 
     private void processStoreForward(String payment_xml, Payment payment) {
@@ -743,8 +748,12 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
                     fieldAmountTendered.setText(fieldAmountDue.getText().toString());
                     break;
                 case R.id.processButton:
-                    if (validatePaymentData())
+                    v.setEnabled(false);
+                    if (validatePaymentData()) {
                         processPayment();
+                    } else {
+                        v.setEnabled(true);
+                    }
                     break;
             }
         }
@@ -903,7 +912,6 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         @Override
         protected void onPostExecute(String unused) {
             myProgressDialog.dismiss();
-
             if (wasProcessed) // payment processing succeeded
             {
                 payment.setPay_resultcode(parsedMap.get("pay_resultcode"));
@@ -919,6 +927,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
                 showBalancePrompt("Status: " + parsedMap.get("epayStatusCode") + "\n" + "Auth. Amount: " + (parsedMap.get("AuthorizedAmount") == null ? "0.00" : parsedMap.get("AuthorizedAmount")) + "\n" + "Card Balance: " + Global.getCurrencyFrmt(parsedMap.get("CardBalance")) + "\n");
             } else // payment processing failed
             {
+                findViewById(R.id.processButton).setEnabled(true);
                 Global.showPrompt(activity, R.string.dlog_title_error, errorMsg);
             }
         }
