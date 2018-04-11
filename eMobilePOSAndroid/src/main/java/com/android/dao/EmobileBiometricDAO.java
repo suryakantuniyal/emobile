@@ -157,6 +157,7 @@ public class EmobileBiometricDAO {
         try {
             for (EmobileBiometric biometric : emobileBiometrics) {
                 biometric.initRealmId();
+                biometric.setSync(true);
                 RealmList<BiometricFid> fids = biometric.getFids();
                 for (BiometricFid fid : fids) {
                     fid.decodeFmdBase64();
