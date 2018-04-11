@@ -1473,7 +1473,7 @@ public class GenerateXML {
                 serializer.text(p.getClerk_id());
                 serializer.endTag(empstr, "clerk_id");
                 serializer.startTag(empstr, "pay_ccfournum");
-                serializer.text(p.getPay_ccnum());
+                serializer.text(p.getCcnum_last4());
                 serializer.endTag(empstr, "pay_ccfournum");
                 serializer.startTag(empstr, "pay_cardtype");
                 serializer.text(p.getCard_type());
