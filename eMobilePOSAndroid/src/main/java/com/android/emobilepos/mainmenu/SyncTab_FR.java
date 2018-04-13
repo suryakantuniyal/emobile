@@ -212,6 +212,9 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
                 SynchMethods sm = new SynchMethods(dbManager);
                 if (NetworkUtils.isConnectedToInternet(getActivity())) {
                     sm.synchSend(Global.FROM_SYNCH_ACTIVITY, true);
+                } else {
+                    dialog.dismiss();
+                    Global.showPrompt(getActivity(), R.string.sync_title, getString(R.string.dlog_msg_no_internet_access));
                 }
                 break;
             case R.id.syncReceiveButton:
