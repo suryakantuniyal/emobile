@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v4.widget.CursorAdapter;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -50,7 +51,6 @@ import drivers.digitalpersona.DigitalPersona;
 import interfaces.BCRCallbacks;
 import interfaces.BiometricCallbacks;
 import interfaces.EMSCallBack;
-import util.StringUtil;
 import util.json.UIUtils;
 
 public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements BiometricCallbacks, OnClickListener, OnItemClickListener, BCRCallbacks, EMSCallBack {
@@ -468,8 +468,11 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
             final ViewHolder holder = (ViewHolder) view.getTag();
             String temp = cursor.getString(holder.i_cust_name);
             String lastname = cursor.getString(holder.i_cust_lastName);
-            if (temp != null)
-                holder.cust_name.setText(String.format("%s %s", temp, StringUtil.nullStringToEmpty(lastname)));
+            if (!TextUtils.isEmpty(temp)) {
+                holder.cust_name.setText(temp);
+            } else if (!TextUtils.isEmpty(lastname)) {
+                holder.cust_name.setText(lastname);
+            }
 
             temp = cursor.getString(holder.i_CompanyName);
             if (temp != null)

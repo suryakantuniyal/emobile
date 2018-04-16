@@ -126,12 +126,14 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
 
 
     public static void startDefault(Activity activity, Global.TransactionType type) {
-        if (validateClerkShift(type, activity))
-            if (activity != null && type != null) {
-                Intent intent = new Intent(activity, OrderingMain_FA.class);
-                intent.putExtra("option_number", type);
-                activity.startActivityForResult(intent, 0);
-            }
+        if (type != null) {
+            if (validateClerkShift(type, activity))
+                if (activity != null && type != null) {
+                    Intent intent = new Intent(activity, OrderingMain_FA.class);
+                    intent.putExtra("option_number", type);
+                    activity.startActivityForResult(intent, 0);
+                }
+        }
 
     }
 
@@ -346,41 +348,28 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                     break;
                 }
                 case SALE_RECEIPT: {
-//                    boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
-//                    if (hasPermissions) {
-//                        if (myPref.isCustomerRequired()) {
-//                            if (myPref.isRestaurantMode() &&
-//                                    myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
-//                                askEatInToGo();
-//                            } else {
-//                                intent = new Intent(getActivity(), OrderingMain_FA.class);
-//                                intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.TO_GO);
-//                                intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
-//                                startActivityForResult(intent, 0);
-//                            }
-//
-//                        } else {
-//                            promptWithCustomer();
-//                        }
-//                    } else {
-//                        Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
-//                    }
-                    boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
-                            SecurityManager.SecurityAction.OPEN_ORDER);
+                    boolean hasPermissions = SecurityManager.hasPermissions(getActivity(), SecurityManager.SecurityAction.OPEN_ORDER);
                     if (hasPermissions) {
                         if (validateClerkShift(Global.TransactionType.getByCode(pos), getActivity())) {
-                            if (myPref.isRestaurantMode() &&
-                                    myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
-                                askEatInToGo();
+                            if (myPref.isCustomerRequired()) {
+                                if (myPref.isRestaurantMode() &&
+                                        myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
+                                    askEatInToGo();
+                                } else {
+                                    intent = new Intent(getActivity(), OrderingMain_FA.class);
+                                    intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.TO_GO);
+                                    intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
+                                    startActivityForResult(intent, 0);
+                                }
+
                             } else {
-                                intent = new Intent(getActivity(), OrderingMain_FA.class);
-                                intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
-                                startActivityForResult(intent, 0);
+                                promptWithCustomer();
                             }
                         }
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                     }
+
                     break;
                 }
                 case ORDERS: {
@@ -532,56 +521,36 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                     pickLocations(true);
                     break;
                 case SHIFTS: {
-//                    boolean hasPermissions = myPref.isUseClerks() && SecurityManager.hasPermissions(getActivity(),
-//                            SecurityManager.SecurityAction.SHIFT_CLERK);
-//                    if (hasPermissions) {
-//                        intent = new Intent(getActivity(), ShiftsActivity.class);
-//                        startActivity(intent);
-//                    } else {
-//                        Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
-//                    }
-//                    break;
-                    boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
+                    boolean hasPermissions = myPref.isUseClerks() && SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.SHIFT_CLERK);
                     if (hasPermissions) {
-                        if (myPref.isUseClerks() && validateClerkShift(Global.TransactionType.getByCode(pos), getActivity())) {
+                        if (validateClerkShift(Global.TransactionType.getByCode(pos), getActivity())) {
                             intent = new Intent(getActivity(), ShiftsActivity.class);
                             startActivity(intent);
-                        } else if (!myPref.isUseClerks()) {
-                            promptClerkLogin(Global.TransactionType.getByCode(pos));
                         }
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                     }
                     break;
+
                 }
                 case SHIFT_EXPENSES: {
-//                    boolean hasPermissions = myPref.isUseClerks() && SecurityManager.hasPermissions(getActivity(),
-//                            SecurityManager.SecurityAction.NO_SALE);
-//                    if (hasPermissions) {
-//                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen()) {
-//                            intent = new Intent(getActivity(), ShiftExpensesList_FA.class);
-//                            startActivity(intent);
-//                        } else {
-//                            Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
-//                        }
-//                    } else {
-//                        Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
-//                    }
-//                    break;
-                    boolean hasPermissions = SecurityManager.hasPermissions(getActivity(),
+                    boolean hasPermissions = myPref.isUseClerks() && SecurityManager.hasPermissions(getActivity(),
                             SecurityManager.SecurityAction.NO_SALE);
                     if (hasPermissions) {
-                        if (myPref.isUseClerks() && validateClerkShift(Global.TransactionType.getByCode(pos), getActivity())) {
-                            intent = new Intent(getActivity(), ShiftExpensesList_FA.class);
-                            startActivity(intent);
-                        } else if (!myPref.isUseClerks()) {
-                            promptClerkLogin(Global.TransactionType.getByCode(pos));
+                        if (!myPref.isUseClerks() || ShiftDAO.isShiftOpen()) {
+                            if (validateClerkShift(Global.TransactionType.getByCode(pos), getActivity())) {
+                                intent = new Intent(getActivity(), ShiftExpensesList_FA.class);
+                                startActivity(intent);
+                            }
+                        } else {
+                            Global.showPrompt(getActivity(), R.string.shift_open_shift, getString(R.string.dlog_msg_error_shift_needs_to_be_open));
                         }
                     } else {
                         Global.showPrompt(getActivity(), R.string.security_alert, getString(R.string.permission_denied));
                     }
                     break;
+
                 }
             }
 
