@@ -982,14 +982,6 @@ public class SynchMethods {
         tempFile.delete();
     }
 
-//    private void synchCustomers() throws IOException, SAXException {
-//        post.postData(7, "Customers");
-//        SAXSynchHandler synchHandler = new SAXSynchHandler(context, Global.S_CUSTOMERS);
-//        File tempFile = new File(tempFilePath);
-//        sp.parse(tempFile, synchHandler);
-//        tempFile.delete();
-//    }
-
     private void synchCustomers() throws IOException, SAXException, NoSuchAlgorithmException, KeyManagementException {
         Gson gson = JsonUtils.getInstance();
         GenerateXML xml = new GenerateXML(context);
