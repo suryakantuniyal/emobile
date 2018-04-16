@@ -344,7 +344,7 @@ public class HistoryPayments_FA extends BaseFragmentActivityActionBar implements
                 temp = "";
             if (!temp.isEmpty())
                 temp = " (" + temp + ")";
-            myHolder.title.setText(String.format("%s%s", cursor.getString(myHolder.i_id), temp));
+            myHolder.title.setText(String.format("%s %s", cursor.getString(myHolder.i_id), temp));
 
             temp = cursor.getString(myHolder.i_pay_amount);
             if (TextUtils.isEmpty(temp))
