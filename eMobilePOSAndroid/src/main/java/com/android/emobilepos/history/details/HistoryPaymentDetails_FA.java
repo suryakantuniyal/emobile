@@ -112,8 +112,8 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
         boolean isDeclined = Boolean.parseBoolean(extras.getString("isDeclined"));
 
 
-        printButton = (Button) findViewById(R.id.printButton);
-        voidButton = (Button) findViewById(R.id.histpayVoidBut);
+        printButton = findViewById(R.id.printButton);
+        voidButton = findViewById(R.id.histpayVoidBut);
         voidButton.setEnabled(!isDeclined && !isVoid);
 
         allInfoLeft = Arrays.asList(getString(R.string.pay_details_id), getString(R.string.pay_details_date),
@@ -140,13 +140,13 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
             allInfoRight = Arrays.asList("", "", "", "", "", "");
         }
 
-        ListView myListView = (ListView) findViewById(R.id.payDetailsLV);
-        TextView headerTitle = (TextView) findViewById(R.id.HeaderTitle);
+        ListView myListView = findViewById(R.id.payDetailsLV);
+        TextView headerTitle = findViewById(R.id.HeaderTitle);
         headerTitle.setText(getString(R.string.pay_details_title));
         View headerView = getLayoutInflater().inflate(R.layout.orddetails_lvheader_adapter, (ViewGroup) findViewById(R.id.order_header_root));
-        TextView name = (TextView) headerView.findViewById(R.id.ordLVHeaderTitle);
-        TextView paid_amount = (TextView) headerView.findViewById(R.id.ordLVHeaderSubtitle);
-        ImageView receipt = (ImageView) headerView.findViewById(R.id.ordTicketImg);
+        TextView name = headerView.findViewById(R.id.ordLVHeaderTitle);
+        TextView paid_amount = headerView.findViewById(R.id.ordLVHeaderSubtitle);
+        ImageView receipt = headerView.findViewById(R.id.ordTicketImg);
         name.setText(cust_name);
         paid_amount.setText(Global.getCurrencyFormat(pay_amount));
         String encodedImg = paymentDetails.getPay_signature();
@@ -162,7 +162,7 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
         }
         myListView.addHeaderView(headerView);
         View footerView = getLayoutInflater().inflate(R.layout.orddetails_lvfooter_adapter, (ViewGroup) findViewById(R.id.order_footer_root));
-        final ImageView mapImg = (ImageView) footerView.findViewById(R.id.ordDetailsMapImg);
+        final ImageView mapImg = footerView.findViewById(R.id.ordDetailsMapImg);
         loadMapImage(mapImg, paymentDetails.getPay_latitude(), paymentDetails.getPay_longitude());
         myListView.addFooterView(footerView);
         ListViewAdapter myAdapter = new ListViewAdapter(activity);
@@ -322,23 +322,31 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
         protected void onPostExecute(String unused) {
             myProgressDialog.dismiss();
 
-            if (!printSuccessful)
-                showPrintDlg();
+            if (!printSuccessful) {
+                showPrintDlg(false);
+            } else if (myPref.isMultiplePrints()) {
+                showPrintDlg(true);
+            }
         }
     }
 
-    private void showPrintDlg() {
+    private void showPrintDlg(boolean isReprint) {
         final Dialog dlog = new Dialog(this, R.style.Theme_TransparentTest);
         dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dlog.setCancelable(false);
         dlog.setContentView(R.layout.dlog_btn_left_right_layout);
-        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
-        viewTitle.setText(R.string.dlog_title_error);
-        viewMsg.setText(R.string.dlog_msg_failed_print);
+        TextView viewTitle = dlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = dlog.findViewById(R.id.dlogMessage);
+        if (isReprint) {
+            viewTitle.setText(R.string.dlog_title_confirm);
+            viewMsg.setText(R.string.dlog_msg_want_to_reprint);
+        } else {
+            viewTitle.setText(R.string.dlog_title_error);
+            viewMsg.setText(R.string.dlog_msg_failed_print);
+        }
         dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
-        Button btnYes = (Button) dlog.findViewById(R.id.btnDlogLeft);
-        Button btnNo = (Button) dlog.findViewById(R.id.btnDlogRight);
+        Button btnYes = dlog.findViewById(R.id.btnDlogLeft);
+        Button btnNo = dlog.findViewById(R.id.btnDlogRight);
         btnYes.setText(R.string.button_yes);
         btnNo.setText(R.string.button_no);
         btnYes.setOnClickListener(new View.OnClickListener() {
@@ -403,20 +411,20 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
         globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         globalDlog.setCancelable(true);
         globalDlog.setContentView(R.layout.dlog_field_single_layout);
-        final EditText viewField = (EditText) globalDlog.findViewById(R.id.dlogFieldSingle);
+        final EditText viewField = globalDlog.findViewById(R.id.dlogFieldSingle);
         viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        TextView viewTitle = (TextView) globalDlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) globalDlog.findViewById(R.id.dlogMessage);
+        TextView viewTitle = globalDlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = globalDlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_confirm);
         viewMsg.setText(R.string.dlog_title_enter_manager_password);
-        Button btnCancel = (Button) globalDlog.findViewById(R.id.btnCancelDlogSingle);
+        Button btnCancel = globalDlog.findViewById(R.id.btnCancelDlogSingle);
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 globalDlog.dismiss();
             }
         });
-        Button btnOk = (Button) globalDlog.findViewById(R.id.btnDlogSingle);
+        Button btnOk = globalDlog.findViewById(R.id.btnDlogSingle);
         btnOk.setText(R.string.button_ok);
         btnOk.setOnClickListener(new View.OnClickListener() {
 
@@ -545,8 +553,8 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
                     case 0: // divider
                     {
                         convertView = myInflater.inflate(R.layout.orddetails_lvdivider_adapter, null);
-                        holder.textLine1 = (TextView) convertView.findViewById(R.id.orderDivLeft);
-                        holder.textLine2 = (TextView) convertView.findViewById(R.id.orderDivRight);
+                        holder.textLine1 = convertView.findViewById(R.id.orderDivLeft);
+                        holder.textLine2 = convertView.findViewById(R.id.orderDivRight);
                         if (position == 0) {
                             holder.textLine1.setText(getString(R.string.pay_details_infomation));
                         } else // if(position == allInfoLeft.size()+1)
@@ -558,8 +566,8 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
                     case 1: // content in divider
                     {
                         convertView = myInflater.inflate(R.layout.orddetails_lvinfo_adapter, null);
-                        holder.textLine1 = (TextView) convertView.findViewById(R.id.ordInfoLeft);
-                        holder.textLine2 = (TextView) convertView.findViewById(R.id.ordInfoRight);
+                        holder.textLine1 = convertView.findViewById(R.id.ordInfoLeft);
+                        holder.textLine2 = convertView.findViewById(R.id.ordInfoRight);
                         holder.textLine1.setText(allInfoLeft.get(position - 1));
                         holder.textLine2.setText(allInfoRight.get(position - 1));
                         break;

@@ -37,8 +37,6 @@ import android.widget.TextView;
 
 import com.android.dao.ShiftDAO;
 import com.android.dao.StoredPaymentsDAO;
-import com.android.database.CustomersHandler;
-import com.android.database.OrderProductsHandler;
 import com.android.database.OrdersHandler;
 import com.android.database.PaymentsHandler;
 import com.android.database.ProductsImagesHandler;
@@ -51,7 +49,6 @@ import com.android.emobilepos.security.SecurityManager;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.CreditCardInfo;
-import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NumberUtils;
@@ -328,15 +325,21 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
 
     }
 
-    private void showPrintDlg() {
+    private void showPrintDlg(boolean isReprint) {
         final Dialog dlog = new Dialog(activity, R.style.Theme_TransparentTest);
         dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dlog.setCancelable(false);
         dlog.setContentView(R.layout.dlog_btn_left_right_layout);
         TextView viewTitle = dlog.findViewById(R.id.dlogTitle);
         TextView viewMsg = dlog.findViewById(R.id.dlogMessage);
-        viewTitle.setText(R.string.dlog_title_error);
-        viewMsg.setText(R.string.dlog_msg_failed_print);
+        if (isReprint) {
+            viewTitle.setText(R.string.dlog_title_confirm);
+            viewMsg.setText(R.string.dlog_msg_want_to_reprint);
+        } else {
+            viewTitle.setText(R.string.dlog_title_error);
+            viewMsg.setText(R.string.dlog_msg_failed_print);
+        }
+
         dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
         Button btnYes = dlog.findViewById(R.id.btnDlogLeft);
         Button btnNo = dlog.findViewById(R.id.btnDlogRight);
@@ -644,8 +647,11 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         @Override
         protected void onPostExecute(String unused) {
             myProgressDialog.dismiss();
-            if (!printSuccessful)
-                showPrintDlg();
+            if (!printSuccessful) {
+                showPrintDlg(false);
+            } else if (myPref.isMultiplePrints()) {
+                showPrintDlg(true);
+            }
         }
     }
 
