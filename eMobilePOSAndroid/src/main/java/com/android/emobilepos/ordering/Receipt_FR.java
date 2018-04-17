@@ -1655,17 +1655,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             getOrderingMainFa().global.resetOrderDetailsValues();
         }
         new SyncOnHolds().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-//        DBManager dbManager = new DBManager(getActivity());
-//        SynchMethods sm = new SynchMethods(dbManager);
-//        sm.synchSendOnHold(false, false, getActivity(), null);
-//
-//        if (!isToGo && ((OrderingMain_FA) getActivity()).orderingAction != OrderingMain_FA.OrderingAction.HOLD
-//                && (((OrderingMain_FA) getActivity()).orderingAction == OrderingMain_FA.OrderingAction.CHECKOUT ||
-//                ((OrderingMain_FA) getActivity()).orderingAction != OrderingMain_FA.OrderingAction.BACK_PRESSED)) {
-//            showSplitedOrderPreview();
-//        } else {
-//            getActivity().finish();
-//        }
     }
 
     public void voidCancelOnHold(int type) {

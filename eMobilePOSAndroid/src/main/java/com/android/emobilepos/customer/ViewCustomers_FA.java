@@ -88,7 +88,7 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
         myListView = findViewById(R.id.customerSelectionLV);
         search = findViewById(R.id.searchCustomer);
         Collection<UsbDevice> usbDevices = DeviceUtils.getUSBDevices(this);
-        isReaderConnected = usbDevices != null && usbDevices.size() > 0;
+        isReaderConnected = usbDevices.size() > 0;
         handler = new CustomersHandler(this);
         myCursor = handler.getCursorAllCust();
         adap2 = new CustomCursorAdapter(this, myCursor, CursorAdapter.NO_SELECTION);
@@ -455,9 +455,9 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
 
     public class CustomCursorAdapter extends CursorAdapter {
         private LayoutInflater inflater;
-        private boolean displayCustAccountNum = false;
+        private boolean displayCustAccountNum;
 
-        public CustomCursorAdapter(Context context, Cursor c, int flags) {
+        CustomCursorAdapter(Context context, Cursor c, int flags) {
             super(context, c, flags);
             inflater = LayoutInflater.from(context);
             displayCustAccountNum = myPref.getPreferences(MyPreferences.pref_display_customer_account_number);
@@ -469,9 +469,7 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
             String temp = cursor.getString(holder.i_cust_name);
             String lastname = cursor.getString(holder.i_cust_lastName);
             if (!TextUtils.isEmpty(temp)) {
-                holder.cust_name.setText(temp);
-            } else if (!TextUtils.isEmpty(lastname)) {
-                holder.cust_name.setText(lastname);
+                holder.cust_name.setText(String.format("%s %s", temp, lastname));
             }
 
             temp = cursor.getString(holder.i_CompanyName);
@@ -521,7 +519,7 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
             holder.moreInfoIcon = retView.findViewById(R.id.custSelecIcon);
             holder.i_cust_id = cursor.getColumnIndex("_id");
             holder.i_account_number = cursor.getColumnIndex("AccountNumnber");
-            holder.i_cust_name = cursor.getColumnIndex("cust_name");
+            holder.i_cust_name = cursor.getColumnIndex("cust_firstName");
             holder.i_cust_lastName = cursor.getColumnIndex("cust_lastName");
 
 
