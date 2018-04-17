@@ -102,10 +102,12 @@ public class HistoryTransactions_FA extends BaseFragmentActivityActionBar implem
             public void afterTextChanged(Editable arg0) {
 
             }
+
             @Override
             public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
 
             }
+
             @Override
             public void onTextChanged(CharSequence s, int arg1, int arg2, int arg3) {
                 String test = s.toString().trim();
@@ -222,6 +224,7 @@ public class HistoryTransactions_FA extends BaseFragmentActivityActionBar implem
 
     public enum Limiters {
         orders, returns, invoices, estimates, receipts;
+
         public static Limiters toLimit(String str) {
             try {
                 return valueOf(str);
@@ -277,6 +280,7 @@ public class HistoryTransactions_FA extends BaseFragmentActivityActionBar implem
         CustomersHandler custHandler = new CustomersHandler(activity);
         ViewHolder myHolder;
         String temp = "";
+
         public CustomCursorAdapter(Context context, Cursor c, int flags) {
             super(context, c, flags);
             inflater = LayoutInflater.from(context);

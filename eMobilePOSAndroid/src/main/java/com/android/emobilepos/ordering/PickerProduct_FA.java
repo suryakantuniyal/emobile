@@ -473,7 +473,9 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
     private void refreshAttributeProduct(Cursor myCursor) {
 
 //        OrderProduct orderProduct = new OrderProduct();
-        orderProduct = global.order.getOrderProducts().get(modifyOrderPosition);
+        if(isModify) {
+            orderProduct = global.order.getOrderProducts().get(modifyOrderPosition);
+        }
         orderProduct.setProd_id(myCursor.getString(myCursor.getColumnIndex("_id")));
         orderProduct.setOrdprod_name(myCursor.getString(myCursor.getColumnIndex("prod_name")));
 
