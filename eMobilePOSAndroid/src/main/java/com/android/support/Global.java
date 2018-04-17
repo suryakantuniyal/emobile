@@ -1411,7 +1411,6 @@ public class Global extends MultiDexApplication {
         selectedPO = "";
         taxID = "";
         taxPosition = 0;
-        order = null;
         ord_type = null;
         cat_id = "0";
         Global.overallPaidAmount = 0;

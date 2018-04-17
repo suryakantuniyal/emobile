@@ -257,7 +257,7 @@ public class OrderProductListAdapter extends BaseAdapter {
 
         switch (type) {
             case TYPE_HEADER:
-                ImageButton menuButton = (ImageButton) convertView.findViewById(R.id.headerMenubutton);
+                ImageButton menuButton = convertView.findViewById(R.id.headerMenubutton);
                 menuButton.setOnClickListener((OrderingMain_FA) activity);
                 menuButton.setTag(orderSeatProductList.get(position));
                 convertView.findViewById(R.id.seatHeaderSection).setVisibility(View.VISIBLE);
@@ -280,15 +280,15 @@ public class OrderProductListAdapter extends BaseAdapter {
                 convertView = mInflater.inflate(R.layout.product_receipt_adapter, null);
                 convertView.findViewById(R.id.seatHeaderSection).setVisibility(View.GONE);
                 convertView.findViewById(R.id.itemSection).setVisibility(View.VISIBLE);
-                holder.itemQty = (TextView) convertView.findViewById(R.id.itemQty);
-                holder.itemName = (TextView) convertView.findViewById(R.id.itemName);
-                holder.itemAmount = (TextView) convertView.findViewById(R.id.itemAmount);
-                holder.distQty = (TextView) convertView.findViewById(R.id.distQty);
-                holder.distAmount = (TextView) convertView.findViewById(R.id.distAmount);
-                holder.granTotal = (TextView) convertView.findViewById(R.id.granTotal);
-                holder.addonsTextView = (TextView) convertView.findViewById(R.id.addonsTextView);
-                holder.addonButton = (Button) convertView.findViewById(R.id.addonButton);
-                holder.loyaltyPayButton = (ImageButton) convertView.findViewById(R.id.loyaltyPayimageButton);
+                holder.itemQty = convertView.findViewById(R.id.itemQty);
+                holder.itemName = convertView.findViewById(R.id.itemName);
+                holder.itemAmount = convertView.findViewById(R.id.itemAmount);
+                holder.distQty = convertView.findViewById(R.id.distQty);
+                holder.distAmount = convertView.findViewById(R.id.distAmount);
+                holder.granTotal = convertView.findViewById(R.id.granTotal);
+                holder.addonsTextView = convertView.findViewById(R.id.addonsTextView);
+                holder.addonButton = convertView.findViewById(R.id.addonButton);
+                holder.loyaltyPayButton = convertView.findViewById(R.id.loyaltyPayimageButton);
                 if (holder.addonButton != null)
                     holder.addonButton.setFocusable(false);
                 if (orderSeatProductList.get(position).rowType == RowType.TYPE_ITEM) {
