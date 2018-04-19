@@ -208,9 +208,10 @@ public class DigitalPersona {
                         engine = UareUGlobal.GetEngine();
                         stopFingerReader = false;
                         Fmd[] fmds = EmobileBiometricDAO.getFmds(userType);
-                        Realm r = Realm.getDefaultInstance();
-                        RealmResults<EmobileBiometric> all = r.where(EmobileBiometric.class).findAll();
-                        List<EmobileBiometric> emobileBiometrics = r.copyFromRealm(all);
+                        Realm realm = Realm.getDefaultInstance();
+                        RealmResults<EmobileBiometric> all = realm.where(EmobileBiometric.class).findAll();
+                        List<EmobileBiometric> emobileBiometrics = realm.copyFromRealm(all);
+                        realm.close();
                         for (EmobileBiometric biometric : emobileBiometrics) {
                             RealmList<BiometricFid> fids = biometric.getFids();
                             for (BiometricFid fid : fids) {
