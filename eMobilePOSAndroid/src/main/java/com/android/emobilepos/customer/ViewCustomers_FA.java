@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v4.widget.CursorAdapter;
 import android.text.Editable;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -468,28 +467,22 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
             final ViewHolder holder = (ViewHolder) view.getTag();
             String temp = cursor.getString(holder.i_cust_name);
             String lastname = cursor.getString(holder.i_cust_lastName);
-            if (!TextUtils.isEmpty(temp)) {
+            if (temp != null) {
                 holder.cust_name.setText(String.format("%s %s", temp, lastname));
             }
-
             temp = cursor.getString(holder.i_CompanyName);
             if (temp != null)
                 holder.CompanyName.setText(temp);
-
-
             temp = cursor.getString(holder.i_cust_phone);
             if (temp != null)
                 holder.cust_phone.setText(temp);
             temp = cursor.getString(holder.i_pricelevel_name);
             if (temp != null)
                 holder.pricelevel_name.setText(temp);
-
             if (displayCustAccountNum)
                 holder.cust_id.setText(cursor.getString(holder.i_account_number));
             else
                 holder.cust_id.setText(cursor.getString(holder.i_cust_id));
-
-
             holder.moreInfoIcon.setTag(cursor.getString(holder.i_cust_id));
             holder.moreInfoIcon.setOnTouchListener(Global.opaqueImageOnClick());
             holder.moreInfoIcon.setOnClickListener(new View.OnClickListener() {
