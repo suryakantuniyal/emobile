@@ -405,6 +405,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         if (savedInstanceState == null) {
             global.resetOrderDetailsValues();
             global.clearListViewData();
+            global.order = new Order();
         }
         listener = new BBPosShelpaDeviceDriver(this, this);
         bbDeviceController = BBDeviceController.getInstance(
@@ -1151,7 +1152,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     } else {
                         OrdersHandler.deleteTransaction(OrderingMain_FA.this, global.order.ord_id);
                     }
-                    global.resetOrderDetailsValues();
+
                     global.clearListViewData();
                     msrWasLoaded = false;
                     cardReaderConnected = false;
@@ -1194,7 +1195,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     }
                     String upc = invisibleSearchMain.getText().toString().trim().replace("\n", "").replace("\r", "");
 //                    upc = invisibleSearchMain.getText().toString().trim().replace("\r", "");
-                    if(myPref.isRemoveLeadingZerosFromUPC()) {
+                    if (myPref.isRemoveLeadingZerosFromUPC()) {
                         upc = NumberUtils.removeLeadingZeros(upc);
                     }
                     Product product = handler.getUPCProducts(upc, false);
@@ -1327,7 +1328,12 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     }
 
     public boolean validAutomaticAddQty(Product product) {
-        List<OrderProduct> list = OrderProductUtils.getOrderProducts(global.order.getOrderProducts(), product.getId());
+        List<OrderProduct> list;
+        if (global.order != null && global.order.getOrderProducts() != null) {
+            list = OrderProductUtils.getOrderProducts(global.order.getOrderProducts(), product.getId());
+        } else {
+            list = new ArrayList<>();
+        }
         String addedQty = list.isEmpty() ? "0" : list.get(0).getOrdprod_qty();
         double newQty = Double.parseDouble(addedQty) + 1;
         double onHandQty = Double.parseDouble(product.getProdOnHand());

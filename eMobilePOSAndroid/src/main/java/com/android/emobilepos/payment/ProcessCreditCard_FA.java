@@ -858,7 +858,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         String taxAmnt2 = null;
         if (Global.isIvuLoto) {
 
-            if (!extras.getString("Tax1_amount").isEmpty()) {
+            if (!TextUtils.isEmpty(extras.getString("Tax1_amount"))) {
                 taxAmnt1 = extras.getString("Tax1_amount");
                 taxName1 = extras.getString("Tax1_name");
 

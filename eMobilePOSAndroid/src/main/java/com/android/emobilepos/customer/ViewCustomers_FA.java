@@ -50,7 +50,6 @@ import drivers.digitalpersona.DigitalPersona;
 import interfaces.BCRCallbacks;
 import interfaces.BiometricCallbacks;
 import interfaces.EMSCallBack;
-import util.StringUtil;
 import util.json.UIUtils;
 
 public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements BiometricCallbacks, OnClickListener, OnItemClickListener, BCRCallbacks, EMSCallBack {
@@ -88,7 +87,7 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
         myListView = findViewById(R.id.customerSelectionLV);
         search = findViewById(R.id.searchCustomer);
         Collection<UsbDevice> usbDevices = DeviceUtils.getUSBDevices(this);
-        isReaderConnected = usbDevices != null && usbDevices.size() > 0;
+        isReaderConnected = usbDevices.size() > 0;
         handler = new CustomersHandler(this);
         myCursor = handler.getCursorAllCust();
         adap2 = new CustomCursorAdapter(this, myCursor, CursorAdapter.NO_SELECTION);
@@ -455,9 +454,9 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
 
     public class CustomCursorAdapter extends CursorAdapter {
         private LayoutInflater inflater;
-        private boolean displayCustAccountNum = false;
+        private boolean displayCustAccountNum;
 
-        public CustomCursorAdapter(Context context, Cursor c, int flags) {
+        CustomCursorAdapter(Context context, Cursor c, int flags) {
             super(context, c, flags);
             inflater = LayoutInflater.from(context);
             displayCustAccountNum = myPref.getPreferences(MyPreferences.pref_display_customer_account_number);
@@ -468,27 +467,22 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
             final ViewHolder holder = (ViewHolder) view.getTag();
             String temp = cursor.getString(holder.i_cust_name);
             String lastname = cursor.getString(holder.i_cust_lastName);
-            if (temp != null)
-                holder.cust_name.setText(String.format("%s %s", temp, StringUtil.nullStringToEmpty(lastname)));
-
+            if (temp != null) {
+                holder.cust_name.setText(String.format("%s %s", temp, lastname));
+            }
             temp = cursor.getString(holder.i_CompanyName);
             if (temp != null)
                 holder.CompanyName.setText(temp);
-
-
             temp = cursor.getString(holder.i_cust_phone);
             if (temp != null)
                 holder.cust_phone.setText(temp);
             temp = cursor.getString(holder.i_pricelevel_name);
             if (temp != null)
                 holder.pricelevel_name.setText(temp);
-
             if (displayCustAccountNum)
                 holder.cust_id.setText(cursor.getString(holder.i_account_number));
             else
                 holder.cust_id.setText(cursor.getString(holder.i_cust_id));
-
-
             holder.moreInfoIcon.setTag(cursor.getString(holder.i_cust_id));
             holder.moreInfoIcon.setOnTouchListener(Global.opaqueImageOnClick());
             holder.moreInfoIcon.setOnClickListener(new View.OnClickListener() {
@@ -518,7 +512,7 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
             holder.moreInfoIcon = retView.findViewById(R.id.custSelecIcon);
             holder.i_cust_id = cursor.getColumnIndex("_id");
             holder.i_account_number = cursor.getColumnIndex("AccountNumnber");
-            holder.i_cust_name = cursor.getColumnIndex("cust_name");
+            holder.i_cust_name = cursor.getColumnIndex("cust_firstName");
             holder.i_cust_lastName = cursor.getColumnIndex("cust_lastName");
 
 

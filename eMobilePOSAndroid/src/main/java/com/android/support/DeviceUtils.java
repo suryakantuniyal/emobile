@@ -14,6 +14,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.android.dao.DeviceTableDAO;
+import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.models.realms.Device;
@@ -271,7 +272,9 @@ public class DeviceUtils {
                 boolean connected;
                 MyPreferences preferences = new MyPreferences(context);
                 if (intent.getAction().contains("ATTACHED")) {
-                    Toast.makeText(context, "USB connected", Toast.LENGTH_SHORT).show();
+                    if(BuildConfig.DEBUG) {
+                        Toast.makeText(context, "USB connected", Toast.LENGTH_SHORT).show();
+                    }
                     connected = true;
                     if (activity != null && activity instanceof Activity &&
                             ((preferences.getPrinterType() == Global.STAR &&
@@ -289,7 +292,9 @@ public class DeviceUtils {
                         new ReconnectUSBPrinterTask((Activity) activity).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                     }
                 } else if (intent.getAction().contains("DETACHED")) {
-                    Toast.makeText(context, "USB disconnected", Toast.LENGTH_SHORT).show();
+                    if(BuildConfig.DEBUG) {
+                        Toast.makeText(context, "USB disconnected", Toast.LENGTH_SHORT).show();
+                    }
                     connected = false;
                     if (preferences.getPrinterType() == Global.STAR && preferences.getPrinterName().toUpperCase().startsWith("USB")) {
                         Toast.makeText(context, context.getString(R.string.usb_disconnected), Toast.LENGTH_SHORT).show();

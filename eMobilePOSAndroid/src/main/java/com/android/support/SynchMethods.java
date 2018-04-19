@@ -85,11 +85,13 @@ import com.android.saxhandler.SAXSynchOrdPostHandler;
 import com.android.saxhandler.SaxLoginHandler;
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -360,8 +362,10 @@ public class SynchMethods {
 
         JSONArray jsonArray;
         try {
-            jsonArray = new JSONObject(json).getJSONArray("table");
-            if (jsonArray == null) {
+            Object nextValue = new JSONTokener(json).nextValue();
+            if (nextValue instanceof JSONObject) {
+                jsonArray = new JSONObject(json).optJSONArray("table");
+            } else {
                 jsonArray = new JSONArray(json);
             }
             for (int i = 0; i < jsonArray.length(); i++) {
@@ -480,13 +484,13 @@ public class SynchMethods {
         if (count == 0) {
             boolean compactRealm = Realm.compactRealm(Realm.getDefaultConfiguration());
             if (!compactRealm) {
-                Crashlytics.log("Realm compact fail.");
+                Crashlytics.logException(new Exception("Realm compact fail."));
             }
         } else {
-            Crashlytics.log("Realm compact fail. All realm instance must be closed before compactrealm. EmobilePOS Logger.");
+            Crashlytics.logException(new Exception("Realm compact fail. All realm instance must be closed before compactrealm. EmobilePOS Logger."));
         }
         File realmFile = new File(Realm.getDefaultConfiguration().getPath());
-        Crashlytics.log(String.format(Locale.getDefault(), "Account: %s. Realm database file size:%d", preferences.getAcctNumber(), realmFile.length()));
+        Crashlytics.logException(new Exception(String.format(Locale.getDefault(), "Account: %s. Realm database file size:%d", preferences.getAcctNumber(), realmFile.length())));
 
     }
 
@@ -981,14 +985,6 @@ public class SynchMethods {
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
-
-//    private void synchCustomers() throws IOException, SAXException {
-//        post.postData(7, "Customers");
-//        SAXSynchHandler synchHandler = new SAXSynchHandler(context, Global.S_CUSTOMERS);
-//        File tempFile = new File(tempFilePath);
-//        sp.parse(tempFile, synchHandler);
-//        tempFile.delete();
-//    }
 
     private void synchCustomers() throws IOException, SAXException, NoSuchAlgorithmException, KeyManagementException {
         Gson gson = JsonUtils.getInstance();

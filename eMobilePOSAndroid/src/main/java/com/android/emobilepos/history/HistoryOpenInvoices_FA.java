@@ -343,7 +343,7 @@ public class HistoryOpenInvoices_FA extends BaseFragmentActivityActionBar implem
     }
 
 
-    private void showReprintDlg(final String _id) {
+    private void showReprintDlg(final String _id, boolean isReprint) {
         final Dialog dlog = new Dialog(activity, R.style.Theme_TransparentTest);
         dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dlog.setCancelable(false);
@@ -351,10 +351,14 @@ public class HistoryOpenInvoices_FA extends BaseFragmentActivityActionBar implem
 
         TextView viewTitle = dlog.findViewById(R.id.dlogTitle);
         TextView viewMsg = dlog.findViewById(R.id.dlogMessage);
-        viewTitle.setText(R.string.dlog_title_confirm);
+        if (isReprint) {
+            viewTitle.setText(R.string.dlog_title_confirm);
+            viewMsg.setText(R.string.dlog_msg_want_to_reprint);
+        } else {
+            viewTitle.setText(R.string.dlog_title_error);
+            viewMsg.setText(R.string.dlog_msg_failed_print);
+        }
 
-        viewTitle.setText(R.string.dlog_title_error);
-        viewMsg.setText(R.string.dlog_msg_failed_print);
 
         dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
         Button btnYes = dlog.findViewById(R.id.btnDlogLeft);
@@ -407,8 +411,11 @@ public class HistoryOpenInvoices_FA extends BaseFragmentActivityActionBar implem
         @Override
         protected void onPostExecute(String unused) {
             myProgressDialog.dismiss();
-            if (!printSuccessful)
-                showReprintDlg(_inv_id);
+            if (!printSuccessful) {
+                showReprintDlg(_inv_id, false);
+            } else if (myPref.isMultiplePrints()) {
+                showReprintDlg(_inv_id, true);
+            }
         }
     }
 
@@ -497,13 +504,13 @@ public class HistoryOpenInvoices_FA extends BaseFragmentActivityActionBar implem
                 txnID.setText(sb.toString());
                 createdDate.setText(Global.formatToDisplayDate(cursor
                                 .getString(cursor.getColumnIndex("inv_timecreated")),
-                         0));
+                        0));
                 dueDate.setText(Global.formatToDisplayDate(
                         cursor.getString(cursor.getColumnIndex("inv_duedate")),
-                         0));
+                        0));
                 shipDate.setText(Global.formatToDisplayDate(
                         cursor.getString(cursor.getColumnIndex("inv_shipdate")),
-                         0));
+                        0));
 
                 double tempVal = Double.parseDouble(cursor.getString(cursor
                         .getColumnIndex("inv_total")));

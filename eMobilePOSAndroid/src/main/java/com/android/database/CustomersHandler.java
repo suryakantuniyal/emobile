@@ -101,64 +101,6 @@ public class CustomersHandler {
         return attrHash.get(tag);
     }
 
-//    public void insert(List<String[]> data, List<HashMap<String, Integer>> dictionary) {
-//        DBManager.getDatabase().beginTransaction();
-//        try {
-//
-//            custData = data;
-//            dictionaryListMap = dictionary;
-//            SQLiteStatement insert;
-//            String sb = "INSERT INTO " + table_name + " (" + sb1.toString() + ") " +
-//                    "VALUES (" + sb2.toString() + ")";
-//            insert = DBManager.getDatabase().compileStatement(sb);
-//
-//            int size = custData.size();
-//
-//            for (int j = 0; j < size; j++) {
-//                insert.bindString(index(cust_id), getData(cust_id, j)); // cust_id
-//                insert.bindString(index(cust_id_ref), getData(cust_id_ref, j)); // cust_id_ref
-//                insert.bindString(index(qb_sync), getData(qb_sync, j)); // qb_sync
-//                insert.bindString(index(zone_id), getData(zone_id, j)); // zone_id
-//                insert.bindString(index(CompanyName), getData(CompanyName, j)); // CompanyName
-//                insert.bindString(index(Salutation), getData(Salutation, j)); // Salutation
-//                insert.bindString(index(cust_name), getData(cust_name, j)); // cust_name
-//                insert.bindString(index(cust_chain), getData(cust_chain, j)); // cust_chain
-//                insert.bindString(index(cust_balance), getData(cust_balance, j)); // cust_balance
-//                insert.bindString(index(cust_limit), getData(cust_limit, j)); // cust_limit
-//                insert.bindString(index(cust_contact), getData(cust_contact, j)); // cust_contact
-//                insert.bindString(index(cust_firstName), getData(cust_firstName, j)); // cust_firstName
-//                insert.bindString(index(cust_middleName), getData(cust_middleName, j)); // cust_middleName
-//                insert.bindString(index(cust_lastName), getData(cust_lastName, j)); // cust_lastName
-//                insert.bindString(index(cust_phone), getData(cust_phone, j)); // cust_phone
-//                insert.bindString(index(cust_email), getData(cust_email, j)); // cust_email
-//                insert.bindString(index(cust_fax), getData(cust_fax, j)); // cust_fax
-//                insert.bindString(index(cust_update), getData(cust_update, j)); // cust_update
-//                insert.bindString(index(isactive), getData(isactive, j)); // isactive
-//                insert.bindString(index(cust_ordertype), getData(cust_ordertype, j)); // cust_ordertype
-//                insert.bindString(index(cust_taxable), getData(cust_taxable, j)); // cust_taxable
-//                insert.bindString(index(cust_salestaxcode), getData(cust_salestaxcode, j)); // cust_salestaxcode
-//                insert.bindString(index(pricelevel_id), getData(pricelevel_id, j)); // pricelevel_id
-//                insert.bindString(index(cust_terms), getData(cust_terms, j)); // cust_terms
-//                insert.bindString(index(cust_pwd), getData(cust_pwd, j)); // cust_pwd
-//                insert.bindString(index(cust_securityquestion), getData(cust_securityquestion, j)); // cust_securityquestion
-//                insert.bindString(index(cust_securityanswer), getData(cust_securityanswer, j)); // cust_securityanswer
-//                insert.bindString(index(cust_points), getData(cust_points, j)); // cust_points
-//                insert.bindString(index(custidkey), getData(custidkey, j)); // custidkey
-//                insert.bindString(index(cust_id_numeric), getData(cust_id_numeric, j)); // cust_id_numeric
-//                insert.bindString(index(cust_dob), getData(cust_dob, j)); // cust_dob
-//                insert.bindString(index(AccountNumnber), getData(AccountNumnber, j));
-//
-//                insert.execute();
-//                insert.clearBindings();
-//            }
-//            insert.close();
-//            DBManager.getDatabase().setTransactionSuccessful();
-//        } catch (Exception e) {
-//            Crashlytics.logException(e);
-//        } finally {
-//            DBManager.getDatabase().endTransaction();
-//        }
-//    }
 
     public void insertOneCustomer(Customer customer) {
         insert(Arrays.asList(customer));
@@ -241,7 +183,7 @@ public class CustomersHandler {
     }
 
     public Cursor getCursorAllCust() {
-        String query = "SELECT cust_id as _id,AccountNumnber, custidkey, cust_name, cust_lastName,c.pricelevel_id,pl.pricelevel_name," +
+        String query = "SELECT cust_id as _id,AccountNumnber, custidkey, cust_firstName, cust_name, cust_lastName,c.pricelevel_id,pl.pricelevel_name," +
                 "cust_taxable,cust_salestaxcode,cust_email,CompanyName,cust_phone " +
                 "FROM Customers c LEFT OUTER JOIN PriceLevel pl ON c.pricelevel_id = pl.pricelevel_id ORDER BY cust_name";
 
@@ -378,7 +320,7 @@ public class CustomersHandler {
 
     public Cursor getSearchCust(String search)
     {
-        String sb = "SELECT cust_id as _id,c.AccountNumnber, custidkey, cust_name, cust_lastName,c.pricelevel_id,pl.pricelevel_name,cust_taxable,cust_salestaxcode," +
+        String sb = "SELECT cust_id as _id,c.AccountNumnber, custidkey, cust_name, cust_firstName, cust_lastName,c.pricelevel_id,pl.pricelevel_name,cust_taxable,cust_salestaxcode," +
                 "cust_email,CompanyName,cust_phone FROM Customers c LEFT OUTER JOIN PriceLevel pl ON c.pricelevel_id = pl.pricelevel_id " +
                 "WHERE c.cust_name LIKE ? OR c.cust_lastName LIKE ? " +
                 "OR c.cust_id LIKE ? OR c.AccountNumnber LIKE ? " +
