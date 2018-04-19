@@ -835,7 +835,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 if (!editTextDialogComments.getText().toString().isEmpty()) {
                     getOrderingMainFa().global.setSelectedComments(editTextDialogComments.getText().toString());
                 }
-                order_email=emailInput.getText().toString();
+                order_email = emailInput.getText().toString();
                 order_phone = phoneNum.getText().toString();
                 if (!emailInput.getText().toString().isEmpty()) {
                     if (checkEmail(emailInput.getText().toString())) {
@@ -2290,7 +2290,11 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             myProgressDialog.dismiss();
             if (!isPrintStationPrinter) {
                 if (printSuccessful) {
-                    reloadDefaultTransaction();
+                    if (myPref.isMultiplePrints()) {
+                        showPrintDlg(false);
+                    } else {
+                        reloadDefaultTransaction();
+                    }
                 } else {
                     showPrintDlg(true);
                 }
