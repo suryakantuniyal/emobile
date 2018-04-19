@@ -1400,5 +1400,8 @@
     <string name="check_update_stop">Application update was cancelled.</string>
     <string name="clerk_login">Use clerk password</string>
     <string name="config_remove_leading_zeros">Remove leading zeros from UPC/SKU</string>
+    <string name="title_device_list">devices</string>
+    <string name="title_device_detail">device Detail</string>
+    <string name="config_multiple_devices_setup">Multiple Printers Configuration</string>
 
 </resources>

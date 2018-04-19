@@ -61,6 +61,7 @@ import com.android.emobilepos.models.realms.PaymentMethod;
 import com.android.emobilepos.security.ClerkManagementActivity;
 import com.android.emobilepos.security.SecurityManager;
 import com.android.emobilepos.service.SyncConfigServerService;
+import com.android.emobilepos.settings.printers.DeviceListActivity;
 import com.android.support.DateUtils;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
@@ -355,6 +356,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     break;
                 case PRINTING:
                     if (settingsType == SettingsTab_FR.SettingsRoles.ADMIN) {
+                        prefManager.findPreference("pref_multiple_devices_setup").setOnPreferenceClickListener(this);
                         prefManager.findPreference("pref_printek_info").setOnPreferenceClickListener(this);
                         prefManager.findPreference("pref_star_info").setOnPreferenceClickListener(this);
                         prefManager.findPreference("pref_snbc_setup").setOnPreferenceClickListener(this);
@@ -413,7 +415,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                                         if (newValue instanceof Boolean) {
                                             if ((Boolean) newValue && myPref.isSyncplus_AutoScan()) {
                                                 SyncConfigServerService.startService(getActivity());
-                                            }else{
+                                            } else {
                                                 SyncConfigServerService.stopService(getActivity());
                                             }
                                         }
@@ -553,7 +555,10 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
         public boolean onPreferenceClick(Preference preference) {
             Intent intent;
             switch (preference.getTitleRes()) {
-
+                case R.string.config_multiple_devices_setup:
+                    intent = new Intent(getActivity(), DeviceListActivity.class);
+                    startActivity(intent);
+                    break;
                 case R.string.config_mw_with_genius:
                     CheckBoxPreference checkBoxPreference = (CheckBoxPreference) preference;
                     if (checkBoxPreference.isChecked()) {

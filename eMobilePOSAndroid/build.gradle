@@ -51,8 +51,8 @@ android {
         ems {
             minSdkVersion 16
             applicationId 'com.emobilepos.app'
-            versionName "1.2.3.64"
-            versionCode 161
+            versionName "1.2.3.74"
+            versionCode 163
             targetSdkVersion 23
             multiDexEnabled = true
             dimension "ems"
@@ -66,8 +66,8 @@ android {
         icmpevo {
             minSdkVersion 16
             applicationId 'com.emobilepos.icmpevo.app'
-            versionName "1.2.3.64"
-            versionCode 161
+            versionName "1.2.3.74"
+            versionCode 163
             targetSdkVersion 23
             multiDexEnabled = true
             dimension "ems"
@@ -95,8 +95,8 @@ android {
         ivupos {
             minSdkVersion 16
             applicationId 'com.emobilepos.ivupos.app'
-            versionName "1.2.3.64"
-            versionCode 161
+            versionName "1.2.3.74"
+            versionCode 163
             targetSdkVersion 23
             multiDexEnabled = true
             dimension "ems"
@@ -145,7 +145,7 @@ android {
             buildConfigField "int", "POLLING_PERIOD", "10000"
             buildConfigField "int", "BCR_TIMEOUT", "15000"
             buildConfigField "int", "AUTOSYNC_PERIOD", "60000"
-            buildConfigField "boolean", "PRINT_TO_LOG", "false"
+            buildConfigField "boolean", "PRINT_TO_LOG", "true"
             buildConfigField "boolean", "DEBUG_NOMAD", "true"
             buildConfigField "boolean", "USE_DUMMY_START_PRINTER", "false"
             buildConfigField "boolean", "DELETE_INVALID_HOLDS", "true"
@@ -314,3 +314,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth:11.8.0'
 }
 apply plugin: 'com.google.gms.google-services'
+
+dependencies {
+    implementation 'com.android.support:support-v4:27.+'
+    implementation 'com.android.support:recyclerview-v7:27.+'
+}
