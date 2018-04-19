@@ -22,8 +22,8 @@ import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.models.realms.Shift;
 import com.android.emobilepos.models.realms.ShiftExpense;
 import com.android.support.DateUtils;
-import com.android.support.DeviceUtils;
 import com.android.support.Global;
+import com.android.support.MyPreferences;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import java.math.BigDecimal;
@@ -153,7 +153,7 @@ public class ShiftReportDetails_FA extends BaseFragmentActivityActionBar impleme
         }
     }
 
-    private void showPrintDlg() {
+    private void showPrintDlg(boolean isReprint) {
         final Dialog dlog = new Dialog(this, R.style.Theme_TransparentTest);
         dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dlog.setCancelable(false);
@@ -161,11 +161,13 @@ public class ShiftReportDetails_FA extends BaseFragmentActivityActionBar impleme
 
         TextView viewTitle = dlog.findViewById(R.id.dlogTitle);
         TextView viewMsg = dlog.findViewById(R.id.dlogMessage);
-        viewTitle.setText(R.string.dlog_title_confirm);
-
-        viewTitle.setText(R.string.dlog_title_error);
-        viewMsg.setText(R.string.dlog_msg_failed_print);
-
+        if (isReprint) {
+            viewTitle.setText(R.string.dlog_title_confirm);
+            viewMsg.setText(R.string.dlog_msg_want_to_reprint);
+        } else {
+            viewTitle.setText(R.string.dlog_title_error);
+            viewMsg.setText(R.string.dlog_msg_failed_print);
+        }
         dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
 
         Button btnYes = dlog.findViewById(R.id.btnDlogLeft);
@@ -213,8 +215,12 @@ public class ShiftReportDetails_FA extends BaseFragmentActivityActionBar impleme
         @Override
         protected void onPostExecute(Void unused) {
             myProgressDialog.dismiss();
-            if (!printSuccessful)
-                showPrintDlg();
+            MyPreferences preferences = new MyPreferences(ShiftReportDetails_FA.this);
+            if (!printSuccessful) {
+                showPrintDlg(false);
+            }else if (preferences.isMultiplePrints()) {
+                showPrintDlg(true);
+            }
         }
     }
 

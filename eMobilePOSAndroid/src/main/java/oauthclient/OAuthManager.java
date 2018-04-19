@@ -25,24 +25,22 @@ public class OAuthManager {
         byte[] key = new byte[64];
         new SecureRandom().nextBytes(key);
         requestTokenUrl = context.getString(R.string.oauth_token_url);//"https://emslogin.enablermobile.com/oauth/token";
+
         Realm.init(context);
-//        RealmConfiguration realmConfig = new RealmConfiguration.Builder()
-//                .name("oauthclient")
-//                .deleteRealmIfMigrationNeeded()
-//                .modules(Realm.getDefaultModule(), new OAuthRealmModule())
-////                .encryptionKey(key)
-//                .build();
         Realm realm = Realm.getInstance(getRealmConfiguration());
-        realm.beginTransaction();
-        OAuthClient authClient = realm.createObject(OAuthClient.class);
-        authClient.setClient_id(clientId);
-        authClient.setClient_secret(clientSecret);
-        realm.commitTransaction();
-        realm.close();
         try {
-            requestToken();
-        } catch (Exception e) {
-            e.printStackTrace();
+            realm.beginTransaction();
+            OAuthClient authClient = realm.createObject(OAuthClient.class);
+            authClient.setClient_id(clientId);
+            authClient.setClient_secret(clientSecret);
+            try {
+                requestToken();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } finally {
+            realm.commitTransaction();
+            realm.close();
         }
     }
 
@@ -100,7 +98,7 @@ public class OAuthManager {
             @Override
             public void run() {
                 try {
-                    requestToken[0] = httpClient.post(requestTokenUrl, oauthUrl,true);
+                    requestToken[0] = httpClient.post(requestTokenUrl, oauthUrl, true);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
