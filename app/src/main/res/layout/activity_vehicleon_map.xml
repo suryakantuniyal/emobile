@@ -1,473 +1,397 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical">
+    tools:context="com.innobins.innotrack.activity.TrackingDevicesActivity">
 
     <android.support.design.widget.AppBarLayout
-        android:id="@+id/appbar"
-        android:layout_height="match_parent"
-        android:layout_width="match_parent"
-        android:layout_marginBottom="130dp"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
-
-        <android.support.design.widget.CollapsingToolbarLayout
-            app:expandedTitleGravity="left|top"
-            app:expandedTitleTextAppearance="@style/TextAppearance.AppCompat"
-            android:id="@+id/collapsing_toolbar"
-            android:layout_height="match_parent"
-            android:layout_width="match_parent"
-            android:fitsSystemWindows="true"
-            app:expandedTitleMarginEnd="64dp"
-            app:expandedTitleMarginStart="65dp"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed"
-            android:title="">
-
-            <FrameLayout
-                app:layout_collapseMode="parallax"
-                app:layout_scrollFlags="scroll|exitUntilCollapsed"
-                android:layout_height="match_parent"
-                android:layout_width="match_parent">
-
-                <fragment
-                    android:id="@+id/map25"
-                    app:layout_collapseMode="parallax"
-                    android:layout_height="match_parent"
-                    android:layout_width="match_parent"
-                    android:name="com.google.android.gms.maps.MapFragment" />
-
-                <LinearLayout
-                    android:background="@drawable/imageview_gradient"
-                    android:id="@+id/shadoview_vv"
-                    android:layout_gravity="top|bottom|left|right|center_vertical|fill_vertical|center_horizontal|fill_horizontal|center|fill|start|end"
-                    android:layout_height="2dp"
-                    android:layout_width="match_parent"
-                    android:orientation="horizontal" />
-            </FrameLayout>
-
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:background="?attr/colorPrimary"
-                android:layout_height="?attr/actionBarSize"
-                app:layout_collapseMode="pin"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
-        </android.support.design.widget.CollapsingToolbarLayout>
-    </android.support.design.widget.AppBarLayout>
-
-    <android.support.v4.widget.NestedScrollView
-        android:id="@+id/nestedScroll"
+        android:id="@id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:background="#efefef">
-
-        <LinearLayout
+        android:theme="@style/AppTheme.AppBarOverlay">
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="5dp"
-            android:layout_gravity="bottom"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay">
 
-            android:orientation="vertical">
+        </android.support.v7.widget.Toolbar>
+    </android.support.design.widget.AppBarLayout>
+    <RelativeLayout
+        android:id="@+id/main_rl"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/appbar">
 
-            <android.support.v7.widget.CardView
-                android:id="@+id/position_cv"
+        <fragment
+            android:id="@+id/map25"
+            android:name="com.google.android.gms.maps.MapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:scrollbars="vertical" />
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/position_cv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="5dp">
+
+            <LinearLayout
+                android:id="@+id/mainswipe_ll"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="3dp"
-                android:layout_marginRight="3dp">
+                android:layout_below="@+id/mapview_rl"
+                android:background="#efefef"
+                android:clickable="true"
+                android:orientation="vertical">
 
                 <LinearLayout
-                    android:id="@+id/mainswipe_ll"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/mapview_rl"
-                    android:background="#efefef"
-                    android:clickable="true"
+                    android:background="@drawable/full_rounded_white"
                     android:orientation="vertical">
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/full_rounded_white"
-                        android:orientation="vertical">
+                        android:layout_height="40dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:orientation="horizontal"
+                        android:weightSum="2"
+
+                        >
 
                         <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="40dp"
-                            android:layout_marginLeft="10dp"
-                            android:layout_marginRight="10dp"
-                            android:orientation="horizontal"
-                            android:weightSum="2"
-
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@drawable/full_rounded_white"
                             >
 
                             <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
-                                android:background="@drawable/full_rounded_white"
-                                >
-
-                                <LinearLayout
-                                    android:layout_width="40dp"
-                                    android:layout_height="40dp"
-                                    android:layout_marginLeft="1dp"
-                                    android:layout_gravity="center"
-                                    android:gravity="center">
-                                    <ImageView
-                                        android:layout_width="25dp"
-                                        android:layout_height="25dp"
-                                        android:src="@drawable/ic_date" />
-
-                                </LinearLayout>
-                                <LinearLayout
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="40dp"
-                                    android:gravity="center"
-                                    android:layout_gravity="center_vertical">
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:background="#ffffff"
-                                        android:gravity="left"
-                                        android:id="@+id/date_tv"
-                                        android:layout_marginLeft="10dp"
-                                        android:text=""
-                                        android:textColor="@color/black"
-                                        android:textSize="13dp" />
-
-                                </LinearLayout>
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:layout_marginLeft="1dp"
+                                android:layout_gravity="center"
+                                android:gravity="center">
+                                <ImageView
+                                    android:layout_width="25dp"
+                                    android:layout_height="25dp"
+                                    android:src="@drawable/ic_date" />
 
                             </LinearLayout>
-                            <View
-                                android:layout_width="1dp"
-                                android:layout_height="match_parent"
-                                android:background="#E0E0E0"/>
                             <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="40dp"
                                 android:gravity="center"
-                                android:background="@drawable/full_rounded_white"
-                                >
-
-                                <LinearLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="40dp"
-                                    android:layout_gravity="left"
-                                    android:layout_marginLeft="20dp"
-                                    android:gravity="center_vertical"
-                                    android:background="#ffffff"
-                                    android:orientation="horizontal">
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="Last Updates: "
-                                        android:textSize="13dp"
-                                        />
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:background="#ffffff"
-                                        android:gravity="left"
-                                        android:id="@+id/diff_tv"
-                                        android:layout_marginLeft="10dp"
-                                        android:text=""
-                                        android:textColor="@color/black"
-                                        android:textSize="12dp" />
-
-                                </LinearLayout>
-                            </LinearLayout>
-                        </LinearLayout>
-
-                    </LinearLayout>
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp" />
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/full_rounded_white"
-                        android:orientation="vertical">
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="40dp"
-                            android:layout_marginLeft="10dp"
-                            android:layout_marginRight="10dp"
-                            android:orientation="horizontal"
-                            android:weightSum="2"
-
-                            >
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
-                                android:background="@drawable/full_rounded_white"
-                                >
-
-                                <LinearLayout
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="40dp"
-                                    android:gravity="center"
-                                    android:layout_marginLeft="1dp"
-                                    android:layout_gravity="center_vertical">
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="Vehicle:"
-                                        android:layout_marginLeft="10dp"
-                                        android:textSize="13dp"
-                                        />
-                                </LinearLayout>
-                                <LinearLayout
+                                android:layout_gravity="center_vertical">
+                                <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_gravity="center"
                                     android:background="#ffffff"
-                                    android:orientation="horizontal">
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:background="#ffffff"
-                                        android:gravity="left"
-                                        android:id="@+id/project_name_tv"
-                                        android:layout_marginLeft="10dp"
-                                        android:text=""
-                                        android:textColor="@color/black"
-                                        android:textSize="13dp" />
-
-                                </LinearLayout>
+                                    android:gravity="left"
+                                    android:id="@+id/date_tv"
+                                    android:layout_marginLeft="10dp"
+                                    android:text=""
+                                    android:textColor="@color/black"
+                                    android:textSize="13dp" />
 
                             </LinearLayout>
-                            <View
-                                android:layout_width="1dp"
-                                android:layout_height="match_parent"
-                                android:background="#E0E0E0"/>
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
-                                android:gravity="center"
-                                android:background="@drawable/full_rounded_white"
-                                >
 
-                                <LinearLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="40dp"
-                                    android:layout_gravity="center"
-                                    android:layout_marginLeft="20dp"
-                                    android:gravity="center_vertical"
-                                    android:background="#ffffff"
-                                    android:orientation="horizontal">
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="20dp"
-                                        android:text="Uid: "
-                                        android:textSize="13dp"
-                                        />
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:background="#ffffff"
-                                        android:gravity="left"
-                                        android:id="@+id/uniqueid_tv"
-                                        android:layout_marginLeft="10dp"
-                                        android:text=""
-                                        android:textColor="@color/black"
-                                        android:textSize="12dp" />
-                                </LinearLayout>
-                            </LinearLayout>
                         </LinearLayout>
-
-                    </LinearLayout>
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp" />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/full_rounded_white"
-                        android:orientation="vertical">
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="match_parent"
+                            android:background="#E0E0E0"/>
                         <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="40dp"
-                            android:layout_marginLeft="10dp"
-                            android:layout_marginRight="10dp"
-                            android:orientation="horizontal"
-                            android:weightSum="2"
-
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:background="@drawable/full_rounded_white"
                             >
 
                             <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
-                                android:background="@drawable/full_rounded_white"
-                                >
-
-                                <LinearLayout
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="40dp"
-                                    android:layout_marginLeft="1dp"
-                                    android:gravity="center"
-                                    android:layout_gravity="center_vertical">
-                                    <TextView
-                                        android:id="@+id/trackDeviceIcn"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="Status"
-                                        android:layout_marginLeft="10dp" />
-                                </LinearLayout>
-                                <LinearLayout
-                                    android:id="@+id/track_ll"
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp"
+                                android:layout_gravity="left"
+                                android:layout_marginLeft="20dp"
+                                android:gravity="center_vertical"
+                                android:background="#ffffff"
+                                android:orientation="horizontal">
+                                <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_gravity="center"
+                                    android:text="Last Updates: "
+                                    android:textSize="13dp"
+                                    />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
                                     android:background="#ffffff"
-                                    android:orientation="horizontal">
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:background="#ffffff"
-                                        android:gravity="left"
-                                        android:id="@+id/status_tv"
-                                        android:layout_marginLeft="10dp"
-                                        android:text=""
-                                        android:textColor="@color/black"
-                                        android:textSize="13dp" />
+                                    android:gravity="left"
+                                    android:id="@+id/diff_tv"
+                                    android:layout_marginLeft="10dp"
+                                    android:text=""
+                                    android:textColor="@color/black"
+                                    android:textSize="12dp" />
 
-                                </LinearLayout>
-
-                            </LinearLayout>
-                            <View
-                                android:layout_width="1dp"
-                                android:layout_height="match_parent"
-                                android:background="#E0E0E0"/>
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
-                                android:gravity="center"
-                                android:background="@drawable/full_rounded_white"
-                                >
-
-                                <LinearLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="40dp"
-                                    android:layout_gravity="center"
-                                    android:gravity="center_vertical"
-                                    android:layout_marginLeft="20dp"
-                                    android:background="#ffffff"
-                                    android:orientation="horizontal">
-                                    <TextView
-                                        android:layout_width="50dp"
-                                        android:layout_height="20dp"
-                                        android:text="Speed: "
-                                        android:textSize="13dp"
-                                        />
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:background="#ffffff"
-                                        android:gravity="left"
-                                        android:id="@+id/speed_tv"
-                                        android:layout_marginLeft="10dp"
-                                        android:text=""
-                                        android:textColor="@color/black"
-                                        android:textSize="12dp" />
-                                </LinearLayout>
                             </LinearLayout>
                         </LinearLayout>
-
                     </LinearLayout>
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp" />
+                </LinearLayout>
 
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/full_rounded_white"
+                    android:orientation="vertical">
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="40dp"
-                        android:layout_gravity="center_vertical"
-                        android:background="@drawable/rounded_top"
-                        android:orientation="horizontal">
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:orientation="horizontal"
+                        android:weightSum="2"
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="21dp"
-                            android:layout_gravity="center_vertical"
-                            android:text="Category :"
-                            android:textSize="12dp"
-                            android:typeface="serif" />
-
-                        <TextView
-                            android:id="@+id/category_tv"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="5dp"
-                            android:layout_gravity="center_vertical"
-                            android:text=""
-                            android:textColor="@color/black"
-                            android:textSize="12dp"
-                            android:typeface="serif" />
-                    </LinearLayout>
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp" />
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="#ffffff">
+                        >
 
                         <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/rounded_top"
-                            android:gravity="top|bottom|left|right|center_vertical|fill_vertical|center_horizontal|fill_horizontal|center|fill|start|end"
-                            android:orientation="horizontal"
-                            android:paddingBottom="8dp"
-                            android:paddingRight="8dp"
-                            android:layout_marginTop="5dp"
-                            android:layout_marginBottom="5dp"
-                            android:paddingTop="8dp">
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@drawable/full_rounded_white"
+                            >
 
-                            <TextView
-                                android:id="@+id/days_togo_tt"
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="40dp"
+                                android:gravity="center"
+                                android:layout_marginLeft="1dp"
+                                android:layout_gravity="center_vertical">
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Vehicle:"
+                                    android:layout_marginLeft="10dp"
+                                    android:textSize="13dp"
+                                    />
+                            </LinearLayout>
+                            <LinearLayout
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_centerVertical="true"
-                                android:layout_marginLeft="21dp"
-                                android:text="Location :"
-                                android:textSize="12dp"
-                                android:typeface="serif" />
+                                android:layout_gravity="center"
+                                android:background="#ffffff"
+                                android:orientation="horizontal">
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:background="#ffffff"
+                                    android:gravity="left"
+                                    android:id="@+id/project_name_tv"
+                                    android:layout_marginLeft="10dp"
+                                    android:text=""
+                                    android:textColor="@color/black"
+                                    android:textSize="13dp" />
 
-                            <TextView
-                                android:id="@+id/positionId_tv"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignLeft="@id/days_togo_tt"
-                                android:layout_centerVertical="true"
-                                android:layout_marginLeft="10dp"
-                                android:text=""
-                                android:maxLines="3"
-                                android:textColor="@color/black"                                android:textSize="12dp"
-                                android:typeface="serif" />
+                            </LinearLayout>
+
                         </LinearLayout>
-                    </RelativeLayout>
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="match_parent"
+                            android:background="#E0E0E0"/>
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:background="@drawable/full_rounded_white"
+                            >
 
-                    <View
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp"
+                                android:layout_gravity="center"
+                                android:layout_marginLeft="20dp"
+                                android:gravity="center_vertical"
+                                android:background="#ffffff"
+                                android:orientation="horizontal">
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="20dp"
+                                    android:text="Uid: "
+                                    android:textSize="13dp"
+                                    />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:background="#ffffff"
+                                    android:gravity="left"
+                                    android:id="@+id/uniqueid_tv"
+                                    android:layout_marginLeft="10dp"
+                                    android:text=""
+                                    android:textColor="@color/black"
+                                    android:textSize="12dp" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/full_rounded_white"
+                    android:orientation="vertical">
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="2dp" />
+                        android:layout_height="40dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:orientation="horizontal"
+                        android:weightSum="2"
+
+                        >
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@drawable/full_rounded_white"
+                            >
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="40dp"
+                                android:layout_marginLeft="1dp"
+                                android:gravity="center"
+                                android:layout_gravity="center_vertical">
+                                <TextView
+                                    android:id="@+id/trackDeviceIcn"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Status"
+                                    android:layout_marginLeft="10dp" />
+                            </LinearLayout>
+                            <LinearLayout
+                                android:id="@+id/track_ll"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:background="#ffffff"
+                                android:orientation="horizontal">
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:background="#ffffff"
+                                    android:gravity="left"
+                                    android:id="@+id/status_tv"
+                                    android:layout_marginLeft="10dp"
+                                    android:text=""
+                                    android:textColor="@color/black"
+                                    android:textSize="13dp" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="match_parent"
+                            android:background="#E0E0E0"/>
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:background="@drawable/full_rounded_white"
+                            >
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp"
+                                android:layout_gravity="center"
+                                android:gravity="center_vertical"
+                                android:layout_marginLeft="20dp"
+                                android:background="#ffffff"
+                                android:orientation="horizontal">
+                                <TextView
+                                    android:layout_width="50dp"
+                                    android:layout_height="20dp"
+                                    android:text="Speed: "
+                                    android:textSize="13dp"
+                                    />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:background="#ffffff"
+                                    android:gravity="left"
+                                    android:id="@+id/speed_tv"
+                                    android:layout_marginLeft="10dp"
+                                    android:text=""
+                                    android:textColor="@color/black"
+                                    android:textSize="12dp" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/rounded_top"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="21dp"
+                        android:layout_gravity="center_vertical"
+                        android:text="Category :"
+                        android:textSize="12dp"
+                        android:typeface="serif" />
+
+                    <TextView
+                        android:id="@+id/category_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:layout_gravity="center_vertical"
+                        android:text=""
+                        android:textColor="@color/black"
+                        android:textSize="12dp"
+                        android:typeface="serif" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#ffffff">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -477,28 +401,68 @@
                         android:orientation="horizontal"
                         android:paddingBottom="8dp"
                         android:paddingRight="8dp"
-                        android:paddingTop="8dp"
-                        android:visibility="gone">
+                        android:layout_marginTop="5dp"
+                        android:layout_marginBottom="5dp"
+                        android:paddingTop="8dp">
 
                         <TextView
+                            android:id="@+id/days_togo_tt"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="21dp"
+                            android:text="Location :"
+                            android:textSize="12dp"
+                            android:typeface="serif" />
+
+                        <TextView
+                            android:id="@+id/positionId_tv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignLeft="@id/days_togo_tt"
+                            android:layout_centerVertical="true"
                             android:layout_marginLeft="10dp"
-                            android:text="Distance Travelled :"
-                            android:textColor="#545454"
-                            android:textSize="12dp" />
-
-                        <TextView
-                            android:id="@+id/distancecover_tv"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="4dp"
                             android:text=""
-                            android:textColor="@color/colorPrimary"
-                            android:textSize="12dp" />
+                            android:maxLines="3"
+                            android:textColor="@color/black"                                android:textSize="12dp"
+                            android:typeface="serif" />
                     </LinearLayout>
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rounded_top"
+                    android:gravity="top|bottom|left|right|center_vertical|fill_vertical|center_horizontal|fill_horizontal|center|fill|start|end"
+                    android:orientation="horizontal"
+                    android:paddingBottom="8dp"
+                    android:paddingRight="8dp"
+                    android:paddingTop="8dp"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:text="Distance Travelled :"
+                        android:textColor="#545454"
+                        android:textSize="12dp" />
+
+                    <TextView
+                        android:id="@+id/distancecover_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="4dp"
+                        android:text=""
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="12dp" />
                 </LinearLayout>
-            </android.support.v7.widget.CardView>
-        </LinearLayout>
-    </android.support.v4.widget.NestedScrollView>
-</android.support.design.widget.CoordinatorLayout>
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+    </RelativeLayout>
+</RelativeLayout>

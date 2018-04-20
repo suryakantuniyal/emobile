@@ -9,12 +9,12 @@
 
     <string-array name="Type">
         <item>Route</item>
-        <item>Events</item>
+        <item>Daily RunSheet</item>
         <item>Summary</item>
         <item>Trips</item>
+        <item>Route Map</item>
 
     </string-array>
-
 
     <!-- String used to wrap navigation item descriptions for a11y users to indicate the user
          interface element is a menu item. -->
@@ -42,5 +42,7 @@
     <string name="google_directions_key">AIzaSyDoNLdPwYDEFvXsxAQtfNk1yJZetjDniEw</string>
     <string name="title_activity_animation">Animation</string>
     <string name="sign_in_username">Username</string>
+    <string name="title_activity_route_map">RouteMapActivity</string>
+    <string name="title_activity_table">TableActivity</string>
 
 </resources>

@@ -1,92 +1,154 @@
 package com.innobins.innotrack.activity.PdfFile;
 
-import android.graphics.pdf.PdfDocument;
+import android.content.Intent;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.RequiresApi;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.TextView;
 
-import com.itextpdf.text.Rectangle;
-import com.itextpdf.text.pdf.PdfContentByte;
-import com.itextpdf.text.pdf.PdfPCell;
-import com.itextpdf.text.pdf.PdfPCellEvent;
-import com.itextpdf.text.pdf.PdfPTable;
+import com.innobins.innotrack.R;
+import com.innobins.innotrack.activity.Reports.ReportsActivity;
 
-/**
- * Created by surya on 23/11/17.
- */
+import java.io.File;
+import java.util.List;
 
-@RequiresApi(api = Build.VERSION_CODES.KITKAT)
-public  class PDFGenerator  implements PdfPCellEvent {
+public class PDFGenerator extends AppCompatActivity {
+
+    private static String FILE;
+    public static MenuItem shareMenuItem;
+    String[] invoiceTitlelistArray, invoicepricelistArray, invoiceQNTlistArray, invoiceNOlistArray;
+    String invoiceNO = "";
+    TextView path_pdf;
+    File storagePath;
+    String endpoint;
+    ViewPager viewPager=null;
+    WebView webView;
+    private List<Integer> number ;
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
-    public void cellLayout(PdfPCell cell, Rectangle position, PdfContentByte[] canvases) {
-        PdfContentByte cb = canvases[PdfPTable.LINECANVAS];
-        cb.roundRectangle(position.getLeft()+1.5f,position.getBottom()+1.5f,position.getWidth()-3,
-                position.getHeight()-3,4);
-        cb.stroke();
-        PdfDocument document = new PdfDocument();
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_pdf_generator);
 
-        PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(300,300,1).create();
-        PdfDocument.Page page = document.startPage(pageInfo);
-
-
-      /*  cell = new PdfPCell(innerTable);
-        PdfPCellEvent roundRectangle;
-        cell.setCellEvent(roundRectangle);*/
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+       // getSupportActionBar().setIcon(R.mipmap.luncher_icon);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        setTitle(" Report");
+        //
     }
-
-    /*//create a new Documnet
-    PdfDocument document = new PdfDocument();
-    //create a Page discription
-    PageInfo.Builder pageInfo = new PageInfo.Builder(12,12,1);
-    //start a page
-    Page page = document.startPage(pageInfo.create());
-    //draw something on page
-    View content = getContentView();
-    content.dr
-    private View getContentView() {
-    }*/
-
-   /* public static void process(DocumentsContract.Document document, JSONObject json) throws JSONException, DocumentException {
-        for (String k : json.keySet()) {
-            Object object = json.get(k);
-            if (object instanceof JSONArray) {
-                JSONArray list = json.getJSONArray(k);
-                process(document, list);
-            } else if (object instanceof JSONObject) {
-                process(document, json.getJSONObject(k));
-            } else {
-                document.add(new Paragraph(k + " " + json.get(k)));
+/*
+    public static class CreateTable {
+        public static void main(String[] args) throws FileNotFoundException, DocumentException {
+            Document document = new Document();
+            PdfPTable table = new PdfPTable(new float[] { 2, 1, 2 });
+            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_CENTER);
+            table.addCell("Name");
+            table.addCell("Age");
+            table.addCell("Location");
+            table.setHeaderRows(1);
+            PdfPCell[] cells = table.getRow(0).getCells();
+            for (int j=0;j<cells.length;j++){
+                cells[j].setBackgroundColor(BaseColor.GRAY);
             }
+            for (int i=1;i<5;i++){
+                table.addCell("Name:"+i);
+                table.addCell("Age:"+i);
+                table.addCell("Location:"+i);
+            }
+            PdfWriter.getInstance(document, new FileOutputStream("sample3.pdf"));
+            document.open();
+            document.add(table);
+            document.close();
+            System.out.println("Done");
         }
     }
-    public static void process(DocumentsContract.Document document, JSONArray json) throws JSONException, DocumentException {
-        for (int x = 0; x < json.length(); x++) {
-            Object object = json.get(x);
-            if (object instanceof JSONArray) {
-                JSONArray list = json.getJSONArray(x);
-                process(document, list);
-            } else if (object instanceof JSONObject) {
-                process(document, json.getJSONObject(x));
-            } else {
-                document.add(new Paragraph(json.get(x).toString()));
+*/
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu1, menu);
+        shareMenuItem = menu.findItem(R.id.menu_item_share);
+/*
+
+        MenuItemCompat.setOnActionExpandListener(shareMenuItem, new MenuItemCompat.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem item) {
+
             }
+
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem item) {
+                return true;
+            }
+        });
+*/
+
+
+        //searchMenuItem = menu.findItem(R.id.action_search);
+/*
+        MenuItemCompat.setOnActionExpandListener(searchMenuItem, new MenuItemCompat.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem menuItem) {
+                SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchMenuItem);
+
+                return true;
+            }
+
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem menuItem) {
+                return true;
+            }
+        });
+*/
+
+        return super.onCreateOptionsMenu(menu);
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_item_share:
+                Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+                sharingIntent.setType("text/plain");
+                sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "AndroidSolved");
+                sharingIntent.putExtra(Intent.ACTION_ATTACH_DATA, "Now Learn Android with AndroidSolved clicke here to visit https://androidsolved.wordpress.com/ ");
+                startActivity(Intent.createChooser(sharingIntent, "Share via"));
+
+                return true;
+
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+
+        }
+        return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(PDFGenerator.this, ReportsActivity.class);
+        startActivity(intent);
+        finish();
+        super.onBackPressed();
+    }
+
+
+    private class WebViewController extends WebViewClient {
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            view.loadUrl(url);
+            return true;
         }
     }
-    public static File jsonTopdf(JSONObject json) throws IOException, DocumentException {
-        DocumentsContract.Document document = new DocumentsContract.Document(PageSize.A4, 70, 55, 100, 55);
-        File file = File.createTempFile("consulta", ".pdf");
-        FileOutputStream output = new FileOutputStream(file);
-        PdfWriter writer = PdfWriter.getInstance(document, output);
-        writer.setEncryption("a".getBytes(), "b".getBytes(), PdfWriter.ALLOW_PRINTING, PdfWriter.STANDARD_ENCRYPTION_128);
-        writer.createXmpMetadata();
-        writer.setBoxSize("art", new Rectangle(36, 54, 559, 788));
-        document.open();
-        document.addCreationDate();
-        document.addTitle("documento");
-        document.newPage();
-        process(document, json);
-        document.close();
-        return file;
-    }*/
-
 }
-

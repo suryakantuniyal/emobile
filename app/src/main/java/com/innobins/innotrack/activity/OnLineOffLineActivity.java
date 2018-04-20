@@ -8,9 +8,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,13 +22,17 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
+import com.innobins.innotrack.R;
 import com.innobins.innotrack.adapter.VehicleslistAdapter;
-import com.innobins.innotrack.api.APIServices;
 import com.innobins.innotrack.home.BaseActivity;
 import com.innobins.innotrack.model.VehicleList;
-import com.innobins.innotrack.network.ResponseOnlineVehicle;
+import com.innobins.innotrack.network.ResponseCallback;
+import com.innobins.innotrack.network.WebserviceHelper;
 import com.innobins.innotrack.services.UpdateListViewService;
+import com.innobins.innotrack.utils.URLContstant;
+import com.innobins.innotrack.vehicleonmap.VehicleOnMap;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,11 +42,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import com.innobins.innotrack.R;
-
-import com.innobins.innotrack.utils.URLContstant;
-import com.innobins.innotrack.vehicleonmap.VehicleOnMap;
-
 /**
  * Created by silence12 on 5/7/17.
  */
@@ -50,45 +49,33 @@ import com.innobins.innotrack.vehicleonmap.VehicleOnMap;
 public class OnLineOffLineActivity extends BaseActivity implements SwipeRefreshLayout.OnRefreshListener, VehicleslistAdapter.OnItemClickListener {
     public static MenuItem searchMenuItem;
     private static ProgressDialog progressDialog;
-    SharedPreferences sharedPrefs;
-    ArrayList<VehicleList> arrayList;
     private SwipeRefreshLayout swipeRefreshLayout;
     private VehicleslistAdapter vehiclesAdapter;
     private RecyclerView recyclerView;
     private List<VehicleList> listArrayList;
     SharedPreferences mSharedPreferences;
     private LinearLayout no_data_ll;
-    private String onnOff;
-
     public static OnLineOffLineActivity onLineInstance;
-
     PendingIntent pintent;
     AlarmManager alarm;
-    private boolean bound = false;
-
-    // private LocalService mBoundService;
     Intent updateListViewService;
-
     String userName,password;
+    RelativeLayout coordinatorLayout ;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_onlineoffline);
-
         onLineInstance = this;
         updateListViewService = new Intent(getBaseContext(), UpdateListViewService.class);
         startService(updateListViewService);
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setIcon(R.mipmap.innotrack_icon);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         mSharedPreferences = getSharedPreferences(URLContstant.PREFERENCE_NAME, Context.MODE_PRIVATE);
         userName = mSharedPreferences.getString(URLContstant.KEY_USERNAME, "");
         password = mSharedPreferences.getString(URLContstant.KEY_PASSWORD,"");
-
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Wait a moment...");
         progressDialog.setCancelable(false);
@@ -109,6 +96,7 @@ public class OnLineOffLineActivity extends BaseActivity implements SwipeRefreshL
             no_data_ll.setVisibility(View.GONE);
         }
         vehiclesAdapter = new VehicleslistAdapter(getBaseContext(),listArrayList,this);
+        coordinatorLayout = (RelativeLayout)findViewById(R.id.main_rl);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -126,20 +114,31 @@ public class OnLineOffLineActivity extends BaseActivity implements SwipeRefreshL
     public void uploadNewData() {
 
         listArrayList.clear();
+        String mUrl = "https://mtrack-api.appspot.com/api/get/devices/byuser/" ;
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("userid",mSharedPreferences.getInt(URLContstant.KEY_LOGEDIN_USERID,-1));
+            WebserviceHelper.getInstance().PostCall(OnLineOffLineActivity.this, mUrl, jsonObject, new ResponseCallback() {
+                @Override
+                public void OnResponse(JSONObject Response) {
+                    if(Response!=null) {
+                        try {
+                            JSONArray jsonArray = Response.getJSONArray("deviceData");
+                            SessionHandler.updateSnessionHandler(getBaseContext(), jsonArray, mSharedPreferences);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }else {
 
-        APIServices.GetAllVehicle(OnLineOffLineActivity.this, userName, password, new ResponseOnlineVehicle() {
-            @Override
-            public void onSuccessOnline(JSONArray response) {
-
-                if (response!=null){
-
-                    SessionHandler.updateSnessionHandler(getBaseContext(), response, mSharedPreferences);
-                    vehiclesAdapter.notifyDataSetChanged();
+                        Snackbar snackbar1 = Snackbar.make(coordinatorLayout, "Check your internet connectivity.", Snackbar.LENGTH_LONG);
+                        snackbar1.show();
+                    }
                 }
-            }
-        });
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         parseView();
-
     }
 
     private List<VehicleList> parseView() {
@@ -228,11 +227,14 @@ public class OnLineOffLineActivity extends BaseActivity implements SwipeRefreshL
             public boolean onMenuItemActionExpand(MenuItem menuItem) {
                 SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchMenuItem);
                 searchVehicle(searchView);
+                Log.d("CollapseValue","Expands");
+
                 return true;
             }
 
             @Override
             public boolean onMenuItemActionCollapse(MenuItem menuItem) {
+                Log.d("CollapseValue","Collapse");
                 return true;
             }
         });

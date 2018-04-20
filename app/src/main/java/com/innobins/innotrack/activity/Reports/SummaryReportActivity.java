@@ -4,14 +4,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 
-import com.innobins.innotrack.network.ReportResponseCallBack;
+import com.innobins.innotrack.R;
+import com.innobins.innotrack.ReportsAdapter.SummaryReportAdapter;
+import com.innobins.innotrack.activity.GoGeoDataProDialog;
+import com.innobins.innotrack.home.BaseActivity;
+import com.innobins.innotrack.network.ResponseCallback;
+import com.innobins.innotrack.network.WebserviceHelper;
+import com.innobins.innotrack.utils.URLContstant;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,12 +25,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.innobins.innotrack.R;
-import com.innobins.innotrack.ReportsAdapter.SummaryReportAdapter;
-import com.innobins.innotrack.api.APIServices;
-import com.innobins.innotrack.utils.URLContstant;
-
-public class SummaryReportActivity extends AppCompatActivity {
+public class SummaryReportActivity extends BaseActivity {
     RecyclerView summaryList_rv;
     SummaryReportAdapter summaryReportAdapter;
     private List<ReportData>sumryReportList;
@@ -33,6 +33,7 @@ public class SummaryReportActivity extends AppCompatActivity {
     SharedPreferences mSharedPreferences;
     int divId;
     String startTime,endTime;
+    GoGeoDataProDialog goGeoDataProDialog;
 
 
     @Override
@@ -45,9 +46,10 @@ public class SummaryReportActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setIcon(R.mipmap.luncher_icon);
-        setTitle("Summary Report");
+        getSupportActionBar().setIcon(R.mipmap.innotrack_icon);
+        customTitle("   "+"Summery Report");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        goGeoDataProDialog = new GoGeoDataProDialog(this);
 
         mSharedPreferences = getSharedPreferences(URLContstant.PREFERENCE_NAME, Context.MODE_PRIVATE);
        // sumryReportList = getSummaryReport();
@@ -57,41 +59,64 @@ public class SummaryReportActivity extends AppCompatActivity {
     }
 
     private void summaryReport() {
-
+        goGeoDataProDialog.show();
         Intent getIntent = getIntent();
-        divId = getIntent.getIntExtra("divReport",-1);
-        String deviceName = getIntent.getStringExtra("deviceName");
+        // divId = getIntent.getIntExtra("divReport",-1);
+        String divId = getIntent.getStringExtra("divReport");
+        final String deviceName = getIntent.getStringExtra("deviceName");
+        String reportType = getIntent.getStringExtra("reportType");
         String time1 = getIntent.getStringExtra("startTime");
         String time2 = getIntent.getStringExtra("endTime");
         String date1 = getIntent.getStringExtra("startdate");
         String date2 = getIntent.getStringExtra("endDate");
-        startTime = date1+"T"+time1;
-        endTime   = date2+"T"+time2;
+        startTime = date1+" "+time1;
+        endTime   = date2+" "+time2;
+        Log.d("starttme", String.valueOf(divId));
 
-        final String newUrl = URLContstant.SUMMARY_REPORT + "?" + "deviceId=" + divId + "&from=" + startTime + "&to=" +endTime;
-        APIServices.GetReport(SummaryReportActivity.this, newUrl, new ReportResponseCallBack() {
-            @Override
-            public void onGetReport(JSONArray result) {
-                Log.d("summryReport",String.valueOf(result));
+        String mUrl = "https://mtrack-api.appspot.com/api/report/summary/";
+        final JSONObject jsonObject = new JSONObject();
+        try{
 
-                if (result!=null){
-                    try {
-                        for (int i=0;i<result.length();i++){
-                            JSONObject jsonObject = result.getJSONObject(i);
-                            reportData = new ReportData(jsonObject.getString("deviceName"),jsonObject.getDouble("distance"),jsonObject.getDouble("averageSpeed"),jsonObject.getDouble("maxSpeed"),jsonObject.getInt("engineHours"));
+            jsonObject.put("startDate",startTime);
+            jsonObject.put("endDate",endTime);
+            jsonObject.put("deviceLst",divId);
+            /*jsonObject.put("reportType",reportType);
+            jsonObject.put("dList",divId);//[divId]
+            jsonObject.put("dName",deviceName);*/
 
-                            sumryReportList.add(reportData);
-                            summaryReportAdapter = new SummaryReportAdapter(getBaseContext(),sumryReportList);
-                            summaryList_rv.setAdapter(summaryReportAdapter);
+            WebserviceHelper.getInstance().PostCall(SummaryReportActivity.this, mUrl, jsonObject, new ResponseCallback() {
+                @Override
+                public void OnResponse(JSONObject Response) {
+                    if (Response!=null){
+                        try {
+                            JSONArray jsonArray = Response.getJSONArray("reportData");
+                            Log.d("sumryreprt",String.valueOf(jsonArray));
+                            for (int i= 0;i<jsonArray.length();i++){
+                                JSONObject jsonObject1 = jsonArray.getJSONObject(i);
+                              //String deviceName,Double distance,Double averageSpeed,Double maximumSpeed,int engineHours,String spentFuel
+                                reportData = new ReportData(jsonObject1.getString("deviceName"),jsonObject1.getDouble("distance"),jsonObject1.getDouble("averageSpeed")
+                                        ,jsonObject1.getDouble("maxSpeed"),jsonObject1.getInt("engineHours"),jsonObject1.getString("spentFuel") );
+
+                                sumryReportList.add(reportData);
+                                summaryReportAdapter = new SummaryReportAdapter(SummaryReportActivity.this,sumryReportList);
+                                summaryList_rv.setAdapter(summaryReportAdapter);
+                                goGeoDataProDialog.dismiss();
+                            }
+                            Log.d("trprespns",String.valueOf(jsonArray));
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
-
-                    }catch (JSONException e){
-                        e.printStackTrace();
                     }
                 }
+            });
 
-            }
-        });
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+    }
+
 
         /*try {
             jsonObject.put("deviceId",divId);
@@ -125,7 +150,7 @@ public class SummaryReportActivity extends AppCompatActivity {
                 SessionHandler.reportHandler(getBaseContext(),result,mSharedPreferences);
             }
         });*/
-    }
+
 
 
     private List<ReportData> getSummaryReport() {

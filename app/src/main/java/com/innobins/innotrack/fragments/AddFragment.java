@@ -60,10 +60,11 @@ public class    AddFragment extends Fragment implements View.OnClickListener {
             Bundle b = getArguments();
             page_pos = b.getInt("pos");
             if (page_pos == 1) {
-                imageView.setImageResource(R.drawable.banner2);
-            } else if (page_pos == 2) {
                 imageView.setImageResource(R.drawable.banner3);
             }
+//            } else if (page_pos == 2) {
+//                imageView.setImageResource(R.drawable.banner3);
+//            }
 
         } else {
 

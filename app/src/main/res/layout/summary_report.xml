@@ -195,9 +195,11 @@
                         android:id="@+id/upadated"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginLeft="30dp"
                         android:text="distance"
                         android:textAllCaps="true"
-                        android:textColor="@color/app_body_text_2"
+                        android:fontFamily="@string/roboto_medium"
+                        android:textColor="@color/black"
                         android:textSize="12dp"
                         />
                     <TextView
@@ -205,11 +207,11 @@
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/upadated"
-                        android:layout_gravity="center"
+                        android:layout_marginLeft="30dp"
                         android:background="#ffffff"
                         android:layout_marginTop="2dp"
-                        android:gravity="left|center_vertical"
-                        android:text=""
+                        android:maxLines="1"
+                        android:text="helllooooo"
                         android:textColor="@color/colorPrimary"
                         android:textSize="10dp"
                         />
@@ -247,13 +249,14 @@
                     android:layout_height="fill_parent"
                     android:layout_marginBottom="@dimen/tiny"
                     android:text="average speed"
+                    android:textAllCaps="true"
                     android:fontFamily="@string/roboto_medium" />
                 <TextView
                     android:textSize="@dimen/text14"
-                    android:textColor="@color/txt_black_87"
                     android:id="@+id/summryAvrgSpeed"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
+                    android:textColor="@color/colorPrimary"
                     android:maxLines="1" />
             </LinearLayout>
             <LinearLayout
@@ -275,15 +278,59 @@
                     android:fontFamily="@string/roboto_medium" />
                 <TextView
                     android:textSize="@dimen/text14"
-                    android:textColor="@color/txt_black_87"
+                    android:textColor="@color/colorPrimary"
                     android:id="@+id/summryMaxSpeed"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:maxLines="1" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_height="2dp"
+            android:background="#E0E0E0"/>
+
+
+        <LinearLayout
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:id="@+id/ll_driver_performance_first_row1"
+            android:paddingTop="@dimen/dashboard_items_padding"
+            android:paddingBottom="@dimen/dashboard_items_padding"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            >
+            <LinearLayout
+                android:orientation="vertical"
+                android:id="@+id/ll_driver_login_hrs1"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="44.0dip"
+                android:layout_weight="1.0">
+                <TextView
+                    android:textSize="@dimen/text10"
+                    android:textColor="@color/black"
+                    android:id="@+id/tv_drivers_logged_in_label1"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_marginBottom="@dimen/tiny"
+                    android:textAllCaps="true"
+                    android:text="Engine Hours"
+                    android:fontFamily="@string/roboto_medium" />
+                <TextView
+                    android:textSize="@dimen/text14"
+                    android:textColor="@color/colorPrimary"
+                    android:id="@+id/summryEngnHrs"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:maxLines="1" />
             </LinearLayout>
             <LinearLayout
                 android:orientation="vertical"
-                android:id="@+id/ll_ola_score"
+                android:id="@+id/ll_bookings_per_driver1"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="30.0dip"
@@ -291,22 +338,23 @@
                 <TextView
                     android:textSize="@dimen/text10"
                     android:textColor="@color/black"
-                    android:id="@+id/tv_ola_score_label"
+                    android:id="@+id/tv_bookings_per_driver_label1"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:layout_marginBottom="@dimen/tiny"
-                    android:text="engine hours"
+                    android:text="spent fuel"
                     android:textAllCaps="true"
                     android:fontFamily="@string/roboto_medium" />
                 <TextView
                     android:textSize="@dimen/text14"
-                    android:textColor="@color/txt_black_87"
-                    android:id="@+id/summryEngnHrs"
+                    android:textColor="@color/colorPrimary"
+                    android:id="@+id/summrySpentFuel"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:maxLines="1" />
             </LinearLayout>
         </LinearLayout>
+
 
         <View
             android:layout_width="match_parent"

@@ -19,14 +19,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.innobins.innotrack.R;
-import com.innobins.innotrack.network.ResponseCallback;
-import com.innobins.innotrack.network.WebserviceHelper;
 import com.innobins.innotrack.utils.SharedUtils;
-import com.innobins.innotrack.utils.URLContstant;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 
 /**
@@ -83,13 +76,11 @@ public class BaseActivity extends AppCompatActivity {
         setVisible(true);
     }
 
-
     public void customTitle(String title){
         SpannableString s = new SpannableString(title);
         s.setSpan(new TypefaceSpan("fonts/Serif.ttf"), 0, s.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         setTitle(s);
     }
-
 
     @Override
     protected void onPause() {

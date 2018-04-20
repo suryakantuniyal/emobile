@@ -4,15 +4,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 
+import com.innobins.innotrack.R;
 import com.innobins.innotrack.ReportsAdapter.RouteReportAdapter;
-import com.innobins.innotrack.network.ReportResponseCallBack;
+import com.innobins.innotrack.activity.GoGeoDataProDialog;
+import com.innobins.innotrack.home.BaseActivity;
+import com.innobins.innotrack.network.ResponseCallback;
+import com.innobins.innotrack.network.WebserviceHelper;
+import com.innobins.innotrack.utils.URLContstant;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,12 +25,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.innobins.innotrack.R;
-
-import com.innobins.innotrack.api.APIServices;
-import com.innobins.innotrack.utils.URLContstant;
-
-public class RouteReportActivity extends AppCompatActivity {
+public class RouteReportActivity extends BaseActivity {
 
     RouteReportAdapter routeReportAdapter;
     RecyclerView viewList_rc;
@@ -35,76 +34,89 @@ public class RouteReportActivity extends AppCompatActivity {
     SharedPreferences mSharedPreferences;
     int divId;
     String startTime,endTime;
+    GoGeoDataProDialog goGeoDataProDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_generate_report);
         routereportList = new ArrayList<ReportData>();
-
         viewList_rc = (RecyclerView)findViewById(R.id.routeReport);
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setIcon(R.mipmap.luncher_icon);
-        setTitle("Route Report");
+        getSupportActionBar().setIcon(R.mipmap.innotrack_icon);
+        customTitle("   "+"Route Report");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        goGeoDataProDialog = new GoGeoDataProDialog(this);
 
         mSharedPreferences = getSharedPreferences(URLContstant.PREFERENCE_NAME, Context.MODE_PRIVATE);
         viewList_rc.setLayoutManager(new LinearLayoutManager(this));
         allReport();
-
-       // routereportList = getRouteReport();
-
-
-
-
-        /*generateRptIntnt.putExtra("deviceName",vhcleNoPopup_str);
-        generateRptIntnt.putExtra("startdate",startDate_str);
-        generateRptIntnt.putExtra("endDate",endDate_str);
-        generateRptIntnt.putExtra("startTime",startTime_str);
-        generateRptIntnt.putExtra("endTime",endTime_str);*/
     }
 
     private void allReport() {
+        goGeoDataProDialog.show();
         Intent getIntent = getIntent();
-        divId = getIntent.getIntExtra("divReport",-1);
-        final String deviceName = getIntent.getStringExtra("deviceName");
+        // divId = getIntent.getIntExtra("divReport",-1);
+        String newName = null;
+        String divId = getIntent.getStringExtra("divReport");
+        Log.d("divid",divId);
+        String deviceName = getIntent.getStringExtra("deviceName");
+        String reportType = getIntent.getStringExtra("reportType");
         String time1 = getIntent.getStringExtra("startTime");
         String time2 = getIntent.getStringExtra("endTime");
         String date1 = getIntent.getStringExtra("startdate");
         String date2 = getIntent.getStringExtra("endDate");
-        startTime = date1+"T"+time1;
-        endTime   = date2+"T"+time2;
+        startTime = date1+" "+time1;
+        endTime   = date2+" "+time2;
+       Log.d("starttme", deviceName);
+        if (deviceName.endsWith(",")) {
+             newName = deviceName.substring(0, deviceName.length() - 1);
+        }
 
-        Log.d("starttime",startTime);
-        Log.d("divicenaya",String.valueOf(divId));
+        String mUrl = "https://mtrack-api.appspot.com/api/report/view/";
+        final JSONObject jsonObject = new JSONObject();
+        try{
 
-        final String newUrl = URLContstant.ROUTE_REPORT + "?" + "deviceId=" + divId + "&from=" + startTime + "&to=" +endTime;
-        APIServices.GetReport(RouteReportActivity.this, newUrl, new ReportResponseCallBack() {
-            @Override
-            public void onGetReport(JSONArray result) {
-                Log.d("RouteReport",String.valueOf(result));
+            jsonObject.put("startDate",startTime);
+            jsonObject.put("endDate",endTime);
+            jsonObject.put("deviceLst",divId);
+            jsonObject.put("reportType",reportType);
+            /*jsonObject.put("reportType",reportType);
+            jsonObject.put("dList",divId);//[divId]
+            jsonObject.put("dName",deviceName);*/
 
-                if (result!=null){
-                    try {
-                        for (int i= 0;i<result.length();i++){
-                            JSONObject jsonObject = result.getJSONObject(i);
-                            reportData = new ReportData(deviceName,jsonObject.getInt("valid"),jsonObject.getString("deviceTime"),jsonObject.getDouble("speed"),
-                                    jsonObject.getString("address"),jsonObject.getDouble("latitude"),jsonObject.getDouble("longitude"),jsonObject.getDouble("altitude"));
+            final String device_Name = newName;
+            Log.d("finaldevce",device_Name);
+            WebserviceHelper.getInstance().PostCall(RouteReportActivity.this, mUrl, jsonObject, new ResponseCallback() {
+                @Override
+                public void OnResponse(JSONObject Response) {
+                    if (Response!=null){
+                        try {
+                            JSONArray jsonArray = Response.getJSONArray("reportData");
+                            Log.d("routejson",String.valueOf(jsonArray));
+                            for (int i= 0;i<jsonArray.length();i++){
+                                JSONObject jsonObject1 = jsonArray.getJSONObject(i);
 
-                            routereportList.add(reportData);
-                            routeReportAdapter = new RouteReportAdapter(getBaseContext(),routereportList);
-                            viewList_rc.setAdapter(routeReportAdapter);
+                                reportData = new ReportData(device_Name,jsonObject1.getString("valid"),jsonObject1.getString("servertime"),jsonObject1.getDouble("latitude"),
+                                        jsonObject1.getDouble("longitude"),jsonObject1.getDouble("altitude"),jsonObject1.getString("speed"),jsonObject1.getString("address"));
 
+                                routereportList.add(reportData);
+                                routeReportAdapter = new RouteReportAdapter(RouteReportActivity.this,routereportList);
+                                viewList_rc.setAdapter(routeReportAdapter);
+                                goGeoDataProDialog.dismiss();
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
-                    }catch (JSONException e){
-                        e.printStackTrace();
                     }
                 }
+            });
 
-            }
-        });
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
 
        /* APIServices.GetReport(RouteReportActivity.this, divId, startTime, endTime, new ReportResponseCallBack() {
             @Override

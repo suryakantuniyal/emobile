@@ -15,7 +15,7 @@ import com.innobins.innotrack.fragments.AddFragment;
 
 public class   ViewPagerAdapter extends FragmentPagerAdapter {
 
-    final int PAGE_COUNT = 3;
+    final int PAGE_COUNT = 2;
     Context context;
     private AddFragment addFragment1, addFragment2, addFragment3, addFragment4;
 

@@ -12,12 +12,10 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -25,11 +23,10 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.innobins.innotrack.R;
 import com.innobins.innotrack.home.BaseActivity;
-import com.innobins.innotrack.model.VehicleList;
 import com.innobins.innotrack.services.UpdateListViewService;
 import com.innobins.innotrack.utils.URLContstant;
 
@@ -37,11 +34,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
-
-import com.innobins.innotrack.R;
 
 /**
  * Created by silence12 on 5/7/17.
@@ -50,25 +43,14 @@ import com.innobins.innotrack.R;
 public class MapViewActivity extends BaseActivity {
 
     public static MapViewActivity mapViewActivity;
-
-    public static MenuItem searchMenuItem;
     GoogleMap googleMap;
-    SharedPreferences sharedPreferences;
-    int locationCount = 0;
-    ArrayList<VehicleList> result;
-    MarkerOptions markerOptions;
-    private List<VehicleList> mFilteredList;
-    private CameraPosition cameraPosition;
     SharedPreferences mSharedPreferences;
     String userName,password;
     private static ProgressDialog progressDialog;
-
     PendingIntent pintent;
     AlarmManager alarm;
     Intent updateListViewService;
     String address,name;
-
-    TextView name_tv,address_tv;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -113,8 +95,6 @@ public class MapViewActivity extends BaseActivity {
 
     public void reloadMap() {
 
-
-
         googleMap.getUiSettings().setZoomControlsEnabled(true);
         googleMap.setPadding(10,10,10,20);
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(28.644800, 77.216721)));
@@ -151,8 +131,6 @@ public class MapViewActivity extends BaseActivity {
                 } else {
                     address = jsonObject.getString("address");
                 }
-               // title = name+","+ address;
-
                 drawMarker(new LatLng(lat, lng),jsonObject.getString("status"),name,address,jsonObject.getString("category"));
             }
 
@@ -172,65 +150,19 @@ public class MapViewActivity extends BaseActivity {
             markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_punch_person));
         }else {
             if (str.equals("Online")) {
-                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.greentruck));
+                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.car_green));
             } else if (str.equals("Offline")) {
-                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.redtruck));
+                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.car_red));
             } else {
-                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_truck_med));
+                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_car));
             }
         }
         googleMap.addMarker(markerOptions);
-
-/*
-        googleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
-            @Override
-            public View getInfoWindow(Marker marker) {
-                return null;
-            }
-            @Override
-            public View getInfoContents(Marker marker) {
-
-                View v = getLayoutInflater().inflate(R.layout.info_window_layout, null);
-                // Getting the position from the marker
-                // LatLng latLng = marker.getPosition();
-                // Getting reference to the TextView to set latitude
-                name_tv = (TextView) v.findViewById(R.id.name);
-                // Getting reference to the TextView to set longitude
-                address_tv = (TextView) v.findViewById(R.id.address);
-                // Setting the latitude
-                name_tv.setText("Name:" + add);
-                // Setting the longitude
-                address_tv.setText("Address:"+ devicename);
-
-                // Returning the view containing InfoWindow contents
-                return v;
-
-            }
-        });
-*/
-
 
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-
-//        MenuInflater inflater = getMenuInflater();
-//        inflater.inflate(R.menu.main_menu, menu);
-//        searchMenuItem = menu.findItem(R.id.action_search);
-//        MenuItemCompat.setOnActionExpandListener(searchMenuItem, new MenuItemCompat.OnActionExpandListener() {
-//            @Override
-//            public boolean onMenuItemActionExpand(MenuItem menuItem) {
-//                SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchMenuItem);
-//                searchVehicle(searchView);
-//                return true;
-//            }
-//
-//            @Override
-//            public boolean onMenuItemActionCollapse(MenuItem menuItem) {
-//                return true;
-//            }
-//        });
         return super.onCreateOptionsMenu(menu);
     }
 

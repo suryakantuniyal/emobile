@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
@@ -19,7 +20,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -33,7 +36,6 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
@@ -46,9 +48,11 @@ import com.innobins.innotrack.network.WebserviceHelper;
 import com.innobins.innotrack.parser.TraccerParser;
 import com.innobins.innotrack.services.UpdateListViewService;
 import com.innobins.innotrack.utils.URLContstant;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -91,6 +95,7 @@ public class VehicleOnMap extends BaseActivity implements View.OnClickListener {
     private static View myView;
     boolean isUp;
     ArrayList<LatLng> lineStringArray = new ArrayList<LatLng>();
+    LinearLayout coordinatorLayout ;
     private CollapsingToolbarLayout collapsingToolbarLayout;
 
     ///start latlong static and then start = new latlong.....
@@ -132,6 +137,7 @@ public class VehicleOnMap extends BaseActivity implements View.OnClickListener {
         googleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map25)).getMap();
         googleMap.getUiSettings().setZoomControlsEnabled(true);
         googleMap.setPadding(10,10,10,20);
+        Log.d("orignLat",String.valueOf(origin_latitute));
         CameraUpdate point = CameraUpdateFactory.newLatLng(new LatLng(origin_latitute, origin_longitute));
         googleMap.moveCamera(point);
         markerOptions = new MarkerOptions().position(new LatLng(origin_latitute,origin_longitute)).title(address);//set current position lat,long
@@ -158,13 +164,15 @@ public class VehicleOnMap extends BaseActivity implements View.OnClickListener {
         speed_tv = (TextView) findViewById(R.id.speed_tv);
         distance_tv = (TextView) findViewById(R.id.distancecover_tv);
         timedated = (TextView) findViewById(R.id.diff_tv);
-        myView = findViewById(R.id.shadoview_vv);
-//        myView.setOnTouchListener(this);
-        myView.setOnClickListener(this);
-        myView.setVisibility(View.VISIBLE);
+        coordinatorLayout = (LinearLayout)findViewById(R.id.mainswipe_ll);
+//        myView = findViewById(R.id.shadoview_vv);
+////        myView.setOnTouchListener(this);
+//        myView.setOnClickListener(this);
+//        myView.setVisibility(View.VISIBLE);
         isUp = false;
     }
-
+//28.271915
+//04-04 17:30:56.878 7883-7883/com.innobins.innotrack D/orignLat: 28.207438333333332
     public void uploadIndividualData(){
         String urlStr = "https://mtrack-api.appspot.com/api/get/devices/deviceid/" ;
         JSONObject jsonObject = new JSONObject();
@@ -173,50 +181,55 @@ public class VehicleOnMap extends BaseActivity implements View.OnClickListener {
             WebserviceHelper.getInstance().PostCall(VehicleOnMap.this, urlStr, jsonObject, new ResponseCallback() {
                 @Override
                 public void OnResponse(JSONObject Response) {
-                    progressDialog.dismiss();
-                    try {
-
-                        JSONArray result = Response.getJSONArray("deviceData");
-                        nameString = result.getJSONObject(0).getString("name");
-                        uniqueIdString = result.getJSONObject(0).getString("uniqueId");
-                        lastUpdatetString = result.getJSONObject(0).getString("lastUpdate");
-                        statusString = result.getJSONObject(0).getString("status");
-                        categoryString = result.getJSONObject(0).getString("category");
-                        address = result.getJSONObject(0).getString("address");
-                        destiny_latitude = result.getJSONObject(0).getDouble("latitude");
-                        destiny_longitude = result.getJSONObject(0).getDouble("longitude");
-                        speed = result.getJSONObject(0).getDouble("speed");
-                        lastUpdate_tv.setText(result.getJSONObject(0).getString("latitude"));
-                        String time = TraccerParser.datetime(lastUpdatetString);
-                        String timeDiff = TraccerParser.numDays(lastUpdatetString);
+                    if(Response!=null) {
                         progressDialog.dismiss();
-                        name_tv.setText(nameString);
-                        Log.d("VehicleMap",nameString);
+                        try {
 
-                        if (address.equals("null")) {
-                            address = "Loading...";
-                        }
-                        positionId_tv.setText(address);
+                            JSONArray result = Response.getJSONArray("deviceData");
+                            nameString = result.getJSONObject(0).getString("name");
+                            uniqueIdString = result.getJSONObject(0).getString("uniqueId");
+                            lastUpdatetString = result.getJSONObject(0).getString("lastUpdate");
+                            statusString = result.getJSONObject(0).getString("status");
+                            categoryString = result.getJSONObject(0).getString("category");
+                            address = result.getJSONObject(0).getString("address");
+                            destiny_latitude = result.getJSONObject(0).getDouble("latitude");
+                            destiny_longitude = result.getJSONObject(0).getDouble("longitude");
+                            speed = result.getJSONObject(0).getDouble("speed");
+                            lastUpdate_tv.setText(result.getJSONObject(0).getString("latitude"));
+                            String time = TraccerParser.datetime(lastUpdatetString);
+                            String timeDiff = TraccerParser.numDays(lastUpdatetString);
+                            progressDialog.dismiss();
+                            name_tv.setText(nameString);
+                            Log.d("VehicleMap", nameString);
+
+                            if (address.equals("null")) {
+                                address = "Loading...";
+                            }
+                            positionId_tv.setText(address);
 //                        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_car));
 //                        markerOptions.anchor(0.5f,0.5f)
 //                                .flat(true);
 //                        marker=googleMap.addMarker(markerOptions);
-                        uniqueId_tv.setText(uniqueIdString);
-                        lastUpdate_tv.setText(time);
-                        status_tv.setText(statusString);
-                        category_tv.setText(categoryString);
-                        speed_tv.setText(String.valueOf(speed));
-                        timedated.setText(timeDiff);
-                        distance_tv.setText(String.valueOf(distance_trav));
+                            uniqueId_tv.setText(uniqueIdString);
+                            lastUpdate_tv.setText(time);
+                            status_tv.setText(statusString);
+                            category_tv.setText(categoryString);
+                            speed_tv.setText(String.valueOf(speed));
+                            timedated.setText(timeDiff);
+                            distance_tv.setText(String.valueOf(distance_trav));
 
-                        lineStringArray.add(new LatLng(origin_latitute,origin_longitute));
+                            lineStringArray.add(new LatLng(origin_latitute, origin_longitute));
 
-                        if(Double.compare(origin_latitute,destiny_latitude)!=0) {
-                            animationFunc();
+                            if (Double.compare(origin_latitute, destiny_latitude) != 0) {
+                                animationFunc();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+                    }else {
+                        progressDialog.dismiss();
+                        Snackbar snackbar1 = Snackbar.make(coordinatorLayout, "Check your internet connectivity.", Snackbar.LENGTH_LONG);
+                        snackbar1.show();                    }
                 }
             });
         } catch (JSONException e) {
@@ -318,32 +331,39 @@ public class VehicleOnMap extends BaseActivity implements View.OnClickListener {
                                         valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                                             @Override
                                             public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                                                v = valueAnimator.getAnimatedFraction();
-                                                newLongitude = v * endPosition.longitude + (1 - v)
-                                                        * startPosition.longitude;
-                                                newLatitude = v * endPosition.latitude + (1 - v)
-                                                        * startPosition.latitude;
+                                                try {
+                                                    v = valueAnimator.getAnimatedFraction();
+                                                    Log.d("ValueAnimator", String.valueOf(v));
+                                                    newLongitude = v * endPosition.longitude + (1 - v)
+                                                            * startPosition.longitude;
+                                                    newLatitude = v * endPosition.latitude + (1 - v)
+                                                            * startPosition.latitude;
 
-                                                LatLng newPos = new LatLng(newLatitude, newLongitude);
-                                                marker.setPosition(newPos);
-                                                marker.setAnchor(0.5f, 0.5f);
-                                                marker.setRotation(getBearing(startPosition, newPos));
-                                                googleMap.moveCamera(CameraUpdateFactory
-                                                        .newCameraPosition
-                                                                (new CameraPosition.Builder()
-                                                                        .target(newPos)
-                                                                        .zoom(17)
-                                                                        .build()));
+                                                    LatLng newPos = new LatLng(newLatitude, newLongitude);
+                                                    marker.setPosition(newPos);
+                                                    marker.setAnchor(0.5f, 0.5f);
+                                                    marker.setRotation(getBearing(startPosition, newPos));
+                                                    googleMap.moveCamera(CameraUpdateFactory
+                                                            .newCameraPosition
+                                                                    (new CameraPosition.Builder()
+                                                                            .target(newPos)
+                                                                            .zoom(17)
+                                                                            .build()));
+                                                }catch (Exception e){
+
+                                                }
                                             }
                                         });
                                         if(Double.compare(origin_latitute,destiny_latitude)!=0) {
                                             valueAnimator.start();
-//                                        handler.postDelayed(this, 3000);
+//                                        handler.postDelayed(this, 6000);
                                             origin_latitute = destiny_latitude;
                                             origin_longitute = destiny_longitude;
+                                        }else {
+                                            valueAnimator.end();
                                         }
                                     }
-                                }, 6000);
+                                }, 500);
 
                             } catch (Exception e) {
                                 e.printStackTrace();

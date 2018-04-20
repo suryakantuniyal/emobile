@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,20 +18,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.innobins.innotrack.FCM.SendRegistrationTokentoServer;
-import com.innobins.innotrack.activity.Main2Activity;
-import com.innobins.innotrack.api.APIServices;
+import com.innobins.innotrack.R;
 import com.innobins.innotrack.home.HomeActivity;
 import com.innobins.innotrack.network.ResponseCallback;
-import com.innobins.innotrack.network.ResponseStringCallback;
+import com.innobins.innotrack.network.WebserviceHelper;
+import com.innobins.innotrack.utils.URLContstant;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.innobins.innotrack.R;
 //import com.innobins.innotrack.activity.CircularActivity;
-import com.innobins.innotrack.network.WebserviceHelper;
-import com.innobins.innotrack.utils.URLContstant;
 
 /**
  * Created by silence12 on 19/6/17.
@@ -99,7 +95,6 @@ public class LoginFragment extends Fragment {
                                         mEditor.putString(URLContstant.KEY_PASSWORD, pass);
                                         mEditor.putInt(URLContstant.KEY_LOGEDIN_USERID,jsonObject1.getInt("userId"));
                                         mEditor.putBoolean(URLContstant.KEY_LOGGED_IN, true);
-                                        vehicleStatusData(jsonObject1.getInt("userId"));
                                         if (rememberMe.isChecked()) {
                                             mEditor.putString(URLContstant.KEY_REMBR_USER,user);
                                             mEditor.putString(URLContstant.KEY_REMBR_PASS,pass);

@@ -13,12 +13,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.innobins.innotrack.R;
 import com.innobins.innotrack.model.VehicleList;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import com.innobins.innotrack.R;
 
 /**
  * Created by silence12 on 28/6/17.
@@ -32,7 +31,6 @@ public class VehicleslistAdapter extends RecyclerView.Adapter<VehicleslistAdapte
     private List<VehicleList> vehicleLists = new ArrayList<>();
     private List<VehicleList> mFilteredList;
     private OnItemClickListener cnoteClick;
-
 
     public VehicleslistAdapter(Context mContext, List<VehicleList> mVehicleList, OnItemClickListener cnoteClick) {
         this.mContext = mContext;
@@ -62,6 +60,7 @@ public class VehicleslistAdapter extends RecyclerView.Adapter<VehicleslistAdapte
         if (vehicle.category.equals("person")){
             holder.vehicleLstIcn.setImageResource(R.drawable.ic_punch_person);
         }
+
         if (vehicle.category.equals("motorcycle")){
             holder.vehicleLstIcn.setImageResource(R.drawable.motobikes);
         }
@@ -79,8 +78,16 @@ public class VehicleslistAdapter extends RecyclerView.Adapter<VehicleslistAdapte
             holder.online_tv.setText("Online");
             Glide.with(mContext).load(R.drawable.online_icon).asBitmap()
                     .centerCrop().placeholder(R.drawable.placeholderxx4).into(holder.status_iv);
-        } else {
+        } else if(vehicle.status.equals("Offline")) {
             holder.online_tv.setText("Offline");
+            Glide.with(mContext).load(R.drawable.offline_icon).asBitmap()
+                    .centerCrop().placeholder(R.drawable.placeholderxx4).into(holder.status_iv);
+        }else if(vehicle.status.equals("Running")){
+            holder.online_tv.setText("Running");
+            Glide.with(mContext).load(R.drawable.online_icon).asBitmap()
+                    .centerCrop().placeholder(R.drawable.placeholderxx4).into(holder.status_iv);
+        }else if(vehicle.status.equals("Unknown")){
+            holder.online_tv.setText("Unknown");
             Glide.with(mContext).load(R.drawable.offline_icon).asBitmap()
                     .centerCrop().placeholder(R.drawable.placeholderxx4).into(holder.status_iv);
         }

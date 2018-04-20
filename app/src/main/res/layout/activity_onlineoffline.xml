@@ -26,6 +26,7 @@
     </android.support.design.widget.AppBarLayout>
 
     <RelativeLayout
+        android:id="@+id/main_rl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/appbar"
@@ -109,8 +110,8 @@
                 android:layout_marginTop="10dp"
                 android:layout_below="@+id/no_internet_img"
                 android:gravity="center"
-                android:text="Sorry No Online Users"
-                android:textColor="#7a7a7a"
+                android:typeface="serif"
+                android:text="Sorry No Any Vehicle"                android:textColor="#7a7a7a"
                 android:textSize="18sp" />
 
         </LinearLayout>

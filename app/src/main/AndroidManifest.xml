@@ -36,12 +36,12 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
+        android:name=".application.App"
         android:allowBackup="true"
         android:icon="@mipmap/innotrack_icon"
         android:label="@string/app_name"
         android:largeHeap="true"
         android:supportsRtl="true"
-        android:name="com.innobins.innotrack.application.App"
         android:theme="@style/AppTheme">
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -52,88 +52,102 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
-
         <activity
-            android:name="com.innobins.innotrack.activity.SplashActivity"
+            android:name=".activity.SplashActivity"
             android:screenOrientation="portrait">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
-            android:name="com.innobins.innotrack.activity.MainActivity"
+            android:name=".activity.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.innobins.innotrack.activity.SignUpAccount"
-            android:screenOrientation="portrait"
-            />
-        <activity
-            android:name="com.innobins.innotrack.activity.VehicleDetailActivity"
+            android:name=".activity.SignUpAccount"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.innobins.innotrack.activity.TrackingDevicesActivity"
+            android:name=".activity.VehicleDetailActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.innobins.innotrack.activity.WelcomeMessageActivity"
+            android:name=".activity.TrackingDevicesActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.innobins.innotrack.activity.Reports.ReportsActivity"
+            android:name=".activity.WelcomeMessageActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.innobins.innotrack.activity.OnLineOffLineActivity"
+            android:name=".activity.Reports.ReportsActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.innobins.innotrack.activity.MapViewActivity"
+            android:name=".activity.OnLineOffLineActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.MapViewActivity"
             android:screenOrientation="portrait" />
 
-        <service android:name="com.innobins.innotrack.FCM.MessagingHandler">
+        <service android:name=".FCM.MessagingHandler">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-        <service android:name="com.innobins.innotrack.FCM.RegistrationTokenHandler">
+        <service android:name=".FCM.RegistrationTokenHandler">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
-        <service android:name="com.innobins.innotrack.FCM.SendRegistrationTokentoServer" />
+        <service android:name=".FCM.SendRegistrationTokentoServer" />
 
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyAa6oTp11HF9-joRd366-2m8rdQNqhyskE" />
+            android:value="AIzaSyCJU0fcqNTKk4gro4hYHmQ5NR6G9QWVFXI" />
 
         <activity
-            android:name="com.innobins.innotrack.activity.Main2Activity"
+            android:name=".activity.Main2Activity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
-        <activity android:name="com.innobins.innotrack.activity.OfflineActivity" />
+        <activity android:name=".activity.OfflineActivity" />
 
-        <service android:name="com.innobins.innotrack.services.UpdateListViewService" />
-
-        <activity android:name="com.innobins.innotrack.activity.Reports.RouteReportActivity" />
-        <activity android:name="com.innobins.innotrack.activity.Reports.EventesReportActivity" />
-        <activity android:name="com.innobins.innotrack.activity.Reports.TripsReportActiviy" />
-        <activity android:name="com.innobins.innotrack.activity.Reports.SummaryReportActivity" />
+        <service android:name=".services.UpdateListViewService" />
+        <activity android:name=".activity.Reports.RouteReportActivity" />
+        <activity android:name=".activity.Reports.DailyRunsheetActivity" />
+        <activity android:name=".activity.Reports.TripsReportActiviy" />
+        <activity android:name=".activity.Reports.SummaryReportActivity" />
         <activity
-            android:name="com.innobins.innotrack.activity.PdfFile.PdfGenerator"
+            android:name=".activity.PdfFile.PDFGenerator"
             android:label="@string/title_activity_pdf_generator" />
         <activity
-            android:name="com.innobins.innotrack.activity.Animation"
+            android:name=".activity.Animation"
             android:label="@string/title_activity_animation"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".home.HomeActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".vehicleonmap.VehicleOnMap"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".running.RunningActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".unknownActivity.UnknownActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.Reports.RouteMapActivity"
+            android:label="@string/title_activity_route_map"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".activity.TableActivity"
+            android:label="@string/title_activity_table"
+            android:theme="@style/AppTheme">
 
-        <activity android:name="com.innobins.innotrack.home.HomeActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name="com.innobins.innotrack.vehicleonmap.VehicleOnMap"
-            android:theme="@style/AppTheme"
-            android:screenOrientation="portrait">
+
         </activity>
-
     </application>
 
 </manifest>

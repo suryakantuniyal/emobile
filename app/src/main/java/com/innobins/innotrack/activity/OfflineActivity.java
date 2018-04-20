@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,9 +20,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.innobins.innotrack.R;
 import com.innobins.innotrack.adapter.VehicleslistAdapter;
 import com.innobins.innotrack.home.BaseActivity;
 import com.innobins.innotrack.model.VehicleList;
+import com.innobins.innotrack.utils.URLContstant;
+import com.innobins.innotrack.vehicleonmap.VehicleOnMap;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,11 +33,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import com.innobins.innotrack.R;
-
-import com.innobins.innotrack.utils.URLContstant;
-import com.innobins.innotrack.vehicleonmap.VehicleOnMap;
 
 /**
  * Created by silence12 on 11/7/17.
@@ -60,6 +57,7 @@ public class OfflineActivity extends BaseActivity implements SwipeRefreshLayout.
         setSupportActionBar(toolbar);
         getSupportActionBar().setIcon(R.mipmap.innotrack_icon);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         mSharedPreferences = getSharedPreferences(URLContstant.PREFERENCE_NAME, Context.MODE_PRIVATE);
         userName = mSharedPreferences.getString(URLContstant.KEY_USERNAME, "");
         password = mSharedPreferences.getString(URLContstant.KEY_PASSWORD,"");
@@ -76,21 +74,6 @@ public class OfflineActivity extends BaseActivity implements SwipeRefreshLayout.
         recyclerView = (RecyclerView) findViewById(R.id.onlineoffline_rv);
         listArrayList = new ArrayList<VehicleList>();
 
-/*
-        APIServices.GetAllOnlineVehicleList(OfflineActivity.this,userName,password, new ResponseOnlineVehicle() {
-            @Override
-            public void onSuccessOnline(JSONObject result) {
-                Log.d("Result", String.valueOf(result));
-               // SessionHandler.updateSnessionHandler(getBaseContext(), result, mSharedPreferences);
-                // recyclerView.getRecycledViewPool().clear();
-                vehiclesAdapter.notifyDataSetChanged();
-                //8189 1.8.23
-                //6958 1.6.27
-            }
-        });
-*/
-
-
         listArrayList = parseView();
         if(listArrayList.size() == 0){
             progressDialog.dismiss();
@@ -103,13 +86,7 @@ public class OfflineActivity extends BaseActivity implements SwipeRefreshLayout.
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(vehiclesAdapter);
-//        swipeRefreshLayout.post(new Runnable() {
-//            @Override
-//            public void run() {
-//                swipeRefreshLayout.setRefreshing(true);
-//                parseView();
-//            }
-//        });
+
         vehiclesAdapter.setOnItemClickListener(this);
     }
 

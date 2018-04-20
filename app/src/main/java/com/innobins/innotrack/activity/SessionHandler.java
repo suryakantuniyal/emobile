@@ -4,11 +4,11 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.innobins.innotrack.parser.TraccerParser;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import com.innobins.innotrack.parser.TraccerParser;
 
 /**
  * Created by silence12 on 19/7/17.
@@ -105,7 +105,7 @@ public class   SessionHandler  {
                         totalOnlineList.put(vehicleDict);
                         previousData.put("OnLineList",totalOnlineList);
                     }
-                }else {
+                }else if(innerElement.getString("status").equals("Offline")){
                     if (previousData.has("OffLineList")){
                         JSONArray totalOffLineList = previousData.getJSONArray("OffLineList");
                         totalOffLineList.put(vehicleDict);
@@ -115,6 +115,28 @@ public class   SessionHandler  {
                         JSONArray totalOffLIneList = new JSONArray();
                         totalOffLIneList.put(vehicleDict);
                         previousData.put("OffLineList",totalOffLIneList);
+                    }
+                }else if(innerElement.getString("status").equals("Running")){
+                    if (previousData.has("RunningList")){
+                        JSONArray totalOffLineList = previousData.getJSONArray("RunningList");
+                        totalOffLineList.put(vehicleDict);
+                        Log.d("RunningList",String.valueOf(totalOffLineList.length()));
+                        previousData.put("RunningList",totalOffLineList);
+                    }else {
+                        JSONArray totalOffLIneList = new JSONArray();
+                        totalOffLIneList.put(vehicleDict);
+                        previousData.put("RunningList",totalOffLIneList);
+                    }
+                }else if(innerElement.getString("status").equals("Unknown")){
+                    if (previousData.has("UnknownList")){
+                        JSONArray totalOffLineList = previousData.getJSONArray("UnknownList");
+                        totalOffLineList.put(vehicleDict);
+                        Log.d("UnknownList",String.valueOf(totalOffLineList.length()));
+                        previousData.put("UnknownList",totalOffLineList);
+                    }else {
+                        JSONArray totalOffLIneList = new JSONArray();
+                        totalOffLIneList.put(vehicleDict);
+                        previousData.put("UnknownList",totalOffLIneList);
                     }
                 }
                 mEditor = mSharedPreferences.edit();

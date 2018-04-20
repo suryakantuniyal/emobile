@@ -7,9 +7,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,14 +21,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
+import com.innobins.innotrack.R;
 import com.innobins.innotrack.adapter.VehicleslistAdapter;
-import com.innobins.innotrack.api.APIServices;
 import com.innobins.innotrack.home.BaseActivity;
-import com.innobins.innotrack.home.HomeActivity;
 import com.innobins.innotrack.model.VehicleList;
 import com.innobins.innotrack.network.ResponseCallback;
-import com.innobins.innotrack.network.ResponseOnlineVehicle;
 import com.innobins.innotrack.network.WebserviceHelper;
 import com.innobins.innotrack.services.UpdateListViewService;
 import com.innobins.innotrack.utils.URLContstant;
@@ -41,8 +40,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-
-import com.innobins.innotrack.R;
 
 public class MainActivity extends BaseActivity
         implements VehicleslistAdapter.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
@@ -70,20 +67,19 @@ public class MainActivity extends BaseActivity
     String userName,password;
     int vhcleId;
     LinearLayout detail_ll;
+    RelativeLayout coordinatorLayout ;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         instance = this;
-
         updateListViewService = new Intent(getBaseContext(), UpdateListViewService.class);
         startService(updateListViewService);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        customTitle("   "+"Listview");
+        customTitle("  "+"Listview");
         getSupportActionBar().setIcon(R.mipmap.innotrack_icon);
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Wait a moment...");
@@ -100,6 +96,7 @@ public class MainActivity extends BaseActivity
         no_data_ll = (LinearLayout) findViewById(R.id.no_vehicle_ll);
         listArrayList = new ArrayList<VehicleList>();
         recyclerView = (RecyclerView) findViewById(R.id.vehicle_rv);
+        coordinatorLayout = (RelativeLayout)findViewById(R.id.main_rl);
         detail_ll = (LinearLayout)findViewById(R.id.detail_ll);
 
         listArrayList = parseView();
@@ -125,7 +122,6 @@ public class MainActivity extends BaseActivity
     public void uploadNewData() {
 
         listArrayList.clear();
-
         String mUrl = "https://mtrack-api.appspot.com/api/get/devices/byuser/" ;
         JSONObject jsonObject = new JSONObject();
         try {
@@ -133,11 +129,17 @@ public class MainActivity extends BaseActivity
             WebserviceHelper.getInstance().PostCall(MainActivity.this, mUrl, jsonObject, new ResponseCallback() {
                 @Override
                 public void OnResponse(JSONObject Response) {
-                    try {
-                        JSONArray jsonArray = Response.getJSONArray("deviceData");
-                        SessionHandler.updateSnessionHandler(getBaseContext(),jsonArray,mSharedPreferences);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                    if(Response!=null) {
+                        try {
+                            JSONArray jsonArray = Response.getJSONArray("deviceData");
+                            SessionHandler.updateSnessionHandler(getBaseContext(), jsonArray, mSharedPreferences);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }else {
+
+                        Snackbar snackbar1 = Snackbar.make(coordinatorLayout, "Check your internet connectivity.", Snackbar.LENGTH_LONG);
+                        snackbar1.show();
                     }
                 }
             });
@@ -203,9 +205,7 @@ public class MainActivity extends BaseActivity
         listArrayList.clear();
         parseView();
     }
-
     private List<VehicleList> parseView() {
-
         JSONObject previousData = null;
         try {
             previousData = new JSONObject(mSharedPreferences.getString("deviceData", "{}"));
@@ -227,7 +227,6 @@ public class MainActivity extends BaseActivity
             e.printStackTrace();
         }
         return listArrayList;
-
     }
 
     @Override

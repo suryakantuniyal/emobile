@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -24,9 +23,12 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
-import com.innobins.innotrack.activity.PdfFile.PdfGenerator;
+import com.innobins.innotrack.R;
+import com.innobins.innotrack.home.BaseActivity;
 import com.innobins.innotrack.model.VehicleList;
+import com.innobins.innotrack.utils.URLContstant;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,12 +42,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.innobins.innotrack.R;
-
-import com.innobins.innotrack.adapter.SimpleListAdapter;
-import com.innobins.innotrack.utils.URLContstant;
-
-public class ReportsActivity extends AppCompatActivity {
+public class ReportsActivity extends BaseActivity {
     Spinner reportSpinner;
     private List<String> reportType = new ArrayList<>();
     private List<String> devicename = new ArrayList<String>();
@@ -62,27 +59,21 @@ public class ReportsActivity extends AppCompatActivity {
     Map<String, List> data = new HashMap<String, List>();
     List<List> value = new ArrayList<List>(data.values());
 
-    String positionId;
-    int newDeviceId,divIdReport;
-    String reportType_String,spinnerValue="",vhcleNoPopup_str,vhcleNoPopup_str1,vhcleNoPopup_str2,startDate_str,endDate_str,startTime_str,endTime_str;
-    int vhcleNoPopup_int;
-    Button confrigure_btn,genrateReprt_btn,submtConfig_btn,addVehicle_btn;
+    String positionId,deviceLst;
+    int divIdReport;
+    String reportType_String,spinnerValue="",vhcleNoPopup_str,startDate_str,endDate_str,startTime_str,endTime_str;
+    Button genrateReprt_btn;
     final Context context = this;
-    TextView startDate_tv,endDate_tv,startTime_tv,endTime_tv,vehcleNo_tv,vehcleNo_tv1,vehcleNo_tv2;
-    int dateTime;
+    TextView startDate_tv,endDate_tv,startTime_tv,endTime_tv,vehcleNo_tv;
     SharedPreferences mSharedPreferences;
     ArrayAdapter<String> adapter;
     ArrayAdapter<Integer>divIdAdaptr;
-    SimpleListAdapter simpleListAdapter;
-    int click = 0;
-    int vehicleNo;
-    ImageView close_img,close1_img;
     String userName,password;
-
     View dateView;
     ImageView dateImg;
-    boolean isDown;
-    Date startDate,endDate;
+    SparseBooleanArray checked;
+
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -90,12 +81,10 @@ public class ReportsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_reports);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setIcon(R.mipmap.luncher_icon);
-        setTitle("Reports");
+        getSupportActionBar().setIcon(R.mipmap.innotrack_icon);
+        customTitle("   "+"Reports");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         listArrayList = new ArrayList<VehicleList>();
-
         mSharedPreferences = getSharedPreferences(URLContstant.PREFERENCE_NAME, Context.MODE_PRIVATE);
         userName = mSharedPreferences.getString(URLContstant.KEY_USERNAME, "");
         password = mSharedPreferences.getString(URLContstant.KEY_PASSWORD,"");
@@ -105,91 +94,107 @@ public class ReportsActivity extends AppCompatActivity {
         startTime_tv = (TextView)findViewById(R.id.frmTime_report);
         endTime_tv = (TextView)findViewById(R.id.toTime_report);
         vehcleNo_tv = (TextView)findViewById(R.id.vehicleNo_report);
+        final android.support.v7.app.AlertDialog.Builder bodylist = new android.support.v7.app.AlertDialog.Builder(context);
+        final LayoutInflater layoutInflater = LayoutInflater.from(context);
+        // View v = layoutInflater.inflate(R.layout.s)
 
         vehcleNo_tv.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
                // getUpdatedDevice();
                 //listArrayList = getDeviceName();
                 getDeviceName();
-                android.support.v7.app.AlertDialog.Builder bodylist = new android.support.v7.app.AlertDialog.Builder(context);
-                LayoutInflater layoutInflater = LayoutInflater.from(context);
                 v = layoutInflater.inflate(R.layout.simplelist, null);
-                // View v = layoutInflater.inflate(R.layout.s)
                 final ListView listView = (ListView)v.findViewById(R.id.lists);
                 final Button listSubmit = (Button)v.findViewById(R.id.listbutton);
                 bodylist.setView(v);
                 final Dialog dialog = bodylist.create();
                 dialog.show();
-                deviceId = deviceId;
-                Log.d("newDeviceIdof",String.valueOf(deviceId));
-               /* simpleListAdapter = new SimpleListAdapter(context,android.R.layout.simple_list_item_multiple_choice,devicename);
-                listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-                listView.setAdapter(simpleListAdapter);*/
+
                 divIdAdaptr = new ArrayAdapter<Integer>(context,android.R.layout.simple_list_item_multiple_choice,deviceId);
                 listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
                 listView.setAdapter(divIdAdaptr);
+
                 adapter = new ArrayAdapter<String>(context,android.R.layout.simple_list_item_multiple_choice, devicename);
                 listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
                 listView.setAdapter(adapter);
+/*
+                class CheckBoxClick implements AdapterView.OnItemClickListener {
+
+                    @Override
+                    public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+                        // TODO Auto-generated method stub
+
+                        CheckedTextView ctv = (CheckedTextView)arg1;
+                        if(ctv.isChecked()){
+                            Toast.makeText(ReportsActivity.this, "now it is unchecked", Toast.LENGTH_SHORT).show();
+                        }else{
+                            Toast.makeText(ReportsActivity.this, "now it is checked", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                }
+*/
+
+
+
+
                 listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                           // positionId = String.valueOf(deviceId.get(position));
-                           // int posold = deviceId.get(position);
+
                         Object obj = divIdAdaptr.getItem(position);
                         positionId = obj.toString();
                         positionId = positionId+","+obj;
-                           /* positionId = String.valueOf(deviceId.get(position));
-                            positionId = positionId+",";*/
-                           // positionId = (positionId+","+deviceId.get(position));
-
-                        Log.d("positionnew", String.valueOf(positionId));
+                        Log.d("positionnew", String.valueOf(obj));
                     }
-
                 });
                 listSubmit.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        SparseBooleanArray checked = listView.getCheckedItemPositions();
-                        ArrayList<String> selectedItem = new ArrayList<String>();
+                       checked = listView.getCheckedItemPositions();
 
-                        Log.d("selecteditem",String.valueOf(selectedItem1));
+                        ArrayList<String> selectedItem = new ArrayList<String>();
 
                         for (int i = 0; i < checked.size(); i++){
                             int position = checked.keyAt(i);
                             if (checked.valueAt(i))
                                 selectedItem.add(adapter.getItem(position));
+                               // vehicleDetail.add(selectedItem);
+                                String divid = divIdAdaptr.getItem(position).toString();
                                 selectedItem1.add(divIdAdaptr.getItem(position));
+                            Log.d("selecteditem", String.valueOf(selectedItem1));
                         }
-/*
-                        for (int j=0;j<checked.size();j++){
-                            int position = checked.keyAt(j);
-                            if (checked.valueAt(j))
-                                selectedItem1.add(divIdAdaptr.getItem(position));
-                        }
-*/
+
                         String [] output = new String[selectedItem.size()];
                         Integer[] posId = new Integer[selectedItem1.size()];
 
                         for (int i =0 ;i<selectedItem.size();i++)
                         {
                             output[i] = selectedItem.get(i);
-                            // vehcleNo_tv.setText(vehcleNo_tv.getText() + ""+output[i]+" ,");
+                            Log.d("lentgh",String.valueOf(output[i]));
+                            Log.d("sizeout", String.valueOf(selectedItem.size()));
+                           // if (selectedItem.size()>1){
+                            //vehcle name string form............a,b,c
                             vehcleNo_tv.setText(vehcleNo_tv.getText()+""+output[i]+",");
-                            String vhcle = vehcleNo_tv.getText().toString();
+//                            }else {
+//                                vehcleNo_tv.setText(vehcleNo_tv.getText()+""+output[i]);
+//                            }
+                            listView.setItemChecked(selectedItem.size(),true);
                         }
                         for (int i= 0;i<selectedItem1.size();i++){
                             posId[i] = selectedItem1.get(i);
+                            String vclId = ((posId[i])+",");
                             int id = posId[i];
                             newDivId.add(id);
-                            Log.d("idofadpt", String.valueOf(id));
+                            Log.d("idofadpt", vclId);
                         }
                         for (int j=0;j<newDivId.size();j++){
-
                             Log.d("newdivIdarr", String.valueOf(newDivId.get(j)));
                         }
 
+                        //dialog.hide();
                         dialog.dismiss();
                     }
                 });
@@ -231,8 +236,6 @@ public class ReportsActivity extends AppCompatActivity {
                 timepicker(2);
             }
         });
-
-
 /*
         APIServices.GetAllOnlineVehicleList(ReportsActivity.this, userName, password, new ResponseOnlineVehicle() {
             @Override
@@ -254,7 +257,7 @@ public class ReportsActivity extends AppCompatActivity {
         reportSpinner = (Spinner)findViewById(R.id.reportSpinner);
         //materialDesignSpinner.setBackgroundResource(R.drawable.textviewoutline);
         reportType.add("Route");
-        reportType.add("Events");
+        reportType.add("RunSheet");
         reportType.add("Summary");
         reportType.add("Trips");
 /*
@@ -345,11 +348,11 @@ public class ReportsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                Intent intent = new Intent(ReportsActivity.this, PdfGenerator.class);
+               /* Intent intent = new Intent(ReportsActivity.this, PDFGenerator.class);
                 startActivity(intent);
-                finish();
+                finish();*/
 
-              /*  getValue();
+                getValue();
                 if (vhcleNoPopup_str.equals("")||startDate_tv.equals("")||endDate_str.equals("")||startTime_str.equals("")||endTime_str.equals(""))
                 {
                     Toast.makeText(context,"Please Fill All Fields",Toast.LENGTH_LONG).show();
@@ -360,7 +363,7 @@ public class ReportsActivity extends AppCompatActivity {
 
                 }else {
                     showReport();
-                }*/
+                }
 
                // getValue();
             }
@@ -380,7 +383,6 @@ public class ReportsActivity extends AppCompatActivity {
         animation.setFillAfter(true);
         dateView.startAnimation(animation);
     }
-
             private ArrayList<VehicleList> getDeviceName() {
                 devicename.clear();
                 String name ;
@@ -394,34 +396,26 @@ public class ReportsActivity extends AppCompatActivity {
                         name = vehicleList.getJSONObject(i).getString("name");
                         id = vehicleList.getJSONObject(i).getInt("deviceId");
                         VehicleList vehicleList1 = new VehicleList(name,id);
+                        Log.d("vhcleid",String.valueOf(id));
 
                         listArrayList.add(vehicleList1);
 
                         Log.d("arraylistvhcl", String.valueOf(listArrayList));
-
-                        Log.d("idofvhcle",String.valueOf(id));
-                        Log.d("newVehicleName",name);
-                        Log.d("reportPosition",String.valueOf(id));
-                        /*    divname.add(name);
-                        divId.add(id);
-                        data.put("devicename",divname);
-                        data.put("divId",divId);*/
+                        //value in array form
                         devicename.add(name);
                         deviceId.add(id);
                         vehicleDetail.add(deviceId);
                         vehicleDetail.add(devicename);
-                        Log.d("vehicleDetailmap",String.valueOf(vehicleDetail));
+                        Log.d("vehicleDetailmap",String.valueOf(deviceId));
                        // data.put("vehicleDetail", (Map<String, Integer>) vehicleDetail);
                        // deviceId.add(id);
                     }
-
                 }catch (JSONException e){
                     e.printStackTrace();
                 }
 
                 return listArrayList;
             }
-
 
     private void getValue() {
         SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
@@ -436,61 +430,38 @@ public class ReportsActivity extends AppCompatActivity {
         }
 
         vhcleNoPopup_str = vehcleNo_tv.getText().toString();
-        Log.d("vehicleNoPopu",vhcleNoPopup_str);
-
-       /* try {
-         startDate = formatter.parse(startDate_str);
-         endDate = formatter.parse(endDate_str);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }*/
-     /*   Date date1 = dateFormat.parse("2013-01-01");
-        Date date2 = dateFormat.parse("2013-01-02");*/
 
         startTime_str  = startTime_tv.getText().toString();
         endTime_str  = endTime_tv.getText().toString();
         divId = selectedItem1;
+        deviceLst = divId.toString().replace("[","").replace("]","");
 
-        for(Integer item:divId){
-            Log.d("itemofVhcle", String.valueOf(item));
-        }
-       /* for (int i=0;i<selectedItem1.size();i++){
-            Log.d("sizeofselctd", String.valueOf(selectedItem1.size()));
-
-            divId = selectedItem1;
-           // divIdReport = selectedItem1.listIterator();
-        }*/
-        Log.d("vehclenO",vhcleNoPopup_str);
-        Log.d("divIdReport",String.valueOf(divId));
-
-
-//
-//        vhcleNoPopup_int = Integer.parseInt(vehcleNo_tv.getText().toString());
     }
 
     private void showReport() {
 
-        if(spinnerValue.equals("Events")){
-            Intent evntIntnt = new Intent(context,EventesReportActivity.class);
+        if(spinnerValue.equals("Daily RunSheet")){
+            Intent evntIntnt = new Intent(context,DailyRunsheetActivity.class);
             getValue();
             evntIntnt.putExtra("deviceName",vhcleNoPopup_str);
             evntIntnt.putExtra("startdate",startDate_str);
             evntIntnt.putExtra("endDate",endDate_str);
             evntIntnt.putExtra("startTime",startTime_str);
             evntIntnt.putExtra("endTime",endTime_str);
-            evntIntnt.putExtra("divReport",selectedItem1);
+            evntIntnt.putExtra("divReport",deviceLst);
             startActivity(evntIntnt);
             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
         }
 
         if (spinnerValue.equals("Trips")){
             Intent intent = new Intent(context,TripsReportActiviy.class);
+            intent.putExtra("reportType",spinnerValue);
             intent.putExtra("deviceName",vhcleNoPopup_str);
             intent.putExtra("startdate",startDate_str);
             intent.putExtra("endDate",endDate_str);
             intent.putExtra("startTime",startTime_str);
             intent.putExtra("endTime",endTime_str);
-            intent.putExtra("divReport",divIdReport);
+            intent.putExtra("divReport",deviceLst);
             startActivity(intent);
             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
         }
@@ -502,7 +473,7 @@ public class ReportsActivity extends AppCompatActivity {
             intent.putExtra("endDate",endDate_str);
             intent.putExtra("startTime",startTime_str);
             intent.putExtra("endTime",endTime_str);
-            intent.putExtra("divReport",divIdReport);
+            intent.putExtra("divReport",deviceLst);
             startActivity(intent);
             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
 
@@ -510,13 +481,27 @@ public class ReportsActivity extends AppCompatActivity {
         if (spinnerValue.equals("Route")){
             Intent routeIntnt = new Intent(context,RouteReportActivity.class);
             getValue();
+            routeIntnt.putExtra("reportType",spinnerValue);
             routeIntnt.putExtra("deviceName",vhcleNoPopup_str);
             routeIntnt.putExtra("startdate",startDate_str);
             routeIntnt.putExtra("endDate",endDate_str);
             routeIntnt.putExtra("startTime",startTime_str);
             routeIntnt.putExtra("endTime",endTime_str);
-            routeIntnt.putExtra("divReport",divIdReport);
+            routeIntnt.putExtra("divReport",deviceLst);
             startActivity(routeIntnt);
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+        }
+        if (spinnerValue.equals("Route Map")){
+            Intent routeMapIntent = new Intent(context,RouteMapActivity.class);
+            getValue();
+            routeMapIntent.putExtra("reportType","Route Map");
+            routeMapIntent.putExtra("deviceName",vhcleNoPopup_str);
+            routeMapIntent.putExtra("startdate",startDate_str);
+            routeMapIntent.putExtra("endDate",endDate_str);
+            routeMapIntent.putExtra("startTime",startTime_str);
+            routeMapIntent.putExtra("endTime",endTime_str);
+            routeMapIntent.putExtra("divReport",deviceLst);
+            startActivity(routeMapIntent);
             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
         }
 
@@ -580,11 +565,11 @@ public class ReportsActivity extends AppCompatActivity {
               switch (i){
                   case 1:
                      // startDate_tv.setText(datePicker.getDayOfMonth()+ "-"+String.valueOf(newMonth)+"-"+datePicker.getYear());
-                      startDate_tv.setText(datePicker.getDayOfMonth() +"-"+newMonth+"-"+datePicker.getYear());
+                      startDate_tv.setText(datePicker.getYear() +"/"+newMonth+"/"+datePicker.getDayOfMonth());
                       break;
                   case 2:
                      // endDate_tv.setText(datePicker.getDayOfMonth()+"-"+String.valueOf(newMonth)+"-"+datePicker.getYear());
-                      endDate_tv.setText(datePicker.getDayOfMonth() +"-"+newMonth+"-"+datePicker.getYear());
+                      endDate_tv.setText(datePicker.getYear() +"/"+newMonth+"/"+datePicker.getDayOfMonth());
                       break;
               }
             }

@@ -2,17 +2,17 @@ package com.innobins.innotrack.ReportsAdapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.innobins.innotrack.R;
 import com.innobins.innotrack.activity.Reports.ReportData;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import com.innobins.innotrack.R;
 
 /**
  * Created by surya on 10/10/17.
@@ -23,7 +23,6 @@ public class RouteReportAdapter extends RecyclerView.Adapter<RouteReportAdapter.
     private List<ReportData>mReortData;
     public RouteReportAdapter(Context context,List<ReportData>mReortData) {
         this.context = context;
-        this.reportDatas = mReortData;
         this.mReortData = mReortData;
     }
     @Override
@@ -36,21 +35,23 @@ public class RouteReportAdapter extends RecyclerView.Adapter<RouteReportAdapter.
     @Override
     public void onBindViewHolder(RouteReportAdapter.ViewHolder holder, int position) {
 
-/*        ReportData reportData = mReortData.get(position);
+        ReportData reportData = mReortData.get(position);
+        String divicename = reportData.getDeviceName();
+        Log.d("divcename",divicename);
 
         holder.deviceName_tv.setText(reportData.getDeviceName());
         holder.valid_tv.setText(reportData.getValid());
         holder.time_tv.setText(reportData.getTime());
-        holder.speed_tv.setText(reportData.getSpeed().toString());
+        holder.speed_tv.setText(reportData.getSpd());
         holder.address_tv.setText(reportData.getAddress());
         holder.latitude_tv.setText(reportData.getLatitude().toString());
         holder.longitude_tv.setText(reportData.getLongitude().toString());
-        holder.altitude_tv.setText(reportData.getAltitude().toString());*/
+        holder.altitude_tv.setText(reportData.getAltitude().toString());
     }
 
     @Override
     public int getItemCount() {
-        return mReortData.size();
+        return 1;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -60,7 +61,7 @@ public class RouteReportAdapter extends RecyclerView.Adapter<RouteReportAdapter.
 
             deviceName_tv = (TextView)itemView.findViewById(R.id.routeDeviceName);
             valid_tv = (TextView)itemView.findViewById(R.id.routeValid_tv);
-            time_tv = (TextView)itemView.findViewById(R.id.routeTime_tv);
+            time_tv = (TextView)itemView.findViewById(R.id.routedate_tv);
             speed_tv = (TextView)itemView.findViewById(R.id.routeSpeed_tv);
             address_tv = (TextView)itemView.findViewById(R.id.routeAddres_tv);
             latitude_tv = (TextView)itemView.findViewById(R.id.routeLatitude_tv);

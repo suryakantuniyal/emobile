@@ -217,6 +217,7 @@ public final class TraccerParser {
             time = minuteDiff + " min";
         }
 
+        Log.d("TimeDiff",str+",,"+time);
         return time;
     }
 

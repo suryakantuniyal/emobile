@@ -9,6 +9,15 @@ public class ReportData {
     public String time;
     public String deviceName;
     public Double speed;
+    public String spd;
+
+    public String getSpd() {
+        return spd;
+    }
+
+    public void setSpd(String spd) {
+        this.spd = spd;
+    }
 
     public Double getSpeed() {
         return speed;
@@ -18,7 +27,7 @@ public class ReportData {
         this.speed = speed;
     }
 
-    public int valid;
+    public String valid;
 
     public String address;
     public Double latitude;
@@ -31,6 +40,7 @@ public class ReportData {
     public String endTime;
     public int duration;
     public String startAddress;
+
 
     public String getStartTime() {
         return startTime;
@@ -120,11 +130,11 @@ public class ReportData {
     public int engineHours;
 
 
-    public int getValid() {
+    public String getValid() {
         return valid;
     }
 
-    public void setValid(int valid) {
+    public void setValid(String valid) {
         this.valid = valid;
     }
 
@@ -215,30 +225,34 @@ public class ReportData {
         this.time = time;
         this.geofence = geofence;
     }
-    public ReportData(String deviceName,String type,String time,String geofence){
+    public ReportData(String deviceName,String time,Double maximumSpeed,double averageSpeed,double distance,int engineHours,String spentFuel){
         this.deviceName = deviceName;
-        this.type = type;
         this.time = time;
-        this.geo = geofence;
+        this.maximumSpeed = maximumSpeed;
+        this.averageSpeed = averageSpeed;
+        this.distance = distance;
+        this.engineHours = engineHours;
+        this.spentFuel = spentFuel;
     }
 
-    public ReportData(String deviceName,int valid,String time,Double speed,String address,Double latitude,Double longitude,Double altitude){
+    public ReportData(String deviceName,String valid,String time,Double latitude,Double longitude,Double altitude,String speed,String address){
         this.deviceName = deviceName;
         this.valid = valid;
         this.time = time;
-        this.speed = speed;
+        this.spd = speed;
         this.address = address;
         this.latitude = latitude;
         this.longitude = longitude;
         this.altitude = altitude;
     }
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>for Summary Report>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>..
-    public ReportData(String deviceName,Double distance,Double averageSpeed,Double maximumSpeed,int engineHours){
+    public ReportData(String deviceName,Double distance,Double averageSpeed,Double maximumSpeed,int engineHours,String spentFuel){
         this.deviceName = deviceName;
         this.distance = distance;
         this.averageSpeed = averageSpeed;
         this.maximumSpeed = maximumSpeed;
         this.engineHours = engineHours;
+        this.spentFuel = spentFuel;
     }
     public ReportData(String deviceName,String startTime,String endTime,int duration,String startAddress,String endAddress,String spentFuel,Double distance,Double averageSpeed,Double maximumSpeed){
         this.deviceName = deviceName;

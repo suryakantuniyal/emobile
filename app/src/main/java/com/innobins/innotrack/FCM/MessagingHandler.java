@@ -1,19 +1,17 @@
 package com.innobins.innotrack.FCM;
 
-import com.google.firebase.messaging.FirebaseMessagingService;
-import com.google.firebase.messaging.RemoteMessage;
 
 /**
  * Created by silence12 on 20/6/17.
  */
 
-public class MessagingHandler extends FirebaseMessagingService {
+public class MessagingHandler  {
 
     private static final String TAG = "MessagingHandler";
 
-    @Override
-    public void onMessageReceived(RemoteMessage remoteMessage) {
-        // TODO(developer): Handle FCM messages here.
+//    @Override
+//    public void onMessageReceived(RemoteMessage remoteMessage) {
+//        // TODO(developer): Handle FCM messages here.
         // If the application is in the foreground handle both data and notification messages here.
         // Also if you intend on generating your own notifications as a result of a received FCM
         // message, here is where that should be initiated. See sendNotification method below.
@@ -37,6 +35,6 @@ public class MessagingHandler extends FirebaseMessagingService {
 //            intent.putExtra(URLContstant.KEY_NOTIFICATION_DATA,remoteMessage.getData().get("message"));
 //            startService(intent);
 //        }
-    }
+//    }
 }
 

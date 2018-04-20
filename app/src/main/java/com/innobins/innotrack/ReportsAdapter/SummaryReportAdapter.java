@@ -7,12 +7,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.innobins.innotrack.R;
 import com.innobins.innotrack.activity.Reports.ReportData;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import com.innobins.innotrack.R;
 
 /**
  * Created by surya on 11/10/17.
@@ -46,6 +45,7 @@ public class SummaryReportAdapter extends RecyclerView.Adapter<SummaryReportAdap
         holder.averageSpeed_tv.setText(reportData.getAverageSpeed().toString());
         holder.maximumSpeed_tv.setText(reportData.getMaximumSpeed().toString());
         holder.enginHrs_tv.setText(String.valueOf(reportData.getEngineHours()));
+        holder.spentFuel_tv.setText(reportData.getSpentFuel());
     }
 
     @Override
@@ -54,7 +54,7 @@ public class SummaryReportAdapter extends RecyclerView.Adapter<SummaryReportAdap
     }
 
     public class ViewHolde extends RecyclerView.ViewHolder {
-        private TextView deviceName_tv,distance_tv,averageSpeed_tv,maximumSpeed_tv,enginHrs_tv;
+        private TextView deviceName_tv,distance_tv,averageSpeed_tv,maximumSpeed_tv,enginHrs_tv,spentFuel_tv;
         public ViewHolde(View itemView) {
             super(itemView);
             deviceName_tv = (TextView)itemView.findViewById(R.id.summryDeviceName);
@@ -62,6 +62,7 @@ public class SummaryReportAdapter extends RecyclerView.Adapter<SummaryReportAdap
             averageSpeed_tv = (TextView)itemView.findViewById(R.id.summryAvrgSpeed);
             maximumSpeed_tv = (TextView)itemView.findViewById(R.id.summryMaxSpeed);
             enginHrs_tv = (TextView)itemView.findViewById(R.id.summryEngnHrs);
+            spentFuel_tv = itemView.findViewById(R.id.summrySpentFuel);
         }
     }
 }

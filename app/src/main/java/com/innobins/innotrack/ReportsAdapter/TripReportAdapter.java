@@ -7,12 +7,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.innobins.innotrack.R;
 import com.innobins.innotrack.activity.Reports.ReportData;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import com.innobins.innotrack.R;
 
 /**
  * Created by surya on 10/10/17.
@@ -25,8 +24,8 @@ public class TripReportAdapter extends RecyclerView.Adapter<TripReportAdapter.Vi
 
     public TripReportAdapter(Context context,List<ReportData>mReportData) {
         this.context = context;
-        this.reportDatas = mReportData;
         this.mReportData = mReportData;
+       // this.mReportData = mReportData;
     }
 
     @Override
@@ -46,7 +45,7 @@ public class TripReportAdapter extends RecyclerView.Adapter<TripReportAdapter.Vi
         holder.deviceName_tv.setText(reportData.getDeviceName());
         holder.startTime_tv.setText(reportData.getStartTime());
         holder.endTime_tv.setText(reportData.getEndTime().toString());
-        holder.duration_tv.setText(reportData.getDuration());
+        holder.duration_tv.setText(String.valueOf(reportData.getDuration()));
         holder.startAddres_tv.setText(reportData.getStartAddress());
         holder.endAddres_tv.setText(reportData.getEndAddress());
         holder.spentFuel_tv.setText(reportData.getSpentFuel());

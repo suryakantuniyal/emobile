@@ -12,7 +12,9 @@
     <color name="txt_black_87">#de000000</color>
     <color name="txt_black_54">#86000000</color>
     <color name="bg_separator">#1f000000</color>
-
+    <color name="green">#00cc00</color>
+    <color name="yellow">#ffff00</color>
+    <color name="red_p">#ff4000</color>
     <color name="app_body_text_2">#8a000000</color>
 
     <!-- start deprecated -->
