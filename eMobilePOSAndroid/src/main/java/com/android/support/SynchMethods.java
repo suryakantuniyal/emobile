@@ -85,7 +85,6 @@ import com.android.saxhandler.SAXSynchOrdPostHandler;
 import com.android.saxhandler.SaxLoginHandler;
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
 
 import org.json.JSONArray;
@@ -1147,7 +1146,7 @@ public class SynchMethods {
         String jsonRequest = oauthclient.HttpClient.getString(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
                 xml.downloadAll("Printers"), null, true);
         try {
-            DeviceTableDAO.truncate();
+            DeviceTableDAO.truncateRemoteDevices();
             DeviceTableDAO.insert(jsonRequest);
         } catch (Exception e) {
             e.printStackTrace();

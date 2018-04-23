@@ -44,11 +44,13 @@ import com.android.database.VoidTransactionsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.orders.OrderProduct;
+import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.security.SecurityManager;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.CreditCardInfo;
+import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NumberUtils;
@@ -81,6 +83,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import interfaces.EMSCallBack;
+import main.EMSDeviceManager;
 
 public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener, OnItemClickListener {
     private static List<String> allInfoLeft;
@@ -635,12 +638,14 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         protected String doInBackground(String... params) {
             Bundle extras = activity.getIntent().getExtras();
             String trans_type = extras.getString("trans_type");
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+            EMSDeviceManager emsDeviceManager = DeviceUtils.getEmsDeviceManager(Device.Printables.TRANSACTION_RECEIPT_REPRINT, Global.printerDevices);
+            if (emsDeviceManager != null && emsDeviceManager.getCurrentDevice() != null) {
                 if (Global.OrderType.getByCode(Integer.parseInt(trans_type)) != Global.OrderType.CONSIGNMENT_FILLUP
                         && Global.OrderType.getByCode(Integer.parseInt(trans_type)) != Global.OrderType.CONSIGNMENT_PICKUP) {
-                    printSuccessful = Global.mainPrinterManager.getCurrentDevice().printTransaction(order, Global.OrderType.getByCode(Integer.parseInt(trans_type)), true, false);
+                    printSuccessful = emsDeviceManager.getCurrentDevice().printTransaction(order, Global.OrderType.getByCode(Integer.parseInt(trans_type)), true, false);
                 }
             }
+
             return null;
         }
 

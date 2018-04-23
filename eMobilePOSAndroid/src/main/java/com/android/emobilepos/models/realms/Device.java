@@ -2,16 +2,33 @@ package com.android.emobilepos.models.realms;
 
 import com.google.gson.annotations.SerializedName;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
+import main.EMSDeviceManager;
 
 /**
  * Created by Guarionex on 6/14/2016.
  */
 public class Device extends RealmObject {
+
+
+    public EMSDeviceManager getEmsDeviceManager() {
+        return emsDeviceManager;
+    }
+
+    public void setEmsDeviceManager(EMSDeviceManager emsDeviceManager) {
+        this.emsDeviceManager = emsDeviceManager;
+    }
+
+    public enum Printables {
+        PAYMENT_RECEIPT, PAYMENT_RECEIPT_REPRINT, TRANSACTION_RECEIPT, TRANSACTION_RECEIPT_REPRINT, REPORTS;
+    }
+
     @SerializedName("printer_id")
-    @Index
+    @PrimaryKey
     private String id;
     @SerializedName("printer_name")
     @Index
@@ -26,6 +43,10 @@ public class Device extends RealmObject {
     private String categoryName;
     @SerializedName("cat_id")
     private String categoryId;
+    private boolean isRemoteDevice = true;
+    private RealmList<String> selectedPritables;
+    @Ignore
+    private EMSDeviceManager emsDeviceManager;
 
     public String getId() {
         return id;
@@ -81,5 +102,26 @@ public class Device extends RealmObject {
 
     public void setCategoryId(String categoryId) {
         this.categoryId = categoryId;
+    }
+
+    public boolean isRemoteDevice() {
+        return isRemoteDevice;
+    }
+
+    public void setRemoteDevice(boolean remoteDevice) {
+        isRemoteDevice = remoteDevice;
+    }
+
+    public RealmList<String> getSelectedPritables() {
+        return selectedPritables;
+    }
+
+    public void setSelectedPritables(RealmList<String> selectedPritables) {
+        this.selectedPritables = selectedPritables;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return ((Device) obj).getId().equalsIgnoreCase(getId());
     }
 }

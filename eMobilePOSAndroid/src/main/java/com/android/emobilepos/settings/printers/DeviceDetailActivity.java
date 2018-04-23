@@ -4,9 +4,11 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.view.MenuItem;
 
 import com.android.emobilepos.R;
+import com.android.support.Global;
 
 /**
  * An activity representing a single device detail screen. This
@@ -20,25 +22,12 @@ public class DeviceDetailActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_device_detail);
-
         // Show the Up button in the action bar.
         ActionBar actionBar = getActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-
-        // savedInstanceState is non-null when there is fragment state
-        // saved from previous configurations of this activity
-        // (e.g. when rotating the screen from portrait to landscape).
-        // In this case, the fragment will automatically be re-added
-        // to its container so we don't need to manually add it.
-        // For more information, see the Fragments API guide at:
-        //
-        // http://developer.android.com/guide/components/fragments.html
-        //
         if (savedInstanceState == null) {
-            // Create the detail fragment and add it to the activity
-            // using a fragment transaction.
             Bundle arguments = new Bundle();
             arguments.putString(DeviceDetailFragment.ARG_ITEM_ID,
                     getIntent().getStringExtra(DeviceDetailFragment.ARG_ITEM_ID));
@@ -54,15 +43,40 @@ public class DeviceDetailActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            // This ID represents the Home or Up button. In the case of this
-            // activity, the Up button is shown. For
-            // more details, see the Navigation pattern on Android Design:
-            //
-            // http://developer.android.com/design/patterns/navigation.html#up-vs-back
-            //
             navigateUpTo(new Intent(this, DeviceListActivity.class));
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+    @Override
+    public void onResume() {
+        Global global = (Global) getApplication();
+        if (global.isApplicationSentToBackground())
+            Global.loggedIn = false;
+        global.stopActivityTransitionTimer();
+
+        if (!Global.loggedIn) {
+            if (global.getGlobalDlog() != null && global.getGlobalDlog().isShowing()) {
+                global.getGlobalDlog().dismiss();
+            }
+            global.promptForMandatoryLogin(this);
+        }
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        Global global = (Global) getApplication();
+        super.onPause();
+        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+        boolean isScreenOn;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT_WATCH) {
+            isScreenOn = powerManager.isInteractive();
+        } else {
+            isScreenOn = powerManager.isScreenOn();
+        }
+        if (!isScreenOn)
+            Global.loggedIn = false;
+        global.startActivityTransitionTimer();
     }
 }

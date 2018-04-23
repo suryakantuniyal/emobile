@@ -6,6 +6,7 @@ import com.android.emobilepos.models.realms.BixolonPaymentMethod;
 import com.android.emobilepos.models.realms.BixolonTax;
 import com.android.emobilepos.models.realms.BixolonTransaction;
 import com.android.emobilepos.models.realms.CustomerCustomField;
+import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.models.realms.EmobileBiometric;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.PaymentMethod;
@@ -23,7 +24,7 @@ import io.realm.RealmSchema;
  * Created by Guarionex on 4/13/2016.
  */
 public class EmobilePOSRealmMigration implements io.realm.RealmMigration {
-    public static int REALM_SCHEMA_VERSION = 12;
+    public static int REALM_SCHEMA_VERSION = 14;
 
     @Override
     public void migrate(DynamicRealm realm, long oldVersion, long newVersion) {
@@ -156,6 +157,22 @@ public class EmobilePOSRealmMigration implements io.realm.RealmMigration {
                 if (oldVersion == 11) {
                     if (schema.contains(SyncServerConfiguration.class.getSimpleName())) {
                         schema.remove(SyncServerConfiguration.class.getSimpleName());
+                    }
+                    oldVersion++;
+                }
+                if (oldVersion == 12) {
+                    if (!schema.get(Device.class.getSimpleName()).hasField("isRemoteDevice")) {
+                        schema.get(Device.class.getSimpleName()).addField("isRemoteDevice",
+                                boolean.class);
+                        schema.get(Device.class.getSimpleName()).removeIndex("id");
+                        schema.get(Device.class.getSimpleName()).addPrimaryKey("id");
+                    }
+                    oldVersion++;
+                }
+                if (oldVersion == 13) {
+                    if (!schema.get(Device.class.getSimpleName()).hasField("selectedPritables")) {
+                        schema.get(Device.class.getSimpleName())
+                                .addRealmListField("selectedPritables",String.class);
                     }
                     oldVersion++;
                 }

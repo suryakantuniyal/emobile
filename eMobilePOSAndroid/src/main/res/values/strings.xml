@@ -1403,5 +1403,12 @@
     <string name="title_device_list">devices</string>
     <string name="title_device_detail">device Detail</string>
     <string name="config_multiple_devices_setup">Multiple Printers Configuration</string>
+    <string name="connectedDevices">Connected Devices</string>
+    <string name="devicePrintables">Device Printables</string>
+    <string name="paymentReceipt">Payment Receipt</string>
+    <string name="transactionReceipt">Transaction Receipt</string>
+    <string name="paymentReceiptReprint">Re-Print Payment Recept</string>
+    <string name="transactionReceiptReprint">Re-Print Transaction Recept</string>
+    <string name="printReports">Print Reports</string>
 
 </resources>

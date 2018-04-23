@@ -72,12 +72,14 @@ import com.android.emobilepos.models.Product;
 import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
+import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.models.realms.OrderAttributes;
 import com.android.emobilepos.models.salesassociates.Template;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.emobilepos.security.SecurityManager;
 import com.android.support.Customer;
 import com.android.support.CustomerInventory;
+import com.android.support.DeviceUtils;
 import com.android.support.GenerateNewID;
 import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
@@ -103,6 +105,7 @@ import java.util.List;
 
 import drivers.EMSBluetoothStarPrinter;
 import interfaces.PayWithLoyalty;
+import main.EMSDeviceManager;
 import util.StringUtil;
 import util.json.JsonUtils;
 
@@ -2230,9 +2233,10 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             if (!isPrintStationPrinter) {
                 publishProgress();
                 Global.OrderType type = Global.ord_type;
-                if (Global.mainPrinterManager != null
-                        && Global.mainPrinterManager.getCurrentDevice() != null) {
-                    printSuccessful = Global.mainPrinterManager.getCurrentDevice()
+                EMSDeviceManager emsDeviceManager = DeviceUtils.getEmsDeviceManager(Device.Printables.TRANSACTION_RECEIPT_REPRINT, Global.printerDevices);
+                if (emsDeviceManager != null
+                        && emsDeviceManager.getCurrentDevice() != null) {
+                    printSuccessful = emsDeviceManager.getCurrentDevice()
                             .printTransaction(getOrderingMainFa().global.order.ord_id, type, false,
                                     false);
                 }

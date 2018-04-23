@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -11,8 +12,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.android.dao.DeviceTableDAO;
 import com.android.emobilepos.R;
-import com.android.emobilepos.settings.printers.dummy.DummyContent;
+import com.android.emobilepos.models.realms.Device;
+import com.android.support.Global;
 
 import java.util.List;
 
@@ -38,10 +41,6 @@ public class DeviceListActivity extends Activity {
         setContentView(R.layout.activity_device_list);
 
         if (findViewById(R.id.device_detail_container) != null) {
-            // The detail container view will be present only in the
-            // large-screen layouts (res/values-w900dp).
-            // If this view is present, then the
-            // activity should be in two-pane mode.
             mTwoPane = true;
         }
 
@@ -51,22 +50,23 @@ public class DeviceListActivity extends Activity {
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(this, DummyContent.ITEMS, mTwoPane));
+        List<Device> devices = DeviceTableDAO.getAll();
+        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(this, devices, mTwoPane));
     }
 
     public static class SimpleItemRecyclerViewAdapter
             extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
         private final DeviceListActivity mParentActivity;
-        private final List<DummyContent.DummyItem> mValues;
+        private final List<Device> devices;
         private final boolean mTwoPane;
         private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DummyContent.DummyItem item = (DummyContent.DummyItem) view.getTag();
+                Device item = (Device) view.getTag();
                 if (mTwoPane) {
                     Bundle arguments = new Bundle();
-                    arguments.putString(DeviceDetailFragment.ARG_ITEM_ID, item.id);
+                    arguments.putString(DeviceDetailFragment.ARG_ITEM_ID, item.getName());
                     DeviceDetailFragment fragment = new DeviceDetailFragment();
                     fragment.setArguments(arguments);
                     mParentActivity.getFragmentManager().beginTransaction()
@@ -75,17 +75,16 @@ public class DeviceListActivity extends Activity {
                 } else {
                     Context context = view.getContext();
                     Intent intent = new Intent(context, DeviceDetailActivity.class);
-                    intent.putExtra(DeviceDetailFragment.ARG_ITEM_ID, item.id);
-
+                    intent.putExtra(DeviceDetailFragment.ARG_ITEM_ID, item.getName());
                     context.startActivity(intent);
                 }
             }
         };
 
         SimpleItemRecyclerViewAdapter(DeviceListActivity parent,
-                                      List<DummyContent.DummyItem> items,
+                                      List<Device> items,
                                       boolean twoPane) {
-            mValues = items;
+            devices = items;
             mParentActivity = parent;
             mTwoPane = twoPane;
         }
@@ -99,15 +98,14 @@ public class DeviceListActivity extends Activity {
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
-            holder.mIdView.setText(mValues.get(position).id);
-
-            holder.itemView.setTag(mValues.get(position));
+            holder.mIdView.setText(devices.get(position).getName());
+            holder.itemView.setTag(devices.get(position));
             holder.itemView.setOnClickListener(mOnClickListener);
         }
 
         @Override
         public int getItemCount() {
-            return mValues.size();
+            return devices.size();
         }
 
         class ViewHolder extends RecyclerView.ViewHolder {
@@ -116,8 +114,39 @@ public class DeviceListActivity extends Activity {
             ViewHolder(View view) {
                 super(view);
                 mIdView = view.findViewById(R.id.id_text);
-//                mContentView = view.findViewById(R.id.content);
             }
         }
+    }
+
+    @Override
+    public void onResume() {
+        Global global = (Global) getApplication();
+        if (global.isApplicationSentToBackground())
+            Global.loggedIn = false;
+        global.stopActivityTransitionTimer();
+
+        if (!Global.loggedIn) {
+            if (global.getGlobalDlog() != null && global.getGlobalDlog().isShowing()) {
+                global.getGlobalDlog().dismiss();
+            }
+            global.promptForMandatoryLogin(this);
+        }
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        Global global = (Global) getApplication();
+        super.onPause();
+        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+        boolean isScreenOn;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT_WATCH) {
+            isScreenOn = powerManager.isInteractive();
+        } else {
+            isScreenOn = powerManager.isScreenOn();
+        }
+        if (!isScreenOn)
+            Global.loggedIn = false;
+        global.startActivityTransitionTimer();
     }
 }
