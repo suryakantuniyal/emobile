@@ -1921,6 +1921,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 @Override
                 public void onClick(View v) {
                     loadCustomerTemplate();
+                    reCalculate();
                     dlog.dismiss();
                 }
             });
