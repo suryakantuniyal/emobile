@@ -37,6 +37,9 @@ public class JsonUtils {
                 .registerTypeAdapter(new TypeToken<RealmList<EmobileBiometric>>() {
                         }.getType(),
                         new EmobileBiometricsRealmListConverter())
+                .registerTypeAdapter(new TypeToken<RealmList<String>>() {
+                        }.getType(),
+                        new DeviceRealmListConverter())
 //                .excludeFieldsWithoutExposeAnnotation()
                 .create();
     }

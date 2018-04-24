@@ -1,5 +1,6 @@
 package com.android.emobilepos.models.realms;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import io.realm.RealmList;
@@ -29,23 +30,33 @@ public class Device extends RealmObject {
 
     @SerializedName("printer_id")
     @PrimaryKey
+    @Expose(deserialize = true, serialize = true)
     private String id;
     @SerializedName("printer_name")
     @Index
+    @Expose(deserialize = true, serialize = true)
     private String name;
     @SerializedName("printer_ip")
+    @Expose(deserialize = true, serialize = true)
     private String ipAddress;
     @SerializedName("printer_port")
+    @Expose(deserialize = true, serialize = true)
     private String tcpPort;
     @SerializedName("printer_type")
+    @Expose(deserialize = true, serialize = true)
     private String type;
     @SerializedName("cat_name")
+    @Expose(deserialize = true, serialize = true)
     private String categoryName;
     @SerializedName("cat_id")
+    @Expose(deserialize = true, serialize = true)
     private String categoryId;
+    @Expose(deserialize = false, serialize = false)
     private boolean isRemoteDevice = true;
+    @Expose(deserialize = false, serialize = false)
     private RealmList<String> selectedPritables;
     @Ignore
+    @Expose(deserialize = false, serialize = false)
     private EMSDeviceManager emsDeviceManager;
 
     public String getId() {

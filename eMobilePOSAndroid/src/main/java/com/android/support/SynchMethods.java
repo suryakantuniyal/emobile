@@ -426,6 +426,7 @@ public class SynchMethods {
             synchPriceLevel();
             synchCustomerCustomFields();
             synchItemsPriceLevel();
+            synchDownloadDinnerTable();
             synchPrinters();
             synchProdCatXref();
             synchProdChain();
@@ -458,7 +459,7 @@ public class SynchMethods {
             synchShifts();
             synchDownloadClerks();
             synchClerkPersmissions();
-            synchDownloadDinnerTable();
+
             synchSalesAssociateDinnindTablesConfiguration(context);
             synchDownloadMixMatch();
             synchDownloadTermsAndConditions();
