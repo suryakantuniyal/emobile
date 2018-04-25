@@ -1364,7 +1364,8 @@ public class Global extends MultiDexApplication {
         Realm.init(this);
         isIvuLoto = getPackageName().contains(getString(R.string.ivupos_packageid));
         RealmConfiguration config = new RealmConfiguration.Builder()
-                .migration(new EmobilePOSRealmMigration())
+                //.migration(new EmobilePOSRealmMigration())
+                .deleteRealmIfMigrationNeeded()
                 .modules(Realm.getDefaultModule(), new RealmModule())
                 .schemaVersion(EmobilePOSRealmMigration.REALM_SCHEMA_VERSION)
                 .build();

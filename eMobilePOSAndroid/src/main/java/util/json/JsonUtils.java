@@ -1,5 +1,6 @@
 package util.json;
 
+import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.models.realms.DinningTable;
 import com.android.emobilepos.models.realms.EmobileBiometric;
 import com.android.support.DateUtils;
@@ -37,9 +38,6 @@ public class JsonUtils {
                 .registerTypeAdapter(new TypeToken<RealmList<EmobileBiometric>>() {
                         }.getType(),
                         new EmobileBiometricsRealmListConverter())
-                .registerTypeAdapter(new TypeToken<RealmList<String>>() {
-                        }.getType(),
-                        new DeviceRealmListConverter())
 //                .excludeFieldsWithoutExposeAnnotation()
                 .create();
     }

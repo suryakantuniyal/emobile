@@ -10,6 +10,7 @@ import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.models.realms.EmobileBiometric;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.PaymentMethod;
+import com.android.emobilepos.models.realms.RealmString;
 import com.android.emobilepos.models.realms.SyncServerConfiguration;
 import com.crashlytics.android.Crashlytics;
 
@@ -24,7 +25,7 @@ import io.realm.RealmSchema;
  * Created by Guarionex on 4/13/2016.
  */
 public class EmobilePOSRealmMigration implements io.realm.RealmMigration {
-    public static int REALM_SCHEMA_VERSION = 14;
+    public static int REALM_SCHEMA_VERSION = 15;
 
     @Override
     public void migrate(DynamicRealm realm, long oldVersion, long newVersion) {
@@ -169,10 +170,15 @@ public class EmobilePOSRealmMigration implements io.realm.RealmMigration {
                     }
                     oldVersion++;
                 }
-                if (oldVersion == 13) {
+                if (oldVersion == 14) {
+                    schema.create(RealmString.class.getSimpleName())
+                            .addField("value", String.class);
+                    if (schema.get(Device.class.getSimpleName()).hasField("selectedPritables")) {
+                        schema.get(Device.class.getSimpleName()).removeField("selectedPritables");
+                    }
                     if (!schema.get(Device.class.getSimpleName()).hasField("selectedPritables")) {
                         schema.get(Device.class.getSimpleName())
-                                .addRealmListField("selectedPritables",String.class);
+                                .addRealmListField("selectedPritables", schema.get(RealmString.class.getSimpleName()));
                     }
                     oldVersion++;
                 }

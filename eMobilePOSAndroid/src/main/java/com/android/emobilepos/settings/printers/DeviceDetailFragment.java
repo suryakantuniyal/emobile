@@ -12,6 +12,7 @@ import android.widget.Switch;
 import com.android.dao.DeviceTableDAO;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.realms.Device;
+import com.android.emobilepos.models.realms.RealmString;
 
 import io.realm.RealmList;
 
@@ -56,8 +57,8 @@ public class DeviceDetailFragment extends Fragment implements CompoundButton.OnC
         transactionReprintASwitch = view.findViewById(R.id.reprintTransactionReceiptswitch1);
         reportsASwitch = view.findViewById(R.id.printReportsswitch1);
         if (device != null) {
-            for (String name : device.getSelectedPritables()) {
-                Device.Printables printables = Device.Printables.valueOf(name);
+            for (RealmString name : device.getSelectedPritables()) {
+                Device.Printables printables = Device.Printables.valueOf(name.getValue());
                 switch (printables) {
                     case REPORTS:
                         reportsASwitch.setChecked(true);
@@ -87,21 +88,21 @@ public class DeviceDetailFragment extends Fragment implements CompoundButton.OnC
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        RealmList<String> values = new RealmList<>();
+        RealmList<RealmString> values = new RealmList<>();
         if (paymetReceiptSwitch.isChecked()) {
-            values.add(Device.Printables.PAYMENT_RECEIPT.name());
+            values.add(Device.Printables.PAYMENT_RECEIPT.getRealmString());
         }
         if (paymentReprintASwitch.isChecked()) {
-            values.add(Device.Printables.PAYMENT_RECEIPT_REPRINT.name());
+            values.add(Device.Printables.PAYMENT_RECEIPT_REPRINT.getRealmString());
         }
         if (transactionReceiptSwitch.isChecked()) {
-            values.add(Device.Printables.TRANSACTION_RECEIPT.name());
+            values.add(Device.Printables.TRANSACTION_RECEIPT.getRealmString());
         }
         if (transactionReprintASwitch.isChecked()) {
-            values.add(Device.Printables.TRANSACTION_RECEIPT_REPRINT.name());
+            values.add(Device.Printables.TRANSACTION_RECEIPT_REPRINT.getRealmString());
         }
         if (reportsASwitch.isChecked()) {
-            values.add(Device.Printables.REPORTS.name());
+            values.add(Device.Printables.REPORTS.getRealmString());
         }
         device.setSelectedPritables(values);
         DeviceTableDAO.upsert(device);

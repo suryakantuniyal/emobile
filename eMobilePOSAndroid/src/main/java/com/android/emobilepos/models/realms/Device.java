@@ -26,6 +26,12 @@ public class Device extends RealmObject {
 
     public enum Printables {
         PAYMENT_RECEIPT, PAYMENT_RECEIPT_REPRINT, TRANSACTION_RECEIPT, TRANSACTION_RECEIPT_REPRINT, REPORTS;
+
+        public RealmString getRealmString() {
+            RealmString realmString = new RealmString();
+            realmString.setValue(name());
+            return realmString;
+        }
     }
 
     @SerializedName("printer_id")
@@ -54,10 +60,10 @@ public class Device extends RealmObject {
     @Expose(deserialize = false, serialize = false)
     private boolean isRemoteDevice = true;
     @Expose(deserialize = false, serialize = false)
-    private RealmList<String> selectedPritables;
+    private RealmList<RealmString> selectedPritables;
     @Ignore
     @Expose(deserialize = false, serialize = false)
-    private EMSDeviceManager emsDeviceManager;
+    private transient EMSDeviceManager emsDeviceManager;
 
     public String getId() {
         return id;
@@ -123,11 +129,11 @@ public class Device extends RealmObject {
         isRemoteDevice = remoteDevice;
     }
 
-    public RealmList<String> getSelectedPritables() {
+    public RealmList<RealmString> getSelectedPritables() {
         return selectedPritables;
     }
 
-    public void setSelectedPritables(RealmList<String> selectedPritables) {
+    public void setSelectedPritables(RealmList<RealmString> selectedPritables) {
         this.selectedPritables = selectedPritables;
     }
 
