@@ -2330,8 +2330,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
             Global.dismissDialog(getActivity(), dialog);
-            getOrderingMainFa().buildOrderStarted = false;
             if (getActivity() != null) {
+                getOrderingMainFa().buildOrderStarted = false;
                 if (!isToGo && ((OrderingMain_FA) getActivity()).orderingAction != OrderingMain_FA.OrderingAction.HOLD
                         && (((OrderingMain_FA) getActivity()).orderingAction == OrderingMain_FA.OrderingAction.CHECKOUT ||
                         ((OrderingMain_FA) getActivity()).orderingAction != OrderingMain_FA.OrderingAction.BACK_PRESSED)) {
@@ -2340,7 +2340,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     getActivity().finish();
                 }
             }
-//            Global.releaseOrientation(getActivity());
         }
     }
 
