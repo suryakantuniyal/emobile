@@ -16,24 +16,6 @@ import main.EMSDeviceManager;
 public class Device extends RealmObject {
 
 
-    public EMSDeviceManager getEmsDeviceManager() {
-        return emsDeviceManager;
-    }
-
-    public void setEmsDeviceManager(EMSDeviceManager emsDeviceManager) {
-        this.emsDeviceManager = emsDeviceManager;
-    }
-
-    public enum Printables {
-        PAYMENT_RECEIPT, PAYMENT_RECEIPT_REPRINT, TRANSACTION_RECEIPT, TRANSACTION_RECEIPT_REPRINT, REPORTS;
-
-        public RealmString getRealmString() {
-            RealmString realmString = new RealmString();
-            realmString.setValue(name());
-            return realmString;
-        }
-    }
-
     @SerializedName("printer_id")
     @PrimaryKey
     @Expose(deserialize = true, serialize = true)
@@ -64,6 +46,17 @@ public class Device extends RealmObject {
     @Ignore
     @Expose(deserialize = false, serialize = false)
     private transient EMSDeviceManager emsDeviceManager;
+    private String macAddress;
+    private int textAreaSize;
+    private boolean POS;
+
+    public EMSDeviceManager getEmsDeviceManager() {
+        return emsDeviceManager;
+    }
+
+    public void setEmsDeviceManager(EMSDeviceManager emsDeviceManager) {
+        this.emsDeviceManager = emsDeviceManager;
+    }
 
     public String getId() {
         return id;
@@ -140,5 +133,39 @@ public class Device extends RealmObject {
     @Override
     public boolean equals(Object obj) {
         return ((Device) obj).getId().equalsIgnoreCase(getId());
+    }
+
+    public void setMacAddress(String macAddress) {
+        this.macAddress = macAddress;
+    }
+
+    public String getMacAddress() {
+        return macAddress;
+    }
+
+    public int getTextAreaSize() {
+        return textAreaSize;
+    }
+
+    public void setTextAreaSize(int textAreaSize) {
+        this.textAreaSize = textAreaSize;
+    }
+
+    public boolean isPOS() {
+        return POS;
+    }
+
+    public void setPOS(boolean POS) {
+        this.POS = POS;
+    }
+
+    public enum Printables {
+        PAYMENT_RECEIPT, PAYMENT_RECEIPT_REPRINT, TRANSACTION_RECEIPT, TRANSACTION_RECEIPT_REPRINT, REPORTS;
+
+        public RealmString getRealmString() {
+            RealmString realmString = new RealmString();
+            realmString.setValue(name());
+            return realmString;
+        }
     }
 }

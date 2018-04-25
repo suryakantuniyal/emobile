@@ -17,4 +17,9 @@ public class RealmString extends RealmObject {
     public String toString() {
         return value;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj.equals(value);
+    }
 }

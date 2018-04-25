@@ -49,6 +49,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.dao.AssignEmployeeDAO;
+import com.android.dao.DeviceTableDAO;
 import com.android.dao.PayMethodsDAO;
 import com.android.database.CategoriesHandler;
 import com.android.database.DBManager;
@@ -57,6 +58,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.country.CountryPicker;
 import com.android.emobilepos.country.CountryPickerListener;
 import com.android.emobilepos.mainmenu.SettingsTab_FR;
+import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.models.realms.PaymentMethod;
 import com.android.emobilepos.security.ClerkManagementActivity;
 import com.android.emobilepos.security.SecurityManager;
@@ -658,6 +660,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     break;
                 case R.string.config_delete_saved_peripherals:
                     myPref.forgetPeripherals();
+                    DeviceTableDAO.deleteLocalDevices();
                     Toast.makeText(getActivity(), "Peripherals have been erased", Toast.LENGTH_LONG).show();
                     break;
                 case R.string.config_attribute_to_display:
@@ -1099,6 +1102,22 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     EMSDeviceManager edm = new EMSDeviceManager();
                     Global.mainPrinterManager = edm.getManager();
                     Global.mainPrinterManager.loadDrivers(getActivity(), Global.STAR, EMSDeviceManager.PrinterInterfase.TCP);
+                    List<Device> list = new ArrayList<>();
+                    Device device = DeviceTableDAO.getByName(Global.getPeripheralName(Global.STAR));
+                    if (device == null) {
+                        device = new Device();
+                    }
+                    device.setId(String.format("TCP:%d", Global.STAR));
+                    device.setName(Global.getPeripheralName(Global.STAR));
+                    device.setType(String.valueOf(Global.STAR));
+                    device.setRemoteDevice(false);
+                    device.setIpAddress(ipAddress.getText().toString());
+                    device.setTcpPort(portNumber.getText().toString());
+                    device.setMacAddress("TCP:" + ipAddress.getText().toString());
+                    device.setEmsDeviceManager(Global.mainPrinterManager);
+                    list.add(device);
+                    DeviceTableDAO.insert(list);
+                    Global.printerDevices.add(device);
 
                 }
             }).create();
@@ -1126,6 +1145,19 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     EMSDeviceManager edm = new EMSDeviceManager();
                     Global.mainPrinterManager = edm.getManager();
                     Global.mainPrinterManager.loadDrivers(getActivity(), Global.SNBC, EMSDeviceManager.PrinterInterfase.USB);
+                    List<Device> list = new ArrayList<>();
+                    Device device = DeviceTableDAO.getByName(Global.getPeripheralName(Global.SNBC));
+                    if (device == null) {
+                        device = new Device();
+                    }
+                    device.setId(String.format("USB:%s", Global.SNBC));
+                    device.setName(Global.getPeripheralName(Global.SNBC));
+                    device.setType(String.valueOf(Global.SNBC));
+                    device.setRemoteDevice(false);
+                    device.setEmsDeviceManager(Global.mainPrinterManager);
+                    list.add(device);
+                    DeviceTableDAO.insert(list);
+                    Global.printerDevices.add(device);
                     dlog.dismiss();
                 }
             });

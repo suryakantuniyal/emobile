@@ -25,7 +25,7 @@ import io.realm.RealmSchema;
  * Created by Guarionex on 4/13/2016.
  */
 public class EmobilePOSRealmMigration implements io.realm.RealmMigration {
-    public static int REALM_SCHEMA_VERSION = 15;
+    public static int REALM_SCHEMA_VERSION = 16;
 
     @Override
     public void migrate(DynamicRealm realm, long oldVersion, long newVersion) {
@@ -179,6 +179,12 @@ public class EmobilePOSRealmMigration implements io.realm.RealmMigration {
                     if (!schema.get(Device.class.getSimpleName()).hasField("selectedPritables")) {
                         schema.get(Device.class.getSimpleName())
                                 .addRealmListField("selectedPritables", schema.get(RealmString.class.getSimpleName()));
+                    }
+                    oldVersion++;
+                }
+                if (oldVersion == 15) {
+                    if (!schema.get(Device.class.getSimpleName()).hasField("macAddress")) {
+                        schema.get(Device.class.getSimpleName()).addField("macAddress", String.class);
                     }
                     oldVersion++;
                 }

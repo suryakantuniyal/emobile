@@ -1147,7 +1147,7 @@ public class SynchMethods {
         String jsonRequest = oauthclient.HttpClient.getString(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
                 xml.downloadAll("Printers"), null, true);
         try {
-            DeviceTableDAO.truncateRemoteDevices();
+            DeviceTableDAO.deleteRemoteDevices();
             DeviceTableDAO.insert(jsonRequest);
         } catch (Exception e) {
             e.printStackTrace();

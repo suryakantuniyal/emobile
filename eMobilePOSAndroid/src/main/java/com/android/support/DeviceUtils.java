@@ -55,22 +55,24 @@ public class DeviceUtils {
         if (forceReload || Global.multiPrinterMap.size() != devices.size()) {
             int i = 0;
             for (Device device : devices) {
-                if (tempMap.containsKey(device.getId())) {
-                    Global.multiPrinterMap.put(device.getCategoryId(), tempMap.get(device.getId()));
-                } else {
-                    tempMap.put(device.getId(), i);
-                    Global.multiPrinterMap.put(device.getCategoryId(), i);
+                if (device.isRemoteDevice()) {
+                    if (tempMap.containsKey(device.getId())) {
+                        Global.multiPrinterMap.put(device.getCategoryId(), tempMap.get(device.getId()));
+                    } else {
+                        tempMap.put(device.getId(), i);
+                        Global.multiPrinterMap.put(device.getCategoryId(), i);
 
-                    edm = new EMSDeviceManager();
-                    Global.multiPrinterManager.add(edm);
+                        edm = new EMSDeviceManager();
+                        Global.multiPrinterManager.add(edm);
 
-                    if (Global.multiPrinterManager.get(i).loadMultiDriver(activity, Global.STAR, 48, true,
-                            "TCP:" + device.getIpAddress(), device.getTcpPort()))
-                        sb.append(device.getIpAddress()).append(": ").append("Connected\n\r");
-                    else
-                        sb.append(device.getIpAddress()).append(": ").append("Failed to connect\n\r");
+                        if (Global.multiPrinterManager.get(i).loadMultiDriver(activity, Global.STAR, 48, true,
+                                "TCP:" + device.getIpAddress(), device.getTcpPort()))
+                            sb.append(device.getIpAddress()).append(": ").append("Connected\n\r");
+                        else
+                            sb.append(device.getIpAddress()).append(": ").append("Failed to connect\n\r");
 
-                    i++;
+                        i++;
+                    }
                 }
             }
         }
@@ -225,19 +227,21 @@ public class DeviceUtils {
                     if (Global.mainPrinterManager.loadMultiDriver(activity, myPref.getPrinterType(), txtAreaSize,
                             isPOS, _portName, _portNumber)) {
                         sb.append(_peripheralName).append(": ").append("Connected\n\r");
-                        List<Device> list = new ArrayList<>();
-                        Device device = DeviceTableDAO.getByName(_peripheralName);
-                        if (device == null) {
-                            device = new Device();
+//                        List<Device> list = new ArrayList<>();
+                        Device device = DeviceTableDAO.getByName(_portName);
+                        if (device != null) {
+                            device.setEmsDeviceManager(Global.mainPrinterManager);
+                            Global.printerDevices.add(device);
                         }
-                        device.setId(_peripheralName);
-                        device.setName(_peripheralName);
-                        device.setType(String.valueOf(myPref.getPrinterType()));
-                        device.setRemoteDevice(false);
-                        device.setEmsDeviceManager(Global.mainPrinterManager);
-                        list.add(device);
-                        DeviceTableDAO.insert(list);
-                        Global.printerDevices.add(device);
+//                        device.setId(_portName);
+//                        device.setName(_portName);
+//                        device.setTcpPort(_portNumber);
+//                        device.setType(String.valueOf(myPref.getPrinterType()));
+//                        device.setRemoteDevice(false);
+//                        device.setEmsDeviceManager(Global.mainPrinterManager);
+//                        list.add(device);
+//                        DeviceTableDAO.insert(list);
+
                     } else {
                         sb.append(_peripheralName).append(": ").append("Failed to connect\n\r");
                     }
@@ -254,20 +258,28 @@ public class DeviceUtils {
                     sb.append(myPref.getStarIPAddress()).append(": ").append("Connected\n\r");
                     List<Device> list = new ArrayList<>();
                     Device device = DeviceTableDAO.getByName("TCP:" + myPref.getStarIPAddress());
-                    if (device == null) {
-                        device = new Device();
+                    if (device != null) {
+                        device.setEmsDeviceManager(Global.mainPrinterManager);
+                        Global.printerDevices.add(device);
                     }
-                    device.setId("TCP:" + myPref.getStarIPAddress());
-                    device.setName("TCP:" + myPref.getStarIPAddress());
-                    device.setType(String.valueOf(Global.STAR));
-                    device.setRemoteDevice(false);
-                    device.setEmsDeviceManager(Global.mainPrinterManager);
-                    list.add(device);
-                    DeviceTableDAO.insert(list);
-                    Global.printerDevices.add(device);
+//                    device.setId("TCP:" + myPref.getStarIPAddress());
+//                    device.setName("TCP:" + myPref.getStarIPAddress());
+//                    device.setType(String.valueOf(Global.STAR));
+//                    device.setRemoteDevice(false);
+//                    device.setEmsDeviceManager(Global.mainPrinterManager);
+//                    list.add(device);
+//                    DeviceTableDAO.insert(list);
+
                 } else {
                     sb.append(myPref.getStarIPAddress()).append(": ").append("Failed to connect\n\r");
                 }
+            }
+        }
+        for (Device device : devices) {
+            EMSDeviceManager deviceManager = new EMSDeviceManager();
+            if (deviceManager.loadMultiDriver(activity, Integer.parseInt(device.getType()), 48, true,
+                    "TCP:" + device.getIpAddress(), device.getTcpPort())){
+                device.setEmsDeviceManager(deviceManager);
             }
         }
 //        sendBroadcast(activity);

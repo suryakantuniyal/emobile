@@ -53,7 +53,7 @@ public class DeviceTableDAO {
         return all;
     }
 
-    public static void truncateRemoteDevices() {
+    public static void deleteRemoteDevices() {
         Realm realm = Realm.getDefaultInstance();
         try {
             realm.beginTransaction();
@@ -125,15 +125,31 @@ public class DeviceTableDAO {
     public static Device getByPrintable(Device.Printables printable) {
         Realm realm = Realm.getDefaultInstance();
         try {
-            List<Device> all = realm.where(Device.class).findAll();
-            for (Device d : all) {
-                boolean contains = d.getSelectedPritables().contains(printable.name());
-                if (contains) {
-                    return realm.copyFromRealm(d);
-                }
+//            RealmResults<Device> all = realm.where(Device.class).findAll();
+            Device first = realm.where(Device.class)
+                    .equalTo("selectedPritables.value", printable.name())
+                    .findFirst();
+            if (first != null) {
+                first = realm.copyFromRealm(first);
             }
-            return null;
+            return first;
         } finally {
+            realm.close();
+        }
+    }
+
+    public static void deleteLocalDevices() {
+        Realm realm = Realm.getDefaultInstance();
+        try {
+            realm.beginTransaction();
+            if (realm.where(Device.class).isValid()) {
+                RealmResults<Device> devices = realm.where(Device.class)
+                        .equalTo("isRemoteDevice", false)
+                        .findAll();
+                devices.deleteAllFromRealm();
+            }
+        } finally {
+            realm.commitTransaction();
             realm.close();
         }
     }
