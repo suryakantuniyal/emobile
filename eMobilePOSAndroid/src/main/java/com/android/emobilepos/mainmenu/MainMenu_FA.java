@@ -192,17 +192,13 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
      * it doesn't, display a dialog that allows users to download the APK from
      * the Google Play Store or enable it in the device's system settings.
      */
-    private boolean checkPlayServices() {
+    public static boolean checkPlayServices(Context context) {
         GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
-        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(context);
         if (resultCode != ConnectionResult.SUCCESS) {
             if (apiAvailability.isUserResolvableError(resultCode)) {
-//                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
-//                        .show();
             } else {
                 Log.i("checkPlayServices", "This device is not supported by Google Play Services.");
-//                ToastNotify("This device is not supported by Google Play Services.");
-//                finish();
             }
             return false;
         }
@@ -210,7 +206,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
     }
 
     public void registerWithNotificationHubs() {
-        if (checkPlayServices()) {
+        if (checkPlayServices(this)) {
 //            if (false) {
 //            String accountNumber = myPref.getAcctNumber();
 //            FirebaseMessaging.getInstance().subscribeToTopic(accountNumber);
@@ -219,7 +215,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
             startService(intent);
         } else {
             if ((myPref.isPollingHoldsEnable() || myPref.isAutoSyncEnable()) && !PollingNotificationService.isServiceRunning(this)) {
-                startPollingService();
+                startPollingService(this);
             }
         }
     }
@@ -246,8 +242,8 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
     @Override
     public void onResume() {
         global.resetOrderDetailsValues();
-        if (!checkPlayServices() && (myPref.isPollingHoldsEnable() || myPref.isAutoSyncEnable()) && !PollingNotificationService.isServiceRunning(this)) {
-            startPollingService();
+        if (!checkPlayServices(this) && (myPref.isPollingHoldsEnable() || myPref.isAutoSyncEnable()) && !PollingNotificationService.isServiceRunning(this)) {
+            startPollingService(this);
         }
         if(myPref.isUse_syncplus_services() && myPref.isSyncplus_AutoScan()) {
             SyncConfigServerService.startService(this);
@@ -283,7 +279,8 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         forceTabs();
     }
 
-    private void startPollingService() {
+    private static void startPollingService(Context context) {
+        MyPreferences myPref = new MyPreferences(context);
         int flags = 0;
         if (myPref.isPollingHoldsEnable()) {
             flags = PollingNotificationService.PollingServicesFlag.ONHOLDS.getCode() | PollingNotificationService.PollingServicesFlag.DINING_TABLES.getCode();
@@ -291,7 +288,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         if (myPref.isAutoSyncEnable()) {
             flags = flags | PollingNotificationService.PollingServicesFlag.AUTO_SYNC.getCode();
         }
-        PollingNotificationService.start(this, flags);
+        PollingNotificationService.start(context, flags);
     }
 
     private void stopPollingService() {

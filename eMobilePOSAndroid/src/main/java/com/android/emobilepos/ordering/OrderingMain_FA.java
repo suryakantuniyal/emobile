@@ -48,6 +48,8 @@ import com.android.database.SalesTaxCodesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.OrderProductListAdapter;
 import com.android.emobilepos.customer.ViewCustomers_FA;
+import com.android.emobilepos.firebase.PollingNotificationService;
+import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.mainmenu.SalesTab_FR;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.OrderSeatProduct;
@@ -907,6 +909,11 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         soundManager.initSounds(this);
         soundManager.loadSounds();
         buildOrderStarted = false;
+        if (!MainMenu_FA.checkPlayServices(this) && (myPref.isPollingHoldsEnable()
+                || myPref.isAutoSyncEnable())
+                && !PollingNotificationService.isServiceRunning(this)) {
+            MainMenu_FA.checkPlayServices(this);
+        }
         if (global.isApplicationSentToBackground())
             Global.loggedIn = false;
         global.stopActivityTransitionTimer();
@@ -1303,17 +1310,14 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         ProductsHandler handler = new ProductsHandler(this);
         Product product = handler.getUPCProducts(upc, false);
         if (product.getId() != null) {
-
             if (myPref.getPreferences(MyPreferences.pref_fast_scanning_mode)) {
                 if (validAutomaticAddQty(product)) {
-                    if (myPref.isGroupReceiptBySku(isToGo)) {//(myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
+                    if (myPref.isGroupReceiptBySku(isToGo)) {
                         int foundPosition = global.checkIfGroupBySKU(this, product.getId(), "1");
-                        if (foundPosition != -1) // product already exist in
-                        // list
-                        {
+                        if (foundPosition != -1) {
                             global.refreshParticularOrder(OrderingMain_FA.this, foundPosition, product);
                         } else
-                            getCatalogFr().automaticAddOrder(product);// temp.automaticAddOrder(listData);
+                            getCatalogFr().automaticAddOrder(product);
                     } else
                         getCatalogFr().automaticAddOrder(product);
                     refreshView();
@@ -1324,6 +1328,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             } else {
                 getCatalogFr().searchUPC(upc);
             }
+        } else {
+            Global.showPrompt(OrderingMain_FA.this, R.string.dlog_title_error,
+                    getString(R.string.dlog_msg_item_not_found));
         }
     }
 
@@ -1784,15 +1791,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     @Override
     public void scannerWasRead(String data) {
-//        if (bbDeviceController != null) {
-//            new Timer().schedule(new TimerTask() {
-//                @Override
-//                public void run() {
-//                    bbDeviceController.getBarcode();
-//                }
-//            }, 2000);
-//
-//        }
         soundManager.playSound(1, 1);
         scannerInDecodeMode = false;
         if (!data.isEmpty()) {
