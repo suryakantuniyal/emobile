@@ -290,7 +290,7 @@ public class PaymentsHandler {
     public List<Payment> getUnsyncPayments() {
         List<Payment> payments = new ArrayList<>();
         Cursor cursor = getDatabase().rawQuery("SELECT " + sb1.toString() + " FROM " +
-                table_name + " WHERE pay_issync = '0'", null);
+                table_name + " WHERE pay_issync = '0'  LIMIT 10", null);
         if (cursor.moveToFirst()) {
             do {
                 payments.add(getPayment(cursor));
@@ -303,7 +303,7 @@ public class PaymentsHandler {
     public List<Payment> getUnsyncPaymentSignatures() {
         List<Payment> payments = new ArrayList<>();
         Cursor cursor = getDatabase().rawQuery("SELECT " + sb1.toString() + " FROM " +
-                table_name + " WHERE pay_signature_issync = '0'", null);
+                table_name + " WHERE pay_signature_issync = '0'  LIMIT 10", null);
         if (cursor.moveToFirst()) {
             do {
                 Payment payment = getPayment(cursor);
@@ -611,6 +611,10 @@ public class PaymentsHandler {
         payment.setIvuLottoDrawDate(c.getString(c.getColumnIndex(IvuLottoDrawDate)));
         payment.setIvuLottoNumber(c.getString(c.getColumnIndex(IvuLottoNumber)));
         payment.setIvuLottoQR(c.getString(c.getColumnIndex(IvuLottoQR)));
+        payment.setTax1_amount(c.getString(c.getColumnIndex(Tax1_amount)));
+        payment.setTax1_name(c.getString(c.getColumnIndex(Tax1_name)));
+        payment.setTax2_amount(c.getString(c.getColumnIndex(Tax2_amount)));
+        payment.setTax2_name(c.getString(c.getColumnIndex(Tax2_name)));
         payment.setCard_type(c.getString(c.getColumnIndex(card_type)));
         payment.setCustidkey(c.getString(c.getColumnIndex(custidkey)));
         payment.setOriginal_pay_id(c.getString(c.getColumnIndex(original_pay_id)));
