@@ -48,6 +48,8 @@ import com.android.database.SalesTaxCodesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.OrderProductListAdapter;
 import com.android.emobilepos.customer.ViewCustomers_FA;
+import com.android.emobilepos.firebase.PollingNotificationService;
+import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.mainmenu.SalesTab_FR;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.OrderSeatProduct;
@@ -907,6 +909,11 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         soundManager.initSounds(this);
         soundManager.loadSounds();
         buildOrderStarted = false;
+        if (!MainMenu_FA.checkPlayServices(this) && (myPref.isPollingHoldsEnable()
+                || myPref.isAutoSyncEnable())
+                && !PollingNotificationService.isServiceRunning(this)) {
+            MainMenu_FA.checkPlayServices(this);
+        }
         if (global.isApplicationSentToBackground())
             Global.loggedIn = false;
         global.stopActivityTransitionTimer();
