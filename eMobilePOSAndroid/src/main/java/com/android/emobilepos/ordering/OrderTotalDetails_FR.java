@@ -669,7 +669,9 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
 
     @Override
     public void recalculateTotal() {
-        reCalculate(getOrderingMainFa().global.order.getOrderProducts());
+        if (getOrderingMainFa() != null) {
+            reCalculate(getOrderingMainFa().global.order.getOrderProducts());
+        }
     }
 
     private static class ReCalculate extends AsyncTask<List<OrderProduct>, Void, OrderTotalDetails> {
