@@ -137,30 +137,30 @@ public class ReportsMenuAdapter extends BaseAdapter implements Filterable {
             switch (type) {
                 case 0: {
                     convertView = mInflater.inflate(R.layout.report_listviewheader, null);
-                    holder.textLine = (TextView) convertView.findViewById(R.id.reportHeader);
+                    holder.textLine = convertView.findViewById(R.id.reportHeader);
                     setHolderValues(type, position, holder);
                     break;
                 }
                 case 1:        //transaction divider
                 {
                     convertView = mInflater.inflate(R.layout.report_listviewdivider, null);
-                    holder.textLine = (TextView) convertView.findViewById(R.id.reportTitle);
+                    holder.textLine = convertView.findViewById(R.id.reportTitle);
                     setHolderValues(type, position, holder);
                     break;
                 }
                 case 2:                //transaction content
                 {
                     convertView = mInflater.inflate(R.layout.report_listviewadapter, null);
-                    holder.textLine = (TextView) convertView.findViewById(R.id.reportLeft);
-                    holder.rightOne = (TextView) convertView.findViewById(R.id.reportRight);
-                    holder.rightTwo = (TextView) convertView.findViewById(R.id.reportRight2);
-                    holder.rightThree = (TextView) convertView.findViewById(R.id.reportRight3);
+                    holder.textLine = convertView.findViewById(R.id.reportLeft);
+                    holder.rightOne = convertView.findViewById(R.id.reportRight);
+                    holder.rightTwo = convertView.findViewById(R.id.reportRight2);
+                    holder.rightThree = convertView.findViewById(R.id.reportRight3);
                     setHolderValues(type, position, holder);
                     break;
                 }
                 case 3: {
                     convertView = mInflater.inflate(R.layout.reports_listviewadapter2, null);
-                    holder.textLine = (TextView) convertView.findViewById(R.id.reportRight);
+                    holder.textLine = convertView.findViewById(R.id.reportRight);
                     setHolderValues(type, position, holder);
 
                     break;

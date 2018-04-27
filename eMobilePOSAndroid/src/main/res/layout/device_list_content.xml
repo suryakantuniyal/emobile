@@ -22,7 +22,7 @@
         tools:text="Star 100P" />
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/deviceimageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"

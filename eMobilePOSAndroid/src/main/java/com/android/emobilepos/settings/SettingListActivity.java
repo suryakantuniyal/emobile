@@ -1325,7 +1325,20 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                                 myPref.setPrinterType(Global.STAR);
                                 myPref.setPrinterMACAddress("BT:" + macAddressList.get(pos));
                                 myPref.setPrinterName(strDeviceName);
-
+                                List<Device> list = new ArrayList<>();
+                                Device device = DeviceTableDAO.getByName(strDeviceName);
+                                if (device == null) {
+                                    device = new Device();
+                                }
+                                device.setId(String.format("BT:%s", Global.STAR));
+                                device.setMacAddress("BT:" + macAddressList.get(pos));
+                                device.setName(strDeviceName);
+                                device.setType(String.valueOf(Global.STAR));
+                                device.setRemoteDevice(false);
+                                device.setEmsDeviceManager(Global.mainPrinterManager);
+                                list.add(device);
+                                DeviceTableDAO.insert(list);
+                                Global.printerDevices.add(device);
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();
                                 Global.mainPrinterManager.loadDrivers(getActivity(), Global.STAR, EMSDeviceManager.PrinterInterfase.BLUETOOTH);

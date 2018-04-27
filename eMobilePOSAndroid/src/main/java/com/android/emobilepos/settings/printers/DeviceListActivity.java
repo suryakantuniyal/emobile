@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.dao.DeviceTableDAO;
@@ -51,11 +52,11 @@ public class DeviceListActivity extends Activity {
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
         List<Device> devices = DeviceTableDAO.getAll();
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(this, devices, mTwoPane));
+        recyclerView.setAdapter(new DevicesRecyclerViewAdapter(this, devices, mTwoPane));
     }
 
-    public static class SimpleItemRecyclerViewAdapter
-            extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
+    public static class DevicesRecyclerViewAdapter
+            extends RecyclerView.Adapter<DevicesRecyclerViewAdapter.ViewHolder> {
 
         private final DeviceListActivity mParentActivity;
         private final List<Device> devices;
@@ -81,9 +82,9 @@ public class DeviceListActivity extends Activity {
             }
         };
 
-        SimpleItemRecyclerViewAdapter(DeviceListActivity parent,
-                                      List<Device> items,
-                                      boolean twoPane) {
+        DevicesRecyclerViewAdapter(DeviceListActivity parent,
+                                   List<Device> items,
+                                   boolean twoPane) {
             devices = items;
             mParentActivity = parent;
             mTwoPane = twoPane;
@@ -98,9 +99,21 @@ public class DeviceListActivity extends Activity {
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
-            holder.mIdView.setText(devices.get(position).getName());
-            holder.itemView.setTag(devices.get(position));
+            Device device = devices.get(position);
+            holder.mIdView.setText(device.getName());
+            holder.itemView.setTag(device);
             holder.itemView.setOnClickListener(mOnClickListener);
+            switch (Integer.parseInt(device.getType())) {
+                case Global.STAR:
+                    holder.deviceImageView.setImageResource(R.drawable.starprnt);
+                    break;
+                case Global.SNBC:
+                    holder.deviceImageView.setImageResource(R.drawable.snbc);
+                    break;
+                default:
+                    holder.deviceImageView.setImageResource(R.drawable.starprnt);
+                    break;
+            }
         }
 
         @Override
@@ -110,10 +123,12 @@ public class DeviceListActivity extends Activity {
 
         class ViewHolder extends RecyclerView.ViewHolder {
             final TextView mIdView;
+            ImageView deviceImageView;
 
             ViewHolder(View view) {
                 super(view);
                 mIdView = view.findViewById(R.id.id_text);
+                deviceImageView = view.findViewById(R.id.deviceimageView);
             }
         }
     }

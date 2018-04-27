@@ -38,7 +38,9 @@ import com.android.database.InvoicePaymentsHandler;
 import com.android.database.InvoicesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.history.details.HistoryOpenInvoicesDetails_FA;
+import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
+import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
@@ -46,6 +48,8 @@ import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+
+import main.EMSDeviceManager;
 
 public class HistoryOpenInvoices_FA extends BaseFragmentActivityActionBar implements OnClickListener, OnItemClickListener {
 
@@ -402,8 +406,9 @@ public class HistoryOpenInvoices_FA extends BaseFragmentActivityActionBar implem
         @Override
         protected String doInBackground(String... params) {
             _inv_id = params[0];
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)
-                printSuccessful = Global.mainPrinterManager.getCurrentDevice().printOpenInvoices(_inv_id);
+            EMSDeviceManager emsDeviceManager = DeviceUtils.getEmsDeviceManager(Device.Printables.PAYMENT_RECEIPT_REPRINT, Global.printerDevices);
+            if (emsDeviceManager != null && emsDeviceManager.getCurrentDevice() != null)
+                printSuccessful = emsDeviceManager.getCurrentDevice().printOpenInvoices(_inv_id);
 
             return null;
         }

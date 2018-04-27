@@ -36,8 +36,10 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
+import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.support.ConsignmentTransaction;
+import com.android.support.DeviceUtils;
 import com.android.support.GenerateNewID;
 import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
@@ -49,6 +51,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+
+import main.EMSDeviceManager;
 
 public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
     private CustomAdapter_LV myAdapter;
@@ -425,8 +429,9 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
 
         @Override
         protected String doInBackground(String... params) {
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)
-                printSuccessful = Global.mainPrinterManager.getCurrentDevice().printConsignment(consTransactionList, encodedImage);
+            EMSDeviceManager emsDeviceManager = DeviceUtils.getEmsDeviceManager(Device.Printables.PAYMENT_RECEIPT_REPRINT, Global.printerDevices);
+            if (emsDeviceManager != null && emsDeviceManager.getCurrentDevice() != null)
+                printSuccessful = emsDeviceManager.getCurrentDevice().printConsignment(consTransactionList, encodedImage);
             return null;
         }
 

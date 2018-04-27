@@ -19,15 +19,19 @@ import com.android.database.OrderProductsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.Clerk;
+import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.models.realms.Shift;
 import com.android.emobilepos.models.realms.ShiftExpense;
 import com.android.support.DateUtils;
+import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import java.math.BigDecimal;
 import java.util.List;
+
+import main.EMSDeviceManager;
 
 public class ShiftReportDetails_FA extends BaseFragmentActivityActionBar implements View.OnClickListener {
 
@@ -207,8 +211,9 @@ public class ShiftReportDetails_FA extends BaseFragmentActivityActionBar impleme
 
         @Override
         protected Void doInBackground(Void... params) {
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)
-                Global.mainPrinterManager.getCurrentDevice().printShiftDetailsReport(shiftID);
+            EMSDeviceManager emsDeviceManager = DeviceUtils.getEmsDeviceManager(Device.Printables.REPORTS, Global.printerDevices);
+            if (emsDeviceManager != null && emsDeviceManager.getCurrentDevice() != null)
+                emsDeviceManager.getCurrentDevice().printShiftDetailsReport(shiftID);
             return null;
         }
 

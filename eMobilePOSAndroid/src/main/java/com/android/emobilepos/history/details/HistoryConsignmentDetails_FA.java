@@ -23,11 +23,14 @@ import android.widget.TextView;
 
 import com.android.database.ConsignmentTransactionHandler;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.realms.Device;
+import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import java.util.HashMap;
 
+import main.EMSDeviceManager;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 public class HistoryConsignmentDetails_FA extends BaseFragmentActivityActionBar implements OnClickListener {
@@ -152,8 +155,9 @@ public class HistoryConsignmentDetails_FA extends BaseFragmentActivityActionBar 
 
         @Override
         protected Void doInBackground(Void... params) {
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
-                printSuccessful = Global.mainPrinterManager.getCurrentDevice().printConsignmentHistory(dataMap, c, extras.getBoolean("isPickup"));
+            EMSDeviceManager emsDeviceManager = DeviceUtils.getEmsDeviceManager(Device.Printables.PAYMENT_RECEIPT_REPRINT, Global.printerDevices);
+            if (emsDeviceManager != null && emsDeviceManager.getCurrentDevice() != null) {
+                printSuccessful = emsDeviceManager.getCurrentDevice().printConsignmentHistory(dataMap, c, extras.getBoolean("isPickup"));
             }
 
             return null;

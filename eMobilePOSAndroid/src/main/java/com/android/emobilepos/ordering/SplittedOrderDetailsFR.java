@@ -29,8 +29,10 @@ import com.android.emobilepos.models.OrderSeatProduct;
 import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
+import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.support.DateUtils;
+import com.android.support.DeviceUtils;
 import com.android.support.GenerateNewID;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -45,6 +47,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
+
+import main.EMSDeviceManager;
 
 /**
  * Created by Guarionex on 2/19/2016.
@@ -524,8 +528,9 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
 
         @Override
         protected Void doInBackground(SplittedOrder... params) {
+            EMSDeviceManager emsDeviceManager = DeviceUtils.getEmsDeviceManager(Device.Printables.PAYMENT_RECEIPT_REPRINT, Global.printerDevices);
             for (SplittedOrder order : params) {
-                Global.mainPrinterManager.getCurrentDevice().printReceiptPreview(order);
+                emsDeviceManager.getCurrentDevice().printReceiptPreview(order);
             }
             return null;
         }

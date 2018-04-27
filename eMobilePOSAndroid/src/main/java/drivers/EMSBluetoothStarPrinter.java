@@ -450,18 +450,10 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
     @Override
     public boolean printReport(String curDate) {
-        try {
-            setPaperWidth(LINE_WIDTH);
-            setStartIOPort();
-            verifyConnectivity();
-            Thread.sleep(1000);
-            printReportReceipt(curDate, LINE_WIDTH);
-            releasePrinter();
-        } catch (StarIOPortException e) {
-            return false;
-        } catch (InterruptedException e) {
-            return false;
-        }
+        setPaperWidth(LINE_WIDTH);
+        setStartIOPort();
+        printReportReceipt(curDate, LINE_WIDTH);
+        releasePrinter();
         return true;
     }
 
@@ -594,9 +586,9 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if(myPref.isESY13P1()){
+        if (myPref.isESY13P1()) {
             EMSELO elo = new EMSELO();
-            elo.activity=activity;
+            elo.activity = activity;
             elo.openCashDrawer();
         }
     }
