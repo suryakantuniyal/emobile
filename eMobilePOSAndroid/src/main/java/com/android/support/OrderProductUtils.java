@@ -48,8 +48,10 @@ public class OrderProductUtils {
     public static List<OrderProduct> getOrderProducts(List<OrderProduct> orderProducts, String productId) {
         List<OrderProduct> list = new ArrayList<>();
         for (OrderProduct orderProduct : orderProducts) {
-            if (orderProduct.getProd_id().equalsIgnoreCase(productId)) {
-                list.add(orderProduct);
+            if (orderProduct.getProd_id() != null && productId != null) {
+                if (orderProduct.getProd_id().equalsIgnoreCase(productId)) {
+                    list.add(orderProduct);
+                }
             }
         }
         return list;
@@ -127,7 +129,7 @@ public class OrderProductUtils {
         return false;
     }
 
-    public static void setOrderProductsCustomerValues(Context context, List<OrderProduct> orderProducts){
+    public static void setOrderProductsCustomerValues(Context context, List<OrderProduct> orderProducts) {
 
     }
 }
