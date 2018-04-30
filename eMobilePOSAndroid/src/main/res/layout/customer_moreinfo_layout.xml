@@ -548,11 +548,9 @@
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:layout_gravity="center_vertical"
-					android:digits="0123456789"
 					android:enabled="false"
 					android:hint="@string/cust_add_zcode"
 					android:imeOptions="flagNoExtractUi|actionNext"
-					android:inputType="numberDecimal"
 					android:textAppearance="@style/black_text_appearance_unbold"
 					android:textColor="#000000"
 					android:textSize="@dimen/field_general_txt_size" />
@@ -716,11 +714,9 @@
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:layout_gravity="center_vertical"
-					android:digits="0123456789"
 					android:enabled="false"
 					android:hint="@string/cust_add_zcode"
 					android:imeOptions="flagNoExtractUi|actionNext"
-					android:inputType="numberDecimal"
 					android:textAppearance="@style/black_text_appearance_unbold"
 					android:textColor="#000000"
 					android:textSize="@dimen/field_general_txt_size" />
