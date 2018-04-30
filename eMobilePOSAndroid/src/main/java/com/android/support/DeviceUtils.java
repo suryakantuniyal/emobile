@@ -410,10 +410,12 @@ public class DeviceUtils {
                 if (device == null) {
                     device = new Device();
                 }
+                device.setEmsDeviceManager(Global.mainPrinterManager);
                 device.setId(mPortList.get(0).getPortName());
                 device.setName(mPortList.get(0).getPortName());
                 device.setType(String.valueOf(Global.STAR));
                 device.setRemoteDevice(false);
+                device.setMacAddress(mPortList.get(0).getPortName());
                 devices.add(device);
                 DeviceTableDAO.insert(devices);
                 Global.printerDevices.add(device);

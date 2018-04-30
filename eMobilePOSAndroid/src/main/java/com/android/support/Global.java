@@ -439,6 +439,9 @@ public class Global extends MultiDexApplication {
             case MIURA:
                 _name = "MIURA";
                 break;
+            case ELOPAYPOINT:
+                _name = "ELO Paypoint";
+                break;
         }
         return _name;
 
