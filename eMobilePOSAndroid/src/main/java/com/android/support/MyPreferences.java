@@ -34,6 +34,8 @@ public class MyPreferences {
     public static final String pref_enable_table_selection = "pref_enable_table_selection";
     public static final String pref_ask_seats = "pref_ask_seats";
     public static final String pref_use_navigationbar = "pref_use_navigationbar";
+
+    public static final String pref_use_ticketreceipt_printing = "pref_use_ticketreceipt_printing";
     public static final String pref_fast_scanning_mode = "pref_fast_scanning_mode";
     public static final String pref_signature_required_mode = "pref_signature_required_mode";
     public static final String pref_qr_code_reading = "pref_qr_code_reading";
@@ -1515,4 +1517,7 @@ public class MyPreferences {
         return getPreferences(MyPreferences.pref_remove_leading_zeros);
     }
 
+    public boolean isUseTicketReceipt() {
+        return getPreferences(MyPreferences.pref_use_ticketreceipt_printing);
+    }
 }

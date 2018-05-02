@@ -19,6 +19,7 @@ import com.android.support.MyPreferences;
 import com.android.support.TaxesCalculator;
 import com.google.gson.Gson;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ import java.util.List;
 
 import util.json.JsonUtils;
 
-public class Order implements Cloneable {
+public class Order implements Cloneable, Serializable {
     public String ord_id = "";
     public String qbord_id = "";
     public String emp_id = "";
