@@ -1410,5 +1410,10 @@
     <string name="paymentReceiptReprint">Re-Print Payment Recept</string>
     <string name="transactionReceiptReprint">Re-Print Transaction Recept</string>
     <string name="printReports">Print Reports</string>
+    <string name="beach">Beach</string>
+    <string name="license_num">License #</string>
+    <string name="permit">Permit</string>
+    <string name="fee">Fee</string>
+    <string name="config_use_permitreceipt_printing">Use Permit Receipt</string>
 
 </resources>

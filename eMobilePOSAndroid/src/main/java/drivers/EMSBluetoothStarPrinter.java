@@ -568,9 +568,16 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         return receipt;
     }
 
-    public void print(String str, boolean isLargeFont) {
+    public void print(String str, int size, PrinterFunctions.Alignment alignment) {
         setStartIOPort();
-        super.print(str, FORMAT, isLargeFont);
+        super.print(str, FORMAT, size, alignment);
+//        super.cutPaper();
+        releasePrinter();
+    }
+
+    @Override
+    public void cutPaper() {
+        setStartIOPort();
         super.cutPaper();
         releasePrinter();
     }
