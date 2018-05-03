@@ -576,9 +576,16 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         return receipt;
     }
 
-    public void print(String str, boolean isLargeFont) {
+    public void print(String str, int size, PrinterFunctions.Alignment alignment) {
         setStartIOPort();
-        super.print(str, FORMAT, isLargeFont);
+        super.print(str, FORMAT, size, alignment);
+//        super.cutPaper();
+        releasePrinter();
+    }
+
+    @Override
+    public void cutPaper() {
+        setStartIOPort();
         super.cutPaper();
         releasePrinter();
     }
@@ -594,9 +601,9 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if(myPref.isESY13P1()){
+        if (myPref.isESY13P1()) {
             EMSELO elo = new EMSELO();
-            elo.activity=activity;
+            elo.activity = activity;
             elo.openCashDrawer();
         }
     }

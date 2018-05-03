@@ -102,6 +102,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import drivers.EMSBluetoothStarPrinter;
+import drivers.star.utils.PrinterFunctions;
 import interfaces.PayWithLoyalty;
 import util.StringUtil;
 import util.json.JsonUtils;
@@ -130,7 +131,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     private boolean validPassword = true;
     private ProductsHandler prodHandler;
     private String ord_HoldName = "";
-    private ProgressDialog myProgressDialog;
+    //    private ProgressDialog myProgressDialog;
     //    private boolean voidOnHold = false;
     private Button btnTemplate;
     private Button btnHold;
@@ -990,7 +991,15 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     productsAttrDb.insert(getOrderingMainFa().global.ordProdAttr);
                     if (myPref.isRestaurantMode()) {
                         new PrintAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
+                        synchronized (getOrderingMainFa().global.order) {
+                            try {
+                                getOrderingMainFa().global.order.wait(5000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
                     }
+
                     new SyncOnHolds().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 //                    DBManager dbManager = new DBManager(getActivity());
 //                    SynchMethods sm = new SynchMethods(dbManager);
@@ -2146,14 +2155,17 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     }
 
     public class OnHoldAsync extends AsyncTask<Object, Integer, Boolean> {
+        private ProgressDialog myProgressDialog;
+
         @Override
         protected void onPreExecute() {
             myProgressDialog = new ProgressDialog(getActivity());
             myProgressDialog.setMessage(getString(R.string.sending));
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);
-            if (myProgressDialog.isShowing())
-                myProgressDialog.dismiss();
+            if (!Global.isActivityDestroyed(getActivity())) {
+                myProgressDialog.show();
+            }
 
         }
 
@@ -2202,15 +2214,17 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     private class PrintAsync extends AsyncTask<Boolean, Integer, String> {
         boolean isPrintStationPrinter = false;
         boolean printSuccessful = true;
+        private ProgressDialog myProgressDialog;
 
         @Override
         protected void onPreExecute() {
             myProgressDialog = new ProgressDialog(getActivity());
-            myProgressDialog.setMessage("Printing...");
+            myProgressDialog.setMessage(getString(R.string.printing_message));
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);
-            if (myProgressDialog.isShowing())
-                myProgressDialog.dismiss();
+            if (!Global.isActivityDestroyed(getActivity())) {
+                myProgressDialog.show();
+            }
 
             if (getOrderingMainFa()._msrUsbSams != null
                     && getOrderingMainFa()._msrUsbSams.isDeviceOpen()) {
@@ -2260,7 +2274,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                     Global.multiPrinterManager.get(printMap).getCurrentDevice()).getPortName())) {
                                 printHeader = true;
                                 if (currentDevice != null) {
-                                    currentDevice.print(receipt.toString(), true);
+                                    currentDevice.print(receipt.toString(), 1, PrinterFunctions.Alignment.Left);
                                     receipt.setLength(0);
                                     currentDevice.cutPaper();
                                 }
@@ -2271,7 +2285,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                             printHeader = splitByCat;
                             currentPrinterName = currentDevice.getPortName();
                             if (splitByCat) {
-                                currentDevice.print(receipt.toString(), true);
+                                currentDevice.print(receipt.toString(), 1, PrinterFunctions.Alignment.Left);
                                 receipt.setLength(0);
                                 currentDevice.cutPaper();
                             }
@@ -2279,8 +2293,9 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     }
                 }
                 if (currentDevice != null && !TextUtils.isEmpty(receipt)) {
-                    currentDevice.print(receipt.toString(), true);
+                    currentDevice.print(receipt.toString(), 1, PrinterFunctions.Alignment.Left);
                     receipt.setLength(0);
+                    currentDevice.cutPaper();
                 }
             }
             return null;
@@ -2288,7 +2303,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
         @Override
         protected void onPostExecute(String unused) {
-            myProgressDialog.dismiss();
+            Global.dismissDialog(getActivity(), myProgressDialog);
             if (!isPrintStationPrinter) {
                 if (printSuccessful) {
                     if (myPref.isMultiplePrints()) {
@@ -2299,6 +2314,9 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 } else {
                     showPrintDlg(true);
                 }
+            }
+            synchronized (getOrderingMainFa().global.order) {
+                getOrderingMainFa().global.order.notifyAll();
             }
         }
     }
@@ -2314,7 +2332,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             dialog.setIndeterminate(true);
             dialog.setCancelable(false);
             dialog.setMessage(getString(R.string.sync_sending_orders));
-            if (Global.isActivityDestroyed(getActivity())) {
+            if (!Global.isActivityDestroyed(getActivity())) {
                 dialog.show();
             }
         }

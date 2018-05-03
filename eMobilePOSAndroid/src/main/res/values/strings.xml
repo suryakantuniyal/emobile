@@ -1400,5 +1400,10 @@
     <string name="check_update_stop">Application update was cancelled.</string>
     <string name="clerk_login">Use clerk password</string>
     <string name="config_remove_leading_zeros">Remove leading zeros from UPC/SKU</string>
+    <string name="beach">Beach</string>
+    <string name="license_num">License #</string>
+    <string name="permit">Permit</string>
+    <string name="fee">Fee</string>
+    <string name="config_use_permitreceipt_printing">Use Permit Receipt</string>
 
 </resources>

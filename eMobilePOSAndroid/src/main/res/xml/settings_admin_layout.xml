@@ -375,6 +375,10 @@
             android:key="pref_automatic_printing"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_automatic_printing" />
+        <CheckBoxPreference
+            android:key="pref_use_permitreceipt_printing"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_use_permitreceipt_printing" />
         <ListPreference
             android:defaultValue="MEDIUM"
             android:entries="@array/printerWidths"
