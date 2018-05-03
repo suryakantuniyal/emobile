@@ -32,7 +32,6 @@ import com.android.database.InvProdHandler;
 import com.android.database.InvoicesHandler;
 import com.android.database.MemoTextHandler;
 import com.android.database.OrderProductsHandler;
-import com.android.database.OrderTaxes_DB;
 import com.android.database.OrdersHandler;
 import com.android.database.PayMethodsHandler;
 import com.android.database.PaymentsHandler;
@@ -364,7 +363,7 @@ public class EMSDeviceDriver {
             mePOSReceipt.addLine(new MePOSReceiptTextLine(str, MePOS.TEXT_STYLE_NONE, MePOS.TEXT_SIZE_NORMAL, MePOS.TEXT_POSITION_LEFT));
         } else if (this instanceof EMSBluetoothStarPrinter) {
             try {
-                printStar(str, false);
+                printStar(str, 0, PrinterFunctions.Alignment.Left);
 //                port.writePort(str.getBytes(), 0, str.length());
             } catch (StarIOPortException e) {
                 e.printStackTrace();
@@ -436,7 +435,7 @@ public class EMSDeviceDriver {
             mePOSReceipt.addLine(new MePOSReceiptTextLine(new String(byteArray), MePOS.TEXT_STYLE_NONE, MePOS.TEXT_SIZE_NORMAL, MePOS.TEXT_POSITION_LEFT));
         } else if (this instanceof EMSBluetoothStarPrinter) {
             try {
-                printStar(new String(byteArray), false);
+                printStar(new String(byteArray), 0, PrinterFunctions.Alignment.Left);
             } catch (StarIOPortException e) {
                 e.printStackTrace();
             } catch (UnsupportedEncodingException e) {
@@ -487,11 +486,11 @@ public class EMSDeviceDriver {
     }
 
     public void print(String str, String FORMAT) {
-        print(str, FORMAT, false);
+        print(str, FORMAT, 0, PrinterFunctions.Alignment.Left);
     }
 
-    public void print(String str, boolean isLargeFont) {
-        print(str, FORMAT, isLargeFont);
+    public void print(String str, int size, PrinterFunctions.Alignment alignment) {
+        print(str, FORMAT, size, alignment);
     }
 
     private void startReceipt() {
@@ -569,17 +568,25 @@ public class EMSDeviceDriver {
         }
     }
 
-    private void printStar(String str, boolean isLargeFont) throws StarIOPortException, UnsupportedEncodingException {
+    private void printStar(String str, int size, PrinterFunctions.Alignment alignment) throws StarIOPortException, UnsupportedEncodingException {
         if (port == null) {
             return;
         }
         if (!isPOSPrinter) {
-            port.writePort(new byte[]{0x1d, 0x57, (byte) 0x80, 0x31}, 0, 4);
-            port.writePort(new byte[]{0x1d, 0x21, 0x00}, 0, 3);
-            port.writePort(new byte[]{0x1b, 0x74, 0x11}, 0, 3); // set to
-            // windows-1252
-            port.writePort(str.getBytes(), 0, str.length());
-        } else if (isLargeFont) {
+//            if (size > 0) {
+            MiniPrinterFunctions.PrintText(activity, port.getPortName(), port.getPortSettings()
+                    , false, false, false, false,
+                    Integer.valueOf(size).byteValue(), Integer.valueOf(size).byteValue(),
+                    0, alignment
+                    , str.getBytes());
+//            } else {
+//                port.writePort(new byte[]{0x1d, 0x57, (byte) 0x80, 0x31}, 0, 4);
+//                port.writePort(new byte[]{0x1d, 0x21, 0x00}, 0, 3);
+//                port.writePort(new byte[]{0x1b, 0x74, 0x11}, 0, 3); // set to
+//                // windows-1252
+//                port.writePort(str.getBytes(), 0, str.length());
+//            }
+        } else if (size > 0) {
             ArrayList<byte[]> commands = new ArrayList<>();
             commands.add(new byte[]{0x1b, 0x40}); // Initialization
             byte[] characterheightExpansion = new byte[]{0x1b, 0x68, 0x00};
@@ -619,7 +626,7 @@ public class EMSDeviceDriver {
         }
     }
 
-    protected void print(String str, String FORMAT, boolean isLargeFont) {
+    protected void print(String str, String FORMAT, int size, PrinterFunctions.Alignment alignment) {
         str = removeAccents(str);
         if (PRINT_TO_LOG) {
             Log.d("Print", str);
@@ -628,7 +635,7 @@ public class EMSDeviceDriver {
         if (this instanceof EMSBixolonRD) {
             String[] split = str.split(("\n"));
             for (String line : split) {
-                if (isLargeFont) {
+                if (size > 0) {
                     SendCmd(String.format("80>%s", str));
                 } else {
                     SendCmd(String.format("80*%s", line));
@@ -645,7 +652,7 @@ public class EMSDeviceDriver {
             mePOSReceipt.addLine(new MePOSReceiptTextLine(str, MePOS.TEXT_STYLE_NONE, MePOS.TEXT_SIZE_NORMAL, MePOS.TEXT_POSITION_LEFT));
         } else if (this instanceof EMSBluetoothStarPrinter) {
             try {
-                printStar(str, isLargeFont);
+                printStar(str, size, alignment);
             } catch (StarIOPortException e) {
                 e.printStackTrace();
             } catch (UnsupportedEncodingException e) {
@@ -820,18 +827,70 @@ public class EMSDeviceDriver {
         printReceipt(anOrder, lineWidth, fromOnHold, type, isFromHistory, emvContainer);
     }
 
+    protected void printTicketReceipt(Order order, int lineWidth) {
+        MemoTextHandler handler = new MemoTextHandler(activity);
+        String[] header = handler.getHeader();
+        AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee(false);
+        startReceipt();
+        setPaperWidth(lineWidth);
+        printPref = myPref.getPrintingPreferences();
+        List<OrderProduct> orderProducts = order.getOrderProducts();
+        StringBuilder sb = new StringBuilder();
+        String date = Global.formatToDisplayDate(order.ord_timecreated, 3);
+
+        if (orderProducts != null) {
+            for (OrderProduct orderProduct : orderProducts) {
+                if (printPref.contains(MyPreferences.print_header)) {
+                    for (String str : header) {
+                        sb.append(textHandler.centeredString(str, lineWidth));
+                    }
+                    print(sb.toString(), 0, PrinterFunctions.Alignment.Center);
+                    print(textHandler.newLines(1), 0, PrinterFunctions.Alignment.Left);
+                }
+                sb.setLength(0);
+                sb.append(textHandler.centeredString(orderProduct.getOrdprod_name(), lineWidth / 2));
+                sb.append(textHandler.centeredString(String.format("%s: %s", getString(R.string.fee), Global.getCurrencyFormat(orderProduct.getFinalPrice())), lineWidth / 2));
+                sb.append(textHandler.newLines(1));
+                sb.append(textHandler.oneColumnLineWithLeftAlignedText(activity.getString(R.string.date), lineWidth / 2, 0));
+                sb.append(textHandler.oneColumnLineWithLeftAlignedText(date, lineWidth / 2, 0));
+                sb.append(textHandler.newLines(1));
+                sb.append(textHandler.oneColumnLineWithLeftAlignedText(activity.getString(R.string.beach), lineWidth / 2, 0));
+                sb.append(textHandler.oneColumnLineWithLeftAlignedText(employee.getEmpName(), lineWidth / 2, 0));
+                sb.append(textHandler.newLines(1));
+                sb.append(textHandler.oneColumnLineWithLeftAlignedText(activity.getString(R.string.license_num), lineWidth / 2, 0));
+                sb.append(textHandler.oneColumnLineWithLeftAlignedText(order.customer.getCust_name(), lineWidth / 2, 0));
+                sb.append(textHandler.newLines(1));
+                sb.append(textHandler.oneColumnLineWithLeftAlignedText(activity.getString(R.string.permit), lineWidth / 2, 0));
+                sb.append(textHandler.oneColumnLineWithLeftAlignedText(orderProduct.getProd_id(), lineWidth / 2, 0));
+                print(sb.toString(), 1, PrinterFunctions.Alignment.Left);
+                sb.setLength(0);
+                if (printPref.contains(MyPreferences.print_footer)) {
+                    printFooter(lineWidth);
+                }
+                printTermsNConds();
+                printEnablerWebSite(lineWidth);
+                print(textHandler.newLines(2), 0, PrinterFunctions.Alignment.Left);
+                cutPaper();
+            }
+        }
+
+
+    }
+
     protected void printReceipt(Order anOrder, int lineWidth, boolean fromOnHold, Global.OrderType type, boolean isFromHistory, EMVContainer emvContainer) {
         try {
+            if (myPref.isUseTicketReceipt()) {
+                printTicketReceipt(anOrder, lineWidth);
+                return;
+            }
             AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee(false);
             Clerk clerk = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()));
             startReceipt();
             setPaperWidth(lineWidth);
             printPref = myPref.getPrintingPreferences();
             OrderProductsHandler orderProductsHandler = new OrderProductsHandler(activity);
-            OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB();
-//            Order anOrder = orderHandler.getPrintedOrder(ordID);
-            List<DataTaxes> listOrdTaxes = anOrder.getListOrderTaxes();//ordTaxesDB.getOrderTaxes(anOrder.ord_id);
-            List<OrderProduct> orderProducts = anOrder.getOrderProducts();//orderProductsHandler.getOrderProducts(ordID);
+            List<DataTaxes> listOrdTaxes = anOrder.getListOrderTaxes();
+            List<OrderProduct> orderProducts = anOrder.getOrderProducts();
 
             boolean payWithLoyalty = false;
             StringBuilder sb = new StringBuilder();
@@ -1625,7 +1684,7 @@ public class EMSDeviceDriver {
 
         if (!sb.toString().isEmpty()) {
             sb.append(textHandler.newLines(1));
-            print(sb.toString());
+            print(sb.toString(), 1, PrinterFunctions.Alignment.Left);
         }
 
     }

@@ -16,6 +16,10 @@
             android:key="pref_enable_multiple_prints"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_multiple_prints" />
+        <CheckBoxPreference
+            android:key="pref_use_permitreceipt_printing"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_use_permitreceipt_printing" />
         <ListPreference
             android:defaultValue="MEDIUM"
             android:entries="@array/printerWidths"

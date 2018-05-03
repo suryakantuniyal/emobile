@@ -1360,4 +1360,9 @@
     <string name="automatic">Automático</string>
     <string name="clerk_login">Usar contraseña de Clerk</string>
     <string name="config_remove_leading_zeros">Remove leading zeros from UPC/SKU</string>
+    <string name="beach">Playa</string>
+    <string name="license_num"># Licencia</string>
+    <string name="permit">Permiso</string>
+    <string name="fee">Cargo</string>
+    <string name="config_use_permitreceipt_printing">Usar Recibo de Permiso</string>
 </resources>
