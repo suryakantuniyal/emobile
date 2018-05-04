@@ -51,7 +51,7 @@ public class DeviceListActivity extends Activity {
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        List<Device> devices = DeviceTableDAO.getAll();
+        List<Device> devices = DeviceTableDAO.getLocalDevices();
         recyclerView.setAdapter(new DevicesRecyclerViewAdapter(this, devices, mTwoPane));
     }
 

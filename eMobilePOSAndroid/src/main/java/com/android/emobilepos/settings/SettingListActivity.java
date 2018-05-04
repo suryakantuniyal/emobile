@@ -1350,7 +1350,22 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                                 myPref.setIsBixolonRD(true);
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();
-                                Global.mainPrinterManager.loadDrivers(getActivity(), Global.BIXOLON_RD, EMSDeviceManager.PrinterInterfase.BLUETOOTH);
+                                Global.mainPrinterManager.loadMultiDriver(getActivity(), Global.BIXOLON_RD,
+                                        48,true,"","");
+                                List<Device> list = new ArrayList<>();
+                                Device device = DeviceTableDAO.getByName(strDeviceName);
+                                if (device == null) {
+                                    device = new Device();
+                                }
+                                device.setId(String.format("BT:%s", val[pos]));
+                                device.setMacAddress("BT:" + macAddressList.get(pos));
+                                device.setName(strDeviceName);
+                                device.setType(String.valueOf(Global.BIXOLON_RD));
+                                device.setRemoteDevice(false);
+                                device.setEmsDeviceManager(Global.mainPrinterManager);
+                                list.add(device);
+                                DeviceTableDAO.insert(list);
+                                Global.printerDevices.add(device);
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("SPP-R")) {
                                 myPref.setPrinterType(Global.BIXOLON);
                                 myPref.setPrinterMACAddress("BT:" + macAddressList.get(pos));

@@ -443,7 +443,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                     if (!myPref.getPreferences(MyPreferences.pref_automatic_printing))
                         showPrintDlg(false, false, null);
                     else
-                        new PrintAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
+                        new PrintAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false, false);
                 } else {
                     if (Global.overallPaidAmount == 0)
                         setResult(-1);
@@ -592,7 +592,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         super.onStop();
     }
 
-    private void showPrintDlg(final boolean isReprint, boolean isRetry, final EMVContainer emvContainer) {
+    private void showPrintDlg(final boolean isReprint, final boolean isRetry, final EMVContainer emvContainer) {
         final Dialog dlog = new Dialog(this, R.style.Theme_TransparentTest);
         dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dlog.setCancelable(false);
@@ -624,7 +624,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             @Override
             public void onClick(View v) {
                 dlog.dismiss();
-                new PrintAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, isReprint, emvContainer);
+                new PrintAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, isReprint, isRetry, emvContainer);
 
             }
         });
@@ -816,7 +816,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             if ((emvContainer != null && emvContainer.getGeniusResponse() != null &&
                     emvContainer.getGeniusResponse().getStatus().equalsIgnoreCase("APPROVED")) ||
                     emvContainer == null || emvContainer.getGeniusResponse() == null) {
-                new PrintAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
+                new PrintAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false, false);
             }
         } else if (withPrintRequest) {
             if (Global.loyaltyCardInfo != null && !Global.loyaltyCardInfo.getCardNumUnencrypted().isEmpty()) {
@@ -965,7 +965,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                     if (!myPref.getPreferences(MyPreferences.pref_automatic_printing))
                         showPrintDlg(false, false, null);
                     else
-                        new PrintAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
+                        new PrintAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false, false);
                 } else {
                     finish();
                 }
@@ -1227,13 +1227,19 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
         @Override
         protected String doInBackground(Object... params) {
-            EMSDeviceManager emsDeviceManager = DeviceUtils.getEmsDeviceManager(order == null ? Device.Printables.PAYMENT_RECEIPT :
-                    Device.Printables.TRANSACTION_RECEIPT, Global.printerDevices);
-            wasReprint = (Boolean) params[0];
-            EMVContainer emvContainer = params.length > 1 ? (EMVContainer) params[1] : null;
+            EMSDeviceManager emsDeviceManager;
+            wasReprint = (boolean) params[0];
+            if (wasReprint) {
+                emsDeviceManager = DeviceUtils.getEmsDeviceManager(order == null ? Device.Printables.PAYMENT_RECEIPT_REPRINT :
+                        Device.Printables.TRANSACTION_RECEIPT_REPRINT, Global.printerDevices);
+            } else {
+                emsDeviceManager = DeviceUtils.getEmsDeviceManager(order == null ? Device.Printables.PAYMENT_RECEIPT :
+                        Device.Printables.TRANSACTION_RECEIPT, Global.printerDevices);
+            }
+            EMVContainer emvContainer = params.length > 2 ? (EMVContainer) params[2] : null;
             try {
                 if (emsDeviceManager != null && emsDeviceManager.getCurrentDevice() != null) {
-                    if (isFromMainMenu || extras.getBoolean("histinvoices") ||
+                    if (wasReprint || isFromMainMenu || extras.getBoolean("histinvoices") ||
                             (emvContainer != null && emvContainer.getGeniusResponse() != null &&
                                     emvContainer.getGeniusResponse().getStatus().equalsIgnoreCase("DECLINED")))
                         printSuccessful = emsDeviceManager.getCurrentDevice().printPaymentDetails(PaymentsHandler.getLastPaymentInserted().getPay_id(), 1,

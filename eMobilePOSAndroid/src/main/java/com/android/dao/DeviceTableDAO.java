@@ -125,7 +125,6 @@ public class DeviceTableDAO {
     public static Device getByPrintable(Device.Printables printable) {
         Realm realm = Realm.getDefaultInstance();
         try {
-//            RealmResults<Device> all = realm.where(Device.class).findAll();
             Device first = realm.where(Device.class)
                     .equalTo("selectedPritables.value", printable.name())
                     .findFirst();
@@ -150,6 +149,40 @@ public class DeviceTableDAO {
             }
         } finally {
             realm.commitTransaction();
+            realm.close();
+        }
+    }
+
+    public static  List<Device> getLocalDevices() {
+        Realm realm = Realm.getDefaultInstance();
+        List<Device> devices = null;
+        try {
+            if (realm.where(Device.class).isValid()) {
+                 devices = realm.where(Device.class)
+                        .equalTo("isRemoteDevice", false)
+                        .findAll();
+               if(devices!=null){
+                   devices = realm.copyFromRealm(devices);
+               }
+            }
+
+        } finally {
+            realm.close();
+        }
+        return devices;
+    }
+
+    public static Device getByPrintableType(int type) {
+        Realm realm = Realm.getDefaultInstance();
+        try {
+            Device first = realm.where(Device.class)
+                    .equalTo("type", String.valueOf(type))
+                    .findFirst();
+            if (first != null) {
+                first = realm.copyFromRealm(first);
+            }
+            return first;
+        } finally {
             realm.close();
         }
     }

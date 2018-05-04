@@ -280,7 +280,7 @@ public class DeviceUtils {
         for (Device device : devices) {
             int i = connected.indexOf(device);
             if (i == -1) {
-                if (device.getEmsDeviceManager() == null) {
+                if (device.getEmsDeviceManager() == null && !device.isRemoteDevice()) {
                     EMSDeviceManager deviceManager = new EMSDeviceManager();
                     if (deviceManager.loadMultiDriver(activity, Integer.parseInt(device.getType()), 48, true,
                             device.getMacAddress(), device.getTcpPort())) {
@@ -471,6 +471,17 @@ public class DeviceUtils {
     public static void sendBroadcastDeviceConnected(Context context) {
         Intent intent = new Intent(MainMenu_FA.NOTIFICATION_DEVICES_LOADED);
         context.sendBroadcast(intent);
+    }
+
+    public static EMSDeviceManager getEmsDeviceManager(int type, Set<Device> printerDevices) {
+        Device device = DeviceTableDAO.getByPrintableType(type);
+        ArrayList<Device> devices = new ArrayList(printerDevices);
+        int i = devices.indexOf(device);
+        EMSDeviceManager emsDeviceManager = null;
+        if (i > -1) {
+            emsDeviceManager = devices.get(i).getEmsDeviceManager();
+        }
+        return emsDeviceManager;
     }
 
     private static class ReconnectUSBPrinterTask extends AsyncTask<Void, Void, Void> {

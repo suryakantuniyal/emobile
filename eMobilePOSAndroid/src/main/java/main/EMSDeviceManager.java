@@ -70,7 +70,7 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                     promptStarPrinterSize(true, activity);
                 break;
             case Global.BIXOLON_RD:
-                aDevice = new EMSBixolonRD(EMSBixolonRD.BixolonCountry.DOMINICAN_REPUBLIC);
+                aDevice = new EMSBixolonRD(EMSBixolonRD.BixolonCountry.PANAMA);
                 aDevice.connect(activity, -1, true, this);
                 break;
             case Global.BAMBOO:
