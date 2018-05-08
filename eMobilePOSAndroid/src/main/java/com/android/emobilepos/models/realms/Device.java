@@ -46,8 +46,11 @@ public class Device extends RealmObject {
     @Ignore
     @Expose(deserialize = false, serialize = false)
     private transient EMSDeviceManager emsDeviceManager;
+    @Expose(deserialize = true, serialize = true)
     private String macAddress;
+    @Expose(deserialize = true, serialize = true)
     private int textAreaSize;
+    @Expose(deserialize = true, serialize = true)
     private boolean POS;
 
     public EMSDeviceManager getEmsDeviceManager() {

@@ -2235,7 +2235,8 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             Payment payment = (Payment) params[1];
             wasReprint = (Boolean) params[0];
             try {
-                EMSDeviceManager emsDeviceManager = DeviceUtils.getEmsDeviceManager(Device.Printables.PAYMENT_RECEIPT, Global.printerDevices);
+                EMSDeviceManager emsDeviceManager = DeviceUtils.getEmsDeviceManager(Device.Printables.PAYMENT_RECEIPT_REPRINT, Global.printerDevices);
+//                EMSDeviceManager emsDeviceManager = DeviceUtils.getEmsDeviceManager(Device.Printables.PAYMENT_RECEIPT, Global.printerDevices);
                 if (emsDeviceManager != null && emsDeviceManager.getCurrentDevice() != null) {
                     printingSuccessful = emsDeviceManager.getCurrentDevice().printPaymentDetails(payment.getPay_id(), 1,
                             wasReprint, payment.getEmvContainer());

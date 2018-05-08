@@ -1338,7 +1338,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                                 device.setEmsDeviceManager(Global.mainPrinterManager);
                                 list.add(device);
                                 DeviceTableDAO.insert(list);
-                                Global.printerDevices.add(device);
+//                                Global.printerDevices.add(device);
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();
                                 Global.mainPrinterManager.loadDrivers(getActivity(), Global.STAR, EMSDeviceManager.PrinterInterfase.BLUETOOTH);

@@ -282,7 +282,7 @@ public class DeviceUtils {
             if (i == -1) {
                 if (device.getEmsDeviceManager() == null && !device.isRemoteDevice()) {
                     EMSDeviceManager deviceManager = new EMSDeviceManager();
-                    if (deviceManager.loadMultiDriver(activity, Integer.parseInt(device.getType()), 48, true,
+                    if (deviceManager.loadMultiDriver(activity, Integer.parseInt(device.getType()), 48, device.isPOS(),
                             device.getMacAddress(), device.getTcpPort())) {
                         device.setEmsDeviceManager(deviceManager);
                     }
