@@ -734,7 +734,7 @@ public class EMSDeviceDriver {
     }
 
     public void printReceiptPreview(SplittedOrder splitedOrder, int lineWidth) throws JAException, StarIOPortException {
-        AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee(false);
+        AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee();
         startReceipt();
         setPaperWidth(lineWidth);
         printPref = myPref.getPrintingPreferences();
@@ -830,7 +830,7 @@ public class EMSDeviceDriver {
     protected void printTicketReceipt(Order order, int lineWidth) {
         MemoTextHandler handler = new MemoTextHandler(activity);
         String[] header = handler.getHeader();
-        AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee(false);
+        AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee();
         startReceipt();
         setPaperWidth(lineWidth);
         printPref = myPref.getPrintingPreferences();
@@ -883,7 +883,7 @@ public class EMSDeviceDriver {
                 printTicketReceipt(anOrder, lineWidth);
                 return;
             }
-            AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee(false);
+            AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee();
             Clerk clerk = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()));
             startReceipt();
             setPaperWidth(lineWidth);
@@ -2035,7 +2035,7 @@ public class EMSDeviceDriver {
 
     String printStationPrinterReceipt(List<Orders> orders, String ordID, int lineWidth, boolean cutPaper, boolean printheader) {
         try {
-            AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee(false);
+            AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee();
             setPaperWidth(lineWidth);
             EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
             OrdersHandler orderHandler = new OrdersHandler(activity);
@@ -2199,7 +2199,7 @@ public class EMSDeviceDriver {
 
     protected void printConsignmentReceipt(List<ConsignmentTransaction> myConsignment, String encodedSig, int lineWidth) {
         try {
-            AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee(false);
+            AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee();
             startReceipt();
             encodedSignature = encodedSig;
             printPref = myPref.getPrintingPreferences();
@@ -2303,7 +2303,7 @@ public class EMSDeviceDriver {
 
     void printConsignmentHistoryReceipt(HashMap<String, String> map, Cursor c, boolean isPickup, int lineWidth) {
         try {
-            AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee(false);
+            AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee();
             startReceipt();
             encodedSignature = map.get("encoded_signature");
             printPref = myPref.getPrintingPreferences();
@@ -2407,7 +2407,7 @@ public class EMSDeviceDriver {
 
     void printConsignmentPickupReceipt(List<ConsignmentTransaction> myConsignment, String encodedSig, int lineWidth) {
         try {
-            AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee(false);
+            AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee();
             startReceipt();
             printPref = myPref.getPrintingPreferences();
             EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
@@ -2468,7 +2468,7 @@ public class EMSDeviceDriver {
     }
 
     protected void printEndOfDayReportReceipt(String curDate, int lineWidth, boolean printDetails) {
-        AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee(false);
+        AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee();
         startReceipt();
         String mDate = Global.formatToDisplayDate(curDate, 4);
         StringBuilder sb = new StringBuilder();
@@ -2721,7 +2721,7 @@ public class EMSDeviceDriver {
     }
 
     protected void printShiftDetailsReceipt(int lineWidth, String shiftID) {
-        AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee(false);
+        AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee();
         startReceipt();
         StringBuilder sb = new StringBuilder();
         EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
@@ -2791,7 +2791,7 @@ public class EMSDeviceDriver {
 
 
     protected void printExpenseReceipt(int lineWidth, ShiftExpense expense) {
-        AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee(false);
+        AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee();
         startReceipt();
         StringBuilder sb = new StringBuilder();
         EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
@@ -2818,7 +2818,7 @@ public class EMSDeviceDriver {
 
     void printReportReceipt(String curDate, int lineWidth) {
         try {
-            AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee(false);
+            AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee();
             startReceipt();
             PaymentsHandler paymentHandler = new PaymentsHandler(activity);
             PayMethodsHandler payMethodHandler = new PayMethodsHandler(activity);

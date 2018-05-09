@@ -755,7 +755,7 @@ public class OrderProductsHandler {
 
     public AssignEmployee getAssignEmployee() {
         if (this.assignEmployee == null) {
-            this.assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+            this.assignEmployee = AssignEmployeeDAO.getAssignEmployee();
         }
         return this.assignEmployee;
     }

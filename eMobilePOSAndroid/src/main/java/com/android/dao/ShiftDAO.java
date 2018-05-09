@@ -57,7 +57,7 @@ public class ShiftDAO {
     }
 
     public static Shift getOpenShift() {
-        int empId = AssignEmployeeDAO.getAssignEmployee(false).getEmpId();
+        int empId = AssignEmployeeDAO.getAssignEmployee().getEmpId();
         Realm r = Realm.getDefaultInstance();
         try {
             Shift shift = r.where(Shift.class)

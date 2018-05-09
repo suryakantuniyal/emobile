@@ -677,7 +677,7 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
     }
 
     private boolean printBixolonItem(OrderProduct product, boolean isCredit) {
-        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
         BixolonTax tax = BixolonDAO.getTax(product.getProd_taxId(), assignEmployee.getTaxDefault());
         String cmnd;
         BigDecimal totalPrice = Global.getBigDecimalNum(product.getFinalPrice(), 2);

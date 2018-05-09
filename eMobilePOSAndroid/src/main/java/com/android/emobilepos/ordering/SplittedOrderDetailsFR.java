@@ -36,7 +36,6 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.OrderProductUtils;
 import com.android.support.SynchMethods;
-import com.android.support.TaxesCalculator;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -76,7 +75,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
         LinearLayout previewContainer = view.findViewById(R.id.receiptPreviewContainer);
         ViewGroup.LayoutParams params = previewContainer.getLayoutParams();
         params.width = myPref.getPrintPreviewLayoutWidth();

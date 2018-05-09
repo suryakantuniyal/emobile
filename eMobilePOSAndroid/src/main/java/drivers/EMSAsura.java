@@ -68,7 +68,7 @@ public class EMSAsura extends EMSDeviceDriver
         implements EMSDeviceManagerPrinterDelegate, IMSRListener, IBarcodeListener {
 
     private final String FORMAT = "windows-1252";
-    AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+    AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
     private int LINE_WIDTH = 40;
     private int PRINT_TXT_SIZE = 24;
     private int PAPER_WIDTH = 576;

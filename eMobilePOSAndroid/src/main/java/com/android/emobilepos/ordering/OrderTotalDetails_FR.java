@@ -418,7 +418,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.order_total_details_layout, container, false);
-        assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+        assignEmployee = AssignEmployeeDAO.getAssignEmployee();
         isToGo = ((OrderingMain_FA) getActivity()).isToGo;
         taxSelected = 0;
         discountSelected = 0;

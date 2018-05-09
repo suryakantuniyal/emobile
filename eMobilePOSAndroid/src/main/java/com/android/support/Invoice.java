@@ -33,7 +33,7 @@ public class Invoice {
 	private String inv_update = empstr;
 
 	public Invoice(Activity activity) {
-		AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+		AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
 		SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy h:mm a");
 		inv_timecreated = sdf.format(new Date());
 

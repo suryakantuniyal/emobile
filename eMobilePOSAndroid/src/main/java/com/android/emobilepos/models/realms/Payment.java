@@ -12,7 +12,6 @@ import com.android.emobilepos.models.EMVContainer;
 import com.android.ivu.MersenneTwisterFast;
 import com.android.support.DateUtils;
 import com.android.support.Global;
-import com.android.support.MyPreferences;
 
 import java.util.Date;
 
@@ -165,7 +164,7 @@ public class Payment extends RealmObject {
     }
 
     public Payment() {
-        assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+        assignEmployee = AssignEmployeeDAO.getAssignEmployee();
     }
 
     public Payment(Context activity) {
@@ -177,7 +176,7 @@ public class Payment extends RealmObject {
         String date = DateUtils.getDateAsString(new Date(), DateUtils.DATE_PATTERN);
         setPay_timecreated(date);
         setPay_date(date);
-        assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+        assignEmployee = AssignEmployeeDAO.getAssignEmployee();
 
         setEmp_id(String.valueOf(assignEmployee.getEmpId()));
         Location currLocation = Global.getCurrLocation(activity, false);
@@ -193,7 +192,7 @@ public class Payment extends RealmObject {
                    String isRefund, String paymentType, String creditCardType, String cardNumberEnc, String cardNumberLast4,
                    String cardExpMonth, String cardExpYear, String cardPostalCode, String cardSecurityCode, String trackOne,
                    String trackTwo, String transactionId, String authcode) {
-        assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+        assignEmployee = AssignEmployeeDAO.getAssignEmployee();
         setPay_issync("0");
         setIsVoid("0");
         setStatus("1");

@@ -66,7 +66,7 @@ public class ProcessTupyx_FA extends FragmentActivity implements OnClickListener
         super.onCreate(savedInstanceState);
         activity = this;
         global = (Global) getApplication();
-        assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+        assignEmployee = AssignEmployeeDAO.getAssignEmployee();
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.tupyx_main_layout);

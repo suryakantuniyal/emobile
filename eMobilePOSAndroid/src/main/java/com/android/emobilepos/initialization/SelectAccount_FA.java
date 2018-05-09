@@ -1,12 +1,9 @@
 package com.android.emobilepos.initialization;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -41,12 +38,9 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-
-import io.realm.Realm;
 
 public class SelectAccount_FA extends BaseFragmentActivityActionBar {
     private Context thisContext;
@@ -97,7 +91,7 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
             dbManager = new DBManager(this, Global.FROM_LOGIN_ACTIVITTY);
             if (dbManager.isNewDBVersion()) {
                 dbManager.alterTables();
-                AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+                AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
                 if (assignEmployee == null && !myPref.getEmpIdFromPreferences().isEmpty()) {
                     assignEmployee = new AssignEmployee();
                     assignEmployee.setEmpId(Integer.parseInt(myPref.getEmpIdFromPreferences()));

@@ -463,7 +463,7 @@ public class MyPreferences {
                     return new_id;
                 else if (new_seq > curr_seq)
                     return new_id;
-            } else if (tokens[0].equals(String.valueOf(AssignEmployeeDAO.getAssignEmployee(false).getEmpId()))) {
+            } else if (tokens[0].equals(String.valueOf(AssignEmployeeDAO.getAssignEmployee().getEmpId()))) {
                 return new_id;
             }
         }

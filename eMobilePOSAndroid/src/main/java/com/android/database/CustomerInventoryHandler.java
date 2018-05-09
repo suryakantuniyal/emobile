@@ -159,7 +159,7 @@ public class CustomerInventoryHandler {
         if (myPref.isCustSelected())
             priceLevelID = myPref.getCustPriceLevel();
         else {
-            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
             priceLevelID = StringUtil.nullStringToEmpty(assignEmployee.getPricelevelId());
         }
 
@@ -186,7 +186,7 @@ public class CustomerInventoryHandler {
         if (myPref.isCustSelected())
             priceLevelID = myPref.getCustPriceLevel();
         else {
-            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
             priceLevelID = StringUtil.nullStringToEmpty(assignEmployee.getPricelevelId());
         }
         sb.append(

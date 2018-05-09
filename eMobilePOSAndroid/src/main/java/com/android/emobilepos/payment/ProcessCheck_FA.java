@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.text.Editable;
 import android.text.Selection;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -102,7 +103,7 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
         super.onCreate(savedInstanceState);
         extras = this.getIntent().getExtras();
         activity = this;
-        assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+        assignEmployee = AssignEmployeeDAO.getAssignEmployee();
 
         myPref = new MyPreferences(activity);
         String custTaxCode;
@@ -466,7 +467,7 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
             payment.setIvuLottoQR(Global.base64QRCode(extras.getString("IvuLottoNumber"), extras.getString("IvuLottoDrawDate")));
 
 
-            if (!extras.getString("Tax1_amount").isEmpty()) {
+            if (!TextUtils.isEmpty(extras.getString("Tax1_amount"))) {
                 payment.setTax1_amount(extras.getString("Tax1_amount"));
                 payment.setTax1_name(extras.getString("Tax1_name"));
 
