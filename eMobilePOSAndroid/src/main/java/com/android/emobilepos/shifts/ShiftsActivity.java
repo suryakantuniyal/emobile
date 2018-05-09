@@ -311,7 +311,7 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
         }
         Date now = new Date();
         shift = new Shift();
-        AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee(false);
+        AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee();
         shift.setShiftStatus(Shift.ShiftStatus.OPEN);
         shift.setAssigneeId(employee.getEmpId());
         shift.setAssigneeName(employee.getEmpName());
@@ -597,6 +597,7 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
 
         @Override
         protected void onPreExecute() {
+            Global.lockOrientation(ShiftsActivity.this);
             dialog = new ProgressDialog(ShiftsActivity.this);
             dialog.setTitle(getString(R.string.shift_title));
             dialog.setMessage(getString(R.string.sync_dload_shifts));
@@ -622,8 +623,9 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            dialog.dismiss();
+            Global.dismissDialog(ShiftsActivity.this,dialog);
             openUI();
+            Global.releaseOrientation(ShiftsActivity.this);
         }
     }
 
@@ -632,6 +634,7 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
 
         @Override
         protected void onPreExecute() {
+            Global.lockOrientation(ShiftsActivity.this);
             dialog = new ProgressDialog(ShiftsActivity.this);
             dialog.setTitle(getString(R.string.shift_title));
             dialog.setMessage(getString(R.string.sync_sending_shifts));
@@ -646,10 +649,11 @@ public class ShiftsActivity extends BaseFragmentActivityActionBar implements Vie
 
         @Override
         protected void onPostExecute(Boolean result) {
-            dialog.dismiss();
+            Global.dismissDialog(ShiftsActivity.this,dialog);
             if (shift.getShiftStatus() == Shift.ShiftStatus.CLOSED) {
                 finish();
             }
+            Global.releaseOrientation(ShiftsActivity.this);
         }
     }
 }

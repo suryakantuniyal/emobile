@@ -154,7 +154,7 @@ public class ProductsHandler {
         if (myPref.isCustSelected())
             priceLevelID = myPref.getCustPriceLevel();
         else {
-            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
             priceLevelID = StringUtil.nullStringToEmpty(assignEmployee.getPricelevelId());
         }
 
@@ -389,7 +389,7 @@ public class ProductsHandler {
         if (myPref.isCustSelected())
             priceLevelID = myPref.getCustPriceLevel();
         else {
-            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
             priceLevelID = StringUtil.nullStringToEmpty(assignEmployee.getPricelevelId());
         }
 
@@ -558,7 +558,7 @@ public class ProductsHandler {
         if (myPref.isCustSelected())
             priceLevelID = myPref.getCustPriceLevel();
         else {
-            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
             priceLevelID = StringUtil.nullStringToEmpty(assignEmployee.getPricelevelId());
         }
 
@@ -847,7 +847,7 @@ public class ProductsHandler {
         if (myPref.isCustSelected())
             priceLevelID = myPref.getCustPriceLevel();
         else {
-            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
             priceLevelID = StringUtil.nullStringToEmpty(assignEmployee.getPricelevelId());
         }
         search = search.replace("'", "''");
@@ -984,7 +984,7 @@ public class ProductsHandler {
         if (myPref.isCustSelected())
             priceLevelID = myPref.getCustPriceLevel();
         else {
-            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
             priceLevelID = StringUtil.nullStringToEmpty(assignEmployee.getPricelevelId());
         }
 

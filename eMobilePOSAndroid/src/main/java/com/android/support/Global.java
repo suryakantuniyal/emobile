@@ -1376,7 +1376,7 @@ public class Global extends MultiDexApplication {
                 .putCustomAttribute("filesize", realmFile.length()));
 
         Realm.setDefaultConfiguration(config);
-        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
         if (assignEmployee == null) {
             assignEmployee = new AssignEmployee();
             if (!TextUtils.isEmpty(preferences.getEmpIdFromPreferences())) {

@@ -163,7 +163,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         OrderingMain_FA orderingMainFa = (OrderingMain_FA) activity;
         orderingMainFa.buildOrderStarted = true;
         MyPreferences myPref = new MyPreferences(activity);
-        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
 
         Order order = new Order(activity);
         order.setOrderProducts(orderProducts);

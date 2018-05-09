@@ -2,6 +2,7 @@ package com.android.emobilepos.shifts;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
@@ -25,7 +26,6 @@ import com.android.dao.ShiftExpensesDAO;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.realms.Shift;
 import com.android.emobilepos.models.realms.ShiftExpense;
-import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NumberUtils;
@@ -160,6 +160,18 @@ public class ShiftExpense_FA extends BaseFragmentActivityActionBar implements Vi
     }
 
     private class PrintReceiptTask extends AsyncTask<ShiftExpense, Void, ShiftExpense> {
+        private ProgressDialog myProgressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            Global.lockOrientation(ShiftExpense_FA.this);
+            myProgressDialog = new ProgressDialog(ShiftExpense_FA.this);
+            myProgressDialog.setMessage(getString(R.string.printing_message));
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setCancelable(true);
+            myProgressDialog.setCanceledOnTouchOutside(true);
+            myProgressDialog.show();
+        }
 
         @Override
         protected ShiftExpense doInBackground(ShiftExpense... shiftExpenses) {
@@ -174,11 +186,13 @@ public class ShiftExpense_FA extends BaseFragmentActivityActionBar implements Vi
 
         @Override
         protected void onPostExecute(ShiftExpense expense) {
+            Global.dismissDialog(ShiftExpense_FA.this, myProgressDialog);
             if (preferences.isMultiplePrints()) {
                 showPrintDlg(expense);
-            }else {
+            } else {
                 finish();
             }
+            Global.releaseOrientation(ShiftExpense_FA.this);
         }
     }
 

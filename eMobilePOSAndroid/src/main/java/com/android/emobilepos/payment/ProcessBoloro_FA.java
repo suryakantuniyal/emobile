@@ -93,7 +93,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activity = this;
-        assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+        assignEmployee = AssignEmployeeDAO.getAssignEmployee();
         storeForwardPaymentId = System.currentTimeMillis();
         Bundle extras = this.getIntent().getExtras();
         global = (Global) getApplication();

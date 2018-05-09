@@ -498,7 +498,7 @@ public class EMSPayGate_Default {
     }
 
     private void generateAccountInfo() throws IllegalArgumentException, IllegalStateException, IOException {
-        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
 
         Encrypt encrypt = new Encrypt(activity);
         serializer.setOutput(writer);

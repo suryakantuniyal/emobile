@@ -1,6 +1,5 @@
 package com.android.database;
 
-import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 
@@ -150,7 +149,7 @@ public class MemoTextHandler {
 	public HashMap<String,String>getOrderInfo()
 	{
 		HashMap<String,String>map = new HashMap<String,String>();
-		AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+		AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
 		String query = "SELECT * FROM memotext";
 		
 		Cursor c = DBManager.getDatabase().rawQuery(query, null);

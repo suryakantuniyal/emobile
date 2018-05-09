@@ -257,6 +257,7 @@ public class StoredPaymentsDAO {
         }
 
         if (getIdFromRealm) {
+            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
             Realm realm = Realm.getDefaultInstance();
             StoreAndForward storeAndForward = realm.where(StoreAndForward.class)
                     .beginsWith("payment.pay_id", deviceId + "-")
@@ -265,7 +266,6 @@ public class StoredPaymentsDAO {
                 lastPayID = storeAndForward.getPayment().getPay_id();
             }
             if (TextUtils.isEmpty(lastPayID)) {
-                AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
                 lastPayID = assignEmployee.getEmpId() + "-" + "00001" + "-" + year;
             }
             myPref.setLastPayID(lastPayID);

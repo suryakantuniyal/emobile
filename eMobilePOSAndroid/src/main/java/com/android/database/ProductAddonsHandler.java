@@ -1,6 +1,5 @@
 package com.android.database;
 
-import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 
@@ -8,7 +7,6 @@ import com.android.dao.AssignEmployeeDAO;
 import com.android.emobilepos.models.ParentAddon;
 import com.android.emobilepos.models.ProductAddons;
 import com.android.emobilepos.models.realms.AssignEmployee;
-import com.android.support.Global;
 import com.android.support.MyPreferences;
 
 import net.sqlcipher.database.SQLiteStatement;
@@ -41,7 +39,7 @@ public class ProductAddonsHandler {
 
     public ProductAddonsHandler(Context activity) {
         myPref = new MyPreferences(activity);
-        assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+        assignEmployee = AssignEmployeeDAO.getAssignEmployee();
         attrHash = new HashMap<>();
         addrData = new ArrayList<>();
         sb1 = new StringBuilder();

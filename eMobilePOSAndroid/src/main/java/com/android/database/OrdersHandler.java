@@ -317,7 +317,7 @@ public class OrdersHandler {
     }
 
     public void emptyTableOnHold() {
-        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
         DBManager.getDatabase().delete("OrderProduct",
                 "OrderProduct.ord_id IN (SELECT op.ord_id FROM OrderProduct op LEFT JOIN Orders o ON op.ord_id=o.ord_id WHERE o.isOnHold = '1' AND o.emp_id != ?)",
                 new String[]{String.valueOf(assignEmployee.getEmpId())});
@@ -442,7 +442,7 @@ public class OrdersHandler {
     }
 
     public String getLastOrderId(int deviceId, int year) {
-        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
         String lastOrdID = assignEmployee.getMSLastOrderID();
         boolean getIdFromDB = false;
         StringBuilder sb = new StringBuilder();

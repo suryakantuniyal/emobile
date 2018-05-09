@@ -32,7 +32,7 @@ public class AboutTab_FR extends Fragment implements OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.about_layout, container, false);
-        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
         MyPreferences myPref = new MyPreferences(getActivity());
         TextView acctNumber = (TextView) view.findViewById(R.id.acctNum);
         TextView employee = (TextView) view.findViewById(R.id.employeeNameID);
