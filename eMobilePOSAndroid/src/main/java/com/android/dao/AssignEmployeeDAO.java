@@ -29,18 +29,15 @@ public class AssignEmployeeDAO {
 //    }
 
 
-    public static AssignEmployee getAssignEmployee(boolean returnManaged) {
+    public static AssignEmployee getAssignEmployee() {
         Realm r = Realm.getDefaultInstance();
         AssignEmployee employee;
         try {
-//            r.beginTransaction();
             employee = r.where(AssignEmployee.class).findFirst();
-
-            if (!returnManaged && employee != null) {
+            if (employee != null) {
                 employee = r.copyFromRealm(employee);
             }
         } finally {
-//            r.commitTransaction();
             r.close();
         }
         return employee;
@@ -63,9 +60,9 @@ public class AssignEmployeeDAO {
     }
 
     public static void updateLastOrderId(String ord_id) {
+        AssignEmployee assignEmployee = getAssignEmployee();
         Realm r = Realm.getDefaultInstance();
         try {
-            AssignEmployee assignEmployee = getAssignEmployee(false);
             r.beginTransaction();
             assignEmployee.setMSLastOrderID(ord_id);
             r.insertOrUpdate(assignEmployee);
@@ -76,9 +73,9 @@ public class AssignEmployeeDAO {
     }
 
     public static void updateLastTransferId(String transferId) {
+        AssignEmployee assignEmployee = getAssignEmployee();
         Realm r = Realm.getDefaultInstance();
         try {
-            AssignEmployee assignEmployee = getAssignEmployee(false);
             r.beginTransaction();
             assignEmployee.setMSLastTransferID(transferId);
             r.insertOrUpdate(assignEmployee);

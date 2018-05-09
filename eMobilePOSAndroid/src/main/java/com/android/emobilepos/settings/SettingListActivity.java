@@ -1671,14 +1671,14 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                 MyPreferences myPref = new MyPreferences(context);
                 DBUtils.uploadDatabaseBackup(dbInputStream,
                         myPref.getAcctNumber() + "_" +
-                                AssignEmployeeDAO.getAssignEmployee(false).getEmpId()
+                                AssignEmployeeDAO.getAssignEmployee().getEmpId()
                                 + "_" + date + "_" +
                                 Uri.fromFile(sqlDBFile).getLastPathSegment());
                 File outFile = files[1];
                 dbInputStream = new FileInputStream(outFile);
                 DBUtils.uploadDatabaseBackup(dbInputStream,
                         myPref.getAcctNumber() + "_" +
-                                AssignEmployeeDAO.getAssignEmployee(false).getEmpId()
+                                AssignEmployeeDAO.getAssignEmployee().getEmpId()
                                 + "_" + date + "_" +
                                 Uri.fromFile(outFile).getLastPathSegment());
             } catch (FileNotFoundException e) {

@@ -51,7 +51,7 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
     private final int LINE_WIDTH = 83;
     private final String FORMAT = "windows-1252";
     public EMSPrintingDelegate printingDelegate;
-    AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+    AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
     private String encodedSignature;
     private String encodedQRCode = "";
     private ProgressDialog myProgressDialog;

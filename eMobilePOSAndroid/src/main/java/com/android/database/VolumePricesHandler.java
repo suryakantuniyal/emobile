@@ -1,6 +1,5 @@
 package com.android.database;
 
-import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 
@@ -116,7 +115,7 @@ public class VolumePricesHandler {
         if (myPref.isCustSelected())
             priceLevelID = myPref.getCustPriceLevel();
         else {
-            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
             priceLevelID = StringUtil.nullStringToEmpty(assignEmployee.getPricelevelId());
         }
         sb.append("SELECT * From VolumePrices WHERE prod_id = '");

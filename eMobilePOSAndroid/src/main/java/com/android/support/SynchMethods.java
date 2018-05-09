@@ -216,7 +216,7 @@ public class SynchMethods {
             configuration.setClerks(location.getValue());
             configurations.add(configuration);
         }
-        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
 
         MyPreferences preferences = new MyPreferences(activity);
         StringBuilder url = new StringBuilder(activity.getString(R.string.sync_enablermobile_mesasconfig));
@@ -240,7 +240,7 @@ public class SynchMethods {
         if (emobileBiometrics.isEmpty()) {
             return;
         }
-        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
         MyPreferences preferences = new MyPreferences(context);
         StringBuilder url = new StringBuilder(context.getString(R.string.sync_enablermobile_biometrics));
         url.append("/").append(URLEncoder.encode(String.valueOf(assignEmployee.getEmpId()), GenerateXML.UTF_8));
@@ -271,7 +271,7 @@ public class SynchMethods {
             InputStream inputStream = oauthclient.HttpClient.get(activity.getString(R.string.sync_enablermobile_mesasconfig), oauthClient, true);
             JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
             reader.beginArray();
-            String defaultLocation = AssignEmployeeDAO.getAssignEmployee(false).getDefaultLocation();
+            String defaultLocation = AssignEmployeeDAO.getAssignEmployee().getDefaultLocation();
             while (reader.hasNext()) {
                 DinningLocationConfiguration configuration = gson.fromJson(reader, DinningLocationConfiguration.class);
                 if (configuration.getLocationId().equalsIgnoreCase(defaultLocation)) {

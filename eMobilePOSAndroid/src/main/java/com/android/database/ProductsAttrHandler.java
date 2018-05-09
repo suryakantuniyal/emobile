@@ -1,6 +1,5 @@
 package com.android.database;
 
-import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 
@@ -203,7 +202,7 @@ public class ProductsAttrHandler
 			if(myPref.isCustSelected())
 				priceLevelID = myPref.getCustPriceLevel();
 			else {
-				AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+				AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
 				priceLevelID = StringUtil.nullStringToEmpty(assignEmployee.getPricelevelId());
 			}
 

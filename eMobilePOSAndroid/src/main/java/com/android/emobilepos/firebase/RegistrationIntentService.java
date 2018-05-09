@@ -100,7 +100,7 @@ public class RegistrationIntentService extends IntentService {
             HttpClient httpClient = new HttpClient();
             String url = getString(R.string.sync_register_pns);
             OAuthClient authClient = OAuthManager.getOAuthClient(RegistrationIntentService.this);
-            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
             NotificationSettings settings = FirebaseDAO.getNotificationSettings();
             HubRegistrationPNS request = new HubRegistrationPNS();
             request.setEmployeeId(assignEmployee.getEmpId());

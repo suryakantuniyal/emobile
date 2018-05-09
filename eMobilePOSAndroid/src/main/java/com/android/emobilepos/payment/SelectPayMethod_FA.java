@@ -867,7 +867,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
     }
 
     private void processInquiry(boolean isLoyalty) {
-        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
 
         loyaltyRewardPayment = new Payment(this);
         Bundle extras = getIntent().getExtras();
@@ -1455,7 +1455,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             String cardType = "Reward";
             CreditCardInfo creditCardInfo = Global.rewardCardInfo;
             PaymentMethod paymentMethod = PaymentMethodDAO.getPaymentMethodByType(cardType);
-            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
             Payment payment = new Payment(SelectPayMethod_FA.this);
             GenerateNewID generator = new GenerateNewID(SelectPayMethod_FA.this);
             String tempPay_id;

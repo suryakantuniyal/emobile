@@ -115,7 +115,7 @@ public class ConsignmentPickup_FR extends Fragment implements OnClickListener {
 
         @Override
         protected String doInBackground(String... params) {
-            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
             ordersHandler = new OrdersHandler(activity);
             orderProductsHandler = new OrderProductsHandler(activity);
             ProductsHandler prodHandler = new ProductsHandler(activity);

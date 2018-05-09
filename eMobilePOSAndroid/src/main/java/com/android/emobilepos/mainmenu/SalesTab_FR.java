@@ -961,7 +961,7 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                 empId = Integer.parseInt(myPref.getClerkID());
             }
         } else {
-            empId = AssignEmployeeDAO.getAssignEmployee(false).getEmpId();
+            empId = AssignEmployeeDAO.getAssignEmployee().getEmpId();
         }
         intent.putExtra("associateId", empId);
         startActivityForResult(intent, 0);

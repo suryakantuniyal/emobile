@@ -52,9 +52,9 @@ public class DinningTableDAO {
     }
 
     private static void removeInvalidLocations() {
+        String defaultLocation = AssignEmployeeDAO.getAssignEmployee().getDefaultLocation();
         Realm r = Realm.getDefaultInstance();
         try {
-            String defaultLocation = AssignEmployeeDAO.getAssignEmployee(false).getDefaultLocation();
             r.beginTransaction();
             r.where(DinningTable.class)
                     .notEqualTo("locationId", defaultLocation)
@@ -66,10 +66,10 @@ public class DinningTableDAO {
     }
 
     public static List<DinningTable> getAll(String sortField) {
+        String defaultLocation = AssignEmployeeDAO.getAssignEmployee().getDefaultLocation();
         Realm realm = Realm.getDefaultInstance();
         List<DinningTable> tables = null;
         try {
-            String defaultLocation = AssignEmployeeDAO.getAssignEmployee(false).getDefaultLocation();
             RealmResults<DinningTable> all = realm.where(DinningTable.class)
                     .equalTo("locationId", defaultLocation)
                     .findAll();

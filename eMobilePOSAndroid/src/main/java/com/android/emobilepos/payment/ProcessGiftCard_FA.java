@@ -124,7 +124,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         global = (Global) getApplication();
         activity = this;
         callBack = this;
-        assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
+        assignEmployee = AssignEmployeeDAO.getAssignEmployee();
         Bundle extras = getIntent().getExtras();
         boolean isFromSalesReceipt = extras.getBoolean("isFromSalesReceipt");
 
