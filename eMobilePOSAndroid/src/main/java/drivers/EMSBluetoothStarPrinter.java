@@ -311,23 +311,10 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
     @Override
     public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
-        try {
-            setPaperWidth(LINE_WIDTH);
-            if (!BuildConfig.USE_DUMMY_START_PRINTER) {
-                setStartIOPort();
-                if (port == null) {
-                    verifyConnectivity();
-                }
-            }
-            Thread.sleep(1000);
-            printReceipt(ordID, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, emvContainer);
-            releasePrinter();
-        } catch (StarIOPortException e) {
-            return false;
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        setPaperWidth(LINE_WIDTH);
+        setStartIOPort();
+        printReceipt(ordID, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, emvContainer);
+        releasePrinter();
         return true;
     }
 

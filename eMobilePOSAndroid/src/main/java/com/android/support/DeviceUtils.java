@@ -282,7 +282,7 @@ public class DeviceUtils {
             if (i == -1) {
                 if (device.getEmsDeviceManager() == null && !device.isRemoteDevice()) {
                     EMSDeviceManager deviceManager = new EMSDeviceManager();
-                    if (deviceManager.loadMultiDriver(activity, Integer.parseInt(device.getType()), 48, device.isPOS(),
+                    if (deviceManager.loadMultiDriver(activity, Integer.parseInt(device.getType()), device.getTextAreaSize(), device.isPOS(),
                             device.getMacAddress(), device.getTcpPort())) {
                         device.setEmsDeviceManager(deviceManager);
                     }
@@ -410,6 +410,7 @@ public class DeviceUtils {
                 if (device == null) {
                     device = new Device();
                 }
+                device.setTextAreaSize(48);
                 device.setEmsDeviceManager(Global.mainPrinterManager);
                 device.setId(mPortList.get(0).getPortName());
                 device.setName(mPortList.get(0).getPortName());
@@ -455,6 +456,7 @@ public class DeviceUtils {
                 if (device == null) {
                     device = new Device();
                 }
+                device.setTextAreaSize(48);
                 device.setName("SNBC");
                 device.setId("SNBC");
                 device.setType(String.valueOf(Global.SNBC));

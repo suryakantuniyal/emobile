@@ -296,6 +296,7 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 Device device = DeviceTableDAO.getByName( myPref.getPrinterName());
                 if (device != null) {
                     device.setPOS(isPOSPrinter);
+                    device.setTextAreaSize( paperSize[position]);
                     list.add(device);
                     DeviceTableDAO.insert(list);
                     device.setEmsDeviceManager(EMSDeviceManager.this);

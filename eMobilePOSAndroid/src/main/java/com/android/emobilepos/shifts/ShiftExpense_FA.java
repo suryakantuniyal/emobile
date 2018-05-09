@@ -27,6 +27,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.models.realms.Shift;
 import com.android.emobilepos.models.realms.ShiftExpense;
+import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NumberUtils;
