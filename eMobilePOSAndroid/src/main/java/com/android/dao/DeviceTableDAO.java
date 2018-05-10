@@ -1,12 +1,14 @@
 package com.android.dao;
 
 import com.android.emobilepos.models.realms.Device;
+import com.android.emobilepos.models.realms.RealmString;
 import com.google.gson.Gson;
 
 import java.lang.reflect.Type;
 import java.util.List;
 
 import io.realm.Realm;
+import io.realm.RealmList;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import util.json.JsonUtils;
@@ -137,6 +139,17 @@ public class DeviceTableDAO {
         }
     }
 
+    public static void remove(RealmList<RealmString> names) {
+        for (RealmString str : names) {
+            Device.Printables printables = Device.Printables.valueOf(str.getValue());
+            Device device = getByPrintable(printables);
+            if(device!=null) {
+                device.getSelectedPritables().remove(str);
+                upsert(device);
+            }
+        }
+    }
+
     public static void deleteLocalDevices() {
         Realm realm = Realm.getDefaultInstance();
         try {
@@ -153,17 +166,17 @@ public class DeviceTableDAO {
         }
     }
 
-    public static  List<Device> getLocalDevices() {
+    public static List<Device> getLocalDevices() {
         Realm realm = Realm.getDefaultInstance();
         List<Device> devices = null;
         try {
             if (realm.where(Device.class).isValid()) {
-                 devices = realm.where(Device.class)
+                devices = realm.where(Device.class)
                         .equalTo("isRemoteDevice", false)
                         .findAll();
-               if(devices!=null){
-                   devices = realm.copyFromRealm(devices);
-               }
+                if (devices != null) {
+                    devices = realm.copyFromRealm(devices);
+                }
             }
 
         } finally {

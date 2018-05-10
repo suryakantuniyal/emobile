@@ -104,6 +104,7 @@ public class DeviceDetailFragment extends Fragment implements CompoundButton.OnC
         if (reportsASwitch.isChecked()) {
             values.add(Device.Printables.REPORTS.getRealmString());
         }
+        DeviceTableDAO.remove(values);
         device.setSelectedPritables(values);
         DeviceTableDAO.upsert(device);
     }
