@@ -833,9 +833,9 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         BigDecimal productPriceLevelTotal = Global.getBigDecimalNum(prLevTotal);
         if (OrderingMain_FA.returnItem)
             orderProduct.setReturned(true);
-        if (isFromAddon) {
-            productPriceLevelTotal = productPriceLevelTotal.add(new BigDecimal(Double.toString(Global.addonTotalAmount)));
-        }
+//        if (isFromAddon) {
+//            productPriceLevelTotal = productPriceLevelTotal.add(new BigDecimal(Double.toString(Global.addonTotalAmount)));
+//        }
         BigDecimal total = num.multiply(productPriceLevelTotal.multiply(uomMultiplier)).setScale(2, RoundingMode.HALF_UP);
         calculateTaxDiscount(total);                    // calculate taxes and discount
         if (!myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities)) {
