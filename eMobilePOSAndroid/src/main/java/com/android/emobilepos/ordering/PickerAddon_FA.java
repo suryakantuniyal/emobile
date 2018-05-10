@@ -93,7 +93,7 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
         orderProduct = gson.fromJson(extras.getString("orderProduct"), OrderProduct.class);
         parentAddons = prodAddonsHandler.getParentAddons(orderProduct.getProd_id());
         Cursor c = prodAddonsHandler.getSpecificChildAddons(_prod_id, parentAddons.get(0).getCategoryId());
-        myGridView = (GridView) findViewById(R.id.asset_grid);
+        myGridView = findViewById(R.id.asset_grid);
         isEditAddon = extras.getBoolean("isEditAddon", false);
         selectedSeatNumber = extras.getString("selectedSeatNumber");
         File cacheDir = new File(myPref.getCacheDir());
@@ -111,7 +111,7 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
 
         adapter = new PickerAddonLV_Adapter(this, c, CursorAdapter.NO_SELECTION, imageLoader, orderProduct);
         myGridView.setAdapter(adapter);
-        Button btnDone = (Button) findViewById(R.id.addonDoneButton);
+        Button btnDone = findViewById(R.id.addonDoneButton);
         btnDone.setOnClickListener(this);
         createParentAddons();
         hasBeenCreated = true;
@@ -166,15 +166,15 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
 
     private void createParentAddons() {
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        LinearLayout addonParentLL = (LinearLayout) findViewById(R.id.addonParentHolder);
+        LinearLayout addonParentLL = findViewById(R.id.addonParentHolder);
 
         if (parentAddons.size() >= 1) {
             listParentViews = new ArrayList<>();
             int pos = 0;
             for (ParentAddon parentAddon : parentAddons) {
                 final View view = inflater.inflate(R.layout.catalog_gridview_adapter, null);
-                TextView tv = (TextView) view.findViewById(R.id.gridViewImageTitle);
-                ImageView iv = (ImageView) view.findViewById(R.id.gridViewImage);
+                TextView tv = view.findViewById(R.id.gridViewImageTitle);
+                ImageView iv = view.findViewById(R.id.gridViewImage);
                 tv.setText(parentAddon.getCategoryName());
                 imageLoader.displayImage(parentAddon.getUrl(), iv, options);
                 iv.setOnTouchListener(Global.opaqueImageOnClick());
@@ -185,9 +185,9 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
                     public void onClick(View v) {
                         int _curr_pos = (Integer) v.getTag();
                         if (_curr_pos != index_selected_parent) {
-                            TextView temp1 = (TextView) listParentViews.get(index_selected_parent).findViewById(R.id.gridViewImageTitle);
+                            TextView temp1 = listParentViews.get(index_selected_parent).findViewById(R.id.gridViewImageTitle);
                             temp1.setBackgroundResource(R.drawable.gridview_title_bar);
-                            TextView temp2 = (TextView) listParentViews.get(_curr_pos).findViewById(R.id.gridViewImageTitle);
+                            TextView temp2 = listParentViews.get(_curr_pos).findViewById(R.id.gridViewImageTitle);
                             temp2.setBackgroundColor(Color.rgb(0, 112, 60));
                             index_selected_parent = _curr_pos;
                             Cursor c = prodAddonsHandler.getSpecificChildAddons(_prod_id, parentAddons.get(_curr_pos).getCategoryId());
@@ -243,8 +243,6 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
 
         } else {
             updateLineItem();
-//            if (Receipt_FR.fragInstance != null)
-//                Receipt_FR.fragInstance.reCalculate();
         }
         activity.finish();
     }
