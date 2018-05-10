@@ -879,7 +879,7 @@ public class EMSDeviceDriver {
 
     protected void printReceipt(Order anOrder, int lineWidth, boolean fromOnHold, Global.OrderType type, boolean isFromHistory, EMVContainer emvContainer) {
         try {
-            if (myPref.isUseTicketReceipt()) {
+            if (myPref.isUsePermitReceipt()) {
                 printTicketReceipt(anOrder, lineWidth);
                 return;
             }
