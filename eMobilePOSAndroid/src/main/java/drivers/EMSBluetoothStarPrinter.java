@@ -311,23 +311,10 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
     @Override
     public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
-        try {
             setPaperWidth(LINE_WIDTH);
-            if (!BuildConfig.USE_DUMMY_START_PRINTER) {
                 setStartIOPort();
-                if (port == null) {
-                    verifyConnectivity();
-                }
-            }
-            Thread.sleep(1000);
             printReceipt(ordID, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, emvContainer);
             releasePrinter();
-        } catch (StarIOPortException e) {
-            return false;
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         return true;
     }
 
@@ -450,18 +437,10 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
     @Override
     public boolean printReport(String curDate) {
-        try {
             setPaperWidth(LINE_WIDTH);
             setStartIOPort();
-            verifyConnectivity();
-            Thread.sleep(1000);
             printReportReceipt(curDate, LINE_WIDTH);
             releasePrinter();
-        } catch (StarIOPortException e) {
-            return false;
-        } catch (InterruptedException e) {
-            return false;
-        }
         return true;
     }
 
@@ -577,15 +556,25 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     }
 
     public void print(String str, int size, PrinterFunctions.Alignment alignment) {
-        setStartIOPort();
         super.print(str, FORMAT, size, alignment);
 //        super.cutPaper();
-        releasePrinter();
+    }
+
+    public void print(String str) {
+        super.print(str);
+    }
+
+    public void print(String str, String FORMAT) {
+        super.print(str, FORMAT);
+    }
+
+    public void startReceipt() {
+        setStartIOPort();
+        super.startReceipt();
     }
 
     @Override
     public void cutPaper() {
-        setStartIOPort();
         super.cutPaper();
         releasePrinter();
     }
