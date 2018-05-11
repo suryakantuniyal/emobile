@@ -1356,7 +1356,7 @@
     <string name="check_update_stop">La actualización fue cancelada.</string>
     <string name="config_syncplus_settings">Sync Plus Services</string>
     <string name="config_use_syncplus_services">Usar Servicios Sync Plus</string>
-    <string name="syncplus_connection_mode">Tipo de Conección</string>
+    <string name="syncplus_connection_mode">Tipo de Conexión</string>
     <string name="automatic">Automático</string>
     <string name="clerk_login">Usar contraseña de Clerk</string>
     <string name="config_remove_leading_zeros">Remove leading zeros from UPC/SKU</string>
@@ -1365,4 +1365,14 @@
     <string name="permit">Permiso</string>
     <string name="fee">Cargo</string>
     <string name="config_use_permitreceipt_printing">Usar Recibo de Permiso</string>
+    <string name="devicePrintables">Selección de Reportes</string>
+    <string name="title_device_list">Impresorar</string>
+    <string name="title_device_detail">Cofiguración</string>
+    <string name="paymentReceipt">Recibo de pago</string>
+    <string name="transactionReceipt">Recibo de Transacción</string>
+    <string name="paymentReceiptReprint">Imprimir copia de recibo de pago</string>
+    <string name="transactionReceiptReprint">Imprimir copia de transacción</string>
+    <string name="printReports">Imprimir Reportes</string>
+    <string name="config_multiple_devices_setup">Configurar Multiples Impresoras</string>
+    <string name="connectedDevices">Impresores Conectados</string>
 </resources>
