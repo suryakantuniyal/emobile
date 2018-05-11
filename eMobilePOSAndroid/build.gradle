@@ -8,7 +8,7 @@ android {
         config {
             keyAlias 'emobilepos'
             keyPassword '1Enabler1'
-            storeFile file('/home/guarionex/Develop/AndroidAPKCerts')
+            storeFile file('/home/guarionex/Develop/AndroidAPKCerts/eMobileKeystore')
             storePassword '1Enabler1'
             v2SigningEnabled false
         }
@@ -51,7 +51,7 @@ android {
         ems {
             minSdkVersion 16
             applicationId 'com.emobilepos.app'
-            versionName "1.2.3.87"
+            versionName "1.2.3.88"
             versionCode 163
             targetSdkVersion 23
             multiDexEnabled = true
@@ -66,7 +66,7 @@ android {
         icmpevo {
             minSdkVersion 16
             applicationId 'com.emobilepos.icmpevo.app'
-            versionName "1.2.3.87"
+            versionName "1.2.3.88"
             versionCode 163
             targetSdkVersion 23
             multiDexEnabled = true
@@ -95,7 +95,7 @@ android {
         ivupos {
             minSdkVersion 16
             applicationId 'com.emobilepos.ivupos.app'
-            versionName "1.2.3.87"
+            versionName "1.2.3.88"
             versionCode 163
             targetSdkVersion 23
             multiDexEnabled = true

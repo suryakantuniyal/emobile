@@ -493,7 +493,7 @@ public class EMSDeviceDriver {
         print(str, FORMAT, size, alignment);
     }
 
-    private void startReceipt() {
+    public void startReceipt() {
         if (myPref.getPrinterName().toUpperCase().contains("MPOP")) {
             emulation = StarIoExt.Emulation.StarPRNT;
         } else {
@@ -573,19 +573,19 @@ public class EMSDeviceDriver {
             return;
         }
         if (!isPOSPrinter) {
-//            if (size > 0) {
+            if (size > 0) {
             MiniPrinterFunctions.PrintText(activity, port.getPortName(), port.getPortSettings()
                     , false, false, false, false,
                     Integer.valueOf(size).byteValue(), Integer.valueOf(size).byteValue(),
                     0, alignment
                     , str.getBytes());
-//            } else {
-//                port.writePort(new byte[]{0x1d, 0x57, (byte) 0x80, 0x31}, 0, 4);
-//                port.writePort(new byte[]{0x1d, 0x21, 0x00}, 0, 3);
-//                port.writePort(new byte[]{0x1b, 0x74, 0x11}, 0, 3); // set to
-//                // windows-1252
-//                port.writePort(str.getBytes(), 0, str.length());
-//            }
+            } else {
+                port.writePort(new byte[]{0x1d, 0x57, (byte) 0x80, 0x31}, 0, 4);
+                port.writePort(new byte[]{0x1d, 0x21, 0x00}, 0, 3);
+                port.writePort(new byte[]{0x1b, 0x74, 0x11}, 0, 3); // set to
+                // windows-1252
+                port.writePort(str.getBytes(), 0, str.length());
+            }
         } else if (size > 0) {
             ArrayList<byte[]> commands = new ArrayList<>();
             commands.add(new byte[]{0x1b, 0x40}); // Initialization
@@ -1684,7 +1684,7 @@ public class EMSDeviceDriver {
 
         if (!sb.toString().isEmpty()) {
             sb.append(textHandler.newLines(1));
-            print(sb.toString(), 1, PrinterFunctions.Alignment.Left);
+            print(sb.toString(), 0, PrinterFunctions.Alignment.Left);
         }
 
     }
