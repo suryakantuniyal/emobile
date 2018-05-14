@@ -262,11 +262,6 @@ public class Global extends MultiDexApplication {
     public static CreditCardInfo loyaltyCardInfo;
     // Reward data
     public static BigDecimal rewardChargeAmount = new BigDecimal("0");
-    //    public static List<HashMap<String, String>> productParentAddons;
-//    public static HashMap<String, Integer> productParentAddonsDictionary;
-//    public HashMap<String, String[]> addonSelectionType;
-//    public static Map<String, HashMap<String, String[]>> addonSelectionMap;
-//    public static HashMap<String, List<OrderProduct>> orderProductAddonsMap;
     public static CreditCardInfo rewardCardInfo;
     public static BigDecimal rewardAccumulableSubtotal = new BigDecimal("0");
     // ----- Consignment Variables
@@ -277,26 +272,18 @@ public class Global extends MultiDexApplication {
     public static HashMap<String, HashMap<String, String>> consignSummaryMap;
     public static List<OrderProduct> consignment_products = new ArrayList<OrderProduct>();
     public static Order consignment_order;
-    // public static List<Orders>consignment_cur_order = new
-    // ArrayList<Orders>();
     public static HashMap<String, String> consignment_qtyCounter = new HashMap<String, String>();
     public static List<OrderProduct> cons_fillup_products = new ArrayList<OrderProduct>();
     public static Order cons_fillup_order;
-    // public static List<Orders>cons_fillup_cur_order = new
-    // ArrayList<Orders>();
     public static HashMap<String, String> cons_fillup_qtyCounter = new HashMap<String, String>();
     public static List<OrderProduct> cons_issue_products = new ArrayList<OrderProduct>();
     public static Order cons_issue_order;
-    // public List<Orders> cur_orders = new ArrayList<Orders>();
-//    public HashMap<String, String> qtyCounter = new HashMap<String, String>();
-    // public static List<Orders>cons_issue_cur_order = new ArrayList<Orders>();
     public static HashMap<String, String> cons_issue_qtyCounter = new HashMap<String, String>();
     public static List<OrderProduct> cons_return_products = new ArrayList<OrderProduct>();
     public static Order cons_return_order;
-    // public static List<ConsignmentTransaction>consTransactionList;
-    // public static List<Orders>cons_return_cur_order = new
-    // ArrayList<Orders>();
     public static HashMap<String, String> cons_return_qtyCounter = new HashMap<String, String>();
+
+
     public static String lastOrdID = "";
     // public int discountPos = 0, taxPos = 0;
     public static String cat_id = "0";
