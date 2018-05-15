@@ -234,6 +234,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 OrderProductsHandler dbOrdProd = new OrderProductsHandler(activity);
                 OrderProductsAttr_DB dbOrdAttr = new OrderProductsAttr_DB(activity);
                 dbOrders.insert(order);
+                dbOrdProd.deleteAllOrdProd(order.ord_id);
                 dbOrdProd.insert(order.getOrderProducts());
                 dbOrdAttr.insert(ordProdAttr);
             }

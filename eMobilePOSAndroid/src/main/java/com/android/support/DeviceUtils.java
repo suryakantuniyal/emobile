@@ -1,6 +1,7 @@
 package com.android.support;
 
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -36,6 +37,8 @@ import drivers.EMSPowaPOS;
 import drivers.EMSmePOS;
 import drivers.EMSsnbc;
 import main.EMSDeviceManager;
+
+import static com.android.emobilepos.customer.ViewCustomerDetails_FA.ACTION_USB_PERMISSION;
 
 /**
  * Created by Guarionex on 6/14/2016.
@@ -264,6 +267,8 @@ public class DeviceUtils {
         final IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("android.hardware.usb.action.USB_DEVICE_ATTACHED");
         intentFilter.addAction("android.hardware.usb.action.USB_DEVICE_DETACHED");
+        intentFilter.addAction("com.android.example.USB_PERMISSION");
+
         final Context activity = context;
 
         fingerPrintbroadcastReceiver = new BroadcastReceiver() {
@@ -272,27 +277,37 @@ public class DeviceUtils {
                 boolean connected;
                 MyPreferences preferences = new MyPreferences(context);
                 if (intent.getAction().contains("ATTACHED")) {
-                    if(BuildConfig.DEBUG) {
+                    if (BuildConfig.DEBUG) {
                         Toast.makeText(context, "USB connected", Toast.LENGTH_SHORT).show();
                     }
+                    UsbManager manager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
+                    UsbDevice usbDevice = (UsbDevice) intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+                    // Create and intent and request a permission.
+                    PendingIntent mPermissionIntent = PendingIntent.getBroadcast(context, 0, new Intent(ACTION_USB_PERMISSION), 0);
+                    IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
+                    context.registerReceiver(fingerPrintbroadcastReceiver, filter);
+                    manager.requestPermission(usbDevice, mPermissionIntent);
                     connected = true;
                     if (activity != null && activity instanceof Activity &&
                             ((preferences.getPrinterType() == Global.STAR &&
                                     preferences.getPrinterName().toUpperCase().startsWith("USB")) ||
                                     (preferences.isSNBC())
                             )) {
-//                        DeviceUtils.connectStarTS650BT(activity);
                         if (preferences.isSNBC()) {
-                            DeviceUtils.connectStarTS650BT(activity);
+//                            DeviceUtils.connectStarTS650BT(activity);
                             EMSDeviceDriver usbDeviceDriver = getUSBDeviceDriver((Activity) activity);
-                            if (preferences.isSNBC() && usbDeviceDriver != null) {
+                            if (usbDeviceDriver != null) {
                                 connectSNBCUSB(activity, usbDeviceDriver);
                             }
                         }
+//                        if (Global.mainPrinterManager == null || Global.mainPrinterManager.getCurrentDevice() == null) {
                         new ReconnectUSBPrinterTask((Activity) activity).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+//                        } else {
+//                            DeviceUtils.connectStarTS650BT(activity);
+//                        }
                     }
                 } else if (intent.getAction().contains("DETACHED")) {
-                    if(BuildConfig.DEBUG) {
+                    if (BuildConfig.DEBUG) {
                         Toast.makeText(context, "USB disconnected", Toast.LENGTH_SHORT).show();
                     }
                     connected = false;
@@ -370,7 +385,7 @@ public class DeviceUtils {
 
         @Override
         protected void onPreExecute() {
-            if(!Global.isActivityDestroyed(activity)) {
+            if (!Global.isActivityDestroyed(activity)) {
                 progressDialog = new ProgressDialog(activity);
                 progressDialog.setTitle(R.string.connecting_devices);
                 progressDialog.setMessage(activity.getString(R.string.connecting_devices));
