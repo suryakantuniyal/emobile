@@ -1201,8 +1201,8 @@ public class GenerateXML {
                     serializer.startTag(empstr, "ordprod_qty");
                     serializer.text(product.getOrdprod_qty());
                     serializer.endTag(empstr, "ordprod_qty");
-//                    BigDecimal price = new BigDecimal(cursor.getString(cursor.getColumnIndex("overwrite_price")))
-//                            .multiply(new BigDecimal(cursor.getString(cursor.getColumnIndex("ordprod_qty"))));
+                    //                    BigDecimal price = new BigDecimal(cursor.getString(cursor.getColumnIndex("overwrite_price")))
+                    //                            .multiply(new BigDecimal(cursor.getString(cursor.getColumnIndex("ordprod_qty"))));
                     serializer.startTag(empstr, "overwrite_price");
                     serializer.text(product.getFinalPrice());
                     serializer.endTag(empstr, "overwrite_price");
@@ -1268,6 +1268,7 @@ public class GenerateXML {
 
                     serializer.endTag(empstr, "OrderProduct");
                 }
+
                 cursor.moveToNext();
 
             } catch (Exception e) {
