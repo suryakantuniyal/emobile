@@ -124,6 +124,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import oauthclient.OAuthClient;
 import oauthclient.OAuthManager;
 import util.json.JsonUtils;
