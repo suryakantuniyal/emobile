@@ -142,9 +142,9 @@ android {
             ext.enableCrashlytics = true
 //            buildConfigField "boolean", "REPORT_CRASHLITYCS", "true"
             buildConfigField "String", "OS", "\"Android\""
-            buildConfigField "int", "POLLING_PERIOD", "5000"
+            buildConfigField "int", "POLLING_PERIOD", "1000"
             buildConfigField "int", "BCR_TIMEOUT", "15000"
-            buildConfigField "int", "AUTOSYNC_PERIOD", "6000"
+            buildConfigField "int", "AUTOSYNC_PERIOD", "1000"
             buildConfigField "boolean", "PRINT_TO_LOG", "true"
             buildConfigField "boolean", "DEBUG_NOMAD", "true"
             buildConfigField "boolean", "USE_DUMMY_START_PRINTER", "false"

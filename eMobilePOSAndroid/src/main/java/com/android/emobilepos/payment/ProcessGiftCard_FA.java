@@ -911,7 +911,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
 
         @Override
         protected void onPostExecute(String unused) {
-            myProgressDialog.dismiss();
+            Global.dismissDialog(ProcessGiftCard_FA.this, myProgressDialog);
             if (wasProcessed) // payment processing succeeded
             {
                 payment.setPay_resultcode(parsedMap.get("pay_resultcode"));

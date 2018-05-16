@@ -35,7 +35,7 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
     private static String[] navigationbarByModels;
     public Menu menu;
     protected ActionBar myBar;
-    Clerk clerk;
+    static Clerk clerk;
     private boolean showNavigationbar = false;
 
     protected void setActionBar() {
@@ -71,7 +71,9 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
         if (myPref == null) {
             myPref = new MyPreferences(this);
         }
-        clerk = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()));
+        if (clerk == null || !myPref.getClerkID().equalsIgnoreCase(String.valueOf(clerk.getEmpId()))) {
+            clerk = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()));
+        }
         setActionBar();
     }
 
@@ -104,7 +106,9 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem menuItem = menu.findItem(R.id.logoutMenuItem);
         if (myPref.isUseClerks()) {
-            clerk = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()));
+            if (clerk == null || !myPref.getClerkID().equalsIgnoreCase(String.valueOf(clerk.getEmpId()))) {
+                clerk = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()));
+            }
         } else {
             if (!myPref.isUseClerks()) {
                 clerk = null;
