@@ -13,6 +13,7 @@ import android.view.Window;
 import android.widget.Toast;
 
 import com.android.dao.ClerkDAO;
+import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.OnHoldActivity;
 import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
@@ -23,6 +24,7 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 
 import drivers.EMSsnbc;
+import io.realm.Realm;
 import main.EMSDeviceManager;
 
 /**
@@ -33,7 +35,7 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
     private static String[] navigationbarByModels;
     public Menu menu;
     protected ActionBar myBar;
-    Clerk clerk;
+    static Clerk clerk;
     private boolean showNavigationbar = false;
 
     protected void setActionBar() {
@@ -69,7 +71,9 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
         if (myPref == null) {
             myPref = new MyPreferences(this);
         }
-        clerk = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()));
+        if (clerk == null || !myPref.getClerkID().equalsIgnoreCase(String.valueOf(clerk.getEmpId()))) {
+            clerk = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()));
+        }
         setActionBar();
     }
 
@@ -102,7 +106,9 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem menuItem = menu.findItem(R.id.logoutMenuItem);
         if (myPref.isUseClerks()) {
-            clerk = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()));
+            if (clerk == null || !myPref.getClerkID().equalsIgnoreCase(String.valueOf(clerk.getEmpId()))) {
+                clerk = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()));
+            }
         } else {
             if (!myPref.isUseClerks()) {
                 clerk = null;
@@ -136,6 +142,14 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
 
     @Override
     protected void onResume() {
+        if (BuildConfig.DEBUG) {
+            int count = 0;
+            if (Realm.getDefaultConfiguration() != null) {
+                count = Realm.getGlobalInstanceCount(Realm.getDefaultConfiguration());
+                Toast.makeText(this, "Realms count: " + String.valueOf(count), Toast.LENGTH_LONG).show();
+
+            }
+        }
         invalidateOptionsMenu();
         DeviceUtils.registerFingerPrintReader(this);
         super.onResume();
@@ -152,6 +166,7 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
         boolean isUSB = false;
         private boolean loadMultiPrinter;
         ProgressDialog driversProgressDialog;
+
         @Override
         protected void onPreExecute() {
             setRequestedOrientation(Global.getScreenOrientation(BaseFragmentActivityActionBar.this));
@@ -199,6 +214,7 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
             }
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         }
+
         private void showProgressDialog() {
             if (driversProgressDialog == null) {
                 driversProgressDialog = new ProgressDialog(BaseFragmentActivityActionBar.this);
@@ -208,6 +224,7 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
             }
             driversProgressDialog.show();
         }
+
         private void dismissProgressDialog() {
             if (driversProgressDialog != null && driversProgressDialog.isShowing()) {
                 driversProgressDialog.dismiss();

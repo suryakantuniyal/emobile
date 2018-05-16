@@ -303,7 +303,7 @@ public class OrderProductListAdapter extends BaseAdapter {
 
     public void setHolderValues(ViewHolder holder, final int pos) {
         final OrderProduct product = orderSeatProductList.get(pos).orderProduct;
-        final int orderProductIdx = orderSeatProductList.get(pos).rowType == OrderProductListAdapter.RowType.TYPE_ITEM ? global.order.getOrderProducts().indexOf(orderSeatProductList.get(pos).orderProduct) : 0;
+        final int orderProductIdx = orderSeatProductList.get(pos).rowType == OrderProductListAdapter.RowType.TYPE_ITEM && global.order.getOrderProducts() != null ? global.order.getOrderProducts().indexOf(orderSeatProductList.get(pos).orderProduct) : 0;
         final String tempId = product.getOrdprod_id();
 
         if (product.isPayWithPoints()) {
@@ -363,7 +363,7 @@ public class OrderProductListAdapter extends BaseAdapter {
                         intent.putExtra("isEditAddon", true);
                         intent.putExtra("prod_id", product.getProd_id());
                         intent.putExtra("item_position", orderProductIdx);
-                        intent.putExtra("transType",orderingMainFa.mTransType);
+                        intent.putExtra("transType", orderingMainFa.mTransType);
 
                         activity.startActivityForResult(intent, 0);
                     }
