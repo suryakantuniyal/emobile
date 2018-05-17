@@ -34,6 +34,8 @@ public class MyPreferences {
     public static final String pref_enable_table_selection = "pref_enable_table_selection";
     public static final String pref_ask_seats = "pref_ask_seats";
     public static final String pref_use_navigationbar = "pref_use_navigationbar";
+    public static final String pref_expire_usersession_time = "pref_expire_usersession_time";
+    public static final String pref_expire_session = "pref_expire_session";
 
     public static final String pref_use_permitreceipt_printing = "pref_use_permitreceipt_printing";
     public static final String pref_fast_scanning_mode = "pref_fast_scanning_mode";
@@ -1519,5 +1521,17 @@ public class MyPreferences {
 
     public boolean isUsePermitReceipt() {
         return getPreferences(MyPreferences.pref_use_permitreceipt_printing);
+    }
+
+    public boolean isExpireUserSession() {
+        return getPreferences(MyPreferences.pref_expire_session);
+    }
+
+    public int getSessionExpirationTime() {
+        String value = getPreferencesValue(pref_expire_usersession_time);
+        if (TextUtils.isEmpty(value))
+            return 15;
+        else
+            return Integer.parseInt(value);
     }
 }

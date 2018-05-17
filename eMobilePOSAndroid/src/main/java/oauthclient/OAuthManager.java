@@ -3,6 +3,7 @@ package oauthclient;
 import android.content.Context;
 
 import com.android.emobilepos.R;
+import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 
 import java.security.SecureRandom;
@@ -25,7 +26,6 @@ public class OAuthManager {
         byte[] key = new byte[64];
         new SecureRandom().nextBytes(key);
         requestTokenUrl = context.getString(R.string.oauth_token_url);//"https://emslogin.enablermobile.com/oauth/token";
-
         Realm.init(context);
         Realm realm = Realm.getInstance(getRealmConfiguration());
         try {
@@ -33,6 +33,8 @@ public class OAuthManager {
             OAuthClient authClient = realm.createObject(OAuthClient.class);
             authClient.setClient_id(clientId);
             authClient.setClient_secret(clientSecret);
+        } catch (Exception e) {
+            Crashlytics.logException(e);
         } finally {
             realm.commitTransaction();
             realm.close();
