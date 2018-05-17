@@ -413,7 +413,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                                         if (newValue instanceof Boolean) {
                                             if ((Boolean) newValue && myPref.isSyncplus_AutoScan()) {
                                                 SyncConfigServerService.startService(getActivity());
-                                            }else{
+                                            } else {
                                                 SyncConfigServerService.stopService(getActivity());
                                             }
                                         }
@@ -517,6 +517,10 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
 
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
             updatePrefSummary(findPreference(key));
+            if (key.equalsIgnoreCase(MyPreferences.pref_expire_usersession_time)) {
+                String value = ((EditTextPreference) findPreference(key)).getEditText().getText().toString();
+                Global.MAX_ACTIVITY_TRANSITION_TIME_MS = Long.parseLong(value) * 1000;
+            }
         }
 
         private void initSummary(Preference p) {

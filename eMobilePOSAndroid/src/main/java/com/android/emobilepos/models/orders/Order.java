@@ -232,7 +232,7 @@ public class Order implements Cloneable, Serializable {
         } else {
             if (!Global.taxID.isEmpty()) {
                 tax = taxHandler.getTax(Global.taxID, "", Double.parseDouble(TextUtils.isEmpty(orderProduct.getProd_price()) ? "0" : orderProduct.getProd_price()));
-                if (listOrderTaxes != null && getListOrderTaxes()!=null && !getListOrderTaxes().isEmpty()) {
+                if (listOrderTaxes != null && getListOrderTaxes() != null && !getListOrderTaxes().isEmpty()) {
                     for (DataTaxes dataTaxes : getListOrderTaxes()) {
                         taxes.add(new BigDecimal(dataTaxes.getTax_rate()));
 //                        BigDecimal taxAmount = orderProduct.getProductPriceTaxableAmountCalculated()
@@ -393,5 +393,24 @@ public class Order implements Cloneable, Serializable {
 
     public boolean isReturn() {
         return ord_type.equalsIgnoreCase("1");
+    }
+
+    public double getTotalLines() {
+        if (orderProducts == null || orderProducts.isEmpty()) {
+            return 0;
+        } else {
+            int count = 0;
+            for (OrderProduct orderProduct : getOrderProducts()) {
+                double consigmentQty = TextUtils.isEmpty(orderProduct.getConsignment_qty()) ? 0 : Integer.parseInt(orderProduct.getConsignment_qty());
+                double qty = Integer.parseInt(orderProduct.getOrdprod_qty());
+                if (consigmentQty == 0 && qty > 0) {
+                    count++;
+                } else if (consigmentQty > 0 && consigmentQty > qty) {
+                    count++;
+                }
+            }
+            return count;
+        }
+
     }
 }
