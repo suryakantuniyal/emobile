@@ -207,7 +207,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             order.clerk_id = String.valueOf(ShiftDAO.getOpenShift().getClerkId());
         }
 
-        order.total_lines = Integer.toString(totalLines);
+        order.total_lines = String.valueOf(global.order.getTotalLines());
         order.ord_taxamount = String.valueOf(Global
                 .getRoundBigDecimal(OrderTotalDetails_FR.tax_amount));
         order.ord_discount = String.valueOf(Global

@@ -113,14 +113,6 @@ import main.EMSDeviceManager;
 public class Global extends MultiDexApplication {
     public static final String EVOSNAP_PACKAGE_NAME = "com.emobilepos.icmpevo.app";
     public static final int MAGTEK = 0;
-    //Load JNI from the library project. Refer MainActivity.java from library project elotouchCashDrawer.
-    // In constructor we are loading .so file for Cash Drawer.
-//    static {
-//        System.loadLibrary("cashdrawerjni");
-//        System.loadLibrary("cfdjni");
-//        System.loadLibrary("barcodereaderjni");
-//        System.loadLibrary("serial_port");
-//    }
     public static final int STAR = 1;
     public static final int ZEBRA = 2;
     public static final int BAMBOO = 3;
@@ -320,7 +312,7 @@ public class Global extends MultiDexApplication {
     };
     private com.android.support.LocationServices locationServices;
     private static Dialog popDlog;
-    private final long MAX_ACTIVITY_TRANSITION_TIME_MS = 15000;
+    public static long MAX_ACTIVITY_TRANSITION_TIME_MS = 15000;
     public String encodedImage = "";
     public int orientation;
     // For new addon views
@@ -351,6 +343,7 @@ public class Global extends MultiDexApplication {
     private String selectedComments;
     private String selectedPO;
     private Dialog globalDlog;
+    private MyPreferences preferences;
 
     public static void lockOrientation(Activity activity) {
         if (activity != null) {
@@ -1325,8 +1318,12 @@ public class Global extends MultiDexApplication {
                 wasInBackground = true;
             }
         };
+        if(preferences.isExpireUserSession()) {
+            mActivityTransitionTimer.schedule(mActivityTransitionTimerTask, MAX_ACTIVITY_TRANSITION_TIME_MS);
+        }else{
+            mActivityTransitionTimer.schedule(mActivityTransitionTimerTask, 86400);//24 hours to expire user session
 
-        mActivityTransitionTimer.schedule(mActivityTransitionTimerTask, MAX_ACTIVITY_TRANSITION_TIME_MS);
+        }
     }
 
     public void stopActivityTransitionTimer() {
@@ -1362,7 +1359,7 @@ public class Global extends MultiDexApplication {
         if (!compactRealm) {
             Crashlytics.log("Realm compact fail. All realm instance must be closed before compactrealm. EmobilePOS Logger.");
         }
-        MyPreferences preferences = new MyPreferences(this);
+        preferences = new MyPreferences(this);
         File realmFile = new File(Realm.getDefaultConfiguration().getPath());
         Crashlytics.log(String.format(Locale.getDefault(), "Account: %s. Realm database file size:%d", preferences.getAcctNumber(), realmFile.length()));
 

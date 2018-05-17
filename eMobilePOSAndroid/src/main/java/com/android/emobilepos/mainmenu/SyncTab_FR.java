@@ -252,7 +252,7 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
 
         @Override
         protected void onPostExecute(Boolean result) {
-            dialog.dismiss();
+            Global.dismissDialog(getActivity(), dialog);
             if (!result) {
                 Global.showPrompt(getActivity(), R.string.sync_title, getString(R.string.sync_fail));
             }

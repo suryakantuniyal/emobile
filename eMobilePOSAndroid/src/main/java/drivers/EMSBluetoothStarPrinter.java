@@ -575,6 +575,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
     @Override
     public void cutPaper() {
+        setStartIOPort();
         super.cutPaper();
         releasePrinter();
     }

@@ -13,6 +13,25 @@
     </PreferenceCategory>
     <PreferenceCategory
         android:layout="@layout/settings_custom_header_layout"
+        android:title="@string/config_session_settings">
+        <CheckBoxPreference
+            android:key="pref_expire_session"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_expire_session"  />
+        <EditTextPreference
+            android:layout="@layout/settings_custom_layout"
+            android:defaultValue="6"
+            android:dependency="pref_expire_session"
+            android:inputType="number"
+            android:key="pref_expire_usersession_time"
+            android:numeric="integer"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:summary="@string/seconds"
+            android:title="@string/typeUserSessionExpirationTime" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:layout="@layout/settings_custom_header_layout"
         android:title="@string/config_cash_drawer">
         <Preference
             android:key="pref_open_cash_drawer"

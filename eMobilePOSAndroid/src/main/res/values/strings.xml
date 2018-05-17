@@ -1415,5 +1415,9 @@
     <string name="permit">Permit</string>
     <string name="fee">Fee</string>
     <string name="config_use_permitreceipt_printing">Use Permit Receipt</string>
+    <string name="config_session_settings">Session Settings</string>
+    <string name="config_expire_session">Expire user login session</string>
+    <string name="typeUserSessionExpirationTime">User session expiration time</string>
+    <string name="seconds">Seconds</string>
 
 </resources>
