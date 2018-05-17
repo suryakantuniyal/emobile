@@ -360,8 +360,8 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                 splitedOrder.isOnHold = "0";
                 global.order.isOnHold = "0";
                 global.order.processed = "10";
-                splitedOrder.total_lines = String.valueOf(splitedOrder.getOrderProducts().size());
-                global.order.total_lines = String.valueOf(splitedOrder.getOrderProducts().size());
+                splitedOrder.total_lines = String.valueOf(splitedOrder.getTotalLines());
+                global.order.total_lines = String.valueOf(splitedOrder.getTotalLines());
                 if (summaryFa.splitType == SplittedOrderSummary_FA.SalesReceiptSplitTypes.SPLIT_EQUALLY) {
                     for (OrderSeatProduct seatProduct : summaryFa.orderSeatProducts) {
                         if (seatProduct.rowType == OrderProductListAdapter.RowType.TYPE_ITEM && seatProduct.orderProduct != null) {
@@ -371,7 +371,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                     splitedOrder.syncOrderProductIds();
                     ordersHandler.insert(splitedOrder);
                 } else {
-                    splitedOrder.total_lines = String.valueOf(splitedOrder.getOrderProducts().size());
+                    splitedOrder.total_lines = String.valueOf(splitedOrder.getTotalLines());
                     splitedOrder.syncOrderProductIds();
                     ordersHandler.insert(splitedOrder);
                 }

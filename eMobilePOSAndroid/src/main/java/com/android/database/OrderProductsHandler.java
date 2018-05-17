@@ -340,6 +340,10 @@ public class OrderProductsHandler {
             for (int i = 0; i < size; i++) {
                 DBUtils dbUtils = DBUtils.getInstance(myPref.getAcctNumber(), sqlinsert, sql, DBUtils.DBChild.ORDER_PRODUCT);
                 OrderProduct prod = orderProducts.get(i);
+                double qty = Double.parseDouble(prod.getOrdprod_qty());
+                if (qty == 0) {
+                    continue;
+                }
                 dbUtils.bindString(index(addon), String.valueOf(prod.isAddon())); // addon
                 dbUtils.bindString(index(isAdded), String.valueOf(prod.isAdded())); // isAdded
                 dbUtils.bindString(index(isPrinted), String.valueOf(prod.isPrinted())); // isPrinted

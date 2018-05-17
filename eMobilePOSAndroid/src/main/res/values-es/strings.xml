@@ -1356,7 +1356,7 @@
     <string name="check_update_stop">La actualización fue cancelada.</string>
     <string name="config_syncplus_settings">Sync Plus Services</string>
     <string name="config_use_syncplus_services">Usar Servicios Sync Plus</string>
-    <string name="syncplus_connection_mode">Tipo de Conección</string>
+    <string name="syncplus_connection_mode">Tipo de Conexión</string>
     <string name="automatic">Automático</string>
     <string name="clerk_login">Usar contraseña de Clerk</string>
     <string name="config_remove_leading_zeros">Remove leading zeros from UPC/SKU</string>
@@ -1365,4 +1365,8 @@
     <string name="permit">Permiso</string>
     <string name="fee">Cargo</string>
     <string name="config_use_permitreceipt_printing">Usar Recibo de Permiso</string>
+    <string name="config_session_settings">Configuración de Sessión</string>
+    <string name="config_expire_session">Expirar la sessión del usuario</string>
+    <string name="typeUserSessionExpirationTime">Tiempo de expiración para sessión</string>
+    <string name="seconds">Segundos</string>
 </resources>

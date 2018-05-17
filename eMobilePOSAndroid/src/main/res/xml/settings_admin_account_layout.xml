@@ -9,5 +9,24 @@
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_change_password" />
     </PreferenceCategory>
-
+    <PreferenceCategory
+        android:layout="@layout/settings_custom_header_layout"
+        android:title="@string/config_session_settings">
+        <CheckBoxPreference
+            android:key="pref_expire_session"
+            android:defaultValue="true"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_expire_session"  />
+        <EditTextPreference
+            android:defaultValue="15"
+            android:dependency="pref_expire_session"
+            android:inputType="number"
+            android:key="pref_expire_usersession_time"
+            android:layout="@layout/settings_custom_layout"
+            android:numeric="integer"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:summary="@string/seconds"
+            android:title="@string/typeUserSessionExpirationTime" />
+    </PreferenceCategory>
 </PreferenceScreen>
