@@ -11,36 +11,21 @@ import io.realm.Realm;
  */
 
 public class AssignEmployeeDAO {
-
-//    public static AssignEmployee getAssignEmployee(boolean returnManaged) {
-//        Realm r = Realm.getDefaultInstance();
-//        AssignEmployee employee;
-//        try {
-//            r.beginTransaction();
-//            employee = r.where(AssignEmployee.class).findFirst();
-//        } finally {
-//            r.commitTransaction();
-//        }
-//        if (returnManaged || employee == null) {
-//            return employee;
-//        } else {
-//            return r.copyFromRealm(employee);
-//        }
-//    }
-
+    private static AssignEmployee assignEmployee;
 
     public static AssignEmployee getAssignEmployee() {
-        Realm r = Realm.getDefaultInstance();
-        AssignEmployee employee;
-        try {
-            employee = r.where(AssignEmployee.class).findFirst();
-            if (employee != null) {
-                employee = r.copyFromRealm(employee);
+        if (assignEmployee == null) {
+            Realm r = Realm.getDefaultInstance();
+            try {
+                assignEmployee = r.where(AssignEmployee.class).findFirst();
+                if (assignEmployee != null) {
+                    assignEmployee = r.copyFromRealm(assignEmployee);
+                }
+            } finally {
+                r.close();
             }
-        } finally {
-            r.close();
         }
-        return employee;
+        return assignEmployee;
     }
 
 
@@ -60,7 +45,7 @@ public class AssignEmployeeDAO {
     }
 
     public static void updateLastOrderId(String ord_id) {
-        AssignEmployee assignEmployee = getAssignEmployee();
+        assignEmployee = getAssignEmployee();
         Realm r = Realm.getDefaultInstance();
         try {
             r.beginTransaction();
@@ -73,7 +58,7 @@ public class AssignEmployeeDAO {
     }
 
     public static void updateLastTransferId(String transferId) {
-        AssignEmployee assignEmployee = getAssignEmployee();
+        assignEmployee = getAssignEmployee();
         Realm r = Realm.getDefaultInstance();
         try {
             r.beginTransaction();
