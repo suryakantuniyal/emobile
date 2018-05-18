@@ -30,6 +30,7 @@ import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.GenerateNewID;
 import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
+import com.android.support.MyPreferences;
 import com.android.support.NetworkUtils;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
@@ -113,10 +114,11 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
     @Override
     public void onPause() {
         super.onPause();
-        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-        boolean isScreenOn = powerManager.isScreenOn();
-        if (!isScreenOn)
-            Global.loggedIn = false;
+//        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+//        boolean isScreenOn = powerManager.isScreenOn();
+//        MyPreferences myPref = new MyPreferences(this);
+//        if (!isScreenOn && myPref.isExpireUserSession())
+//            Global.loggedIn = false;
         global.startActivityTransitionTimer();
     }
 

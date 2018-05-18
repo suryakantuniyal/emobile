@@ -204,10 +204,10 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
     @Override
     public void onPause() {
         super.onPause();
-        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-        boolean isScreenOn = powerManager.isScreenOn();
-        if (!isScreenOn)
-            Global.loggedIn = false;
+//        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+//        boolean isScreenOn = powerManager.isScreenOn();
+//        if (!isScreenOn && myPref.isExpireUserSession())
+//            Global.loggedIn = false;
 //        DeviceUtils.unregisterFingerPrintReader(this);
         global.startActivityTransitionTimer();
     }

@@ -365,15 +365,15 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         myListview.setOnItemClickListener(null);
         super.onPause();
 //        DeviceUtils.unregisterFingerPrintReader(this);
-        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-        boolean isScreenOn;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT_WATCH) {
-            isScreenOn = powerManager.isInteractive();
-        } else {
-            isScreenOn = powerManager.isScreenOn();
-        }
-        if (!isScreenOn)
-            Global.loggedIn = false;
+//        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+//        boolean isScreenOn;
+//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT_WATCH) {
+//            isScreenOn = powerManager.isInteractive();
+//        } else {
+//            isScreenOn = powerManager.isScreenOn();
+//        }
+//        if (!isScreenOn && myPref.isExpireUserSession())
+//            Global.loggedIn = false;
         global.startActivityTransitionTimer();
     }
 
