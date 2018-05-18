@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.android.database.CustomerInventoryHandler;
 import com.android.emobilepos.R;
 import com.android.support.Global;
+import com.android.support.MyPreferences;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 public class ConsignmentHistory_FA extends BaseFragmentActivityActionBar
@@ -65,10 +66,11 @@ public class ConsignmentHistory_FA extends BaseFragmentActivityActionBar
 	public void onPause()
 	{
 		super.onPause();
-		PowerManager powerManager = (PowerManager)getSystemService(POWER_SERVICE);
-		boolean isScreenOn = powerManager.isScreenOn();
-		if(!isScreenOn)
-			Global.loggedIn = false;
+//		PowerManager powerManager = (PowerManager)getSystemService(POWER_SERVICE);
+//		boolean isScreenOn = powerManager.isScreenOn();
+//		MyPreferences myPref = new MyPreferences(this);
+//		if(!isScreenOn && myPref.isExpireUserSession())
+//			Global.loggedIn = false;
 		global.startActivityTransitionTimer();
 	}
 	

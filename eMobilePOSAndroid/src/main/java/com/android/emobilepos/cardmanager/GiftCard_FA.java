@@ -27,12 +27,13 @@ public class GiftCard_FA extends BaseFragmentActivityActionBar implements OnItem
 
     private boolean hasBeenCreated = false;
     private Global global;
+    MyPreferences preferences;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.gift_loyal_reward_main_layout);
-
+        preferences = new MyPreferences(this);
         global = (Global) getApplication();
         TextView headerTitle = findViewById(R.id.HeaderTitle);
         headerTitle.setText(getString(R.string.header_title_gift_card));
@@ -63,10 +64,10 @@ public class GiftCard_FA extends BaseFragmentActivityActionBar implements OnItem
     @Override
     public void onPause() {
         super.onPause();
-        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-        boolean isScreenOn = powerManager.isScreenOn();
-        if (!isScreenOn)
-            Global.loggedIn = false;
+//        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+//        boolean isScreenOn = powerManager.isScreenOn();
+//        if (!isScreenOn && preferences.isExpireUserSession())
+//        Global.loggedIn = false;
         global.startActivityTransitionTimer();
     }
 
