@@ -1193,6 +1193,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
             @Override
             public void afterTextChanged(Editable s) {
+                Log.d("After change Scan:", s.toString());
                 if (doneScanning) {
                     doneScanning = false;
                     if (EMSELO.isEloPaypoint2()) {
@@ -1245,6 +1246,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Log.d("On change Scan:", s.toString());
                 if (s.toString().contains("\n") || s.toString().contains("\r"))
                     doneScanning = true;
             }
@@ -1904,9 +1906,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                         xr.parse(inSource);
                         parsedMap[0] = getHashMap(xml);//handler.getData();
                         parsedMap[1] = getHashMap(xmlGiftCard);
-                        if (parsedMap != null && parsedMap[0].size() > 0 && parsedMap[0].get("epayStatusCode").equals("APPROVED"))
+                        if (parsedMap[0] != null && parsedMap[0].size() > 0 && parsedMap[0].get("epayStatusCode").equals("APPROVED"))
                             wasProcessed = true;
-                        else if (parsedMap != null && parsedMap[0].size() > 0) {
+                        else if (parsedMap[0] != null && parsedMap[0].size() > 0) {
                             errorMsg = "statusCode = " + parsedMap[0].get("statusCode") + "\n" + parsedMap[0].get("statusMessage");
                         } else
                             errorMsg = xml;
