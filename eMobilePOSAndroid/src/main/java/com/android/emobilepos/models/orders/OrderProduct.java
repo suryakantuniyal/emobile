@@ -830,7 +830,7 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         if (isVAT()) {
             finalPrice = finalPrice.add(getProd_taxValue());
         }
-        BigDecimal discount = getDiscountTotal();
+        BigDecimal discount = getDiscountTotal().setScale(2,RoundingMode.UP);
         subtotal = finalPrice.subtract(discount).add(addonsTotalPrice).setScale(6, RoundingMode.HALF_UP);
         return subtotal;
     }
