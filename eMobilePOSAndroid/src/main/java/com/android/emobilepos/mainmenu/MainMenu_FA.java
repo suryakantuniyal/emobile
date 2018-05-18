@@ -328,10 +328,10 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         super.onPause();
         unregisterReceiver(messageReceiver);
 //        DeviceUtils.unregisterFingerPrintReader(this);
-        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-        boolean isScreenOn = powerManager.isScreenOn();
-        if (!isScreenOn)
-            Global.loggedIn = false;
+//        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+//        boolean isScreenOn = powerManager.isScreenOn();
+//        if (!isScreenOn && myPref.isExpireUserSession())
+//            Global.loggedIn = false;
         global.startActivityTransitionTimer();
     }
 

@@ -166,6 +166,7 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
     private DateDialog newFrag;
     private RadioGroup billingRadioGroup;
     private RadioGroup shippingRadioGroup;
+    private MyPreferences myPref;
 
     public static String QualityToString(Reader.CaptureResult result) {
         if (result == null) {
@@ -226,6 +227,7 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         activity = this;
         global = (Global) getApplication();
         setHandler();
+        myPref = new MyPreferences(this);
         preferences = new MyPreferences(this);
         Collection<UsbDevice> usbDevices = DeviceUtils.getUSBDevices(this);
         isReaderConnected = usbDevices.size() > 0;
@@ -590,10 +592,10 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
     @Override
     public void onPause() {
         super.onPause();
-        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-        boolean isScreenOn = powerManager.isScreenOn();
-        if (!isScreenOn)
-            Global.loggedIn = false;
+//        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+//        boolean isScreenOn = powerManager.isScreenOn();
+//        if (!isScreenOn && myPref.isExpireUserSession())
+//            Global.loggedIn = false;
         global.startActivityTransitionTimer();
     }
 
