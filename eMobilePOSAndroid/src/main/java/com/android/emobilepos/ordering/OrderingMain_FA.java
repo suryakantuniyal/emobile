@@ -1917,7 +1917,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
             } catch (Exception e) {
                 Crashlytics.logException(e);
-                Global.showPrompt(OrderingMain_FA.this, R.string.dlog_title_error, e.getMessage());
+                wasProcessed = false;
+                errorMsg = e.getMessage();
             }
 
             return parsedMap;
