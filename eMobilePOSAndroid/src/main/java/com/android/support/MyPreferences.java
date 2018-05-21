@@ -109,6 +109,8 @@ public class MyPreferences {
     public static final String pref_default_country = "pref_default_country";
     public static final String pref_default_transaction = "pref_default_transaction";
     public static final String pref_default_category = "pref_default_category";
+    public static final String pref_default_customer_display_name = "pref_default_customer_display_name";
+
     public static final String pref_default_payment_method = "pref_default_payment_method";
     public static final String print_header = "print_header";
     public static final String print_shiptoinfo = "print_shiptoinfo";

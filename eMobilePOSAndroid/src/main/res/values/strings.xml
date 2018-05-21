@@ -1419,5 +1419,7 @@
     <string name="config_expire_session">Expire user login session</string>
     <string name="typeUserSessionExpirationTime">User session expiration time</string>
     <string name="seconds">Seconds</string>
+    <string name="config_customer_settings">Customer Settings</string>
+    <string name="config_default_customer_display_name">Select Customer Name</string>
 
 </resources>
