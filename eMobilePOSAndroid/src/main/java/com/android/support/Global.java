@@ -19,6 +19,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.os.PowerManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.multidex.MultiDexApplication;
@@ -1318,9 +1319,9 @@ public class Global extends MultiDexApplication {
                 wasInBackground = true;
             }
         };
-        if(preferences.isExpireUserSession()) {
+        if (preferences.isExpireUserSession()) {
             mActivityTransitionTimer.schedule(mActivityTransitionTimerTask, MAX_ACTIVITY_TRANSITION_TIME_MS);
-        }else{
+        } else {
             mActivityTransitionTimer.schedule(mActivityTransitionTimerTask, 86400);//24 hours to expire user session
 
         }

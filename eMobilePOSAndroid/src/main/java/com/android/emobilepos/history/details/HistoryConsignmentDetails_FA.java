@@ -26,6 +26,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.models.realms.Device;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
+import com.android.support.MyPreferences;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import java.util.HashMap;
@@ -94,10 +95,11 @@ public class HistoryConsignmentDetails_FA extends BaseFragmentActivityActionBar 
     @Override
     public void onPause() {
         super.onPause();
-        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-        boolean isScreenOn = powerManager.isScreenOn();
-        if (!isScreenOn)
-            Global.loggedIn = false;
+//        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+//        boolean isScreenOn = powerManager.isScreenOn();
+//        MyPreferences myPref = new MyPreferences(this);
+//        if (!isScreenOn && myPref.isExpireUserSession())
+//            Global.loggedIn = false;
         global.startActivityTransitionTimer();
     }
 

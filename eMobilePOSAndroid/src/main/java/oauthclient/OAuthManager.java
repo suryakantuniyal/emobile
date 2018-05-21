@@ -26,7 +26,7 @@ public class OAuthManager {
         byte[] key = new byte[64];
         new SecureRandom().nextBytes(key);
         requestTokenUrl = context.getString(R.string.oauth_token_url);//"https://emslogin.enablermobile.com/oauth/token";
-        Realm.init(context);
+//        Realm.init(context);
         Realm realm = Realm.getInstance(getRealmConfiguration());
         try {
             realm.beginTransaction();

@@ -242,7 +242,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
     @Override
     public void onResume() {
         global.resetOrderDetailsValues();
-        if (!checkPlayServices(this) && (myPref.isPollingHoldsEnable() || myPref.isAutoSyncEnable()) && !PollingNotificationService.isServiceRunning(this)) {
+        if ((myPref.isPollingHoldsEnable() || myPref.isAutoSyncEnable()) && !PollingNotificationService.isServiceRunning(this)) {
             startPollingService(this);
         }
         if(myPref.isUse_syncplus_services() && myPref.isSyncplus_AutoScan()) {
@@ -328,10 +328,10 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         super.onPause();
         unregisterReceiver(messageReceiver);
 //        DeviceUtils.unregisterFingerPrintReader(this);
-        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-        boolean isScreenOn = powerManager.isScreenOn();
-        if (!isScreenOn)
-            Global.loggedIn = false;
+//        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+//        boolean isScreenOn = powerManager.isScreenOn();
+//        if (!isScreenOn && myPref.isExpireUserSession())
+//            Global.loggedIn = false;
         global.startActivityTransitionTimer();
     }
 

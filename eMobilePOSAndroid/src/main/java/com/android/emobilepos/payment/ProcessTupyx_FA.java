@@ -146,10 +146,11 @@ public class ProcessTupyx_FA extends FragmentActivity implements OnClickListener
         if (mNfcAdapter != null)
             mNfcAdapter.disableForegroundDispatch(this);
 
-        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-        boolean isScreenOn = powerManager.isScreenOn();
-        if (!isScreenOn)
-            Global.loggedIn = false;
+//        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+//        boolean isScreenOn = powerManager.isScreenOn();
+//        MyPreferences myPref = new MyPreferences(this);
+//        if (!isScreenOn && myPref.isExpireUserSession())
+//            Global.loggedIn = false;
         global.startActivityTransitionTimer();
     }
 

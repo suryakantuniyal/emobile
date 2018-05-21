@@ -22,6 +22,7 @@ import com.android.database.TransferLocations_DB;
 import com.android.emobilepos.R;
 import com.android.emobilepos.history.details.HistoryInventoryTransferDetails_FA;
 import com.android.support.Global;
+import com.android.support.MyPreferences;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 public class HistoryInventoryTransfer_FA extends BaseFragmentActivityActionBar implements OnItemClickListener{
@@ -33,13 +34,14 @@ public class HistoryInventoryTransfer_FA extends BaseFragmentActivityActionBar i
 	private boolean hasBeenCreated = false;
 	private ListView lView;
 	private CustomCursorAdapter adapter;
-	
+	MyPreferences preferences;
 	@Override
 	public void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.history_inventory_transfer_layout);
 		activity = this;
+		preferences=new MyPreferences(this);
 		global = (Global)getApplication();
 		lView = (ListView)findViewById(R.id.listView);
 		dbHandler = new TransferLocations_DB(this);
@@ -72,10 +74,11 @@ public class HistoryInventoryTransfer_FA extends BaseFragmentActivityActionBar i
 	public void onPause()
 	{
 		super.onPause();
-		PowerManager powerManager = (PowerManager)getSystemService(POWER_SERVICE);
-		boolean isScreenOn = powerManager.isScreenOn();
-		if(!isScreenOn)
-			Global.loggedIn = false;
+//		MyPreferences myPref = new MyPreferences(this);
+//		PowerManager powerManager = (PowerManager)getSystemService(POWER_SERVICE);
+//		boolean isScreenOn = powerManager.isScreenOn();
+//		if(!isScreenOn && myPref.isExpireUserSession())
+//			Global.loggedIn = false;
 		global.startActivityTransitionTimer();
 	}
 	

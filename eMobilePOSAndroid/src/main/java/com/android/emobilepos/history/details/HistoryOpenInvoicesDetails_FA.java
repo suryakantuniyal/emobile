@@ -20,6 +20,7 @@ import com.android.database.InvoicesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.support.Global;
+import com.android.support.MyPreferences;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -117,10 +118,11 @@ public class HistoryOpenInvoicesDetails_FA extends BaseFragmentActivityActionBar
     @Override
     public void onPause() {
         super.onPause();
-        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-        boolean isScreenOn = powerManager.isScreenOn();
-        if (!isScreenOn)
-            Global.loggedIn = false;
+//        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+//        boolean isScreenOn = powerManager.isScreenOn();
+//        MyPreferences myPref = new MyPreferences(this);
+//        if (!isScreenOn && myPref.isExpireUserSession())
+//            Global.loggedIn = false;
         global.startActivityTransitionTimer();
     }
 
