@@ -107,19 +107,20 @@ public class PollingNotificationService extends Service {
                 notificationIntent.setAction(MAIN_ACTION);
                 notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                         | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-
-                if (timer == null) {
-                    timer = new Timer();
-                    timer.schedule(new TimerTask() {
-                        @Override
-                        public void run() {
-                            Log.i(TAG, "Timer");
-                            if (((intent.getFlags() & PollingServicesFlag.ONHOLDS.getCode()) == PollingServicesFlag.ONHOLDS.getCode()) ||
-                                    ((intent.getFlags() & PollingServicesFlag.DINING_TABLES.getCode()) == PollingServicesFlag.DINING_TABLES.getCode())) {
-                                pollNotificationEvents(PollingNotificationService.this);
+                if (preferences.isPollingHoldsEnable() && !MainMenu_FA.checkPlayServices(this)) {
+                    if (timer == null) {
+                        timer = new Timer();
+                        timer.schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                Log.i(TAG, "Timer");
+                                if (((intent.getFlags() & PollingServicesFlag.ONHOLDS.getCode()) == PollingServicesFlag.ONHOLDS.getCode()) ||
+                                        ((intent.getFlags() & PollingServicesFlag.DINING_TABLES.getCode()) == PollingServicesFlag.DINING_TABLES.getCode())) {
+                                    pollNotificationEvents(PollingNotificationService.this);
+                                }
                             }
-                        }
-                    }, delay, BuildConfig.POLLING_PERIOD);
+                        }, delay, BuildConfig.POLLING_PERIOD);
+                    }
                 }
                 if (autoSyncTimer == null) {
                     autoSyncTimer = new Timer();
@@ -180,10 +181,10 @@ public class PollingNotificationService extends Service {
                 String pattern;
                 if (preferences.isUse_syncplus_services()) {
                     baseUrl = SyncConfigServerService.getUrl(context.getString(R.string.sync_enablermobile_local_polling), context);
-                    pattern="%spollnotification?RegID=%s&fromdate=%s";
+                    pattern = "%spollnotification?RegID=%s&fromdate=%s";
                 } else {
                     baseUrl = context.getString(R.string.sync_enablermobile_deviceasxmltrans);
-                    pattern="%spollnotification.ashx?RegID=%s&fromdate=%s";
+                    pattern = "%spollnotification.ashx?RegID=%s&fromdate=%s";
                 }
                 String sb = String.format(pattern,
                         baseUrl,

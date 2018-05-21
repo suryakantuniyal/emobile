@@ -910,7 +910,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         soundManager.initSounds(this);
         soundManager.loadSounds();
         buildOrderStarted = false;
-        if (!MainMenu_FA.checkPlayServices(this) && (myPref.isPollingHoldsEnable()
+        if ((myPref.isPollingHoldsEnable()
                 || myPref.isAutoSyncEnable())
                 && !PollingNotificationService.isServiceRunning(this)) {
             MainMenu_FA.checkPlayServices(this);
