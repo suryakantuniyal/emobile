@@ -77,6 +77,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
     private Button splitEquallyQtyBtn;
     List<SplittedOrder> calculatedSplitedOrders = new ArrayList<>();
     public Global.TransactionType transType;
+    private MyPreferences myPref;
 
 
     public String getTaxID() {
@@ -151,7 +152,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
         Bundle extras = this.getIntent().getExtras();
         preferences = new MyPreferences(this);
         generateNewID = new GenerateNewID(this);
-
+        myPref = new MyPreferences(this);
         Gson gson = JsonUtils.getInstance();
         if (extras != null) {
             transType = (Global.TransactionType) extras.get("transType");
@@ -630,10 +631,10 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
     @Override
     public void onPause() {
         super.onPause();
-        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-        boolean isScreenOn = powerManager.isScreenOn();
-        if (!isScreenOn)
-            Global.loggedIn = false;
+//        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+//        boolean isScreenOn = powerManager.isScreenOn();
+//        if (!isScreenOn && myPref.isExpireUserSession())
+//            Global.loggedIn = false;
         global.startActivityTransitionTimer();
     }
 

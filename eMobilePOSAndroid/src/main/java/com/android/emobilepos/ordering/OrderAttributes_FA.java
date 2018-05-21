@@ -18,6 +18,7 @@ import com.android.dao.OrderProductAttributeDAO;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.realms.ProductAttribute;
 import com.android.support.Global;
+import com.android.support.MyPreferences;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import java.util.HashMap;
@@ -83,10 +84,11 @@ public class OrderAttributes_FA extends BaseFragmentActivityActionBar implements
 	public void onPause()
 	{
 		super.onPause();
-		PowerManager powerManager = (PowerManager)getSystemService(POWER_SERVICE);
-		boolean isScreenOn = powerManager.isScreenOn();
-		if(!isScreenOn)
-			Global.loggedIn = false;
+//		MyPreferences myPref = new MyPreferences(this);
+//		PowerManager powerManager = (PowerManager)getSystemService(POWER_SERVICE);
+//		boolean isScreenOn = powerManager.isScreenOn();
+//		if(!isScreenOn && myPref.isExpireUserSession())
+//			Global.loggedIn = false;
 		global.startActivityTransitionTimer();
 	}
 	
