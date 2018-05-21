@@ -7,9 +7,9 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.hardware.usb.UsbDevice;
 import android.os.Bundle;
-import android.os.PowerManager;
 import android.support.v4.widget.CursorAdapter;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -465,10 +465,15 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
         @Override
         public void bindView(View view, Context context, Cursor cursor) {
             final ViewHolder holder = (ViewHolder) view.getTag();
-            String temp = cursor.getString(holder.i_cust_name);
+            String temp = cursor.getString(holder.i_cust_firstname);
             String lastname = cursor.getString(holder.i_cust_lastName);
-            if (temp != null) {
+            if (!TextUtils.isEmpty(temp)) {
                 holder.cust_name.setText(String.format("%s %s", temp, lastname));
+            } else {
+                temp = cursor.getString(holder.i_cust_name);
+                if (!TextUtils.isEmpty(temp)) {
+                    holder.cust_name.setText(temp);
+                }
             }
             temp = cursor.getString(holder.i_CompanyName);
             if (temp != null)
@@ -512,7 +517,8 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
             holder.moreInfoIcon = retView.findViewById(R.id.custSelecIcon);
             holder.i_cust_id = cursor.getColumnIndex("_id");
             holder.i_account_number = cursor.getColumnIndex("AccountNumnber");
-            holder.i_cust_name = cursor.getColumnIndex("cust_firstName");
+            holder.i_cust_name = cursor.getColumnIndex("cust_name");
+            holder.i_cust_firstname = cursor.getColumnIndex("cust_firstName");
             holder.i_cust_lastName = cursor.getColumnIndex("cust_lastName");
 
 
@@ -530,7 +536,7 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
             TextView cust_name, CompanyName, cust_id, cust_phone, pricelevel_name;
             ImageView moreInfoIcon;
 
-            int i_cust_id, i_account_number, i_cust_name, i_cust_lastName, i_CompanyName, i_cust_phone, i_pricelevel_name;
+            int i_cust_id, i_account_number, i_cust_name, i_cust_firstname, i_cust_lastName, i_CompanyName, i_cust_phone, i_pricelevel_name;
         }
 
     }
