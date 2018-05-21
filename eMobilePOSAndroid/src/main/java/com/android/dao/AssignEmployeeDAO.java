@@ -1,5 +1,7 @@
 package com.android.dao;
 
+import android.text.TextUtils;
+
 import com.android.emobilepos.models.realms.AssignEmployee;
 
 import java.util.List;
@@ -14,7 +16,7 @@ public class AssignEmployeeDAO {
     private static AssignEmployee assignEmployee;
 
     public static AssignEmployee getAssignEmployee() {
-        if (assignEmployee == null) {
+        if (assignEmployee == null || TextUtils.isEmpty(assignEmployee.getEmpName())) {
             Realm r = Realm.getDefaultInstance();
             try {
                 assignEmployee = r.where(AssignEmployee.class).findFirst();
