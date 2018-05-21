@@ -109,13 +109,14 @@ import drivers.EMSIDTechUSB;
 import drivers.EMSMagtekAudioCardReader;
 import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
+import interfaces.BCRCallbacks;
 import interfaces.EMSCallBack;
 import util.json.JsonUtils;
 import util.json.UIUtils;
 
 public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Receipt_FR.AddProductBtnCallback,
         Receipt_FR.UpdateHeaderTitleCallback, OnClickListener, Catalog_FR.RefreshReceiptViewCallback,
-        OrderLoyalty_FR.SwiperLoyaltyCallback, OrderRewards_FR.SwiperRewardCallback, EMSCallBack {
+        OrderLoyalty_FR.SwiperLoyaltyCallback, OrderRewards_FR.SwiperRewardCallback, EMSCallBack, BCRCallbacks {
 
     private static final String DATA_STRING_TAG = "com.motorolasolutions.emdk.datawedge.data_string";
     public static boolean returnItem = false;
@@ -1196,47 +1197,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 Log.d("After change Scan:", s.toString());
                 if (doneScanning) {
                     doneScanning = false;
-                    if (EMSELO.isEloPaypoint2()) {
-                        if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
-                            Global.mainPrinterManager.getCurrentDevice().playSound();
-                            Global.mainPrinterManager.getCurrentDevice().turnOnBCR();
-                        }
-                    }
-                    String upc = invisibleSearchMain.getText().toString().trim().replace("\n", "").replace("\r", "");
-//                    upc = invisibleSearchMain.getText().toString().trim().replace("\r", "");
-                    if (myPref.isRemoveLeadingZerosFromUPC()) {
-                        upc = NumberUtils.removeLeadingZeros(upc);
-                    }
-                    Product product = handler.getUPCProducts(upc, false);
-                    if (product.getId() != null) {
-                        if (myPref.getPreferences(MyPreferences.pref_fast_scanning_mode)) {
-                            if (validAutomaticAddQty(product)) {
-                                if (myPref.isGroupReceiptBySku(isToGo)) {//(myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
-                                    int foundPosition = global.checkIfGroupBySKU(OrderingMain_FA.this, product.getId(), "1");
-                                    if (foundPosition != -1 && !OrderingMain_FA.returnItem) // product
-                                    {
-                                        global.refreshParticularOrder(OrderingMain_FA.this, foundPosition, product);
-                                    } else
-                                        getCatalogFr().automaticAddOrder(product);// temp.automaticAddOrder(listData);
-                                } else
-                                    getCatalogFr().automaticAddOrder(product);
-                                refreshView();
-                                if (OrderingMain_FA.returnItem) {
-                                    OrderingMain_FA.returnItem = !OrderingMain_FA.returnItem;
-                                    switchHeaderTitle(OrderingMain_FA.returnItem, "Return", mTransType);
-                                }
-                            } else {
-                                Global.showPrompt(OrderingMain_FA.this, R.string.dlog_title_error,
-                                        OrderingMain_FA.this.getString(R.string.limit_onhand));
-                            }
-                        } else {
-                            getCatalogFr().searchUPC(upc);
-                        }
-                    } else {
-                        Global.showPrompt(OrderingMain_FA.this, R.string.dlog_title_error,
-                                getString(R.string.dlog_msg_item_not_found));
-                    }
-                    invisibleSearchMain.setText("");
+                    processScan();
                 }
             }
 
@@ -1247,10 +1208,56 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 Log.d("On change Scan:", s.toString());
+                UIUtils.startBCR(invisibleSearchMain, invisibleSearchMain, OrderingMain_FA.this);
                 if (s.toString().contains("\n") || s.toString().contains("\r"))
                     doneScanning = true;
             }
         };
+    }
+
+    private void processScan() {
+
+        if (EMSELO.isEloPaypoint2()) {
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                Global.mainPrinterManager.getCurrentDevice().playSound();
+                Global.mainPrinterManager.getCurrentDevice().turnOnBCR();
+            }
+        }
+        String upc = invisibleSearchMain.getText().toString().trim().replace("\n", "").replace("\r", "");
+//                    upc = invisibleSearchMain.getText().toString().trim().replace("\r", "");
+        if (myPref.isRemoveLeadingZerosFromUPC()) {
+            upc = NumberUtils.removeLeadingZeros(upc);
+        }
+        Product product = handler.getUPCProducts(upc, false);
+        if (product.getId() != null) {
+            if (myPref.getPreferences(MyPreferences.pref_fast_scanning_mode)) {
+                if (validAutomaticAddQty(product)) {
+                    if (myPref.isGroupReceiptBySku(isToGo)) {//(myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
+                        int foundPosition = global.checkIfGroupBySKU(OrderingMain_FA.this, product.getId(), "1");
+                        if (foundPosition != -1 && !OrderingMain_FA.returnItem) // product
+                        {
+                            global.refreshParticularOrder(OrderingMain_FA.this, foundPosition, product);
+                        } else
+                            getCatalogFr().automaticAddOrder(product);// temp.automaticAddOrder(listData);
+                    } else
+                        getCatalogFr().automaticAddOrder(product);
+                    refreshView();
+                    if (OrderingMain_FA.returnItem) {
+                        OrderingMain_FA.returnItem = !OrderingMain_FA.returnItem;
+                        switchHeaderTitle(OrderingMain_FA.returnItem, "Return", mTransType);
+                    }
+                } else {
+                    Global.showPrompt(OrderingMain_FA.this, R.string.dlog_title_error,
+                            OrderingMain_FA.this.getString(R.string.limit_onhand));
+                }
+            } else {
+                getCatalogFr().searchUPC(upc);
+            }
+        } else {
+            Global.showPrompt(OrderingMain_FA.this, R.string.dlog_title_error,
+                    getString(R.string.dlog_msg_item_not_found));
+        }
+        invisibleSearchMain.setText("");
     }
 
     @Override
@@ -1526,6 +1533,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         Button btnOK = dlogMSR.findViewById(R.id.btnDlogLeft);
         Button btnCancel = dlogMSR.findViewById(R.id.btnDlogRight);
         swiperField = dlogMSR.findViewById(R.id.dlogFieldSingle);
+        swiperField.requestFocus();
         EditText swiperHiddenField = dlogMSR.findViewById(R.id.hiddenField);
         swiperHiddenField.addTextChangedListener(hiddenTxtWatcher(swiperHiddenField));
         swiperLabel.setText(R.string.loading);
@@ -1843,6 +1851,12 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     public void setCatalogFr(Catalog_FR catalogFr) {
         this.catalogFr = catalogFr;
+    }
+
+    @Override
+    public void executeBCR() {
+        processScan();
+        Log.d("Scan callback:", invisibleSearchMain.getText().toString());
     }
 
     public enum OrderingAction {

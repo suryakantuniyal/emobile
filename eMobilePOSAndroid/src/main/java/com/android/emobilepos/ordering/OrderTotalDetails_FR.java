@@ -459,7 +459,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         } else if (Global.isFromOnHold && !TextUtils.isEmpty(Global.taxID))
             custTaxCode = Global.taxID;
         else {
-            custTaxCode = assignEmployee.getTaxDefault();
+            custTaxCode = assignEmployee != null ? assignEmployee.getTaxDefault() : "";
         }
         taxes.add("Global Tax");
         discount.add("Global Discount");
