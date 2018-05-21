@@ -242,7 +242,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
     @Override
     public void onResume() {
         global.resetOrderDetailsValues();
-        if (!checkPlayServices(this) && (myPref.isPollingHoldsEnable() || myPref.isAutoSyncEnable()) && !PollingNotificationService.isServiceRunning(this)) {
+        if ((myPref.isPollingHoldsEnable() || myPref.isAutoSyncEnable()) && !PollingNotificationService.isServiceRunning(this)) {
             startPollingService(this);
         }
         if(myPref.isUse_syncplus_services() && myPref.isSyncplus_AutoScan()) {
