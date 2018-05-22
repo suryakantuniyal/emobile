@@ -1379,4 +1379,6 @@
     <string name="config_expire_session">Expirar la sessión del usuario</string>
     <string name="typeUserSessionExpirationTime">Tiempo de expiración para sessión</string>
     <string name="seconds">Segundos</string>
+    <string name="config_default_customer_display_name">Nombre de cliente a mostrar </string>
+    <string name="config_customer_settings">Configuracion del Cliente</string>
 </resources>

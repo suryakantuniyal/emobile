@@ -247,7 +247,16 @@
         <item name="reader_rover">2</item>
         <item name="reader_walker">3</item>
     </string-array>
-
+    <string-array name="customernamesEntries">
+        <item name="name">Name</item>
+        <item name="fullName">Full Name</item>
+        <item name="companyName">Company Name</item>
+    </string-array>
+    <string-array name="customernamesValues">
+        <item name="name">cust_name</item>
+        <item name="fullName">fullName</item>
+        <item name="companyName">CompanyName</item>
+    </string-array>
     <string-array name="cardTypes">
         <item name="amex">American Express</item>
         <item name="visa">Visa</item>

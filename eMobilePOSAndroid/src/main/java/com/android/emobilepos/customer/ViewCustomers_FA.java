@@ -453,6 +453,8 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
 
 
     public class CustomCursorAdapter extends CursorAdapter {
+        private String displayName;
+        private int displayNameIdx;
         private LayoutInflater inflater;
         private boolean displayCustAccountNum;
 
@@ -460,21 +462,28 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
             super(context, c, flags);
             inflater = LayoutInflater.from(context);
             displayCustAccountNum = myPref.getPreferences(MyPreferences.pref_display_customer_account_number);
+            displayName = myPref.getCustomerDisplayName();
+            if (TextUtils.isEmpty(displayName)) {
+                displayName = "cust_name";
+            } else {
+                displayNameIdx = c.getColumnIndex(displayName);
+            }
         }
 
         @Override
         public void bindView(View view, Context context, Cursor cursor) {
             final ViewHolder holder = (ViewHolder) view.getTag();
-            String temp = cursor.getString(holder.i_cust_firstname);
-            String lastname = cursor.getString(holder.i_cust_lastName);
+            String temp = cursor.getString(displayNameIdx);
+//            String lastname = cursor.getString(holder.i_cust_lastName);
             if (!TextUtils.isEmpty(temp)) {
-                holder.cust_name.setText(String.format("%s %s", temp, lastname));
-            } else {
-                temp = cursor.getString(holder.i_cust_name);
-                if (!TextUtils.isEmpty(temp)) {
-                    holder.cust_name.setText(temp);
-                }
+                holder.cust_name.setText(temp);
             }
+//            else {
+//                temp = cursor.getString(holder.i_cust_name);
+//                if (!TextUtils.isEmpty(temp)) {
+//                    holder.cust_name.setText(temp);
+//                }
+//            }
             temp = cursor.getString(holder.i_CompanyName);
             if (temp != null)
                 holder.CompanyName.setText(temp);

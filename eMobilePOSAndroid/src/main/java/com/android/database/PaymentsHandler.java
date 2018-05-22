@@ -866,7 +866,7 @@ public class PaymentsHandler {
             case 0: {
                 sb.append(
                         "select * from (SELECT p.pay_id as pay_id, p.inv_id as inv_id,p.job_id as job_id,CASE WHEN p.paymethod_id IN ('Genius','') THEN p.card_type ELSE m.paymethod_name END AS 'paymethod_name'," +
-                                "p.pay_date as pay_date,p.pay_timecreated as pay_timecreated,IFNULL(c.cust_name,'Unknown') as 'cust_name', o.ord_total as ord_total,p.pay_amount as pay_amount," +
+                                "p.pay_date as pay_date,p.pay_timecreated as pay_timecreated,IFNULL(c.cust_name,'Unknown') as 'cust_name',c.cust_id as 'cust_id', o.ord_total as ord_total,p.pay_amount as pay_amount," +
                                 "p.pay_dueamount as pay_dueamount, amount_tender,"
                                 + "CASE WHEN (m.paymethod_name = 'Cash') THEN (o.ord_total-p.pay_amount)  ELSE p.pay_tip END as 'change' ,p.pay_signature as pay_signature, "
                                 + "p.pay_transid as pay_transid,p.ccnum_last4 as ccnum_last4,p.pay_check as pay_check,p.is_refund as is_refund,p.IvuLottoDrawDate AS 'IvuLottoDrawDate'," +
@@ -893,7 +893,7 @@ public class PaymentsHandler {
 
                 sb.append(
                         "select * from (SELECT p.pay_id as pay_id, p.inv_id as inv_id,p.job_id as job_id,CASE WHEN p.paymethod_id IN ('Genius','') THEN p.card_type ELSE m.paymethod_name END AS 'paymethod_name'," +
-                                "p.pay_date as pay_date,p.pay_timecreated as pay_timecreated, IFNULL(c.cust_name,'Unknown') as 'cust_name',p.pay_amount AS 'ord_total',p.pay_amount as pay_amount," +
+                                "p.pay_date as pay_date,p.pay_timecreated as pay_timecreated, IFNULL(c.cust_name,'Unknown') as 'cust_name',c.cust_id as 'cust_id',p.pay_amount AS 'ord_total',p.pay_amount as pay_amount," +
                                 "p.pay_dueamount as pay_dueamount,amount_tender,"
                                 + "CASE WHEN (m.paymethod_name = 'Cash') THEN SUM(p.pay_amount-p.pay_amount) ELSE p.pay_tip END AS 'change', p.pay_signature as pay_signature,  "
                                 + "p.pay_transid as pay_transid,p.ccnum_last4 as ccnum_last4,p.pay_check as pay_check,p.is_refund as is_refund,p.IvuLottoDrawDate AS 'IvuLottoDrawDate'," +
@@ -921,7 +921,7 @@ public class PaymentsHandler {
             case 2: {
                 sb.append(
                         "select * from (SELECT p.pay_id as pay_id, p.inv_id as inv_id,p.job_id as job_id,CASE WHEN p.paymethod_id IN ('Genius','') THEN p.card_type ELSE m.paymethod_name END AS 'paymethod_name'," +
-                                "p.pay_date as pay_date,p.pay_timecreated as pay_timecreated, IFNULL(c.cust_name,'Unknown') as 'cust_name',p.pay_amount AS 'ord_total'," +
+                                "p.pay_date as pay_date,p.pay_timecreated as pay_timecreated, IFNULL(c.cust_name,'Unknown') as 'cust_name',c.cust_id as 'cust_id',p.pay_amount AS 'ord_total'," +
                                 "p.pay_amount as pay_amount,p.pay_dueamount as pay_dueamount,amount_tender,"
                                 + "CASE WHEN (m.paymethod_name = 'Cash') THEN SUM(p.pay_amount-p.pay_amount) ELSE p.pay_tip END AS 'change', p.pay_signature as pay_signature,  "
                                 + "p.pay_transid as pay_transid,p.ccnum_last4 as ccnum_last4,p.pay_check as pay_check,p.is_refund as is_refund," +
@@ -956,6 +956,7 @@ public class PaymentsHandler {
         if (cursor.moveToFirst()) {
 
             do {
+                payDetail.setCustomerId(cursor.getString(cursor.getColumnIndex(cust_id)));
                 payDetail.setPaymethod_name(cursor.getString(cursor.getColumnIndex("paymethod_name")));
                 payDetail.setPay_date(Global.formatToDisplayDate(cursor.getString(cursor.getColumnIndex(pay_date)), 0));
                 payDetail.setPay_timecreated(Global.formatToDisplayDate(cursor.getString(cursor.getColumnIndex(pay_timecreated)), 2));

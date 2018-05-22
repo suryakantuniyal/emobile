@@ -131,9 +131,10 @@
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_clear_customer" />
         <ListPreference
-            android:defaultValue="0"
+            android:defaultValue="cust_name"
             android:key="pref_default_customer_display_name"
-            android:entryValues="@array/audioCardReaderValues"
+            android:entries="@array/customernamesEntries"
+            android:entryValues="@array/customernamesValues"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_default_customer_display_name" />
         <CheckBoxPreference
