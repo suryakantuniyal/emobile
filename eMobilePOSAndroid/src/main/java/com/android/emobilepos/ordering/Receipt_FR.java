@@ -2101,13 +2101,20 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             CustomersHandler handler = new CustomersHandler(getActivity());
             Customer customer = handler.getCustomer(myPref.getCustID());
             if (customer != null) {
-                if (!TextUtils.isEmpty(customer.getCust_firstName())) {
-                    custName.setText(String.format("%s %s", StringUtil.nullStringToEmpty(customer.getCust_firstName())
-                            , StringUtil.nullStringToEmpty(customer.getCust_lastName())));
-                } else if (!TextUtils.isEmpty(customer.getCompanyName())) {
-                    custName.setText(customer.getCompanyName());
-                } else {
-                    custName.setText(customer.getCust_name());
+                String displayName = myPref.getCustomerDisplayName();
+                switch (displayName) {
+                    case "cust_name":
+                        custName.setText(customer.getCust_name());
+                        break;
+                    case "fullName":
+                        custName.setText(String.format("%s %s", StringUtil.nullStringToEmpty(customer.getCust_firstName())
+                                , StringUtil.nullStringToEmpty(customer.getCust_lastName())));
+                        break;
+                    case "CompanyName":
+                        custName.setText(customer.getCompanyName());
+                        break;
+                    default:
+                        custName.setText(customer.getCust_name());
                 }
             }
         }

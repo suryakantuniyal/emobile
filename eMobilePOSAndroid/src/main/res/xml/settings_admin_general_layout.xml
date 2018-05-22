@@ -47,36 +47,7 @@
             android:key="pref_mix_match"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_mix_match" />
-        <PreferenceCategory
-            android:layout="@layout/settings_custom_header_layout"
-            android:title="@string/config_customer_settings">
-            <CheckBoxPreference
-                android:key="pref_require_customer"
-                android:layout="@layout/settings_custom_layout"
-                android:title="@string/config_require_customer" />
-            <CheckBoxPreference
-                android:key="pref_clear_customer"
-                android:layout="@layout/settings_custom_layout"
-                android:title="@string/config_clear_customer" />
-            <CheckBoxPreference
-                android:key="pref_allow_customer_creation"
-                android:layout="@layout/settings_custom_layout"
-                android:title="@string/config_allow_customer_creation" />
-            <CheckBoxPreference
-                android:key="pref_direct_customer_selection"
-                android:layout="@layout/settings_custom_layout"
-                android:title="@string/config_direct_customer_selection" />
-            <CheckBoxPreference
-                android:key="pref_display_customer_account_number"
-                android:layout="@layout/settings_custom_layout"
-                android:title="@string/config_display_customer_account_number" />
-            <ListPreference
-                android:defaultValue="0"
-                android:key="pref_default_customer_display_name"
-                android:entryValues="@array/audioCardReaderValues"
-                android:layout="@layout/settings_custom_layout"
-                android:title="@string/config_default_customer_display_name" />
-        </PreferenceCategory>
+
         <CheckBoxPreference
             android:key="pref_show_confirmation_screen"
             android:layout="@layout/settings_custom_layout"
@@ -111,5 +82,36 @@
             android:key="pref_clerk_management"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_clerk_management" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:layout="@layout/settings_custom_header_layout"
+        android:title="@string/config_customer_settings">
+        <CheckBoxPreference
+            android:key="pref_require_customer"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_require_customer" />
+        <CheckBoxPreference
+            android:key="pref_clear_customer"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_clear_customer" />
+        <CheckBoxPreference
+            android:key="pref_allow_customer_creation"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_allow_customer_creation" />
+        <CheckBoxPreference
+            android:key="pref_direct_customer_selection"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_direct_customer_selection" />
+        <CheckBoxPreference
+            android:key="pref_display_customer_account_number"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_display_customer_account_number" />
+        <ListPreference
+            android:defaultValue="cust_name"
+            android:entryValues="@array/customernamesValues"
+            android:entries="@array/customernamesEntries"
+            android:key="pref_default_customer_display_name"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_default_customer_display_name" />
     </PreferenceCategory>
 </PreferenceScreen>

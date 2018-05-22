@@ -183,7 +183,7 @@ public class CustomersHandler {
     }
 
     public Cursor getCursorAllCust() {
-        String query = "SELECT cust_id as _id,AccountNumnber, custidkey, cust_firstName, cust_name, cust_lastName,c.pricelevel_id,pl.pricelevel_name," +
+        String query = "SELECT cust_id as _id,AccountNumnber, custidkey, cust_firstName ||' '|| cust_lastName as 'fullName', cust_firstName, cust_name, cust_lastName,c.pricelevel_id,pl.pricelevel_name," +
                 "cust_taxable,cust_salestaxcode,cust_email,CompanyName,cust_phone " +
                 "FROM Customers c LEFT OUTER JOIN PriceLevel pl ON c.pricelevel_id = pl.pricelevel_id ORDER BY cust_name";
 

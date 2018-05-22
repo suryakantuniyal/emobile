@@ -284,10 +284,14 @@ public class DeviceUtils {
             int i = connected.indexOf(device);
             if (i == -1) {
                 if (device.getEmsDeviceManager() == null && !device.isRemoteDevice()) {
-                    EMSDeviceManager deviceManager = new EMSDeviceManager();
-                    if (deviceManager.loadMultiDriver(activity, Integer.parseInt(device.getType()), device.getTextAreaSize(), device.isPOS(),
-                            device.getMacAddress(), device.getTcpPort())) {
-                        device.setEmsDeviceManager(deviceManager);
+                    try {
+                        EMSDeviceManager deviceManager = new EMSDeviceManager();
+                        if (deviceManager.loadMultiDriver(activity, Integer.parseInt(device.getType()), device.getTextAreaSize(), device.isPOS(),
+                                device.getMacAddress(), device.getTcpPort())) {
+                            device.setEmsDeviceManager(deviceManager);
+                        }
+                    } catch (Exception e) {
+                        Crashlytics.logException(e);
                     }
                 }
             } else {
