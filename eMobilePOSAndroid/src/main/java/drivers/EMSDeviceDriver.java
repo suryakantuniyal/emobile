@@ -1727,7 +1727,8 @@ public class EMSDeviceDriver {
     }
 
     public void printClockInOut(List<ClockInOut> timeClocks, int lineWidth, String clerkID) {
-        EMSPlainTextHelper textHelper = new EMSPlainTextHelper();
+       startReceipt();
+       EMSPlainTextHelper textHelper = new EMSPlainTextHelper();
         Clerk clerk = ClerkDAO.getByEmpId(Integer.parseInt(clerkID));
         StringBuilder str = new StringBuilder();
         str.append(textHelper.centeredString(activity.getString(R.string.clockReceipt), lineWidth));

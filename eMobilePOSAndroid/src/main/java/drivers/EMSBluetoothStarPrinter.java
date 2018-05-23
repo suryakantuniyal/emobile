@@ -775,7 +775,9 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     @Override
     public void printClockInOut(List<ClockInOut> timeClocks, String clerkID) {
         setPaperWidth(LINE_WIDTH);
-        super.printClockInOut(timeClocks, LINE_WIDTH, clerkID);
+        setStartIOPort();
+        printClockInOut(timeClocks, LINE_WIDTH, clerkID);
+        releasePrinter();
     }
 
     @Override
