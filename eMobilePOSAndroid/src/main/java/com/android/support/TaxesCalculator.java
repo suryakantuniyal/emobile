@@ -52,22 +52,24 @@ public class TaxesCalculator {
     public static HashMap<String, String[]> getOrderTaxes(Context context, List<DataTaxes> taxes, Order order) {
         MyPreferences preferences = new MyPreferences(context);
         HashMap<String, String[]> prodTaxes = new HashMap<>();
-        if (preferences.isRetailTaxes()) {
+        if (preferences.isRetailTaxes() && order.getOrderProducts() != null) {
             for (OrderProduct product : order.getOrderProducts()) {
-                for (Tax tax : product.getTaxes()) {
-                    if (prodTaxes.containsKey(tax.getTaxRate())) {
-                        BigDecimal taxAmount = new BigDecimal(prodTaxes.get(tax.getTaxRate())[1]);
-                        taxAmount = taxAmount.add(TaxesCalculator.taxRounder(tax.getTaxAmount()));
-                        String[] arr = new String[2];
-                        arr[0] = tax.getTaxName();
-                        arr[1] = String.valueOf(taxAmount);
-                        prodTaxes.put(tax.getTaxRate(), arr);
-                    } else {
-                        BigDecimal taxAmount = TaxesCalculator.taxRounder(tax.getTaxAmount());
-                        String[] arr = new String[2];
-                        arr[0] = tax.getTaxName();
-                        arr[1] = String.valueOf(taxAmount);
-                        prodTaxes.put(tax.getTaxRate(), arr);
+                if(product.getTaxes()!=null) {
+                    for (Tax tax : product.getTaxes()) {
+                        if (prodTaxes.containsKey(tax.getTaxRate())) {
+                            BigDecimal taxAmount = new BigDecimal(prodTaxes.get(tax.getTaxRate())[1]);
+                            taxAmount = taxAmount.add(TaxesCalculator.taxRounder(tax.getTaxAmount()));
+                            String[] arr = new String[2];
+                            arr[0] = tax.getTaxName();
+                            arr[1] = String.valueOf(taxAmount);
+                            prodTaxes.put(tax.getTaxRate(), arr);
+                        } else {
+                            BigDecimal taxAmount = TaxesCalculator.taxRounder(tax.getTaxAmount());
+                            String[] arr = new String[2];
+                            arr[0] = tax.getTaxName();
+                            arr[1] = String.valueOf(taxAmount);
+                            prodTaxes.put(tax.getTaxRate(), arr);
+                        }
                     }
                 }
             }
