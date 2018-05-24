@@ -12,9 +12,9 @@ import android.graphics.Paint;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Message;
-import android.os.PowerManager;
 import android.text.Editable;
 import android.text.Selection;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Base64;
 import android.view.View;
@@ -92,10 +92,10 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
         setContentView(R.layout.process_genius_layout);
         global = (Global) this.getApplication();
         extras = this.getIntent().getExtras();
-        invJobView = (EditText) findViewById(R.id.geniusJobIDView);
-        amountView = (EditText) findViewById(R.id.geniusAmountView);
+        invJobView = findViewById(R.id.geniusJobIDView);
+        amountView = findViewById(R.id.geniusAmountView);
 
-        Button btnProcess = (Button) findViewById(R.id.processGeniusButton);
+        Button btnProcess = findViewById(R.id.processGeniusButton);
         btnProcess.setOnClickListener(this);
 
 //		Button btnExact = (Button)findViewById(R.id.btnExact);
@@ -112,7 +112,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
 
         paymethod_id = extras.getString("paymethod_id");
         if (paymethod_id.equalsIgnoreCase(PaymentMethod.getCardOnFilePaymentMethod().getPaymethod_id())) {
-            ImageView imageView = (ImageView) findViewById(R.id.cayanimageView1);
+            ImageView imageView = findViewById(R.id.cayanimageView1);
             imageView.setImageResource(R.drawable.debitcard);
             ((TextView) findViewById(R.id.geniusTitle)).setText(R.string.card_on_file);
             ((TextView) findViewById(R.id.add_main_title)).setText(R.string.payment);
@@ -159,11 +159,11 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
     private void showResponse(GeniusResponse response) {
         Intent result = new Intent();
         result.putExtras(getIntent());
-        if (response.getStatus().equalsIgnoreCase("DECLINED_DUPLICATE")) {
-            Global.showPrompt(this, R.string.dlog_title_error, response.getStatus());
-        } else if (response.getStatus().equalsIgnoreCase("APPROVED")) {
+        if (response.getStatus().equalsIgnoreCase("APPROVED")) {
             setResult(-2, result);
             finish();
+        } else if (!TextUtils.isEmpty(response.getStatus())) {
+            Global.showPrompt(this, R.string.dlog_title_error, response.getStatus());
         } else {
             setResult(0, result);
             finish();
@@ -375,7 +375,9 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
             } else if (!boProcessed) {
                 Global.showPrompt(ProcessGenius_FA.this, R.string.dlog_title_error, response.getErrorMessage());
             } else if (response != null && (response.getStatus().equalsIgnoreCase("APPROVED") ||
-                    response.getStatus().equalsIgnoreCase("DECLINED"))) {
+                    response.getStatus().equalsIgnoreCase("DECLINED") ||
+                    response.getStatus().equalsIgnoreCase("UserCancelled") ||
+                    response.getStatus().equalsIgnoreCase("TERMINATED"))) {
                 payment.setPay_transid(response.getToken());
                 BigDecimal tip = new BigDecimal(0.00);
                 BigDecimal cashBack = new BigDecimal(0.00);
@@ -395,8 +397,8 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                     signa = response.getAdditionalParameters().getSignatureData();
                 }
 
-                BigDecimal aprovedAmount = new BigDecimal(response.getAmountApproved());
-                BigDecimal payAmount = aprovedAmount.subtract(tip).subtract(cashBack);
+                BigDecimal approvedAmount = new BigDecimal(response.getAmountApproved());
+                BigDecimal payAmount = approvedAmount.subtract(tip).subtract(cashBack);
                 payment.setPay_amount(String.valueOf(Global.getRoundBigDecimal(payAmount)));
                 Global.amountPaid = payment.getPay_amount();
                 payment.setAuthcode(response.getAuthorizationCode());
@@ -473,8 +475,8 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
             dlog.setCancelable(false);
             dlog.setContentView(R.layout.dlog_btn_left_right_layout);
 
-            TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
-            TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+            TextView viewTitle = dlog.findViewById(R.id.dlogTitle);
+            TextView viewMsg = dlog.findViewById(R.id.dlogMessage);
             viewTitle.setText(R.string.dlog_title_confirm);
 
             if (isRetry) {
@@ -485,9 +487,9 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
             }
             dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
 
-            Button btnYes = (Button) dlog.findViewById(R.id.btnDlogLeft);
-            Button btnNo = (Button) dlog.findViewById(R.id.btnDlogRight);
-            Button btnCancel = (Button) dlog.findViewById(R.id.btnDlogCancel);
+            Button btnYes = dlog.findViewById(R.id.btnDlogLeft);
+            Button btnNo = dlog.findViewById(R.id.btnDlogRight);
+            Button btnCancel = dlog.findViewById(R.id.btnDlogCancel);
             btnCancel.setVisibility(View.GONE);
             btnYes.setText(R.string.button_yes);
             btnNo.setText(R.string.button_no);
@@ -625,8 +627,8 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
         dlog.setCancelable(false);
         dlog.setContentView(R.layout.dlog_btn_left_right_layout);
 
-        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+        TextView viewTitle = dlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = dlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_confirm);
 
         if (isRetry) {
@@ -637,9 +639,9 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
         }
         dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
 
-        Button btnYes = (Button) dlog.findViewById(R.id.btnDlogLeft);
-        Button btnNo = (Button) dlog.findViewById(R.id.btnDlogRight);
-        Button btnCancel = (Button) dlog.findViewById(R.id.btnDlogCancel);
+        Button btnYes = dlog.findViewById(R.id.btnDlogLeft);
+        Button btnNo = dlog.findViewById(R.id.btnDlogRight);
+        Button btnCancel = dlog.findViewById(R.id.btnDlogCancel);
         btnCancel.setVisibility(View.GONE);
         btnYes.setText(R.string.button_yes);
         btnNo.setText(R.string.button_no);
@@ -671,13 +673,13 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
     private class printAsync extends AsyncTask<Void, Void, Void> {
         private boolean printSuccessful = true;
 
-            @Override
-            protected void onPreExecute() {
-                myProgressDialog = new ProgressDialog(ProcessGenius_FA.this);
-                myProgressDialog.setMessage("Printing...");
-                myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                myProgressDialog.setCancelable(false);
-                myProgressDialog.show();
+        @Override
+        protected void onPreExecute() {
+            myProgressDialog = new ProgressDialog(ProcessGenius_FA.this);
+            myProgressDialog.setMessage("Printing...");
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setCancelable(false);
+            myProgressDialog.show();
 
         }
 
@@ -746,12 +748,10 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                         if (parsedMap != null && parsedMap.size() > 0
                                 && parsedMap.get("epayStatusCode").equals("APPROVED")) {
                             wasProcessed = true;
-                            String paid_amount = NumberUtils.cleanCurrencyFormatedNumber(payment.getPay_amount());
                             Intent result = new Intent();
                             Global.amountPaid = payment.getPay_amount();
                             setResult(-2, result);
-                        }
-                        else if (parsedMap != null && parsedMap.size() > 0) {
+                        } else if (parsedMap != null && parsedMap.size() > 0) {
                             errorMsg = "statusCode = " + parsedMap.get("statusCode") + "\n" + parsedMap.get("statusMessage");
                         } else
                             errorMsg = xml;
@@ -776,25 +776,25 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                 payment.setCard_type(parsedMap.get("CardType"));
                 payment.setCcnum_last4(parsedMap.get("CCLast4"));
                 payment.setPay_transid(parsedMap.get("CreditCardTransID"));
-                saveApprovedPayment(parsedMap, payment);
+                saveApprovedPayment(payment);
                 showPrintDlg(false);
             } else {
-                if (connectionFailed) {
+//                if (connectionFailed) {
 //                    reverseXMLMap = ProcessCreditCard_FA.generateReverseXML(activity, chargeXml);
-                }
+//                }
                 Global.showPrompt(ProcessGenius_FA.this, R.string.dlog_title_transaction_failed_to_process, errorMsg);
             }
         }
     }
 
-    private void saveApprovedPayment(HashMap<String, String> parsedMap, Payment payment) {
+    private void saveApprovedPayment(Payment payment) {
         if (isRefund) {
             payment.setIs_refund("1");
             payment.setPay_type("2");
         }
-        if(myPref.isPayWithCardOnFile()){
+        if (myPref.isPayWithCardOnFile()) {
             payment.setProcessed("9");
-        }else {
+        } else {
             payment.setProcessed("1");
         }
 
