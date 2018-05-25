@@ -1245,7 +1245,7 @@ public class GenerateXML {
                     serializer.endTag(empstr, "prod_taxId");
 
                     serializer.startTag(empstr, "totalLineValue");
-                    serializer.text(cursor.getString(cursor.getColumnIndex("totalLineValue")));
+                    serializer.text(product.getItemTotal());
                     serializer.endTag(empstr, "totalLineValue");
                     String prod_taxValue = String.valueOf(Global.getRoundBigDecimal(product.getProd_taxValue(), 2));
 
