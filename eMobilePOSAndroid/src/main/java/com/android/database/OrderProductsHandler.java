@@ -303,10 +303,10 @@ public class OrderProductsHandler {
     public Cursor getCursorData(String orderId) {
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT ").append(sb1.toString()).append(",");
-        if (getAssignEmployee().isVAT())
+//        if (getAssignEmployee().isVAT())
             sb.append("itemTotal AS 'totalLineValue' FROM ");
-        else
-            sb.append("(itemTotal+prod_taxValue) AS 'totalLineValue' FROM ");
+//        else
+//            sb.append("(itemTotal+prod_taxValue) AS 'totalLineValue' FROM ");
         sb.append(table_name).append(" WHERE ord_id = ?");
 
         return DBManager.getDatabase().rawQuery(sb.toString(), new String[]{orderId});
