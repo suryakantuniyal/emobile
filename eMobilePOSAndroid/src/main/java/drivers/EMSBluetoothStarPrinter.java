@@ -466,7 +466,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSig) {
         try {
             setPaperWidth(LINE_WIDTH);
-            setStartIOPort();
+//            setStartIOPort();
             verifyConnectivity();
             Thread.sleep(1000);
             printConsignmentReceipt(myConsignment, encodedSig, LINE_WIDTH);
@@ -515,7 +515,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     public boolean printConsignmentPickup(List<ConsignmentTransaction> myConsignment, String encodedSig) {
         try {
             setPaperWidth(LINE_WIDTH);
-            setStartIOPort();
+//            setStartIOPort();
             verifyConnectivity();
             Thread.sleep(1000);
             printConsignmentPickupReceipt(myConsignment, encodedSig, LINE_WIDTH);
@@ -602,7 +602,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     public boolean printConsignmentHistory(HashMap<String, String> map, Cursor c, boolean isPickup) {
         try {
             setPaperWidth(LINE_WIDTH);
-            setStartIOPort();
+//            setStartIOPort();
             verifyConnectivity();
             Thread.sleep(1000);
             printConsignmentHistoryReceipt(map, c, isPickup, LINE_WIDTH);
