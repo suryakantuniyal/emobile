@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.PowerManager;
 import android.text.Editable;
 import android.text.Selection;
 import android.text.TextWatcher;
@@ -1027,6 +1026,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
 
         @Override
         protected void onPreExecute() {
+            Global.lockOrientation(activity);
             myProgressDialog = new ProgressDialog(activity);
             myProgressDialog.setMessage(getString(R.string.printing_message));
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -1048,9 +1048,8 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
 
         @Override
         protected void onPostExecute(Payment payment) {
-            if (myProgressDialog.isShowing()) {
-                myProgressDialog.dismiss();
-            }
+            Global.dismissDialog(activity, myProgressDialog);
+            Global.releaseOrientation(activity);
             double actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDue));
             double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
 
