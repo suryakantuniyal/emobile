@@ -414,7 +414,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         intent.putExtra("typeOfProcedure", Global.TransactionType.SALE_RECEIPT);
         intent.putExtra("salesreceipt", true);
         intent.putExtra("amount", String.valueOf(Global.getRoundBigDecimal(Global.getBigDecimalNum(order.gran_total)
-                .compareTo(new BigDecimal(0)) == -1 ? Global.getBigDecimalNum(order.gran_total)
+                .compareTo(new BigDecimal(0)) < 0 ? Global.getBigDecimalNum(order.gran_total)
                 .negate() : Global.getBigDecimalNum(order.gran_total))));
         intent.putExtra("paid", "0.00");
         intent.putExtra("is_receipt", true);

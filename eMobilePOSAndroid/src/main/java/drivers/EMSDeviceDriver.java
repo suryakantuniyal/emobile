@@ -296,7 +296,7 @@ public class EMSDeviceDriver {
         }
     }
 
-    protected void releasePrinter() {
+    public void releasePrinter() {
         if (this instanceof EMSBluetoothStarPrinter) {
             if (port != null) {
                 try {
