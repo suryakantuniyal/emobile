@@ -15,11 +15,13 @@ import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.orders.Order;
+import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.ShiftExpense;
 import com.android.support.CardParser;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
+import com.android.support.DeviceUtils;
 import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -163,15 +165,21 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
 
     @Override
     public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
-        EMSDeviceManagerPrinterDelegate currentDevice = Global.mainPrinterManager.getCurrentDevice();
-        currentDevice.printTransaction(ordID, saleTypes, isFromHistory, fromOnHold);
+        EMSDeviceManager emsDeviceManager = DeviceUtils.getEmsDeviceManager(Device.Printables.PAYMENT_RECEIPT, Global.printerDevices);
+        if (emsDeviceManager != null && emsDeviceManager.getCurrentDevice() != null) {
+            EMSDeviceManagerPrinterDelegate currentDevice = emsDeviceManager.getCurrentDevice();
+            currentDevice.printTransaction(ordID, saleTypes, isFromHistory, fromOnHold);
+        }
         return true;
     }
 
     @Override
     public boolean printTransaction(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
-        EMSDeviceManagerPrinterDelegate currentDevice = Global.mainPrinterManager.getCurrentDevice();
-        currentDevice.printTransaction(order, saleTypes, isFromHistory, fromOnHold);
+        EMSDeviceManager emsDeviceManager = DeviceUtils.getEmsDeviceManager(Device.Printables.PAYMENT_RECEIPT, Global.printerDevices);
+        if (emsDeviceManager != null && emsDeviceManager.getCurrentDevice() != null) {
+            EMSDeviceManagerPrinterDelegate currentDevice = emsDeviceManager.getCurrentDevice();
+            currentDevice.printTransaction(order, saleTypes, isFromHistory, fromOnHold);
+        }
         return true;
     }
 

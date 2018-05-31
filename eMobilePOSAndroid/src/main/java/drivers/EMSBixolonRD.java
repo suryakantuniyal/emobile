@@ -70,6 +70,11 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
         if (printerTFHKA == null) {
             printerTFHKA = getInstanceOfTfhka(); //new TfhkaAndroid();
         }
+        if (printerTFHKA instanceof TfhkaAndroid) {
+            country = BixolonCountry.PANAMA;
+        } else {
+            country = BixolonCountry.DOMINICAN_REPUBLIC;
+        }
         myPref = new MyPreferences(activity);
         boolean connect = connectTFHKA();
         if (connect) {
@@ -105,6 +110,11 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
         this.edm = edm;
         if (printerTFHKA == null) {
             printerTFHKA = getInstanceOfTfhka();//new TfhkaAndroid();
+        }
+        if (printerTFHKA instanceof TfhkaAndroid) {
+            country = BixolonCountry.PANAMA;
+        } else {
+            country = BixolonCountry.DOMINICAN_REPUBLIC;
         }
         myPref = new MyPreferences(activity);
         boolean connect = connectTFHKA();
@@ -156,7 +166,9 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
         Order order = ordersHandler.getOrder(ordID);
         Bixolon bixolon = BixolonDAO.getBixolon();
         Global.OrderType type = Global.OrderType.getByCode(Integer.parseInt(order.ord_type));
-        boolean cmd = printBixolonMerchantName(bixolon.getMerchantName());
+        String ref_num = PaymentsHandler.getLastPaymentInserted().getRef_num();
+        boolean cmd = printOrderId(ref_num);
+        cmd = printBixolonMerchantName(bixolon.getMerchantName());
         cmd = printRUC(bixolon.getRuc());
         cmd = sendNFC(bixolon.getNcf());
         cmd = openDocument(type);
@@ -192,7 +204,7 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
 
     @Override
     public boolean printTransaction(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
-        return printTransaction(order.ord_id,saleTypes,isFromHistory,fromOnHold,emvContainer);
+        return printTransaction(order.ord_id, saleTypes, isFromHistory, fromOnHold, emvContainer);
     }
 
 
@@ -683,7 +695,8 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
         BigDecimal totalPrice = Global.getBigDecimalNum(product.getFinalPrice(), 2);
         int scaleQty = country == BixolonCountry.PANAMA ? 3 : 2;
         if (isCredit) {
-            cmnd = String.format(Locale.getDefault(), "d%s%s%s",
+            cmnd = String.format(Locale.getDefault(), "d%s%s%s%s",
+                    tax == null ? "0" : tax.getBixolonCreditChar(),
                     String.format("%0" + (10 - Global.getRoundBigDecimal(totalPrice, 2).toString().replace(".", "").length()) + "d%s", 0, Global.getRoundBigDecimal(totalPrice, 2).toString().replace(".", "")),
                     String.format("%0" + (8 - Global.getBigDecimalNum(product.getOrdprod_qty(), scaleQty).abs().toString().replace(".", "").length()) + "d%s", 0, Global.getBigDecimalNum(product.getOrdprod_qty(), scaleQty).abs().toString().replace(".", "")),
                     product.getOrdprod_name());
@@ -810,9 +823,14 @@ public class EMSBixolonRD extends EMSDeviceDriver implements EMSDeviceManagerPri
         return SendCmd("7");
     }
 
-    private boolean printOrderId(Order order) {
+    private boolean printOrderId(String paymentId) {
         if (country == BixolonCountry.PANAMA) {
-            return SendCmd("jF" + String.format("%0" + (22 - order.ord_id.length()) + "d%s", 0, order.ord_id));
+            if (paymentId.length() > 22) {
+                return SendCmd("jF" + String.format("%0" + (22 - paymentId.length()) + "d%s", 0, paymentId));
+            } else {
+                return SendCmd("jF" + paymentId);
+
+            }
         } else
             return true;
     }

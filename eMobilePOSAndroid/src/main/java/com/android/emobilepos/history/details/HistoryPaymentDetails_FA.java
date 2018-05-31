@@ -36,6 +36,7 @@ import com.android.database.InvoicePaymentsHandler;
 import com.android.database.PaymentsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.PaymentDetails;
+import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.security.SecurityManager;
 import com.android.payments.EMSPayGate_Default;
@@ -69,6 +70,7 @@ import javax.xml.parsers.SAXParserFactory;
 
 import interfaces.EMSCallBack;
 import interfaces.EMSDeviceManagerPrinterDelegate;
+import main.EMSDeviceManager;
 
 public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener {
 
@@ -312,8 +314,9 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
 
         @Override
         protected String doInBackground(String... params) {
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
-                printSuccessful = Global.mainPrinterManager.getCurrentDevice().printPaymentDetails(pay_id, 1, true, null);
+            EMSDeviceManager emsDeviceManager = DeviceUtils.getEmsDeviceManager(Device.Printables.PAYMENT_RECEIPT_REPRINT, Global.printerDevices);
+            if (emsDeviceManager != null && emsDeviceManager.getCurrentDevice() != null) {
+                printSuccessful = emsDeviceManager.getCurrentDevice().printPaymentDetails(pay_id, 1, true, null);
             }
             return null;
         }

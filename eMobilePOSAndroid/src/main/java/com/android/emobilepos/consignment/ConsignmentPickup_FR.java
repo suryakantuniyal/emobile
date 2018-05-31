@@ -31,7 +31,9 @@ import com.android.database.ProductsHandler;
 import com.android.emobilepos.DrawReceiptActivity;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.realms.AssignEmployee;
+import com.android.emobilepos.models.realms.Device;
 import com.android.support.ConsignmentTransaction;
+import com.android.support.DeviceUtils;
 import com.android.support.GenerateNewID;
 import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
@@ -40,6 +42,8 @@ import com.android.support.MyPreferences;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import main.EMSDeviceManager;
 
 public class ConsignmentPickup_FR extends Fragment implements OnClickListener {
     private ListView myListview;
@@ -239,10 +243,9 @@ public class ConsignmentPickup_FR extends Fragment implements OnClickListener {
 
         @Override
         protected String doInBackground(String... params) {
-            // TODO Auto-generated method stub
-
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
-                printSuccessful = Global.mainPrinterManager.getCurrentDevice().printConsignmentPickup(consTransactionList, global.encodedImage);
+            EMSDeviceManager emsDeviceManager = DeviceUtils.getEmsDeviceManager(Device.Printables.PAYMENT_RECEIPT_REPRINT, Global.printerDevices);
+            if (emsDeviceManager != null && emsDeviceManager.getCurrentDevice() != null) {
+                printSuccessful = emsDeviceManager.getCurrentDevice().printConsignmentPickup(consTransactionList, global.encodedImage);
             }
 
             global.encodedImage = new String();

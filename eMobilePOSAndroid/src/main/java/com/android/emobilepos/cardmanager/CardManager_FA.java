@@ -31,11 +31,13 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.models.PaymentDetails;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.CustomerCustomField;
+import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.PaymentMethod;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.CreditCardInfo;
+import com.android.support.DeviceUtils;
 import com.android.support.Encrypt;
 import com.android.support.GenerateNewID;
 import com.android.support.Global;
@@ -65,6 +67,7 @@ import drivers.EMSMagtekAudioCardReader;
 import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
 import interfaces.EMSCallBack;
+import main.EMSDeviceManager;
 
 public class CardManager_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener {
 
@@ -843,9 +846,10 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
 
         @Override
         protected HashMap<String, String> doInBackground(HashMap<String, String>... params) {
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+            EMSDeviceManager emsDeviceManager = DeviceUtils.getEmsDeviceManager(Device.Printables.PAYMENT_RECEIPT_REPRINT, Global.printerDevices);
+            if (emsDeviceManager != null && emsDeviceManager.getCurrentDevice() != null) {
                 HashMap<String, String> map = params[0];
-                printSuccessful = Global.mainPrinterManager.getCurrentDevice().printBalanceInquiry(map);
+                printSuccessful = emsDeviceManager.getCurrentDevice().printBalanceInquiry(map);
                 map.put("printSuccessful", String.valueOf(printSuccessful));
             }
 

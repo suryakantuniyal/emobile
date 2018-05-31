@@ -24,8 +24,10 @@ import android.widget.Toast;
 import com.android.dao.ShiftDAO;
 import com.android.dao.ShiftExpensesDAO;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.models.realms.Shift;
 import com.android.emobilepos.models.realms.ShiftExpense;
+import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NumberUtils;
@@ -34,6 +36,8 @@ import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.UUID;
+
+import main.EMSDeviceManager;
 
 /**
  * Created by tirizar on 1/5/2016.
@@ -175,10 +179,11 @@ public class ShiftExpense_FA extends BaseFragmentActivityActionBar implements Vi
 
         @Override
         protected ShiftExpense doInBackground(ShiftExpense... shiftExpenses) {
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
-                Global.mainPrinterManager.getCurrentDevice().openCashDrawer();
+            EMSDeviceManager emsDeviceManager = DeviceUtils.getEmsDeviceManager(Device.Printables.REPORTS, Global.printerDevices);
+            if (emsDeviceManager != null && emsDeviceManager.getCurrentDevice() != null) {
+                emsDeviceManager.getCurrentDevice().openCashDrawer();
                 if (preferences.getPreferences(MyPreferences.pref_enable_printing)) {
-                    Global.mainPrinterManager.getCurrentDevice().printExpenseReceipt(shiftExpenses[0]);
+                    emsDeviceManager.getCurrentDevice().printExpenseReceipt(shiftExpenses[0]);
                 }
             }
             return shiftExpenses[0];

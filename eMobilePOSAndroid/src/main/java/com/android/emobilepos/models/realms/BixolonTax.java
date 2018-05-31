@@ -36,4 +36,15 @@ public class BixolonTax extends RealmObject {
     public void setBixolonChar(String bixolonChar) {
         this.bixolonChar = bixolonChar;
     }
+
+    public String getBixolonCreditChar() {
+        if (getBixolonChar().equalsIgnoreCase("!")) {
+            return "1";
+        } else if (getBixolonChar().equalsIgnoreCase("\"")) {
+            return "2";
+        } else if (getBixolonChar().equalsIgnoreCase("#")) {
+            return "3";
+        }
+        return null;
+    }
 }

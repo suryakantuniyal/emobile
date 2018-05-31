@@ -21,8 +21,10 @@ import android.widget.TextView;
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.ReportsMenuAdapter;
 import com.android.emobilepos.adapters.ReportsShiftAdapter;
+import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.shifts.ShiftReportDetails_FA;
 import com.android.support.DateUtils;
+import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
@@ -31,6 +33,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+
+import main.EMSDeviceManager;
 
 public class ViewReport_FA extends BaseFragmentActivityActionBar {
 
@@ -211,17 +215,17 @@ public class ViewReport_FA extends BaseFragmentActivityActionBar {
         @Override
         protected void onPreExecute() {
             myProgressDialog = new ProgressDialog(ViewReport_FA.this);
-            myProgressDialog.setMessage("Printing...");
+            myProgressDialog.setMessage(getString(R.string.printing_message));
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);
             myProgressDialog.show();
-
         }
 
         @Override
         protected Void doInBackground(Void... params) {
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)
-                printSuccessful = Global.mainPrinterManager.getCurrentDevice().printReport(curDate);
+            EMSDeviceManager emsDeviceManager = DeviceUtils.getEmsDeviceManager(Device.Printables.REPORTS, Global.printerDevices);
+            if (emsDeviceManager != null && emsDeviceManager.getCurrentDevice() != null)
+                printSuccessful = emsDeviceManager.getCurrentDevice().printReport(curDate);
             return null;
         }
 
@@ -230,7 +234,6 @@ public class ViewReport_FA extends BaseFragmentActivityActionBar {
             myProgressDialog.dismiss();
             if (!printSuccessful)
                 showPrintDlg();
-
         }
     }
 

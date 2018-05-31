@@ -49,11 +49,13 @@ import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.GroupTax;
 import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
+import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.StoreAndForward;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.CreditCardInfo;
+import com.android.support.DeviceUtils;
 import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -2233,8 +2235,10 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             Payment payment = (Payment) params[1];
             wasReprint = (Boolean) params[0];
             try {
-                if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
-                    printingSuccessful = Global.mainPrinterManager.getCurrentDevice().printPaymentDetails(payment.getPay_id(), 1,
+                EMSDeviceManager emsDeviceManager = DeviceUtils.getEmsDeviceManager(Device.Printables.PAYMENT_RECEIPT_REPRINT, Global.printerDevices);
+//                EMSDeviceManager emsDeviceManager = DeviceUtils.getEmsDeviceManager(Device.Printables.PAYMENT_RECEIPT, Global.printerDevices);
+                if (emsDeviceManager != null && emsDeviceManager.getCurrentDevice() != null) {
+                    printingSuccessful = emsDeviceManager.getCurrentDevice().printPaymentDetails(payment.getPay_id(), 1,
                             wasReprint, payment.getEmvContainer());
                 }
             } catch (Exception e) {

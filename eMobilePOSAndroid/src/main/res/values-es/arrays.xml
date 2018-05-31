@@ -17,6 +17,15 @@
         <item name="othersSettings">"Otros ajustes"</item>
     </string-array>
 
+
+    <string-array name="printables">
+        <item name="paymentReceipt">Payment Receipt</item>
+        <item name="transactionReceipt">Transaction Receipt</item>
+        <item name="paymentReceiptReprint">Payment Receipt Reprint</item>
+        <item name="transactionReceiptReprint">Transaction Reprint</item>
+        <item name="reports">Reports</item>
+    </string-array>
+
     <string-array name="settingsSectionsManagerArray">
         <item name="printingSettings">"Configuración de impresión"</item>
         <item name="cashDrawerSettings">"Cajón de dinero"</item>

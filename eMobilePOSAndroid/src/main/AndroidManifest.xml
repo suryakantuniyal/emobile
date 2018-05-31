@@ -27,7 +27,6 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
 
-
     <permission
         android:name="android.permission.MSR_OPERATION"
         android:protectionLevel="normal" />
@@ -347,8 +346,7 @@
         <activity
             android:name=".mainmenu.restaurant.DinningTablesActivity"
             android:configChanges="orientation|screenSize"
-            android:exported="false"
-          />
+            android:exported="false" />
         <activity
             android:name=".ordering.OrderAttrEdit_FA"
             android:configChanges="orientation|screenSize"
@@ -522,12 +520,23 @@
             android:name=".security.ClerkManagementDetailActivity"
             android:label="@string/config_clerk_management" />
         <activity android:name=".restore.RestoreActivity" />
-            android:label="@string/title_activity_bixolon_transactions" />
-
+        android:label="@string/title_activity_bixolon_transactions" />
         <service
             android:name=".service.SyncConfigServerService"
             android:enabled="true"
             android:exported="true" />
+
+        <activity
+            android:name=".settings.printers.DeviceListActivity"
+            android:label="@string/title_device_list"></activity>
+        <activity
+            android:name=".settings.printers.DeviceDetailActivity"
+            android:label="@string/title_device_detail"
+            android:parentActivityName=".settings.printers.DeviceListActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.android.emobilepos.settings.printers.DeviceListActivity" />
+        </activity>
     </application>
 
 </manifest>

@@ -57,6 +57,7 @@ import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.BiometricFid;
 import com.android.emobilepos.models.realms.Clerk;
+import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.models.realms.EmobileBiometric;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.ProductAttribute;
@@ -93,9 +94,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -234,6 +237,7 @@ public class Global extends MultiDexApplication {
     public static EMSDeviceManager btSwiper;
     public static EMSDeviceManager btSled;
     public static EMSDeviceManager mainPrinterManager;
+    public static Set<Device> printerDevices=new HashSet();
     public static EMSDeviceManager embededMSR;
     public static HashMap<String, Integer> multiPrinterMap = new HashMap<>();
     public static List<EMSDeviceManager> multiPrinterManager = new ArrayList<>();
@@ -415,6 +419,9 @@ public class Global extends MultiDexApplication {
                 break;
             case MIURA:
                 _name = "MIURA";
+                break;
+            case ELOPAYPOINT:
+                _name = "ELO Paypoint";
                 break;
         }
         return _name;

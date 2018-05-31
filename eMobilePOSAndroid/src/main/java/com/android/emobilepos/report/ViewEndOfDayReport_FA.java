@@ -19,7 +19,9 @@ import android.widget.TextView;
 
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.ReportEndDayAdapter;
+import com.android.emobilepos.models.realms.Device;
 import com.android.support.DateUtils;
+import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
@@ -27,6 +29,7 @@ import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import java.util.Calendar;
 import java.util.Date;
 
+import main.EMSDeviceManager;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 public class ViewEndOfDayReport_FA extends BaseFragmentActivityActionBar implements OnClickListener {
@@ -181,7 +184,7 @@ public class ViewEndOfDayReport_FA extends BaseFragmentActivityActionBar impleme
         @Override
         protected void onPreExecute() {
             myProgressDialog = new ProgressDialog(activity);
-            myProgressDialog.setMessage("Printing...");
+            myProgressDialog.setMessage(getString(R.string.printing_message));
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);
             myProgressDialog.show();
@@ -189,8 +192,10 @@ public class ViewEndOfDayReport_FA extends BaseFragmentActivityActionBar impleme
 
         @Override
         protected Void doInBackground(Boolean... params) {
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)
-                Global.mainPrinterManager.getCurrentDevice().printEndOfDayReport(curDate, null, params[0]);
+            EMSDeviceManager emsDeviceManager = DeviceUtils.getEmsDeviceManager(Device.Printables.REPORTS, Global.printerDevices);
+            if (emsDeviceManager != null && emsDeviceManager.getCurrentDevice() != null) {
+                emsDeviceManager.getCurrentDevice().printEndOfDayReport(curDate, null, params[0]);
+            }
             return null;
         }
 

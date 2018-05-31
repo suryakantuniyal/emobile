@@ -427,6 +427,7 @@ public class SynchMethods {
             synchPriceLevel();
             synchCustomerCustomFields();
             synchItemsPriceLevel();
+            synchDownloadDinnerTable();
             synchPrinters();
             synchProdCatXref();
             synchProdChain();
@@ -459,7 +460,7 @@ public class SynchMethods {
             synchShifts();
             synchDownloadClerks();
             synchClerkPersmissions();
-            synchDownloadDinnerTable();
+
             synchSalesAssociateDinnindTablesConfiguration(context);
             synchDownloadMixMatch();
             synchDownloadTermsAndConditions();
@@ -1148,7 +1149,7 @@ public class SynchMethods {
         String jsonRequest = oauthclient.HttpClient.getString(context.getString(R.string.sync_enablermobile_deviceasxmltrans) +
                 xml.downloadAll("Printers"), null, true);
         try {
-            DeviceTableDAO.truncate();
+            DeviceTableDAO.deleteRemoteDevices();
             DeviceTableDAO.insert(jsonRequest);
         } catch (Exception e) {
             e.printStackTrace();

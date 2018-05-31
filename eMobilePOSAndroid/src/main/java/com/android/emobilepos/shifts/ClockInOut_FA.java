@@ -23,8 +23,10 @@ import com.android.database.TimeClockHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.TimeClock;
+import com.android.emobilepos.models.realms.Device;
 import com.android.saxhandler.SAXPostHandler;
 import com.android.support.DateUtils;
+import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NetworkUtils;
@@ -48,6 +50,8 @@ import java.util.UUID;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+
+import main.EMSDeviceManager;
 
 public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
     private Global global;
@@ -162,11 +166,12 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
     }
 
     private void printClockinOut(List<TimeClock> timeClocks) {
-        if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+        EMSDeviceManager emsDeviceManager = DeviceUtils.getEmsDeviceManager(Device.Printables.REPORTS, Global.printerDevices);
+        if (emsDeviceManager != null && emsDeviceManager.getCurrentDevice() != null) {
             ClockInOut clockInOut = ClockInOut.getList(timeClocks);
             List<ClockInOut> inOuts = new ArrayList<>();
             inOuts.add(clockInOut);
-            Global.mainPrinterManager.getCurrentDevice().printClockInOut(inOuts, getClerkID());
+            emsDeviceManager.getCurrentDevice().printClockInOut(inOuts, getClerkID());
         }
     }
 

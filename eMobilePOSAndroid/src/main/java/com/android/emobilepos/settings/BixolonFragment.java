@@ -23,6 +23,7 @@ import com.android.emobilepos.models.Tax;
 import com.android.emobilepos.models.realms.Bixolon;
 import com.android.emobilepos.models.realms.PaymentMethod;
 import com.android.support.DateUtils;
+import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.thefactoryhka.android.controls.PrinterException;
 
@@ -30,6 +31,7 @@ import java.util.Date;
 import java.util.List;
 
 import drivers.EMSBixolonRD;
+import main.EMSDeviceManager;
 
 public class BixolonFragment extends Fragment implements View.OnClickListener {
 
@@ -46,9 +48,10 @@ public class BixolonFragment extends Fragment implements View.OnClickListener {
     private List<PaymentMethod> paymentMethods;
 
     public BixolonFragment() {
-        if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null
-                && Global.mainPrinterManager.getCurrentDevice() instanceof EMSBixolonRD) {
-            bixolonDevice = (EMSBixolonRD) Global.mainPrinterManager.getCurrentDevice();
+        EMSDeviceManager emsDeviceManager = DeviceUtils.getEmsDeviceManager(Global.BIXOLON_RD, Global.printerDevices);
+        if (emsDeviceManager != null && emsDeviceManager.getCurrentDevice() != null
+                && emsDeviceManager.getCurrentDevice() instanceof EMSBixolonRD) {
+            bixolonDevice = (EMSBixolonRD) emsDeviceManager.getCurrentDevice();
         }
     }
 
@@ -232,37 +235,37 @@ public class BixolonFragment extends Fragment implements View.OnClickListener {
             taxesViews = new TextView[5];
             typeTaxesViews = new TextView[5];
             if (getView() != null && getView().findViewById(R.id.bixolon_paymentMethodsContainer) != null) {
-                LinearLayout payMethodContainer = (LinearLayout) getView().findViewById(R.id.bixolon_paymentMethodsContainer);
+                LinearLayout payMethodContainer = getView().findViewById(R.id.bixolon_paymentMethodsContainer);
                 LayoutInflater layoutInflater = getActivity().getLayoutInflater();
                 for (PaymentMethod paymentMethod : paymentMethods) {
                     LinearLayout row = (LinearLayout) layoutInflater.inflate(R.layout.bixolon_two_cols_row_layout, null);
-                    TextView col1 = (TextView) row.findViewById(R.id.bixoloncolumn1);
-                    TextView col2 = (TextView) row.findViewById(R.id.bixoloncolumn2);
+                    TextView col1 = row.findViewById(R.id.bixoloncolumn1);
+                    TextView col2 = row.findViewById(R.id.bixoloncolumn2);
                     col1.setText(paymentMethod.getPaymentmethod_type());
                     col2.setText(paymentMethod.getPaymethod_name());
                     payMethodContainer.addView(row);
                 }
 
-                date = (TextView) getView().findViewById(R.id.bixolondatetextView25);
-                headersViews[0] = (TextView) getView().findViewById(R.id.bixolonheader1textView25b);
-                headersViews[1] = (TextView) getView().findViewById(R.id.bixolonheader2textView25);
-                headersViews[2] = (TextView) getView().findViewById(R.id.bixolonheader3textView25);
+                date = getView().findViewById(R.id.bixolondatetextView25);
+                headersViews[0] = getView().findViewById(R.id.bixolonheader1textView25b);
+                headersViews[1] = getView().findViewById(R.id.bixolonheader2textView25);
+                headersViews[2] = getView().findViewById(R.id.bixolonheader3textView25);
 
-                footersViews[0] = (TextView) getView().findViewById(R.id.bixolonfooter1textView25c);
-                footersViews[1] = (TextView) getView().findViewById(R.id.bixolonfooter2textView25c);
-                footersViews[2] = (TextView) getView().findViewById(R.id.bixolonfooter3textView25c);
+                footersViews[0] = getView().findViewById(R.id.bixolonfooter1textView25c);
+                footersViews[1] = getView().findViewById(R.id.bixolonfooter2textView25c);
+                footersViews[2] = getView().findViewById(R.id.bixolonfooter3textView25c);
 
-                taxesViews[0] = (TextView) getView().findViewById(R.id.bixolontaxes1textView25);
-                taxesViews[1] = (TextView) getView().findViewById(R.id.bixolontaxes2textView26);
-                taxesViews[2] = (TextView) getView().findViewById(R.id.bixolontaxes3textView27);
-                taxesViews[3] = (TextView) getView().findViewById(R.id.bixolontaxes4textView28);
-                taxesViews[4] = (TextView) getView().findViewById(R.id.bixolontaxes5textView29);
+                taxesViews[0] = getView().findViewById(R.id.bixolontaxes1textView25);
+                taxesViews[1] = getView().findViewById(R.id.bixolontaxes2textView26);
+                taxesViews[2] = getView().findViewById(R.id.bixolontaxes3textView27);
+                taxesViews[3] = getView().findViewById(R.id.bixolontaxes4textView28);
+                taxesViews[4] = getView().findViewById(R.id.bixolontaxes5textView29);
 
-                typeTaxesViews[0] = (TextView) getView().findViewById(R.id.taxType1textView25);
-                typeTaxesViews[1] = (TextView) getView().findViewById(R.id.taxType2textView29);
-                typeTaxesViews[2] = (TextView) getView().findViewById(R.id.taxType3textView26);
-                typeTaxesViews[3] = (TextView) getView().findViewById(R.id.taxType4textView27);
-                typeTaxesViews[4] = (TextView) getView().findViewById(R.id.taxType5textView28);
+                typeTaxesViews[0] = getView().findViewById(R.id.taxType1textView25);
+                typeTaxesViews[1] = getView().findViewById(R.id.taxType2textView29);
+                typeTaxesViews[2] = getView().findViewById(R.id.taxType3textView26);
+                typeTaxesViews[3] = getView().findViewById(R.id.taxType4textView27);
+                typeTaxesViews[4] = getView().findViewById(R.id.taxType5textView28);
 
                 int i = 0;
                 for (Tax tax : taxes) {

@@ -49,6 +49,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.dao.AssignEmployeeDAO;
+import com.android.dao.DeviceTableDAO;
 import com.android.dao.PayMethodsDAO;
 import com.android.database.CategoriesHandler;
 import com.android.database.DBManager;
@@ -57,10 +58,12 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.country.CountryPicker;
 import com.android.emobilepos.country.CountryPickerListener;
 import com.android.emobilepos.mainmenu.SettingsTab_FR;
+import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.models.realms.PaymentMethod;
 import com.android.emobilepos.security.ClerkManagementActivity;
 import com.android.emobilepos.security.SecurityManager;
 import com.android.emobilepos.service.SyncConfigServerService;
+import com.android.emobilepos.settings.printers.DeviceListActivity;
 import com.android.support.DateUtils;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
@@ -356,6 +359,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     break;
                 case PRINTING:
                     if (settingsType == SettingsTab_FR.SettingsRoles.ADMIN) {
+                        prefManager.findPreference("pref_multiple_devices_setup").setOnPreferenceClickListener(this);
                         prefManager.findPreference("pref_printek_info").setOnPreferenceClickListener(this);
                         prefManager.findPreference("pref_star_info").setOnPreferenceClickListener(this);
                         prefManager.findPreference("pref_snbc_setup").setOnPreferenceClickListener(this);
@@ -558,7 +562,10 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
         public boolean onPreferenceClick(Preference preference) {
             Intent intent;
             switch (preference.getTitleRes()) {
-
+                case R.string.config_multiple_devices_setup:
+                    intent = new Intent(getActivity(), DeviceListActivity.class);
+                    startActivity(intent);
+                    break;
                 case R.string.config_mw_with_genius:
                     CheckBoxPreference checkBoxPreference = (CheckBoxPreference) preference;
                     if (checkBoxPreference.isChecked()) {
@@ -658,6 +665,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     break;
                 case R.string.config_delete_saved_peripherals:
                     myPref.forgetPeripherals();
+                    DeviceTableDAO.deleteLocalDevices();
                     Toast.makeText(getActivity(), "Peripherals have been erased", Toast.LENGTH_LONG).show();
                     break;
                 case R.string.config_attribute_to_display:
@@ -1099,6 +1107,22 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     EMSDeviceManager edm = new EMSDeviceManager();
                     Global.mainPrinterManager = edm.getManager();
                     Global.mainPrinterManager.loadDrivers(getActivity(), Global.STAR, EMSDeviceManager.PrinterInterfase.TCP);
+                    List<Device> list = new ArrayList<>();
+                    Device device = DeviceTableDAO.getByName(Global.getPeripheralName(Global.STAR));
+                    if (device == null) {
+                        device = new Device();
+                    }
+                    device.setId(String.format(Locale.getDefault(), "TCP:%s", Global.STAR));
+                    device.setName(String.format("%s TCP:%s", Global.getPeripheralName(Global.STAR), ipAddress.getText().toString()));
+                    device.setType(String.valueOf(Global.STAR));
+                    device.setRemoteDevice(false);
+                    device.setIpAddress(ipAddress.getText().toString());
+                    device.setTcpPort(portNumber.getText().toString());
+                    device.setMacAddress(String.format("TCP:%s", ipAddress.getText().toString()));
+                    device.setEmsDeviceManager(Global.mainPrinterManager);
+                    list.add(device);
+                    DeviceTableDAO.insert(list);
+                    Global.printerDevices.add(device);
 
                 }
             }).create();
@@ -1126,6 +1150,19 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     EMSDeviceManager edm = new EMSDeviceManager();
                     Global.mainPrinterManager = edm.getManager();
                     Global.mainPrinterManager.loadDrivers(getActivity(), Global.SNBC, EMSDeviceManager.PrinterInterfase.USB);
+                    List<Device> list = new ArrayList<>();
+                    Device device = DeviceTableDAO.getByName(Global.getPeripheralName(Global.SNBC));
+                    if (device == null) {
+                        device = new Device();
+                    }
+                    device.setId(String.format("USB:%s", Global.SNBC));
+                    device.setName(Global.getPeripheralName(Global.SNBC));
+                    device.setType(String.valueOf(Global.SNBC));
+                    device.setRemoteDevice(false);
+                    device.setEmsDeviceManager(Global.mainPrinterManager);
+                    list.add(device);
+                    DeviceTableDAO.insert(list);
+                    Global.printerDevices.add(device);
                     dlog.dismiss();
                 }
             });
@@ -1292,8 +1329,21 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("STAR")) {
                                 myPref.setPrinterType(Global.STAR);
                                 myPref.setPrinterMACAddress("BT:" + macAddressList.get(pos));
-                                myPref.setPrinterName(strDeviceName);
-
+                                myPref.setPrinterName(val[pos]);
+                                List<Device> list = new ArrayList<>();
+                                Device device = DeviceTableDAO.getByName(strDeviceName);
+                                if (device == null) {
+                                    device = new Device();
+                                }
+                                device.setId(String.format("BT:%s", val[pos]));
+                                device.setMacAddress("BT:" + macAddressList.get(pos));
+                                device.setName(strDeviceName);
+                                device.setType(String.valueOf(Global.STAR));
+                                device.setRemoteDevice(false);
+                                device.setEmsDeviceManager(Global.mainPrinterManager);
+                                list.add(device);
+                                DeviceTableDAO.insert(list);
+//                                Global.printerDevices.add(device);
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();
                                 Global.mainPrinterManager.loadDrivers(getActivity(), Global.STAR, EMSDeviceManager.PrinterInterfase.BLUETOOTH);
@@ -1305,7 +1355,22 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                                 myPref.setIsBixolonRD(true);
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();
-                                Global.mainPrinterManager.loadDrivers(getActivity(), Global.BIXOLON_RD, EMSDeviceManager.PrinterInterfase.BLUETOOTH);
+                                Global.mainPrinterManager.loadMultiDriver(getActivity(), Global.BIXOLON_RD,
+                                        48,true,"","");
+                                List<Device> list = new ArrayList<>();
+                                Device device = DeviceTableDAO.getByName(strDeviceName);
+                                if (device == null) {
+                                    device = new Device();
+                                }
+                                device.setId(String.format("BT:%s", val[pos]));
+                                device.setMacAddress("BT:" + macAddressList.get(pos));
+                                device.setName(strDeviceName);
+                                device.setType(String.valueOf(Global.BIXOLON_RD));
+                                device.setRemoteDevice(false);
+                                device.setEmsDeviceManager(Global.mainPrinterManager);
+                                list.add(device);
+                                DeviceTableDAO.insert(list);
+                                Global.printerDevices.add(device);
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("SPP-R")) {
                                 myPref.setPrinterType(Global.BIXOLON);
                                 myPref.setPrinterMACAddress("BT:" + macAddressList.get(pos));
@@ -1442,6 +1507,19 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                 myPref.setPrinterType(Global.ELOPAYPOINT);
                 Global.mainPrinterManager = edm.getManager();
                 Global.mainPrinterManager.loadDrivers(getActivity(), Global.ELOPAYPOINT, EMSDeviceManager.PrinterInterfase.USB);
+                List<Device> list = new ArrayList<>();
+                Device device = DeviceTableDAO.getByName(Global.getPeripheralName(Global.ELOPAYPOINT));
+                if (device == null) {
+                    device = new Device();
+                }
+                device.setId(String.format("USB:%s", Global.ELOPAYPOINT));
+                device.setName(Global.getPeripheralName(Global.ELOPAYPOINT));
+                device.setType(String.valueOf(Global.ELOPAYPOINT));
+                device.setRemoteDevice(false);
+                device.setEmsDeviceManager(Global.mainPrinterManager);
+                list.add(device);
+                DeviceTableDAO.insert(list);
+                Global.printerDevices.add(device);
             } else if (myPref.isOT310()) {
                 myPref.setPrinterType(Global.OT310);
                 Global.mainPrinterManager = edm.getManager();

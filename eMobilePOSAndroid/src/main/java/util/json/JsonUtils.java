@@ -1,5 +1,6 @@
 package util.json;
 
+import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.models.realms.DinningTable;
 import com.android.emobilepos.models.realms.EmobileBiometric;
 import com.android.support.DateUtils;

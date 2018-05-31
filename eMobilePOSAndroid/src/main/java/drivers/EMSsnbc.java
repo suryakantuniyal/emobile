@@ -5,8 +5,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.hardware.usb.UsbDevice;
-import android.hardware.usb.UsbManager;
 import android.os.AsyncTask;
 
 import com.StarMicronics.jasura.JAException;
@@ -20,13 +18,13 @@ import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.ShiftExpense;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
+import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.crashlytics.android.Crashlytics;
 import com.starmicronics.stario.StarIOPortException;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 import POSAPI.POSInterfaceAPI;
@@ -380,19 +378,21 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 
     @Override
     public boolean isUSBConnected() {
-        UsbManager manager = (UsbManager) activity.getSystemService(Context.USB_SERVICE);
-
-        HashMap<String, UsbDevice> deviceList = manager.getDeviceList();
-        Iterator<UsbDevice> deviceIterator = deviceList.values().iterator();
-
-        while (deviceIterator.hasNext()) {
-
-            UsbDevice device = deviceIterator.next();
-            if ((device.getVendorId() == 7306 && device.getProductId() == 515))
-                return true;
-
-        }
-        return false;
+        EMSDeviceDriver driver = DeviceUtils.getUSBDeviceDriver((Activity) activity);
+        return driver instanceof EMSsnbc;
+//        UsbManager manager = (UsbManager) activity.getSystemService(Context.USB_SERVICE);
+//
+//        HashMap<String, UsbDevice> deviceList = manager.getDeviceList();
+//        Iterator<UsbDevice> deviceIterator = deviceList.values().iterator();
+//
+//        while (deviceIterator.hasNext()) {
+//
+//            UsbDevice device = deviceIterator.next();
+//            if ((device.getVendorId() == 7306 && device.getProductId() == 515))
+//                return true;
+//
+//        }
+//        return false;
     }
 
     @Override

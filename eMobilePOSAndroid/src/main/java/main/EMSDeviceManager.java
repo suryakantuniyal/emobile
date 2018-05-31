@@ -11,10 +11,15 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.android.dao.DeviceTableDAO;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.realms.Device;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import drivers.EMSAsura;
 import drivers.EMSBixolon;
@@ -70,7 +75,7 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                     promptStarPrinterSize(true, activity);
                 break;
             case Global.BIXOLON_RD:
-                aDevice = new EMSBixolonRD(EMSBixolonRD.BixolonCountry.DOMINICAN_REPUBLIC);
+                aDevice = new EMSBixolonRD(EMSBixolonRD.BixolonCountry.PANAMA);
                 aDevice.connect(activity, -1, true, this);
                 break;
             case Global.BAMBOO:
@@ -287,7 +292,16 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 myPref.posPrinter(false, isPOSPrinter);
                 myPref.printerAreaSize(false, paperSize[position]);
                 aDevice.connect(activity, paperSize[position], isPOSPrinter, EMSDeviceManager.this);
-
+                List<Device> list = new ArrayList<>();
+                Device device = DeviceTableDAO.getByName( myPref.getPrinterName());
+                if (device != null) {
+                    device.setPOS(isPOSPrinter);
+                    device.setTextAreaSize( paperSize[position]);
+                    list.add(device);
+                    DeviceTableDAO.insert(list);
+                    device.setEmsDeviceManager(EMSDeviceManager.this);
+                    Global.printerDevices.add(device);
+                }
             }
         });
 

@@ -38,8 +38,10 @@ import com.android.emobilepos.firebase.PollingNotificationService;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.models.firebase.NotificationEvent;
 import com.android.emobilepos.models.orders.Order;
+import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.support.DateUtils;
+import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NetworkUtils;
@@ -58,6 +60,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+import main.EMSDeviceManager;
 
 public class OnHoldActivity extends BaseFragmentActivityActionBar {
     boolean validPassword = false;
@@ -646,9 +650,9 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
         @Override
         protected Void doInBackground(Void... params) {
-
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
-                printSuccessful = Global.mainPrinterManager.getCurrentDevice().printTransaction(Global.lastOrdID, orderType, false, true);
+            EMSDeviceManager emsDeviceManager = DeviceUtils.getEmsDeviceManager(Device.Printables.TRANSACTION_RECEIPT_REPRINT, Global.printerDevices);
+            if (emsDeviceManager != null && emsDeviceManager.getCurrentDevice() != null) {
+                printSuccessful = emsDeviceManager.getCurrentDevice().printTransaction(Global.lastOrdID, orderType, false, true);
             }
             return null;
         }
