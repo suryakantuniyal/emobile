@@ -52,7 +52,7 @@ android {
             minSdkVersion 16
             applicationId 'com.emobilepos.app'
             versionName "1.2.3.106"
-            versionCode 163
+            versionCode 164
             targetSdkVersion 23
             multiDexEnabled = true
             dimension "ems"
@@ -67,7 +67,7 @@ android {
             minSdkVersion 16
             applicationId 'com.emobilepos.icmpevo.app'
             versionName "1.2.3.106"
-            versionCode 163
+            versionCode 164
             targetSdkVersion 23
             multiDexEnabled = true
             dimension "ems"
@@ -96,7 +96,7 @@ android {
             minSdkVersion 16
             applicationId 'com.emobilepos.ivupos.app'
             versionName "1.2.3.106"
-            versionCode 163
+            versionCode 164
             targetSdkVersion 23
             multiDexEnabled = true
             dimension "ems"

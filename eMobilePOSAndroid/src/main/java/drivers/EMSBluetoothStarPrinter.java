@@ -648,7 +648,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 //        setStartIOPort();
 //        try {
 //            verifyConnectivity();
-//        super.cutPaper();
+        super.cutPaper();
 //            releasePrinter();
 //        } catch (StarIOPortException e) {
 //            e.printStackTrace();
