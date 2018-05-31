@@ -35,6 +35,7 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NetworkUtils;
 import com.android.support.SynchMethods;
+import com.crashlytics.android.Crashlytics;
 import com.thefactoryhka.android.controls.PrinterException;
 
 import java.util.List;
@@ -120,7 +121,11 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
     @Override
     public void onResume() {
         super.onResume();
-        setViewData(getView());
+        try {
+            setViewData(getView());
+        } catch (Exception e) {
+            Crashlytics.logException(e);
+        }
     }
 
     @Override

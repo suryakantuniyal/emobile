@@ -110,6 +110,7 @@ public class StoredPaymentsDAO {
                 paymentDetails.setPaymethod_name(payment.getPaymentMethod().getPaymethod_name());
             }
             paymentDetails.setPay_date(Global.formatToDisplayDate(payment.getPay_date(), 0));
+            paymentDetails.setCustomerId(payment.getCust_id());
             paymentDetails.setPay_timecreated(Global.formatToDisplayDate(payment.getPay_timecreated(), 2));
             paymentDetails.setCust_name(haveCustomer ? cursor.getString(cursor.getColumnIndex("cust_name")) : "Unknown");
             paymentDetails.setOrd_total(payment.getPay_amount());

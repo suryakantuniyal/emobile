@@ -446,6 +446,9 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
     }
 
     public void initSpinners() {
+        if (Global.isActivityDestroyed(activity)) {
+            return;
+        }
         taxSelected = 0;
         listMapTaxes = new ArrayList<>();
         List<String> taxes = new ArrayList<>();

@@ -101,6 +101,8 @@ public class MyPreferences {
     public static final String pref_show_removed_void_items_in_printout = "pref_show_removed_void_items_in_printout";
     public static final String pref_limit_products_on_hand = "pref_limit_products_on_hand";
     public static final String pref_attribute_to_display = "pref_attribute_to_display";
+    public static final String pref_default_customer_display_name = "pref_default_customer_display_name";
+
     public static final String pref_printer_width = "pref_printer_width";
     public static final String pref_group_in_catalog_by_name = "pref_group_in_catalog_by_name";
     public static final String pref_filter_products_by_customer = "pref_filter_products_by_customer";
@@ -109,6 +111,7 @@ public class MyPreferences {
     public static final String pref_default_country = "pref_default_country";
     public static final String pref_default_transaction = "pref_default_transaction";
     public static final String pref_default_category = "pref_default_category";
+
     public static final String pref_default_payment_method = "pref_default_payment_method";
     public static final String print_header = "print_header";
     public static final String print_shiptoinfo = "print_shiptoinfo";
@@ -1501,6 +1504,10 @@ public class MyPreferences {
 
     public String getSyncPlusPort() {
         return getPreferencesValue(pref_syncplus_port);
+    }
+
+    public String getCustomerDisplayName() {
+        return getPreferencesValue(pref_default_customer_display_name);
     }
 
     public void setSyncPlusPort(String value) {

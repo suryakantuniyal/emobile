@@ -196,7 +196,7 @@
     <string name="sync_sending_void">Sending Void Transactions\u002E\u002E\u002E</string>
     <string name="sync_sending_cust">Sending New Customers\u002E\u002E\u002E</string>
     <string name="sync_sending_orders">Sending Orders\u002E\u002E\u002E</string>
-    <string name="sync_sending_reverse">Sending Rerverse\u002E\u002E\u002E</string>
+    <string name="sync_sending_reverse">Sending Reverse\u002E\u002E\u002E</string>
     <string name="sync_sending_payment">Sending Payments\u002E\u002E\u002E</string>
     <string name="sync_sending_templates">Sending Templates\u002E\u002E\u002E</string>
     <string name="sync_sending_customer_inventory">Sending Customer Inventory\u002E\u002E\u002E</string>
@@ -981,7 +981,7 @@
     <string name="loyalty_points_sub_total">Points Subtotal</string>
     <string name="loyalty_points_in_use">Points in Use</string>
     <string name="loyalty_points_available">Points Available</string>
-    <string name="loyalty_acumulable_points">Acumulable Points</string>
+    <string name="loyalty_acumulable_points">Accumulable Points</string>
 
     <string name="rewards_balance">Rewards Balance</string>
     <string name="button_pay_with_rewards">Pay With Rewards</string>
@@ -1419,5 +1419,7 @@
     <string name="config_expire_session">Expire user login session</string>
     <string name="typeUserSessionExpirationTime">User session expiration time</string>
     <string name="seconds">Seconds</string>
+    <string name="config_customer_settings">Customer Settings</string>
+    <string name="config_default_customer_display_name">Select Customer Name</string>
 
 </resources>

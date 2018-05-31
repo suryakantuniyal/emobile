@@ -296,7 +296,7 @@ public class EMSDeviceDriver {
         }
     }
 
-    protected void releasePrinter() {
+    public void releasePrinter() {
         if (this instanceof EMSBluetoothStarPrinter) {
             if (port != null) {
                 try {
@@ -763,7 +763,7 @@ public class EMSDeviceDriver {
                     Global.getCurrencyFormat(Global.getBigDecimalNum(product.getItemTotal())
                             .multiply(qty).toString()), lineWidth, 3));
             sb.append(textHandler.oneColumnLineWithLeftAlignedText(getString(R.string.receipt_description), lineWidth, 3));
-            if ( !TextUtils.isEmpty(product.getOrdprod_desc())) {
+            if (!TextUtils.isEmpty(product.getOrdprod_desc())) {
                 StringTokenizer tokenizer = new StringTokenizer(product.getOrdprod_desc(), "<br/>");
                 sb.append(textHandler.oneColumnLineWithLeftAlignedText(tokenizer.nextToken(), lineWidth, 3));
             } else {
@@ -796,13 +796,20 @@ public class EMSDeviceDriver {
             CustomersHandler handler = new CustomersHandler(activity);
             Customer customer = handler.getCustomer(custId);
             if (customer != null) {
-                if (!TextUtils.isEmpty(customer.getCust_firstName())) {
-                    name = String.format("%s %s", StringUtil.nullStringToEmpty(customer.getCust_firstName())
-                            , StringUtil.nullStringToEmpty(customer.getCust_lastName()));
-                } else if (!TextUtils.isEmpty(customer.getCompanyName())) {
-                    name = customer.getCompanyName();
-                } else {
-                    name = customer.getCust_name();
+                String displayName = myPref.getCustomerDisplayName();
+                switch (displayName) {
+                    case "cust_name":
+                        name = customer.getCust_name();
+                        break;
+                    case "fullName":
+                        name = String.format("%s %s", StringUtil.nullStringToEmpty(customer.getCust_firstName())
+                                , StringUtil.nullStringToEmpty(customer.getCust_lastName()));
+                        break;
+                    case "CompanyName":
+                        name = customer.getCompanyName();
+                        break;
+                    default:
+                        name = customer.getCust_name();
                 }
             }
         }
@@ -933,7 +940,7 @@ public class EMSDeviceDriver {
                         custName, lineWidth, 0));
 
             String ordComment = anOrder.ord_comment;
-            if ( !TextUtils.isEmpty(ordComment)) {
+            if (!TextUtils.isEmpty(ordComment)) {
                 sb.append("\n\n");
                 sb.append("Comments:\n");
                 sb.append(textHandler.oneColumnLineWithLeftAlignedText(ordComment, lineWidth, 3)).append("\n");
@@ -1720,7 +1727,8 @@ public class EMSDeviceDriver {
     }
 
     public void printClockInOut(List<ClockInOut> timeClocks, int lineWidth, String clerkID) {
-        EMSPlainTextHelper textHelper = new EMSPlainTextHelper();
+       startReceipt();
+       EMSPlainTextHelper textHelper = new EMSPlainTextHelper();
         Clerk clerk = ClerkDAO.getByEmpId(Integer.parseInt(clerkID));
         StringBuilder str = new StringBuilder();
         str.append(textHelper.centeredString(activity.getString(R.string.clockReceipt), lineWidth));
@@ -1895,7 +1903,7 @@ public class EMSDeviceDriver {
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(payArray.getPay_date(), payArray.getPay_timecreated(), lineWidth, 0))
                         .append("\n");
 
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer), payArray.getCust_name(),
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer), getCustName(payArray.getCustomerId()),
                         lineWidth, 0));
 
                 if (payArray.getJob_id() != null && !TextUtils.isEmpty(payArray.getJob_id()))

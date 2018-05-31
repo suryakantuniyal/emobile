@@ -282,13 +282,15 @@ public class DeviceUtils {
 
         for (Device device : devices) {
             int i = connected.indexOf(device);
-            if (i == -1) {
-                if (device.getEmsDeviceManager() == null && !device.isRemoteDevice()) {
+            if (i == -1 || (i > -1 && (connected.get(i).getEmsDeviceManager() == null && !connected.get(i).isRemoteDevice()))) {
+                try {
                     EMSDeviceManager deviceManager = new EMSDeviceManager();
                     if (deviceManager.loadMultiDriver(activity, Integer.parseInt(device.getType()), device.getTextAreaSize(), device.isPOS(),
                             device.getMacAddress(), device.getTcpPort())) {
                         device.setEmsDeviceManager(deviceManager);
                     }
+                } catch (Exception e) {
+                    Crashlytics.logException(e);
                 }
             } else {
                 device.setEmsDeviceManager(connected.get(i).getEmsDeviceManager());

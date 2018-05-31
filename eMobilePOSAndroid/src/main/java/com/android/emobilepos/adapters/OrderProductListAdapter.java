@@ -117,7 +117,7 @@ public class OrderProductListAdapter extends BaseAdapter {
     public List<OrderProduct> getOrderProducts(String seatNumber) {
         List<OrderProduct> l = new ArrayList<>();
         for (OrderProduct product : orderProducts) {
-            if (product.getAssignedSeat().equalsIgnoreCase(seatNumber)) {
+            if (product.getAssignedSeat() != null && product.getAssignedSeat().equalsIgnoreCase(seatNumber)) {
                 l.add(product);
             }
         }

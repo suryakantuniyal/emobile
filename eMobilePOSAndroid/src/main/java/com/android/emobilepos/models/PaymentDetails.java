@@ -38,6 +38,7 @@ public class PaymentDetails {
 
     private EMVContainer emvContainer;
     private String payType;
+    private String customerId;
 
 
     public String getPaymethod_name() {
@@ -306,5 +307,13 @@ public class PaymentDetails {
 
     public String getPayType() {
         return payType;
+    }
+
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
+    }
+
+    public String getCustomerId() {
+        return customerId;
     }
 }

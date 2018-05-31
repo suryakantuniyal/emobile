@@ -95,6 +95,7 @@ import com.android.support.SynchMethods;
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.starmicronics.stario.StarIOPortException;
 import com.viewpagerindicator.CirclePageIndicator;
 
 import java.lang.reflect.Type;
@@ -994,17 +995,17 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     orderProductsHandler.insert(order.getOrderProducts());
                     productsAttrDb.insert(getOrderingMainFa().global.ordProdAttr);
                     if (myPref.isRestaurantMode()) {
-                        new PrintAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
-                        synchronized (getOrderingMainFa().global.order) {
-                            try {
-                                getOrderingMainFa().global.order.wait(5000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
+                        new PrintAsync(orderingAction).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
+//                        synchronized (getOrderingMainFa().global.order) {
+//                            try {
+//                                getOrderingMainFa().global.order.wait(5000);
+//                            } catch (InterruptedException e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+                    } else {
+                        new SyncOnHolds().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                     }
-
-                    new SyncOnHolds().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 //                    DBManager dbManager = new DBManager(getActivity());
 //                    SynchMethods sm = new SynchMethods(dbManager);
 //                    sm.synchSendOnHold(false, false, getActivity(), null);
@@ -1032,7 +1033,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         ordTaxesDB.insert(getOrderingMainFa().global.order.getListOrderTaxes(),
                                 getOrderingMainFa().global.order.ord_id);
                     if (myPref.isRestaurantMode())
-                        new PrintAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
+                        new PrintAsync(orderingAction).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
 //                    DBManager dbManager = new DBManager(getActivity());
 //                    SynchMethods sm = new SynchMethods(dbManager);
 //                    sm.synchSendOnHold(false, true, getActivity(), global.order.ord_id);
@@ -1080,7 +1081,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     }
                 }
                 if (myPref.isRestaurantMode())
-                    new PrintAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
+                    new PrintAsync(orderingAction).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
 
             }
         }
@@ -1092,7 +1093,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     updateLocalInventory(getActivity(), getOrderingMainFa().global.order.getOrderProducts(), false);
                     typeOfProcedure = Global.TransactionType.PAYMENT;
                     if (OrderTotalDetails_FR.gran_total
-                            .compareTo(new BigDecimal(0)) == -1) {
+                            .compareTo(new BigDecimal(0)) < 0) {
 //                        updateLocalInventory(getActivity(), global.order.getOrderProducts(), true);
                         proceedToRefund();
                     } else {
@@ -1110,7 +1111,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                 .getPreferences(MyPreferences.pref_enable_printing)) {
                             if (myPref
                                     .getPreferences(MyPreferences.pref_automatic_printing)) {
-                                new PrintAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
+                                new PrintAsync(orderingAction).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
                             } else
                                 showPrintDlg(false);
                         } else {
@@ -1170,7 +1171,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                 .getPreferences(MyPreferences.pref_enable_printing)) {
                             if (myPref
                                     .getPreferences(MyPreferences.pref_automatic_printing)) {
-                                new PrintAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
+                                new PrintAsync(orderingAction).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
                             } else
                                 showPrintDlg(false);
                         } else
@@ -1664,13 +1665,13 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         getOrderingMainFa().global.encodedImage = "";
         orderProductsHandler.deleteAllOrdProd(getOrderingMainFa().global.order.ord_id);
         orderProductsHandler.insert(getOrderingMainFa().global.order.getOrderProducts());
-        new PrintAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
+        new PrintAsync(OrderingMain_FA.OrderingAction.HOLD).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
         if (((OrderingMain_FA) getActivity()).orderingAction != OrderingMain_FA.OrderingAction.CHECKOUT
                 || ((OrderingMain_FA) getActivity()).orderingAction == OrderingMain_FA.OrderingAction.BACK_PRESSED) {
             getOrderingMainFa().global.order.setOrderProducts(new ArrayList<OrderProduct>());
             getOrderingMainFa().global.resetOrderDetailsValues();
         }
-        new SyncOnHolds().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+//        new SyncOnHolds().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     public void voidCancelOnHold(int type) {
@@ -1709,7 +1710,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             @Override
             public void onClick(View v) {
                 dlog.dismiss();
-                new PrintAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
+                new PrintAsync(OrderingMain_FA.OrderingAction.NONE).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
 
             }
         });
@@ -1791,7 +1792,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 if (myPref.getPreferences(MyPreferences.pref_enable_printing)) {
                     if (myPref
                             .getPreferences(MyPreferences.pref_automatic_printing)) {
-                        new PrintAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
+                        new PrintAsync(OrderingMain_FA.OrderingAction.NONE).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
                     } else
                         showPrintDlg(false);
                 } else {
@@ -1851,7 +1852,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 if (myPref.getPreferences(MyPreferences.pref_enable_printing)) {
                     if (myPref
                             .getPreferences(MyPreferences.pref_automatic_printing)) {
-                        new PrintAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
+                        new PrintAsync(OrderingMain_FA.OrderingAction.NONE).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
                     } else
                         showPrintDlg(false);
                 } else
@@ -2101,13 +2102,20 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             CustomersHandler handler = new CustomersHandler(getActivity());
             Customer customer = handler.getCustomer(myPref.getCustID());
             if (customer != null) {
-                if (!TextUtils.isEmpty(customer.getCust_firstName())) {
-                    custName.setText(String.format("%s %s", StringUtil.nullStringToEmpty(customer.getCust_firstName())
-                            , StringUtil.nullStringToEmpty(customer.getCust_lastName())));
-                } else if (!TextUtils.isEmpty(customer.getCompanyName())) {
-                    custName.setText(customer.getCompanyName());
-                } else {
-                    custName.setText(customer.getCust_name());
+                String displayName = myPref.getCustomerDisplayName();
+                switch (displayName) {
+                    case "cust_name":
+                        custName.setText(customer.getCust_name());
+                        break;
+                    case "fullName":
+                        custName.setText(String.format("%s %s", StringUtil.nullStringToEmpty(customer.getCust_firstName())
+                                , StringUtil.nullStringToEmpty(customer.getCust_lastName())));
+                        break;
+                    case "CompanyName":
+                        custName.setText(customer.getCompanyName());
+                        break;
+                    default:
+                        custName.setText(customer.getCust_name());
                 }
             }
         }
@@ -2222,6 +2230,11 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         boolean isPrintStationPrinter = false;
         boolean printSuccessful = true;
         private ProgressDialog myProgressDialog;
+        private OrderingMain_FA.OrderingAction orderingAction;
+
+        public PrintAsync(OrderingMain_FA.OrderingAction orderingAction) {
+            this.orderingAction = orderingAction;
+        }
 
         @Override
         protected void onPreExecute() {
@@ -2238,12 +2251,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 getOrderingMainFa()._msrUsbSams.CloseTheDevice();
             }
 
-        }
-
-        @Override
-        protected void onProgressUpdate(Integer... params) {
-            if (!myProgressDialog.isShowing())
-                myProgressDialog.show();
         }
 
         @Override
@@ -2293,17 +2300,35 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                             printHeader = splitByCat;
                             currentPrinterName = currentDevice.getPortName();
                             if (splitByCat) {
+                                if (currentDevice instanceof EMSBluetoothStarPrinter) {
+                                    try {
+                                        currentDevice.verifyConnectivity();
+                                    } catch (StarIOPortException e) {
+                                        e.printStackTrace();
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
                                 currentDevice.print(receipt.toString(), 1, PrinterFunctions.Alignment.Left);
                                 receipt.setLength(0);
                                 currentDevice.cutPaper();
+                                currentDevice.releasePrinter();
                             }
                         }
                     }
                 }
                 if (currentDevice != null && !TextUtils.isEmpty(receipt)) {
-                    currentDevice.print(receipt.toString(), 1, PrinterFunctions.Alignment.Left);
-                    receipt.setLength(0);
-                    currentDevice.cutPaper();
+                    try {
+                        currentDevice.verifyConnectivity();
+                        currentDevice.print(receipt.toString(), 1, PrinterFunctions.Alignment.Left);
+                        receipt.setLength(0);
+                        currentDevice.cutPaper();
+                        currentDevice.releasePrinter();
+                    } catch (StarIOPortException e) {
+                        e.printStackTrace();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
             return null;
@@ -2323,9 +2348,14 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     showPrintDlg(true);
                 }
             }
-            synchronized (getOrderingMainFa().global.order) {
-                getOrderingMainFa().global.order.notifyAll();
+            if (orderingAction == OrderingMain_FA.OrderingAction.HOLD) {
+                new SyncOnHolds().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
+//            if(getOrderingMainFa()!=null) {
+//                synchronized (getOrderingMainFa().global.order) {
+//                    getOrderingMainFa().global.order.notifyAll();
+//                }
+//            }
         }
     }
 
