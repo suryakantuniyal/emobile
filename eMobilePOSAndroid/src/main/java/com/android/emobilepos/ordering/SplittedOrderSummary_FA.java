@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.PowerManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.InputType;
 import android.view.Menu;
@@ -604,13 +603,15 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
 
     private void setReceiptPreview() {
         SplittedOrder splitedOrder = null;
-        try {
-            splitedOrder = (SplittedOrder) calculatedSplitedOrders.get(0).clone();
-        } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
-            Crashlytics.logException(e);
+        if (calculatedSplitedOrders != null && !calculatedSplitedOrders.isEmpty()) {
+            try {
+                splitedOrder = (SplittedOrder) calculatedSplitedOrders.get(0).clone();
+            } catch (CloneNotSupportedException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
+            }
+            getOrderDetailsFR().setReceiptOrder(splitedOrder);
         }
-        getOrderDetailsFR().setReceiptOrder(splitedOrder);
     }
 
     @Override

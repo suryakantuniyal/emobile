@@ -320,7 +320,7 @@ public class CustomersHandler {
 
     public Cursor getSearchCust(String search)
     {
-        String sb = "SELECT cust_id as _id,c.AccountNumnber, custidkey, cust_name, cust_firstName, cust_lastName,c.pricelevel_id,pl.pricelevel_name,cust_taxable,cust_salestaxcode," +
+        String sb = "SELECT cust_id as _id,c.AccountNumnber, custidkey, cust_name, cust_firstName, cust_firstName ||' '|| cust_lastName as 'fullName', cust_lastName,c.pricelevel_id,pl.pricelevel_name,cust_taxable,cust_salestaxcode," +
                 "cust_email,CompanyName,cust_phone FROM Customers c LEFT OUTER JOIN PriceLevel pl ON c.pricelevel_id = pl.pricelevel_id " +
                 "WHERE c.cust_name LIKE ? OR c.cust_lastName LIKE ? " +
                 "OR c.cust_id LIKE ? OR c.AccountNumnber LIKE ? " +

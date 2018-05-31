@@ -17,7 +17,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.PowerManager;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
@@ -1116,6 +1115,8 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     device.setName(String.format("%s TCP:%s", Global.getPeripheralName(Global.STAR), ipAddress.getText().toString()));
                     device.setType(String.valueOf(Global.STAR));
                     device.setRemoteDevice(false);
+                    device.setPOS(true);
+                    device.setTextAreaSize(48);
                     device.setIpAddress(ipAddress.getText().toString());
                     device.setTcpPort(portNumber.getText().toString());
                     device.setMacAddress(String.format("TCP:%s", ipAddress.getText().toString()));
@@ -1356,7 +1357,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();
                                 Global.mainPrinterManager.loadMultiDriver(getActivity(), Global.BIXOLON_RD,
-                                        48,true,"","");
+                                        48, true, "", "");
                                 List<Device> list = new ArrayList<>();
                                 Device device = DeviceTableDAO.getByName(strDeviceName);
                                 if (device == null) {

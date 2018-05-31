@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.PowerManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.text.InputType;
@@ -473,7 +472,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
     private void refreshAttributeProduct(Cursor myCursor) {
 
 //        OrderProduct orderProduct = new OrderProduct();
-        if(isModify) {
+        if (isModify) {
             orderProduct = global.order.getOrderProducts().get(modifyOrderPosition);
         }
         orderProduct.setProd_id(myCursor.getString(myCursor.getColumnIndex("_id")));
@@ -581,15 +580,15 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             if ((myPref.getPreferences(MyPreferences.pref_limit_products_on_hand) && !prod_type.equals("Service")
                     && ((Global.ord_type == Global.OrderType.SALES_RECEIPT || Global.ord_type == Global.OrderType.INVOICE) &&
                     ((!isModify && (selectedQty > onHandQty || newQty > onHandQty)) || (isModify && selectedQty > onHandQty))
-            )) || (Global.isConsignment && !prod_type.equals("Service") && !validConsignment(selectedQty, onHandQty)))
-
-            {
+            )) || (Global.isConsignment && !prod_type.equals("Service") && !validConsignment(selectedQty, onHandQty))) {
                 Global.showPrompt(this, R.string.dlog_title_error, getString(R.string.limit_onhand));
             } else {
-                if (!isModify)
+                if (isModify) {
+                    List<OrderProduct> list = OrderProductUtils.getOrderProductsByOrderProductId(global.order.getOrderProducts(), this.orderProduct.getOrdprod_id());
+                    if (list != null && !list.isEmpty())
+                        setProductInfo(list.get(0));
+                } else {
                     preValidateSettings();
-                else {
-                    setProductInfo(OrderProductUtils.getOrderProductsByOrderProductId(global.order.getOrderProducts(), orderProduct.getOrdprod_id()).get(0));
                 }
 
                 setResult(2);

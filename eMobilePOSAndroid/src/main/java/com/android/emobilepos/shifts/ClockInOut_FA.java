@@ -148,7 +148,8 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
                 break;
         }
         List<TimeClock> timeClocks = timeClockHandler.getEmployeeTimeClock(mClerkID);
-        printClockinOut(timeClocks);
+        new PrintClockInOut().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, timeClocks);
+//        printClockinOut(timeClocks);
     }
 
     private TimeClock createTimeClock(boolean isOut, String date) {
@@ -523,5 +524,13 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
             myProgressDialog.dismiss();
         }
 
+    }
+    private class PrintClockInOut extends AsyncTask<List, Void, Void>{
+
+        @Override
+        protected Void doInBackground(List... timeClocks) {
+            printClockinOut(timeClocks[0]);
+            return null;
+        }
     }
 }

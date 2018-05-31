@@ -180,7 +180,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         productAddonsSection.addView(itemLL);
     }
 
-    private SplittedOrderSummary_FA getSplittedOrderSummaryFa(){
+    private SplittedOrderSummary_FA getSplittedOrderSummaryFa() {
         return (SplittedOrderSummary_FA) getActivity();
     }
 
@@ -414,7 +414,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         intent.putExtra("typeOfProcedure", Global.TransactionType.SALE_RECEIPT);
         intent.putExtra("salesreceipt", true);
         intent.putExtra("amount", String.valueOf(Global.getRoundBigDecimal(Global.getBigDecimalNum(order.gran_total)
-                .compareTo(new BigDecimal(0)) == -1 ? Global.getBigDecimalNum(order.gran_total)
+                .compareTo(new BigDecimal(0)) < 0 ? Global.getBigDecimalNum(order.gran_total)
                 .negate() : Global.getBigDecimalNum(order.gran_total))));
         intent.putExtra("paid", "0.00");
         intent.putExtra("is_receipt", true);
@@ -547,6 +547,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            Global.lockOrientation(getActivity());
             dialog = new ProgressDialog(getActivity());
             dialog.setIndeterminate(true);
             dialog.setCancelable(false);
@@ -564,6 +565,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         @Override
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
+            Global.releaseOrientation(getActivity());
             Global.dismissDialog(getActivity(), dialog);
             getActivity().setResult(-1);
             getActivity().finish();
