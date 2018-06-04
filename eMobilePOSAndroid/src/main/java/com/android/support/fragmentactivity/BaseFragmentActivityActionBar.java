@@ -209,9 +209,7 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
                 Global.mainPrinterManager = edm.getManager();
                 Global.mainPrinterManager.loadMultiDriver(BaseFragmentActivityActionBar.this, myPref.getPrinterType(), 0, true, "", "");
             }
-            if (!BaseFragmentActivityActionBar.this.isFinishing()) {
-                dismissProgressDialog();
-            }
+            Global.dismissDialog(BaseFragmentActivityActionBar.this, driversProgressDialog);
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         }
 
@@ -223,12 +221,6 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
                 driversProgressDialog.setCancelable(true);
             }
             driversProgressDialog.show();
-        }
-
-        private void dismissProgressDialog() {
-            if (driversProgressDialog != null && driversProgressDialog.isShowing()) {
-                driversProgressDialog.dismiss();
-            }
         }
     }
 

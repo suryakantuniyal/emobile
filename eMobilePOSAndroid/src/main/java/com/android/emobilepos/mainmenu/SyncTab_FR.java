@@ -240,6 +240,7 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
 
         @Override
         protected void onPreExecute() {
+            Global.lockOrientation(getActivity());
             dialog = new ProgressDialog(getActivity());
             dialog.setTitle(R.string.sync_title);
             dialog.setIndeterminate(true);
@@ -257,6 +258,7 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
 
         @Override
         protected void onPostExecute(Boolean result) {
+            Global.releaseOrientation(getActivity());
             Global.dismissDialog(getActivity(), dialog);
             if (!result) {
                 Global.showPrompt(getActivity(), R.string.sync_title, getString(R.string.sync_fail));

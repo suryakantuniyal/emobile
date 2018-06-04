@@ -38,7 +38,7 @@ public class MenuProdGV_Adapter extends CursorAdapter {
 
     private VolumePricesHandler volPriceHandler;
     private String attrToDisplay = "";
-//    private long lastClickTime = 0;
+    //    private long lastClickTime = 0;
     private boolean isFastScanning = false;
     private boolean isRestMode = false;
 
@@ -81,42 +81,44 @@ public class MenuProdGV_Adapter extends CursorAdapter {
                 holder.title.setText(Global.getValidString(cursor.getString(holder.i_prod_name)));
 
             String urlLink = cursor.getString(holder.i_prod_img_name);
-            if ((holder.itemImage.getTag() != null && !holder.itemImage.getTag().equals(urlLink)) || holder.itemImage.getTag() == null) {
-                holder.itemImage.setTag(urlLink);
-                if (urlLink != null || TextUtils.isEmpty(cursor.getString(holder.i_prod_name)) || holder.productNameTxt == null) {
-                    holder.itemImage.setScaleType(ImageView.ScaleType.FIT_XY);
-                    imageLoader.displayImage(urlLink, holder.itemImage, options);
-                    if (holder.productNameTxt != null) {
-                        holder.productNameTxt.setVisibility(View.GONE);
+            if(holder.itemImage!=null) {
+                if ((holder.itemImage.getTag() != null && !holder.itemImage.getTag().equals(urlLink)) || holder.itemImage.getTag() == null) {
+                    holder.itemImage.setTag(urlLink);
+                    if (urlLink != null || TextUtils.isEmpty(cursor.getString(holder.i_prod_name)) || holder.productNameTxt == null) {
+                        holder.itemImage.setScaleType(ImageView.ScaleType.FIT_XY);
+                        imageLoader.displayImage(urlLink, holder.itemImage, options);
+                        if (holder.productNameTxt != null) {
+                            holder.productNameTxt.setVisibility(View.GONE);
+                        }
+                    } else {
+                        holder.itemImage.setImageDrawable(null);
+                        holder.productNameTxt.setText(cursor.getString(holder.i_prod_name));
+                        holder.productNameTxt.setVisibility(View.VISIBLE);
                     }
-                } else {
-                    holder.itemImage.setImageDrawable(null);
-                    holder.productNameTxt.setText(cursor.getString(holder.i_prod_name));
-                    holder.productNameTxt.setVisibility(View.VISIBLE);
                 }
-            }
 
-            holder.itemImage.setOnTouchListener(Global.opaqueImageOnClick());
-            holder.itemImage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+
+                holder.itemImage.setOnTouchListener(Global.opaqueImageOnClick());
+                holder.itemImage.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
 //                    if ((!isFastScanning || (isFastScanning && isRestMode)) && SystemClock.elapsedRealtime() - lastClickTime < 1000) {
 //                        return;
 //                    }
 //                    lastClickTime = SystemClock.elapsedRealtime();
-                    if((isFastScanning && !isRestMode) || UIUtils.singleOnClick(v)) {
-                        if (isPortrait) {
-                            Intent intent = new Intent(activity, ShowProductImageActivity.class);
-                            cursor.moveToPosition(position);
-                            intent.putExtra("url", cursor.getString(holder.i_prod_img_name));
-                            activity.startActivity(intent);
-                        } else {
-                            callBack.productClicked(position);
+                        if ((isFastScanning && !isRestMode) || UIUtils.singleOnClick(v)) {
+                            if (isPortrait) {
+                                Intent intent = new Intent(activity, ShowProductImageActivity.class);
+                                cursor.moveToPosition(position);
+                                intent.putExtra("url", cursor.getString(holder.i_prod_img_name));
+                                activity.startActivity(intent);
+                            } else {
+                                callBack.productClicked(position);
+                            }
                         }
                     }
-                }
-            });
-
+                });
+            }
             if (isPortrait) {
                 String prod_id = cursor.getString(holder.i_id);
                 holder.qty.setText(OrderProductUtils.getOrderProductQty(global.order.getOrderProducts(), prod_id));//getQty(prod_id));
@@ -170,14 +172,14 @@ public class MenuProdGV_Adapter extends CursorAdapter {
         ViewHolder holder = new ViewHolder();
         retView = inflater.inflate(R.layout.catalog_listview_adapter, parent, false);
         if (isPortrait) {
-            holder.title = (TextView) retView.findViewById(R.id.catalogItemName);
-            holder.qty = (TextView) retView.findViewById(R.id.catalogItemQty);
-            holder.consignment_qty = (TextView) retView.findViewById(R.id.catalogConsignmentQty);
-            holder.amount = (TextView) retView.findViewById(R.id.catalogItemPrice);
-            holder.detail = (TextView) retView.findViewById(R.id.catalogItemInfo);
-            holder.iconImage = (ImageView) retView.findViewById(R.id.catalogRightIcon);
-            holder.itemImage = (ImageView) retView.findViewById(R.id.catalogItemPic);
-            holder.productNameTxt = (TextView) retView.findViewById(R.id.gridCatalogProducttNametextView);
+            holder.title = retView.findViewById(R.id.catalogItemName);
+            holder.qty = retView.findViewById(R.id.catalogItemQty);
+            holder.consignment_qty = retView.findViewById(R.id.catalogConsignmentQty);
+            holder.amount = retView.findViewById(R.id.catalogItemPrice);
+            holder.detail = retView.findViewById(R.id.catalogItemInfo);
+            holder.iconImage = retView.findViewById(R.id.catalogRightIcon);
+            holder.itemImage = retView.findViewById(R.id.catalogItemPic);
+            holder.productNameTxt = retView.findViewById(R.id.gridCatalogProducttNametextView);
             holder.i_id = cursor.getColumnIndex("_id");
             holder.i_prod_name = cursor.getColumnIndex(attrToDisplay);
             holder.i_master_price = cursor.getColumnIndex("master_price");
@@ -188,9 +190,9 @@ public class MenuProdGV_Adapter extends CursorAdapter {
             holder.i_chain_price = cursor.getColumnIndex("chain_price");
             holder.i_consignment_qty = cursor.getColumnIndex("consignment_qty");
         } else {
-            holder.title = (TextView) retView.findViewById(R.id.gridViewImageTitle);
-            holder.itemImage = (ImageView) retView.findViewById(R.id.gridViewImage);
-            holder.productNameTxt = (TextView) retView.findViewById(R.id.gridCatalogProducttNametextView);
+            holder.title = retView.findViewById(R.id.gridViewImageTitle);
+            holder.itemImage = retView.findViewById(R.id.gridViewImage);
+            holder.productNameTxt = retView.findViewById(R.id.gridCatalogProducttNametextView);
             holder.i_prod_name = cursor.getColumnIndex(attrToDisplay);
             holder.i_prod_desc = cursor.getColumnIndex("prod_desc");
             holder.i_prod_img_name = cursor.getColumnIndex("prod_img_name");

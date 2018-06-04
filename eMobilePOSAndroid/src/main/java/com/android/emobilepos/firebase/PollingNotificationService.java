@@ -16,6 +16,7 @@ import com.android.database.DBManager;
 import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
+import com.android.emobilepos.models.firebase.NotificationEvent;
 import com.android.emobilepos.service.SyncConfigServerService;
 import com.android.support.DateUtils;
 import com.android.support.Global;
@@ -26,9 +27,14 @@ import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 
+import org.xml.sax.SAXException;
+
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URLEncoder;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -170,11 +176,33 @@ public class PollingNotificationService extends Service {
         Intent intent = new Intent(MAIN_ACTION);
         intent.putExtra("action", message);
         sendBroadcast(intent);
+        if (message.equalsIgnoreCase(ONHOLD_BROADCAST_ACTION)) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        SynchMethods.synchOrdersOnHoldList(getApplicationContext());
+                        Intent i = new Intent(MainMenu_FA.NOTIFICATION_RECEIVED);
+                        i.putExtra(MainMenu_FA.NOTIFICATION_MESSAGE, String.valueOf(NotificationEvent.NotificationEventAction.SYNC_HOLDS.getCode()));
+                        sendBroadcast(i);
+                    } catch (SAXException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (KeyManagementException e) {
+                        e.printStackTrace();
+                    } catch (NoSuchAlgorithmException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
+        }
     }
 
     public void pollNotificationEvents(Context context) {
         try {
-            if (NetworkUtils.isConnectedToInternet(context)) {
+            if ((preferences.isUse_syncplus_services() && NetworkUtils.isConnectedToLAN(context))
+                    || NetworkUtils.isConnectedToInternet(context)) {
                 Date tempPollDate = new Date();
                 Gson gson = JsonUtils.getInstance();
                 String baseUrl;

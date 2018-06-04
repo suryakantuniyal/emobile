@@ -457,7 +457,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         if (myPref != null && myPref.isCustSelected()) {
             custTaxCode = myPref.getCustTaxCode();
             if (TextUtils.isEmpty(custTaxCode)) {
-                custTaxCode = assignEmployee.getTaxDefault();
+                custTaxCode = AssignEmployeeDAO.getAssignEmployee().getTaxDefault();
             }
         } else if (Global.isFromOnHold && !TextUtils.isEmpty(Global.taxID))
             custTaxCode = Global.taxID;
