@@ -12,6 +12,7 @@ import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.os.RemoteException;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -67,6 +68,10 @@ import com.miurasystems.miuralibrary.api.executor.MiuraManager;
 import com.miurasystems.miuralibrary.api.listener.MiuraDefaultListener;
 import com.mpowa.android.sdk.powapos.PowaPOS;
 import com.partner.pt100.printer.PrinterApiContext;
+import com.printer.aidl.PService;
+import com.printer.command.EscCommand;
+import com.printer.command.PrinterCom;
+import com.printer.command.PrinterUtils;
 import com.starmicronics.stario.StarIOPort;
 import com.starmicronics.stario.StarIOPortException;
 import com.starmicronics.starioextension.ICommandBuilder;
@@ -100,6 +105,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.Vector;
 
 import POSSDK.POSSDK;
 import datamaxoneil.connection.Connection_Bluetooth;
@@ -115,6 +121,8 @@ import jpos.POSPrinterConst;
 import main.EMSDeviceManager;
 import plaintext.EMSPlainTextHelper;
 import util.StringUtil;
+
+import static drivers.EMSGPrinterPT380.PRINTER_ID;
 
 
 public class EMSDeviceDriver {
@@ -140,12 +148,14 @@ public class EMSDeviceDriver {
     PrinterAPI eloPrinterApi;
     Printer eloPrinterRefresh;
     POSPrinter bixolonPrinter;
+    PService mPService = null;
     MePOSReceipt mePOSReceipt;
     InputStream inputStream;
     OutputStream outputStream;
     Typeface typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL);
     private double saveAmount;
     private StarIoExt.Emulation emulation = StarIoExt.Emulation.StarGraphic;
+    private EscCommand esc;
 
     private static byte[] convertFromListbyteArrayTobyteArray(List<byte[]> ByteArray) {
         int dataLength = 0;
@@ -565,9 +575,32 @@ public class EMSDeviceDriver {
 //                }
             }
             mePOSReceipt = null;
+        } else if (this instanceof EMSGPrinterPT380) {
+            // print footer
+            esc = new EscCommand();
+            esc.addInitializePrinter();
+            esc.addPrintAndFeedLines((byte) 3);
+            esc.addQueryPrinterStatus();
+            printGPrinter(esc);
         }
     }
 
+    private void printGPrinter(EscCommand escCommand){
+        Vector<Byte> datas = escCommand.getCommand();
+        byte[] bytes = PrinterUtils.ByteTo_byte(datas);
+        String sss = Base64.encodeToString(bytes, Base64.DEFAULT);
+        int rs;
+        try {
+            rs = mPService.sendEscCommand(PRINTER_ID, sss);
+            PrinterCom.ERROR_CODE r = PrinterCom.ERROR_CODE.values()[rs];
+            if (r != PrinterCom.ERROR_CODE.SUCCESS) {
+                Toast.makeText(activity, PrinterCom.getErrorText(r), Toast.LENGTH_SHORT).show();
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
+    }
     private void printStar(String str, int size, PrinterFunctions.Alignment alignment) throws StarIOPortException, UnsupportedEncodingException {
         if (port == null) {
             return;
@@ -641,6 +674,13 @@ public class EMSDeviceDriver {
                     SendCmd(String.format("80*%s", line));
                 }
             }
+        } else if (this instanceof EMSGPrinterPT380) {
+            // print line
+            esc = new EscCommand();
+            esc.addInitializePrinter();
+            esc.addText(str);
+            esc.addQueryPrinterStatus();
+            printGPrinter(esc);
         } else if (this instanceof EMSELO) {
             if (eloPrinterRefresh != null) {
                 eloPrinterRefresh.print(str);
@@ -1346,7 +1386,7 @@ public class EMSDeviceDriver {
                 Crashlytics.logException(e);
             }
 //            print(new byte[]{0x1b, 0x64, 0x02}); // Cut
-        } else if (this instanceof EMSmePOS) {
+        } else if (this instanceof EMSmePOS || this instanceof EMSGPrinterPT380) {
             finishReceipt();
         }
     }
@@ -1526,6 +1566,15 @@ public class EMSDeviceDriver {
 //                } catch (IOException e) {
 //                    e.printStackTrace();
 //                }
+            } else if (this instanceof EMSGPrinterPT380) {
+                // print logo
+                esc = new EscCommand();
+                esc.addInitializePrinter();
+                esc.addSelectJustification(EscCommand.JUSTIFICATION.CENTER);
+                esc.addRastBitImage(myBitmap, 384, 0);
+                esc.addPrintAndFeedLines((byte) 2);
+                esc.addQueryPrinterStatus();
+                printGPrinter(esc);
             } else if (this instanceof EMSBixolon) {
                 ByteBuffer buffer = ByteBuffer.allocate(4);
                 buffer.put((byte) POSPrinterConst.PTR_S_RECEIPT);

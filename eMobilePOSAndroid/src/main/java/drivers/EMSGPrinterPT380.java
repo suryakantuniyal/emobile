@@ -14,6 +14,7 @@ import android.os.RemoteException;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.StarMicronics.jasura.JAException;
 import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
@@ -30,6 +31,7 @@ import com.printer.command.PrinterCom;
 import com.printer.io.PortParameters;
 import com.printer.io.PrinterDevice;
 import com.printer.service.PrinterPrintService;
+import com.starmicronics.stario.StarIOPortException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -43,11 +45,11 @@ import main.EMSDeviceManager;
  */
 public class EMSGPrinterPT380 extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
 
-    private static final int PRINTER_ID = 0;
+    private final int LINE_WIDTH = 42;
+    public static final int PRINTER_ID = 0;
     private static final String DEBUG_TAG = "EMSGPrinterPT380";
     private static final int MAIN_QUERY_PRINTER_STATUS = 0xfe;
 
-    private PService mPService = null;
     private PrinterServiceConnection conn = null;
 
     private EMSDeviceManager edm;
@@ -80,13 +82,12 @@ public class EMSGPrinterPT380 extends EMSDeviceDriver implements EMSDeviceManage
                     Toast.makeText(activity, PrinterCom.getErrorText(r),
                             Toast.LENGTH_LONG).show();
                 }
+                edm.driverDidNotConnectToDevice(EMSGPrinterPT380.this,
+                        "", false, activity);
+            } else {
+                edm.driverDidConnectToDevice(EMSGPrinterPT380.this,
+                        false, activity);
             }
-
-//            try {
-//                mPService.queryPrinterStatus(PRINTER_ID, 500, MAIN_QUERY_PRINTER_STATUS);
-//            } catch (RemoteException e) {
-//                e.printStackTrace();
-//            }
         }
     }
 
@@ -187,67 +188,80 @@ public class EMSGPrinterPT380 extends EMSDeviceDriver implements EMSDeviceManage
     public boolean printTransaction(String ordID, Global.OrderType saleTypes,
                                     boolean isFromHistory, boolean fromOnHold,
                                     EMVContainer emvContainer) {
-        return false;
+        setPaperWidth(LINE_WIDTH);
+        printReceipt(ordID, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, emvContainer);
+        return true;
     }
 
     @Override
     public boolean printTransaction(Order order, Global.OrderType saleTypes,
                                     boolean isFromHistory, boolean fromOnHold,
                                     EMVContainer emvContainer) {
-        return false;
+        setPaperWidth(LINE_WIDTH);
+        printReceipt(order, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, emvContainer);
+        return true;
     }
 
     @Override
     public boolean printTransaction(String ordID, Global.OrderType saleTypes,
                                     boolean isFromHistory, boolean fromOnHold) {
-        return false;
+        setPaperWidth(LINE_WIDTH);
+        printTransaction(ordID, saleTypes, isFromHistory, fromOnHold, null);
+        return true;
     }
 
     @Override
     public boolean printTransaction(Order order, Global.OrderType saleTypes,
                                     boolean isFromHistory, boolean fromOnHold) {
-        return false;
+        setPaperWidth(LINE_WIDTH);
+        printReceipt(order, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, null);
+        return true;
     }
 
     @Override
     public boolean printPaymentDetails(String payID, int type, boolean isReprint, EMVContainer emvContainer) {
-        setPaperWidth(42);
-        printPaymentDetailsReceipt(payID, type, isReprint, 42, emvContainer);
+        setPaperWidth(LINE_WIDTH);
+        printPaymentDetailsReceipt(payID, type, isReprint, LINE_WIDTH, emvContainer);
         return true;
     }
 
     @Override
     public boolean printBalanceInquiry(HashMap<String, String> values) {
-        return false;
+        setPaperWidth(LINE_WIDTH);
+        return printBalanceInquiry(values, LINE_WIDTH);
     }
 
     @Override
-    public boolean printConsignment(List<ConsignmentTransaction> myConsignment,
-                                    String encodedSignature) {
-        return false;
+    public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSig) {
+        setPaperWidth(LINE_WIDTH);
+        printConsignmentReceipt(myConsignment, encodedSig, LINE_WIDTH);
+        return true;
     }
 
     @Override
-    public boolean printConsignmentPickup(List<ConsignmentTransaction> myConsignment,
-                                          String encodedSignature) {
-        return false;
+    public boolean printConsignmentPickup(List<ConsignmentTransaction> myConsignment, String encodedSig) {
+        setPaperWidth(LINE_WIDTH);
+        printConsignmentPickupReceipt(myConsignment, encodedSig, LINE_WIDTH);
+        return true;
     }
 
     @Override
-    public boolean printConsignmentHistory(HashMap<String, String> map, Cursor c,
-                                           boolean isPickup) {
-        return false;
+    public boolean printConsignmentHistory(HashMap<String, String> map, Cursor c, boolean isPickup) {
+        setPaperWidth(LINE_WIDTH);
+        printConsignmentHistoryReceipt(map, c, isPickup, LINE_WIDTH);
+        return true;
     }
 
     @Override
-    public String printStationPrinter(List<Orders> orderProducts, String ordID,
-                                      boolean cutPaper, boolean printHeader) {
-        return null;
+    public String printStationPrinter(List<Orders> orders, String ordID, boolean cutPaper, boolean printHeader) {
+        return printStationPrinterReceipt(orders, ordID, LINE_WIDTH, cutPaper, printHeader);
     }
 
     @Override
     public boolean printOpenInvoices(String invID) {
-        return false;
+        setPaperWidth(LINE_WIDTH);
+        printOpenInvoicesReceipt(invID, LINE_WIDTH);
+        return true;
     }
 
     @Override
@@ -277,17 +291,26 @@ public class EMSGPrinterPT380 extends EMSDeviceDriver implements EMSDeviceManage
 
     @Override
     public boolean printReport(String curDate) {
-        return false;
+        setPaperWidth(LINE_WIDTH);
+        printReportReceipt(curDate, LINE_WIDTH);
+        return true;
     }
 
     @Override
     public void printShiftDetailsReport(String shiftID) {
-
+        setPaperWidth(LINE_WIDTH);
+        printShiftDetailsReceipt(LINE_WIDTH, shiftID);
     }
 
     @Override
-    public void printEndOfDayReport(String date, String clerk_id, boolean printDetails) {
+    public void printEndOfDayReport(String curDate, String clerk_id, boolean printDetails) {
+        setPaperWidth(LINE_WIDTH);
+        printEndOfDayReportReceipt(curDate, LINE_WIDTH, printDetails);
+    }
 
+    @Override
+    public void registerAll() {
+        this.registerPrinter();
     }
 
     @Override
@@ -342,7 +365,14 @@ public class EMSGPrinterPT380 extends EMSDeviceDriver implements EMSDeviceManage
 
     @Override
     public void printReceiptPreview(SplittedOrder splitedOrder) {
-
+        try {
+            setPaperWidth(LINE_WIDTH);
+            super.printReceiptPreview(splitedOrder, LINE_WIDTH);
+        } catch (JAException e) {
+            e.printStackTrace();
+        } catch (StarIOPortException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -389,16 +419,16 @@ public class EMSGPrinterPT380 extends EMSDeviceDriver implements EMSDeviceManage
 
     @Override
     public boolean isConnected() {
-        return false;
+        return true;
     }
 
     @Override
-    public void printClockInOut(List<ClockInOut> clockInOuts, String clerkID) {
-
+    public void printClockInOut(List<ClockInOut> timeClocks, String clerkID) {
+        super.printClockInOut(timeClocks, LINE_WIDTH, clerkID);
     }
 
     @Override
     public void printExpenseReceipt(ShiftExpense expense) {
-
+        printExpenseReceipt(LINE_WIDTH, expense);
     }
 }
