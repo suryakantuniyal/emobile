@@ -152,7 +152,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting_list);
         Bundle extras = this.getIntent().getExtras();
-        if (extras.containsKey("settings_type")) {
+        if (extras != null && extras.containsKey("settings_type")) {
             settingsType = (SettingsTab_FR.SettingsRoles) extras.get("settings_type");
         } else {
             settingsType = SettingsTab_FR.SettingsRoles.GENERAL;

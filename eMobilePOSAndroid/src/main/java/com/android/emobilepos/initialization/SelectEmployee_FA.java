@@ -1,6 +1,5 @@
 package com.android.emobilepos.initialization;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -66,6 +65,7 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
 
         @Override
         protected void onPreExecute() {
+            Global.lockOrientation(SelectEmployee_FA.this);
             myProgressDialog = new ProgressDialog(SelectEmployee_FA.this);
             myProgressDialog.setMessage(getString(R.string.loading));
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -108,9 +108,10 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
 
         @Override
         protected void onPostExecute(String unused) {
-            myProgressDialog.dismiss();
+            Global.dismissDialog(SelectEmployee_FA.this, myProgressDialog);
+            Global.releaseOrientation(SelectEmployee_FA.this);
             if (succeeded) {
-                ListView myListView = (ListView) findViewById(R.id.employeeListView);
+                ListView myListView = findViewById(R.id.employeeListView);
                 ListViewAdapter myAdapter = new ListViewAdapter(SelectEmployee_FA.this);
                 myListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -121,7 +122,7 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
                     }
                 });
 
-                Button reload = (Button) findViewById(R.id.reloadButton);
+                Button reload = findViewById(R.id.reloadButton);
                 reload.setOnClickListener(new View.OnClickListener() {
 
                     @Override
@@ -216,7 +217,7 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
         SAXParserFactory spf = SAXParserFactory.newInstance();
         SaxLoginHandler handler = new SaxLoginHandler();
         try {
-            String xml = post.postData(2,  "");
+            String xml = post.postData(2, "");
             InputSource inSource = new InputSource(new StringReader(xml));
             SAXParser sp = spf.newSAXParser();
             XMLReader xr = sp.getXMLReader();
@@ -246,7 +247,7 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
         SAXParserFactory spf = SAXParserFactory.newInstance();
         SaxLoginHandler handler = new SaxLoginHandler();
         try {
-            String xml = post.postData(5,  "");
+            String xml = post.postData(5, "");
             InputSource inSource = new InputSource(new StringReader(xml));
             SAXParser sp = spf.newSAXParser();
             XMLReader xr = sp.getXMLReader();
@@ -315,7 +316,7 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
             if (convertView == null) {
                 holder = new ViewHolder();
                 convertView = myInflater.inflate(R.layout.select_customer_adapter, null);
-                holder.employeeName = (TextView) convertView.findViewById(R.id.employeeName);
+                holder.employeeName = convertView.findViewById(R.id.employeeName);
                 holder.employeeName.setText(empName.get(position));
 
                 convertView.setTag(holder);
