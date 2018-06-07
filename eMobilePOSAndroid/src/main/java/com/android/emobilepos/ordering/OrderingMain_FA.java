@@ -13,7 +13,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.PowerManager;
 import android.os.RemoteException;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -453,7 +452,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
         isToGo = getRestaurantSaleType() == Global.RestaurantSaleType.TO_GO;
 
-        returnItem = mTransType == Global.TransactionType.RETURN;
+//        returnItem = mTransType == Global.TransactionType.RETURN;
         if (!myPref.isTablet())
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
@@ -592,7 +591,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     private void setReturnConfiguration(int titleResId) {
         headerTitle.setText(getString(titleResId));
         headerContainer.setBackgroundColor(Color.RED);
-        OrderingMain_FA.returnItem = true;
+        if (mTransType != Global.TransactionType.RETURN) {
+            OrderingMain_FA.returnItem = true;
+        }
     }
 
     private void handleFragments() {
