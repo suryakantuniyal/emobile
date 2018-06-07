@@ -537,6 +537,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.android.emobilepos.settings.printers.DeviceListActivity" />
         </activity>
+        <service android:name="com.printer.service.PrinterPrintService"
+
+            android:label="PrinterPrintService">
+            <intent-filter>
+                <action android:name="com.printer.aidl.PrinterPrintService" />
+            </intent-filter>
+        </service>
+        <service android:name="com.printer.service.AllService">
+        </service>
     </application>
 
 </manifest>
