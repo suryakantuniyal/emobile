@@ -529,7 +529,8 @@ public class SynchMethods {
         boolean isError = false;
         try {
 
-            if (NetworkUtils.isConnectedToInternet(context)) {
+            if ((preferences.isUse_syncplus_services() && NetworkUtils.isConnectedToLAN(activity))
+                    || NetworkUtils.isConnectedToInternet(context)) {
                 err_msg = sendOrdersOnHold();
                 if (err_msg.isEmpty()) {
                     if (checkoutOnHold) {
@@ -1847,7 +1848,8 @@ public class SynchMethods {
 
         @Override
         protected String doInBackground(String... params) {
-            if (NetworkUtils.isConnectedToInternet(context)) {
+            if ((myPref.isUse_syncplus_services() && NetworkUtils.isConnectedToLAN(activity))
+                    || NetworkUtils.isConnectedToInternet(context)) {
                 try {
                     updateProgress(context.getString(R.string.sync_dload_ordersonhold));
                     synchOrdersOnHoldList(context);

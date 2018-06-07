@@ -127,7 +127,15 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
 
     @Override
     public boolean printTransaction(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
-        printTransaction(order, saleTypes, isFromHistory, fromOnHold, null);
+            try {
+                if (!device.getIsOpen()) {
+                    device.open();
+                }
+                printReceipt(order, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, emvContainer);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
         return true;
     }
 
@@ -146,7 +154,6 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
 
     @Override
     public boolean printPaymentDetails(String payID, int type, boolean isReprint, EMVContainer emvContainer) {
-        // TODO Auto-generated method stub
         try {
             if (!device.getIsOpen())
                 device.open();

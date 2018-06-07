@@ -152,7 +152,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting_list);
         Bundle extras = this.getIntent().getExtras();
-        if (extras.containsKey("settings_type")) {
+        if (extras != null && extras.containsKey("settings_type")) {
             settingsType = (SettingsTab_FR.SettingsRoles) extras.get("settings_type");
         } else {
             settingsType = SettingsTab_FR.SettingsRoles.GENERAL;
@@ -766,10 +766,10 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
             globalDlog.setCanceledOnTouchOutside(true);
             globalDlog.setContentView(R.layout.dlog_field_single_layout);
 
-            final EditText viewField = (EditText) globalDlog.findViewById(R.id.dlogFieldSingle);
+            final EditText viewField = globalDlog.findViewById(R.id.dlogFieldSingle);
             viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-            TextView viewTitle = (TextView) globalDlog.findViewById(R.id.dlogTitle);
-            TextView viewMsg = (TextView) globalDlog.findViewById(R.id.dlogMessage);
+            TextView viewTitle = globalDlog.findViewById(R.id.dlogTitle);
+            TextView viewMsg = globalDlog.findViewById(R.id.dlogMessage);
             viewTitle.setText(R.string.dlog_title_confirm);
             if (!isReenter) {
                 viewTitle.setText(R.string.enter_password);
@@ -778,14 +778,14 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                 viewTitle.setText(R.string.reenter_password);
                 viewMsg.setVisibility(View.GONE);
             }
-            Button btnCancel = (Button) globalDlog.findViewById(R.id.btnCancelDlogSingle);
+            Button btnCancel = globalDlog.findViewById(R.id.btnCancelDlogSingle);
             btnCancel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     globalDlog.dismiss();
                 }
             });
-            Button btnOk = (Button) globalDlog.findViewById(R.id.btnDlogSingle);
+            Button btnOk = globalDlog.findViewById(R.id.btnDlogSingle);
             btnOk.setText(R.string.button_ok);
             btnOk.setOnClickListener(new View.OnClickListener() {
 
@@ -811,24 +811,24 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
             globalDlog.setCanceledOnTouchOutside(true);
             globalDlog.setContentView(R.layout.dlog_field_single_layout);
 
-            final EditText viewField = (EditText) globalDlog.findViewById(R.id.dlogFieldSingle);
+            final EditText viewField = globalDlog.findViewById(R.id.dlogFieldSingle);
             viewField.setInputType(InputType.TYPE_CLASS_TEXT);
             if (!TextUtils.isEmpty(myPref.getDefaultUnitsName())) {
                 viewField.setText(myPref.getDefaultUnitsName());
             }
-            TextView viewTitle = (TextView) globalDlog.findViewById(R.id.dlogTitle);
-            TextView viewMsg = (TextView) globalDlog.findViewById(R.id.dlogMessage);
+            TextView viewTitle = globalDlog.findViewById(R.id.dlogTitle);
+            TextView viewMsg = globalDlog.findViewById(R.id.dlogMessage);
             viewTitle.setText(R.string.dlog_title_confirm);
             viewTitle.setText(R.string.enter_default_units_name);
             viewMsg.setVisibility(View.GONE);
-            Button btnCancel = (Button) globalDlog.findViewById(R.id.btnCancelDlogSingle);
+            Button btnCancel = globalDlog.findViewById(R.id.btnCancelDlogSingle);
             btnCancel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     globalDlog.dismiss();
                 }
             });
-            Button btnOk = (Button) globalDlog.findViewById(R.id.btnDlogSingle);
+            Button btnOk = globalDlog.findViewById(R.id.btnDlogSingle);
             btnOk.setText(R.string.button_ok);
             btnOk.setOnClickListener(new View.OnClickListener() {
 
@@ -900,17 +900,17 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
             globalDlog.setCanceledOnTouchOutside(true);
             globalDlog.setContentView(R.layout.dlog_field_double_layout);
 
-            final EditText row1 = (EditText) globalDlog.findViewById(R.id.dlogFieldRow1);
-            final EditText row2 = (EditText) globalDlog.findViewById(R.id.dlogFieldRow2);
+            final EditText row1 = globalDlog.findViewById(R.id.dlogFieldRow1);
+            final EditText row2 = globalDlog.findViewById(R.id.dlogFieldRow2);
 
             row1.setHint(myPref.cdtLine1(true, null));
             row2.setHint(myPref.cdtLine2(true, null));
-            TextView viewTitle = (TextView) globalDlog.findViewById(R.id.dlogTitle);
-            TextView viewMsg = (TextView) globalDlog.findViewById(R.id.dlogMessage);
+            TextView viewTitle = globalDlog.findViewById(R.id.dlogTitle);
+            TextView viewMsg = globalDlog.findViewById(R.id.dlogMessage);
             viewTitle.setText(R.string.dlog_title_customer_display);
             viewMsg.setText(R.string.dlog_msg_enter_data);
 
-            Button btnOk = (Button) globalDlog.findViewById(R.id.btnDlogSingle);
+            Button btnOk = globalDlog.findViewById(R.id.btnDlogSingle);
             btnOk.setText(R.string.button_ok);
             btnOk.setOnClickListener(new View.OnClickListener() {
 
@@ -959,8 +959,8 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
             promptDialog.setCancelable(false);
             promptDialog.setContentView(R.layout.dlog_btn_left_right_layout);
 
-            TextView viewTitle = (TextView) promptDialog.findViewById(R.id.dlogTitle);
-            TextView viewMsg = (TextView) promptDialog.findViewById(R.id.dlogMessage);
+            TextView viewTitle = promptDialog.findViewById(R.id.dlogTitle);
+            TextView viewMsg = promptDialog.findViewById(R.id.dlogMessage);
             viewTitle.setText(R.string.dlog_title_confirm);
             if (type == R.string.config_force_upload)
                 viewMsg.setText(R.string.dlog_msg_confirm_force_upload);
@@ -968,8 +968,8 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                 viewMsg.setText(R.string.dlog_msg_confirm_backup_data);
             promptDialog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
 
-            Button btnYes = (Button) promptDialog.findViewById(R.id.btnDlogLeft);
-            Button btnNo = (Button) promptDialog.findViewById(R.id.btnDlogRight);
+            Button btnYes = promptDialog.findViewById(R.id.btnDlogLeft);
+            Button btnNo = promptDialog.findViewById(R.id.btnDlogRight);
             btnYes.setText(R.string.button_yes);
             btnNo.setText(R.string.button_no);
 
@@ -1139,7 +1139,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
             dlog.setCanceledOnTouchOutside(false);
             dlog.setContentView(R.layout.config_snbc_setup_layout);
 
-            final Button btnConnect = (Button) dlog.findViewById(R.id.btnConnect);
+            final Button btnConnect = dlog.findViewById(R.id.btnConnect);
 
             btnConnect.setOnClickListener(new View.OnClickListener() {
 
@@ -1413,7 +1413,20 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();
                                 Global.mainPrinterManager.loadDrivers(getActivity(), Global.BAMBOO, EMSDeviceManager.PrinterInterfase.BLUETOOTH);
-
+                                List<Device> list = new ArrayList<>();
+                                Device device = DeviceTableDAO.getByName(strDeviceName);
+                                if (device == null) {
+                                    device = new Device();
+                                }
+                                device.setId(String.format("BT:%s", val[pos]));
+                                device.setMacAddress("BT:" + macAddressList.get(pos));
+                                device.setName(strDeviceName);
+                                device.setType(String.valueOf(Global.ONEIL));
+                                device.setRemoteDevice(false);
+                                device.setEmsDeviceManager(Global.mainPrinterManager);
+                                list.add(device);
+                                DeviceTableDAO.insert(list);
+                                Global.printerDevices.add(device);
                             } else if (strUpperDeviceName.contains("ISMP")
                                     || (strUpperDeviceName.contains("ICM") &&
                                     !getActivity().getPackageName().equalsIgnoreCase(Global.EVOSNAP_PACKAGE_NAME))) {
@@ -1439,6 +1452,20 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();
                                 Global.mainPrinterManager.loadDrivers(getActivity(), Global.ONEIL, EMSDeviceManager.PrinterInterfase.BLUETOOTH);
+                                List<Device> list = new ArrayList<>();
+                                Device device = DeviceTableDAO.getByName(strDeviceName);
+                                if (device == null) {
+                                    device = new Device();
+                                }
+                                device.setId(String.format("BT:%s", val[pos]));
+                                device.setMacAddress("BT:" + macAddressList.get(pos));
+                                device.setName(strDeviceName);
+                                device.setType(String.valueOf(Global.ONEIL));
+                                device.setRemoteDevice(false);
+                                device.setEmsDeviceManager(Global.mainPrinterManager);
+                                list.add(device);
+                                DeviceTableDAO.insert(list);
+                                Global.printerDevices.add(device);
                             } else if (strUpperDeviceName.startsWith("KDC")) {
                                 myPref.setSwiperMACAddress(macAddressList.get(pos));
                                 myPref.setSwiperType(Global.KDC425);
@@ -1794,7 +1821,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
             public ViewHolder(View view) {
                 super(view);
                 mView = view;
-                mIdView = (TextView) view.findViewById(R.id.id);
+                mIdView = view.findViewById(R.id.id);
             }
 
             @Override

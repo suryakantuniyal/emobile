@@ -320,10 +320,9 @@ public class MyPreferences {
         try {
             pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
         } catch (NameNotFoundException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        String version = pInfo.versionName;
+        String version = String.format("%s,%s", pInfo.versionName, Build.VERSION.RELEASE);
         return (version);
     }
 

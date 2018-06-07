@@ -162,10 +162,10 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
     private void showResponse(GeniusResponse response) {
         Intent result = new Intent();
         result.putExtras(getIntent());
-        if (response.getStatus().equalsIgnoreCase("APPROVED")) {
+        if (response != null && response.getStatus().equalsIgnoreCase("APPROVED")) {
             setResult(-2, result);
             finish();
-        } else if (!TextUtils.isEmpty(response.getStatus())) {
+        } else if (response != null && !TextUtils.isEmpty(response.getStatus())) {
             Global.showPrompt(this, R.string.dlog_title_error, response.getStatus());
         } else {
             setResult(0, result);

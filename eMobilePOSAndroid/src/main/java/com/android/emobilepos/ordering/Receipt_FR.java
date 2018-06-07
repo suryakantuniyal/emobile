@@ -2187,7 +2187,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         @Override
         protected Boolean doInBackground(Object... arg0) {
 
-            if (NetworkUtils.isConnectedToInternet(getActivity())) {
+            if ((myPref.isUse_syncplus_services() && NetworkUtils.isConnectedToLAN(getActivity()))
+                    ||NetworkUtils.isConnectedToInternet(getActivity())) {
 //                Post httpClient = new Post(getActivity());
                 switch ((Integer) arg0[0]) {
                     case UPDATE_HOLD_STATUS:
