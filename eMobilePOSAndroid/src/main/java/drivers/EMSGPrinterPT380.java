@@ -11,10 +11,10 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.StarMicronics.jasura.JAException;
+import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
@@ -45,14 +45,13 @@ import main.EMSDeviceManager;
  */
 public class EMSGPrinterPT380 extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
 
-    private final int LINE_WIDTH = 42;
+    private final int LINE_WIDTH = 48;
     public static final int PRINTER_ID = 0;
-    private static final String DEBUG_TAG = "EMSGPrinterPT380";
     private static final int MAIN_QUERY_PRINTER_STATUS = 0xfe;
 
     private PrinterServiceConnection conn = null;
-
     private EMSDeviceManager edm;
+    private boolean isAutoConnect;
 
     class PrinterServiceConnection implements ServiceConnection {
         @Override
@@ -73,7 +72,6 @@ public class EMSGPrinterPT380 extends EMSDeviceDriver implements EMSDeviceManage
             }
 
             PrinterCom.ERROR_CODE r = PrinterCom.ERROR_CODE.values()[rel];
-            Log.e(DEBUG_TAG, "result :" + String.valueOf(r));
             if (r != PrinterCom.ERROR_CODE.SUCCESS) {
                 if (r == PrinterCom.ERROR_CODE.DEVICE_ALREADY_OPEN) {
                     Toast.makeText(activity, "Printer already connected!",
@@ -83,10 +81,10 @@ public class EMSGPrinterPT380 extends EMSDeviceDriver implements EMSDeviceManage
                             Toast.LENGTH_LONG).show();
                 }
                 edm.driverDidNotConnectToDevice(EMSGPrinterPT380.this,
-                        "", false, activity);
+                        "", !isAutoConnect, activity);
             } else {
                 edm.driverDidConnectToDevice(EMSGPrinterPT380.this,
-                        false, activity);
+                        !isAutoConnect, activity);
             }
         }
     }
@@ -97,6 +95,7 @@ public class EMSGPrinterPT380 extends EMSDeviceDriver implements EMSDeviceManage
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
         this.edm = edm;
+        isAutoConnect = false;
         registerBroadcast();
         conn = new PrinterServiceConnection();
         Intent intent = new Intent(activity, PrinterPrintService.class);
@@ -109,6 +108,7 @@ public class EMSGPrinterPT380 extends EMSDeviceDriver implements EMSDeviceManage
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
         this.edm = edm;
+        isAutoConnect = true;
         registerBroadcast();
         conn = new PrinterServiceConnection();
         Intent intent = new Intent(activity, PrinterPrintService.class);
@@ -124,7 +124,6 @@ public class EMSGPrinterPT380 extends EMSDeviceDriver implements EMSDeviceManage
                 String action = intent.getAction();
                 String str = "";
 
-                Log.d("TAG", action);
                 // PrinterCom.ACTION_DEVICE_REAL_STATUS "For broadcast" IntentFilter
                 if (action.equals(PrinterCom.ACTION_DEVICE_REAL_STATUS)) {
                     // "Business logic request code, where to query what to do"
@@ -173,7 +172,8 @@ public class EMSGPrinterPT380 extends EMSDeviceDriver implements EMSDeviceManage
                             break;
                     }
                 }
-                if (!str.isEmpty()) Toast.makeText(activity, str, Toast.LENGTH_LONG).show();
+                if (BuildConfig.DEBUG && !str.isEmpty())
+                    Toast.makeText(activity, str, Toast.LENGTH_LONG).show();
             }
         };
 

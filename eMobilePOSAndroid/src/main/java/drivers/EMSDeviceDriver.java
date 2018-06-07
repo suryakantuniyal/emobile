@@ -343,6 +343,13 @@ public class EMSDeviceDriver {
             for (String line : split) {
                 SendCmd(String.format("80*%s", line));
             }
+        } else if (this instanceof EMSGPrinterPT380) {
+            // print line
+            esc = new EscCommand();
+            esc.addInitializePrinter();
+            esc.addText(str);
+            esc.addQueryPrinterStatus();
+            printGPrinter(esc);
         } else if (this instanceof EMSELO) {
             if (eloPrinterRefresh != null) {
                 eloPrinterRefresh.print(str);
@@ -433,6 +440,8 @@ public class EMSDeviceDriver {
             for (String line : split) {
                 SendCmd(String.format("80*%s", line));
             }
+        } else if (this instanceof EMSGPrinterPT380) {
+            print(new String(byteArray));
         } else if (this instanceof EMSELO) {
             if (eloPrinterRefresh != null) {
                 eloPrinterRefresh.print(new String(byteArray));
@@ -675,12 +684,7 @@ public class EMSDeviceDriver {
                 }
             }
         } else if (this instanceof EMSGPrinterPT380) {
-            // print line
-            esc = new EscCommand();
-            esc.addInitializePrinter();
-            esc.addText(str);
-            esc.addQueryPrinterStatus();
-            printGPrinter(esc);
+            print(str);
         } else if (this instanceof EMSELO) {
             if (eloPrinterRefresh != null) {
                 eloPrinterRefresh.print(str);
