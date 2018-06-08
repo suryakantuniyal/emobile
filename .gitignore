@@ -7,4 +7,4 @@ projectFilesBackup/
 .gradle/
 emobileposblm/
 *.iml
-
+gradle/wrapper
