@@ -233,6 +233,8 @@ dependencies {
 //    compile files('libs/sqlcipher.jar')
     compile files('libs/StarIO_Extension.jar')
     compile files('libs/StarIOPort3.1.jar')
+    compile files('libs/jcc-bate-0.7.3.jar')
+    compile files('libs/ksoap2-android-assembly-2.5.2-jar-with-dependencies.jar')
     compile files('libs/printersdkv22(standard_neutral).jar')
     compile files('libs/xUtils-2.6.14.jar')
     compile files('libs/zbar.jar')
