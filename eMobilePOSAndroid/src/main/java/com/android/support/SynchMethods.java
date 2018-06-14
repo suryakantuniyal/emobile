@@ -10,7 +10,6 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.os.Debug;
 import android.os.Message;
 import android.text.TextUtils;
 import android.widget.Toast;
@@ -490,10 +489,6 @@ public class SynchMethods {
         } else {
             Crashlytics.logException(new Exception("Realm compact fail. All realm instance must be closed before compactrealm. EmobilePOS Logger."));
         }
-        File realmFile = new File(Realm.getDefaultConfiguration().getPath());
-        Crashlytics.logException(new Exception(String.format(Locale.getDefault(),
-                "Account: %s. Realm database connections:%d , file size:%d", preferences.getAcctNumber(), count, realmFile.length())));
-
     }
 
     public void getLocationsInventory(Activity activity) {
