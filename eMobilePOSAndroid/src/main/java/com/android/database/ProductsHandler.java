@@ -425,11 +425,9 @@ public class ProductsHandler {
                             .append("' AND p.prod_type != 'Discount' ");
                 if (Global.consignmentType == Global.OrderType.ORDER)
                     sb.append("AND ci.qty>0 ");
-                sb2.append("AND (pa.prod_alias = ? OR p.prod_upc = ? OR p.prod_sku = ? " + byIdCondition + ")");
             } else
                 sb2.append(
-                        "WHERE p.prod_type != 'Discount' AND ch.cust_chain = ? " +
-                                "AND (pa.prod_alias = ? OR p.prod_upc = ?  OR p.prod_sku = ? " + byIdCondition + ") ");
+                        "WHERE p.prod_type != 'Discount' AND ch.cust_chain = ? ");
         } else {
             sb2.append("AND ch.cust_chain = ? ");
             if (Global.isConsignment) {
@@ -444,10 +442,8 @@ public class ProductsHandler {
                             .append("' AND p.prod_type != 'Discount' ");
                 if (Global.consignmentType == Global.OrderType.ORDER)
                     sb2.append("AND ci.qty>0 ");
-                sb2.append("AND (pa.prod_alias = ? OR p.prod_upc = ? OR p.prod_sku = ? " + byIdCondition + ") ");
             } else
-                sb2.append("WHERE p.prod_type != 'Discount' AND " +
-                        " (p.prod_sku = ? OR pa.prod_alias = ? OR p.prod_upc = ?  " + byIdCondition + ")" +
+                sb2.append("WHERE p.prod_type != 'Discount' " +
                         " AND (i.type = 'I' OR i.type is NULL )" +
                         " AND ( vp.minQty is NULL OR vp.maxQty is NULL OR ('1' BETWEEN vp.minQty AND vp.maxQty)) "
                 );
@@ -461,7 +457,8 @@ public class ProductsHandler {
                             "from products p " +
                             "LEFT JOIN ProductAliases pa ON p.prod_id = pa.prod_id " +
                             "where prod_type != 'Discount' AND  " +
-                            "(prod_sku = '" + value + "'  OR prod_upc = '" + value + "'" + byIdCondition + " )) p " +
+                            "(prod_sku = '" + value + "' OR pa.prod_alias = '" + value +
+                            "' OR prod_upc = '" + value + "'" + byIdCondition + " )) p " +
                             "INNER JOIN ProdCatXref xr ON p.prod_id = xr.prod_id  " +
                             "INNER JOIN Categories c ON c.cat_id = xr.cat_id " +
                             "LEFT OUTER JOIN EmpInv ei ON ei.prod_id = p.prod_id " +
@@ -474,7 +471,8 @@ public class ProductsHandler {
                             "from products p " +
                             "LEFT JOIN ProductAliases pa ON p.prod_id = pa.prod_id " +
                             "where prod_type != 'Discount' AND  " +
-                            "(prod_sku = '" + value + "'  OR prod_upc = '" + value + "'" + byIdCondition + " )) p " +
+                            "(prod_sku = '" + value + "'  OR pa.prod_alias = '" + value
+                            + "' OR prod_upc = '" + value + "'" + byIdCondition + " )) p " +
                             "LEFT OUTER JOIN Categories c ON c.cat_id = p.cat_id " +
                             "LEFT OUTER JOIN EmpInv ei ON ei.prod_id = p.prod_id " +
                             "LEFT OUTER JOIN VolumePrices vp ON p.prod_id = vp.prod_id AND '1' " +
@@ -500,7 +498,7 @@ public class ProductsHandler {
             sb.append(" LIMIT 1");
         }
 
-        String[] parameters = new String[]{priceLevelID, priceLevelID, priceLevelID, myPref.getCustID(), value, value, value};
+        String[] parameters = new String[]{priceLevelID, priceLevelID, priceLevelID, myPref.getCustID()};
         query = sb.toString();
 
         Cursor cursor = DBManager.getDatabase().rawQuery(query, parameters);
