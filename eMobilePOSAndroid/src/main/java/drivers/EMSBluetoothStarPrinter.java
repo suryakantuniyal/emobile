@@ -36,12 +36,6 @@ import com.android.support.CreditCardInfo;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.crashlytics.android.Crashlytics;
-import com.elo.device.DeviceManager;
-import com.elo.device.enums.EloPlatform;
-import com.elo.device.enums.Status;
-import com.elo.device.enums.TriggerMode;
-import com.elo.device.exceptions.UnsupportedEloPlatform;
-import com.elo.device.peripherals.BarCodeReader;
 import com.starmicronics.stario.StarIOPort;
 import com.starmicronics.stario.StarIOPortException;
 import com.starmicronics.stario.StarPrinterStatus;
@@ -77,7 +71,6 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     private boolean stopLoop = false;
     private String portNumber = "";
     private EMSDeviceManager edm;
-    private BarCodeReader barCodeReaderElo2_0;
     private CreditCardInfo cardManager;
     private Runnable doUpdateViews = new Runnable() {
         public void run() {
@@ -455,22 +448,12 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
     @Override
     public void turnOnBCR() {
-        if (barCodeReaderElo2_0 != null) {
-            barCodeReaderElo2_0.setEnabled(true);
-            barCodeReaderElo2_0.setKbMode(activity);
-            barCodeReaderElo2_0.setTriggerMode(TriggerMode.TRIGGERED);
-        }
+
     }
 
     @Override
     public void turnOffBCR() {
-        if (barCodeReaderElo2_0 != null) {
-            if (barCodeReaderElo2_0.getStatus().equals(Status.ENABLED)) {
-                barCodeReaderElo2_0.setEnabled(false);
-            }
-//            barCodeReaderElo2_0.setKbMode(activity);
-//            barCodeReaderElo2_0.setTriggerMode(TriggerMode.TRIGGERED);
-        }
+
     }
 
     @Override
@@ -738,18 +721,8 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 }
             }
         } else if (callBack != null && Build.MODEL.toUpperCase().contains("ELO")) {
-            try {
-                if (barCodeReaderElo2_0 == null) {
-                    DeviceManager deviceManager = DeviceManager.getInstance(EloPlatform.PAYPOINT_2, activity);
-                    barCodeReaderElo2_0 = deviceManager.getBarCodeReader();
-                }
-                barCodeReaderElo2_0.setEnabled(true);
-                barCodeReaderElo2_0.setTriggerMode(TriggerMode.TRIGGERED);
-                barCodeReaderElo2_0.setKbMode(activity);
-            } catch (UnsupportedEloPlatform e) {
-                e.printStackTrace();
-                Crashlytics.logException(e);
-            }
+            // Do nothing, let the scanner do its thing.
+            // ELO scanner is ready when the hardware is turned on.
         }
     }
 
@@ -760,11 +733,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
     @Override
     public void toggleBarcodeReader() {
-        if (barCodeReaderElo2_0 != null && barCodeReaderElo2_0.getStatus() == Status.ENABLED) {
-            turnOffBCR();
-        } else {
-            turnOnBCR();
-        }
+
     }
 
     @Override
