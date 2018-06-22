@@ -2642,8 +2642,7 @@ public class EMSDeviceDriver {
             for (OrderProduct prod : listProd) {
                 String calc;
                 if (new BigDecimal(prod.getOrdprod_qty()).compareTo(new BigDecimal(0)) != 0) {
-                    calc = Global.getCurrencyFormat(prod.getItemTotal());//Global.getCurrencyFormat(String.valueOf(new BigDecimal(prod.getItemTotal())
-//                            .divide(new BigDecimal(prod.getOrdprod_qty()), 2, RoundingMode.HALF_UP)));
+                    calc = Global.getCurrencyFormat(prod.getFinalPrice());
                 } else {
                     calc = Global.formatDoubleToCurrency(0);
                 }
@@ -2819,11 +2818,12 @@ public class EMSDeviceDriver {
         sb.append(textHandler.newLines(1));
 
         OrderProductsHandler orderProductsHandler = new OrderProductsHandler(activity);
-        String date = DateUtils.getDateAsString(shift.getCreationDate(), "yyyy-MM-dd");
-        List<OrderProduct> listDeptSales = orderProductsHandler.getDepartmentDayReport(true,
-                String.valueOf(shift.getClerkId()), date);
-        List<OrderProduct> listDeptReturns = orderProductsHandler.getDepartmentDayReport(false,
-                String.valueOf(shift.getClerkId()), date);
+        String startDate = DateUtils.getDateAsString(shift.getCreationDate(), "yyyy-MM-dd HH:mm");
+        String endDate = DateUtils.getDateAsString(shift.getEndTime(), "yyyy-MM-dd HH:mm");
+        List<OrderProduct> listDeptSales = orderProductsHandler.getDepartmentDayReport(
+                true, String.valueOf(shift.getClerkId()), startDate, endDate);
+        List<OrderProduct> listDeptReturns = orderProductsHandler.getDepartmentDayReport(
+                false, String.valueOf(shift.getClerkId()), startDate, endDate);
         if (!listDeptSales.isEmpty()) {
             sb.append(textHandler.centeredString(activity.getString(R.string.eod_report_dept_sales), lineWidth));
             for (OrderProduct product : listDeptSales) {
