@@ -874,9 +874,9 @@ public class ProductsHandler {
                             .append("' AND p.prod_type != 'Discount' ");
                 if (Global.consignmentType == Global.OrderType.ORDER)
                     sb.append("AND ci.qty>0 ");
-                sb2.append("AND p.");
+                sb2.append("AND (p.");
             } else
-                sb2.append("WHERE p.prod_type != 'Discount' AND ch.cust_chain = ? AND p.");// .append("'
+                sb2.append("WHERE p.prod_type != 'Discount' AND ch.cust_chain = ? AND (p.");
 
         } else {
             sb2.append("AND ch.cust_chain = ? ");
@@ -892,22 +892,10 @@ public class ProductsHandler {
                             .append("' AND p.prod_type != 'Discount' ");
                 if (Global.consignmentType == Global.OrderType.ORDER)
                     sb2.append("AND ci.qty>0 ");
-                sb2.append("AND p.");
+                sb2.append("AND (p.");
             } else
-                sb2.append("WHERE p.prod_type != 'Discount' AND p.");// ORDER BY
+                sb2.append("WHERE p.prod_type != 'Discount' AND (p.");// ORDER BY
         }
-
-//        sb.append(
-//                "FROM Products p  LEFT OUTER JOIN EmpInv ei ON ei.prod_id = p.prod_id " +
-//                        "LEFT OUTER JOIN VolumePrices vp ON p.prod_id = vp.prod_id AND '1' BETWEEN vp.minQty AND vp.maxQty  AND ");
-//        sb.append("vp.pricelevel_id = ? LEFT OUTER JOIN PriceLevelItems pli ON p.prod_id = pli.pricelevel_prod_id ");
-//        sb.append(
-//                "AND pli.pricelevel_id = ? LEFT OUTER JOIN PriceLevel pl ON pl.pricelevel_id = ? " +
-//                        "LEFT OUTER JOIN Products_Images i ON p.prod_id = i.prod_id AND i.type = 'I' ");
-//        sb.append(
-//                "LEFT OUTER JOIN SalesTaxCodes s ON p.prod_taxcode = s.taxcode_id " +
-//                        "LEFT OUTER JOIN Categories c ON c.cat_id = p.cat_id " +
-//                        "LEFT OUTER JOIN ProductChainXRef ch ON ch.prod_id = p.prod_id ");
 
         if (myPref.getPreferences(MyPreferences.pref_enable_multi_category)) {
             sb.append(
@@ -934,12 +922,24 @@ public class ProductsHandler {
                         "LEFT OUTER JOIN Products_Images i ON p.prod_id = i.prod_id AND i.type = 'I' ");
         sb.append(
                 "LEFT OUTER JOIN SalesTaxCodes s ON p.prod_taxcode = s.taxcode_id " +
+                        "LEFT JOIN ProductAliases pa ON p.prod_id = pa.prod_id " +
                         "LEFT OUTER JOIN ProductChainXRef ch ON ch.prod_id = p.prod_id ");
         sb.append(sb2);
 
         String subquery1 = sb.toString();
         StringBuilder subquery2 = new StringBuilder();
-        subquery2.append(" LIKE ? ");
+
+        String[] parameters;
+        String like = "%" + search + "%";
+        if (type.equalsIgnoreCase(prod_upc)) {
+            subquery2.append(" LIKE ?  OR pa.prod_alias LIKE ? OR p.prod_sku LIKE ?)");
+            parameters = new String[]{priceLevelID, priceLevelID, priceLevelID,
+                    myPref.getCustID(), like, like, like};
+        } else {
+            subquery2.append(" LIKE ? )");
+            parameters = new String[]{priceLevelID, priceLevelID, priceLevelID,
+                    myPref.getCustID(), like};
+        }
 
         if (myPref.getPreferences(MyPreferences.pref_group_in_catalog_by_name)) {
             subquery2.append(" GROUP BY p.prod_name ORDER BY weight, p.prod_name");
@@ -949,8 +949,7 @@ public class ProductsHandler {
 
         sb.setLength(0);
         sb.append(subquery1).append(type).append(subquery2.toString());
-        Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(),
-                new String[]{priceLevelID, priceLevelID, priceLevelID, myPref.getCustID(), "%" + search + "%"});
+        Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), parameters);
         cursor.moveToFirst();
         return cursor;
     }
