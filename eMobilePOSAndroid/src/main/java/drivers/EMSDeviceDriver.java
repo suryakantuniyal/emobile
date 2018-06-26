@@ -966,13 +966,7 @@ public class EMSDeviceDriver {
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_employee),
                     employee.getEmpName() + "(" + employee.getEmpId() + ")", lineWidth, 0));
             String custName = getCustName(anOrder.cust_id);
-            if (myPref.isCustSelected()) {
-//                CustomersHandler handler = new CustomersHandler(activity);
-//                Customer customer = handler.getCustomer(myPref.getCustID());
-//                String name = getCustName();
-//                if (customer != null) {
-//                    custName = String.format("%s %s", customer.getCust_firstName(), customer.getCust_lastName());
-//                }
+            if (custName != null && !custName.isEmpty()) {
                 if (!TextUtils.isEmpty(custName)) {
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer), custName,
                             lineWidth, 0));
@@ -989,8 +983,6 @@ public class EMSDeviceDriver {
                 sb.append("Comments:\n");
                 sb.append(textHandler.oneColumnLineWithLeftAlignedText(ordComment, lineWidth, 3)).append("\n");
             }
-
-//            sb.append("\n\n");
 
             print(sb.toString());
 
