@@ -664,6 +664,8 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     break;
                 case R.string.config_delete_saved_peripherals:
                     myPref.forgetPeripherals();
+                    Global.printerDevices.clear();
+                    Global.mainPrinterManager = null;
                     DeviceTableDAO.deleteLocalDevices();
                     Toast.makeText(getActivity(), "Peripherals have been erased", Toast.LENGTH_LONG).show();
                     break;
@@ -1282,9 +1284,6 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
 //            });
 //            dlog.show();
 //        }
-
-
-
 
         private void connectBTDevice() {
             ListView listViewPairedDevices = new ListView(getActivity());

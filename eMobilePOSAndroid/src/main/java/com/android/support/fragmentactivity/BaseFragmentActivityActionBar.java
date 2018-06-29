@@ -183,10 +183,12 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
 
         @Override
         protected String doInBackground(String... params) {
-            String autoConnect = "";
+            String autoConnect;
             autoConnect = DeviceUtils.autoConnect(BaseFragmentActivityActionBar.this, loadMultiPrinter);
-            if (myPref.getPrinterType() == Global.POWA || myPref.getPrinterType() == Global.MEPOS
-                    || myPref.getPrinterType() == Global.ELOPAYPOINT) {
+            if (myPref.getPrinterType() == Global.POWA ||
+                    myPref.getPrinterType() == Global.MEPOS ||
+                    myPref.getPrinterType() == Global.ELOPAYPOINT ||
+                    myPref.getPrinterType() == Global.SNBC) {
                 isUSB = true;
             }
             if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null &&
