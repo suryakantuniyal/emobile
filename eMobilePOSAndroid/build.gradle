@@ -4,15 +4,6 @@ apply plugin: 'realm-android'
 apply plugin: 'io.fabric'
 android {
     useLibrary 'org.apache.http.legacy'
-    signingConfigs {
-        config {
-            keyAlias 'emobilepos'
-            keyPassword '1Enabler1'
-            storeFile file('/home/guarionex/Develop/AndroidAPKCerts/eMobileKeystore')
-            storePassword '1Enabler1'
-            v2SigningEnabled false
-        }
-    }
     compileSdkVersion 27
     buildToolsVersion '26.0.2'
     dexOptions {
@@ -107,40 +98,11 @@ android {
                 }
             }
         }
-//        restoff {
-//            minSdkVersion 15
-//            applicationId 'com.emobilepos.app'
-//            versionName "1.1.1.100"
-//            versionCode 118
-//            targetSdkVersion 23
-//            multiDexEnabled = true
-//            repositories {
-//                maven { url 'https://maven.fabric.io/public' }
-//                flatDir {
-//                    dirs 'libs'
-//                }
-//            }
-//        }
-//        restoffivupos {
-//            minSdkVersion 15
-//            applicationId 'com.emobilepos.ivupos.app'
-//            versionName "1.1.1.100"
-//            versionCode 118
-//            targetSdkVersion 23
-//            multiDexEnabled = true
-//            repositories {
-//                maven { url 'https://maven.fabric.io/public' }
-//                flatDir {
-//                    dirs 'libs'
-//                }
-//            }
-//        }
     }
     buildTypes {
         debug {
             // Disable fabric build ID generation for debug builds
             ext.enableCrashlytics = false
-//            buildConfigField "boolean", "REPORT_CRASHLITYCS", "true"
             buildConfigField "String", "OS", "\"Android\""
             buildConfigField "int", "POLLING_PERIOD", "1000"
             buildConfigField "int", "BCR_TIMEOUT", "15000"
@@ -156,7 +118,6 @@ android {
         release {
             // Disable fabric build ID generation for debug builds
             ext.enableCrashlytics = true
-//            buildConfigField "boolean", "REPORT_CRASHLITYCS", "true"
             buildConfigField "boolean", "PRINT_TO_LOG", "false"
             buildConfigField "String", "OS", "\"Android\""
             buildConfigField "int", "POLLING_PERIOD", "5000"
@@ -169,7 +130,6 @@ android {
             multiDexEnabled true
             zipAlignEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
-            signingConfig signingConfigs.config
         }
     }
     compileOptions {
@@ -181,7 +141,6 @@ configurations {
     configurations.all {
         resolutionStrategy.force 'com.google.code.findbugs:jsr305:3.0.2'
     }
-//    all*.exclude group: 'com.google.firebase', module: 'firebase-common'
 }
 dependencies {
     icmpevoCompile(name: 'evoSnapSdk-icmp-release', ext: 'aar')
@@ -190,7 +149,6 @@ dependencies {
     compile(name: 'Lib-Miura-SDK', ext: 'aar')
     compile(name: 'MePOSConnect', ext: 'aar')
     compile(name: 'dragSortLibrary-release', ext: 'aar')
-    //        compile(name: 'mDOpenCV-release', ext: 'aar')
     compile(name: 'honeywell-release', ext: 'aar')
     compile(name: 'stickyListHeaders-release', ext: 'aar')
     compile(name: 'gridHeaderLibrary-release', ext: 'aar')
@@ -200,24 +158,14 @@ dependencies {
     ivuposCompile files('libs/Android_Platform_Adapter.jar')
     ivuposCompile files('libs/RBA_SDK.jar')
     ivuposCompile files('libs/evoSnapSDK.jar')
-    //    restoffivuposCompile files('libs/Android_Platform_Adapter.jar')
-    //    restoffivuposCompile files('libs/RBA_SDK.jar')
-    //    restoffivuposCompile files('libs/evoSnapSDK.jar')
     emsCompile files('libs/Android_Platform_Adapter.jar')
     emsCompile files('libs/RBA_SDK.jar')
     emsCompile files('libs/evoSnapSDK.jar')
-    //    restoffCompile files('libs/Android_Platform_Adapter.jar')
-    //    restoffCompile files('libs/RBA_SDK.jar')
-    //    restoffCompile files('libs/evoSnapSDK.jar')
-    //    emsblueCompile files('libs/Android_Platform_Adapter.jar')
-    //    emsblueCompile files('libs/RBA_SDK.jar')
-    //    emsblueCompile files('libs/evoSnapSDK.jar')
     compile files('libs/bouncycastle.jar')
     compile files('libs/commons-codec-1.4.0.jar')
     compile files('libs/commons-io-1.3.2.jar')
     compile files('libs/commons-lang3-3.4.jar')
     compile files('libs/do_androidsdk.jar')
-    //        compile files('libs/IDTuniMagSDKAndroid.jar')
     compile files('libs/JAsura_Android.jar')
     compile files('libs/libuart.jar')
     compile files('libs/mtscra.jar')
@@ -250,7 +198,6 @@ dependencies {
     compile files('libs/hapi-android-3.2.5.jar')
     compile 'com.google.guava:guava:20.0'
     compile 'com.android.support:multidex:1.0.1'
-    //    compile 'com.android.support:support-v4:24.0.0'
     compile 'com.android.support:support-v13:27.0.1'
     compile files('libs/bixolon_printer.jar')
     compile files('libs/jpos114-controls.jar')
@@ -262,14 +209,10 @@ dependencies {
     compile files('libs/PAT215Cashdrawer1.0.0.jar')
     compile files('libs/PAT215Display.1.0.0.jar')
     compile files('libs/pat215msr1.0.0.jar')
-    //    compile 'com.google.firebase:firebase-core:9.2.1'
-    //    compile 'com.google.android.gms:play-services:9.2.1'
     compile 'com.google.code.gson:gson:2.8.0'
     compile files('libs/dspread_1_2_1.jar')
-//    compile files('libs/nomad_1_2_3.jar')
     compile files('libs/rambler_1_2_1.jar')
     compile files('libs/spm2_1_2_1.jar')
-//    compile files('libs/walker_1_2_1.jar')
     compile files('libs/coresdk_1_4_2.jar')
     compile files('libs/dpuareu.jar')
     compile files('libs/TfhkaAndroid.jar')
@@ -284,26 +227,13 @@ dependencies {
 
 
 dependencies {
-//    compile 'com.android.support:support-v4:25.2.0'
-//    compile 'com.android.support:recyclerview-v7:25.2.0'
     compile files('libs/UniMag_SDK_v5.0.jar')
-//    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2', {
-//        exclude group: 'com.android.support', module: 'support-annotations'
-//    }
-//    androidTestCompile 'com.android.support.test.espresso:espresso-contrib:2.2.2', {
-//        exclude group: 'com.android.support', module: 'support-annotations'
-//        exclude group: 'com.android.support', module: 'support-v4'
-//        exclude group: 'com.android.support', module: 'design'
-//        exclude group: 'com.android.support', module: 'recyclerview-v7'
-//    }
     compile 'net.zetetic:android-database-sqlcipher:3.5.4@aar'
 }
 dependencies {
     compile 'com.microsoft.azure:notification-hubs-android-sdk:0.4@aar'
     compile 'com.microsoft.azure:azure-notifications-handler:1.0.1@aar'
     compile 'net.zetetic:android-database-sqlcipher:3.5.4@aar'
-//    compile 'com.google.firebase:firebase-messaging:9.2.1'
-//    compile 'com.google.firebase:firebase-core:9.2.0'
 }
 dependencies {
     compile 'com.android.support:support-v4:27.0.1'
