@@ -11,7 +11,6 @@ import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.PowerManager;
 import android.support.v4.widget.CursorAdapter;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -134,7 +133,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         if (myPref.isPollingHoldsEnable() && !PollingNotificationService.isServiceRunning(this)) {
             PollingNotificationService.start(this, PollingNotificationService.PollingServicesFlag.ONHOLDS.getCode() | PollingNotificationService.PollingServicesFlag.DINING_TABLES.getCode());
         }
-        if(myPref.isUse_syncplus_services()){
+        if (myPref.isUse_syncplus_services()) {
             new RefreshHolds().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
 
@@ -145,7 +144,8 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         int id = item.getItemId();
         switch (id) {
             case R.id.refreshHolds: {
-                if (NetworkUtils.isConnectedToInternet(this)) {
+                if ((myPref.isUse_syncplus_services() && NetworkUtils.isConnectedToLAN(activity))
+                        || NetworkUtils.isConnectedToInternet(this)) {
                     new RefreshHolds().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 } else {
                     Global.showPrompt(this, R.string.dlog_title_error, getString(R.string.dlog_msg_no_internet_access));
@@ -504,7 +504,8 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             myPref.setCustSelected(false);
             String ordID = myCursor.getString(myCursor.getColumnIndex("ord_id"));
             global.setSelectedComments(myCursor.getString(myCursor.getColumnIndex("ord_comment")));
-            if (NetworkUtils.isConnectedToInternet(activity)) {
+            if ((myPref.isUse_syncplus_services() && NetworkUtils.isConnectedToLAN(activity))
+                    || NetworkUtils.isConnectedToInternet(activity)) {
                 try {
                     if (!isUpdateOnHold) {
                         if (!OnHoldsManager.isOnHoldAdminClaimRequired(ordID, activity)) {
@@ -601,7 +602,8 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                 Global.isFromOnHold = true;
             }
 
-            if (NetworkUtils.isConnectedToInternet(activity))
+            if ((myPref.isUse_syncplus_services() && NetworkUtils.isConnectedToLAN(activity))
+                    || NetworkUtils.isConnectedToInternet(activity))
                 proceed = true;
 
             return intent;

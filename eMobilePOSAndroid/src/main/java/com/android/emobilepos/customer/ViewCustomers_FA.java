@@ -2,6 +2,7 @@ package com.android.emobilepos.customer;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -27,6 +28,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
+import android.widget.Toast;
 
 import com.android.database.CustomersHandler;
 import com.android.emobilepos.R;
@@ -50,6 +52,8 @@ import drivers.digitalpersona.DigitalPersona;
 import interfaces.BCRCallbacks;
 import interfaces.BiometricCallbacks;
 import interfaces.EMSCallBack;
+import util.GoogleMapsUtils;
+import util.PhoneUtils;
 import util.json.UIUtils;
 
 public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements BiometricCallbacks, OnClickListener, OnItemClickListener, BCRCallbacks, EMSCallBack {
@@ -72,6 +76,7 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
     private BBDeviceController bbDeviceController;
     private BBPosShelpaDeviceDriver listener;
     private SoundManager soundManager;
+    private boolean isCallingSupported;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -118,6 +123,7 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
         if (bbDeviceController != null) {
             bbDeviceController.startBarcodeReader();
         }
+        isCallingSupported = PhoneUtils.isCallingSupported(this);
     }
 
     @Override
@@ -167,7 +173,6 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
         releaseReader();
         super.onDestroy();
     }
-
 
     private TextWatcher getSearchTextWatcher() {
 
@@ -303,7 +308,6 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
         global.startActivityTransitionTimer();
     }
 
-
     public void performSearch(String text) {
         if (myCursor != null)
             myCursor.close();
@@ -339,6 +343,18 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
                 dlog.dismiss();
                 selectCustomer(selectedCustPosition);
                 break;
+            case R.id.btnDlogTwo:
+                try {
+                    PhoneUtils.dialPhoneNumber(this, getSelectedCustomerPhone());
+                } catch (ActivityNotFoundException e) {
+                    Toast.makeText(this, getString(R.string.cust_calls_not_available),
+                            Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case R.id.btnDlogThree:
+                GoogleMapsUtils.openAndSearchAddress(
+                        this, getSelectedCustomerShippingAddress());
+                break;
             case R.id.btnDlogFour:
                 dlog.dismiss();
                 Intent intent = new Intent(activity, HistoryTransactions_FA.class);
@@ -351,6 +367,20 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
                 startActivity(intent);
                 break;
         }
+    }
+
+    private String getSelectedCustomerPhone() {
+        myCursor.moveToPosition(selectedCustPosition);
+        String phone = myCursor.getString(myCursor.getColumnIndex("cust_phone"));
+        if (phone != null) return phone;
+        return "";
+    }
+
+    private String getSelectedCustomerShippingAddress() {
+        myCursor.moveToPosition(selectedCustPosition);
+        String customerId = myCursor.getString(myCursor.getColumnIndex("_id"));
+        Customer customer = handler.getCustomer(customerId);
+        return customer.getShippingAddress().getFullShippingAddress();
     }
 
     @Override
@@ -370,8 +400,22 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
             viewTitle.setText(R.string.dlog_title_choose_action);
             viewMsg.setVisibility(View.GONE);
             Button btnSelectCust = dlog.findViewById(R.id.btnDlogOne);
+
             Button btnDialPhone = dlog.findViewById(R.id.btnDlogTwo);
+            if (isCallingSupported && !getSelectedCustomerPhone().isEmpty()) {
+                btnDialPhone.setOnClickListener(ViewCustomers_FA.this);
+            } else {
+                btnDialPhone.setVisibility(View.GONE);
+            }
+
             Button btnMapView = dlog.findViewById(R.id.btnDlogThree);
+            if (GoogleMapsUtils.isInstalled(this) &&
+                    !getSelectedCustomerShippingAddress().isEmpty()) {
+                btnMapView.setOnClickListener(ViewCustomers_FA.this);
+            } else {
+                btnMapView.setVisibility(View.GONE);
+            }
+
             Button btnTrans = dlog.findViewById(R.id.btnDlogFour);
             btnSelectCust.setText(R.string.cust_dlog_select_cust);
             btnDialPhone.setText(R.string.cust_dlog_dial);
@@ -417,7 +461,6 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
     public void biometricsDuplicatedEnroll(EmobileBiometric emobileBiometric, BiometricFid biometricFid) {
 
     }
-
 
     @Override
     public void biometricsUnregister(ViewCustomerDetails_FA.Finger finger) {

@@ -19,7 +19,7 @@ public class NetworkUtils {
 
     private static List<NetworkInfo> getConnectedNetworkInfo(ConnectivityManager connectivityManager) {
         NetworkInfo[] allNetworkInfo = connectivityManager.getAllNetworkInfo();
-        List<NetworkInfo> connectedNetworks = new ArrayList<NetworkInfo>();
+        List<NetworkInfo> connectedNetworks = new ArrayList<>();
         for (NetworkInfo networkInfo : allNetworkInfo) {
             if (networkInfo.isConnected()) {
                 connectedNetworks.add(networkInfo);
@@ -78,6 +78,22 @@ public class NetworkUtils {
                         e.printStackTrace();
                     }
                 }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return retVal[0];
+    }
+
+    public static boolean isConnectedToLAN(final Context activity) {
+        final boolean[] retVal = {false};
+        try {
+            final ConnectivityManager connManager = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
+            if (connManager == null)
+                return false;
+            if (!getConnectedNetworkInfo(connManager).isEmpty()) {
+                return true;
             }
         } catch (Exception e) {
             e.printStackTrace();

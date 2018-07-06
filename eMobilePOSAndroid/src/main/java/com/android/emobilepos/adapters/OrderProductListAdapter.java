@@ -127,7 +127,7 @@ public class OrderProductListAdapter extends BaseAdapter {
     public OrderSeatProduct getSeat(String seatNumber) {
         for (OrderSeatProduct seatProduct : orderSeatProductList) {
             if (seatProduct.rowType == RowType.TYPE_HEADER) {
-                if (seatProduct.seatNumber.equalsIgnoreCase(seatNumber)) {
+                if (seatProduct.seatNumber != null && seatProduct.seatNumber.equalsIgnoreCase(seatNumber)) {
                     return seatProduct;
                 }
             }

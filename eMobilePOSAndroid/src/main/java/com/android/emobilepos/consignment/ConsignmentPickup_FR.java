@@ -124,7 +124,7 @@ public class ConsignmentPickup_FR extends Fragment implements OnClickListener {
             int size = Global.consignMapKey.size();
             consTransaction = new ConsignmentTransaction();
             custInventoryHandler.insertUpdate(Global.custInventoryList);
-            double newOnHandQty = 0;
+            double newOnHandQty;
 
 
             GenerateNewID generator = new GenerateNewID(activity);
@@ -152,7 +152,7 @@ public class ConsignmentPickup_FR extends Fragment implements OnClickListener {
                     consTransaction.ConsInventory_Qty = tempArray[2];
 
                 consTransaction.ConsPickup_Qty = Global.consignSummaryMap.get(Global.consignMapKey.get(i)).get("pickup");
-                consTransaction.ConsNew_Qty = Global.custInventoryList.get(i).qty;
+                consTransaction.ConsNew_Qty = Global.custInventoryList.isEmpty() ? "0" : Global.custInventoryList.get(i).qty;
 
 
                 newOnHandQty = Double.parseDouble(Global.consignment_products.get(i).getOnHand()) + Double.parseDouble(consTransaction.ConsPickup_Qty);

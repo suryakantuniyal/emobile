@@ -152,7 +152,11 @@ public class EMSKDC425 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         if (!kdc425Reader.IsConnected() && KDCReader.GetAvailableDeviceList() != null && KDCReader.GetAvailableDeviceList().size() > 0) {
             btDev = KDCReader.GetAvailableDeviceList().get(0);
             if (kdc425Reader != null && btDev != null) {
-                kdc425Reader.Connect(btDev);
+                try {
+                    kdc425Reader.Connect(btDev);
+                }catch (Exception e){
+                    return false;
+                }
             } else {
                 return false;
 

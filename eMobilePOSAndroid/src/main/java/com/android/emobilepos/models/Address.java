@@ -184,4 +184,21 @@ public class Address
 	public void setAddr_s_type(String addr_s_type) {
 		this.addr_s_type = addr_s_type;
 	}
+
+	public String getFullShippingAddress() {
+		StringBuilder sb = new StringBuilder();
+		if (getAddr_s_str1() != null && !getAddr_s_str1().isEmpty())
+		    sb.append(getAddr_s_str1());
+		if (getAddr_s_str2() != null && !getAddr_s_str2().isEmpty())
+		    sb.append(" ").append(getAddr_s_str2());
+		if (getAddr_s_str3() != null && !getAddr_s_str3().isEmpty())
+		    sb.append(" ").append(getAddr_s_str3());
+		if (getAddr_s_city() != null && !getAddr_s_city().isEmpty())
+		    sb.append(" ").append(getAddr_s_city());
+		if (getAddr_s_state() != null && !getAddr_s_state().isEmpty())
+		    sb.append(" ").append(getAddr_s_state());
+		if (getAddr_s_country() != null && !getAddr_s_country().isEmpty())
+		    sb.append(" ").append(getAddr_s_country());
+		return sb.toString().trim();
+	}
 }

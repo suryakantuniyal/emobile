@@ -241,7 +241,11 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
     @Override
     public void onDestroy() {
         super.onDestroy();
-        getActivity().unregisterReceiver(messageReceiver);
+        try {
+            getActivity().unregisterReceiver(messageReceiver);
+        } catch (Exception e) {
+
+        }
     }
 
     @Override
