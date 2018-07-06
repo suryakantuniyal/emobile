@@ -13,7 +13,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.PowerManager;
 import android.os.RemoteException;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -453,7 +452,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
         isToGo = getRestaurantSaleType() == Global.RestaurantSaleType.TO_GO;
 
-        returnItem = mTransType == Global.TransactionType.RETURN;
+//        returnItem = mTransType == Global.TransactionType.RETURN;
         if (!myPref.isTablet())
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
@@ -592,7 +591,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     private void setReturnConfiguration(int titleResId) {
         headerTitle.setText(getString(titleResId));
         headerContainer.setBackgroundColor(Color.RED);
-        OrderingMain_FA.returnItem = true;
+        if (mTransType != Global.TransactionType.RETURN) {
+            OrderingMain_FA.returnItem = true;
+        }
     }
 
     private void handleFragments() {
@@ -1225,37 +1226,39 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
         String upc = invisibleSearchMain.getText().toString().trim().replace("\n", "").replace("\r", "");
 //                    upc = invisibleSearchMain.getText().toString().trim().replace("\r", "");
-        if (myPref.isRemoveLeadingZerosFromUPC()) {
-            upc = NumberUtils.removeLeadingZeros(upc);
-        }
-        Product product = handler.getUPCProducts(upc, false);
-        if (product.getId() != null) {
-            if (myPref.getPreferences(MyPreferences.pref_fast_scanning_mode)) {
-                if (validAutomaticAddQty(product)) {
-                    if (myPref.isGroupReceiptBySku(isToGo)) {//(myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
-                        int foundPosition = global.checkIfGroupBySKU(OrderingMain_FA.this, product.getId(), "1");
-                        if (foundPosition != -1 && !OrderingMain_FA.returnItem) // product
-                        {
-                            global.refreshParticularOrder(OrderingMain_FA.this, foundPosition, product);
+        if (!upc.isEmpty()) {
+            if (myPref.isRemoveLeadingZerosFromUPC()) {
+                upc = NumberUtils.removeLeadingZeros(upc);
+            }
+            Product product = handler.getUPCProducts(upc, false);
+            if (product.getId() != null) {
+                if (myPref.getPreferences(MyPreferences.pref_fast_scanning_mode)) {
+                    if (validAutomaticAddQty(product)) {
+                        if (myPref.isGroupReceiptBySku(isToGo)) {//(myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
+                            int foundPosition = global.checkIfGroupBySKU(OrderingMain_FA.this, product.getId(), "1");
+                            if (foundPosition != -1 && !OrderingMain_FA.returnItem) // product
+                            {
+                                global.refreshParticularOrder(OrderingMain_FA.this, foundPosition, product);
+                            } else
+                                getCatalogFr().automaticAddOrder(product);// temp.automaticAddOrder(listData);
                         } else
-                            getCatalogFr().automaticAddOrder(product);// temp.automaticAddOrder(listData);
-                    } else
-                        getCatalogFr().automaticAddOrder(product);
-                    refreshView();
-                    if (OrderingMain_FA.returnItem) {
-                        OrderingMain_FA.returnItem = !OrderingMain_FA.returnItem;
-                        switchHeaderTitle(OrderingMain_FA.returnItem, "Return", mTransType);
+                            getCatalogFr().automaticAddOrder(product);
+                        refreshView();
+                        if (OrderingMain_FA.returnItem) {
+                            OrderingMain_FA.returnItem = !OrderingMain_FA.returnItem;
+                            switchHeaderTitle(OrderingMain_FA.returnItem, "Return", mTransType);
+                        }
+                    } else {
+                        Global.showPrompt(OrderingMain_FA.this, R.string.dlog_title_error,
+                                OrderingMain_FA.this.getString(R.string.limit_onhand));
                     }
                 } else {
-                    Global.showPrompt(OrderingMain_FA.this, R.string.dlog_title_error,
-                            OrderingMain_FA.this.getString(R.string.limit_onhand));
+                    getCatalogFr().searchUPC(upc);
                 }
             } else {
-                getCatalogFr().searchUPC(upc);
+                Global.showPrompt(OrderingMain_FA.this, R.string.dlog_title_error,
+                        getString(R.string.dlog_msg_item_not_found));
             }
-        } else {
-            Global.showPrompt(OrderingMain_FA.this, R.string.dlog_title_error,
-                    getString(R.string.dlog_msg_item_not_found));
         }
         invisibleSearchMain.setText("");
     }

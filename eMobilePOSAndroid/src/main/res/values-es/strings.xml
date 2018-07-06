@@ -583,6 +583,7 @@
     <string name="cust_add_address_residential">"Residencial"</string>
     <string name="cust_add_address_business">"Negocio"</string>
     <string name="cust_add_type">"Tipo"</string>
+    <string name="cust_calls_not_available">"Llamadas no disponibles"</string>
 
 
     <!-- Process Card Payment -->

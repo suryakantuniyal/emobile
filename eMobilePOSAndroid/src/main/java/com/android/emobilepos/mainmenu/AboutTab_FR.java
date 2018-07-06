@@ -1,10 +1,11 @@
 package com.android.emobilepos.mainmenu;
 
 
-import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +21,11 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.support.MyPreferences;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+
 public class AboutTab_FR extends Fragment implements OnClickListener {
 
     private long _last_time = 0;
@@ -27,6 +33,7 @@ public class AboutTab_FR extends Fragment implements OnClickListener {
     private int counter = 0;
     private boolean deleteIsRunning = false;
     private ImageView posLogo;
+    TextView footerText;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -34,12 +41,12 @@ public class AboutTab_FR extends Fragment implements OnClickListener {
         View view = inflater.inflate(R.layout.about_layout, container, false);
         AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
         MyPreferences myPref = new MyPreferences(getActivity());
-        TextView acctNumber = (TextView) view.findViewById(R.id.acctNum);
-        TextView employee = (TextView) view.findViewById(R.id.employeeNameID);
-        TextView version = (TextView) view.findViewById(R.id.versionID);
-        TextView deviceName = (TextView) view.findViewById(R.id.deviceModelText);
+        TextView acctNumber = view.findViewById(R.id.acctNum);
+        TextView employee = view.findViewById(R.id.employeeNameID);
+        TextView version = view.findViewById(R.id.versionID);
+        TextView deviceName = view.findViewById(R.id.deviceModelText);
         deviceName.setText(Build.MODEL);
-        posLogo = (ImageView) view.findViewById(R.id.aboutMainLogo);
+        posLogo = view.findViewById(R.id.aboutMainLogo);
         posLogo.setOnClickListener(this);
         acctNumber.setText(myPref.getAcctNumber());
         if (assignEmployee != null) {
@@ -50,6 +57,13 @@ public class AboutTab_FR extends Fragment implements OnClickListener {
         version.setText(myPref.getBundleVersion());
 
         return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        footerText = view.findViewById(R.id.footerText);
+        new TLSTesterTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     @Override
@@ -96,6 +110,35 @@ public class AboutTab_FR extends Fragment implements OnClickListener {
             Toast.makeText(getActivity(), "Data was deleted", Toast.LENGTH_LONG).show();
         }
 
+    }
+
+    private class TLSTesterTask extends AsyncTask<Void, Void, Integer> {
+
+        @Override
+        protected Integer doInBackground(Void... voids) {
+            HttpURLConnection httpURLConnection = null;
+            int responseCode = 0;
+            try {
+                httpURLConnection = oauthclient.HttpClient.getHttpURLConnection("https://bo.enablermobile.com/App_Themes/BONewDesign/images/login/EMobileLogo_login.png", oauthclient.HttpClient.HTTPMethod.GET);
+                responseCode = httpURLConnection.getResponseCode();
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            } catch (KeyManagementException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return responseCode;
+        }
+
+        @Override
+        protected void onPostExecute(Integer result) {
+            super.onPostExecute(result);
+            if (result == 200) {
+                footerText.setText(String.format("%s TLS2", getString(R.string.about_footer)));
+            }
+        }
     }
 
 }

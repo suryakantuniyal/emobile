@@ -143,6 +143,7 @@ public class OrdersHandler {
         order.ord_comment = cursor.getString(cursor.getColumnIndex(ord_comment));
         order.ord_delivery = cursor.getString(cursor.getColumnIndex(ord_delivery));
         order.ord_timecreated = cursor.getString(cursor.getColumnIndex(ord_timecreated));
+        order.ord_timeStarted = cursor.getString(cursor.getColumnIndex(ord_timeStarted));
         order.ord_timesync = cursor.getString(cursor.getColumnIndex(ord_timesync));
         order.qb_synctime = cursor.getString(cursor.getColumnIndex(qb_synctime));
         order.emailed = cursor.getString(cursor.getColumnIndex(emailed));

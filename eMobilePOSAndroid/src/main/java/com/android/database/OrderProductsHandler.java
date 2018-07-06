@@ -304,7 +304,7 @@ public class OrderProductsHandler {
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT ").append(sb1.toString()).append(",");
 //        if (getAssignEmployee().isVAT())
-            sb.append("itemTotal AS 'totalLineValue' FROM ");
+        sb.append("itemTotal AS 'totalLineValue' FROM ");
 //        else
 //            sb.append("(itemTotal+prod_taxValue) AS 'totalLineValue' FROM ");
         sb.append(table_name).append(" WHERE ord_id = ?");
@@ -628,7 +628,10 @@ public class OrderProductsHandler {
         query.append(
                 "SELECT prod_price, sum(itemsubtotal) as 'itemsubtotal_sum', ordprod_name, prod_id,prod_sku, prod_upc, " +
                         "sum(ordprod_qty) as 'ordprod_qty', " +
-                        " sum(overwrite_price) 'overwrite_price',date(o.ord_timecreated,'localtime') as 'date' " +
+                        "sum(CASE WHEN overwrite_price = '' THEN prod_price * ordprod_qty " +
+                        "ELSE IFNULL(overwrite_price, prod_price) * ordprod_qty " +
+                        "END) AS 'overwrite_price', " +
+                        "date(o.ord_timecreated,'localtime') as 'date' " +
                         "FROM " + table_name + " op ");
         query.append("LEFT JOIN Orders o ON op.ord_id = o.ord_id WHERE o.isVoid = '0' AND o.ord_type IN ");
 
@@ -650,7 +653,7 @@ public class OrderProductsHandler {
             where_values = new String[]{date};
         }
 
-        query.append(" GROUP BY op.prod_id");
+        query.append(" GROUP BY op.prod_id ORDER BY op.ordprod_name");
 
         Cursor c = DBManager.getDatabase().rawQuery(query.toString(), where_values);
 
@@ -682,17 +685,27 @@ public class OrderProductsHandler {
         return listOrdProd;
     }
 
-    public List<OrderProduct> getDepartmentDayReport(boolean isSales, String clerk_id, String date) {
+    public List<OrderProduct> getDepartmentDayReport(boolean isSales, String clerk_id,
+                                                     String startDate) {
+        return getDepartmentDayReport(isSales, clerk_id, startDate, null);
+    }
+
+    public List<OrderProduct> getDepartmentDayReport(boolean isSales, String clerk_id,
+                                                     String startDate, String endDate) {
         StringBuilder query = new StringBuilder();
         List<OrderProduct> listOrdProd = new ArrayList<>();
 
+        String sqlDateFunction = "date";
+        if (endDate != null) sqlDateFunction = "datetime";
+
         query.append(
-                "SELECT prod_price as 'prod_price', case when op.cat_name='' THEN 'Other' else  " +
-                        "op.cat_name end as cat_name,op.cat_id, sum(ordprod_qty) as 'ordprod_qty', " +
-                        "sum(CASE WHEN overwrite_price='' THEN prod_price " +
-                        "ELSE IFNULL(overwrite_price,prod_price)  END) as 'overwrite_price'," +
-                        "date(o.ord_timecreated,'localtime') as 'date'" +
-                        "FROM " + table_name + " op ");
+                "SELECT prod_price as 'prod_price', case when op.cat_name = '' THEN 'Other' else  " +
+                        "op.cat_name end as cat_name, op.cat_id, sum(ordprod_qty) as 'ordprod_qty', " +
+                        "sum(CASE WHEN overwrite_price = '' THEN prod_price * ordprod_qty " +
+                        "ELSE IFNULL(overwrite_price, prod_price) * ordprod_qty  END) as 'overwrite_price', ");
+        query.append(sqlDateFunction);
+        query.append("(o.ord_timecreated, 'localtime') as 'date'" +
+                "FROM " + table_name + " op ");
         query.append(
                 "LEFT JOIN Categories c ON op.cat_id = c.cat_id " +
                         "LEFT JOIN Orders o ON op.ord_id = o.ord_id " +
@@ -703,22 +716,28 @@ public class OrderProductsHandler {
         else// returned items
             query.append("('1') ");
 
-        String[] where_values = null;
+        ArrayList<String> where_values = new ArrayList<>();
         if (clerk_id != null && !clerk_id.isEmpty()) {
             query.append(" AND o.clerk_id = ? ");
-            where_values = new String[]{clerk_id};
-            if (date != null && !date.isEmpty()) {
+            where_values.add(clerk_id);
+        }
+        if (startDate != null && !startDate.isEmpty()) {
+            if (endDate != null && !endDate.isEmpty()) {
+                query.append(" AND date >= datetime(?, 'localtime') ");
+                where_values.add(startDate);
+            } else {
                 query.append(" AND date = ? ");
-                where_values = new String[]{clerk_id, date};
+                where_values.add(startDate);
             }
-        } else if (date != null && !date.isEmpty()) {
-            query.append(" AND date = ? ");
-            where_values = new String[]{date};
+        }
+        if (endDate != null && !endDate.isEmpty()) {
+            query.append(" AND date <= datetime(?, 'localtime') ");
+            where_values.add(endDate);
         }
 
-        query.append(" GROUP BY op.cat_id ORDER BY op.cat_id");
+        query.append(" GROUP BY op.cat_id ORDER BY op.cat_name");
 
-        Cursor c = DBManager.getDatabase().rawQuery(query.toString(), where_values);
+        Cursor c = DBManager.getDatabase().rawQuery(query.toString(), where_values.toArray(new String[0]));
 
         if (c.moveToFirst()) {
             int i_cat_name = c.getColumnIndex("cat_name");

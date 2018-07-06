@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.PowerManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -91,11 +90,15 @@ public class ShiftReportDetails_FA extends BaseFragmentActivityActionBar impleme
         LinearLayout deptReturnsLinearLayout = findViewById(R.id.deptReturnsLinearLayout);
 
         OrderProductsHandler orderProductsHandler = new OrderProductsHandler(this);
-        String date = DateUtils.getDateAsString(shift.getCreationDate(), "yyyy-MM-dd");
-        List<OrderProduct> listDeptSales = orderProductsHandler.getDepartmentDayReport(true, String.valueOf(shift.getClerkId()), date);
-        List<OrderProduct> listDeptReturns = orderProductsHandler.getDepartmentDayReport(false, String.valueOf(shift.getClerkId()), date);
+        String startDate = DateUtils.getDateAsString(shift.getCreationDate(), "yyyy-MM-dd HH:mm");
+        String endDate = DateUtils.getDateAsString(shift.getEndTime(), "yyyy-MM-dd HH:mm");
+        List<OrderProduct> listDeptSales = orderProductsHandler.getDepartmentDayReport(
+                true, String.valueOf(shift.getClerkId()), startDate, endDate);
+        List<OrderProduct> listDeptReturns = orderProductsHandler.getDepartmentDayReport(
+                false, String.valueOf(shift.getClerkId()), startDate, endDate);
         for (OrderProduct orderProduct : listDeptSales) {
-            LinearLayout rowLinearLayout = (LinearLayout) inflater.inflate(R.layout.adapter_report_items, null, false);
+            LinearLayout rowLinearLayout = (LinearLayout) inflater.inflate(
+                    R.layout.adapter_report_items, null, false);
             TextView prodName = rowLinearLayout.findViewById(R.id.tvProdName);
             TextView prodID = rowLinearLayout.findViewById(R.id.tvProdID);
             TextView prodQty = rowLinearLayout.findViewById(R.id.tvProdQty);
@@ -107,7 +110,8 @@ public class ShiftReportDetails_FA extends BaseFragmentActivityActionBar impleme
             deptSalesLinearLayout.addView(rowLinearLayout);
         }
         for (OrderProduct orderProduct : listDeptReturns) {
-            LinearLayout rowLinearLayout = (LinearLayout) inflater.inflate(R.layout.adapter_report_items, null, false);
+            LinearLayout rowLinearLayout = (LinearLayout) inflater.inflate(
+                    R.layout.adapter_report_items, null, false);
             TextView prodName = rowLinearLayout.findViewById(R.id.tvProdName);
             TextView prodID = rowLinearLayout.findViewById(R.id.tvProdID);
             TextView prodQty = rowLinearLayout.findViewById(R.id.tvProdQty);

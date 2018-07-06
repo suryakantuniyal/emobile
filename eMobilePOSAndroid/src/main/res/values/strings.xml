@@ -591,6 +591,7 @@
     <string name="cust_add_address_residential">Residential</string>
     <string name="cust_add_address_business">Business</string>
     <string name="cust_add_type">Type</string>
+    <string name="cust_calls_not_available">Calls not available</string>
 
 
     <!-- Process Card Payment -->

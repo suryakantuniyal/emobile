@@ -183,10 +183,12 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
 
         @Override
         protected String doInBackground(String... params) {
-            String autoConnect = "";
+            String autoConnect;
             autoConnect = DeviceUtils.autoConnect(BaseFragmentActivityActionBar.this, loadMultiPrinter);
-            if (myPref.getPrinterType() == Global.POWA || myPref.getPrinterType() == Global.MEPOS
-                    || myPref.getPrinterType() == Global.ELOPAYPOINT) {
+            if (myPref.getPrinterType() == Global.POWA ||
+                    myPref.getPrinterType() == Global.MEPOS ||
+                    myPref.getPrinterType() == Global.ELOPAYPOINT ||
+                    myPref.getPrinterType() == Global.SNBC) {
                 isUSB = true;
             }
             if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null &&
@@ -209,9 +211,7 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
                 Global.mainPrinterManager = edm.getManager();
                 Global.mainPrinterManager.loadMultiDriver(BaseFragmentActivityActionBar.this, myPref.getPrinterType(), 0, true, "", "");
             }
-            if (!BaseFragmentActivityActionBar.this.isFinishing()) {
-                dismissProgressDialog();
-            }
+            Global.dismissDialog(BaseFragmentActivityActionBar.this, driversProgressDialog);
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         }
 
@@ -223,12 +223,6 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
                 driversProgressDialog.setCancelable(true);
             }
             driversProgressDialog.show();
-        }
-
-        private void dismissProgressDialog() {
-            if (driversProgressDialog != null && driversProgressDialog.isShowing()) {
-                driversProgressDialog.dismiss();
-            }
         }
     }
 

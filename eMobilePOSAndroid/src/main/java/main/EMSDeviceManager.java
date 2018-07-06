@@ -30,6 +30,7 @@ import drivers.EMSDeviceDriver;
 import drivers.EMSELO;
 import drivers.EMSEM100;
 import drivers.EMSEM70;
+import drivers.EMSGPrinterPT380;
 import drivers.EMSHandpoint;
 import drivers.EMSIngenico;
 import drivers.EMSIngenicoEVO;
@@ -73,6 +74,10 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                     promptTypeOfStarPrinter(activity);
                 else
                     promptStarPrinterSize(true, activity);
+                break;
+            case Global.GPRINTER:
+                aDevice = new EMSGPrinterPT380();
+                aDevice.connect(activity, -1, false, this);
                 break;
             case Global.BIXOLON_RD:
                 aDevice = new EMSBixolonRD(EMSBixolonRD.BixolonCountry.PANAMA);
@@ -205,6 +210,9 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 break;
             case Global.STAR:
                 aDevice = new EMSBluetoothStarPrinter();
+                break;
+            case Global.GPRINTER:
+                aDevice = new EMSGPrinterPT380();
                 break;
             case Global.EM70:
                 aDevice = new EMSEM70();
