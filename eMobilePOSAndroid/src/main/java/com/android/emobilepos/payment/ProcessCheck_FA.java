@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.PowerManager;
 import android.text.Editable;
 import android.text.Selection;
 import android.text.TextUtils;
@@ -124,30 +123,30 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
             setContentView(R.layout.process_local_check_layout);
         }
 
-        subtotal = (EditText) findViewById(R.id.subtotalCashEdit);
-        tax1 = (EditText) findViewById(R.id.tax1CashEdit);
-        tax2 = (EditText) findViewById(R.id.tax2CashEdit);
-        TextView tax1Lbl = (TextView) findViewById(R.id.tax1CashLbl);
-        TextView tax2Lbl = (TextView) findViewById(R.id.tax2CashLbl);
+        subtotal = findViewById(R.id.subtotalCashEdit);
+        tax1 = findViewById(R.id.tax1CashEdit);
+        tax2 = findViewById(R.id.tax2CashEdit);
+        TextView tax1Lbl = findViewById(R.id.tax1CashLbl);
+        TextView tax2Lbl = findViewById(R.id.tax2CashLbl);
         groupTaxRate = new TaxesHandler(this).getGroupTaxRate(custTaxCode);
         ProcessCash_FA.setTaxLabels(groupTaxRate, tax1Lbl, tax2Lbl);
-        this.amountField = (EditText) findViewById(R.id.checkAmount);
+        this.amountField = findViewById(R.id.checkAmount);
 
-        field = new EditText[]{(EditText) findViewById(R.id.checkName), (EditText) findViewById(R.id.checkEmail),
-                (EditText) findViewById(R.id.checkPhone), (EditText) findViewById(R.id.checkAmount),
-                (EditText) findViewById(R.id.checkAmountPaid), (EditText) findViewById(R.id.checkInvoice),
-                (EditText) findViewById(R.id.checkAccount), (EditText) findViewById(R.id.checkRouting),
-                (EditText) findViewById(R.id.checkNumber), (EditText) findViewById(R.id.checkCity), (EditText) findViewById(R.id.checkState),
-                (EditText) findViewById(R.id.checkZipcode), (EditText) findViewById(R.id.checkComment), (EditText) findViewById(R.id.checkAddress),
-                (EditText) findViewById(R.id.checkDLNumber), (EditText) findViewById(R.id.checkDLState), (EditText) findViewById(R.id.checkDOBYear)};
+        field = new EditText[]{findViewById(R.id.checkName), findViewById(R.id.checkEmail),
+                findViewById(R.id.checkPhone), findViewById(R.id.checkAmount),
+                findViewById(R.id.checkAmountPaid), findViewById(R.id.checkInvoice),
+                findViewById(R.id.checkAccount), findViewById(R.id.checkRouting),
+                findViewById(R.id.checkNumber), findViewById(R.id.checkCity), findViewById(R.id.checkState),
+                findViewById(R.id.checkZipcode), findViewById(R.id.checkComment), findViewById(R.id.checkAddress),
+                findViewById(R.id.checkDLNumber), findViewById(R.id.checkDLState), findViewById(R.id.checkDOBYear)};
 
 
         if (isLivePayment) {
-            ImageButton btnCaptureCheck = (ImageButton) findViewById(R.id.btnCheckCapture);
+            ImageButton btnCaptureCheck = findViewById(R.id.btnCheckCapture);
             btnCaptureCheck.setOnClickListener(this);
             btnCaptureCheck.setOnTouchListener(Global.opaqueImageOnClick());
-            radioGroupCheckType = (RadioGroup) findViewById(R.id.radioGroupCheckType);
-            radioGroupAddressType = (RadioGroup) findViewById(R.id.radioGroupAddressType);
+            radioGroupCheckType = findViewById(R.id.radioGroupCheckType);
+            radioGroupAddressType = findViewById(R.id.radioGroupAddressType);
             radioGroupCheckType.setOnCheckedChangeListener(this);
             radioGroupAddressType.setOnCheckedChangeListener(this);
         }
@@ -157,8 +156,8 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
 
         hasBeenCreated = true;
 
-        TextView headerTitle = (TextView) findViewById(R.id.HeaderTitle);
-        tvCheckChange = (TextView) findViewById(R.id.changeCheckText);
+        TextView headerTitle = findViewById(R.id.HeaderTitle);
+        tvCheckChange = findViewById(R.id.changeCheckText);
 
 
         if (!Global.getValidString(extras.getString("cust_id")).isEmpty()) {
@@ -173,8 +172,11 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
                     field[CHECK_EMAIL].setText(customerInfo.get("cust_email"));
             }
 
-        } else if (!extras.getString("order_email", "").isEmpty()) {
-            field[CHECK_EMAIL].setText(extras.getString("order_email"));
+        }
+
+        if (!myPref.isSkipEmailPhone()) {
+            field[CHECK_EMAIL].setText(extras.getString("order_email", ""));
+            field[CHECK_PHONE].setText(extras.getString("order_phone", ""));
         }
 
 
@@ -200,8 +202,8 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
         }
 
 
-        Button exactBut = (Button) findViewById(R.id.exactAmountBut);
-        btnProcess = (Button) findViewById(R.id.processCheckBut);
+        Button exactBut = findViewById(R.id.exactAmountBut);
+        btnProcess = findViewById(R.id.processCheckBut);
         exactBut.setOnClickListener(this);
         btnProcess.setOnClickListener(this);
 
@@ -458,6 +460,7 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
         payment.setPay_phone(field[CHECK_PHONE].getText().toString());
         payment.setPay_email(field[CHECK_EMAIL].getText().toString());
         payment.setPay_check(this.field[CHECK_NUMBER].getText().toString());
+        payment.setPay_comment(field[COMMENTS].getText().toString());
 
         Location location = Global.getCurrLocation(activity, false);
         payment.setPay_latitude(String.valueOf(location.getLatitude()));
@@ -652,6 +655,7 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
         payment.setPay_email(field[CHECK_EMAIL].getText().toString());
         payment.setProcessed("1");
         payment.setPay_check(this.field[CHECK_NUMBER].getText().toString());
+        payment.setPay_comment(field[COMMENTS].getText().toString());
 
         Location location = Global.getCurrLocation(activity, false);
         payment.setPay_latitude(String.valueOf(location.getLatitude()));
@@ -861,8 +865,8 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
         dlog.setCancelable(false);
         dlog.setContentView(R.layout.dlog_btn_left_right_layout);
 
-        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+        TextView viewTitle = dlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = dlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_confirm);
         if (isRetry) {
             viewTitle.setText(R.string.dlog_title_error);
@@ -870,8 +874,8 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
         }
         dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
 
-        Button btnYes = (Button) dlog.findViewById(R.id.btnDlogLeft);
-        Button btnNo = (Button) dlog.findViewById(R.id.btnDlogRight);
+        Button btnYes = dlog.findViewById(R.id.btnDlogLeft);
+        Button btnNo = dlog.findViewById(R.id.btnDlogRight);
         btnYes.setText(R.string.button_yes);
         btnNo.setText(R.string.button_no);
 
@@ -903,12 +907,12 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
         dlog.setCancelable(false);
         dlog.setContentView(R.layout.dlog_btn_single_layout);
 
-        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+        TextView viewTitle = dlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = dlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_confirm);
 
         viewMsg.setText("Change: " + Global.formatDoubleToCurrency(amountTender - actualAmount));
-        Button btnOK = (Button) dlog.findViewById(R.id.btnDlogSingle);
+        Button btnOK = dlog.findViewById(R.id.btnDlogSingle);
         btnOK.setText(R.string.button_ok);
 
         btnOK.setOnClickListener(new View.OnClickListener() {
@@ -930,14 +934,14 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
         dlog.setCanceledOnTouchOutside(true);
         dlog.setContentView(R.layout.dlog_btn_left_right_layout);
 
-        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+        TextView viewTitle = dlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = dlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_error);
         viewMsg.setText(msg);
         dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
 
-        Button btnOK = (Button) dlog.findViewById(R.id.btnDlogLeft);
-        Button btnNo = (Button) dlog.findViewById(R.id.btnDlogRight);
+        Button btnOK = dlog.findViewById(R.id.btnDlogLeft);
+        Button btnNo = dlog.findViewById(R.id.btnDlogRight);
         btnOK.setText(R.string.button_ok);
         btnNo.setText(R.string.button_no);
 

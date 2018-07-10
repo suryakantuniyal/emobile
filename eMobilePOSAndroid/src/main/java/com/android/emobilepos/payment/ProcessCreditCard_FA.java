@@ -12,7 +12,6 @@ import android.media.AudioManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Message;
-import android.os.PowerManager;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.Selection;
@@ -125,7 +124,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
     private EditText tipAmount, reference, promptTipField;
     private EditText amountDueField;
     private EditText amountPaidField;
-    private EditText phoneNumberField, customerEmailField;
+    private EditText phoneNumberField, customerEmailField, commentsField;
     private EditText authIDField, transIDField;
     private EditText subtotal, tax1, tax2;
     private List<GroupTax> groupTaxRate;
@@ -599,11 +598,15 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
         phoneNumberField = findViewById(R.id.processCardPhone);
         customerEmailField = findViewById(R.id.processCardEmail);
+        commentsField = findViewById(R.id.fieldComments);
 
-        if (!Global.getValidString(extras.getString("cust_id")).isEmpty())
+        if (!Global.getValidString(extras.getString("cust_id")).isEmpty()) {
             prefillCustomerInfo();
-        else if (!extras.getString("order_email", "").isEmpty()) {
-            customerEmailField.setText(extras.getString("order_email"));
+        }
+
+        if (!myPref.isSkipEmailPhone()) {
+            customerEmailField.setText(extras.getString("order_email", ""));
+            phoneNumberField.setText(extras.getString("order_phone", ""));
         }
 
         hasBeenCreated = true;
@@ -882,14 +885,40 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         String transactionId = null;
         String authcode = null;
         amountToTip = Global.getBigDecimalNum(String.valueOf(amountToTip), 2).doubleValue();
-        Payment payment = new Payment(activity, extras.getString("pay_id"), extras.getString("cust_id"), invoiceId, jobId, clerkId, custidkey, extras.getString("paymethod_id"),
-                actualAmount, amountTender,
-                cardInfoManager.getCardOwnerName(), reference.getText().toString(), phoneNumberField.getText().toString(),
-                customerEmailField.getText().toString(), amountToTip, taxAmnt1, taxAmnt2, taxName1, taxName2,
-                isRef, paymentType, creditCardType, cardInfoManager.getCardNumAESEncrypted(), cardInfoManager.getCardLast4(),
-                cardInfoManager.getCardExpMonth(), cardInfoManager.getCardExpYear(),
-                zipCode.getText().toString(), cardInfoManager.getCardEncryptedSecCode(), cardInfoManager.getEncryptedAESTrack1(),
-                cardInfoManager.getEncryptedAESTrack2(), transactionId, authcode);
+        Payment payment = new Payment(activity,
+                extras.getString("pay_id"),
+                extras.getString("cust_id"),
+                invoiceId,
+                jobId,
+                clerkId,
+                custidkey,
+                extras.getString("paymethod_id"),
+                actualAmount,
+                amountTender,
+                cardInfoManager.getCardOwnerName(),
+                reference.getText().toString(),
+                phoneNumberField.getText().toString(),
+                customerEmailField.getText().toString(),
+                commentsField.getText().toString(),
+                amountToTip,
+                taxAmnt1,
+                taxAmnt2,
+                taxName1,
+                taxName2,
+                isRef,
+                paymentType,
+                creditCardType,
+                cardInfoManager.getCardNumAESEncrypted(),
+                cardInfoManager.getCardLast4(),
+                cardInfoManager.getCardExpMonth(),
+                cardInfoManager.getCardExpYear(),
+                zipCode.getText().toString(),
+                cardInfoManager.getCardEncryptedSecCode(),
+                cardInfoManager.getEncryptedAESTrack1(),
+                cardInfoManager.getEncryptedAESTrack2(),
+                transactionId,
+                authcode);
+
         if (cardInfoManager.getEmvContainer() != null && cardInfoManager.getEmvContainer().getHandpointResponse() != null) {
             payment.setCard_type(getCreditName(cardInfoManager.getEmvContainer().getHandpointResponse().getCardSchemeName()));
         }
@@ -1033,14 +1062,39 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         String authcode = null;
         String invoiceId = null;
         String jobId = null;
-        Payment payment = new Payment(activity, extras.getString("pay_id"), extras.getString("cust_id"), invoiceId, jobId, clerkId, custidkey, extras.getString("paymethod_id"),
-                actualAmount, amountToBePaid,
-                cardInfoManager.getCardOwnerName(), reference.getText().toString(), phoneNumberField.getText().toString(),
-                customerEmailField.getText().toString(), amountToTip, taxAmnt1, taxAmnt2, taxName1, taxName2,
-                isRef, paymentType, creditCardType, cardInfoManager.getCardNumAESEncrypted(), cardInfoManager.getCardLast4(),
-                cardInfoManager.getCardExpMonth(), cardInfoManager.getCardExpYear(),
-                zipCode.getText().toString(), cardInfoManager.getCardEncryptedSecCode(), cardInfoManager.getEncryptedAESTrack1(),
-                cardInfoManager.getEncryptedAESTrack2(), transactionId, authcode);
+        Payment payment = new Payment(activity,
+                extras.getString("pay_id"),
+                extras.getString("cust_id"),
+                invoiceId,
+                jobId,
+                clerkId,
+                custidkey,
+                extras.getString("paymethod_id"),
+                actualAmount,
+                amountToBePaid,
+                cardInfoManager.getCardOwnerName(),
+                reference.getText().toString(),
+                phoneNumberField.getText().toString(),
+                customerEmailField.getText().toString(),
+                commentsField.getText().toString(),
+                amountToTip,
+                taxAmnt1,
+                taxAmnt2,
+                taxName1,
+                taxName2,
+                isRef,
+                paymentType,
+                creditCardType,
+                cardInfoManager.getCardNumAESEncrypted(),
+                cardInfoManager.getCardLast4(),
+                cardInfoManager.getCardExpMonth(),
+                cardInfoManager.getCardExpYear(),
+                zipCode.getText().toString(),
+                cardInfoManager.getCardEncryptedSecCode(),
+                cardInfoManager.getEncryptedAESTrack1(),
+                cardInfoManager.getEncryptedAESTrack2(),
+                transactionId,
+                authcode);
 
         EMSPayGate_Default payGate = new EMSPayGate_Default(activity, payment);
         String generatedURL;

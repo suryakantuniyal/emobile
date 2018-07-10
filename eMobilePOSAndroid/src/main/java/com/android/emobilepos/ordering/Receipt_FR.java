@@ -162,8 +162,13 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     }
 
     public static Order buildOrder(Activity activity, Global global,
-                                   String _email, String ord_HoldName, String assignedTable, String associateId,
-                                   List<OrderAttributes> orderAttributes, List<DataTaxes> orderTaxes, List<OrderProduct> orderProducts) {
+                                   String email,
+                                   String ord_HoldName,
+                                   String assignedTable,
+                                   String associateId,
+                                   List<OrderAttributes> orderAttributes,
+                                   List<DataTaxes> orderTaxes,
+                                   List<OrderProduct> orderProducts) {
         OrderingMain_FA orderingMainFa = (OrderingMain_FA) activity;
         orderingMainFa.buildOrderStarted = true;
         MyPreferences myPref = new MyPreferences(activity);
@@ -185,19 +190,19 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         order.ord_signature = global.encodedImage;
         order.qbord_id = GenerateNewID.getQBOrderId(Global.lastOrdID);
         order.ord_HoldName = ord_HoldName;
-        order.c_email = _email;
+        order.c_email = email;
         order.cust_id = myPref.getCustID();
         order.custidkey = myPref.getCustIDKey();
         order.ord_type = Global.ord_type == null ? "" : Global.ord_type.getCodeString();
         order.tax_id = OrderTotalDetails_FR.taxID;
         order.ord_discount_id = OrderTotalDetails_FR.discountID;
         if (global.order != null) {
+            order.c_phone = global.order.c_phone;
             order.ord_timecreated = global.order.ord_timecreated;
         }
         if (assignEmployee.isVAT()) {
             order.VAT = "1";
         }
-        int totalLines = global.order.getOrderProducts().size();
         for (OrderProduct orderProduct : global.order.getOrderProducts()) {
             order.ord_lineItemDiscount = String.valueOf(Global.getBigDecimalNum(order.ord_lineItemDiscount)
                     .add(Global.getBigDecimalNum(orderProduct.getDiscount_value())));
@@ -842,24 +847,26 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 }
                 order_email = emailInput.getText().toString();
                 order_phone = phoneNum.getText().toString();
-                if (!emailInput.getText().toString().isEmpty()) {
-                    if (checkEmail(emailInput.getText().toString())) {
+
+                getOrderingMainFa().global.order.c_phone = order_phone;
+
+                if (!order_email.isEmpty()) {
+                    if (checkEmail(order_email)) {
                         if (isToGo) {
-                            Order order = buildOrder(getActivity(), getOrderingMainFa().global, emailInput.getText().toString(), ord_HoldName,
+                            Order order = buildOrder(getActivity(), getOrderingMainFa().global, order_email, ord_HoldName,
                                     ((OrderingMain_FA) getActivity()).getSelectedDinningTableNumber(),
                                     ((OrderingMain_FA) getActivity()).getAssociateId(), ((OrderingMain_FA) getActivity()).getOrderAttributes(),
                                     ((OrderingMain_FA) getActivity()).getListOrderTaxes(), getOrderingMainFa().global.order.getOrderProducts());
-                            processOrder(order, emailInput.getText().toString(), OrderingMain_FA.OrderingAction.CHECKOUT,
+                            processOrder(order, order_email, OrderingMain_FA.OrderingAction.CHECKOUT,
                                     Global.isFromOnHold, false);
                         } else {
                             if (getOrderingMainFa().global.order.getOrderProducts() != null && getOrderingMainFa().global.order.getOrderProducts().size() > 0) {
-                                Order order = buildOrder(getActivity(), getOrderingMainFa().global, emailInput.getText().toString(), ord_HoldName,
+                                Order order = buildOrder(getActivity(), getOrderingMainFa().global, order_email, ord_HoldName,
                                         ((OrderingMain_FA) getActivity()).getSelectedDinningTableNumber(),
                                         ((OrderingMain_FA) getActivity()).getAssociateId(), ((OrderingMain_FA) getActivity()).getOrderAttributes(),
                                         ((OrderingMain_FA) getActivity()).getListOrderTaxes(), getOrderingMainFa().global.order.getOrderProducts());
-                                processOrder(order, emailInput.getText().toString(), OrderingMain_FA.OrderingAction.HOLD,
+                                processOrder(order, order_email, OrderingMain_FA.OrderingAction.HOLD,
                                         Global.isFromOnHold, false);
-
                             } else {
                                 getOrderingMainFa().buildOrderStarted = false;
                                 Toast.makeText(getActivity(),
@@ -873,11 +880,11 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                 Toast.LENGTH_LONG).show();
                 } else {
                     if (isToGo) {
-                        Order order = buildOrder(getActivity(), getOrderingMainFa().global, emailInput.getText().toString(), ord_HoldName,
+                        Order order = buildOrder(getActivity(), getOrderingMainFa().global, "", ord_HoldName,
                                 ((OrderingMain_FA) getActivity()).getSelectedDinningTableNumber(),
                                 ((OrderingMain_FA) getActivity()).getAssociateId(), ((OrderingMain_FA) getActivity()).getOrderAttributes(),
                                 ((OrderingMain_FA) getActivity()).getListOrderTaxes(), getOrderingMainFa().global.order.getOrderProducts());
-                        processOrder(order, emailInput.getText().toString(), OrderingMain_FA.OrderingAction.CHECKOUT, Global.isFromOnHold, false);
+                        processOrder(order, "", OrderingMain_FA.OrderingAction.CHECKOUT, Global.isFromOnHold, false);
                     } else {
                         if (getOrderingMainFa().global.order.getOrderProducts() != null && getOrderingMainFa().global.order.getOrderProducts().size() > 0) {
                             Order order = buildOrder(getActivity(), getOrderingMainFa().global, "", ord_HoldName,

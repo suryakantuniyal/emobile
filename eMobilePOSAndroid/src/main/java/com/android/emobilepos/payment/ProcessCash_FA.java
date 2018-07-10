@@ -67,7 +67,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
     private boolean isFromSalesReceipt = false;
     private boolean isFromMainMenu = false;
     private EditText paid, amountDue, reference, tipAmount, promptTipField, subtotal, tax1, tax2;//,tipAmount,promptTipField
-    private EditText customerNameField, customerEmailField, phoneNumberField;
+    private EditText customerNameField, customerEmailField, phoneNumberField, commentsField;
     private TextView change;
     private boolean isMultiInvoice = false;
     private String[] inv_id_array, txnID_array;
@@ -171,7 +171,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         customerNameField = findViewById(R.id.processCashName);
         customerEmailField = findViewById(R.id.processCashEmail);
         phoneNumberField = findViewById(R.id.processCashPhone);
-
+        commentsField = findViewById(R.id.commentsCashEdit);
 
         Button btnFive = findViewById(R.id.btnFive);
         Button btnTen = findViewById(R.id.btnTen);
@@ -369,7 +369,6 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
             CustomersHandler handler2 = new CustomersHandler(activity);
             HashMap<String, String> customerInfo = handler2.getCustomerMap(extras.getString("cust_id"));
 
-
             if (customerInfo != null) {
                 if (customerInfo.containsKey("cust_name") &&
                         !customerInfo.get("cust_name").isEmpty())
@@ -381,8 +380,11 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
                         !customerInfo.get("cust_email").isEmpty())
                     customerEmailField.setText(customerInfo.get("cust_email"));
             }
-        } else if (!extras.getString("order_email", "").isEmpty()) {
-            customerEmailField.setText(extras.getString("order_email"));
+        }
+
+        if (!myPref.isSkipEmailPhone() && isFromSalesReceipt) {
+            customerEmailField.setText(extras.getString("order_email", ""));
+            phoneNumberField.setText(extras.getString("order_phone", ""));
         }
 
         hasBeenCreated = true;
@@ -696,16 +698,39 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         } else
             paymentType = "0";
 
-        Payment payment = new Payment(activity, extras.getString("pay_id"), extras.getString("cust_id"), invoiceId, jobId,
-                clerkId, custidkey, extras.getString("paymethod_id"),
-                actualAmount, amountTender,
-                customerNameField.getText().toString(), reference.getText().toString(), phoneNumberField.getText().toString(),
-                customerEmailField.getText().toString(), amountToTip, taxAmnt1, taxAmnt2, taxName1, taxName2,
-                isRef, paymentType, "Cash", null, null,
-                null, null,
-                null, null, null,
-                null, null, null);
-
+        Payment payment = new Payment(activity,
+                extras.getString("pay_id"),
+                extras.getString("cust_id"),
+                invoiceId,
+                jobId,
+                clerkId,
+                custidkey,
+                extras.getString("paymethod_id"),
+                actualAmount,
+                amountTender,
+                customerNameField.getText().toString(),
+                reference.getText().toString(),
+                phoneNumberField.getText().toString(),
+                customerEmailField.getText().toString(),
+                commentsField.getText().toString(),
+                amountToTip,
+                taxAmnt1,
+                taxAmnt2,
+                taxName1,
+                taxName2,
+                isRef,
+                paymentType,
+                "Cash",
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
 
         Global.amountPaid = Double.toString(amountTender);
 
@@ -791,23 +816,39 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         String invoiceId = "";
 
         String paymentType = "0";
-        Payment payment = new Payment(activity, extras.getString("pay_id"), extras.getString("cust_id"), invoiceId, null,
-                clerkId, custidkey, extras.getString("paymethod_id"),
-                actualAmount, amountToBePaid,
-                customerNameField.getText().toString(), reference.getText().toString(), phoneNumberField.getText().toString(),
-                customerEmailField.getText().toString(), amountToTip, null, null, null, null,
-                null, paymentType, "Cash", null, null,
-                null, null,
-                null, null, null,
-                null, null, null);
-
-//        Payment payment = new Payment(activity, extras.getString("pay_id"), extras.getString("cust_id"), invoiceId, null, clerkId,
-//                custidkey, extras.getString("paymethod_id"), actualAmount, amountToBePaid,
-//                customerNameField.getText().toString(), reference.getText().toString(), phoneNumberField.getText().toString(),
-//                customerEmailField.getText().toString(),
-//                amountToTip, null, null, null, null,
-//                null, paymentType, "Cash");
-
+        Payment payment = new Payment(activity,
+                extras.getString("pay_id"),
+                extras.getString("cust_id"),
+                invoiceId,
+                null,
+                clerkId,
+                custidkey,
+                extras.getString("paymethod_id"),
+                actualAmount,
+                amountToBePaid,
+                customerNameField.getText().toString(),
+                reference.getText().toString(),
+                phoneNumberField.getText().toString(),
+                customerEmailField.getText().toString(),
+                commentsField.getText().toString(),
+                amountToTip,
+                null,
+                null,
+                null,
+                null,
+                null,
+                paymentType,
+                "Cash",
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
 
         payHandler.insert(payment);
         if (!myPref.getLastPayID().isEmpty())

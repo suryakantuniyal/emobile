@@ -686,6 +686,10 @@ public class GenerateXML {
                 serializer.text(order.c_email);
                 serializer.endTag(empstr, "cust_email");
 
+                serializer.startTag(empstr, "cust_phone");
+                serializer.text(order.c_phone);
+                serializer.endTag(empstr, "cust_phone");
+
                 serializer.startTag(empstr, "ord_signature");
                 serializer.text(order.ord_signature);
                 serializer.endTag(empstr, "ord_signature");
@@ -1483,7 +1487,7 @@ public class GenerateXML {
                 serializer.text(p.getPay_type());
                 serializer.endTag(empstr, "trans_type");
                 serializer.startTag(empstr, "refNumber");
-                serializer.text(p.getPay_refnum());
+                serializer.text(p.getRef_num());
                 serializer.endTag(empstr, "refNumber");
                 serializer.startTag(empstr, "email");
                 serializer.text(p.getPay_email());
