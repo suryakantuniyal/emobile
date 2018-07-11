@@ -23,7 +23,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class DBManager {
-    public static final int VERSION = 67;
+    public static final int VERSION = 68;
     public static final String DB_NAME_OLD = "emobilepos.sqlite";
     private static final String CIPHER_DB_NAME = "emobilepos.sqlcipher";
     private static final String PASSWORD = "em0b1l3p05";
@@ -142,7 +142,7 @@ public class DBManager {
             + "[addr_b_str3] [varchar](41) NULL, [addr_b_city] [varchar](31) NULL, [addr_b_state] [varchar](21) NULL, "
             + "[addr_b_country] [varchar](31) NULL, [addr_b_zipcode] [varchar](13) NULL, [addr_s_str1] [varchar](41) NULL, "
             + "[addr_s_str2] [varchar](41) NULL, [addr_s_str3] [varchar](41) NULL, [addr_s_city] [varchar](31) NULL, [addr_s_state] [varchar](21) NULL, "
-            + "[addr_s_country] [varchar](31) NULL, [addr_s_zipcode] [varchar](13) NULL, [c_email] [varchar](100) NULL, [loc_id] [varchar](50) NULL, "
+            + "[addr_s_country] [varchar](31) NULL, [addr_s_zipcode] [varchar](13) NULL, [c_email] [varchar](100) NULL, [c_phone] [varchar](100) NULL, [loc_id] [varchar](50) NULL, "
             + "[ord_HoldName] [varchar](50) NULL,[isOnHold] [tinyint] NULL, [clerk_id][varchar](50) NULL, [ord_discount_id][varchar](50) NULL, [ord_latitude][varchar](50) NULL, "
             + "[ord_longitude][varchar](50) NULL, [tipAmount][varchar](50) NULL , isVoid tinyint, [is_stored_fwd] BOOL DEFAULT (0), VAT tinyint," +
             " [bixolonTransactionId] [varchar](50) NULL, [assignedTable] [varchar](10) NULL, [numberOfSeats] [int] NULL, associateID [varchar](10) NULL, [ord_timeStarted] [datetime] NULL,[orderAttributes] [varchar](1000) NULL)";

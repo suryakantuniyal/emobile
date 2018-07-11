@@ -35,6 +35,7 @@ public class Order implements Cloneable, Serializable {
     public String cust_id = "";
     public String clerk_id = "";
     public String c_email = "";
+    public String c_phone = "";
     public String ord_signature = "";
     public String ord_po = "";
     public String total_lines = "";

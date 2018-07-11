@@ -67,6 +67,7 @@ public class OrdersHandler {
     private final static String ord_taxamount = "ord_taxamount";
     private final static String ord_discount = "ord_discount";
     private final static String c_email = "c_email";
+    private final static String c_phone = "c_phone";
     private final static String isOnHold = "isOnHold";
     private final static String ord_HoldName = "ord_HoldName";
     private final static String orderAttributes = "orderAttributes";
@@ -83,7 +84,7 @@ public class OrdersHandler {
     private final static String VAT = "VAT";
     private final static String bixolonTransactionId = "bixolonTransactionId";
     private static String ord_timeStarted = "ord_timeStarted";
-    private final static String[] attr = {ord_id, qbord_id, emp_id, cust_id, clerk_id, c_email,
+    private final static String[] attr = {ord_id, qbord_id, emp_id, cust_id, clerk_id, c_email, c_phone,
             ord_signature, ord_po, total_lines, total_lines_pay, ord_total, ord_comment, ord_delivery, ord_timecreated,
             ord_timesync, qb_synctime, emailed, processed, ord_type, ord_claimnumber, ord_rganumber, ord_returns_pu,
             ord_inventory, ord_issync, tax_id, ord_shipvia, ord_shipto, ord_terms, ord_custmsg, ord_class, ord_subtotal,
@@ -135,6 +136,7 @@ public class OrdersHandler {
         order.cust_id = cursor.getString(cursor.getColumnIndex(cust_id));
         order.clerk_id = cursor.getString(cursor.getColumnIndex(clerk_id));
         order.c_email = cursor.getString(cursor.getColumnIndex(c_email));
+        order.c_phone = cursor.getString(cursor.getColumnIndex(c_phone));
         order.ord_signature = cursor.getString(cursor.getColumnIndex(ord_signature));
         order.ord_po = cursor.getString(cursor.getColumnIndex(ord_po));
         order.total_lines = cursor.getString(cursor.getColumnIndex(total_lines));
@@ -242,6 +244,7 @@ public class OrdersHandler {
                 dbUtils.bindString(index(cust_id), order.cust_id == null ? "" : order.cust_id); // cust_id
                 dbUtils.bindString(index(clerk_id), order.clerk_id == null ? "" : order.clerk_id); // cust_id
                 dbUtils.bindString(index(c_email), order.c_email == null ? "" : order.c_email); // cust_id
+                dbUtils.bindString(index(c_phone), order.c_phone == null ? "" : order.c_phone);
                 dbUtils.bindString(index(ord_signature), order.ord_signature == null ? "" : order.ord_signature); // cust_id
                 dbUtils.bindString(index(ord_po), order.ord_po == null ? "" : order.ord_po); // cust_id
                 dbUtils.bindString(index(total_lines), TextUtils.isEmpty(order.total_lines) ? "0" : order.total_lines); // cust_id

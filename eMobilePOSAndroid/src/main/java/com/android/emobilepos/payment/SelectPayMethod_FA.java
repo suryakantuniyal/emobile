@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.PowerManager;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
@@ -123,6 +122,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
     private DisplayImageOptions options;
     private int totalPayCount = 0;
     private String order_email = "";
+    private String order_phone = "";
     private Global.OrderType orderType;
     private boolean skipLogin;
     private Dialog dlog;
@@ -248,7 +248,8 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         myPref = new MyPreferences(this);
         total = extras.getString("amount");
         paid = extras.getString("paid");
-        order_email = extras.getString("order_email", "");
+        order_email = extras.getString("ord_email", "");
+        order_phone = extras.getString("ord_phone", "");
         isFromMainMenu = extras.getBoolean("isFromMainMenu");
         overAllRemainingBalance = Double.parseDouble(total);
         if (!isFromMainMenu) {
@@ -473,6 +474,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         intent.putExtra("custidkey", Global.getValidString(extras.getString("custidkey")));
         intent.putExtra("cust_id", Global.getValidString(extras.getString("cust_id")));
         intent.putExtra("order_email", order_email);
+        intent.putExtra("order_phone", order_phone);
 
         if (overAllRemainingBalance != 0)
             payingAmount = Global.formatNumber(true, overAllRemainingBalance);

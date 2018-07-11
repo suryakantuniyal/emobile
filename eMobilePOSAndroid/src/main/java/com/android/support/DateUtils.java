@@ -64,6 +64,21 @@ public class DateUtils {
         return getDateAsString(date, DATE_PATTERN);
     }
 
+    public static double computeDiffInSeconds(Date firstDate, Date secondDate) {
+        double timeDiffInSeconds = 0;
+        if (firstDate != null && secondDate != null) {
+            timeDiffInSeconds = (secondDate.getTime() - firstDate.getTime()) / 1000;
+        }
+        return timeDiffInSeconds;
+    }
+
+    public static double computeDiffInHours(Date firstDate, Date secondDate) {
+        return convertSecondsToHours(computeDiffInSeconds(firstDate, secondDate));
+    }
+
+    public static double convertSecondsToHours(double seconds) {
+        return seconds / 60 / 60;
+    }
 
     public static Map<TimeUnit, Long> computeDiff(Date date1, Date date2) {
         Map<TimeUnit, Long> result = new LinkedHashMap<>();
