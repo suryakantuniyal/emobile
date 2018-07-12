@@ -96,7 +96,7 @@ public class Order implements Cloneable, Serializable {
         ord_issync = "0";
         isVoid = "0";
         processed = "0"; //need to be 1 when order has been processed or 9 if voided
-        ord_timecreated = DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss);
+        ord_timecreated = DateUtils.getDateAsString(new Date(), DateUtils.DATE_PATTERN);
     }
 
     public Order(Context activity) {
@@ -104,7 +104,7 @@ public class Order implements Cloneable, Serializable {
         ord_issync = "0";
         isVoid = "0";
         processed = "0"; //need to be 1 when order has been processed or 9 if voided
-        ord_timecreated = DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss);
+        ord_timecreated = DateUtils.getDateAsString(new Date(), DateUtils.DATE_PATTERN);
         AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
         emp_id = String.valueOf(assignEmployee != null ? assignEmployee.getEmpId() : "");
         custidkey = myPref.getCustIDKey();
