@@ -489,16 +489,16 @@ public class GenerateXML {
         if (customField != null) {
             try {
                 serializer.startTag(empstr, "custom_fields");
-                serializer.startTag(empstr, "custom_field");
-
-                serializer.startTag(empstr, "cust_field_id");
-                serializer.text(customField.getCustFieldId());
-                serializer.endTag(empstr, "cust_field_id");
-                serializer.startTag(empstr, "cust_value");
-                serializer.text(customField.getCustValue());
-                serializer.endTag(empstr, "cust_value");
-                serializer.endTag(empstr, "custom_field");
-
+                if (!customField.getCustValue().isEmpty()) {
+                    serializer.startTag(empstr, "custom_field");
+                    serializer.startTag(empstr, "cust_field_id");
+                    serializer.text(customField.getCustFieldId());
+                    serializer.endTag(empstr, "cust_field_id");
+                    serializer.startTag(empstr, "cust_value");
+                    serializer.text(customField.getCustValue());
+                    serializer.endTag(empstr, "cust_value");
+                    serializer.endTag(empstr, "custom_field");
+                }
                 serializer.endTag(empstr, "custom_fields");
 
             } catch (IOException e) {
