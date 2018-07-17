@@ -2021,7 +2021,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             mainLVAdapter.selectedPosition = mainLVAdapter.getCount();
         }
         if (mainLVAdapter != null) {
-            mainLVAdapter.notifyDataSetChanged();
+//            mainLVAdapter.notifyDataSetChanged();
             receiptListView.setSelection(mainLVAdapter.selectedPosition);
 //            receiptListView.smoothScrollToPosition(mainLVAdapter.selectedPosition);
         }
