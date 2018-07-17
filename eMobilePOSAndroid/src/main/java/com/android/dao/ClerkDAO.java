@@ -123,8 +123,10 @@ public class ClerkDAO {
         Realm realm = Realm.getDefaultInstance();
         try {
             Clerk clerk = getByEmpId(associate.getEmpId());
-            clerk.getAssignedDinningTables().clear();
-            insertOrUpdate(clerk);
+            if (clerk != null) {
+                clerk.getAssignedDinningTables().clear();
+                insertOrUpdate(clerk);
+            }
         } finally {
             realm.close();
         }
