@@ -45,6 +45,7 @@ public class EMSPayGate_Default {
     private static final int REVERSE_CREDIT_CARD = 9993;
     private static final int REVERSE_DEBIT_CARD = 9994;
     private static final int REVERSE_CHECK = 9992;
+    private static final int REVERSE_GENIUS = 9983;
 
     public EMSPayGate_Default(Context activity, Payment payment) {
         this.activity = activity;
@@ -54,10 +55,11 @@ public class EMSPayGate_Default {
         writer = new StringWriter();
     }
 
-    public void reset(){
+    public void reset() {
         serializer = Xml.newSerializer();
         writer = new StringWriter();
     }
+
     public enum EAction {
         ChargeCreditCardAction(1010), ChargeTupixAction(1010), ChargeCheckAction(1012), ChargeCashAction(1013),
         ChargeDebitAction(1014), ChargeGeniusAction(1017), ChargeGiftCardAction(1018),
@@ -454,12 +456,8 @@ public class EMSPayGate_Default {
                 return Integer.toString(REVERSE_DEBIT_CARD);
             case ChargeCheckAction:
                 return Integer.toString(REVERSE_CHECK);
-//            case CHARGE_CREDIT_CARD:
-//                return Integer.toString(REVERSE_CREDIT_CARD);
-//            case CHARGE_DEBIT_CARD:
-//                return Integer.toString(REVERSE_DEBIT_CARD);
-//            case CHARGE_CHECK:
-//                return Integer.toString(REVERSE_CHECK);
+            case ChargeGeniusAction:
+                return Integer.toString(REVERSE_GENIUS);
         }
         return "0";
     }
