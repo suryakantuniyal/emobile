@@ -67,6 +67,7 @@ import com.android.emobilepos.models.realms.PaymentMethod;
 import com.android.emobilepos.models.realms.Shift;
 import com.android.emobilepos.models.response.ClerkEmployeePermissionResponse;
 import com.android.emobilepos.models.salesassociates.DinningLocationConfiguration;
+import com.android.emobilepos.models.xml.EMSPayment;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.emobilepos.service.SyncConfigServerService;
 import com.android.saxhandler.SAXParserPost;
@@ -126,6 +127,7 @@ import javax.xml.parsers.SAXParserFactory;
 import io.realm.Realm;
 import oauthclient.OAuthClient;
 import oauthclient.OAuthManager;
+import util.XmlUtils;
 import util.json.JsonUtils;
 
 public class SynchMethods {
@@ -594,8 +596,17 @@ public class SynchMethods {
                                 && (parsedMap.get("epayStatusCode").equals(
                                 "APPROVED") || parsedMap.get(
                                 "epayStatusCode").equals("DECLINE"))) {
-                            _paymentsXML_DB.deleteRow(c.getString(c
-                                    .getColumnIndex("app_id")));
+
+                            _paymentsXML_DB.deleteRow(
+                                    c.getString(c.getColumnIndex("app_id")));
+
+                            EMSPayment emsPayment = XmlUtils.getEMSPayment(
+                                    c.getString(c.getColumnIndex("payment_xml")));
+
+                            if (!emsPayment.getJobId().isEmpty()) {
+                                OrdersHandler ordersHandler = new OrdersHandler(context);
+                                ordersHandler.updateIsVoid(emsPayment.getJobId());
+                            }
                         }
                     }
 
