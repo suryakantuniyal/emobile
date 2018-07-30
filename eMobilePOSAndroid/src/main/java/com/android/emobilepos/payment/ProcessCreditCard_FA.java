@@ -2105,9 +2105,6 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
         @Override
         protected Payment doInBackground(Object... params) {
-//            if (true) {
-//                openEverpayApp((Payment) params[1]);
-//            } else
             if (NetworkUtils.isConnectedToInternet(activity) && !livePaymentRunning) {
                 livePaymentRunning = true;
 
@@ -2197,7 +2194,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                 SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
 
                 try {
-                    String reverseXml = "";
+                    String reverseXml = reverseXMLMap.get(PaymentsXML_DB.payment_xml);
                     String xml = httpClient.postData(13, reverseXml);
 
                     if (xml.equals(Global.TIME_OUT) || xml.equals(Global.NOT_VALID_URL) || xml.isEmpty()) {

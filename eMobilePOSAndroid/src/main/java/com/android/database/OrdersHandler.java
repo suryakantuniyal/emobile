@@ -290,7 +290,7 @@ public class OrdersHandler {
                     dbUtils.bindString(index(orderAttributes), json);
                 }
                 if (TextUtils.isEmpty(order.ord_timeStarted)) {
-                    order.ord_timeStarted = DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss);
+                    order.ord_timeStarted = DateUtils.getDateAsString(new Date(), DateUtils.DATE_PATTERN);
                 }
                 dbUtils.bindString(index(ord_timeStarted), order.ord_timeStarted);
                 dbUtils.bindString(index(isVoid), TextUtils.isEmpty(order.isVoid) ? "0" : order.isVoid);

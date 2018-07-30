@@ -421,9 +421,10 @@
     <string name="about_acct_num">Account Num.</string>
     <string name="about_employee">Employee</string>
     <string name="about_version">Version</string>
+    <string name="about_android_version">Android</string>
     <string name="about_copyright_tag">Copyright</string>
     <string name="about_location_tag">Location ID</string>
-    <string name="about_copyright">\u00A9 2015 e-Nabler Corporation</string>
+    <string name="about_copyright">\u00A9 %s e-Nabler Corporation</string>
     <string name="about_footer">WARNING: This program is protected by copyright law and international treaties\u002E Unauthorized reproduction
 	    or distribution of this program may result in severe civil and criminal penalties, and will be prosecuted to the maximum 
 	    extent possible under law\u002E</string>

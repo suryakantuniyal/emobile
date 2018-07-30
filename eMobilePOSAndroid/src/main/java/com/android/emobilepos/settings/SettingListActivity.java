@@ -1404,6 +1404,20 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();
                                 Global.mainPrinterManager.loadDrivers(getActivity(), Global.BIXOLON, EMSDeviceManager.PrinterInterfase.BLUETOOTH);
+                                List<Device> list = new ArrayList<>();
+                                Device device = DeviceTableDAO.getByName(strDeviceName);
+                                if (device == null) {
+                                    device = new Device();
+                                }
+                                device.setId(String.format("BT:%s", val[pos]));
+                                device.setMacAddress("BT:" + macAddressList.get(pos));
+                                device.setName(strDeviceName);
+                                device.setType(String.valueOf(Global.BIXOLON));
+                                device.setRemoteDevice(false);
+                                device.setEmsDeviceManager(Global.mainPrinterManager);
+                                list.add(device);
+                                DeviceTableDAO.insert(list);
+                                Global.printerDevices.add(device);
                             } else if (strUpperDeviceName.contains("P25")) {
                                 myPref.setPrinterType(Global.BAMBOO);
                                 myPref.setPrinterMACAddress(macAddressList.get(pos));

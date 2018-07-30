@@ -415,9 +415,10 @@
     <string name="about_acct_num">"Número de cuenta"</string>
     <string name="about_employee">"Empleado "</string>
     <string name="about_version">"Versión"</string>
+    <string name="about_android_version">"Android"</string>
     <string name="about_copyright_tag">"Derechos de autor"</string>
     <string name="about_location_tag">"ID de ubicación"</string>
-    <string name="about_copyright">"\u00A9 2015 e-Nabler Corporation"</string>
+    <string name="about_copyright">"\u00A9 %s e-Nabler Corporation"</string>
     <string name="about_footer">"ADVERTENCIA: Este programa está protegido por la ley de derechos de autor y tratados internacionales \ u002E La reproducción o distribución no autorizada de este programa puede resultar en severas sanciones civiles y criminales y será procesada hasta el máximo posible bajo la ley."</string>
 
 
