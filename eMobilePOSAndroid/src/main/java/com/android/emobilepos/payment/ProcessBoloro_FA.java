@@ -14,7 +14,6 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.PowerManager;
 import android.text.Editable;
 import android.text.Selection;
 import android.text.TextWatcher;
@@ -246,8 +245,6 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
         if (Global.isIvuLoto) {
             payment.setIvuLottoNumber(extras.getString("IvuLottoNumber"));
             payment.setIvuLottoDrawDate(extras.getString("IvuLottoDrawDate"));
-            payment.setIvuLottoQR(Global.base64QRCode(extras.getString("IvuLottoNumber"), extras.getString("IvuLottoDrawDate")));
-
 
             if (!extras.getString("Tax1_amount").isEmpty()) {
                 payment.setTax1_amount(extras.getString("Tax1_amount"));

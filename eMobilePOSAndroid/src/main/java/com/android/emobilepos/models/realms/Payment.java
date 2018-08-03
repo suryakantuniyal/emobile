@@ -268,7 +268,6 @@ public class Payment extends RealmObject {
             String ivuLottoNum = mersenneTwister.generateIVULoto();
             setIvuLottoNumber(ivuLottoNum);
             setIvuLottoDrawDate(drawDate);
-            setIvuLottoQR(Global.base64QRCode(ivuLottoNum, drawDate));
             if (!TextUtils.isEmpty(taxAmount1)) {
                 setTax1_amount(taxAmount1);
                 setTax1_name(taxName1);

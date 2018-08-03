@@ -236,7 +236,7 @@ public class Global extends MultiDexApplication {
     public static EMSDeviceManager btSwiper;
     public static EMSDeviceManager btSled;
     public static EMSDeviceManager mainPrinterManager;
-    public static Set<Device> printerDevices=new HashSet();
+    public static Set<Device> printerDevices = new HashSet();
     public static EMSDeviceManager embededMSR;
     public static HashMap<String, Integer> multiPrinterMap = new HashMap<>();
     public static List<EMSDeviceManager> multiPrinterManager = new ArrayList<>();
@@ -481,28 +481,6 @@ public class Global extends MultiDexApplication {
         }
 
         return LocationServices.mLastLocation;
-    }
-
-    public static String base64QRCode(String ivuLottoNumber, String ivuLottoDrawDate) {
-        String finaldata = "CONTROL: " + ivuLottoNumber + ivuLottoDrawDate;
-        com.google.zxing.Writer writer = new QRCodeWriter();
-        try {
-            int width = 200, height = 200;
-            BitMatrix bm = writer.encode(finaldata, BarcodeFormat.QR_CODE, width, height);
-            Bitmap myBitmap = Bitmap.createBitmap(width, height, Config.ARGB_8888);
-            for (int i = 0; i < width; i++) {
-                for (int j = 0; j < height; j++) {
-                    myBitmap.setPixel(i, j, bm.get(i, j) ? Color.BLACK : Color.WHITE);
-                }
-            }
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            myBitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
-            byte[] b = baos.toByteArray();
-            return Base64.encodeBytes(b);
-        } catch (WriterException e) {
-            Crashlytics.logException(e);
-        }
-        return "";
     }
 
     public static String getValidString(String value) {
