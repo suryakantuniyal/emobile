@@ -9,7 +9,6 @@ import android.location.Location;
 import android.media.AudioManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.PowerManager;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -502,7 +501,6 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
 
             payment.setIvuLottoNumber(ivuLottoNum);
             payment.setIvuLottoDrawDate(drawDate);
-            payment.setIvuLottoQR(Global.base64QRCode(ivuLottoNum, drawDate));
             if (!TextUtils.isEmpty(extras.getString("Tax1_amount"))) {
                 payment.setTax1_amount(extras.getString("Tax1_amount"));
                 payment.setTax1_name(extras.getString("Tax1_name"));

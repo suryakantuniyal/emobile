@@ -470,8 +470,6 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
         if (Global.isIvuLoto) {
             payment.setIvuLottoNumber(extras.getString("IvuLottoNumber"));
             payment.setIvuLottoDrawDate(extras.getString("IvuLottoDrawDate"));
-            payment.setIvuLottoQR(Global.base64QRCode(extras.getString("IvuLottoNumber"), extras.getString("IvuLottoDrawDate")));
-
 
             if (!TextUtils.isEmpty(extras.getString("Tax1_amount"))) {
                 payment.setTax1_amount(extras.getString("Tax1_amount"));
@@ -664,8 +662,6 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
         if (Global.isIvuLoto) {
             payment.setIvuLottoNumber(extras.getString("IvuLottoNumber"));
             payment.setIvuLottoDrawDate(extras.getString("IvuLottoDrawDate"));
-            payment.setIvuLottoQR(Global.base64QRCode(extras.getString("IvuLottoNumber"), extras.getString("IvuLottoDrawDate")));
-
 
             if (!extras.getString("Tax1_amount").isEmpty()) {
                 payment.setTax1_amount(extras.getString("Tax1_amount"));
