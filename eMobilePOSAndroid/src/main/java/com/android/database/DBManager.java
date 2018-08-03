@@ -23,7 +23,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class DBManager {
-    public static final int VERSION = 68;
+    public static final int VERSION = 69;
     public static final String DB_NAME_OLD = "emobilepos.sqlite";
     private static final String CIPHER_DB_NAME = "emobilepos.sqlcipher";
     private static final String PASSWORD = "em0b1l3p05";
@@ -44,6 +44,8 @@ public class DBManager {
             "CREATE INDEX IF NOT EXISTS OrderProductsAttr_ordprod_id_index ON OrderProduct (ordprod_id)",
             "CREATE INDEX IF NOT EXISTS Payments_paymethod_id_index ON Payments (paymethod_id)",
             "CREATE INDEX IF NOT EXISTS Payments_job_id_index ON Payments (job_id)",
+            "CREATE INDEX IF NOT EXISTS Payments_pay_issync_index ON Payments (pay_issync)",
+            "CREATE INDEX IF NOT EXISTS Payments_pay_signature_issync_index ON Payments (pay_signature_issync)",
             "CREATE INDEX IF NOT EXISTS Product_addons_prod_id_index ON Product_addons (prod_id)",
             "CREATE INDEX IF NOT EXISTS Taxes_tax_id_index ON Taxes (tax_id)",
             "CREATE INDEX IF NOT EXISTS Taxes_tax_code_id_index ON Taxes (tax_code_id)",
