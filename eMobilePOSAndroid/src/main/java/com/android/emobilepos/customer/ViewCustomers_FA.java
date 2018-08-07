@@ -289,16 +289,6 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
     }
 
     @Override
-    public void onBackPressed() {
-        if (!myPref.isCustSelected()) {
-            Intent data = getIntent();
-            data.putExtra("GOTO_MAIN", true);
-            setResult(Global.FROM_CUSTOMER_SELECTION_ACTIVITY, data);
-        }
-        finish();
-    }
-
-    @Override
     public void onPause() {
         super.onPause();
 //        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
