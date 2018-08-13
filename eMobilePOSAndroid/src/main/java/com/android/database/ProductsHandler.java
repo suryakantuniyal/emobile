@@ -850,7 +850,7 @@ public class ProductsHandler {
         }
         search = search.replace("'", "''");
         sb.append(
-                "SELECT CASE WHEN  p.prod_name LIKE '" + search + "%' THEN '0' ELSE '1' END as weight, " +
+                "SELECT DISTINCT CASE WHEN  p.prod_name LIKE '" + search + "%' THEN '0' ELSE '1' END as weight, " +
                         "p.prod_id as '_id', p.prod_prices_group_id as 'prod_prices_group_id', p.prod_price as 'master_price'," +
                         "vp.price as 'volume_price', ch.over_price_net as 'chain_price', p.prod_sku as prod_sku, p.prod_upc as prod_upc, ");
         sb.append(
