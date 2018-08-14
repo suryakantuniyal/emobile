@@ -1187,7 +1187,7 @@
     <string name="eod_report_itemsreturned">"Artículos devueltos"</string>
     <string name="eod_report_dept_sales">"Ventas de departamento"</string>
     <string name="eod_report_dept_returns">"Devoluciones de Departamento"</string>
-    <string name="eod_report_payment">"Pago"</string>
+    <string name="eod_report_payment">"Pagos"</string>
     <string name="eod_report_void">"Anular"</string>
     <string name="eod_report_refund">"Reembolso"</string>
     <string name="eod_report_ar_trans">"AR Trans"</string>

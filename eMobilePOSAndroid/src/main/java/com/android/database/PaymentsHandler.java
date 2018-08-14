@@ -1095,9 +1095,19 @@ public class PaymentsHandler {
         List<Payment> listPayment = new ArrayList<>();
 
         query.append(
-                "SELECT card_type, SUM(pay_amount) AS 'pay_amount', SUM(pay_tip) AS 'pay_tip', pay_id, paymethod_id,");
+                "SELECT pm.paymethod_name || ' - ' || pm.paymentmethod_type AS card_type, " +
+                        "SUM(pay_amount) AS 'pay_amount', " +
+                        "SUM(pay_tip) AS 'pay_tip', " +
+                        "pay_id, " +
+                        "p.paymethod_id,");
         query.append(
-                "CASE WHEN inv_id ='' THEN job_ID ELSE inv_id END AS 'job_id',date(pay_timecreated,'localtime') as 'date' FROM Payments WHERE ");
+                "CASE WHEN inv_id ='' THEN job_ID " +
+                        "ELSE inv_id " +
+                        "END AS 'job_id'," +
+                        "date(pay_timecreated,'localtime') as 'date' " +
+                        "FROM Payments p " +
+                        "LEFT JOIN PayMethods pm ON p.paymethod_id = pm.paymethod_id " +
+                        "WHERE ");
 
         switch (type) {
             case 0:// Payments
@@ -1125,7 +1135,7 @@ public class PaymentsHandler {
             where_values = new String[]{date};
         }
 
-        query.append(" GROUP BY paymethod_id");
+        query.append(" GROUP BY p.paymethod_id");
 
         Cursor c = getDatabase().rawQuery(query.toString(), where_values);
 
