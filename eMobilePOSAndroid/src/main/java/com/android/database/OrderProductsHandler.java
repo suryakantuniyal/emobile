@@ -704,7 +704,7 @@ public class OrderProductsHandler {
                         "sum(CASE WHEN overwrite_price = '' THEN prod_price * ordprod_qty " +
                         "ELSE IFNULL(overwrite_price, prod_price) * ordprod_qty  END) as 'overwrite_price', ");
         query.append(sqlDateFunction);
-        query.append("(o.ord_timecreated, 'localtime') as 'date'" +
+        query.append("(o.ord_timecreated, 'utc') as 'date'" +
                 "FROM " + table_name + " op ");
         query.append(
                 "LEFT JOIN Categories c ON op.cat_id = c.cat_id " +
@@ -723,7 +723,7 @@ public class OrderProductsHandler {
         }
         if (startDate != null && !startDate.isEmpty()) {
             if (endDate != null && !endDate.isEmpty()) {
-                query.append(" AND date >= datetime(?, 'localtime') ");
+                query.append(" AND date >= datetime(?, 'utc') ");
                 where_values.add(startDate);
             } else {
                 query.append(" AND date = ? ");
@@ -731,7 +731,7 @@ public class OrderProductsHandler {
             }
         }
         if (endDate != null && !endDate.isEmpty()) {
-            query.append(" AND date <= datetime(?, 'localtime') ");
+            query.append(" AND date <= datetime(?, 'utc') ");
             where_values.add(endDate);
         }
 
