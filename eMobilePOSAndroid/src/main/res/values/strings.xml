@@ -1203,7 +1203,7 @@
     <string name="eod_report_itemsreturned">Items Returned</string>
     <string name="eod_report_dept_sales">Dept Sales</string>
     <string name="eod_report_dept_returns">Dept Returns</string>
-    <string name="eod_report_payment">Payment</string>
+    <string name="eod_report_payment">Payments</string>
     <string name="eod_report_void">Void</string>
     <string name="eod_report_refund">Refund</string>
     <string name="eod_report_ar_trans">AR Trans</string>
