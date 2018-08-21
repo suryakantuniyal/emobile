@@ -8,9 +8,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.PorterDuff.Mode;
 import android.location.Location;
 import android.os.Build;
@@ -50,6 +48,7 @@ import com.android.emobilepos.holders.Locations_Holder;
 import com.android.emobilepos.holders.TransferInventory_Holder;
 import com.android.emobilepos.holders.TransferLocations_Holder;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
+import com.android.emobilepos.models.OrderSeatProduct;
 import com.android.emobilepos.models.Product;
 import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.orders.OrderProduct;
@@ -69,10 +68,6 @@ import com.crashlytics.android.answers.CustomEvent;
 import com.crashlytics.android.core.CrashlyticsCore;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.WriterException;
-import com.google.zxing.common.BitMatrix;
-import com.google.zxing.qrcode.QRCodeWriter;
 
 import org.springframework.util.support.Base64;
 
@@ -279,6 +274,8 @@ public class Global extends MultiDexApplication {
     public static Order cons_return_order;
     public static HashMap<String, String> cons_return_qtyCounter = new HashMap<String, String>();
 
+    // Temporary fix: global used to avoid the costly gson serialization, needs refactoring
+    public static List<OrderSeatProduct> globalOrderSeatProductList;
 
     public static String lastOrdID = "";
     // public int discountPos = 0, taxPos = 0;

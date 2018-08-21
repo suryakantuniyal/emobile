@@ -14,12 +14,10 @@ import java.util.List;
 public class SplittedOrder extends Order implements Cloneable, Comparable<SplittedOrder> {
     private List<OrderProduct> orderProducts;
     private String tableNumber;
-    public long splittedOrderId = System.currentTimeMillis();
-    private Activity activity;
+    public long splittedOrderId;
 
     public SplittedOrder(Activity activity, Order order) {
         super(activity);
-        this.activity = activity;
         init(order);
         splittedOrderId = System.currentTimeMillis();
         try {

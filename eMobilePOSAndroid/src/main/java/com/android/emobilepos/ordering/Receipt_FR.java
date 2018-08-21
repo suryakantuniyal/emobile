@@ -94,11 +94,9 @@ import com.android.support.SemiClosedSlidingDrawer.OnDrawerOpenListener;
 import com.android.support.SynchMethods;
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.starmicronics.stario.StarIOPortException;
 import com.viewpagerindicator.CirclePageIndicator;
 
-import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -1518,21 +1516,15 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     }
 
     private void showSplitedOrderPreview() {
-        Gson gson = JsonUtils.getInstance();
-        Type listType = new TypeToken<List<OrderSeatProduct>>() {
-        }.getType();
         Intent intent = new Intent(getActivity(), SplittedOrderSummary_FA.class);
         Bundle b = new Bundle();
-        String json = gson.toJson(mainLVAdapter.orderSeatProductList, listType);
-        b.putString("orderSeatProductList", json);
+        Global.globalOrderSeatProductList = mainLVAdapter.orderSeatProductList;
         b.putString("tableNumber", ((OrderingMain_FA) getActivity()).getSelectedDinningTableNumber());
         b.putString("taxID", Global.taxID);
         b.putString("orderTaxId", getOrderingMainFa().global.order.tax_id);
         b.putInt("discountSelected", Global.discountPosition - 1);
-
         intent.putExtras(b);
         intent.putExtra("transType", getOrderingMainFa().mTransType);
-
         startActivityForResult(intent, 0);
     }
 
