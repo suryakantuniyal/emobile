@@ -41,17 +41,12 @@ import com.android.support.MyPreferences;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.crashlytics.android.Crashlytics;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
-import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-
-import util.json.JsonUtils;
 
 /**
  * Created by Guarionex on 2/8/2016.
@@ -152,14 +147,11 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
         preferences = new MyPreferences(this);
         generateNewID = new GenerateNewID(this);
         myPref = new MyPreferences(this);
-        Gson gson = JsonUtils.getInstance();
         if (extras != null) {
             transType = (Global.TransactionType) extras.get("transType");
-            Type listType = new TypeToken<List<OrderSeatProduct>>() {
-            }.getType();
-            String json = extras.getString("orderSeatProductList");
             tableNumber = extras.getString("tableNumber");
-            orderSeatProducts = gson.fromJson(json, listType);
+            orderSeatProducts = Global.globalOrderSeatProductList;
+            Global.globalOrderSeatProductList = null;
             setTaxID(extras.getString("taxID"));
             String ordetTaxId = extras.getString("orderTaxId");
             int discountSelected = extras.getInt("discountSelected");
@@ -434,159 +426,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                 popup.show();
                 break;
         }
-//            case SPLIT_SINGLE: {
-//                for (OrderSeatProduct seatProduct : orderSeatProducts) {
-//                    if (seatProduct.rowType == OrderProductListAdapter.RowType.TYPE_HEADER) {
-//                        Order order = null;
-//                        try {
-//                            order = (Order) global.order.clone();
-//                        } catch (CloneNotSupportedException e) {
-//                            e.printStackTrace();
-//                            Crashlytics.logException(e);
-//                        }
-//                        SplittedOrder splitedOrder;
-//                        splitedOrder = new SplittedOrder(this, order);
-//                        List<OrderProduct> orderProducts = getProductsSingleReceipt();
-//                        BigDecimal orderSubTotal = new BigDecimal(0);
-//                        for (OrderProduct product : orderProducts) {
-//                            orderSubTotal = orderSubTotal.add(product.getItemSubtotalCalculated()
-//                                    .add(product.getAddonsTotalPrice())).setScale(4, RoundingMode.HALF_UP);
-//                        }
-//                        splitedOrder.ord_subtotal = orderSubTotal.toString();
-//                        splitedOrder.ord_total = orderSubTotal.subtract(globalDiscountAmount).toString();
-//                        splitedOrder.setOrderProducts(orderProducts);
-//                        splitedOrder.setTableNumber(tableNumber);
-//                        splitedOrders.add(splitedOrder);
-//                        break;
-//                    }
-//                }
-//                SplittedOrderSummaryAdapter summaryAdapter = new SplittedOrderSummaryAdapter(this, splitedOrders);
-//                getOrderSummaryFR().getGridView().setAdapter(summaryAdapter);
-//                break;
-//            }
-//            case SPLIT_EQUALLY:
-//                splitEquallyQtyBtn.setVisibility(View.VISIBLE);
-//                PopupMenu popup = new PopupMenu(this, splitEquallyQtyBtn);
-//                for (int i = 0; i < 20; i++) {
-//                    popup.getMenu().add(0, i + 1, Menu.NONE, String.valueOf(i + 1));
-//                }
-//                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-//                    @Override
-//                    public boolean onMenuItemClick(MenuItem item) {
-//                        int splitQty = item.getItemId();
-//                        splitEquallyQtyBtn.setText(String.valueOf(splitQty));
-//                        setSplitEquallyReceipt(splitQty);
-//                        return true;
-//                    }
-//                });
-//                popup.show();
-//                break;
-//            case SPLIT_BY_SEATS: {
-//                HashSet<Integer> joinedGroupIds = new HashSet<>();
-//                String nextID = null;// = assignEmployee.getMSLastOrderID();
-//                int i = 0;
-//                for (OrderSeatProduct seatProduct : orderSeatProducts) {
-//                    if (seatProduct.rowType == OrderProductListAdapter.RowType.TYPE_HEADER &&
-//                            !joinedGroupIds.contains(seatProduct.getSeatGroupId())) {
-//                        Order order = null;
-//                        try {
-//                            order = (Order) global.order.clone();
-//                        } catch (CloneNotSupportedException e) {
-//                            e.printStackTrace();
-//                            Crashlytics.logException(e);
-//                        }
-//                        SplittedOrder splitedOrder = new SplittedOrder(this, order);
-//                        if (i == 0) {
-//                            nextID = order.ord_id;
-//                        } else if (i == 1) {
-//                            nextID = generateNewID.getNextID(GenerateNewID.IdType.ORDER_ID);
-//                        } else {
-//                            nextID = generateNewID.getNextID(nextID);
-//                        }
-//                        splitedOrder.ord_id = nextID;
-//                        List<OrderProduct> orderProducts = getProductsBySeatsGroup(seatProduct.getSeatGroupId());
-//                        BigDecimal orderSubTotal = new BigDecimal(0);
-//                        for (OrderProduct product : orderProducts) {
-//                            orderSubTotal = orderSubTotal.add(product.getItemSubtotalCalculated().add(product.getAddonsTotalPrice())).setScale(4, RoundingMode.HALF_UP);
-//                        }
-//                        splitedOrder.ord_subtotal = orderSubTotal.toString();
-//                        splitedOrder.ord_total = orderSubTotal.subtract(orderSubTotal.multiply(globalDiscountPercentge)).toString();
-//
-//                        splitedOrder.setOrderProducts(orderProducts);
-//                        splitedOrder.setTableNumber(tableNumber);
-//                        if (!splitedOrder.getOrderProducts().isEmpty()) {
-//                            splitedOrders.add(splitedOrder);
-//                        }
-//                        joinedGroupIds.add(seatProduct.getSeatGroupId());
-//                        i++;
-//                    }
-//                }
-//                SplittedOrderSummaryAdapter summaryAdapter = new SplittedOrderSummaryAdapter(this, splitedOrders);
-//                getOrderSummaryFR().getGridView().setAdapter(summaryAdapter);
-//                break;
-//            }
-//        }
-//        calculatedSplitedOrders = new ArrayList<>(splitedOrders);
-//        calculateSplitedOrder(calculatedSplitedOrders);
-//        setReceiptPreview();
     }
-
-
-//    private void setSplitEquallyReceipt(int splitQty) {
-//        String nextID = null;
-//        final List<SplittedOrder> splitedOrders = new ArrayList<>();
-//        for (OrderSeatProduct seatProduct : orderSeatProducts) {
-//            if (seatProduct.rowType == OrderProductListAdapter.RowType.TYPE_HEADER) {
-//                Order order = null;
-//                try {
-//                    order = (Order) global.order.clone();
-//                } catch (CloneNotSupportedException e) {
-//                    e.printStackTrace();
-//                    Crashlytics.logException(e);
-//                }
-//                for (int i = 0; i < splitQty; i++) {
-//                    SplittedOrder splitedOrder = new SplittedOrder(SplittedOrderSummary_FA.this, order);
-//                    if (i == 0) {
-//                        nextID = order.ord_id;
-//                    } else if (i == 1) {
-//                        nextID = generateNewID.getNextID(GenerateNewID.IdType.ORDER_ID);
-//                    } else {
-//                        nextID = generateNewID.getNextID(nextID);
-//                    }
-//                    splitedOrder.ord_id = nextID;
-//                    List<OrderProduct> orderProducts = getProductsSingleReceipt();
-//                    BigDecimal orderSubTotal = new BigDecimal(0);
-//                    for (OrderProduct product : orderProducts) {
-//                        BigDecimal itemSubtotal = new BigDecimal(product.getFinalPrice()).add(product.getAddonsTotalPrice());
-//                        itemSubtotal = itemSubtotal.divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP);
-////                        product.setItemSubtotal(itemSubtotal.toString());
-//                        for (OrderProduct addon : product.addonsProducts) {
-//                            addon.setProd_price(new BigDecimal(addon.getProd_price()).divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP).toString());
-//                            addon.setOverwrite_price(new BigDecimal(addon.getProd_price()));
-//                            addon.setItemTotal(Global.getBigDecimalNum(addon.getItemTotal()).divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP).toString());
-////                            addon.setItemSubtotal(Global.getBigDecimalNum(addon.getItemSubtotal()).divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP).toString());
-//                        }
-//                        product.setProd_price(new BigDecimal(product.getFinalPrice()).divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP).toString());
-//                        product.setOverwrite_price(new BigDecimal(product.getProd_price()));
-//                        product.setProd_taxValue(product.getProd_taxValue().divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP));
-//                        product.setDiscount_value(Global.getBigDecimalNum(product.getDiscount_value()).divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP).toString());
-//                        product.setItemTotal(Global.getBigDecimalNum(product.getItemTotal()).divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP).toString());
-//                        orderSubTotal = orderSubTotal.add(itemSubtotal).setScale(4, RoundingMode.HALF_UP);
-//                    }
-//                    splitedOrder.ord_subtotal = orderSubTotal.toString();
-//                    splitedOrder.ord_total = orderSubTotal.subtract(orderSubTotal.multiply(globalDiscountPercentge)).toString();
-//
-//                    splitedOrder.setOrderProducts(orderProducts);
-//                    splitedOrder.setTableNumber(tableNumber);
-//                    splitedOrders.add(splitedOrder);
-//                }
-//                break;
-//            }
-//        }
-//        SplittedOrderSummaryAdapter summaryAdapter = new SplittedOrderSummaryAdapter(SplittedOrderSummary_FA.this, splitedOrders);
-//        getOrderSummaryFR().getGridView().setAdapter(summaryAdapter);
-//        setReceiptPreview();
-//    }
 
     public BigDecimal getGlobalDiscountPercentge() {
         return globalDiscountPercentge;

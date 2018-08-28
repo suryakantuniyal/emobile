@@ -339,9 +339,6 @@ public class OrdersHandler {
     }
 
     public Order getOrder(String orderId) {
-//        String sb = "SELECT " + sb1.toString() + " FROM " + table_name + " WHERE ord_id = '" +
-//                orderId + "'";
-//        Cursor cursor = DBManager.getDatabase().rawQuery(sb, null);
         Cursor cursor = DBManager.getDatabase().query(table_name, attr, "ord_id=?",
                 new String[]{orderId}, null, null, null);
 
@@ -351,6 +348,17 @@ public class OrdersHandler {
         }
         cursor.close();
         return order;
+    }
+
+    private static String getOrderAssignedTable(String orderId) {
+        String tableNumber = "0";
+        Cursor cursor = DBManager.getDatabase().query(table_name, attr, "ord_id=?",
+                new String[]{orderId}, null, null, null);
+        if (cursor.moveToFirst()) {
+            tableNumber = cursor.getString(cursor.getColumnIndex(assignedTable));
+        }
+        cursor.close();
+        return tableNumber;
     }
 
     public boolean existsOrder(String orderId) {
@@ -601,14 +609,12 @@ public class OrdersHandler {
         return dateCreated;
     }
 
-    public Order updateIsProcessed(String orderID, String updateValue) {
+    public void updateIsProcessed(String orderID, String updateValue) {
         ContentValues args = new ContentValues();
         args.put(processed, updateValue);
         args.put(isOnHold, "0");
         DBManager.getDatabase().update(table_name, args, ord_id + " = ?", new String[]{orderID});
-        Order order = getOrder(orderID);
-        DinningTableOrderDAO.deleteByNumber(order.assignedTable);
-        return order;
+        DinningTableOrderDAO.deleteByNumber(getOrderAssignedTable(orderID));
     }
 
     public void updateOrderTypeToInvoice(String orderID) {

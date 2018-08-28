@@ -748,10 +748,8 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             } else {
                 boolean isReturn = false;
                 if (job_id != null && !job_id.isEmpty()) {
-                    order = ordersHandler.updateIsProcessed(job_id, "1");
-//                    order = ordersHandler.getOrder(job_id);
-                    if (!TextUtils.isEmpty(order.ord_type)
-                            && Global.OrderType.getByCode(Integer.parseInt(order.ord_type)) == Global.OrderType.RETURN) {
+                    ordersHandler.updateIsProcessed(job_id, "1");
+                    if (orderType == Global.OrderType.RETURN) {
                         isReturn = true;
                     }
                 }
