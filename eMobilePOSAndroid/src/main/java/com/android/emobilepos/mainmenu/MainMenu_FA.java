@@ -8,12 +8,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.PowerManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -24,7 +22,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.dao.ClerkDAO;
 import com.android.emobilepos.R;
@@ -35,7 +32,6 @@ import com.android.emobilepos.firebase.RegistrationIntentService;
 import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.security.SecurityManager;
 import com.android.emobilepos.service.SyncConfigServerService;
-import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
@@ -46,9 +42,6 @@ import com.microsoft.windowsazure.notifications.NotificationsManager;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-
-import drivers.EMSsnbc;
-import main.EMSDeviceManager;
 
 import static com.android.emobilepos.models.firebase.NotificationEvent.NotificationEventAction;
 
@@ -142,9 +135,9 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
         getTabsAdapter().addTab(myBar.newTab().setText(R.string.sales_title), SalesTab_FR.class, null);
         myBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        getTabsAdapter().addTab(myBar.newTab().setText(R.string.sync_title), SyncTab_FR.class, null);
-        myBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         getTabsAdapter().addTab(myBar.newTab().setText(R.string.hist_title), HistoryTab_FR.class, null);
+        myBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        getTabsAdapter().addTab(myBar.newTab().setText(R.string.sync_title), SyncTab_FR.class, null);
         myBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         getTabsAdapter().addTab(myBar.newTab().setText(R.string.routes_title), RoutesTab_FR.class, null);
         myBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
