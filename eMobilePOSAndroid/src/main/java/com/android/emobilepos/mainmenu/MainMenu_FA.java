@@ -139,8 +139,8 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         myBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         getTabsAdapter().addTab(myBar.newTab().setText(R.string.sync_title), SyncTab_FR.class, null);
         myBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        getTabsAdapter().addTab(myBar.newTab().setText(R.string.routes_title), RoutesTab_FR.class, null);
-        myBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+//        getTabsAdapter().addTab(myBar.newTab().setText(R.string.routes_title), RoutesTab_FR.class, null);
+//        myBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         // tabsAdapter.addTab(myBar.newTab().setText(R.string.admin_title),
         // SettingsMenuActivity.class, null);
         getTabsAdapter().addTab(myBar.newTab().setText(R.string.admin_title), SettingsTab_FR.class, null);
