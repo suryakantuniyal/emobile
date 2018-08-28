@@ -51,6 +51,7 @@ import com.android.support.MyPreferences;
 import com.android.support.NetworkUtils;
 import com.android.support.NumberUtils;
 import com.android.support.Post;
+import com.android.support.StringUtils;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
@@ -229,6 +230,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
         payment.setPay_dueamount(NumberUtils.cleanCurrencyFormatedNumber(amountView.getText().toString()));
         payment.setPay_amount(NumberUtils.cleanCurrencyFormatedNumber(amountView.getText().toString()));
         payment.setOriginalTotalAmount("0");
+        payment.setPay_type("0");
 
         EMSPayGate_Default payGate = new EMSPayGate_Default(this, payment);
         String geniusXml;
@@ -394,7 +396,9 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                 payment.setPay_amount(String.valueOf(Global.getRoundBigDecimal(payAmount)));
                 Global.amountPaid = payment.getPay_amount();
                 payment.setAuthcode(response.getAuthorizationCode());
-                payment.setCcnum_last4(response.getAccountNumber());
+                payment.setCcnum_last4(StringUtils.getLastFour(response.getAccountNumber()));
+                payment.setPay_resultcode(response.getStatus());
+                payment.setPay_resultmessage(response.getStatus());
                 payment.setPay_name(response.getCardholder());
                 payment.setPay_date(DateUtils.getDateStringAsString(response.getTransactionDate(), "MM/dd/yyyy HH:mm:ss a"));
                 if (signa.contains("^"))

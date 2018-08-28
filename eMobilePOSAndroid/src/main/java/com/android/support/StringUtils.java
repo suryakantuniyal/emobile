@@ -24,4 +24,12 @@ public class StringUtils {
         }
         return retVal;
     }
+
+    public static String getLastFour(String value) {
+        if (value != null && value.length() >= 4) {
+            return value.substring(value.length() - 4);
+        } else {
+            return "";
+        }
+    }
 }
