@@ -67,10 +67,20 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     //Load JNI from the library project. Refer MainActivity.java from library project elotouchCashDrawer.
     // In constructor we are loading .so file for Cash Drawer.
     static {
-        System.loadLibrary("cashdrawerjni");
-        System.loadLibrary("cfdjni");
-        System.loadLibrary("barcodereaderjni");
-        System.loadLibrary("serial_port");
+        try {
+
+
+            System.loadLibrary("cashdrawerjni");
+            System.loadLibrary("cfdjni");
+            System.loadLibrary("barcodereaderjni");
+            System.loadLibrary("serial_port");
+        } catch (UnsatisfiedLinkError error) {
+            // Output expected UnsatisfiedLinkErrors.
+            //Logging.log(error);
+        } catch (Error | Exception error) {
+            // Output unexpected Errors and Exceptions.
+            //Logging.log(error, false);
+        }
     }
 
     private final int LINE_WIDTH = 32;

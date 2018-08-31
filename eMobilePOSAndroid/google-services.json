@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "555089729868-tj2hp8l9vbnnrpfbf9lqla8qqtgao3fk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.emobilepos.app",
+            "certificate_hash": "4862bebb7735222264b81511d2c528517f105d10"
+          }
+        },
+        {
           "client_id": "555089729868-uh3drqmtrnnsb7lhcm650ai2o31rnga4.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -23,11 +31,71 @@
           }
         },
         {
-          "client_id": "555089729868-tj2hp8l9vbnnrpfbf9lqla8qqtgao3fk.apps.googleusercontent.com",
+          "client_id": "555089729868-cf9m4s5qk6g2jjbqsj3lop370k2j44b4.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.emobilepos.app",
+            "certificate_hash": "56e0b78597046b99e634900780ffdc60c2f4c77b"
+          }
+        },
+        {
+          "client_id": "555089729868-4egctu7k5e2c0pfuns2h6gj8ictemoce.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCogKmgsEBfX6LQRmo1lhvWgp7dxojuLdY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "555089729868-4egctu7k5e2c0pfuns2h6gj8ictemoce.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:555089729868:android:c19ef83e863ce9a2",
+        "android_client_info": {
+          "package_name": "com.emobilepos.icmpevo.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "555089729868-810pd81ssf6h4uf5i8kv4901ok9js1a0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.emobilepos.icmpevo.app",
             "certificate_hash": "4862bebb7735222264b81511d2c528517f105d10"
+          }
+        },
+        {
+          "client_id": "555089729868-bdf2igapdl6ckghvibua3c3sh6jhpdcs.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.emobilepos.icmpevo.app",
+            "certificate_hash": "58529af727b798aa8e16dc2873013663ddd40717"
+          }
+        },
+        {
+          "client_id": "555089729868-us5k5q4opj52prfk0a3o3osahd5jktmd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.emobilepos.icmpevo.app",
+            "certificate_hash": "56e0b78597046b99e634900780ffdc60c2f4c77b"
           }
         },
         {
@@ -83,55 +151,11 @@
           }
         },
         {
-          "client_id": "555089729868-4egctu7k5e2c0pfuns2h6gj8ictemoce.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyCogKmgsEBfX6LQRmo1lhvWgp7dxojuLdY"
-        }
-      ],
-      "services": {
-        "analytics_service": {
-          "status": 1
-        },
-        "appinvite_service": {
-          "status": 2,
-          "other_platform_oauth_client": [
-            {
-              "client_id": "555089729868-4egctu7k5e2c0pfuns2h6gj8ictemoce.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        },
-        "ads_service": {
-          "status": 2
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:555089729868:android:c19ef83e863ce9a2",
-        "android_client_info": {
-          "package_name": "com.emobilepos.icmpevo.app"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "555089729868-810pd81ssf6h4uf5i8kv4901ok9js1a0.apps.googleusercontent.com",
+          "client_id": "555089729868-ag9ek0hbd4qd6d10cfd26v9ju5qvgje4.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.emobilepos.icmpevo.app",
-            "certificate_hash": "4862bebb7735222264b81511d2c528517f105d10"
-          }
-        },
-        {
-          "client_id": "555089729868-bdf2igapdl6ckghvibua3c3sh6jhpdcs.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.emobilepos.icmpevo.app",
-            "certificate_hash": "58529af727b798aa8e16dc2873013663ddd40717"
+            "package_name": "com.emobilepos.ivupos.app",
+            "certificate_hash": "56e0b78597046b99e634900780ffdc60c2f4c77b"
           }
         },
         {
