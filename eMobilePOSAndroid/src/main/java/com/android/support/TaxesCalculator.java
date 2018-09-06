@@ -77,26 +77,22 @@ public class TaxesCalculator {
             while (it.hasNext()) {
                 Map.Entry<String, String[]> pair = (Map.Entry<String, String[]>) it.next();
 
-//                sb.append(textHandler.twoColumnLineWithLeftAlignedText(pair.getValue()[0],
-//                        Global.getCurrencyFormat(String.valueOf(pair.getValue()[1])), lineWidth, 2));
                 it.remove();
             }
-
-
         } else {
-            for (DataTaxes tax : taxes) {
-                BigDecimal taxAmount = new BigDecimal(0);
-                List<BigDecimal> rates = new ArrayList<>();
-                rates.add(new BigDecimal(tax.getTax_rate()));
-                for (OrderProduct product : order.getOrderProducts()) {
-                    taxAmount = taxAmount.add(TaxesCalculator.calculateTax(product.getProductPriceTaxableAmountCalculated(), rates));
+            if (taxes != null) {
+                for (DataTaxes tax : taxes) {
+                    BigDecimal taxAmount = new BigDecimal(0);
+                    List<BigDecimal> rates = new ArrayList<>();
+                    rates.add(new BigDecimal(tax.getTax_rate()));
+                    for (OrderProduct product : order.getOrderProducts()) {
+                        taxAmount = taxAmount.add(TaxesCalculator.calculateTax(product.getProductPriceTaxableAmountCalculated(), rates));
+                    }
+                    String[] arr = new String[2];
+                    arr[0] = tax.getTax_name();
+                    arr[1] = String.valueOf(taxAmount);
+                    prodTaxes.put(tax.getTax_rate(), arr);
                 }
-                String[] arr = new String[2];
-                arr[0] = tax.getTax_name();
-                arr[1] = String.valueOf(taxAmount);
-                prodTaxes.put(tax.getTax_rate(), arr);
-//                sb.append(textHandler.twoColumnLineWithLeftAlignedText(tax.getTax_name(),
-//                        Global.getCurrencyFormat(String.valueOf(taxAmount)), lineWidth, 2));
             }
         }
         return prodTaxes;
