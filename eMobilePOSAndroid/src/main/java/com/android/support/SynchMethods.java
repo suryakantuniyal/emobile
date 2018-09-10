@@ -1630,8 +1630,10 @@ public class SynchMethods {
             if (NetworkUtils.isConnectedToInternet(context)) {
                 try {
 
-                    synchStage = context.getString(R.string.sync_sending_reverse);
-                    sendReverse(this);
+                    if (!Global.isPaymentInProgress) {
+                        synchStage = context.getString(R.string.sync_sending_reverse);
+                        sendReverse(this);
+                    }
 
                     synchStage = context.getString(R.string.sync_sending_payment);
                     sendPayments(this);

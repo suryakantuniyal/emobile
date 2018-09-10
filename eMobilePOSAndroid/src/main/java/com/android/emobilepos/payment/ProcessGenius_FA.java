@@ -336,6 +336,9 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                 if (geniusTransportToken != null && geniusTransportToken.getStatusCode().equalsIgnoreCase("APPROVED")) {// && getData("statusCode", 0, 0).equals("APPROVED")) {
                     boProcessed = true;
 
+                    // set payment semaphore
+                    Global.isPaymentInProgress = true;
+
                     // generate reverse in case communication is lost
                     paymentAppId = generateAndSaveReverseXML(ProcessGenius_FA.this, geniusRequestXml);
 
@@ -414,10 +417,6 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                     payHandler.insertDeclined(payment);
                 }
 
-                // delete reverse since the payment is saved
-                PaymentsXML_DB _paymentXml_DB = new PaymentsXML_DB(ProcessGenius_FA.this);
-                _paymentXml_DB.deleteRow(paymentAppId);
-
                 EMVContainer emvContainer = new EMVContainer(response);
 
                 String paid_amount = NumberUtils.cleanCurrencyFormatedNumber(amountView.getText().toString());//Double.toString(Global.formatNumFromLocale(amountView.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim()));
@@ -468,6 +467,13 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                     Global.showPrompt(ProcessGenius_FA.this, R.string.dlog_title_error, response != null ? response.getStatus() : getString(R.string.failed_genius_connectivity));
                 }
             }
+
+            // delete reverse since the payment is saved
+            PaymentsXML_DB _paymentXml_DB = new PaymentsXML_DB(ProcessGenius_FA.this);
+            _paymentXml_DB.deleteRow(paymentAppId);
+
+            // remove payment semaphore
+            Global.isPaymentInProgress = false;
         }
 
         private void showPrintDlg(boolean isRetry) {
