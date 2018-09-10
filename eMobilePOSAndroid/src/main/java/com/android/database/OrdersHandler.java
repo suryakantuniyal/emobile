@@ -24,6 +24,7 @@ import com.google.gson.Gson;
 import net.sqlcipher.database.SQLiteStatement;
 
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -647,6 +648,13 @@ public class OrdersHandler {
         args.put(ord_issync, "0");
         args.put(processed, "9");
         DBManager.getDatabase().update(table_name, args, ord_id + " = ?", new String[]{param});
+    }
+
+    public boolean isOrderPaid(String orderID) {
+        BigDecimal orderTotal = Global.getBigDecimalNum(getColumnValue("ord_total", orderID));
+        PaymentsHandler paymentsHandler = new PaymentsHandler(activity);
+        BigDecimal totalPaid = Global.getBigDecimalNum(paymentsHandler.getTotalPaidAmount(orderID));
+        return orderTotal.equals(totalPaid);
     }
 
     public String getColumnValue(String key, String _ord_id) {

@@ -605,7 +605,9 @@ public class SynchMethods {
 
                             if (!emsPayment.getJobId().isEmpty()) {
                                 OrdersHandler ordersHandler = new OrdersHandler(context);
-                                ordersHandler.updateIsVoid(emsPayment.getJobId());
+                                if (!ordersHandler.isOrderPaid(emsPayment.getJobId())) {
+                                    ordersHandler.updateIsVoid(emsPayment.getJobId());
+                                }
                             }
                         }
                     }
