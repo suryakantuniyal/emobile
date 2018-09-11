@@ -157,7 +157,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
         Bundle extras = getIntent().getExtras();
         if (extras != null && extras.getBoolean("unsynched_items", false))
-            myBar.setSelectedNavigationItem(1);
+            myBar.setSelectedNavigationItem(2);
         new Thread(new Runnable() {
             @Override
             public void run() {
