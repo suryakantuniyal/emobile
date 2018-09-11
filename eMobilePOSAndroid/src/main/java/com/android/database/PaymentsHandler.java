@@ -323,6 +323,23 @@ public class PaymentsHandler {
         return payments;
     }
 
+    public String getTotalPaidAmount(String orderId) {
+        String query = "SELECT " +
+                "ROUND(SUM(pay_amount),2) AS 'total' " +
+                "FROM " + table_name + " " +
+                "WHERE  job_id = '" + orderId + "' " +
+                "AND is_refund='0' AND isVoid != '1'";
+
+        Cursor cursor = getDatabase().rawQuery(query, null);
+        String total = "0.00";
+        if (cursor.moveToFirst()) {
+            total = cursor.getString(cursor.getColumnIndex("total"));
+            if (total == null) total = "0.00";
+        }
+        cursor.close();
+        return total;
+    }
+
     public String getTotalPayAmount(String paymethod_id, String pay_date) {
 
         StringBuilder sb = new StringBuilder();
