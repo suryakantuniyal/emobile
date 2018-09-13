@@ -8,3 +8,5 @@ projectFilesBackup/
 emobileposblm/
 *.iml
 gradle/wrapper
+/gradlew
+gradle
