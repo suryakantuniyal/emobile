@@ -18,6 +18,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static android.content.DialogInterface.BUTTON_POSITIVE;
+
 public class MiniPrinterFunctions 
 {
 	enum BarcodeWidth {_125, _250, _375, _500, _625, _750, _875, _1_0}
@@ -742,7 +744,7 @@ public class MiniPrinterFunctions
     			//This function also closes the port
 				public void onClick(DialogInterface dialog, int which)
 				{
-	              	  ((AlertDialog)dialog).getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(false);
+	              	  ((AlertDialog)dialog).getButton(BUTTON_POSITIVE).setEnabled(false);
 	              	  ((AlertDialog)dialog).getButton(DialogInterface.BUTTON_NEGATIVE).setEnabled(false);
 					try
 					{
@@ -772,13 +774,13 @@ public class MiniPrinterFunctions
     		alert.setTitle("");
     		alert.setMessage("Slide credit card");
     		alert.setCancelable(false);
-    		alert.setButton("OK", new OnClickListener()
+    		alert.setButton(BUTTON_POSITIVE, "OK", new OnClickListener()
     		{	
     			//If the user presses ok then the magnetic stripe is read and displayed to the user
     			//This function also closes the port
 				public void onClick(DialogInterface dialog, int which)
 				{
-	              	((AlertDialog)dialog).getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(false);
+	              	((AlertDialog)dialog).getButton(BUTTON_POSITIVE).setEnabled(false);
 	              	((AlertDialog)dialog).getButton(DialogInterface.BUTTON_NEGATIVE).setEnabled(false);
 					try
 					{

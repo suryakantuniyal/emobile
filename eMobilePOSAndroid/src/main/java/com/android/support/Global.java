@@ -68,6 +68,7 @@ import com.crashlytics.android.answers.CustomEvent;
 import com.crashlytics.android.core.CrashlyticsCore;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.FusedLocationProviderClient;
 
 import org.springframework.util.support.Base64;
 
@@ -460,7 +461,6 @@ public class Global extends MultiDexApplication {
         }
 
         synchronized (global.locationServices)
-
         {
             if (LocationServices.mLastLocation == null || reload) {
                 global.locationServices.connect();

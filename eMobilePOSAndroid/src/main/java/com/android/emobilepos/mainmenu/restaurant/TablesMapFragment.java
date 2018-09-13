@@ -1,10 +1,10 @@
 package com.android.emobilepos.mainmenu.restaurant;
 
 
-import android.app.Fragment;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -71,7 +71,7 @@ public class TablesMapFragment extends Fragment implements View.OnClickListener,
         observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                map.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                map.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 List<DinningTable> dinningTables = getDinningTablesActivity().dinningTables;
                 for (DinningTable table : dinningTables) {
                     params[0] = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
