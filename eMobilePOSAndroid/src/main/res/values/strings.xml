@@ -18,6 +18,9 @@
     <string name="hint_search">Search</string>
     <string name="enter_name">Enter Name</string>
     <string name="last_saved">Last Saved</string>
+    <string name="notification_channel_id">com.android.emobilepos.NOTIFICATION_ID</string>
+    <string name="notification_channel_name">EMOBILEPOS CHANNEL</string>
+    <string name="notification_channel_description">A notification channel for emobile pos application.</string>
 
     <string name="inventory_transfer">Inventory Transfer</string>
 
