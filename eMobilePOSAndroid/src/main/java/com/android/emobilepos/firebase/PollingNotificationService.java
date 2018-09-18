@@ -2,11 +2,14 @@ package com.android.emobilepos.firebase;
 
 import android.app.ActivityManager;
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
@@ -145,7 +148,17 @@ public class PollingNotificationService extends Service {
                 Bitmap icon = BitmapFactory.decodeResource(getResources(),
                         R.drawable.emobile_icon);
 
-                Notification notification = new NotificationCompat.Builder(this)
+                String channelId = getString(R.string.notification_channel_id);
+                String name = getString(R.string.notification_channel_name);
+                String description = getString(R.string.notification_channel_description);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    int importance = NotificationManager.IMPORTANCE_DEFAULT;
+                    NotificationChannel channel = new NotificationChannel(channelId, name, importance);
+                    channel.setDescription(description);
+                    NotificationManager notificationManager = getSystemService(NotificationManager.class);
+                    notificationManager.createNotificationChannel(channel);
+                }
+                Notification notification = new NotificationCompat.Builder(this,channelId)
                         .setContentTitle("eMobilePOS")
                         .setTicker("eMobilePOS")
                         .setContentText("Synchronizing")

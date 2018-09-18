@@ -94,7 +94,6 @@ public class OrderDetailsActivity extends BaseFragmentActivityActionBar {
         }
     }
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -190,7 +189,7 @@ public class OrderDetailsActivity extends BaseFragmentActivityActionBar {
                 showPickerDialogBox(pos);
                 break;
             case DELIVERY:
-                showDialog(DATE_DIALOG_ID);
+                showDatePickerDialog();
                 break;
             case ADDRESS:
                 showPickerDialogBox(pos);
@@ -438,14 +437,11 @@ public class OrderDetailsActivity extends BaseFragmentActivityActionBar {
         adb.show();
     }
 
-    protected Dialog onCreateDialog(int id) {
-        switch (id) {
-            case DATE_DIALOG_ID:
-                return new DatePickerDialog(this,
-                        datePickerListener,
-                        currYear, currMonth, currDay);
-        }
-        return null;
+    private void showDatePickerDialog(){
+        DatePickerDialog dialog = new DatePickerDialog(this,
+                datePickerListener,
+                currYear, currMonth, currDay);
+        dialog.show();
     }
 
     private class CustomAdapter extends BaseAdapter {

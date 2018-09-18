@@ -74,6 +74,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.location.FusedLocationProviderClient;
 
 import org.springframework.util.support.Base64;
 
@@ -385,7 +386,6 @@ public class Global extends MultiDexApplication {
             case ASURA:
                 _name = "ASURA";
                 break;
-
             case PAT215:
                 _name = "PAT215";
                 break;

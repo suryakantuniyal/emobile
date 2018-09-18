@@ -194,7 +194,8 @@ public class CreditCardInfo {
             try {
                 Integer.parseInt(this.cardExpMonth);
             } catch (Exception e) {
-                this.cardExpMonth = String.valueOf(new Date().getMonth() + 1);
+                Calendar calendar = Calendar.getInstance();
+                this.cardExpMonth = String.valueOf(calendar.get(Calendar.MONTH) + 1);
             }
         }
         return this.cardExpMonth;
