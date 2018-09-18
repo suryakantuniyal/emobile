@@ -1,11 +1,13 @@
 package com.android.support;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -20,6 +22,7 @@ import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.multidex.MultiDexApplication;
+import android.support.v4.app.ActivityCompat;
 import android.text.Html;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -68,6 +71,9 @@ import com.crashlytics.android.answers.CustomEvent;
 import com.crashlytics.android.core.CrashlyticsCore;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 
 import org.springframework.util.support.Base64;
 
@@ -115,7 +121,6 @@ public class Global extends MultiDexApplication {
     public static final int SNBC = 5;
     public static final int POWA = 6;
     public static final int ASURA = 7;
-    public static final int PAT100 = 8;
     public static final int ISMP = 9;
     public static final int EM100 = 10;
     public static final int EM70 = 11;
@@ -380,9 +385,7 @@ public class Global extends MultiDexApplication {
             case ASURA:
                 _name = "ASURA";
                 break;
-            case PAT100:
-                _name = "PAT100";
-                break;
+
             case PAT215:
                 _name = "PAT215";
                 break;
@@ -425,15 +428,35 @@ public class Global extends MultiDexApplication {
 
     }
 
-    public static Location getCurrLocation(Context activity, boolean reload) {
+    public static Location getCurrLocation(final Context activity, boolean reload) {
         final Global global = (Global) activity.getApplicationContext();
         if (global.locationServices == null) {
             global.locationServices = new com.android.support.LocationServices(activity, new GoogleApiClient.ConnectionCallbacks() {
                 @Override
                 public void onConnected(@Nullable Bundle bundle) {
-                    Location lastLocation = com.google.android.gms.location.LocationServices.FusedLocationApi.getLastLocation(
-                            global.locationServices.mGoogleApiClient);
-                    if (lastLocation == null) {
+                    if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                        FusedLocationProviderClient lastLocation = com.google.android.gms.location.LocationServices.getFusedLocationProviderClient(activity);
+                        lastLocation .getLastLocation().addOnSuccessListener((Activity) activity, new OnSuccessListener<Location>() {
+                            @Override
+                            public void onSuccess(Location location) {
+                                if (location == null) {
+                                    LocationServices.mLastLocation = new Location("");
+                                } else {
+                                    LocationServices.mLastLocation = location;
+                                }
+                                global.locationServices.disconnect();
+                                synchronized (global.locationServices)
+                                {
+                                    global.locationServices.notifyAll();
+                                }
+
+                            }
+                        });
+
+                    }
+
+
+                   /* if (lastLocation == null) {
                         LocationServices.mLastLocation = new Location("");
                     } else {
                         LocationServices.mLastLocation = lastLocation;
@@ -443,7 +466,7 @@ public class Global extends MultiDexApplication {
 
                     {
                         global.locationServices.notifyAll();
-                    }
+                    }*/
                 }
 
                 @Override
@@ -460,7 +483,6 @@ public class Global extends MultiDexApplication {
         }
 
         synchronized (global.locationServices)
-
         {
             if (LocationServices.mLastLocation == null || reload) {
                 global.locationServices.connect();
@@ -1657,7 +1679,7 @@ public class Global extends MultiDexApplication {
 
 
     public enum BuildModel {
-        ET1, MC40N0, M2MX60P, M2MX6OP, JE971, Asura, Dolphin_Black_70e, PAT215, PAT100, EM100, EM70, OT_310, PayPoint_ESY13P1;
+        ET1, MC40N0, M2MX60P, M2MX6OP, JE971, Asura, Dolphin_Black_70e, PAT215, EM100, EM70, OT_310, PayPoint_ESY13P1;
 
         @Override
         public String toString() {

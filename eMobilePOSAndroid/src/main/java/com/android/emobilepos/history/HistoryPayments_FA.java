@@ -39,8 +39,6 @@ public class HistoryPayments_FA extends BaseFragmentActivityActionBar implements
     private TabHost tabHost;
     private Activity activity;
     private String paymethod_name = "Cash";
-
-
     private Cursor myCursor;
     private PaymentsHandler handler;
 

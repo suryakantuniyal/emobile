@@ -376,7 +376,7 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
             Intent i = getIntent();
             handleDecodeData(i);
             cardSwipe.setChecked(true);
-        } else if (myPref.isSam4s() || myPref.isPAT100() || EMSIDTechUSB.isUSBConnected(this)) {
+        } else if (myPref.isSam4s() || EMSIDTechUSB.isUSBConnected(this)) {
             cardSwipe.setChecked(true);
             _msrUsbSams = new EMSIDTechUSB(activity, msrCallBack);
             if (_msrUsbSams.OpenDevice())

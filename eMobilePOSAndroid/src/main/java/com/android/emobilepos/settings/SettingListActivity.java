@@ -1555,11 +1555,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                 Global.mainPrinterManager = edm.getManager();
                 Global.mainPrinterManager.loadDrivers(getActivity(), Global.ASURA, EMSDeviceManager.PrinterInterfase.USB);
 
-            } else if (myPref.isPAT100()) {
-                myPref.setPrinterType(Global.PAT100);
-                Global.mainPrinterManager = edm.getManager();
-                Global.mainPrinterManager.loadDrivers(getActivity(), Global.PAT100, EMSDeviceManager.PrinterInterfase.USB);
-            } else if (myPref.isPAT215()) {
+            }else if (myPref.isPAT215()) {
                 edm = new EMSDeviceManager();
                 myPref.setPrinterType(Global.PAT215);
                 Global.embededMSR = edm.getManager();
