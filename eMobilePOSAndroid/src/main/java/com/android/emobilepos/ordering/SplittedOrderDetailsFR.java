@@ -49,7 +49,7 @@ import java.util.StringTokenizer;
 
 import main.EMSDeviceManager;
 
-import static com.google.android.gms.internal.zzahn.runOnUiThread;
+/*import static com.google.android.gms.internal.zzahn.runOnUiThread;*/
 
 /**
  * Created by Guarionex on 2/19/2016.
@@ -255,7 +255,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                             ((TextView) productSectionLL.findViewById(R.id.productDescriptiontextView)).setText("");
                         }
 
-                        runOnUiThread(new Runnable() {
+                        getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 orderProductSection.addView(productSectionLL);

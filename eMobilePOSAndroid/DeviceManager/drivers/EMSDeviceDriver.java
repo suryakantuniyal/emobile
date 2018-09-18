@@ -190,8 +190,6 @@ public class EMSDeviceDriver {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		} else if (this instanceof EMSPAT100) {
-			printerApi.printData(str);
 		} else if (this instanceof EMSBlueBambooP25) {
 			byte[] header = { 0x1B, 0x21, 0x01 };
 			byte[] lang = new byte[] { (byte) 0x1B, (byte) 0x4B, (byte) 0x31, (byte) 0x1B, (byte) 0x52, 48 };
@@ -233,8 +231,6 @@ public class EMSDeviceDriver {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		} else if (this instanceof EMSPAT100) {
-			printerApi.printData(byteArray, byteArray.length);
 		} else if (this instanceof EMSBlueBambooP25) {
 			try {
 				outputStream.write(byteArray);
@@ -275,8 +271,6 @@ public class EMSDeviceDriver {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		} else if (this instanceof EMSPAT100) {
-			printerApi.printData(str);
 		} else if (this instanceof EMSBlueBambooP25) {
 			print(str);
 		} else if (this instanceof EMSOneil4te) {
@@ -753,8 +747,6 @@ public class EMSDeviceDriver {
 							myBitmap, PAPER_WIDTH, false, false);
 				}
 
-			} else if (this instanceof EMSPAT100) {
-				printerApi.printImage(myBitmap, 0);
 			} else if (this instanceof EMSBlueBambooP25) {
 				EMSBambooImageLoader loader = new EMSBambooImageLoader();
 				ArrayList<ArrayList<Byte>> arrayListList = loader.bambooDataWithAlignment(0, myBitmap);

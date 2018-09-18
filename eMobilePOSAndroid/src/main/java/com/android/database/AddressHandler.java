@@ -130,6 +130,7 @@ public class AddressHandler {
 
         } finally {
             DBManager.getDatabase().endTransaction();
+
         }
     }
 

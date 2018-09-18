@@ -867,7 +867,7 @@ public class MyPreferences {
         setIsICMPEVO(false);
         setIsKDC425(false);
         setIsOT310(false);
-        setIsPAT100(false);
+
         setPrinterName(""); //clean the printer name
         prefEditor.putInt(sled_type, -1);
         prefEditor.putInt(printer_type, -1);
@@ -915,17 +915,6 @@ public class MyPreferences {
         return false;
     }
 
-    public boolean isPAT100() {
-        String device_pat100 = "device_pat100";
-        return prefs.getBoolean(device_pat100, false);
-    }
-
-    public boolean setIsPAT100(boolean value) {
-        String device_em100 = "device_pat100";
-        prefEditor.putBoolean(device_em100, value);
-        prefEditor.commit();
-        return false;
-    }
 
     public boolean isPAT215() {
         String device_pat215 = "device_pat215";

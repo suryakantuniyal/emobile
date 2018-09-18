@@ -67,7 +67,7 @@ import com.elo.device.peripherals.Printer;
 import com.miurasystems.miuralibrary.api.executor.MiuraManager;
 import com.miurasystems.miuralibrary.api.listener.MiuraDefaultListener;
 import com.mpowa.android.sdk.powapos.PowaPOS;
-import com.partner.pt100.printer.PrinterApiContext;
+/*import com.partner.pt100.printer.PrinterApiContext;*/
 import com.printer.aidl.PService;
 import com.printer.command.EscCommand;
 import com.printer.command.PrinterCom;
@@ -127,7 +127,7 @@ import static drivers.EMSGPrinterPT380.PRINTER_ID;
 
 public class EMSDeviceDriver {
     private static final boolean PRINT_TO_LOG = BuildConfig.PRINT_TO_LOG;
-    static PrinterApiContext printerApi;
+    /*static PrinterApiContext printerApi;*/
     static Object printerTFHKA;
     private static int PAPER_WIDTH;
     protected final String FORMAT = "windows-1252";
@@ -387,8 +387,6 @@ public class EMSDeviceDriver {
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
-        } else if (this instanceof EMSPAT100) {
-            printerApi.printData(str);
         } else if (this instanceof EMSBlueBambooP25) {
             byte[] header = {0x1B, 0x21, 0x01};
             byte[] lang = new byte[]{(byte) 0x1B, (byte) 0x4B, (byte) 0x31, (byte) 0x1B, (byte) 0x52, 48};
@@ -460,8 +458,6 @@ public class EMSDeviceDriver {
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
-        } else if (this instanceof EMSPAT100) {
-            printerApi.printData(byteArray, byteArray.length);
         } else if (this instanceof EMSBlueBambooP25) {
             try {
                 outputStream.write(byteArray);
@@ -703,8 +699,6 @@ public class EMSDeviceDriver {
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
-        } else if (this instanceof EMSPAT100) {
-            printerApi.printData(str);
         } else if (this instanceof EMSBlueBambooP25) {
             print(str);
         } else if (this instanceof EMSOneil4te) {
@@ -1447,8 +1441,6 @@ public class EMSDeviceDriver {
                         Crashlytics.logException(e);
                     }
                 }
-            } else if (this instanceof EMSPAT100) {
-                printerApi.printImage(myBitmap, 0);
             } else if (this instanceof EMSBlueBambooP25) {
                 EMSBambooImageLoader loader = new EMSBambooImageLoader();
                 ArrayList<ArrayList<Byte>> arrayListList = loader.bambooDataWithAlignment(0, myBitmap);
@@ -1639,8 +1631,6 @@ public class EMSDeviceDriver {
                             bmp, PAPER_WIDTH, false, false);
                 }
 
-            } else if (this instanceof EMSPAT100) {
-                printerApi.printImage(bitmap, 0);
             } else if (this instanceof EMSmePOS) {
                 mePOSReceipt.addLine(new MePOSReceiptImageLine(bitmap));
             } else if (this instanceof EMSBlueBambooP25) {

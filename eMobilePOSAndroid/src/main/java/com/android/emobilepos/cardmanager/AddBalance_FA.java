@@ -193,9 +193,9 @@ public class AddBalance_FA extends BaseFragmentActivityActionBar implements EMSC
             Intent i = getIntent();
             handleDecodeData(i);
             cardSwipe.setChecked(true);
-        } else if (myPref.isSam4s() || myPref.isPAT100()) {
+        } /*else if (myPref.isSam4s() ) {
             cardSwipe.setChecked(true);
-        } else if (myPref.isESY13P1()) {
+        }*/ else if (myPref.isESY13P1()) {
             if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
                 Global.mainPrinterManager.getCurrentDevice().loadCardReader(msrCallBack, false);
                 cardSwipe.setChecked(true);

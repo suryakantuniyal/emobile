@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.android.database.OrdersHandler;
 import com.android.emobilepos.R;
+import com.android.emobilepos.bixolon.BixolonTransactionsActivity;
 import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.realms.BixolonTransaction;
 import com.android.support.Global;
@@ -34,7 +35,7 @@ public class BixolonTransactionAdapter extends RealmRecyclerViewAdapter<BixolonT
     private Context context;
 
     public BixolonTransactionAdapter(@NonNull Context context, @Nullable OrderedRealmCollection<BixolonTransaction> data, boolean autoUpdate) {
-        super(context, data, autoUpdate);
+        super(data, autoUpdate);
         ordersDB = new OrdersHandler(context);
         this.context = context;
         if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null

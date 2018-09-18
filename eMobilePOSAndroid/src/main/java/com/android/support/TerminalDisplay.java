@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.OutputStream;
 
 import drivers.EMSELO;
-import drivers.EMSPAT100;
 import drivers.EMSPAT215;
 import util.StringUtil;
 
@@ -23,9 +22,6 @@ public class TerminalDisplay {
             uart_tool.config(3, 9600, 8, 1);
             uart_tool.write(3, Global.emptySpaces(40, 0, false));
             uart_tool.write(3, Global.formatSam4sCDT(row1, row2));
-        } else if (myPref.isPAT100()) {
-            EMSPAT100.getTerminalDisp().clearText();
-            EMSPAT100.getTerminalDisp().displayText(Global.formatSam4sCDT(row1, row2));
         } else if (myPref.isESY13P1()) {
             final String finalRow = row1;
             final String finalRow1 = row2;

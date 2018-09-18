@@ -181,7 +181,7 @@ public class BalanceInquiry_FA extends BaseFragmentActivityActionBar implements 
             Intent i = getIntent();
             handleDecodeData(i);
             cardSwipe.setChecked(true);
-        } else if (myPref.isSam4s() || myPref.isPAT100()) {
+        } else if (myPref.isSam4s()) {
             cardSwipe.setChecked(true);
         } else if (myPref.isESY13P1()) {
             if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {

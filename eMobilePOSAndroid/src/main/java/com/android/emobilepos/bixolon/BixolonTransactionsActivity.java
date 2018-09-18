@@ -14,7 +14,7 @@ import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import io.realm.OrderedRealmCollection;
 import io.realm.Realm;
 
-public class BixolonTransactionsActivity extends BaseFragmentActivityActionBar {
+public class BixolonTransactionsActivity extends BaseFragmentActivityActionBar{
 
     private RecyclerView list;
     private Realm realm;
