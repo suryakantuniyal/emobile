@@ -36,6 +36,7 @@ import drivers.EMSIngenico;
 import drivers.EMSIngenicoEVO;
 import drivers.EMSKDC425;
 import drivers.EMSMagtekAudioCardReader;
+import drivers.EMSMagtekSwiper;
 import drivers.EMSMiura;
 import drivers.EMSNomad;
 import drivers.EMSOT310;
@@ -66,6 +67,10 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
         switch (type) {
             case Global.MAGTEK:
                 aDevice = new EMSMagtekAudioCardReader();
+                aDevice.connect(activity, -1, false, this);
+                break;
+            case Global.MAGTEK_EMBEDDED:
+                aDevice = new EMSMagtekSwiper();
                 aDevice.connect(activity, -1, false, this);
                 break;
             case Global.STAR:
@@ -171,6 +176,9 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
         switch (type) {
             case Global.MAGTEK:
                 aDevice = new EMSMagtekAudioCardReader();
+                break;
+            case Global.MAGTEK_EMBEDDED:
+                aDevice = new EMSMagtekSwiper();
                 break;
             case Global.BAMBOO:
                 aDevice = new EMSBlueBambooP25();
