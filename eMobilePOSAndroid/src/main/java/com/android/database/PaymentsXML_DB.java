@@ -21,7 +21,7 @@ public class PaymentsXML_DB {
 	private HashMap<String, Integer> attrHash;
 	private StringBuilder mainSB1,mainSB2;
 	private static final String TABLE_NAME = "PaymentsXML";
-
+	SQLiteStatement insert = null;
 	public PaymentsXML_DB(Context activity)
 	{
 		attrHash = new HashMap<>();
@@ -55,7 +55,7 @@ public class PaymentsXML_DB {
 		DBManager.getDatabase().beginTransaction();
 
 		try {
-			SQLiteStatement insert = null;
+
 			StringBuilder sb = new StringBuilder();
 			sb.append("INSERT INTO ").append(TABLE_NAME).append(" (").append(mainSB1.toString()).append(") ").append("VALUES (")
 					.append(mainSB2.toString()).append(")");
@@ -72,7 +72,9 @@ public class PaymentsXML_DB {
 //			Tracker tracker = EasyTracker.getInstance(activity);
 //			tracker.send(MapBuilder.createException(Log.getStackTraceString(e), false).build());
 		} finally {
+			insert.close();
 			DBManager.getDatabase().endTransaction();
+
 		}
 	}
 	

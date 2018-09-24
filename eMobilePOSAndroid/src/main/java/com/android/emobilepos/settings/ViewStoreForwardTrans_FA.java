@@ -63,7 +63,7 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
     private CustomCursorAdapter adapter;
     private RealmResults<StoreAndForward> storeAndForwards;
     private Button btnProcessAll;
-    private Realm realm = Realm.getDefaultInstance();
+    private Realm realm;
     private boolean livePaymentRunning = false;
     private ProgressDialog myProgressDialog;
 
@@ -73,7 +73,7 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
         setContentView(R.layout.view_store_forward_trans_layout);
         activity = this;
         global = (Global) getApplication();
-
+        realm = Realm.getDefaultInstance();
         btnProcessAll = (Button) findViewById(R.id.btnProcessAll);
         btnProcessAll.setOnClickListener(this);
         btnProcessAll.setEnabled(true);

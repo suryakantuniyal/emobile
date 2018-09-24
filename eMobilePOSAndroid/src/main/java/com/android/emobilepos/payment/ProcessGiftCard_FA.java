@@ -118,6 +118,16 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
 
 
     @Override
+    protected void onResumeFragments() {
+        super.onResumeFragments();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         global = (Global) getApplication();

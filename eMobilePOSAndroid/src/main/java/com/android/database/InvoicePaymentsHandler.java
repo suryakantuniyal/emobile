@@ -23,7 +23,7 @@ public class InvoicePaymentsHandler {
 	private StringBuilder sb1, sb2;
 	private HashMap<String, Integer> attrHash;
 	private static final String table_name = "InvoicePayments";
-
+	SQLiteStatement insert = null;
 	public InvoicePaymentsHandler(Context activity) {
 		attrHash = new HashMap<>();
 		sb1 = new StringBuilder();
@@ -55,7 +55,7 @@ public class InvoicePaymentsHandler {
 		DBManager.getDatabase().beginTransaction();
 		try {
 
-			SQLiteStatement insert = null;
+
 			StringBuilder sb = new StringBuilder();
 			sb.append("INSERT INTO ").append(table_name).append(" (").append(sb1.toString()).append(") ")
 					.append("VALUES (").append(sb2.toString()).append(")");
@@ -81,7 +81,9 @@ public class InvoicePaymentsHandler {
 //			Tracker tracker = EasyTracker.getInstance(activity);
 //			tracker.send(MapBuilder.createException(sb.toString(), false).build());
 		} finally {
+			insert.close();
 			DBManager.getDatabase().endTransaction();
+
 		}
 		// db.close();
 	}

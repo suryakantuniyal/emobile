@@ -98,6 +98,7 @@ public class OrdersHandler {
     private StringBuilder sb1, sb2;
     private HashMap<String, Integer> attrHash;
     private Context activity;
+    SQLiteStatement sqlinsert;
 
     public OrdersHandler(Context activity) {
         attrHash = new HashMap<>();
@@ -229,11 +230,12 @@ public class OrdersHandler {
     }
 
     public void insert(List<Order> orders) {
+
         DBManager.getDatabase().beginTransaction();
         MyPreferences preferences = new MyPreferences(activity);
         try {
             for (Order order : orders) {
-                SQLiteStatement sqlinsert;
+
                 String sb = "INSERT OR REPLACE INTO " + table_name + " (" + sb1.toString() + ") " +
                         "VALUES (" + sb2.toString() + ")";
                 sqlinsert = DBManager.getDatabase().compileStatement(sb);
@@ -310,7 +312,9 @@ public class OrdersHandler {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
+            sqlinsert.close();
             DBManager.getDatabase().endTransaction();
+
         }
     }
 

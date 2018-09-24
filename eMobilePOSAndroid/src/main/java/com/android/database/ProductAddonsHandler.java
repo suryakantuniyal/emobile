@@ -34,7 +34,7 @@ public class ProductAddonsHandler {
     private List<String[]> addrData;
     private List<HashMap<String, Integer>> dictionaryListMap;
     private MyPreferences myPref;
-
+    SQLiteStatement insert;
     private static final String table_name = "Product_addons";
 
     public ProductAddonsHandler(Context activity) {
@@ -78,7 +78,7 @@ public class ProductAddonsHandler {
     public void insert(List<ProductAddons> addons) {
         DBManager.getDatabase().beginTransaction();
         try {
-            SQLiteStatement insert;
+
             insert = DBManager.getDatabase().compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
             for (ProductAddons addon : addons) {
                 insert.bindString(index(rest_addons), String.valueOf(addon.getRestAddons()));
@@ -94,7 +94,9 @@ public class ProductAddonsHandler {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
+            insert.close();
             DBManager.getDatabase().endTransaction();
+
         }
     }
 

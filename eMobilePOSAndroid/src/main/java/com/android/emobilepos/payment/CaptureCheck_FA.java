@@ -19,7 +19,13 @@ public class CaptureCheck_FA extends BaseFragmentActivityActionBar implements On
 	
 	private Global global;
 	private boolean hasBeenCreated = false;
-	public void onCreate(Bundle savedInstanceState) 
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+	}
+
+	public void onCreate(Bundle savedInstanceState)
 	{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.check_capture_layout);

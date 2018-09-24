@@ -29,7 +29,7 @@ public class PriceLevelHandler {
     private List<HashMap<String, Integer>> dictionaryListMap;
 
     public static final String table_name = "PriceLevel";
-
+    SQLiteStatement insert;
     public PriceLevelHandler() {
         attrHash = new HashMap<String, Integer>();
         addrData = new ArrayList<String[]>();
@@ -99,9 +99,10 @@ public class PriceLevelHandler {
 
 
     public void insert(List<PriceLevel> priceLevels) {
+
         DBManager.getDatabase().beginTransaction();
         try {
-            SQLiteStatement insert;
+
             insert = DBManager.getDatabase().compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
 
             int size = addrData.size();
@@ -122,7 +123,9 @@ public class PriceLevelHandler {
         } catch (Exception e) {
 
         } finally {
+            insert.close();
             DBManager.getDatabase().endTransaction();
+
         }
     }
 

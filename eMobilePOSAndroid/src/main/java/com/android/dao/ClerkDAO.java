@@ -101,8 +101,13 @@ public class ClerkDAO {
 
     public static void removeAssignedTable(Clerk selectedClerk, DinningTable table) {
         Realm realm = Realm.getDefaultInstance();
-        selectedClerk.getAssignedDinningTables().remove(table);
-        realm.close();
+        try {
+             selectedClerk.getAssignedDinningTables().remove(table);
+        }
+        finally {
+            realm.close();
+        }
+
         insertOrUpdate(selectedClerk);
     }
 

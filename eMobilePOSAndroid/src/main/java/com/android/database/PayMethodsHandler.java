@@ -68,10 +68,10 @@ public class PayMethodsHandler {
 
 
     public void insert(List<PaymentMethod> paymentMethods) {
-
+        SQLiteStatement insert = null;
         DBManager.getDatabase().beginTransaction();
         try {
-            SQLiteStatement insert;
+
             insert = DBManager.getDatabase().compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
 
             for (PaymentMethod method : paymentMethods) {
@@ -101,6 +101,7 @@ public class PayMethodsHandler {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
+            insert.close();
             DBManager.getDatabase().endTransaction();
         }
     }

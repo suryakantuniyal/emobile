@@ -23,6 +23,8 @@ import io.realm.Realm;
 
 public class RestoreActivity extends Activity implements View.OnClickListener {
 
+    private Realm realm;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,12 +69,18 @@ public class RestoreActivity extends Activity implements View.OnClickListener {
         preferences.setActivKey(getEditText(R.id.activationKeyRestore).getText().toString());
         AssignEmployee assignEmployee = new AssignEmployee();//AssignEmployeeDAO.getAssignEmployee(false);
         assignEmployee.setEmpId(Integer.parseInt(getEditText(R.id.employeeIdRestore).getText().toString()));
-        Realm realm = Realm.getDefaultInstance();
+        realm = Realm.getDefaultInstance();
         realm.beginTransaction();
         realm.where(AssignEmployee.class).findAll().deleteAllFromRealm();
         realm.copyToRealm(assignEmployee);
         realm.commitTransaction();
         dbManager.dbRestore();
         finish();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        realm.close();
     }
 }
