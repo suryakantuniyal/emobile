@@ -76,6 +76,7 @@ public class OrderProductsHandler {
     private static final String prodPricePoints = "prod_price_points";
     private static final String isGC = "isGC";
     private static final String product_taxes_json = "product_taxes_json";
+    SQLiteStatement sqlinsert;
     Type taxListType = new com.google.gson.reflect.TypeToken<List<Tax>>() {
     }.getType();
     Gson gson = JsonUtils.getInstance();
@@ -330,7 +331,7 @@ public class OrderProductsHandler {
         DBManager.getDatabase().beginTransaction();
         try {
             boolean isRestaurantMode = myPref.isRestaurantMode();
-            SQLiteStatement sqlinsert;
+
             String sql = "INSERT OR REPLACE INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")";
             sqlinsert = DBManager.getDatabase().compileStatement(sql);
             int size = orderProducts.size();
@@ -419,7 +420,9 @@ public class OrderProductsHandler {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
+            sqlinsert.close();
             DBManager.getDatabase().endTransaction();
+
         }
     }
 

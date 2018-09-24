@@ -89,11 +89,12 @@ public class AddressHandler {
 
     public void insert(List<String[]> data, List<HashMap<String, Integer>> dictionary) {
         DBManager.getDatabase().beginTransaction();
+        SQLiteStatement insert = null;
         try {
 
             addrData = data;
             dictionaryListMap = dictionary;
-            SQLiteStatement insert;
+
             insert = DBManager.getDatabase().compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
 
             int size = addrData.size();
@@ -129,6 +130,7 @@ public class AddressHandler {
         } catch (Exception e) {
 
         } finally {
+            insert.close();
             DBManager.getDatabase().endTransaction();
 
         }

@@ -26,6 +26,7 @@ import android.support.v4.app.ActivityCompat;
 import android.text.Html;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.Surface;
@@ -456,17 +457,6 @@ public class Global extends MultiDexApplication {
                     }
 
 
-                   /* if (lastLocation == null) {
-                        LocationServices.mLastLocation = new Location("");
-                    } else {
-                        LocationServices.mLastLocation = lastLocation;
-                    }
-                    global.locationServices.disconnect();
-                    synchronized (global.locationServices)
-
-                    {
-                        global.locationServices.notifyAll();
-                    }*/
                 }
 
                 @Override
@@ -1541,6 +1531,7 @@ public class Global extends MultiDexApplication {
             }
             systemLoginButton.setText(R.string.clerk_login);
             loginInstructionTextView.setText(getString(R.string.login_system_instructions));
+
         }
         viewMsg.setText(R.string.password);
         if (!loggedIn) {

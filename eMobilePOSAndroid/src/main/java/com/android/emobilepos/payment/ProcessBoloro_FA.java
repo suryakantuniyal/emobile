@@ -493,17 +493,24 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
                 generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.GetTelcoInfoByTag, false, null, null);
                 if (myPreferences.isPrefUseStoreForward()) {
                     Realm realm = Realm.getDefaultInstance();
-                    realm.beginTransaction();
-                    StoreAndForward storeAndForward = realm.createObject(StoreAndForward.class);
-                    storeAndForward.setCreationDate(new Date());
-                    storeAndForward.setId(storeForwardPaymentId);
-                    payment.setPay_id(String.valueOf(System.currentTimeMillis()));
-                    storeAndForward.setPayment(realm.copyToRealmOrUpdate(payment));
-                    storeAndForward.setPaymentXml(generatedURL);
-                    storeAndForward.setRetry(false);
-                    storeAndForward.setPaymentType(StoreAndForward.PaymentType.BOLORO);
-                    storeAndForward.setStoreAndForwatdStatus(StoreAndForward.StoreAndForwatdStatus.PENDING);
-                    realm.commitTransaction();
+                    try {
+
+                        realm.beginTransaction();
+                        StoreAndForward storeAndForward = realm.createObject(StoreAndForward.class);
+                        storeAndForward.setCreationDate(new Date());
+                        storeAndForward.setId(storeForwardPaymentId);
+                        payment.setPay_id(String.valueOf(System.currentTimeMillis()));
+                        storeAndForward.setPayment(realm.copyToRealmOrUpdate(payment));
+                        storeAndForward.setPaymentXml(generatedURL);
+                        storeAndForward.setRetry(false);
+                        storeAndForward.setPaymentType(StoreAndForward.PaymentType.BOLORO);
+                        storeAndForward.setStoreAndForwatdStatus(StoreAndForward.StoreAndForwatdStatus.PENDING);
+                        realm.commitTransaction();
+                        realm.close();
+                    }
+                    finally {
+                        realm.close();
+                    }
                     return true;
                 } else {
                     Post httpClient = new Post(activity);

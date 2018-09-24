@@ -122,6 +122,11 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
     }
 
     @Override
+    protected void onPostResume() {
+        super.onPostResume();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         switch (id) {
@@ -141,11 +146,18 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
     }
 
     @Override
+    protected void onDestroy() {
+
+        super.onDestroy();
+    }
+
+    @Override
     protected void onResume() {
         if (BuildConfig.DEBUG) {
             int count = 0;
             if (Realm.getDefaultConfiguration() != null) {
                 count = Realm.getGlobalInstanceCount(Realm.getDefaultConfiguration());
+
                 Toast.makeText(this, "Realms count: " + String.valueOf(count), Toast.LENGTH_LONG).show();
 
             }

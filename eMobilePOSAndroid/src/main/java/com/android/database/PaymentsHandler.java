@@ -117,8 +117,9 @@ public class PaymentsHandler {
     private HashMap<String, Integer> attrHash;
     //    private Global global;
     private MyPreferences myPref;
+    SQLiteStatement insert;
     private Context activity;
-
+    SQLiteStatement sqlinsert;
     public PaymentsHandler(Context context) {
 //        global = (Global) activity.getApplication();
         myPref = new MyPreferences(context);
@@ -180,8 +181,9 @@ public class PaymentsHandler {
     public void insert(Payment payment) {
 
         getDatabase().beginTransaction();
+
         try {
-            SQLiteStatement sqlinsert;
+
             String sql = "INSERT INTO " + table_name + " (" + sb1.toString() + ")" +
                     "VALUES (" + sb2.toString() + ")";
             sqlinsert = getDatabase().compileStatement(sql);
@@ -273,9 +275,11 @@ public class PaymentsHandler {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
+            sqlinsert.close();
             myPref.setLastPayID(payment.getPay_id());
             getDatabase().endTransaction();
             lastPaymentInserted = payment;
+
         }
     }
 
@@ -1218,7 +1222,7 @@ public class PaymentsHandler {
     public void insertDeclined(Payment payment) {
         getDatabase().beginTransaction();
         try {
-            SQLiteStatement insert;
+
             insert = getDatabase().compileStatement("INSERT INTO " + table_name_declined + " (" + sb1.toString() + ")" + "VALUES (" + sb2.toString() + ")");
             insert.bindString(index(pay_id), payment.getPay_id() == null ? "" : payment.getPay_id()); // pay_id
             insert.bindString(index(group_pay_id), payment.getGroup_pay_id() == null ? "" : payment.getGroup_pay_id()); // group_pay_id
@@ -1302,6 +1306,7 @@ public class PaymentsHandler {
             myPref.setLastPayID(payment.getPay_id());
             lastPaymentInserted = payment;
             getDatabase().endTransaction();
+            insert.close();
         }
     }
 }

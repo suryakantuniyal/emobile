@@ -26,11 +26,16 @@ public class StoredPaymentsDAO {
 
     public static StoreAndForward getStoreAndForward(String pay_uuid) {
         Realm realm = Realm.getDefaultInstance();
-        StoreAndForward first = realm.where(StoreAndForward.class).equalTo("payment.pay_uuid", pay_uuid).findFirst();
-        if (first != null) {
-            first = realm.copyFromRealm(first);
+        StoreAndForward first;
+        try {
+            first = realm.where(StoreAndForward.class).equalTo("payment.pay_uuid", pay_uuid).findFirst();
+            if (first != null) {
+                first = realm.copyFromRealm(first);
+            }
         }
-        realm.close();
+        finally {
+            realm.close();
+        }
         return first;
     }
 
@@ -225,10 +230,13 @@ public class StoredPaymentsDAO {
             storeAndForward.setId(System.currentTimeMillis());
             realm.insertOrUpdate(storeAndForward);
             realm.commitTransaction();
+            realm.close();
         } catch (Exception e) {
             realm.cancelTransaction();
         }
-        realm.close();
+        finally {
+            realm.close();
+        }
         PaymentsHandler.setLastPaymentInserted(payment);
         new MyPreferences(activity).setLastPayID(payment.getPay_id());
     }

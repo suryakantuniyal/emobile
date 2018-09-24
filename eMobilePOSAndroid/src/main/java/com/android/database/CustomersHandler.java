@@ -444,9 +444,10 @@ public class CustomersHandler {
     }
 
     public void insert(List<Customer> customers) {
+        SQLiteStatement insert = null;
         DBManager.getDatabase().beginTransaction();
         try {
-            SQLiteStatement insert;
+
             String sb = "INSERT INTO " + table_name + " (" + sb1.toString() + ") " +
                     "VALUES (" + sb2.toString() + ")";
             insert = DBManager.getDatabase().compileStatement(sb);
@@ -495,7 +496,9 @@ public class CustomersHandler {
             e.printStackTrace();
             throw e;
         } finally {
+            insert.close();
             DBManager.getDatabase().endTransaction();
+
         }
     }
 }
