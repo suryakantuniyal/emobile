@@ -13,6 +13,9 @@
     <string name="hint_search">"Buscar"</string>
     <string name="enter_name">"Ingrese su nombre"</string>
     <string name="last_saved">"Última actualización"</string>
+    <string name="notification_channel_id">"com.android.emobilepos.NOTIFICATION_ID"</string>
+    <string name="notification_channel_name">"CANAL EMOBILEPOS"</string>
+    <string name="notification_channel_description">"Un canal de notificación para la aplicación eMobilePOS."</string>
 
     <string name="inventory_transfer">"Transferencia inventario"</string>
 
