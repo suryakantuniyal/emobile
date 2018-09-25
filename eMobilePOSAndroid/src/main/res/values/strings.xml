@@ -623,6 +623,7 @@
     <string name="card_information">Card Information</string>
     <string name="paymethod_due_amount_label">Amount Due</string>
     <string name="comments">Comments</string>
+    <string name="card_swipe_failed">Card swipe failed, please try again.</string>
 
 
     <!-- Check Payment/Refund -->

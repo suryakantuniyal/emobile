@@ -208,7 +208,9 @@ public class MyPreferences {
     }
 
     public static boolean isTeamSable() {
-        return Build.MODEL.toUpperCase().startsWith("SABRESD") || Build.MODEL.toUpperCase().equalsIgnoreCase("TR");
+        return Build.MODEL.toUpperCase().startsWith("SABRESD") ||
+                Build.MODEL.toUpperCase().equalsIgnoreCase("TR") ||
+                Build.MODEL.toUpperCase().equalsIgnoreCase("15N-A-RM");
     }
 
     public String getApplicationPassword() {

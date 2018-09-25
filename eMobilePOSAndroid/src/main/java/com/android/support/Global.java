@@ -139,6 +139,7 @@ public class Global extends MultiDexApplication {
     public static final int BIXOLON_RD = 22;
     public static final int TEAMSABLE = 23;
     public static final int GPRINTER = 24;
+    public static final int MAGTEK_EMBEDDED = 25;
 
     public static final String AUDIO_MSR_UNIMAG = "0";
     public static final String AUDIO_MSR_MAGTEK = "1";
@@ -371,6 +372,9 @@ public class Global extends MultiDexApplication {
                 break;
             case MAGTEK:
                 _name = "MAGTEK";
+                break;
+            case MAGTEK_EMBEDDED:
+                _name = "MAGTEK EMBEDDED";
                 break;
             case BAMBOO:
                 _name = "Blue Bamboo";

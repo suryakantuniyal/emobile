@@ -155,8 +155,6 @@ public class DeviceUtils {
                     sb.append(Global.BuildModel.PAT215.name()).append(": ").append("Failed to connect\n\r");
                 }
             }
-        } else if (MyPreferences.isTeamSable()) {
-
         } else if (myPref.isESY13P1() && myPref.getPrinterType() == -1) {
             myPref.setPrinterType(Global.ELOPAYPOINT);
             if (DeviceManager.getPlatformInfo().eloPlatform == EloPlatform.PAYPOINT_2) {
@@ -204,7 +202,34 @@ public class DeviceUtils {
                     sb.append(Global.BuildModel.PayPoint_ESY13P1.name()).append(": ").append("Failed to connect\n\r");
                 }
             }
+        } else if (MyPreferences.isTeamSable()) {
+            Collection<UsbDevice> usbDevices = getUSBDevices(activity);
+
+            boolean isMagtekConnected = false;
+
+            for (UsbDevice device : usbDevices) {
+                if (device.getProductId() == 17 &&
+                        device.getVendorId() == 2049) { // "Mag-Tek Embedded"
+                    isMagtekConnected = true;
+                    break;
+                }
+            }
+
+            if (isMagtekConnected) {
+                if (Global.embededMSR == null || forceReload) {
+                    Global.embededMSR = (new EMSDeviceManager()).getManager();
+                    if (Global.embededMSR.loadMultiDriver(activity, Global.MAGTEK_EMBEDDED,
+                            0, false, "", "")) {
+                        sb.append(Global.getPeripheralName(Global.MAGTEK_EMBEDDED))
+                                .append(": Connected\n\r");
+                    } else {
+                        sb.append(Global.getPeripheralName(Global.MAGTEK_EMBEDDED))
+                                .append(": Failed to connect\n\r");
+                    }
+                }
+            }
         }
+
         if ((myPref.getPrinterType() != -1)) {
             _peripheralName = Global.getPeripheralName(myPref.getPrinterType());
             _portName = myPref.getPrinterMACAddress();
