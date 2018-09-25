@@ -612,6 +612,7 @@
     <string name="card_information">"Información de Tarjeta"</string>
     <string name="paymethod_due_amount_label">"Monto a Pagar"</string>
     <string name="comments">"Comentarios"</string>
+    <string name="card_swipe_failed">"El deslizamiento de la tarjeta falló, por favor intente de nuevo."</string>
 
 
     <!-- Check Payment/Refund -->

@@ -1815,6 +1815,14 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
     @Override
     public void cardWasReadSuccessfully(boolean read, CreditCardInfo cardManager) {
+        if (!read && cardManager == null) {
+            month.setText("");
+            year.setText("");
+            ownersName.setText("");
+            cardNum.setText("");
+            Global.showPrompt(activity, R.string.payment, getString(R.string.card_swipe_failed));
+            return;
+        }
         if (isDebit) {
             cardManager.setCardType("DebitCard");
         }

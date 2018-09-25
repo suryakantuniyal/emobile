@@ -302,6 +302,10 @@ public class EMSMagtekSwiper extends EMSDeviceDriver implements EMSDeviceManager
                         break;
                     case MTSCRAEvent.OnDataReceived:
                         if (m_scra.getResponseData() != null) {
+                            if (m_scra.getTrackDecodeStatus().contains("01")) {
+                                scannerCallBack.cardWasReadSuccessfully(false, null);
+                                break;
+                            }
                             CreditCardInfo cardInfo = new CreditCardInfo();
                             if (m_scra.getKSN().equals("00000000000000000000")) {
                                 CardParser.parseCreditCard(activity, m_scra.getMaskedTracks(), cardInfo);
