@@ -489,14 +489,16 @@ public class CustomersHandler {
                 insert.execute();
                 insert.clearBindings();
             }
-            insert.close();
+
             DBManager.getDatabase().setTransactionSuccessful();
         } catch (Exception e) {
             Crashlytics.logException(e);
             e.printStackTrace();
             throw e;
         } finally {
-            insert.close();
+            if(insert!=null) {
+                insert.close();
+            }
             DBManager.getDatabase().endTransaction();
 
         }

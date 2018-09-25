@@ -92,7 +92,7 @@ public class DeviceDefaultValuesHandler {
                 insert.execute();
                 insert.clearBindings();
             }
-            insert.close();
+
             DBManager.getDatabase().setTransactionSuccessful();
         } catch (Exception e) {
             e.printStackTrace();

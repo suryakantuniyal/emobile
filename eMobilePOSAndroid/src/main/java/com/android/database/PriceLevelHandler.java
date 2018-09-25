@@ -118,12 +118,14 @@ public class PriceLevelHandler {
                 insert.execute();
                 insert.clearBindings();
             }
-            insert.close();
+          //  insert.close();
             DBManager.getDatabase().setTransactionSuccessful();
         } catch (Exception e) {
 
         } finally {
-            insert.close();
+            if(insert!=null) {
+                insert.close();
+            }
             DBManager.getDatabase().endTransaction();
 
         }

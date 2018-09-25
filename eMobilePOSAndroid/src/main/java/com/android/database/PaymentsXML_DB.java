@@ -66,13 +66,15 @@ public class PaymentsXML_DB {
 			
 			insert.execute();
 			insert.clearBindings();
-			insert.close();
+			//insert.close();
 			DBManager.getDatabase().setTransactionSuccessful();
 		} catch (Exception e) {
 //			Tracker tracker = EasyTracker.getInstance(activity);
 //			tracker.send(MapBuilder.createException(Log.getStackTraceString(e), false).build());
 		} finally {
-			insert.close();
+			if(insert!=null) {
+				insert.close();
+			}
 			DBManager.getDatabase().endTransaction();
 
 		}

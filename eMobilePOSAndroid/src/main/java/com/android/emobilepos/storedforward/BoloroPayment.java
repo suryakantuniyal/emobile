@@ -62,7 +62,9 @@ public class BoloroPayment {
                 realm.commitTransaction();
                 return executeBoloroPolling(activity, payment, isPolling);
             } finally {
-                realm.close();
+                if(realm!=null) {
+                    realm.close();
+                }
             }
         }
         return response;
@@ -120,7 +122,9 @@ public class BoloroPayment {
                             isPolling = false;
                             transCompleted = true;
                         } finally {
-                            realm.close();
+                            if(realm!=null) {
+                                realm.close();
+                            }
                         }
                     } else if (response.containsKey("next_action") && response.get("next_action").equals("FAILED"))
                         failed = true;
@@ -137,7 +141,9 @@ public class BoloroPayment {
                     realm.cancelTransaction();
                 }
             } finally {
-                realm.close();
+                if(realm!=null) {
+                    realm.close();
+                }
             }
         }
         return response;

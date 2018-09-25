@@ -141,7 +141,9 @@ public class PaymentsHandler {
             try {
                 lastPaymentInserted = realm.copyFromRealm(payment);
             } finally {
-                realm.close();
+                if(realm!=null) {
+                    realm.close();
+                }
             }
 
         } else {
@@ -269,13 +271,14 @@ public class PaymentsHandler {
 
             dbUtils.executeAuditedDB();
             sqlinsert.clearBindings();
-            sqlinsert.close();
             getDatabase().setTransactionSuccessful();
 
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            sqlinsert.close();
+            if(sqlinsert!=null) {
+                sqlinsert.close();
+            }
             myPref.setLastPayID(payment.getPay_id());
             getDatabase().endTransaction();
             lastPaymentInserted = payment;
@@ -1297,16 +1300,19 @@ public class PaymentsHandler {
 
             insert.execute();
             insert.clearBindings();
-            insert.close();
+
             getDatabase().setTransactionSuccessful();
 
         } catch (Exception e) {
             Log.d("Exception", e.getMessage() + " [com.android.emobilepos.PaymentsHandler (at Class.insertDeclined)]");
         } finally {
+            if(insert!=null) {
+                insert.close();
+            }
             myPref.setLastPayID(payment.getPay_id());
             lastPaymentInserted = payment;
             getDatabase().endTransaction();
-            insert.close();
+
         }
     }
 }

@@ -34,7 +34,9 @@ public class StoredPaymentsDAO {
             }
         }
         finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
         return first;
     }
@@ -80,7 +82,9 @@ public class StoredPaymentsDAO {
             }
         } finally {
             realm.commitTransaction();
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -95,7 +99,9 @@ public class StoredPaymentsDAO {
                 payment = realm.copyFromRealm(first.getPayment());
             }
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
 
         switch (type) {
@@ -153,7 +159,9 @@ public class StoredPaymentsDAO {
                 storeAndForwards = realm.copyFromRealm(storeAndForwards);
             }
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
         List<PaymentDetails> list = new ArrayList<>();
 
@@ -187,7 +195,9 @@ public class StoredPaymentsDAO {
             }
         } finally {
             realm.commitTransaction();
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -200,7 +210,9 @@ public class StoredPaymentsDAO {
                     .findAll().deleteAllFromRealm();
         } finally {
             realm.commitTransaction();
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -211,7 +223,9 @@ public class StoredPaymentsDAO {
             storeAndForward.setRetry(true);
         } finally {
             realm.commitTransaction();
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -230,12 +244,14 @@ public class StoredPaymentsDAO {
             storeAndForward.setId(System.currentTimeMillis());
             realm.insertOrUpdate(storeAndForward);
             realm.commitTransaction();
-            realm.close();
+           // realm.close();
         } catch (Exception e) {
             realm.cancelTransaction();
         }
         finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
         PaymentsHandler.setLastPaymentInserted(payment);
         new MyPreferences(activity).setLastPayID(payment.getPay_id());
@@ -248,7 +264,9 @@ public class StoredPaymentsDAO {
             storeAndForward.setRetry(true);
         } finally {
             realm.commitTransaction();
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 

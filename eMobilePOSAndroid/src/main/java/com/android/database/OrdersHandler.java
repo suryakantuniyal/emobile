@@ -301,7 +301,7 @@ public class OrdersHandler {
 
                 dbUtils.executeAuditedDB();
                 sqlinsert.clearBindings();
-                sqlinsert.close();
+              //  sqlinsert.close();
 //                Log.d("Order Insert:", order.toString());
                 DinningTableOrderDAO.createDinningTableOrder(order);
                 if (GenerateNewID.isValidLastId(order.ord_id, GenerateNewID.IdType.ORDER_ID)) {
@@ -312,7 +312,9 @@ public class OrdersHandler {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            sqlinsert.close();
+            if(sqlinsert!=null) {
+                sqlinsert.close();
+            }
             DBManager.getDatabase().endTransaction();
 
         }

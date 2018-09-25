@@ -36,7 +36,9 @@ public class UomDAO {
             realm.copyToRealm(uoms);
         } finally {
             realm.commitTransaction();
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -49,7 +51,9 @@ public class UomDAO {
             }
             return uoms;
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -60,7 +64,9 @@ public class UomDAO {
             realm.delete(UOM.class);
         } finally {
             realm.commitTransaction();
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -74,7 +80,9 @@ public class UomDAO {
             }
             return uoms;
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 }

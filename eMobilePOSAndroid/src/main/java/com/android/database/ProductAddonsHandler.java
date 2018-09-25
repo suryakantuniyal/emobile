@@ -89,12 +89,14 @@ public class ProductAddonsHandler {
                 insert.execute();
                 insert.clearBindings();
             }
-            insert.close();
+           // insert.close();
             DBManager.getDatabase().setTransactionSuccessful();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            insert.close();
+            if(insert!=null) {
+                insert.close();
+            }
             DBManager.getDatabase().endTransaction();
 
         }

@@ -71,11 +71,12 @@ public class CategoriesHandler {
 
 
     public void insert(List<String[]> data, List<HashMap<String, Integer>> dictionary) {
+        SQLiteStatement insert = null;
         DBManager.getDatabase().beginTransaction();
         try {
             catData = data;
             dictionaryListMap = dictionary;
-            SQLiteStatement insert;
+
             insert = DBManager.getDatabase().compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
             int size = catData.size();
             for (int j = 0; j < size; j++) {
@@ -88,10 +89,13 @@ public class CategoriesHandler {
                 insert.execute();
                 insert.clearBindings();
             }
-            insert.close();
+
             DBManager.getDatabase().setTransactionSuccessful();
         } catch (Exception e) {
         } finally {
+            if(insert!=null) {
+                insert.close();
+            }
             DBManager.getDatabase().endTransaction();
         }
     }

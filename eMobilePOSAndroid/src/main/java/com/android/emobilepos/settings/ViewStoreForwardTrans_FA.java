@@ -296,7 +296,9 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
                     }
                 }
             } finally {
-                realm.close();
+                if(realm!=null) {
+                    realm.close();
+                }
             }
         }
 
@@ -413,7 +415,9 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
                     _count_conn_error++;
                 }
             } finally {
-                realm.close();
+                if(realm!=null) {
+                    realm.close();
+                }
             }
             return null;
         }
@@ -464,7 +468,9 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
             payHandler.insert(payment);
             StoredPaymentsDAO.updateStatusDeleted(storeAndForward);
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
 
 //        dbStoredPay.deleteStoredPaymentRow(myCursor.getString(myCursor.getColumnIndex("pay_uuid")));

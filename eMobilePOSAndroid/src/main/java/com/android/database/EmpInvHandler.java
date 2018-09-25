@@ -72,12 +72,13 @@ public class EmpInvHandler {
 
 
     public void insert(List<String[]> insertData, List<HashMap<String, Integer>> dictionary) {
+        SQLiteStatement insert = null;
         DBManager.getDatabase().beginTransaction();
         try {
 
             data = insertData;
             dictionaryListMap = dictionary;
-            SQLiteStatement insert = null;
+
             StringBuilder sb = new StringBuilder();
             sb.append("INSERT INTO ").append(TABLE_NAME).append(" (").append(sb1.toString()).append(") ").append("VALUES (").append(sb2.toString()).append(")");
             insert = DBManager.getDatabase().compileStatement(sb.toString());
@@ -97,7 +98,7 @@ public class EmpInvHandler {
                 insert.clearBindings();
 
             }
-            insert.close();
+
             DBManager.getDatabase().setTransactionSuccessful();
         } catch (Exception e) {
             StringBuilder sb = new StringBuilder();
@@ -106,6 +107,9 @@ public class EmpInvHandler {
 //			Tracker tracker = EasyTracker.getInstance(activity);
 //			tracker.send(MapBuilder.createException(sb.toString(), false).build());
         } finally {
+            if(insert!=null) {
+                insert.close();
+            }
             DBManager.getDatabase().endTransaction();
         }
     }

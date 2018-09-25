@@ -36,7 +36,9 @@ public class OrderProductAttributeDAO {
             realm.copyToRealm(attributes);
         } finally {
             realm.commitTransaction();
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -56,7 +58,9 @@ public class OrderProductAttributeDAO {
             }
             return attributes;
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -67,7 +71,9 @@ public class OrderProductAttributeDAO {
             realm.delete(ProductAttribute.class);
         } finally {
             realm.commitTransaction();
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -81,7 +87,9 @@ public class OrderProductAttributeDAO {
             }
             return attributes;
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -96,7 +104,9 @@ public class OrderProductAttributeDAO {
             }
             return attributes;
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -110,7 +120,9 @@ public class OrderProductAttributeDAO {
             }
             return attribute;
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 }

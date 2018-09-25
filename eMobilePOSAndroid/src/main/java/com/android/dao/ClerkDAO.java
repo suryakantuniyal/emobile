@@ -42,7 +42,9 @@ public class ClerkDAO {
             realm.copyToRealm(clerks);
         } finally {
             realm.commitTransaction();
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -53,7 +55,9 @@ public class ClerkDAO {
             realm.insertOrUpdate(clerk);
         } finally {
             realm.commitTransaction();
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -68,7 +72,9 @@ public class ClerkDAO {
             }
         } finally {
             realm.commitTransaction();
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
         return all;
     }
@@ -80,7 +86,9 @@ public class ClerkDAO {
             realm.delete(Clerk.class);
         } finally {
             realm.commitTransaction();
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -94,7 +102,9 @@ public class ClerkDAO {
                 clerk = realm.copyFromRealm(clerk);
             }
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
         return clerk;
     }
@@ -105,7 +115,9 @@ public class ClerkDAO {
              selectedClerk.getAssignedDinningTables().remove(table);
         }
         finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
 
         insertOrUpdate(selectedClerk);
@@ -120,7 +132,9 @@ public class ClerkDAO {
             insertOrUpdate(clerk);
             selectedClerk = clerk;
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -133,7 +147,9 @@ public class ClerkDAO {
                 insertOrUpdate(clerk);
             }
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -165,7 +181,9 @@ public class ClerkDAO {
             locationHashMap.put(locId, associates);
 
         }
-        realm.close();
+        if(realm!=null) {
+            realm.close();
+        }
         return locationHashMap;
     }
 
@@ -202,7 +220,9 @@ public class ClerkDAO {
                     .equalTo("number", tableNumber).count();
             return count > 0;
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 }

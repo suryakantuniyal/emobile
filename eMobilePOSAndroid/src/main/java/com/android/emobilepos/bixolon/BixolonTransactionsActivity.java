@@ -38,7 +38,9 @@ public class BixolonTransactionsActivity extends BaseFragmentActivityActionBar{
     protected void onDestroy() {
         super.onDestroy();
         list.setAdapter(null);
-        realm.close();
+        if(realm!=null) {
+            realm.close();
+        }
     }
 
 }

@@ -26,7 +26,9 @@ public class EmobileBiometricDAO {
             realm.insertOrUpdate(biometric);
         } finally {
             realm.commitTransaction();
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -43,7 +45,9 @@ public class EmobileBiometricDAO {
             }
         } finally {
             realm.commitTransaction();
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -62,7 +66,9 @@ public class EmobileBiometricDAO {
                 biometric.setUserType(userType);
             }
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
         return biometric;
     }
@@ -83,7 +89,9 @@ public class EmobileBiometricDAO {
             }
         } finally {
             realm.commitTransaction();
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -104,7 +112,9 @@ public class EmobileBiometricDAO {
                 }
             }
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
         return fmds.toArray(new Fmd[fmds.size()]);
     }
@@ -121,7 +131,9 @@ public class EmobileBiometricDAO {
                 biometric = realm.copyFromRealm(biometric);
             }
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
         return biometric;
     }
@@ -135,9 +147,12 @@ public class EmobileBiometricDAO {
                 all = realm.copyFromRealm(all);
             }
         } finally {
-            realm.close();
-            return all;
+            if(realm!=null) {
+                realm.close();
+            }
+
         }
+        return all;
     }
 
     public static void truncate() {
@@ -148,7 +163,9 @@ public class EmobileBiometricDAO {
             all.deleteAllFromRealm();
             realm.commitTransaction();
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -167,7 +184,9 @@ public class EmobileBiometricDAO {
             realm.insertOrUpdate(emobileBiometrics);
             realm.commitTransaction();
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -181,7 +200,9 @@ public class EmobileBiometricDAO {
             realm.insertOrUpdate(emobileBiometrics);
             realm.commitTransaction();
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -195,9 +216,12 @@ public class EmobileBiometricDAO {
             if (all != null) {
                 all = realm.copyFromRealm(all);
             }
+
         } finally {
-            realm.close();
-            return all;
+            if(realm!=null) {
+                realm.close();
+            }
         }
+        return all;
     }
 }

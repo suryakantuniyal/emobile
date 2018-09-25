@@ -71,7 +71,7 @@ public class InvoicePaymentsHandler {
 				insert.execute();
 				insert.clearBindings();
 			}
-			insert.close();
+		//	insert.close();
 			DBManager.getDatabase().setTransactionSuccessful();
 
 		} catch (Exception e) {
@@ -81,7 +81,9 @@ public class InvoicePaymentsHandler {
 //			Tracker tracker = EasyTracker.getInstance(activity);
 //			tracker.send(MapBuilder.createException(sb.toString(), false).build());
 		} finally {
-			insert.close();
+			if(insert!=null) {
+				insert.close();
+			}
 			DBManager.getDatabase().endTransaction();
 
 		}
