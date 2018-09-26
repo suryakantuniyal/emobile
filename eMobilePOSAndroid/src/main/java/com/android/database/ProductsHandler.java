@@ -349,8 +349,7 @@ public class ProductsHandler {
         Cursor cursor = DBManager.getDatabase().rawQuery(query + " LIMIT " + limit + " OFFSET " + offset, parameters);
          cursor.moveToFirst();
 
-
-        return cursor;
+         return cursor;
     }
 
     //get list of products configured as an expense

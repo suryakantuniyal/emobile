@@ -67,7 +67,6 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
     private Global.TransactionType mTransType;
     private List<View> listParentViews;
     private int index_selected_parent = 0;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         myPref = new MyPreferences(this);
@@ -152,7 +151,9 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
 
     @Override
     public void onDestroy() {
+
         super.onDestroy();
+
     }
 
     @Override
