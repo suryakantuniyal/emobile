@@ -1024,7 +1024,9 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
 //                                        });
 
                             } finally {
-                                realm.close();
+                                if(realm!=null) {
+                                    realm.close();
+                                }
                             }
                             break;
                     }

@@ -23,7 +23,9 @@ public class DinningTableOrderDAO {
             realm.copyToRealmOrUpdate(dinningTableOrder);
         } finally {
             realm.commitTransaction();
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -36,7 +38,9 @@ public class DinningTableOrderDAO {
             }
             return all;
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -47,7 +51,9 @@ public class DinningTableOrderDAO {
             realm.delete(DinningTableOrder.class);
         } finally {
             realm.commitTransaction();
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -60,7 +66,9 @@ public class DinningTableOrderDAO {
             results.deleteAllFromRealm();
         } finally {
             realm.commitTransaction();
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -74,7 +82,9 @@ public class DinningTableOrderDAO {
                 first = realm.copyFromRealm(first);
             }
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
         return first;
     }
@@ -101,7 +111,9 @@ public class DinningTableOrderDAO {
             results.deleteAllFromRealm();
         } finally {
             realm.commitTransaction();
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 }

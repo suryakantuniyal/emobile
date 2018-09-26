@@ -414,13 +414,14 @@ public class OrderProductsHandler {
                     insertAddon(prod.getOrd_id(), sqlinsert, prod.addonsProducts);
                 }
             }
-            sqlinsert.close();
             DBManager.getDatabase().setTransactionSuccessful();
 
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            sqlinsert.close();
+            if(sqlinsert!=null) {
+                sqlinsert.close();
+            }
             DBManager.getDatabase().endTransaction();
 
         }

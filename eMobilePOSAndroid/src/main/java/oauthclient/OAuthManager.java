@@ -37,7 +37,9 @@ public class OAuthManager {
             Crashlytics.logException(e);
         } finally {
             realm.commitTransaction();
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
         try {
             requestToken();

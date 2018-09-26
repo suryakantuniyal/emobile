@@ -52,7 +52,9 @@ public class EmobileBiometricsRealmListConverter implements JsonSerializer<Realm
             }
             return ja;
         }finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 }

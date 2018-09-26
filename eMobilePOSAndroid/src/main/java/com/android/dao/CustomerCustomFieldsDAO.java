@@ -19,7 +19,9 @@ public class CustomerCustomFieldsDAO {
             realm.where(CustomerCustomField.class).findAll().deleteAllFromRealm();
             realm.commitTransaction();
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -33,7 +35,9 @@ public class CustomerCustomFieldsDAO {
             realm.insert(customFields);
             realm.commitTransaction();
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -48,7 +52,9 @@ public class CustomerCustomFieldsDAO {
                 customField = realm.copyFromRealm(customField);
             }
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
         return customField;
     }
@@ -61,7 +67,9 @@ public class CustomerCustomFieldsDAO {
             realm.insertOrUpdate(customField);
             realm.commitTransaction();
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -76,7 +84,9 @@ public class CustomerCustomFieldsDAO {
                 customFields = realm.copyFromRealm(customFields);
             }
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
         return customFields;
     }

@@ -305,6 +305,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
 //                            if (count[0] < adapter.getCount()) {
 //                                setReceiptOrder((SplittedOrder) adapter.getItem(count[0]));
 //                            } else {
+//                            } else {
 //                                receiptPreview.getViewTreeObserver().removeGlobalOnLayoutListener(this);
 //                            }
 //                        }

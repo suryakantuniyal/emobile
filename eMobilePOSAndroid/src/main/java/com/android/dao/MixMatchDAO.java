@@ -38,7 +38,9 @@ public class MixMatchDAO {
             realm.copyToRealm(mixMatches);
         } finally {
             realm.commitTransaction();
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -51,7 +53,9 @@ public class MixMatchDAO {
             }
             return all;
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -62,7 +66,9 @@ public class MixMatchDAO {
             realm.delete(MixMatch.class);
         } finally {
             realm.commitTransaction();
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 

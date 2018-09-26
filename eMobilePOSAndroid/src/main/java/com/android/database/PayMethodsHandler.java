@@ -96,12 +96,14 @@ public class PayMethodsHandler {
                 paymentMethods.add(PaymentMethod.getCardOnFilePaymentMethod());
             }
             PaymentMethodDAO.insert(paymentMethods);
-            insert.close();
+         //   insert.close();
             DBManager.getDatabase().setTransactionSuccessful();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            insert.close();
+            if(insert!=null) {
+                insert.close();
+            }
             DBManager.getDatabase().endTransaction();
         }
     }

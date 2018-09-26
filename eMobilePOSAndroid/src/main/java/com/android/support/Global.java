@@ -309,7 +309,9 @@ public class Global extends MultiDexApplication {
                         realm.insertOrUpdate(payment);
                         realm.commitTransaction();
                     } finally {
-                        realm.close();
+                        if(realm!=null) {
+                            realm.close();
+                        }
                     }
                     break;
                 }

@@ -506,10 +506,10 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
                         storeAndForward.setPaymentType(StoreAndForward.PaymentType.BOLORO);
                         storeAndForward.setStoreAndForwatdStatus(StoreAndForward.StoreAndForwatdStatus.PENDING);
                         realm.commitTransaction();
-                        realm.close();
                     }
                     finally {
-                        realm.close();
+                        if(realm!=null) {
+                            realm.close();}
                     }
                     return true;
                 } else {

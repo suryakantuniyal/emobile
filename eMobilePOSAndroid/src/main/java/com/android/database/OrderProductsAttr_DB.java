@@ -23,7 +23,7 @@ public class OrderProductsAttr_DB {
 	private HashMap<String, Integer> attrHash;
 	private StringBuilder mainSB1,mainSB2;
 	private static final String TABLE_NAME = "OrderProductsAttr";
-	SQLiteStatement insert = null;
+	SQLiteStatement insert;
 	public OrderProductsAttr_DB(Context activity)
 	{
 		attrHash = new HashMap<>();
@@ -74,7 +74,7 @@ public class OrderProductsAttr_DB {
 				insert.execute();
 				insert.clearBindings();
 			}
-			insert.close();
+			//insert.close();
 			DBManager.getDatabase().setTransactionSuccessful();
 
 		} catch (Exception e) {
@@ -84,7 +84,9 @@ public class OrderProductsAttr_DB {
 //			Tracker tracker = EasyTracker.getInstance(activity);
 //			tracker.send(MapBuilder.createException(sb.toString(), false).build());
 		} finally {
-			insert.close();
+			if(insert!=null) {
+				insert.close();
+			}
 			DBManager.getDatabase().endTransaction();
 
 		}
