@@ -15,13 +15,11 @@ import java.util.List;
 public class ProductAliases_DB {
     public final static String prod_id = "prod_id";
     public final static String prod_alias = "prod_alias";
-
     private final List<String> attr = Arrays.asList(prod_id, prod_alias);
     private StringBuilder sb1, sb2;
     private HashMap<String, Integer> attrHash;
     private List<String[]> addrData;
     private List<HashMap<String, Integer>> dictionaryListMap;
-    SQLiteStatement insert;
     private static final String table_name = "ProductAliases";
 
     public ProductAliases_DB(Context activity) {
@@ -30,7 +28,6 @@ public class ProductAliases_DB {
         sb1 = new StringBuilder();
         sb2 = new StringBuilder();
         new DBManager(activity);
-
         initDictionary();
     }
 
@@ -62,7 +59,7 @@ public class ProductAliases_DB {
 
 
     public void insert(List<ProductAlias> aliases) {
-
+        SQLiteStatement insert=null;
         DBManager.getDatabase().beginTransaction();
         try {
 
