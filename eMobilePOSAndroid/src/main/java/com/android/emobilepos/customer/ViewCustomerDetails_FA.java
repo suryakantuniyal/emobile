@@ -13,7 +13,6 @@ import android.hardware.usb.UsbDevice;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.PowerManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.text.TextUtils;
@@ -349,7 +348,11 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
                 Crashlytics.logException(e);
                 e.printStackTrace();
             } catch (DPFPDDUsbException e) {
-
+                Crashlytics.logException(e);
+                e.printStackTrace();
+            } catch (UnsatisfiedLinkError e) {
+                Crashlytics.logException(e);
+                e.printStackTrace();
             }
         }
     }
