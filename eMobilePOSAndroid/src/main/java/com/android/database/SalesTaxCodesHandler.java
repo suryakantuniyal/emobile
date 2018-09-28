@@ -71,11 +71,12 @@ public class SalesTaxCodesHandler {
 
     public void insert(List<String[]> data, List<HashMap<String, Integer>> dictionary) {
         DBManager.getDatabase().beginTransaction();
+        SQLiteStatement insert=null;
         try {
 
             addrData = data;
             dictionaryListMap = dictionary;
-            SQLiteStatement insert;
+           
             insert = DBManager.getDatabase().compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
 
             int size = addrData.size();
@@ -97,6 +98,10 @@ public class SalesTaxCodesHandler {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
+            if(insert!=null)
+            {
+                insert.close();
+            }
             DBManager.getDatabase().endTransaction();
         }
     }
@@ -119,24 +124,32 @@ public class SalesTaxCodesHandler {
 
 
     public TaxableCode checkIfCustTaxable(String cust_taxable) {
-        TaxableCode taxableCode;
-        String subquery1 = "SELECT taxcode_istaxable FROM ";
-        String subquery2 = " WHERE taxcode_id = '";
+        Cursor cursor=null;
+        try {
+            TaxableCode taxableCode;
+            String subquery1 = "SELECT taxcode_istaxable FROM ";
+            String subquery2 = " WHERE taxcode_id = '";
 
-        Cursor cursor = DBManager.getDatabase().rawQuery(subquery1 + table_name + subquery2 + cust_taxable + "'", null);
+             cursor = DBManager.getDatabase().rawQuery(subquery1 + table_name + subquery2 + cust_taxable + "'", null);
 
-        if (cursor.moveToFirst()) {
-            if (cursor.getString(cursor.getColumnIndex(taxcode_istaxable)).equals("1")) {
-                taxableCode = TaxableCode.TAXABLE;
+            if (cursor.moveToFirst()) {
+                if (cursor.getString(cursor.getColumnIndex(taxcode_istaxable)).equals("1")) {
+                    taxableCode = TaxableCode.TAXABLE;
+                } else {
+                    taxableCode = TaxableCode.NON_TAXABLE;
+                }
             } else {
-                taxableCode = TaxableCode.NON_TAXABLE;
+                taxableCode = TaxableCode.NONE;
             }
-        } else {
-            taxableCode = TaxableCode.NONE;
-        }
-        cursor.close();
+            cursor.close();
 
-        return taxableCode;
+            return taxableCode;
+        }finally {
+            if(cursor!=null && !cursor.isClosed())
+            {
+                cursor.close();
+            }
+        }
 
     }
 }

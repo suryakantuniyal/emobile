@@ -1,5 +1,6 @@
 package com.android.emobilepos.firebase;
 
+import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -145,9 +146,9 @@ public class PollingNotificationService extends Service {
                         }
                     }, delay, BuildConfig.AUTOSYNC_PERIOD);
                 }
+
                 Bitmap icon = BitmapFactory.decodeResource(getResources(),
                         R.drawable.emobile_icon);
-
                 String channelId = getString(R.string.notification_channel_id);
                 String name = getString(R.string.notification_channel_name);
                 String description = getString(R.string.notification_channel_description);
@@ -163,12 +164,13 @@ public class PollingNotificationService extends Service {
                         .setTicker("eMobilePOS")
                         .setContentText("Synchronizing")
                         .setSmallIcon(R.drawable.emobile_icon_notification)
+                        .setChannelId(channelId)
                         .setLargeIcon(
                                 Bitmap.createScaledBitmap(icon, 128, 128, false))
 //                    .setContentIntent(pendingIntent)
                         .setOngoing(true).build();
 
-                startForeground(FOREGROUND_SERVICE,
+                        startForeground(FOREGROUND_SERVICE,
                         notification);
             } else if (intent.getAction().equals(STOP_ACTION)) {
                 Log.i(TAG, "Received Stop Foreground Intent");

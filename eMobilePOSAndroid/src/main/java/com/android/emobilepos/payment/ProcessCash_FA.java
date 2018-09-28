@@ -191,14 +191,16 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
             HashMap<String, String[]> orderTaxes = TaxesCalculator.getOrderTaxes(this, global.order.getListOrderTaxes(), global.order);
             int i = 0;
             Iterator it = orderTaxes.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry<String, String[]> map = (Map.Entry<String, String[]>) it.next();
-                if (i == 0) {
-                    tax1.setText(Global.getCurrencyFormat(map.getValue()[1]));
-                } else if (i == 1) {
-                    tax2.setText(Global.getCurrencyFormat(map.getValue()[1]));
+            if (it != null) {
+                while (it.hasNext()) {
+                    Map.Entry<String, String[]> map = (Map.Entry<String, String[]>) it.next();
+                    if (i == 0) {
+                        tax1.setText(Global.getCurrencyFormat(map.getValue()[1]));
+                    } else if (i == 1) {
+                        tax2.setText(Global.getCurrencyFormat(map.getValue()[1]));
+                    }
+                    i++;
                 }
-                i++;
             }
         }
         custidkey = extras.getString("custidkey");

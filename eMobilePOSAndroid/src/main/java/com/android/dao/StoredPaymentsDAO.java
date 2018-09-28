@@ -57,18 +57,36 @@ public class StoredPaymentsDAO {
 
     public static int getRetryTransCount(String _job_id) {
         Realm realm = Realm.getDefaultInstance();
-        int size = realm.where(StoreAndForward.class).equalTo("payment.job_id", _job_id)
-                .equalTo("payment.is_retry", "1").findAll().size();
-        realm.close();
-        return size;
+        try {
+
+            int size = realm.where(StoreAndForward.class).equalTo("payment.job_id", _job_id)
+                    .equalTo("payment.is_retry", "1").findAll().size();
+            realm.close();
+            return size;
+        }finally {
+            if(realm!=null)
+            {
+                realm.close();
+            }
+        }
     }
 
     public static long getCountPendingStoredPayments(String job_id) {
         Realm realm = Realm.getDefaultInstance();
-        int size = realm.where(StoreAndForward.class)
-                .equalTo("payment.job_id", job_id).findAll().size();
-        realm.close();
-        return size;
+        try {
+
+            int size = realm.where(StoreAndForward.class)
+                    .equalTo("payment.job_id", job_id).findAll().size();
+            realm.close();
+            return size;
+        }
+        finally {
+            if(realm!=null)
+            {
+                realm.close();
+            }
+        }
+
     }
 
     public static void deletePaymentFromJob(String _job_id) {
@@ -110,44 +128,53 @@ public class StoredPaymentsDAO {
                 sb.append("SELECT " + "IFNULL(c.cust_name,'Unknown') as 'cust_name' " + "FROM Customers c where c.cust_id = '").append(custId).append("'");
                 break;
         }
-
-        Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
-        PaymentDetails paymentDetails = new PaymentDetails();
-        boolean haveCustomer = cursor.moveToFirst();
+       Cursor cursor=null;
+        try {
+       cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
+       PaymentDetails paymentDetails = new PaymentDetails();
+       boolean haveCustomer = cursor.moveToFirst();
         if (payment != null) {
-            if (TextUtils.isEmpty(payment.getPaymethod_id()) || payment.getPaymethod_id().equalsIgnoreCase("Genius")) {
-                paymentDetails.setPaymethod_name(payment.getCard_type());
-            } else {
-                paymentDetails.setPaymethod_name(payment.getPaymentMethod().getPaymethod_name());
-            }
-            paymentDetails.setPay_date(Global.formatToDisplayDate(payment.getPay_date(), 0));
-            paymentDetails.setCustomerId(payment.getCust_id());
-            paymentDetails.setPay_timecreated(Global.formatToDisplayDate(payment.getPay_timecreated(), 2));
-            paymentDetails.setCust_name(haveCustomer ? cursor.getString(cursor.getColumnIndex("cust_name")) : "Unknown");
-            paymentDetails.setOrd_total(payment.getPay_amount());
-            paymentDetails.setPay_amount(payment.getPay_amount());
-            paymentDetails.setChange(new BigDecimal(payment.getAmountTender()).subtract(new BigDecimal(payment.getPay_amount())).toString());
-            paymentDetails.setPay_signature(payment.getPay_signature());
-            paymentDetails.setPay_transid(payment.getPay_transid());
-            paymentDetails.setCcnum_last4(payment.getCcnum_last4());
-            paymentDetails.setPay_check(payment.getPay_check());
-            paymentDetails.setIs_refund(payment.getIs_refund());
-            paymentDetails.setIvuLottoDrawDate(payment.getIvuLottoDrawDate());
-            paymentDetails.setIvuLottoNumber(payment.getIvuLottoNumber());
-            paymentDetails.setIvuLottoQR(payment.getIvuLottoQR());
-            paymentDetails.setPay_dueamount(payment.getPay_dueamount());
-            paymentDetails.setInv_id(payment.getInv_id());
-            paymentDetails.setJob_id(payment.getJob_id());
-            paymentDetails.setTax1_amount(payment.getTax1_amount());
-            paymentDetails.setTax2_amount(payment.getTax2_amount());
-            paymentDetails.setTax1_name(payment.getTax1_name());
-            paymentDetails.setTax2_name(payment.getTax2_name());
-            paymentDetails.setEmvContainer(payment.getEmvContainer());
-
+        if (TextUtils.isEmpty(payment.getPaymethod_id()) || payment.getPaymethod_id().equalsIgnoreCase("Genius")) {
+            paymentDetails.setPaymethod_name(payment.getCard_type());
+        } else {
+            paymentDetails.setPaymethod_name(payment.getPaymentMethod().getPaymethod_name());
         }
+        paymentDetails.setPay_date(Global.formatToDisplayDate(payment.getPay_date(), 0));
+        paymentDetails.setCustomerId(payment.getCust_id());
+        paymentDetails.setPay_timecreated(Global.formatToDisplayDate(payment.getPay_timecreated(), 2));
+        paymentDetails.setCust_name(haveCustomer ? cursor.getString(cursor.getColumnIndex("cust_name")) : "Unknown");
+        paymentDetails.setOrd_total(payment.getPay_amount());
+        paymentDetails.setPay_amount(payment.getPay_amount());
+        paymentDetails.setChange(new BigDecimal(payment.getAmountTender()).subtract(new BigDecimal(payment.getPay_amount())).toString());
+        paymentDetails.setPay_signature(payment.getPay_signature());
+        paymentDetails.setPay_transid(payment.getPay_transid());
+        paymentDetails.setCcnum_last4(payment.getCcnum_last4());
+        paymentDetails.setPay_check(payment.getPay_check());
+        paymentDetails.setIs_refund(payment.getIs_refund());
+        paymentDetails.setIvuLottoDrawDate(payment.getIvuLottoDrawDate());
+        paymentDetails.setIvuLottoNumber(payment.getIvuLottoNumber());
+        paymentDetails.setIvuLottoQR(payment.getIvuLottoQR());
+        paymentDetails.setPay_dueamount(payment.getPay_dueamount());
+        paymentDetails.setInv_id(payment.getInv_id());
+        paymentDetails.setJob_id(payment.getJob_id());
+        paymentDetails.setTax1_amount(payment.getTax1_amount());
+        paymentDetails.setTax2_amount(payment.getTax2_amount());
+        paymentDetails.setTax1_name(payment.getTax1_name());
+        paymentDetails.setTax2_name(payment.getTax2_name());
+        paymentDetails.setEmvContainer(payment.getEmvContainer());
+
+    }
 
         cursor.close();
         return paymentDetails;
+        }
+        finally {
+            if(cursor!=null && !cursor.isClosed())
+            {
+                cursor.close();
+            }
+}
+
     }
 
     public static List<PaymentDetails> getPaymentForPrintingTransactions(String jobID) {
@@ -286,28 +313,46 @@ public class StoredPaymentsDAO {
         if (getIdFromRealm) {
             AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
             Realm realm = Realm.getDefaultInstance();
-            StoreAndForward storeAndForward = realm.where(StoreAndForward.class)
-                    .beginsWith("payment.pay_id", deviceId + "-")
-                    .endsWith("payment.pay_id", "-" + year).findFirst();
-            if (storeAndForward != null && storeAndForward.getPayment() != null) {
-                lastPayID = storeAndForward.getPayment().getPay_id();
+            try {
+
+
+                StoreAndForward storeAndForward = realm.where(StoreAndForward.class)
+                        .beginsWith("payment.pay_id", deviceId + "-")
+                        .endsWith("payment.pay_id", "-" + year).findFirst();
+                if (storeAndForward != null && storeAndForward.getPayment() != null) {
+                    lastPayID = storeAndForward.getPayment().getPay_id();
+                }
+                if (TextUtils.isEmpty(lastPayID)) {
+                    lastPayID = assignEmployee.getEmpId() + "-" + "00001" + "-" + year;
+                }
+                myPref.setLastPayID(lastPayID);
+                realm.close();
             }
-            if (TextUtils.isEmpty(lastPayID)) {
-                lastPayID = assignEmployee.getEmpId() + "-" + "00001" + "-" + year;
+            finally {
+                if(realm!=null)
+                {
+                    realm.close();
+                }
             }
-            myPref.setLastPayID(lastPayID);
-            realm.close();
         }
         return lastPayID;
     }
 
     public static List<StoreAndForward> getAll() {
         Realm realm = Realm.getDefaultInstance();
-        List<StoreAndForward> all = realm.where(StoreAndForward.class).findAll();
-        if (all != null) {
-            all = realm.copyFromRealm(all);
+        try {
+            List<StoreAndForward> all = realm.where(StoreAndForward.class).findAll();
+            if (all != null) {
+                all = realm.copyFromRealm(all);
+            }
+            realm.close();
+            return all;
         }
-        realm.close();
-        return all;
+        finally {
+            if(realm!=null)
+            {
+                realm.close();
+            }
+        }
     }
 }

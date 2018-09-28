@@ -234,7 +234,8 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
                 driversProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                 driversProgressDialog.setCancelable(true);
             }
-            driversProgressDialog.show();
+                driversProgressDialog.show();
+
         }
     }
 

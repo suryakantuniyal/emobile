@@ -28,6 +28,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.FileProvider;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -53,6 +54,7 @@ import com.android.dao.PayMethodsDAO;
 import com.android.database.CategoriesHandler;
 import com.android.database.DBManager;
 import com.android.database.DBUtils;
+import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.R;
 import com.android.emobilepos.country.CountryPicker;
 import com.android.emobilepos.country.CountryPickerListener;
@@ -1024,7 +1026,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
 //                                        });
 
                             } finally {
-                                if(realm!=null) {
+                                if (realm != null) {
                                     realm.close();
                                 }
                             }
@@ -1557,7 +1559,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                 Global.mainPrinterManager = edm.getManager();
                 Global.mainPrinterManager.loadDrivers(getActivity(), Global.ASURA, EMSDeviceManager.PrinterInterfase.USB);
 
-            }else if (myPref.isPAT215()) {
+            } else if (myPref.isPAT215()) {
                 edm = new EMSDeviceManager();
                 myPref.setPrinterType(Global.PAT215);
                 Global.embededMSR = edm.getManager();
@@ -1629,7 +1631,9 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
         public void downloadCompleted(String path) {
             final File file = new File(path);
             final Intent i = new Intent(Intent.ACTION_VIEW);
-            i.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive");
+            if (getActivity() != null) {
+                i.setDataAndType(FileProvider.getUriForFile(getActivity(), BuildConfig.APPLICATION_ID + ".provider", file), "application/vnd.android.package-archive");
+            }
             this.startActivity(i);
         }
 

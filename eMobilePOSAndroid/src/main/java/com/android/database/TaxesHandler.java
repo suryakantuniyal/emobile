@@ -138,28 +138,33 @@ public class TaxesHandler {
         Tax data = new Tax();
         String[] fields = new String[]{tax_name, tax_id, tax_code_id, tax_rate, tax_type};
 
-        Cursor cursor;
+        Cursor cursor = null;
+        try {
+            if (onlyGroupTaxes)
+                cursor = DBManager.getDatabase().query(false, table_name, fields, "tax_type = ?", new String[]{"G"}, null, null, tax_name, null);
+            else
+                cursor = DBManager.getDatabase().query(false, table_name, fields, null, null, null, null, tax_name, null);
 
-        if (onlyGroupTaxes)
-            cursor = DBManager.getDatabase().query(false, table_name, fields, "tax_type = ?", new String[]{"G"}, null, null, tax_name, null);
-        else
-            cursor = DBManager.getDatabase().query(false, table_name, fields, null, null, null, null, tax_name, null);
+            if (cursor.moveToFirst()) {
+                do {
 
-        if (cursor.moveToFirst()) {
-            do {
+                    data.setTaxName(cursor.getString(cursor.getColumnIndex(tax_name)));
+                    data.setTaxId(cursor.getString(cursor.getColumnIndex(tax_id)));
+                    data.setTaxRate(cursor.getString(cursor.getColumnIndex(tax_rate)));
+                    data.setTaxType(cursor.getString(cursor.getColumnIndex(tax_type)));
+                    data.setTaxCodeId(cursor.getString(cursor.getColumnIndex(tax_code_id)));
+                    list.add(data);
+                    data = new Tax();
+                } while (cursor.moveToNext());
+            }
 
-                data.setTaxName(cursor.getString(cursor.getColumnIndex(tax_name)));
-                data.setTaxId(cursor.getString(cursor.getColumnIndex(tax_id)));
-                data.setTaxRate(cursor.getString(cursor.getColumnIndex(tax_rate)));
-                data.setTaxType(cursor.getString(cursor.getColumnIndex(tax_type)));
-                data.setTaxCodeId(cursor.getString(cursor.getColumnIndex(tax_code_id)));
-                list.add(data);
-                data = new Tax();
-            } while (cursor.moveToNext());
+            cursor.close();
+            return list;
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
         }
-
-        cursor.close();
-        return list;
     }
 
     public List<String[]> getProductTaxes(String taxId) {
@@ -169,47 +174,61 @@ public class TaxesHandler {
         String[] data = new String[4];
         String[] fields = new String[]{tax_name, tax_id, tax_rate, tax_type};
 
-        Cursor cursor;
+        Cursor cursor = null;
+        try {
+            if (myPref.getPreferences(MyPreferences.pref_show_only_group_taxes))
+                cursor = DBManager.getDatabase().query(false, table_name, fields, "tax_type = ? AND tax_id = ?", new String[]{"G", taxId}, null, null, tax_name, null);
+            else
+                cursor = DBManager.getDatabase().query(false, table_name, fields, "tax_id = ?", new String[]{taxId}, null, null, tax_name, null);
 
-        if (myPref.getPreferences(MyPreferences.pref_show_only_group_taxes))
-            cursor = DBManager.getDatabase().query(false, table_name, fields, "tax_type = ? AND tax_id = ?", new String[]{"G", taxId}, null, null, tax_name, null);
-        else
-            cursor = DBManager.getDatabase().query(false, table_name, fields, "tax_id = ?", new String[]{taxId}, null, null, tax_name, null);
+            if (cursor.moveToFirst()) {
+                do {
 
-        if (cursor.moveToFirst()) {
-            do {
+                    data[0] = cursor.getString(cursor.getColumnIndex(tax_name));
+                    data[1] = cursor.getString(cursor.getColumnIndex(tax_id));
+                    data[2] = cursor.getString(cursor.getColumnIndex(tax_rate));
+                    data[3] = cursor.getString(cursor.getColumnIndex(tax_type));
+                    list.add(data);
+                    data = new String[4];
+                } while (cursor.moveToNext());
+            }
 
-                data[0] = cursor.getString(cursor.getColumnIndex(tax_name));
-                data[1] = cursor.getString(cursor.getColumnIndex(tax_id));
-                data[2] = cursor.getString(cursor.getColumnIndex(tax_rate));
-                data[3] = cursor.getString(cursor.getColumnIndex(tax_type));
-                list.add(data);
-                data = new String[4];
-            } while (cursor.moveToNext());
+            cursor.close();
+            //db.close();
+            return list;
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
         }
-
-        cursor.close();
-        //db.close();
-        return list;
     }
 
     public List<GroupTax> getGroupTaxRate(String taxGroupId) {
-        List<GroupTax> list = new ArrayList<GroupTax>();
-        GroupTax data = new GroupTax();
-        Cursor cursor = DBManager.getDatabase().rawQuery("SELECT t.tax_name,t.tax_rate/100 as 'tax_rate',t.prTax " +
-                "FROM Taxes t INNER JOIN Taxes_Group tg ON t.tax_id = tg.taxId " +
-                "WHERE tg.taxGroupId ='" + StringUtil.nullStringToEmpty(taxGroupId) + "' ORDER BY t.tax_name ASC", null);
-        if (cursor.moveToFirst()) {
-            do {
-                data.setTaxName(cursor.getString(cursor.getColumnIndex(tax_name)));
-                data.setTaxRate(cursor.getString(cursor.getColumnIndex(tax_rate)));
-                data.setPrTax(cursor.getString(cursor.getColumnIndex(prTax)));
-                list.add(data);
-                data = new GroupTax();
-            } while (cursor.moveToNext());
+        Cursor cursor = null;
+        try {
+
+            List<GroupTax> list = new ArrayList<GroupTax>();
+            GroupTax data = new GroupTax();
+            cursor = DBManager.getDatabase().rawQuery("SELECT t.tax_name,t.tax_rate/100 as 'tax_rate',t.prTax " +
+                    "FROM Taxes t INNER JOIN Taxes_Group tg ON t.tax_id = tg.taxId " +
+                    "WHERE tg.taxGroupId ='" + StringUtil.nullStringToEmpty(taxGroupId) + "' ORDER BY t.tax_name ASC", null);
+            if (cursor.moveToFirst()) {
+                do {
+                    data.setTaxName(cursor.getString(cursor.getColumnIndex(tax_name)));
+                    data.setTaxRate(cursor.getString(cursor.getColumnIndex(tax_rate)));
+                    data.setPrTax(cursor.getString(cursor.getColumnIndex(prTax)));
+                    list.add(data);
+                    data = new GroupTax();
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+            return list;
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
         }
-        cursor.close();
-        return list;
+
     }
 
     public Tax getTax(String taxID, String taxType, double prodPrice) {
@@ -227,48 +246,54 @@ public class TaxesHandler {
         if (myPref.isRetailTaxes()) {
             sb.append(" AND tax_code_id IS NOT NULL AND tax_code_id != '' AND tax_code_id = '").append(taxType).append("'");
         }
-
-        Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
-        boolean isGroupTax = false;
-        if (cursor.moveToFirst()) {
-            taxRate = cursor.getString(cursor.getColumnIndex("tax_rate"));
-            tax.setTaxRate(taxRate);
-            tax.setTaxName(cursor.getString(cursor.getColumnIndex("tax_name")));
-            if (cursor.getString(cursor.getColumnIndex("tax_type")).equals("G"))
-                isGroupTax = true;
-        }
-
-        cursor.close();
-
-        if (isGroupTax && myPref.isRetailTaxes() && !taxType.isEmpty()) {
-            sb.setLength(0);
-            sb.append("SELECT tg.tax_rate, tg.taxLowRange, tg.taxHighRange, t.tax_name " +
-                    " FROM Taxes_Group tg " +
-                    " INNER JOIN Taxes t ON tg.taxId = t.tax_id AND tg.taxcode_id = t.tax_code_id " +
-                    " WHERE taxgroupid= ? AND taxcode_id = ?");
-            cursor = DBManager.getDatabase().rawQuery(sb.toString(), new String[]{taxID, taxType});
+        Cursor cursor = null;
+        try {
+            cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
+            boolean isGroupTax = false;
             if (cursor.moveToFirst()) {
-                int i_tax_rate = cursor.getColumnIndex("tax_rate");
-                int i_taxLowRange = cursor.getColumnIndex("taxLowRange");
-                int i_taxHighRange = cursor.getColumnIndex("taxHighRange");
-                int i_taxName = cursor.getColumnIndex("tax_name");
-                double total_tax_rate = 0;
-                tax.setTaxName(cursor.getString(i_taxName));
-                do {
-                    double lowRange = cursor.getDouble(i_taxLowRange);
-                    double highRange = cursor.getDouble(i_taxHighRange);
-
-                    if (prodPrice >= lowRange && prodPrice <= highRange)
-                        total_tax_rate += cursor.getDouble(i_tax_rate);
-                } while (cursor.moveToNext());
-
-                taxRate = Double.toString(total_tax_rate);
+                taxRate = cursor.getString(cursor.getColumnIndex("tax_rate"));
                 tax.setTaxRate(taxRate);
+                tax.setTaxName(cursor.getString(cursor.getColumnIndex("tax_name")));
+                if (cursor.getString(cursor.getColumnIndex("tax_type")).equals("G"))
+                    isGroupTax = true;
+            }
 
+            cursor.close();
+
+            if (isGroupTax && myPref.isRetailTaxes() && !taxType.isEmpty()) {
+                sb.setLength(0);
+                sb.append("SELECT tg.tax_rate, tg.taxLowRange, tg.taxHighRange, t.tax_name " +
+                        " FROM Taxes_Group tg " +
+                        " INNER JOIN Taxes t ON tg.taxId = t.tax_id AND tg.taxcode_id = t.tax_code_id " +
+                        " WHERE taxgroupid= ? AND taxcode_id = ?");
+                cursor = DBManager.getDatabase().rawQuery(sb.toString(), new String[]{taxID, taxType});
+                if (cursor.moveToFirst()) {
+                    int i_tax_rate = cursor.getColumnIndex("tax_rate");
+                    int i_taxLowRange = cursor.getColumnIndex("taxLowRange");
+                    int i_taxHighRange = cursor.getColumnIndex("taxHighRange");
+                    int i_taxName = cursor.getColumnIndex("tax_name");
+                    double total_tax_rate = 0;
+                    tax.setTaxName(cursor.getString(i_taxName));
+                    do {
+                        double lowRange = cursor.getDouble(i_taxLowRange);
+                        double highRange = cursor.getDouble(i_taxHighRange);
+
+                        if (prodPrice >= lowRange && prodPrice <= highRange)
+                            total_tax_rate += cursor.getDouble(i_tax_rate);
+                    } while (cursor.moveToNext());
+
+                    taxRate = Double.toString(total_tax_rate);
+                    tax.setTaxRate(taxRate);
+
+                }
+            }
+            cursor.close();
+            return tax;
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
             }
         }
-        cursor.close();
-        return tax;
     }
 
 
@@ -287,63 +312,69 @@ public class TaxesHandler {
         if (myPref.isRetailTaxes()) {
             sb.append(" AND tax_code_id IS NOT NULL AND tax_code_id != '' AND tax_code_id = '").append(taxType).append("'");
         }
-
-        Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
-        boolean isGroupTax = false;
-        if (cursor.moveToFirst()) {
-            taxRate = cursor.getString(cursor.getColumnIndex("tax_rate"));
-            tax.setTaxRate(taxRate);
-            tax.setTaxCodeId(cursor.getString(cursor.getColumnIndex("tax_code_id")));
-            tax.setTaxName(cursor.getString(cursor.getColumnIndex("tax_code_name")));
-            if (cursor.getString(cursor.getColumnIndex("tax_type")).equals("G"))
-                isGroupTax = true;
-        }
-
-        cursor.close();
-
-        if (isGroupTax && myPref.isRetailTaxes() && !taxType.isEmpty()) {
-            sb.setLength(0);
-//            sb.append("SELECT tax_rate,taxLowRange,taxHighRange FROM Taxes_Group WHERE taxgroupid= ? AND taxcode_id = ?");
-            sb.append("SELECT tg.tax_rate, tg.taxLowRange, tg.taxHighRange, t.tax_name " +
-                    " FROM Taxes_Group tg " +
-                    " INNER JOIN Taxes t ON tg.taxId = t.tax_id AND tg.taxcode_id = t.tax_code_id " +
-                    " WHERE taxgroupid= ? AND taxcode_id = ?");
-            cursor = DBManager.getDatabase().rawQuery(sb.toString(), new String[]{taxID, taxType});
+        Cursor cursor = null;
+        try {
+            cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
+            boolean isGroupTax = false;
             if (cursor.moveToFirst()) {
-                int i_tax_rate = cursor.getColumnIndex("tax_rate");
-                int i_taxLowRange = cursor.getColumnIndex("taxLowRange");
-                int i_taxHighRange = cursor.getColumnIndex("taxHighRange");
-                int i_taxName = cursor.getColumnIndex("tax_name");
-                double total_tax_rate = 0;
-                do {
-                    double lowRange = cursor.getDouble(i_taxLowRange);
-                    double highRange = cursor.getDouble(i_taxHighRange);
-                    tax.setTaxName(cursor.getString(i_taxName));
-                    double prodPrice = Double.parseDouble(product.getFinalPrice());
-                    if (prodPrice >= lowRange && prodPrice <= highRange)
-                        total_tax_rate = cursor.getDouble(i_tax_rate);
-                    taxRate = Double.toString(total_tax_rate);
-                    tax.setTaxRate(taxRate);
-                    List<BigDecimal> lb = new ArrayList<>();
-                    lb.add(new BigDecimal(taxRate));
+                taxRate = cursor.getString(cursor.getColumnIndex("tax_rate"));
+                tax.setTaxRate(taxRate);
+                tax.setTaxCodeId(cursor.getString(cursor.getColumnIndex("tax_code_id")));
+                tax.setTaxName(cursor.getString(cursor.getColumnIndex("tax_code_name")));
+                if (cursor.getString(cursor.getColumnIndex("tax_type")).equals("G"))
+                    isGroupTax = true;
+            }
+
+            cursor.close();
+
+            if (isGroupTax && myPref.isRetailTaxes() && !taxType.isEmpty()) {
+                sb.setLength(0);
+//            sb.append("SELECT tax_rate,taxLowRange,taxHighRange FROM Taxes_Group WHERE taxgroupid= ? AND taxcode_id = ?");
+                sb.append("SELECT tg.tax_rate, tg.taxLowRange, tg.taxHighRange, t.tax_name " +
+                        " FROM Taxes_Group tg " +
+                        " INNER JOIN Taxes t ON tg.taxId = t.tax_id AND tg.taxcode_id = t.tax_code_id " +
+                        " WHERE taxgroupid= ? AND taxcode_id = ?");
+                cursor = DBManager.getDatabase().rawQuery(sb.toString(), new String[]{taxID, taxType});
+                if (cursor.moveToFirst()) {
+                    int i_tax_rate = cursor.getColumnIndex("tax_rate");
+                    int i_taxLowRange = cursor.getColumnIndex("taxLowRange");
+                    int i_taxHighRange = cursor.getColumnIndex("taxHighRange");
+                    int i_taxName = cursor.getColumnIndex("tax_name");
+                    double total_tax_rate = 0;
+                    do {
+                        double lowRange = cursor.getDouble(i_taxLowRange);
+                        double highRange = cursor.getDouble(i_taxHighRange);
+                        tax.setTaxName(cursor.getString(i_taxName));
+                        double prodPrice = Double.parseDouble(product.getFinalPrice());
+                        if (prodPrice >= lowRange && prodPrice <= highRange)
+                            total_tax_rate = cursor.getDouble(i_tax_rate);
+                        taxRate = Double.toString(total_tax_rate);
+                        tax.setTaxRate(taxRate);
+                        List<BigDecimal> lb = new ArrayList<>();
+                        lb.add(new BigDecimal(taxRate));
 //                    BigDecimal taxTotal = TaxesCalculator.calculateTax(product.getProductPriceTaxableAmountCalculated(), lb);
-                    BigDecimal taxTotal = Global.getBigDecimalNum(product.getFinalPrice())
-                            .multiply(Global.getBigDecimalNum(product.getOrdprod_qty())
-                                    .multiply(Global.getBigDecimalNum(tax.getTaxRate()))
-                                    .divide(new BigDecimal(100))
-                                    .setScale(6, RoundingMode.HALF_UP));
-                    tax.setTaxAmount(taxTotal);
-                    try {
-                        taxes.add((Tax) tax.clone());
-                    } catch (CloneNotSupportedException e) {
-                        Crashlytics.logException(e);
-                        e.printStackTrace();
-                    }
-                } while (cursor.moveToNext());
+                        BigDecimal taxTotal = Global.getBigDecimalNum(product.getFinalPrice())
+                                .multiply(Global.getBigDecimalNum(product.getOrdprod_qty())
+                                        .multiply(Global.getBigDecimalNum(tax.getTaxRate()))
+                                        .divide(new BigDecimal(100))
+                                        .setScale(6, RoundingMode.HALF_UP));
+                        tax.setTaxAmount(taxTotal);
+                        try {
+                            taxes.add((Tax) tax.clone());
+                        } catch (CloneNotSupportedException e) {
+                            Crashlytics.logException(e);
+                            e.printStackTrace();
+                        }
+                    } while (cursor.moveToNext());
+                }
+            }
+            cursor.close();
+            return taxes;
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
             }
         }
-        cursor.close();
-        return taxes;
     }
 
 
@@ -402,34 +433,41 @@ public class TaxesHandler {
 
     public List<HashMap<String, String>> getTaxDetails(String taxID, String taxType) {
         //SQLiteDatabase db = dbManager.openReadableDB();
+        Cursor c = null;
+        try {
+            String subquery1 = "SELECT tax_id,tax_name,tax_code_id,tax_rate,tax_type FROM ";
+            String subquery2 = " WHERE tax_id = '";
 
-        String subquery1 = "SELECT tax_id,tax_name,tax_code_id,tax_rate,tax_type FROM ";
-        String subquery2 = " WHERE tax_id = '";
+            StringBuilder sb = new StringBuilder();
 
-        StringBuilder sb = new StringBuilder();
+            sb.append(subquery1).append(table_name).append(subquery2).append(taxID).append("'");
 
-        sb.append(subquery1).append(table_name).append(subquery2).append(taxID).append("'");
+            if (myPref.isRetailTaxes()) {
+                sb.append(" AND tax_code_id = '").append(taxType).append("'");
+            }
 
-        if (myPref.isRetailTaxes()) {
-            sb.append(" AND tax_code_id = '").append(taxType).append("'");
+            c = DBManager.getDatabase().rawQuery(sb.toString(), null);
+            List<HashMap<String, String>> listMap = new ArrayList<HashMap<String, String>>();
+            HashMap<String, String> tempMap = new HashMap<String, String>();
+            if (c.moveToFirst()) {
+                tempMap.put(tax_id, c.getString(c.getColumnIndex(tax_id)));
+                tempMap.put(tax_name, c.getString(c.getColumnIndex(tax_name)));
+                tempMap.put(tax_code_id, c.getString(c.getColumnIndex(tax_code_id)));
+                tempMap.put(tax_rate, c.getString(c.getColumnIndex(tax_rate)));
+                tempMap.put(tax_type, c.getString(c.getColumnIndex(tax_type)));
+
+                listMap.add(tempMap);
+            }
+
+            c.close();
+            //db.close();
+
+            return listMap;
+        } finally {
+            if (c != null && !c.isClosed()) {
+                c.close();
+            }
         }
-
-        Cursor c = DBManager.getDatabase().rawQuery(sb.toString(), null);
-        List<HashMap<String, String>> listMap = new ArrayList<HashMap<String, String>>();
-        HashMap<String, String> tempMap = new HashMap<String, String>();
-        if (c.moveToFirst()) {
-            tempMap.put(tax_id, c.getString(c.getColumnIndex(tax_id)));
-            tempMap.put(tax_name, c.getString(c.getColumnIndex(tax_name)));
-            tempMap.put(tax_code_id, c.getString(c.getColumnIndex(tax_code_id)));
-            tempMap.put(tax_rate, c.getString(c.getColumnIndex(tax_rate)));
-            tempMap.put(tax_type, c.getString(c.getColumnIndex(tax_type)));
-
-            listMap.add(tempMap);
-        }
-
-        c.close();
-        //db.close();
-
-        return listMap;
     }
+
 }

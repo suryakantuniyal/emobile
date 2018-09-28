@@ -446,7 +446,9 @@ public class SemiClosedSlidingDrawer
 				mTouchDelta = (int) x - left;
 				prepareTracking(left);
 			}
-			mVelocityTracker.addMovement(event);
+			if(mVelocityTracker!=null) {
+				mVelocityTracker.addMovement(event);
+			}
 		}
 
 		return true;
@@ -462,7 +464,9 @@ public class SemiClosedSlidingDrawer
 
 		if (mTracking)
 		{
-			mVelocityTracker.addMovement(event);
+			if(mVelocityTracker!=null) {
+				mVelocityTracker.addMovement(event);
+			}
 			final int action = event.getAction();
 			switch (action) {
 			case MotionEvent.ACTION_MOVE:

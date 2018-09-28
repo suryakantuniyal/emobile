@@ -562,13 +562,14 @@ public class SynchMethods {
      ************************************/
 
     private void sendReverse(Object task) {
+        Cursor c=null;
         try {
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
             HashMap<String, String> parsedMap;
 
             PaymentsXML_DB _paymentsXML_DB = new PaymentsXML_DB(context);
-            Cursor c = _paymentsXML_DB.getReversePayments();
+             c = _paymentsXML_DB.getReversePayments();
             int size = c.getCount();
             if (size > 0) {
                 if (Global.isForceUpload)
@@ -617,6 +618,12 @@ public class SynchMethods {
             c.close();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        finally {
+            if(c!=null && !c.isClosed())
+            {
+                c.close();
+            }
         }
     }
 
@@ -1912,11 +1919,12 @@ public class SynchMethods {
 
         @Override
         protected String doInBackground(String... params) {
+            Cursor c=null;
             try {
                 updateProgress(context.getString(R.string.sync_dload_ordersonhold));
 //                synchOrdersOnHoldDetails(context, params[0]);
                 OrderProductsHandler orderProdHandler = new OrderProductsHandler(context);
-                Cursor c = orderProdHandler.getOrderProductsOnHold(params[0]);
+                 c = orderProdHandler.getOrderProductsOnHold(params[0]);
                 if (BuildConfig.DELETE_INVALID_HOLDS || (c != null && c.getCount() > 0)) {
                     proceedToView = true;
 //                    if (type == 0)
@@ -1928,6 +1936,12 @@ public class SynchMethods {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+            }
+            finally {
+                if(c!=null && !c.isClosed())
+                {
+                    c.close();
+                }
             }
             return null;
         }

@@ -69,11 +69,12 @@ public class DrawInfoHandler {
 
     public void insert(List<String[]> data, List<HashMap<String, Integer>> dictionary) {
         DBManager.getDatabase().beginTransaction();
+        SQLiteStatement insert=null;
         try {
 
             addrData = data;
             dictionaryListMap = dictionary;
-            SQLiteStatement insert;
+
             insert = DBManager.getDatabase().compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
 
             int size = addrData.size();
@@ -101,6 +102,10 @@ public class DrawInfoHandler {
 //			Tracker tracker = EasyTracker.getInstance(activity);
 //			tracker.send(MapBuilder.createException(sb.toString(), false).build());
         } finally {
+            if(insert!=null)
+            {
+                insert.close();
+            }
             DBManager.getDatabase().endTransaction();
         }
     }
@@ -113,21 +118,29 @@ public class DrawInfoHandler {
 
     public String getDrawDate() {
         //SQLiteDatabase db = dbManager.openReadableDB();
+        net.sqlcipher.Cursor cursor=null;
+        try {
+    cursor = DBManager.getDatabase().rawQuery("SELECT DrawNumber,DrawDate FROM DrawDateInfo WHERE datetime(CutOffDateTime,'localtime') >= datetime('" + DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss) + "','localtime') ORDER BY CutOffDate ", null);
 
-        Cursor cursor = DBManager.getDatabase().rawQuery("SELECT DrawNumber,DrawDate FROM DrawDateInfo WHERE datetime(CutOffDateTime,'localtime') >= datetime('" + DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss) + "','localtime') ORDER BY CutOffDate ", null);
-
-        String drawDate = "N/A";
-        if (cursor.moveToFirst()) {
-            drawDate = "EN DRAW000 00000000";
+    String drawDate = "N/A";
+    if (cursor.moveToFirst()) {
+        drawDate = "EN DRAW000 00000000";
 // 	drawDate = "EN DRAW"+cursor.getString(cursor.getColumnIndex(DrawNumber))+" "+cursor.getString(cursor.getColumnIndex(DrawDate));
-        }
+    }
 
+    cursor.close();
+    //db.close();
+
+    //drawDate = "EC DRAW001 Jan/01/12";
+
+    return drawDate;
+   }
+    finally {
+    if(cursor!=null && !cursor.isClosed())
+    {
         cursor.close();
-        //db.close();
-
-        //drawDate = "EC DRAW001 Jan/01/12";
-
-        return drawDate;
+    }
+}
     }
 
 

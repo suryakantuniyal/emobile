@@ -646,7 +646,10 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
 
     private void setupTaxesHolder() {
         int size = listMapTaxes.size();
-        getOrderingMainFa().setListOrderTaxes(new ArrayList<DataTaxes>());
+        ArrayList<DataTaxes> dataTaxes = new ArrayList<DataTaxes>();
+        if(dataTaxes!=null) {
+            getOrderingMainFa().setListOrderTaxes(dataTaxes);
+        }
         DataTaxes tempTaxes;
         for (int i = 0; i < size; i++) {
             tempTaxes = new DataTaxes();

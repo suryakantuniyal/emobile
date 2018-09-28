@@ -1,5 +1,6 @@
 package com.android.emobilepos.mainmenu;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -102,7 +103,7 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
                         for (String s : errorList) {
                             error.append(s);
                         }
-                        if(!Global.isActivityDestroyed(getActivity())) {
+                        if (!Global.isActivityDestroyed(getActivity())) {
                             Global.showPrompt(getActivity(), R.string.sync_fail, error.toString());
                         }
                         break;
@@ -214,7 +215,9 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
                 dialog = new ProgressDialog(getActivity());
                 dialog.setIndeterminate(true);
                 dialog.setMessage(getString(R.string.sync_inprogress));
-                dialog.show();
+                if (!getActivity().isFinishing()) {
+                    dialog.show();
+                }   dialog.show();
                 DBManager dbManager = new DBManager(getActivity(), Global.FROM_SYNCH_ACTIVITY);
                 SynchMethods sm = new SynchMethods(dbManager);
                 if (NetworkUtils.isConnectedToInternet(getActivity())) {
@@ -248,7 +251,9 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
             dialog.setIndeterminate(true);
             dialog.setMessage(getString(R.string.sync_inprogress));
             dialog.setCancelable(false);
-            dialog.show();
+            if (!getActivity().isFinishing()) {
+                dialog.show();
+            }
         }
 
         @Override
@@ -260,10 +265,13 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
 
         @Override
         protected void onPostExecute(Boolean result) {
-            Global.releaseOrientation(getActivity());
-            Global.dismissDialog(getActivity(), dialog);
-            if (!result) {
-                Global.showPrompt(getActivity(), R.string.sync_title, getString(R.string.sync_fail));
+            Activity activity = getActivity();
+            if (activity != null && isAdded()) {
+                Global.releaseOrientation(activity);
+                Global.dismissDialog(activity, dialog);
+                if (!result) {
+                    Global.showPrompt(activity, R.string.sync_title, getString(R.string.sync_fail));
+                }
             }
             SyncTab_FR.syncTabHandler.sendEmptyMessage(0);
         }
@@ -277,7 +285,9 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
             dialog = new ProgressDialog(getActivity());
             dialog.setIndeterminate(true);
             dialog.setMessage(getString(R.string.loading));
-            dialog.show();
+            if (!getActivity().isFinishing()) {
+                dialog.show();
+            }
         }
 
         @Override
@@ -309,7 +319,10 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
             }
             List<BixolonTransaction> failedTrans = BixolonDAO.getFailedTransactions();
             ((TextView) getView().findViewById(R.id.bixolonFailedTransactionsNumbertextView)).setText(failedTrans != null ? String.valueOf(failedTrans.size()) : "0");
-            dialog.dismiss();
+            if ((this.dialog != null) && this.dialog.isShowing()) {
+                dialog.dismiss();
+            }
+
         }
     }
 }

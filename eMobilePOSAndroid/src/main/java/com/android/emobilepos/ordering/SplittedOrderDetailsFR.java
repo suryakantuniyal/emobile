@@ -349,7 +349,9 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
             }
             global.order.processed = "10";
         } else {
-            splitedOrder.ord_id = global.order.ord_id;
+            if(global.order.ord_id!= null) {
+                splitedOrder.ord_id = global.order.ord_id;
+            }
         }
 
         if (splitedOrder.getOrderProducts().size() > 0) {
@@ -376,7 +378,9 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                 global.encodedImage = "";
                 productsHandler.insert(splitedOrder.getOrderProducts());
                 if (splitedOrder.getListOrderTaxes() != null && splitedOrder.getListOrderTaxes().size() > 0) {
-                    ordTaxesDB.insert(splitedOrder.getListOrderTaxes(), splitedOrder.ord_id);
+                    if(splitedOrder.ord_id!=null) {
+                        ordTaxesDB.insert(splitedOrder.getListOrderTaxes(), splitedOrder.ord_id);
+                    }
                 }
 //                DBManager dbManager = new DBManager(getActivity());
 //                SynchMethods sm = new SynchMethods(dbManager);
@@ -393,7 +397,9 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                 splitedOrder.syncOrderProductIds();
                 ordersHandler.insert(splitedOrder);
                 productsHandler.insert(splitedOrder.getOrderProducts());
-                ordTaxesDB.insert(splitedOrder.getListOrderTaxes(), splitedOrder.ord_id);
+                if(splitedOrder.ord_id!=null) {
+                    ordTaxesDB.insert(splitedOrder.getListOrderTaxes(), splitedOrder.ord_id);
+                }
             }
             Receipt_FR.updateLocalInventory(getActivity(), splitedOrder.getOrderProducts(), false);
             if (Global.getBigDecimalNum(splitedOrder.gran_total).compareTo(new BigDecimal(0)) != -1) {

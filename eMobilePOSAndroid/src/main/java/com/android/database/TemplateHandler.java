@@ -178,53 +178,62 @@ public class TemplateHandler {
 	}
 
     public List<Template> getTemplate(String custID) {
-        List<Template> orderList = new ArrayList<>();
-        GenerateNewID generator = new GenerateNewID(activity);
-		StringBuilder sb = new StringBuilder();
-		Global.lastOrdID = generator.getNextID(IdType.ORDER_ID);
-		sb.append(
-                "SELECT t.product_id,t.name,t.overwrite_price,t.price,t.quantity,p.prod_desc, p.prod_sku, " +
-                        "p.prod_upc,IFNULL(s.taxcode_istaxable,'1') as 'prod_istaxable'  " +
-                        "FROM Templates t ");
-        sb.append(
-                "LEFT JOIN Products p ON t.product_id = p.prod_id " +
-                        "LEFT JOIN SalesTaxCodes s ON p.prod_taxcode = s.taxcode_id  " +
-                        "WHERE cust_id = ?");
-        Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), new String[] { custID });
-		if (cursor.moveToFirst()) {
-			int i_prod_id = cursor.getColumnIndex(product_id);
-			int i_prod_sku = cursor.getColumnIndex(prod_sku);
-			int i_prod_upc = cursor.getColumnIndex(prod_upc);
+		Cursor cursor=null;
+		try {
+			List<Template> orderList = new ArrayList<>();
+			GenerateNewID generator = new GenerateNewID(activity);
+			StringBuilder sb = new StringBuilder();
+			Global.lastOrdID = generator.getNextID(IdType.ORDER_ID);
+			sb.append(
+					"SELECT t.product_id,t.name,t.overwrite_price,t.price,t.quantity,p.prod_desc, p.prod_sku, " +
+							"p.prod_upc,IFNULL(s.taxcode_istaxable,'1') as 'prod_istaxable'  " +
+							"FROM Templates t ");
+			sb.append(
+					"LEFT JOIN Products p ON t.product_id = p.prod_id " +
+							"LEFT JOIN SalesTaxCodes s ON p.prod_taxcode = s.taxcode_id  " +
+							"WHERE cust_id = ?");
+			cursor = DBManager.getDatabase().rawQuery(sb.toString(), new String[]{custID});
+			if (cursor.moveToFirst()) {
+				int i_prod_id = cursor.getColumnIndex(product_id);
+				int i_prod_sku = cursor.getColumnIndex(prod_sku);
+				int i_prod_upc = cursor.getColumnIndex(prod_upc);
 
-			int i_prod_name = cursor.getColumnIndex(name);
-			int i_overwrite_price = cursor.getColumnIndex(overwrite_price);
-			int i_ordprod_qty = cursor.getColumnIndex(quantity);
-			int i_prod_price = cursor.getColumnIndex(price);
-			int i_prod_desc = cursor.getColumnIndex("prod_desc");
-			int i_prod_istaxable = cursor.getColumnIndex("prod_istaxable");
-            Template template;
-            do {
-                template = new Template();
-                template.setProductId(cursor.getString(i_prod_id));
-                template.setProductSku(cursor.getString(i_prod_sku));
-                template.setProductUpc(cursor.getString(i_prod_upc));
-                template.setProductName(cursor.getString(i_prod_name));
-                template.setOveritePrice(cursor.getString(i_overwrite_price));
-                template.setOrdProductQty(cursor.getString(i_ordprod_qty));
-                template.setProductPrice(cursor.getString(i_prod_price));
-                template.setProductIsTaxable(cursor.getString(i_prod_istaxable));
-                template.setOrderId(Global.lastOrdID);
-                template.setOrdProductId(UUID.randomUUID().toString());
-                BigDecimal total = Global.getBigDecimalNum(template.getOrdProductQty())
-                        .multiply(Global.getBigDecimalNum(template.getOveritePrice()));
-                template.setItemTotal(total);
-                template.setItemSubtotal(total);
-                template.setOrdProductDescription(cursor.getString(i_prod_desc));
-                orderList.add(template);
-            } while (cursor.moveToNext());
+				int i_prod_name = cursor.getColumnIndex(name);
+				int i_overwrite_price = cursor.getColumnIndex(overwrite_price);
+				int i_ordprod_qty = cursor.getColumnIndex(quantity);
+				int i_prod_price = cursor.getColumnIndex(price);
+				int i_prod_desc = cursor.getColumnIndex("prod_desc");
+				int i_prod_istaxable = cursor.getColumnIndex("prod_istaxable");
+				Template template;
+				do {
+					template = new Template();
+					template.setProductId(cursor.getString(i_prod_id));
+					template.setProductSku(cursor.getString(i_prod_sku));
+					template.setProductUpc(cursor.getString(i_prod_upc));
+					template.setProductName(cursor.getString(i_prod_name));
+					template.setOveritePrice(cursor.getString(i_overwrite_price));
+					template.setOrdProductQty(cursor.getString(i_ordprod_qty));
+					template.setProductPrice(cursor.getString(i_prod_price));
+					template.setProductIsTaxable(cursor.getString(i_prod_istaxable));
+					template.setOrderId(Global.lastOrdID);
+					template.setOrdProductId(UUID.randomUUID().toString());
+					BigDecimal total = Global.getBigDecimalNum(template.getOrdProductQty())
+							.multiply(Global.getBigDecimalNum(template.getOveritePrice()));
+					template.setItemTotal(total);
+					template.setItemSubtotal(total);
+					template.setOrdProductDescription(cursor.getString(i_prod_desc));
+					orderList.add(template);
+				} while (cursor.moveToNext());
+			}
+			cursor.close();
+			return orderList;
 		}
-		cursor.close();
-		return orderList;
+		finally {
+			if(cursor!=null && !cursor.isClosed())
+			{
+				cursor.close();
+			}
+		}
 	}
 
 	public Cursor getUnsyncTemplates() {

@@ -122,12 +122,12 @@ public class EmpInvHandler {
 
 
     public void updateOnHand(List<OrderProduct> orderProducts) {
+        SQLiteStatement insert=null;
         try {
             DBManager.getDatabase().beginTransaction();
-            SQLiteStatement insert;
+
             String sb = "UPDATE " + TABLE_NAME + " SET " + prod_onhand + " = prod_onhand" +
                     " - " + "?" + " WHERE " + prod_id + " = " + "?";
-
             insert = DBManager.getDatabase().compileStatement(sb);
             for (OrderProduct product : orderProducts) {
                 insert.bindLong(1, Long.parseLong(product.getOrdprod_qty()));
@@ -140,6 +140,10 @@ public class EmpInvHandler {
         } catch (Exception e) {
             Crashlytics.logException(e);
         } finally {
+            if(insert!=null)
+            {
+                insert.close();
+            }
             DBManager.getDatabase().endTransaction();
         }
 //        DBManager.getDatabase().execSQL(sb.toString());

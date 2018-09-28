@@ -21,7 +21,7 @@ public class PaymentsXML_DB {
 	private HashMap<String, Integer> attrHash;
 	private StringBuilder mainSB1,mainSB2;
 	private static final String TABLE_NAME = "PaymentsXML";
-	SQLiteStatement insert = null;
+
 	public PaymentsXML_DB(Context activity)
 	{
 		attrHash = new HashMap<>();
@@ -51,7 +51,7 @@ public class PaymentsXML_DB {
 
 	public void insert(HashMap<String,String> _data) {
 		//SQLiteDatabase db = dbManager.openWritableDB();
-
+		SQLiteStatement insert = null;
 		DBManager.getDatabase().beginTransaction();
 
 		try {

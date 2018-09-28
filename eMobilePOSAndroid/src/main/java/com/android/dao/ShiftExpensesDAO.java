@@ -26,7 +26,9 @@ public class ShiftExpensesDAO {
             r.insertOrUpdate(expense);
         } finally {
             r.commitTransaction();
-            r.close();
+            if(r!=null) {
+                r.close();
+            }
         }
     }
 
@@ -39,7 +41,9 @@ public class ShiftExpensesDAO {
             else
                 return null;
         } finally {
-            r.close();
+            if(r!=null) {
+                r.close();
+            }
         }
     }
 
@@ -54,7 +58,9 @@ public class ShiftExpensesDAO {
             }
             return total;
         } finally {
-            r.close();
+            if(r!=null) {
+                r.close();
+            }
         }
     }
 
@@ -71,7 +77,9 @@ public class ShiftExpensesDAO {
             }
             return total;
         } finally {
-            r.close();
+            if(r!=null) {
+                r.close();
+            }
         }
     }
 }

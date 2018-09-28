@@ -75,52 +75,60 @@ public class CustomerInventoryHandler {
     }
 
     public void insertUpdate(List<CustomerInventory> list) {
-        Cursor cursor;
-        StringBuilder sb = new StringBuilder();
-        String consignmentID = null;
-        ContentValues values = new ContentValues();
-        int size = list.size();
-        for (int i = 0; i < size; i++) {
-            values.clear();
-            sb.setLength(0);
-            CustomerInventory inv = list.get(i);
-            sb.append("SELECT consignment_id FROM ").append(TABLE_NAME).append(" WHERE ");
-            sb.append(cust_id).append(" = '").append(inv.cust_id).append("' AND ");
-            sb.append(prod_id).append(" = '").append(inv.prod_id).append("'");
-            cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
-            if (cursor.moveToFirst())
-                consignmentID = cursor.getString(0);
-            if (consignmentID != null) {
+        Cursor cursor=null;
+        try {
+            StringBuilder sb = new StringBuilder();
+            String consignmentID = null;
+            ContentValues values = new ContentValues();
+            int size = list.size();
+            for (int i = 0; i < size; i++) {
+                values.clear();
                 sb.setLength(0);
-                sb.append(consignment_id).append(" = ?");
-                values.put(qty, inv.qty);
-                values.put(price, inv.price);
-                values.put(cust_update, inv.cust_update);
-                values.put(prod_name, inv.prod_name);
-                values.put(is_synched, inv.is_synched);
-                DBManager.getDatabase().update(TABLE_NAME, values, sb.toString(), new String[]{consignmentID});
-                consignmentID = null;
-            } else {
-                values.put(cust_id, inv.cust_id);
-                values.put(prod_id, inv.prod_id);
-                values.put(qty, inv.qty);
-                values.put(price, inv.price);
-                values.put(prod_name, inv.prod_name);
-                values.put(cust_update, inv.cust_update);
-                values.put(is_synched, inv.is_synched);
+                CustomerInventory inv = list.get(i);
+                sb.append("SELECT consignment_id FROM ").append(TABLE_NAME).append(" WHERE ");
+                sb.append(cust_id).append(" = '").append(inv.cust_id).append("' AND ");
+                sb.append(prod_id).append(" = '").append(inv.prod_id).append("'");
+                cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
+                if (cursor.moveToFirst())
+                    consignmentID = cursor.getString(0);
+                if (consignmentID != null) {
+                    sb.setLength(0);
+                    sb.append(consignment_id).append(" = ?");
+                    values.put(qty, inv.qty);
+                    values.put(price, inv.price);
+                    values.put(cust_update, inv.cust_update);
+                    values.put(prod_name, inv.prod_name);
+                    values.put(is_synched, inv.is_synched);
+                    DBManager.getDatabase().update(TABLE_NAME, values, sb.toString(), new String[]{consignmentID});
+                    consignmentID = null;
+                } else {
+                    values.put(cust_id, inv.cust_id);
+                    values.put(prod_id, inv.prod_id);
+                    values.put(qty, inv.qty);
+                    values.put(price, inv.price);
+                    values.put(prod_name, inv.prod_name);
+                    values.put(cust_update, inv.cust_update);
+                    values.put(is_synched, inv.is_synched);
 
-                DBManager.getDatabase().insert(TABLE_NAME, null, values);
+                    DBManager.getDatabase().insert(TABLE_NAME, null, values);
+                }
+                cursor.close();
             }
-            cursor.close();
+        }finally {
+            if(cursor!=null && !cursor.isClosed())
+            {
+                cursor.close();
+            }
         }
     }
 
     public void insert(List<String[]> Data, List<HashMap<String, Integer>> dictionary) {
         DBManager.getDatabase().beginTransaction();
+        SQLiteStatement insert=null;
         try {
             data = Data;
             dictionaryListMap = dictionary;
-            SQLiteStatement insert;
+
             StringBuilder sb = new StringBuilder();
             sb.append("INSERT INTO ").append(TABLE_NAME).append(" (").append(sb1.toString()).append(",is_synched) ")
                     .append("VALUES (").append(sb2.toString()).append(",?)");
@@ -143,6 +151,10 @@ public class CustomerInventoryHandler {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
+            if(insert!=null)
+            {
+                insert.close();
+            }
             DBManager.getDatabase().endTransaction();
         }
     }
@@ -199,63 +211,67 @@ public class CustomerInventoryHandler {
         sb.append(
                 " LEFT OUTER JOIN ProductChainXRef ch ON ci.prod_id = ch.prod_id AND ch.cust_chain = ci.cust_id WHERE ci.cust_id = ? AND qty != '0'");
 
-        Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(),
-                new String[]{priceLevelID, priceLevelID, myPref.getCustID()});
-        HashMap<String, String[]> tempMap = new HashMap<String, String[]>();
-        List<String> keys = new ArrayList<String>();
-        if (cursor.moveToFirst()) {
-            int i_prod_id = cursor.getColumnIndex(prod_id);
-            int i_qty = cursor.getColumnIndex(qty);
-            int i_prod_name = cursor.getColumnIndex(prod_name);
-            int i_volume_price = cursor.getColumnIndex("volume_price");
-            int i_pricelevel_price = cursor.getColumnIndex("pricelevel_price");
-            int i_chain_price = cursor.getColumnIndex("chain_price");
-            int i_master_price = cursor.getColumnIndex("master_price");
-            String[] values = new String[4];
 
-            String tempPrice;
-            do {
-                values[0] = cursor.getString(i_prod_id);
-                values[1] = cursor.getString(i_prod_name);
-                values[2] = cursor.getString(i_qty);
+         Cursor   cursor = DBManager.getDatabase().rawQuery(sb.toString(),
+                    new String[]{priceLevelID, priceLevelID, myPref.getCustID()});
+            HashMap<String, String[]> tempMap = new HashMap<String, String[]>();
+            List<String> keys = new ArrayList<String>();
+            if (cursor.moveToFirst()) {
+                int i_prod_id = cursor.getColumnIndex(prod_id);
+                int i_qty = cursor.getColumnIndex(qty);
+                int i_prod_name = cursor.getColumnIndex(prod_name);
+                int i_volume_price = cursor.getColumnIndex("volume_price");
+                int i_pricelevel_price = cursor.getColumnIndex("pricelevel_price");
+                int i_chain_price = cursor.getColumnIndex("chain_price");
+                int i_master_price = cursor.getColumnIndex("master_price");
+                String[] values = new String[4];
 
-                tempPrice = cursor.getString(i_volume_price);
-                if (tempPrice == null || tempPrice.isEmpty()) {
-                    tempPrice = cursor.getString(i_pricelevel_price);
+                String tempPrice;
+                do {
+                    values[0] = cursor.getString(i_prod_id);
+                    values[1] = cursor.getString(i_prod_name);
+                    values[2] = cursor.getString(i_qty);
+
+                    tempPrice = cursor.getString(i_volume_price);
                     if (tempPrice == null || tempPrice.isEmpty()) {
-                        tempPrice = cursor.getString(i_chain_price);
-
+                        tempPrice = cursor.getString(i_pricelevel_price);
                         if (tempPrice == null || tempPrice.isEmpty()) {
-                            tempPrice = cursor.getString(i_master_price);
-                            if (tempPrice == null || tempPrice.isEmpty())
-                                tempPrice = "0";
+                            tempPrice = cursor.getString(i_chain_price);
+
+                            if (tempPrice == null || tempPrice.isEmpty()) {
+                                tempPrice = cursor.getString(i_master_price);
+                                if (tempPrice == null || tempPrice.isEmpty())
+                                    tempPrice = "0";
+                            }
                         }
                     }
-                }
-                values[3] = tempPrice;
+                    values[3] = tempPrice;
 
-                tempMap.put(values[0], values);
-                keys.add(values[0]);
-                values = new String[4];
-            } while (cursor.moveToNext());
-        }
+                    tempMap.put(values[0], values);
+                    keys.add(values[0]);
+                    values = new String[4];
+                } while (cursor.moveToNext());
+            }
 
-        Global.custInventoryMap = tempMap;
-        Global.custInventoryKey = keys;
-        cursor.close();
+            Global.custInventoryMap = tempMap;
+            Global.custInventoryKey = keys;
+            cursor.close();
+
     }
 
     public double getProdQty(String prodID) {
         String sb = "SELECT " + qty + " FROM " + TABLE_NAME +
                 " WHERE prod_id = ? AND cust_id = ?";
 
-        Cursor cursor = DBManager.getDatabase().rawQuery(sb, new String[]{prod_id, myPref.getCustID()});
-        double value = 0.0;
-        if (cursor.moveToFirst()) {
-            value = cursor.getDouble(0);
-        }
-        cursor.close();
-        return value;
+
+   Cursor cursor = DBManager.getDatabase().rawQuery(sb, new String[]{prod_id, myPref.getCustID()});
+    double value = 0.0;
+    if (cursor.moveToFirst()) {
+        value = cursor.getDouble(0);
+    }
+    cursor.close();
+    return value;
+
     }
 
     public Cursor getUnsychedItems() {
@@ -265,10 +281,19 @@ public class CustomerInventoryHandler {
     }
 
     public long getNumUnsyncItems() {
-        SQLiteStatement stmt = DBManager.getDatabase().compileStatement("SELECT Count(*) FROM " + TABLE_NAME + " WHERE is_synched = '0'");
-        long count = stmt.simpleQueryForLong();
-        stmt.close();
-        return count;
+        SQLiteStatement stmt=null;
+        try {
+            stmt = DBManager.getDatabase().compileStatement("SELECT Count(*) FROM " + TABLE_NAME + " WHERE is_synched = '0'");
+            long count = stmt.simpleQueryForLong();
+            stmt.close();
+            return count;
+        }
+        finally {
+            if(stmt!=null)
+            {
+                stmt.close();
+            }
+        }
     }
 
     public void updateIsSync(List<String[]> list) {

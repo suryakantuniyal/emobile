@@ -74,14 +74,6 @@ public class SplittedOrderSummaryAdapter extends BaseAdapter implements Filterab
         this.selectedIndex = selectedIndex;
     }
 
-    public class ViewHolder {
-        TextView tableNumber;
-        TextView seatNumber;
-        TextView itemsCount;
-        TextView ticketPrice;
-        TextView itemsList;
-    }
-
     @Override
     public Filter getFilter() {
         return null;
@@ -94,7 +86,11 @@ public class SplittedOrderSummaryAdapter extends BaseAdapter implements Filterab
 
     @Override
     public int getCount() {
-        return splitedOrders.size();
+        if (splitedOrders.size() > 0) {
+            return splitedOrders.size();
+        } else {
+            return 0;
+        }
     }
 
     @Override
@@ -111,6 +107,14 @@ public class SplittedOrderSummaryAdapter extends BaseAdapter implements Filterab
     public void removeOrder(SplittedOrder order) {
         this.splitedOrders.remove(order);
         notifyDataSetChanged();
+    }
+
+    public class ViewHolder {
+        TextView tableNumber;
+        TextView seatNumber;
+        TextView itemsCount;
+        TextView ticketPrice;
+        TextView itemsList;
     }
 
 }

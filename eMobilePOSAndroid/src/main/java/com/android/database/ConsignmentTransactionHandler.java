@@ -9,6 +9,7 @@ import com.android.dao.AssignEmployeeDAO;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.MyPreferences;
+import com.bbpos.bb03z.l;
 
 import net.sqlcipher.database.SQLiteStatement;
 
@@ -122,11 +123,19 @@ public class ConsignmentTransactionHandler {
     }
 
     public long getNumUnsyncItems() {
-
-        SQLiteStatement stmt = DBManager.getDatabase().compileStatement("SELECT Count(DISTINCT ConsTrans_ID) FROM " + TABLE_NAME + " WHERE is_synched = '1'");
-        long count = stmt.simpleQueryForLong();
+        SQLiteStatement stmt=null;
+        try {
+     stmt = DBManager.getDatabase().compileStatement("SELECT Count(DISTINCT ConsTrans_ID) FROM " + TABLE_NAME + " WHERE is_synched = '1'");
+    long count = stmt.simpleQueryForLong();
+    stmt.close();
+    return count;
+    }
+        finally {
+    if(stmt!=null)
+    {
         stmt.close();
-        return count;
+    }
+    }
     }
 
     public void updateIsSync(List<String[]> list) {
@@ -143,11 +152,18 @@ public class ConsignmentTransactionHandler {
     }
 
     public boolean unsyncConsignmentsLeft() {
-
-        SQLiteStatement stmt = DBManager.getDatabase().compileStatement("SELECT Count(DISTINCT ConsTrans_ID) FROM " + TABLE_NAME + " WHERE is_synched = '1'");
-        long count = stmt.simpleQueryForLong();
+        SQLiteStatement stmt=null;
+        try {
+     stmt = DBManager.getDatabase().compileStatement("SELECT Count(DISTINCT ConsTrans_ID) FROM " + TABLE_NAME + " WHERE is_synched = '1'");
+    long count = stmt.simpleQueryForLong();
+    stmt.close();
+    return count != 0;
+       }finally {
+    if(stmt!=null)
+    {
         stmt.close();
-        return count != 0;
+    }
+    }
     }
 
     public Cursor getConsignmentCursor(boolean typePickup) {
@@ -172,31 +188,38 @@ public class ConsignmentTransactionHandler {
     }
 
     public HashMap<String, String> getConsignmentSummaryDetails(String _ConsTrans_ID, boolean isPickup) {
+        Cursor c=null;
+        try {
+            String sb = "SELECT sum(ConsInvoice_Qty) as 'total_items_sold',sum(ConsReturn_Qty) as 'total_items_returned', " +
+                    "sum(ConsDispatch_Qty) as 'total_items_dispatched',count(*) as 'total_line_items'," +
+                    "sum((((ConsOriginal_Qty-ConsStock_Qty)*p.prod_price)-(ConsReturn_Qty*p.prod_price))) as 'total_grand_total', " +
+                    "cs.encoded_signature FROM ConsignmentTransaction ct LEFT OUTER JOIN Products p ON ct.ConsProd_ID = p.prod_id " +
+                    "LEFT OUTER JOIN ConsignmentSignatures cs ON cs.ConsTrans_ID = ct.ConsTrans_ID WHERE ct.ConsTrans_ID = ?";
+            HashMap<String, String> map = new HashMap<>();
 
-        String sb = "SELECT sum(ConsInvoice_Qty) as 'total_items_sold',sum(ConsReturn_Qty) as 'total_items_returned', " +
-                "sum(ConsDispatch_Qty) as 'total_items_dispatched',count(*) as 'total_line_items'," +
-                "sum((((ConsOriginal_Qty-ConsStock_Qty)*p.prod_price)-(ConsReturn_Qty*p.prod_price))) as 'total_grand_total', " +
-                "cs.encoded_signature FROM ConsignmentTransaction ct LEFT OUTER JOIN Products p ON ct.ConsProd_ID = p.prod_id " +
-                "LEFT OUTER JOIN ConsignmentSignatures cs ON cs.ConsTrans_ID = ct.ConsTrans_ID WHERE ct.ConsTrans_ID = ?";
-        HashMap<String, String> map = new HashMap<>();
+             c = DBManager.getDatabase().rawQuery(sb, new String[]{_ConsTrans_ID});
 
-        Cursor c = DBManager.getDatabase().rawQuery(sb, new String[]{_ConsTrans_ID});
+            if (c.moveToFirst()) {
+                map.put("ConsTrans_ID", _ConsTrans_ID);
+                map.put("total_items_sold", c.getString(c.getColumnIndex("total_items_sold")));
+                map.put("total_items_returned", c.getString(c.getColumnIndex("total_items_returned")));
+                map.put("total_items_dispatched", c.getString(c.getColumnIndex("total_items_dispatched")));
+                map.put("total_line_items", c.getString(c.getColumnIndex("total_line_items")));
+                if (!isPickup)
+                    map.put("total_grand_total", c.getString(c.getColumnIndex("total_grand_total")));
+                else
+                    map.put("total_grand_total", "0");
 
-        if (c.moveToFirst()) {
-            map.put("ConsTrans_ID", _ConsTrans_ID);
-            map.put("total_items_sold", c.getString(c.getColumnIndex("total_items_sold")));
-            map.put("total_items_returned", c.getString(c.getColumnIndex("total_items_returned")));
-            map.put("total_items_dispatched", c.getString(c.getColumnIndex("total_items_dispatched")));
-            map.put("total_line_items", c.getString(c.getColumnIndex("total_line_items")));
-            if (!isPickup)
-                map.put("total_grand_total", c.getString(c.getColumnIndex("total_grand_total")));
-            else
-                map.put("total_grand_total", "0");
-
-            map.put("encoded_signature", c.getString(c.getColumnIndex("encoded_signature")));
+                map.put("encoded_signature", c.getString(c.getColumnIndex("encoded_signature")));
+            }
+            c.close();
+            return map;
+        }finally {
+            if(c!=null && !c.isClosed())
+            {
+                c.close();
+            }
         }
-        c.close();
-        return map;
     }
 
     public Cursor getConsignmentItemDetails(String _ConsTrans_ID) {
@@ -236,11 +259,23 @@ public class ConsignmentTransactionHandler {
                     .append("-%-").append(year).append("'");
 
             SQLiteStatement stmt = DBManager.getDatabase().compileStatement(sb.toString());
-            Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
-            cursor.moveToFirst();
-            lastID = cursor.getString(0);
-            cursor.close();
-            stmt.close();
+            net.sqlcipher.Cursor cursor=null;
+            try {
+                 cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
+                cursor.moveToFirst();
+                lastID = cursor.getString(0);
+                cursor.close();
+                stmt.close();
+            }finally {
+                if(cursor!=null && !cursor.isClosed() )
+                {
+                    cursor.close();
+                }
+                if(stmt!=null)
+                {
+                    stmt.close();
+                }
+            }
             if (TextUtils.isEmpty(lastID)) {
                 AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
                 lastID = assignEmployee.getEmpId() + "-" + "00001" + "-" + year;

@@ -33,7 +33,9 @@ public class ShiftDAO {
             }
             return null;
         } finally {
-            r.close();
+            if(r!=null) {
+                r.close();
+            }
         }
     }
 
@@ -52,7 +54,9 @@ public class ShiftDAO {
             }
             return null;
         } finally {
-            r.close();
+            if(r!=null) {
+                r.close();
+            }
         }
     }
 
@@ -70,7 +74,9 @@ public class ShiftDAO {
                 return null;
             }
         } finally {
-            r.close();
+            if(r!=null) {
+                r.close();
+            }
         }
     }
 
@@ -83,7 +89,9 @@ public class ShiftDAO {
             r.insertOrUpdate(shift);
         } finally {
             r.commitTransaction();
-            r.close();
+            if(r!=null) {
+                r.close();
+            }
         }
     }
 
@@ -101,7 +109,9 @@ public class ShiftDAO {
                     .findAll();
             return r.copyFromRealm(sync);
         } finally {
-            r.close();
+            if(r!=null) {
+                r.close();
+            }
         }
     }
 
@@ -115,7 +125,9 @@ public class ShiftDAO {
             r.insertOrUpdate(shifts);
         } finally {
             r.commitTransaction();
-            r.close();
+            if(r!=null) {
+                r.close();
+            }
         }
     }
 
@@ -126,7 +138,9 @@ public class ShiftDAO {
             r.insertOrUpdate(shifts);
         } finally {
             r.commitTransaction();
-            r.close();
+            if(r!=null) {
+                r.close();
+            }
         }
     }
 
@@ -161,7 +175,9 @@ public class ShiftDAO {
         try {
             return r.copyFromRealm(r.where(Shift.class).equalTo("shiftId", shiftId).findFirst());
         } finally {
-            r.close();
+            if(r!=null) {
+                r.close();
+            }
         }
     }
 
@@ -181,7 +197,9 @@ public class ShiftDAO {
             }
             return r.copyFromRealm(list);
         } finally {
-            r.close();
+            if(r!=null) {
+                r.close();
+            }
         }
     }
 
@@ -203,7 +221,9 @@ public class ShiftDAO {
             }
             return r.copyFromRealm(list);
         } finally {
-            r.close();
+            if(r!=null) {
+                r.close();
+            }
         }
     }
 

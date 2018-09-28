@@ -95,10 +95,10 @@ public class OrdersHandler {
     private static CustomersHandler custHandler;
     private static OrderTaxes_DB taxes_db;
     private static OrderProductsHandler orderProductsHandler;
+    SQLiteStatement sqlinsert;
     private StringBuilder sb1, sb2;
     private HashMap<String, Integer> attrHash;
     private Context activity;
-    SQLiteStatement sqlinsert;
 
     public OrdersHandler(Context activity) {
         attrHash = new HashMap<>();
@@ -211,6 +211,27 @@ public class OrdersHandler {
         return orderProductsHandler;
     }
 
+    private static String getOrderAssignedTable(String orderId) {
+        net.sqlcipher.Cursor cursor = null;
+        try {
+            String tableNumber = "0";
+            cursor = DBManager.getDatabase().query(table_name, attr, "ord_id=?",
+                    new String[]{orderId}, null, null, null);
+            if (cursor.moveToFirst()) {
+                tableNumber = cursor.getString(cursor.getColumnIndex(assignedTable));
+            }
+            cursor.close();
+            return tableNumber;
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
+
+        }
+
+
+    }
+
     public void initDictionary() {
         int size = attr.length;
         for (int i = 0; i < size; i++) {
@@ -301,7 +322,7 @@ public class OrdersHandler {
 
                 dbUtils.executeAuditedDB();
                 sqlinsert.clearBindings();
-              //  sqlinsert.close();
+                //  sqlinsert.close();
 //                Log.d("Order Insert:", order.toString());
                 DinningTableOrderDAO.createDinningTableOrder(order);
                 if (GenerateNewID.isValidLastId(order.ord_id, GenerateNewID.IdType.ORDER_ID)) {
@@ -312,7 +333,7 @@ public class OrdersHandler {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            if(sqlinsert!=null) {
+            if (sqlinsert != null) {
                 sqlinsert.close();
             }
             DBManager.getDatabase().endTransaction();
@@ -337,47 +358,60 @@ public class OrdersHandler {
     }
 
     private boolean checkIfExist(String ordID) {
-        String sb = "SELECT 1 FROM " + table_name + " WHERE ord_id = '" +
-                ordID + "'";
-        Cursor c = DBManager.getDatabase().rawQuery(sb, null);
-        boolean exists = (c.getCount() > 0);
-        c.close();
-        return exists;
+        Cursor c = null;
+        try {
+            String sb = "SELECT 1 FROM " + table_name + " WHERE ord_id = '" +
+                    ordID + "'";
+            c = DBManager.getDatabase().rawQuery(sb, null);
+            boolean exists = (c.getCount() > 0);
+            c.close();
+            return exists;
+        } finally {
+            if (c != null && !c.isClosed()) {
+                c.close();
+            }
+        }
     }
 
     public Order getOrder(String orderId) {
         Cursor cursor = DBManager.getDatabase().query(table_name, attr, "ord_id=?",
                 new String[]{orderId}, null, null, null);
+        try {
 
-        Order order = new Order(this.activity);
-        if (cursor.moveToFirst()) {
-            order = getOrder(cursor, activity);
-        }
-        cursor.close();
-        return order;
-    }
 
-    private static String getOrderAssignedTable(String orderId) {
-        String tableNumber = "0";
-        Cursor cursor = DBManager.getDatabase().query(table_name, attr, "ord_id=?",
-                new String[]{orderId}, null, null, null);
-        if (cursor.moveToFirst()) {
-            tableNumber = cursor.getString(cursor.getColumnIndex(assignedTable));
+            Order order = new Order(this.activity);
+            if (cursor.moveToFirst()) {
+                order = getOrder(cursor, activity);
+            }
+            return order;
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
         }
-        cursor.close();
-        return tableNumber;
+
+
     }
 
     public boolean existsOrder(String orderId) {
-        String sb = "SELECT count(*) as count FROM " + table_name + " WHERE ord_id = '" +
-                orderId + "'";
-        Cursor cursor = DBManager.getDatabase().rawQuery(sb, null);
-        int count = 0;
-        if (cursor.moveToFirst()) {
-            count = cursor.getInt(cursor.getColumnIndex("count"));
+        Cursor cursor = null;
+        try {
+            String sb = "SELECT count(*) as count FROM " + table_name + " WHERE ord_id = '" +
+                    orderId + "'";
+            cursor = DBManager.getDatabase().rawQuery(sb, null);
+            int count = 0;
+            if (cursor.moveToFirst()) {
+                count = cursor.getInt(cursor.getColumnIndex("count"));
+            }
+            cursor.close();
+            return count > 0;
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
         }
-        cursor.close();
-        return count > 0;
+
+
     }
 
     private List<Order> getOrders(Cursor cursor) {
@@ -393,17 +427,26 @@ public class OrdersHandler {
     public List<Order> getUnsyncOrders() // Will populate all unsynchronized orders
     // for XML post
     {
-        StringBuilder sb = new StringBuilder();
-        if (Global.isForceUpload)
-            sb.append("SELECT * FROM ").append(table_name).append(" WHERE ord_issync = '0' LIMIT 5");
-        else
-            sb.append("SELECT ").append(sb1.toString()).append(" FROM ").append(table_name)
-                    .append(" WHERE ord_issync = '0' AND processed != '0' AND is_stored_fwd = '0' LIMIT 5");
+        net.sqlcipher.Cursor cursor = null;
+        try {
+            StringBuilder sb = new StringBuilder();
+            if (Global.isForceUpload)
+                sb.append("SELECT * FROM ").append(table_name).append(" WHERE ord_issync = '0' LIMIT 5");
+            else
+                sb.append("SELECT ").append(sb1.toString()).append(" FROM ").append(table_name)
+                        .append(" WHERE ord_issync = '0' AND processed != '0' AND is_stored_fwd = '0' LIMIT 5");
 
-        net.sqlcipher.Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
-        List<Order> orders = getOrders(cursor);
-        cursor.close();
-        return orders;
+            cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
+            List<Order> orders = getOrders(cursor);
+            cursor.close();
+            return orders;
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
+        }
+
+
     }
 
     public Cursor getTupyxOrders() {
@@ -411,24 +454,45 @@ public class OrdersHandler {
     }
 
     public long getNumUnsyncTupyxOrders() {
-        SQLiteStatement stmt = DBManager.getDatabase().compileStatement("SELECT Count(*) FROM " + table_name + " o LEFT OUTER JOIN Payments p ON o.ord_id = p.job_id WHERE p.paymethod_id = 'Wallet' AND o.ord_issync = '0'");
-        long count = stmt.simpleQueryForLong();
-        stmt.close();
-        return count;
+        SQLiteStatement stmt = null;
+        try {
+            stmt = DBManager.getDatabase().compileStatement("SELECT Count(*) FROM " + table_name + " o LEFT OUTER JOIN Payments p ON o.ord_id = p.job_id WHERE p.paymethod_id = 'Wallet' AND o.ord_issync = '0'");
+            long count = stmt.simpleQueryForLong();
+            stmt.close();
+            return count;
+        } finally {
+            if (stmt != null) {
+                stmt.close();
+            }
+        }
     }
 
     public List<Order> getUnsyncOrdersOnHold() {
-        net.sqlcipher.Cursor cursor = DBManager.getDatabase().rawQuery("SELECT * FROM " + table_name + " WHERE ord_issync = '0' AND isOnHold = '1'  LIMIT 5", null);
-        List<Order> orders = getOrders(cursor);
-        cursor.close();
-        return orders;
+        Cursor cursor = null;
+        try {
+            cursor = DBManager.getDatabase().rawQuery("SELECT * FROM " + table_name + " WHERE ord_issync = '0' AND isOnHold = '1'  LIMIT 5", null);
+            List<Order> orders = getOrders(cursor);
+            cursor.close();
+            return orders;
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
+        }
     }
 
     public long getNumUnsyncOrdersOnHold() {
-        SQLiteStatement stmt = DBManager.getDatabase().compileStatement("SELECT Count(*) FROM " + table_name + " WHERE ord_issync = '0' AND isOnHold = '1'");
-        long count = stmt.simpleQueryForLong();
-        stmt.close();
-        return count;
+        SQLiteStatement stmt = null;
+        try {
+            stmt = DBManager.getDatabase().compileStatement("SELECT Count(*) FROM " + table_name + " WHERE ord_issync = '0' AND isOnHold = '1'");
+            long count = stmt.simpleQueryForLong();
+            stmt.close();
+            return count;
+        } finally {
+            if (stmt != null) {
+                stmt.close();
+            }
+        }
     }
 
     public Cursor getOrdersOnHoldCursor() {
@@ -446,76 +510,120 @@ public class OrdersHandler {
     }
 
     public List<Order> getOrdersOnHold() {
-        Cursor c = getOrdersOnHoldSyncCursor();
-        List<Order> orders = getOrders(c);
-        c.close();
-        return orders;
+        Cursor c = null;
+        try {
+            c = getOrdersOnHoldSyncCursor();
+            List<Order> orders = getOrders(c);
+            c.close();
+            return orders;
+        } finally {
+            if (c != null && !c.isClosed()) {
+                c.close();
+            }
+        }
     }
 
     public long getNumUnsyncOrders() {
-
-        SQLiteStatement stmt = DBManager.getDatabase().compileStatement("SELECT Count(*) FROM " + table_name + " WHERE ord_issync = '0'");
-        long count = stmt.simpleQueryForLong();
-        stmt.close();
-        return count;
+        SQLiteStatement stmt = null;
+        try {
+            stmt = DBManager.getDatabase().compileStatement("SELECT Count(*) FROM " + table_name + " WHERE ord_issync = '0'");
+            long count = stmt.simpleQueryForLong();
+            stmt.close();
+            return count;
+        } finally {
+            if (stmt != null) {
+                stmt.close();
+            }
+        }
     }
 
     public String getLastOrderId(int deviceId, int year) {
-        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
-        String lastOrdID = assignEmployee.getMSLastOrderID();
-        boolean getIdFromDB = false;
-        StringBuilder sb = new StringBuilder();
-        if (TextUtils.isEmpty(lastOrdID) || lastOrdID.length() <= 4) {
-            getIdFromDB = true;
-        } else {
-            String[] tokens = assignEmployee.getMSLastOrderID().split("-");
-            if (!tokens[2].equalsIgnoreCase(String.valueOf(year))) {
+        Cursor cursor = null;
+        SQLiteStatement stmt = null;
+        try {
+            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+            String lastOrdID = assignEmployee.getMSLastOrderID();
+            boolean getIdFromDB = false;
+            StringBuilder sb = new StringBuilder();
+            if (TextUtils.isEmpty(lastOrdID) || lastOrdID.length() <= 4) {
                 getIdFromDB = true;
+            } else {
+                String[] tokens = assignEmployee.getMSLastOrderID().split("-");
+                if (!tokens[2].equalsIgnoreCase(String.valueOf(year))) {
+                    getIdFromDB = true;
+                }
             }
-        }
 
-        if (getIdFromDB) {
-            sb.append("select max(ord_id) from ").append(table_name).append(" WHERE ord_id like '").append(assignEmployee.getEmpId())
-                    .append("-%-").append(year).append("'");
+            if (getIdFromDB) {
+                sb.append("select max(ord_id) from ").append(table_name).append(" WHERE ord_id like '").append(assignEmployee.getEmpId())
+                        .append("-%-").append(year).append("'");
 
-            SQLiteStatement stmt = DBManager.getDatabase().compileStatement(sb.toString());
-            Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
-            cursor.moveToFirst();
-            lastOrdID = cursor.getString(0);
-            cursor.close();
-            stmt.close();
-            if (TextUtils.isEmpty(lastOrdID)) {
-                lastOrdID = assignEmployee.getEmpId() + "-" + "00001" + "-" + year;
-            }
-            AssignEmployeeDAO.updateLastOrderId(lastOrdID);
+                stmt = DBManager.getDatabase().compileStatement(sb.toString());
+                cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
+                cursor.moveToFirst();
+                lastOrdID = cursor.getString(0);
+                cursor.close();
+                stmt.close();
+                if (TextUtils.isEmpty(lastOrdID)) {
+                    lastOrdID = assignEmployee.getEmpId() + "-" + "00001" + "-" + year;
+                }
+                AssignEmployeeDAO.updateLastOrderId(lastOrdID);
 //            myPref.setLastOrdID(lastOrdID);
-        }
+            }
 
-        return lastOrdID;
+            return lastOrdID;
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+
+            }
+            if (stmt != null) {
+                stmt.close();
+            }
+        }
 
     }
 
     public long getNumUnsyncProcessedOrders() {
-
-        SQLiteStatement stmt = DBManager.getDatabase().compileStatement("SELECT Count(*) FROM " + table_name + " WHERE ord_issync = '0' AND processed != '0'");
-        long count = stmt.simpleQueryForLong();
-        stmt.close();
-        return count;
+        SQLiteStatement stmt = null;
+        try {
+            stmt = DBManager.getDatabase().compileStatement("SELECT Count(*) FROM " + table_name + " WHERE ord_issync = '0' AND processed != '0'");
+            long count = stmt.simpleQueryForLong();
+            stmt.close();
+            return count;
+        } finally {
+            if (stmt != null) {
+                stmt.close();
+            }
+        }
     }
 
     public long getNumUnsyncOrdersStoredFwd() {
-        SQLiteStatement stmt = DBManager.getDatabase().compileStatement("SELECT Count(*) FROM " + table_name + " WHERE is_stored_fwd = '1'");
-        long count = stmt.simpleQueryForLong();
-        stmt.close();
-        return count;
+        SQLiteStatement stmt = null;
+        try {
+            stmt = DBManager.getDatabase().compileStatement("SELECT Count(*) FROM " + table_name + " WHERE is_stored_fwd = '1'");
+            long count = stmt.simpleQueryForLong();
+            stmt.close();
+            return count;
+        } finally {
+            if (stmt != null) {
+                stmt.close();
+            }
+        }
     }
 
     public boolean unsyncOrdersLeft() {
-
-        SQLiteStatement stmt = DBManager.getDatabase().compileStatement("SELECT Count(*) FROM " + table_name + " WHERE ord_issync = '0' AND processed != '0'");
-        long count = stmt.simpleQueryForLong();
-        stmt.close();
-        return count != 0;
+        SQLiteStatement stmt = null;
+        try {
+            stmt = DBManager.getDatabase().compileStatement("SELECT Count(*) FROM " + table_name + " WHERE ord_issync = '0' AND processed != '0'");
+            long count = stmt.simpleQueryForLong();
+            stmt.close();
+            return count != 0;
+        } finally {
+            if (stmt != null) {
+                stmt.close();
+            }
+        }
     }
 
     private String getOrderTypesAsSQLArray(Global.OrderType[] orderTypes) {
@@ -602,18 +710,24 @@ public class OrdersHandler {
     }
 
     public String updateFinishOnHold(String ordID) {
+        Cursor c = null;
+        try {
+            c = DBManager.getDatabase().rawQuery("SELECT ord_timecreated FROM Orders WHERE ord_id = ?",
+                    new String[]{ordID});
+            String dateCreated = DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss);
 
-        Cursor c = DBManager.getDatabase().rawQuery("SELECT ord_timecreated FROM Orders WHERE ord_id = ?",
-                new String[]{ordID});
-        String dateCreated = DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss);
+            if (c.moveToFirst())
+                dateCreated = c.getString(c.getColumnIndex(ord_timecreated));
 
-        if (c.moveToFirst())
-            dateCreated = c.getString(c.getColumnIndex(ord_timecreated));
-
-        DBManager.getDatabase().delete(table_name, "ord_id = ?", new String[]{ordID});
-        DBManager.getDatabase().delete("OrderProduct", "ord_id = ?", new String[]{ordID});
-        c.close();
-        return dateCreated;
+            DBManager.getDatabase().delete(table_name, "ord_id = ?", new String[]{ordID});
+            DBManager.getDatabase().delete("OrderProduct", "ord_id = ?", new String[]{ordID});
+            c.close();
+            return dateCreated;
+        } finally {
+            if (c != null && !c.isClosed()) {
+                c.close();
+            }
+        }
     }
 
     public void updateIsProcessed(String orderID, String updateValue) {
@@ -674,61 +788,73 @@ public class OrdersHandler {
     }
 
     public boolean isOrderOffline(String ordID) {
-        Cursor c = DBManager.getDatabase().rawQuery("SELECT ord_issync FROM Orders WHERE ord_id = ?", new String[]{ordID});
+        Cursor c = null;
+        try {
+            c = DBManager.getDatabase().rawQuery("SELECT ord_issync FROM Orders WHERE ord_id = ?", new String[]{ordID});
 
-        boolean offline = false;
-        if (c.moveToFirst()) {
-            offline = c.getString(c.getColumnIndex("ord_issync")).equals("0");
+            boolean offline = false;
+            if (c.moveToFirst()) {
+                offline = c.getString(c.getColumnIndex("ord_issync")).equals("0");
+            }
+            c.close();
+            return offline;
+        } finally {
+            c.close();
         }
-        c.close();
-        return offline;
 
     }
 
     public Order getPrintedOrder(String ordID) {
-        Order anOrder = new Order(activity);
-        OrderProductsHandler productsHandler = new OrderProductsHandler(activity);
-        String sb = ("SELECT o.ord_id,o.ord_timecreated,o.ord_total,o.ord_subtotal,o.ord_discount,o.ord_taxamount,c.cust_name," +
-                "c.AccountNumnber,o.cust_id, o.orderAttributes,"
-                + "o.ord_total AS 'gran_total', tipAmount, ord_signature,o.ord_HoldName,o.clerk_id,o.ord_comment,o.isVoid " +
-                "FROM Orders o LEFT OUTER JOIN Customers c ON "
-                + "o.cust_id = c.cust_id WHERE o.ord_id = '") +
-                ordID + "'";
+        net.sqlcipher.Cursor cursor = null;
+        try {
+            Order anOrder = new Order(activity);
+            OrderProductsHandler productsHandler = new OrderProductsHandler(activity);
+            String sb = ("SELECT o.ord_id,o.ord_timecreated,o.ord_total,o.ord_subtotal,o.ord_discount,o.ord_taxamount,c.cust_name," +
+                    "c.AccountNumnber,o.cust_id, o.orderAttributes,"
+                    + "o.ord_total AS 'gran_total', tipAmount, ord_signature,o.ord_HoldName,o.clerk_id,o.ord_comment,o.isVoid " +
+                    "FROM Orders o LEFT OUTER JOIN Customers c ON "
+                    + "o.cust_id = c.cust_id WHERE o.ord_id = '") +
+                    ordID + "'";
 
-        Cursor cursor = DBManager.getDatabase().rawQuery(sb, null);
-        if (cursor.moveToFirst()) {
-            do {
-                anOrder.ord_id = getValue(cursor.getString(cursor.getColumnIndex(ord_id)));
-                anOrder.ord_timecreated = cursor.getString(cursor.getColumnIndex(ord_timecreated));
-                anOrder.ord_total = getValue(cursor.getString(cursor.getColumnIndex(ord_total)));
-                anOrder.ord_subtotal = getValue(cursor.getString(cursor.getColumnIndex(ord_subtotal)));
-                anOrder.ord_discount = getValue(cursor.getString(cursor.getColumnIndex(ord_discount)));
-                anOrder.ord_taxamount = getValue(cursor.getString(cursor.getColumnIndex(ord_taxamount)));
-                anOrder.cust_name = getValue(cursor.getString(cursor.getColumnIndex("cust_name")));
-                anOrder.gran_total = getValue(cursor.getString(cursor.getColumnIndex("gran_total")));
-                anOrder.tipAmount = getValue(cursor.getString(cursor.getColumnIndex(tipAmount)));
-                anOrder.ord_signature = getValue(cursor.getString(cursor.getColumnIndex(ord_signature)));
-                anOrder.ord_HoldName = getValue(cursor.getString(cursor.getColumnIndex(ord_HoldName)));
-                anOrder.clerk_id = getValue(cursor.getString(cursor.getColumnIndex(clerk_id)));
-                anOrder.ord_comment = getValue(cursor.getString(cursor.getColumnIndex(ord_comment)));
-                anOrder.cust_id = getValue(cursor.getString(cursor.getColumnIndex(cust_id)));
-                anOrder.isVoid = getValue(cursor.getString(cursor.getColumnIndex(isVoid)));
-                List<OrderProduct> orderProducts = productsHandler.getOrderProducts(ordID);
-                anOrder.setOrderProducts(orderProducts);
-                String json = getValue(cursor.getString(cursor.getColumnIndex(orderAttributes)));
-                Gson gson = JsonUtils.getInstance();
-                Type listType = new com.google.gson.reflect.TypeToken<List<OrderAttributes>>() {
-                }.getType();
-                if (!TextUtils.isEmpty(json)) {
-                    anOrder.orderAttributes = gson.fromJson(json, listType);
-                } else {
-                    anOrder.orderAttributes = new ArrayList<>();
-                }
+            cursor = DBManager.getDatabase().rawQuery(sb, null);
+            if (cursor.moveToFirst()) {
+                do {
+                    anOrder.ord_id = getValue(cursor.getString(cursor.getColumnIndex(ord_id)));
+                    anOrder.ord_timecreated = cursor.getString(cursor.getColumnIndex(ord_timecreated));
+                    anOrder.ord_total = getValue(cursor.getString(cursor.getColumnIndex(ord_total)));
+                    anOrder.ord_subtotal = getValue(cursor.getString(cursor.getColumnIndex(ord_subtotal)));
+                    anOrder.ord_discount = getValue(cursor.getString(cursor.getColumnIndex(ord_discount)));
+                    anOrder.ord_taxamount = getValue(cursor.getString(cursor.getColumnIndex(ord_taxamount)));
+                    anOrder.cust_name = getValue(cursor.getString(cursor.getColumnIndex("cust_name")));
+                    anOrder.gran_total = getValue(cursor.getString(cursor.getColumnIndex("gran_total")));
+                    anOrder.tipAmount = getValue(cursor.getString(cursor.getColumnIndex(tipAmount)));
+                    anOrder.ord_signature = getValue(cursor.getString(cursor.getColumnIndex(ord_signature)));
+                    anOrder.ord_HoldName = getValue(cursor.getString(cursor.getColumnIndex(ord_HoldName)));
+                    anOrder.clerk_id = getValue(cursor.getString(cursor.getColumnIndex(clerk_id)));
+                    anOrder.ord_comment = getValue(cursor.getString(cursor.getColumnIndex(ord_comment)));
+                    anOrder.cust_id = getValue(cursor.getString(cursor.getColumnIndex(cust_id)));
+                    anOrder.isVoid = getValue(cursor.getString(cursor.getColumnIndex(isVoid)));
+                    List<OrderProduct> orderProducts = productsHandler.getOrderProducts(ordID);
+                    anOrder.setOrderProducts(orderProducts);
+                    String json = getValue(cursor.getString(cursor.getColumnIndex(orderAttributes)));
+                    Gson gson = JsonUtils.getInstance();
+                    Type listType = new com.google.gson.reflect.TypeToken<List<OrderAttributes>>() {
+                    }.getType();
+                    if (!TextUtils.isEmpty(json)) {
+                        anOrder.orderAttributes = gson.fromJson(json, listType);
+                    } else {
+                        anOrder.orderAttributes = new ArrayList<>();
+                    }
 
-            } while (cursor.moveToNext());
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+            return anOrder;
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
         }
-        cursor.close();
-        return anOrder;
     }
 
     private String getValue(String value) {
@@ -738,98 +864,112 @@ public class OrdersHandler {
     }
 
     public List<Order> getOrderDayReport(String clerk_id, String date, boolean onlyOnholds) {
-        List<Order> listOrder = new ArrayList<>();
-        String isOnHolds = onlyOnholds ? "1" : "0";
-        StringBuilder query = new StringBuilder();
-        query.append(
-                "SELECT ord_type,sum(ord_subtotal) as 'ord_subtotal',sum(ord_discount) as 'ord_discount', sum(ord_taxamount) as 'ord_taxamount' ,  ");
-        query.append("sum(ord_total) as 'ord_total',date(ord_timecreated,'localtime') as 'date' FROM Orders ");
+        Cursor c = null;
+        try {
+            List<Order> listOrder = new ArrayList<>();
+            String isOnHolds = onlyOnholds ? "1" : "0";
+            StringBuilder query = new StringBuilder();
+            query.append(
+                    "SELECT ord_type,sum(ord_subtotal) as 'ord_subtotal',sum(ord_discount) as 'ord_discount', sum(ord_taxamount) as 'ord_taxamount' ,  ");
+            query.append("sum(ord_total) as 'ord_total',date(ord_timecreated,'localtime') as 'date' FROM Orders ");
 
-        String[] where_values = null;
-        if (clerk_id != null && !clerk_id.isEmpty()) {
-            query.append("WHERE clerk_id = ? AND isVoid = '0' AND isOnHold = ? ");
-            where_values = new String[]{clerk_id, isOnHolds};
+            String[] where_values = null;
+            if (clerk_id != null && !clerk_id.isEmpty()) {
+                query.append("WHERE clerk_id = ? AND isVoid = '0' AND isOnHold = ? ");
+                where_values = new String[]{clerk_id, isOnHolds};
 
-            if (date != null && !date.isEmpty()) {
-                query.append(" AND date = ? ");
-                where_values = new String[]{clerk_id, isOnHolds, date};
+                if (date != null && !date.isEmpty()) {
+                    query.append(" AND date = ? ");
+                    where_values = new String[]{clerk_id, isOnHolds, date};
+                }
+            } else if (date != null && !date.isEmpty()) {
+                query.append(" WHERE  date = ? AND isVoid = '0' AND isOnHold = ? ");
+                where_values = new String[]{date, isOnHolds};
+            } else {
+                where_values = new String[]{isOnHolds};
+                query.append(" WHERE  isVoid = '0' AND isOnHold = ? ");
             }
-        } else if (date != null && !date.isEmpty()) {
-            query.append(" WHERE  date = ? AND isVoid = '0' AND isOnHold = ? ");
-            where_values = new String[]{date, isOnHolds};
-        } else {
-            where_values = new String[]{isOnHolds};
-            query.append(" WHERE  isVoid = '0' AND isOnHold = ? ");
+            query.append(" GROUP BY ord_type");
+
+            c = DBManager.getDatabase().rawQuery(query.toString(), where_values);
+            if (c.moveToFirst()) {
+                int i_ord_type = c.getColumnIndex(ord_type);
+                int i_ord_subtotal = c.getColumnIndex(ord_subtotal);
+                int i_ord_discount = c.getColumnIndex(ord_discount);
+                int i_ord_taxamount = c.getColumnIndex(ord_taxamount);
+                int i_ord_total = c.getColumnIndex(ord_total);
+                do {
+                    Order ord = new Order(activity);
+                    ord.ord_type = c.getString(i_ord_type);
+                    ord.ord_subtotal = c.getString(i_ord_subtotal);
+                    ord.ord_discount = c.getString(i_ord_discount);
+                    ord.ord_taxamount = c.getString(i_ord_taxamount);
+                    ord.ord_total = c.getString(i_ord_total);
+
+                    listOrder.add(ord);
+                } while (c.moveToNext());
+            }
+
+            c.close();
+            return listOrder;
+        } finally {
+            if (c != null && !c.isClosed()) {
+                c.close();
+            }
         }
-        query.append(" GROUP BY ord_type");
-
-        Cursor c = DBManager.getDatabase().rawQuery(query.toString(), where_values);
-        if (c.moveToFirst()) {
-            int i_ord_type = c.getColumnIndex(ord_type);
-            int i_ord_subtotal = c.getColumnIndex(ord_subtotal);
-            int i_ord_discount = c.getColumnIndex(ord_discount);
-            int i_ord_taxamount = c.getColumnIndex(ord_taxamount);
-            int i_ord_total = c.getColumnIndex(ord_total);
-            do {
-                Order ord = new Order(activity);
-                ord.ord_type = c.getString(i_ord_type);
-                ord.ord_subtotal = c.getString(i_ord_subtotal);
-                ord.ord_discount = c.getString(i_ord_discount);
-                ord.ord_taxamount = c.getString(i_ord_taxamount);
-                ord.ord_total = c.getString(i_ord_total);
-
-                listOrder.add(ord);
-            } while (c.moveToNext());
-        }
-
-        c.close();
-        return listOrder;
     }
 
     public List<Order> getARTransactionsDayReport(String clerk_id, String date) {
-        List<Order> listOrder = new ArrayList<>();
+        net.sqlcipher.Cursor c = null;
+        try {
+            List<Order> listOrder = new ArrayList<>();
 
-        StringBuilder query = new StringBuilder();
-        query.append(
-                "SELECT o.ord_id, c.cust_name , sum(o.ord_total) as 'ord_total'," +
-                        "date(o.ord_timecreated,'localtime') as 'date' FROM Orders o LEFT JOIN Customers c ");
-        query.append("ON o.cust_id = c.cust_id WHERE o.ord_type = '2' ");
+            StringBuilder query = new StringBuilder();
+            query.append(
+                    "SELECT o.ord_id, c.cust_name , sum(o.ord_total) as 'ord_total'," +
+                            "date(o.ord_timecreated,'localtime') as 'date' FROM Orders o LEFT JOIN Customers c ");
+            query.append("ON o.cust_id = c.cust_id WHERE o.ord_type = '2' ");
 
-        String[] where_values = null;
-        if (clerk_id != null && !clerk_id.isEmpty()) {
-            query.append("AND clerk_id = ? ");
-            where_values = new String[]{clerk_id};
+            String[] where_values = null;
+            if (clerk_id != null && !clerk_id.isEmpty()) {
+                query.append("AND clerk_id = ? ");
+                where_values = new String[]{clerk_id};
 
-            if (date != null && !date.isEmpty()) {
-                query.append(" AND date = ? ");
-                where_values = new String[]{clerk_id, date};
-            }
-        } else if (date != null && !date.isEmpty()) {
-            query.append(" AND date = ? ");
-            where_values = new String[]{date};
-        }
-
-        Cursor c = DBManager.getDatabase().rawQuery(query.toString(), where_values);
-        if (c.moveToFirst()) {
-            int i_ord_id = c.getColumnIndex(ord_id);
-            int i_cust_name = c.getColumnIndex("cust_name");
-            int i_ord_total = c.getColumnIndex(ord_total);
-            int i_ord_timecreated = c.getColumnIndex("date");
-
-            do {
-                if (c.getString(i_ord_id) != null) {
-                    Order ord = new Order(activity);
-                    ord.ord_id = c.getString(i_ord_id);
-                    ord.cust_name = c.getString(i_cust_name);
-                    ord.ord_total = c.getString(i_ord_total);
-                    ord.ord_timecreated = c.getString(i_ord_timecreated);
-                    listOrder.add(ord);
+                if (date != null && !date.isEmpty()) {
+                    query.append(" AND date = ? ");
+                    where_values = new String[]{clerk_id, date};
                 }
-            } while (c.moveToNext());
-        }
+            } else if (date != null && !date.isEmpty()) {
+                query.append(" AND date = ? ");
+                where_values = new String[]{date};
+            }
 
-        c.close();
-        return listOrder;
+            c = DBManager.getDatabase().rawQuery(query.toString(), where_values);
+            if (c.moveToFirst()) {
+                int i_ord_id = c.getColumnIndex(ord_id);
+                int i_cust_name = c.getColumnIndex("cust_name");
+                int i_ord_total = c.getColumnIndex(ord_total);
+                int i_ord_timecreated = c.getColumnIndex("date");
+
+                do {
+                    if (c.getString(i_ord_id) != null) {
+                        Order ord = new Order(activity);
+                        ord.ord_id = c.getString(i_ord_id);
+                        ord.cust_name = c.getString(i_cust_name);
+                        ord.ord_total = c.getString(i_ord_total);
+                        ord.ord_timecreated = c.getString(i_ord_timecreated);
+                        listOrder.add(ord);
+                    }
+                } while (c.moveToNext());
+            }
+
+            c.close();
+            return listOrder;
+        } finally {
+            if (c != null && !c.isClosed()) {
+                c.close();
+            }
+        }
     }
 
     public void insert(Order order) {
