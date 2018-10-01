@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
 import android.hardware.usb.UsbDevice;
+import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -128,12 +129,16 @@ public class DigitalPersona {
     }
 
     public void loadForEnrollment() {
-        ReaderCollection readers;
         try {
-            readers = UareUGlobal.GetReaderCollection(context);
-            readers.GetReaders();
-            if (readers.size() > 0) {
-                this.reader = readers.get(0);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                ReaderCollection readers;
+                readers = UareUGlobal.GetReaderCollection(context);
+                readers.GetReaders();
+                if (readers.size() > 0) {
+                    reader = readers.get(0);
+                } else {
+                    return;
+                }
             } else {
                 return;
             }
@@ -175,7 +180,6 @@ public class DigitalPersona {
                     try {
                         int dpi;
                         Engine engine;
-                        ReaderCollection readers;
                         if (!isReaderAvailable) {
                             int retries = 0;
                             while (!isReaderAvailable && retries <= 3) {
@@ -186,10 +190,15 @@ public class DigitalPersona {
                                 return;
                             }
                         }
-                        readers = UareUGlobal.GetReaderCollection(context);
-                        readers.GetReaders();
-                        if (readers.size() > 0) {
-                            reader = readers.get(0);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            ReaderCollection readers;
+                            readers = UareUGlobal.GetReaderCollection(context);
+                            readers.GetReaders();
+                            if (readers.size() > 0) {
+                                reader = readers.get(0);
+                            } else {
+                                return;
+                            }
                         } else {
                             return;
                         }
