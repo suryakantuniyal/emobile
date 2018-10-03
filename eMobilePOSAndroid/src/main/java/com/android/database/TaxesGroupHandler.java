@@ -124,33 +124,39 @@ public class TaxesGroupHandler {
 		//SQLiteDatabase db = dbManager.openReadableDB();
 
 		//String query = "SELECT taxId,taxcode_id AS 'tax_name',tax_rate FROM Taxes_Group WHERE taxGroupId = ? AND taxcode_id = ?";
-		String query = "SELECT * FROM Taxes WHERE tax_id IN (SELECT taxId FROM TAXES_GROUP WHERE taxGroupId = ? AND taxcode_id = ?);";
-		
-		Cursor c = DBManager.getDatabase().rawQuery(query, new String[]{_tax_group_id,_taxcode_id});
-		
-		List<HashMap<String,String>>listMap = new ArrayList<HashMap<String,String>>();
-		HashMap<String,String>tempMap;
-		if(c.moveToFirst())
-		{
-			int i_tax_id = c.getColumnIndex("tax_id");
-			int i_tax_name = c.getColumnIndex("tax_name");
-			int i_tax_rate = c.getColumnIndex("tax_rate");
-			tempMap = new HashMap<String,String>();
-			do
+		Cursor c=null;
+		try {
+			String query = "SELECT * FROM Taxes WHERE tax_id IN (SELECT taxId FROM TAXES_GROUP WHERE taxGroupId = ? AND taxcode_id = ?);";
+
+			c = DBManager.getDatabase().rawQuery(query, new String[]{_tax_group_id, _taxcode_id});
+
+			List<HashMap<String, String>> listMap = new ArrayList<HashMap<String, String>>();
+			HashMap<String, String> tempMap;
+			if (c.moveToFirst()) {
+				int i_tax_id = c.getColumnIndex("tax_id");
+				int i_tax_name = c.getColumnIndex("tax_name");
+				int i_tax_rate = c.getColumnIndex("tax_rate");
+				tempMap = new HashMap<String, String>();
+				do {
+					tempMap.put(taxId, c.getString(i_tax_id));
+					tempMap.put("tax_name", c.getString(i_tax_name));
+					tempMap.put(tax_rate, c.getString(i_tax_rate));
+
+					listMap.add(tempMap);
+					tempMap = new HashMap<String, String>();
+				} while (c.moveToNext());
+			}
+
+			c.close();
+			//db.close();
+
+			return listMap;
+		}finally {
+			if(c!=null && !c.isClosed())
 			{
-				tempMap.put(taxId, c.getString(i_tax_id));
-				tempMap.put("tax_name", c.getString(i_tax_name));
-				tempMap.put(tax_rate, c.getString(i_tax_rate));
-				
-				listMap.add(tempMap);
-				tempMap = new HashMap<String,String>();
-			}while(c.moveToNext());
+				c.close();
+			}
 		}
-		
-		c.close();
-		//db.close();
-		
-		return listMap;
 	}
 	
 

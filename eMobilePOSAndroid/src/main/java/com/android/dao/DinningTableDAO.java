@@ -63,7 +63,9 @@ public class DinningTableDAO {
                     .findAll().deleteAllFromRealm();
         } finally {
             r.commitTransaction();
-            r.close();
+            if(r!=null) {
+                r.close();
+            }
         }
     }
 

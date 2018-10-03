@@ -22,6 +22,7 @@ public class PayMethodsHandler {
 
 
     private final static String paymethod_id = "paymethod_id";
+    private static final String table_name = "PayMethods";
     private final String paymethod_name = "paymethod_name";
     private final String paymentmethod_type = "paymentmethod_type";
     private final String paymethod_update = "paymethod_update";
@@ -29,14 +30,11 @@ public class PayMethodsHandler {
     private final String paymethod_showOnline = "paymethod_showOnline";
     private final String image_url = "image_url";
     private final String OriginalTransid = "OriginalTransid";
-
     private final List<String> attr = Arrays.asList(paymethod_id, paymethod_name, paymentmethod_type, paymethod_update,
             isactive, paymethod_showOnline, image_url, OriginalTransid);
     private StringBuilder sb1, sb2;
     private HashMap<String, Integer> attrHash;
     private MyPreferences myPref;
-
-    private static final String table_name = "PayMethods";
 
     public PayMethodsHandler(Context activity) {
         attrHash = new HashMap<>();
@@ -45,6 +43,32 @@ public class PayMethodsHandler {
         myPref = new MyPreferences(activity);
         new DBManager(activity);
         initDictionary();
+    }
+
+    public static String getPayMethodID(String methodType) {
+        //SQLiteDatabase db = dbManager.openReadableDB();
+        Cursor cursor = null;
+        try {
+            String[] fields = new String[]{paymethod_id};
+
+            cursor = DBManager.getDatabase().query(true, table_name, fields, "paymentmethod_type= '" + methodType + "'", null, null, null, null, null);
+            String data = "";
+            if (cursor.moveToFirst()) {
+                do {
+                    data = cursor.getString(cursor.getColumnIndex(paymethod_id));
+                } while (cursor.moveToNext());
+            }
+
+            cursor.close();
+
+            return data;
+        } finally {
+            {
+                if (cursor != null && !cursor.isClosed()) {
+                    cursor.close();
+                }
+            }
+        }
     }
 
     private void initDictionary() {
@@ -61,11 +85,9 @@ public class PayMethodsHandler {
         }
     }
 
-
     private int index(String tag) {
         return attrHash.get(tag);
     }
-
 
     public void insert(List<PaymentMethod> paymentMethods) {
         SQLiteStatement insert = null;
@@ -96,91 +118,83 @@ public class PayMethodsHandler {
                 paymentMethods.add(PaymentMethod.getCardOnFilePaymentMethod());
             }
             PaymentMethodDAO.insert(paymentMethods);
-         //   insert.close();
+            //   insert.close();
             DBManager.getDatabase().setTransactionSuccessful();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            if(insert!=null) {
+            if (insert != null) {
                 insert.close();
             }
             DBManager.getDatabase().endTransaction();
         }
     }
 
-
     public void emptyTable() {
         DBManager.getDatabase().execSQL("DELETE FROM " + table_name);
         PaymentMethodDAO.truncate();
     }
 
-
     public List<String[]> getPayMethodsName() {
-        List<String[]> list = new ArrayList<>();
+        Cursor cursor = null;
+        try {
+            List<String[]> list = new ArrayList<>();
 
-        String[] fields = new String[]{paymethod_id, paymethod_name};
+            String[] fields = new String[]{paymethod_id, paymethod_name};
 
-        Cursor cursor = DBManager.getDatabase().query(true, table_name, fields, "paymethod_id!=''", null, null, null, paymethod_name + " ASC", null);
+            cursor = DBManager.getDatabase().query(true, table_name, fields, "paymethod_id!=''", null, null, null, paymethod_name + " ASC", null);
 
-        //--------------- add additional payment methods ----------------
-        if (myPref.getPreferences(MyPreferences.pref_mw_with_genius)) {
-            String[] extraMethods = new String[]{"Genius", "Genius", "Genius", "", "0"};
-            list.add(extraMethods);
+            //--------------- add additional payment methods ----------------
+            if (myPref.getPreferences(MyPreferences.pref_mw_with_genius)) {
+                String[] extraMethods = new String[]{"Genius", "Genius", "Genius", "", "0"};
+                list.add(extraMethods);
+            }
+            if (myPref.getPreferences(MyPreferences.pref_pay_with_tupyx)) {
+                String[] extraMethods = new String[]{"Wallet", "Tupyx", "Wallet", "", "0"};
+                list.add(extraMethods);
+            }
+
+            if (cursor.moveToFirst()) {
+                String[] values = new String[2];
+                int i_paymethod_id = cursor.getColumnIndex(paymethod_id);
+                int i_paymethod_name = cursor.getColumnIndex(paymethod_name);
+                do {
+
+                    values[0] = cursor.getString(i_paymethod_id);
+                    values[1] = cursor.getString(i_paymethod_name);
+                    list.add(values);
+                    values = new String[2];
+
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+            //db.close();
+            return list;
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
         }
-        if (myPref.getPreferences(MyPreferences.pref_pay_with_tupyx)) {
-            String[] extraMethods = new String[]{"Wallet", "Tupyx", "Wallet", "", "0"};
-            list.add(extraMethods);
-        }
-
-        if (cursor.moveToFirst()) {
-            String[] values = new String[2];
-            int i_paymethod_id = cursor.getColumnIndex(paymethod_id);
-            int i_paymethod_name = cursor.getColumnIndex(paymethod_name);
-            do {
-
-                values[0] = cursor.getString(i_paymethod_id);
-                values[1] = cursor.getString(i_paymethod_name);
-                list.add(values);
-                values = new String[2];
-
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-        //db.close();
-        return list;
     }
-
-
-    public static String getPayMethodID(String methodType) {
-        //SQLiteDatabase db = dbManager.openReadableDB();
-
-        String[] fields = new String[]{paymethod_id};
-
-        Cursor cursor = DBManager.getDatabase().query(true, table_name, fields, "paymentmethod_type= '" + methodType + "'", null, null, null, null, null);
-        String data = "";
-        if (cursor.moveToFirst()) {
-            do {
-                data = cursor.getString(cursor.getColumnIndex(paymethod_id));
-            } while (cursor.moveToNext());
-        }
-
-        cursor.close();
-
-        return data;
-    }
-
 
     public String getSpecificPayMethodId(String methodName) {
-        String[] fields = new String[]{paymethod_id};
-        Cursor cursor = DBManager.getDatabase().query(true, table_name, fields, "paymethod_name = '" + methodName + "'", null, null, null, null, null);
-        String data = "";
-        if (cursor.moveToFirst()) {
-            do {
-                data = cursor.getString(cursor.getColumnIndex(paymethod_id));
-            } while (cursor.moveToNext());
+        Cursor cursor = null;
+        try {
+            String[] fields = new String[]{paymethod_id};
+            cursor = DBManager.getDatabase().query(true, table_name, fields, "paymethod_name = '" + methodName + "'", null, null, null, null, null);
+            String data = "";
+            if (cursor.moveToFirst()) {
+                do {
+                    data = cursor.getString(cursor.getColumnIndex(paymethod_id));
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+            return data;
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
         }
-        cursor.close();
-        return data;
     }
 
 }

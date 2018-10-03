@@ -57,7 +57,6 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
     private String _prod_id = "";
     private StringBuilder _ord_desc = new StringBuilder();
     private BigDecimal addedAddon = new BigDecimal("0");
-
     private ImageLoader imageLoader;
     private DisplayImageOptions options;
     private ProductAddonsHandler prodAddonsHandler;
@@ -67,6 +66,8 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
     private Global.TransactionType mTransType;
     private List<View> listParentViews;
     private int index_selected_parent = 0;
+    private Cursor c;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         myPref = new MyPreferences(this);
@@ -91,7 +92,7 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
         mTransType = (Global.TransactionType) extras.get("transType");
         orderProduct = gson.fromJson(extras.getString("orderProduct"), OrderProduct.class);
         parentAddons = prodAddonsHandler.getParentAddons(orderProduct.getProd_id());
-        Cursor c = prodAddonsHandler.getSpecificChildAddons(_prod_id, parentAddons.get(0).getCategoryId());
+        c = prodAddonsHandler.getSpecificChildAddons(_prod_id, parentAddons.get(0).getCategoryId());
         myGridView = findViewById(R.id.asset_grid);
         isEditAddon = extras.getBoolean("isEditAddon", false);
         selectedSeatNumber = extras.getString("selectedSeatNumber");
@@ -151,9 +152,10 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
 
     @Override
     public void onDestroy() {
-
         super.onDestroy();
-
+        if (c != null ) {
+            c.close();
+        }
     }
 
     @Override

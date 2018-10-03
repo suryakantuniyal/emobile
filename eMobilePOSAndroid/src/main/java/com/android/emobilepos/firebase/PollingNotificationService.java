@@ -62,10 +62,10 @@ public class PollingNotificationService extends Service {
     private static final int delay = 5000; // delay for 3 sec before first start
     public static int FOREGROUND_SERVICE = 101;
     Timer autoSyncTimer;
+    MyPreferences preferences;
     private Timer timer;
     private Date lastPolled;
     private String accountNumber;
-    MyPreferences preferences;
 
     public static boolean isServiceRunning(Context context) {
         ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
@@ -145,9 +145,9 @@ public class PollingNotificationService extends Service {
                         }
                     }, delay, BuildConfig.AUTOSYNC_PERIOD);
                 }
+
                 Bitmap icon = BitmapFactory.decodeResource(getResources(),
                         R.drawable.emobile_icon);
-
                 String channelId = getString(R.string.notification_channel_id);
                 String name = getString(R.string.notification_channel_name);
                 String description = getString(R.string.notification_channel_description);
@@ -158,7 +158,7 @@ public class PollingNotificationService extends Service {
                     NotificationManager notificationManager = getSystemService(NotificationManager.class);
                     notificationManager.createNotificationChannel(channel);
                 }
-                Notification notification = new NotificationCompat.Builder(this,channelId)
+                Notification notification = new NotificationCompat.Builder(this, channelId)
                         .setContentTitle("eMobilePOS")
                         .setTicker("eMobilePOS")
                         .setContentText("Synchronizing")

@@ -39,13 +39,10 @@ public class ConsignmentTransactionHandler {
     private final List<String> attr = Arrays.asList(Cons_ID, ConsTrans_ID, ConsEmp_ID, ConsCust_ID,
             ConsInvoice_ID, ConsReturn_ID, ConsPickup_ID, ConsDispatch_ID, ConsProd_ID, ConsOriginal_Qty, ConsStock_Qty,
             ConsInvoice_Qty, ConsReturn_Qty, ConsDispatch_Qty, ConsPickup_Qty, ConsNew_Qty, Cons_timecreated);
-
-    private StringBuilder sb1, sb2;
     private final HashMap<String, Integer> attrHash;
-
-    private MyPreferences myPref;
-
     private final String TABLE_NAME = "ConsignmentTransaction";
+    private StringBuilder sb1, sb2;
+    private MyPreferences myPref;
 
     public ConsignmentTransactionHandler(Context activity) {
         attrHash = new HashMap<>();
@@ -54,6 +51,10 @@ public class ConsignmentTransactionHandler {
         myPref = new MyPreferences(activity);
         new DBManager(activity);
         initDictionary();
+    }
+
+    public static ConsignmentTransactionHandler getInstance(Context activity) {
+        return new ConsignmentTransactionHandler(activity);
     }
 
     private void initDictionary() {
@@ -122,11 +123,17 @@ public class ConsignmentTransactionHandler {
     }
 
     public long getNumUnsyncItems() {
-
-        SQLiteStatement stmt = DBManager.getDatabase().compileStatement("SELECT Count(DISTINCT ConsTrans_ID) FROM " + TABLE_NAME + " WHERE is_synched = '1'");
-        long count = stmt.simpleQueryForLong();
-        stmt.close();
-        return count;
+        SQLiteStatement stmt = null;
+        try {
+            stmt = DBManager.getDatabase().compileStatement("SELECT Count(DISTINCT ConsTrans_ID) FROM " + TABLE_NAME + " WHERE is_synched = '1'");
+            long count = stmt.simpleQueryForLong();
+            stmt.close();
+            return count;
+        } finally {
+            if (stmt != null) {
+                stmt.close();
+            }
+        }
     }
 
     public void updateIsSync(List<String[]> list) {
@@ -143,11 +150,17 @@ public class ConsignmentTransactionHandler {
     }
 
     public boolean unsyncConsignmentsLeft() {
-
-        SQLiteStatement stmt = DBManager.getDatabase().compileStatement("SELECT Count(DISTINCT ConsTrans_ID) FROM " + TABLE_NAME + " WHERE is_synched = '1'");
-        long count = stmt.simpleQueryForLong();
-        stmt.close();
-        return count != 0;
+        SQLiteStatement stmt = null;
+        try {
+            stmt = DBManager.getDatabase().compileStatement("SELECT Count(DISTINCT ConsTrans_ID) FROM " + TABLE_NAME + " WHERE is_synched = '1'");
+            long count = stmt.simpleQueryForLong();
+            stmt.close();
+            return count != 0;
+        } finally {
+            if (stmt != null) {
+                stmt.close();
+            }
+        }
     }
 
     public Cursor getConsignmentCursor(boolean typePickup) {
@@ -172,31 +185,37 @@ public class ConsignmentTransactionHandler {
     }
 
     public HashMap<String, String> getConsignmentSummaryDetails(String _ConsTrans_ID, boolean isPickup) {
+        Cursor c = null;
+        try {
+            String sb = "SELECT sum(ConsInvoice_Qty) as 'total_items_sold',sum(ConsReturn_Qty) as 'total_items_returned', " +
+                    "sum(ConsDispatch_Qty) as 'total_items_dispatched',count(*) as 'total_line_items'," +
+                    "sum((((ConsOriginal_Qty-ConsStock_Qty)*p.prod_price)-(ConsReturn_Qty*p.prod_price))) as 'total_grand_total', " +
+                    "cs.encoded_signature FROM ConsignmentTransaction ct LEFT OUTER JOIN Products p ON ct.ConsProd_ID = p.prod_id " +
+                    "LEFT OUTER JOIN ConsignmentSignatures cs ON cs.ConsTrans_ID = ct.ConsTrans_ID WHERE ct.ConsTrans_ID = ?";
+            HashMap<String, String> map = new HashMap<>();
 
-        String sb = "SELECT sum(ConsInvoice_Qty) as 'total_items_sold',sum(ConsReturn_Qty) as 'total_items_returned', " +
-                "sum(ConsDispatch_Qty) as 'total_items_dispatched',count(*) as 'total_line_items'," +
-                "sum((((ConsOriginal_Qty-ConsStock_Qty)*p.prod_price)-(ConsReturn_Qty*p.prod_price))) as 'total_grand_total', " +
-                "cs.encoded_signature FROM ConsignmentTransaction ct LEFT OUTER JOIN Products p ON ct.ConsProd_ID = p.prod_id " +
-                "LEFT OUTER JOIN ConsignmentSignatures cs ON cs.ConsTrans_ID = ct.ConsTrans_ID WHERE ct.ConsTrans_ID = ?";
-        HashMap<String, String> map = new HashMap<>();
+            c = DBManager.getDatabase().rawQuery(sb, new String[]{_ConsTrans_ID});
 
-        Cursor c = DBManager.getDatabase().rawQuery(sb, new String[]{_ConsTrans_ID});
+            if (c.moveToFirst()) {
+                map.put("ConsTrans_ID", _ConsTrans_ID);
+                map.put("total_items_sold", c.getString(c.getColumnIndex("total_items_sold")));
+                map.put("total_items_returned", c.getString(c.getColumnIndex("total_items_returned")));
+                map.put("total_items_dispatched", c.getString(c.getColumnIndex("total_items_dispatched")));
+                map.put("total_line_items", c.getString(c.getColumnIndex("total_line_items")));
+                if (!isPickup)
+                    map.put("total_grand_total", c.getString(c.getColumnIndex("total_grand_total")));
+                else
+                    map.put("total_grand_total", "0");
 
-        if (c.moveToFirst()) {
-            map.put("ConsTrans_ID", _ConsTrans_ID);
-            map.put("total_items_sold", c.getString(c.getColumnIndex("total_items_sold")));
-            map.put("total_items_returned", c.getString(c.getColumnIndex("total_items_returned")));
-            map.put("total_items_dispatched", c.getString(c.getColumnIndex("total_items_dispatched")));
-            map.put("total_line_items", c.getString(c.getColumnIndex("total_line_items")));
-            if (!isPickup)
-                map.put("total_grand_total", c.getString(c.getColumnIndex("total_grand_total")));
-            else
-                map.put("total_grand_total", "0");
-
-            map.put("encoded_signature", c.getString(c.getColumnIndex("encoded_signature")));
+                map.put("encoded_signature", c.getString(c.getColumnIndex("encoded_signature")));
+            }
+            c.close();
+            return map;
+        } finally {
+            if (c != null && !c.isClosed()) {
+                c.close();
+            }
         }
-        c.close();
-        return map;
     }
 
     public Cursor getConsignmentItemDetails(String _ConsTrans_ID) {
@@ -212,10 +231,6 @@ public class ConsignmentTransactionHandler {
         Cursor c = DBManager.getDatabase().rawQuery(sb, new String[]{_ConsTrans_ID});
         c.moveToFirst();
         return c;
-    }
-
-    public static ConsignmentTransactionHandler getInstance(Context activity) {
-        return new ConsignmentTransactionHandler(activity);
     }
 
     public String getLastConsignmentId(int deviceId, int year) {
@@ -236,11 +251,21 @@ public class ConsignmentTransactionHandler {
                     .append("-%-").append(year).append("'");
 
             SQLiteStatement stmt = DBManager.getDatabase().compileStatement(sb.toString());
-            Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
-            cursor.moveToFirst();
-            lastID = cursor.getString(0);
-            cursor.close();
-            stmt.close();
+            Cursor cursor = null;
+            try {
+                cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
+                cursor.moveToFirst();
+                lastID = cursor.getString(0);
+                cursor.close();
+                stmt.close();
+            } finally {
+                if (cursor != null && !cursor.isClosed()) {
+                    cursor.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+            }
             if (TextUtils.isEmpty(lastID)) {
                 AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
                 lastID = assignEmployee.getEmpId() + "-" + "00001" + "-" + year;

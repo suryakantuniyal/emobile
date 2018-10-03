@@ -92,28 +92,36 @@ public class TransferInventory_DB {
     }
 
     public List<HashMap<String, String>> getInventoryTransactionMap(String _trans_id) {
-        String sb = "SELECT p.prod_id, p.prod_name,ti.prod_qty FROM " + TABLE_NAME + " ti LEFT JOIN Products p ON ti.prod_id = p.prod_id WHERE " +
-                "trans_id = ?";
+        Cursor c=null;
+        try {
+            String sb = "SELECT p.prod_id, p.prod_name,ti.prod_qty FROM " + TABLE_NAME + " ti LEFT JOIN Products p ON ti.prod_id = p.prod_id WHERE " +
+                    "trans_id = ?";
 
-        Cursor c = DBManager.getDatabase().rawQuery(sb, new String[]{_trans_id});
+            c = DBManager.getDatabase().rawQuery(sb, new String[]{_trans_id});
 
-        List<HashMap<String, String>> listMap = new ArrayList<>();
-        if (c.moveToFirst()) {
-            int i_prod_name = c.getColumnIndex("prod_name");
-            int i_prod_qty = c.getColumnIndex("prod_qty");
-            int i_prod_id = c.getColumnIndex("prod_id");
-            HashMap<String, String> tempMap;
-            do {
-                tempMap = new HashMap<>();
-                tempMap.put(prod_id, c.getString(i_prod_id));
-                tempMap.put("prod_name", c.getString(i_prod_name));
-                tempMap.put("prod_qty", c.getString(i_prod_qty));
-                listMap.add(tempMap);
-            } while (c.moveToNext());
+            List<HashMap<String, String>> listMap = new ArrayList<>();
+            if (c.moveToFirst()) {
+                int i_prod_name = c.getColumnIndex("prod_name");
+                int i_prod_qty = c.getColumnIndex("prod_qty");
+                int i_prod_id = c.getColumnIndex("prod_id");
+                HashMap<String, String> tempMap;
+                do {
+                    tempMap = new HashMap<>();
+                    tempMap.put(prod_id, c.getString(i_prod_id));
+                    tempMap.put("prod_name", c.getString(i_prod_name));
+                    tempMap.put("prod_qty", c.getString(i_prod_qty));
+                    listMap.add(tempMap);
+                } while (c.moveToNext());
+            }
+
+            c.close();
+            return listMap;
+        }finally {
+            if(c!=null && !c.isClosed())
+            {
+                c.close();
+            }
         }
-
-        c.close();
-        return listMap;
 
     }
 

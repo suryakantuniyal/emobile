@@ -419,68 +419,75 @@ public class GenerateXML {
 
     public void buildNewCustomer(XmlSerializer serializer) {
         CustomersHandler custHandler = new CustomersHandler(context);
-        Cursor cursor = custHandler.getUnsynchCustomers();
-        cursor.moveToFirst();
-        int size = cursor.getCount();
-        for (int i = 0; i < size; i++) {
-            try {
+        Cursor cursor = null;
+        try {
+            cursor = custHandler.getUnsynchCustomers();
+            cursor.moveToFirst();
+            int size = cursor.getCount();
+            for (int i = 0; i < size; i++) {
+                try {
 
-                serializer.startTag(empstr, "new_customer");
+                    serializer.startTag(empstr, "new_customer");
 
-                serializer.startTag(empstr, "cust_id");
-                serializer.text(cursor.getString(cursor.getColumnIndex("cust_id")));
-                serializer.endTag(empstr, "cust_id");
+                    serializer.startTag(empstr, "cust_id");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("cust_id")));
+                    serializer.endTag(empstr, "cust_id");
 
-                serializer.startTag(empstr, "cust_idRef");
-                serializer.text(cursor.getString(cursor.getColumnIndex("cust_id")));
-                serializer.endTag(empstr, "cust_idRef");
+                    serializer.startTag(empstr, "cust_idRef");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("cust_id")));
+                    serializer.endTag(empstr, "cust_idRef");
 
-                serializer.startTag(empstr, "cust_name");
-                serializer.text(cursor.getString(cursor.getColumnIndex("cust_name")));
-                serializer.endTag(empstr, "cust_name");
+                    serializer.startTag(empstr, "cust_name");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("cust_name")));
+                    serializer.endTag(empstr, "cust_name");
 
-                serializer.startTag(empstr, "cust_firstName");
-                serializer.text(cursor.getString(cursor.getColumnIndex("cust_firstName")));
-                serializer.endTag(empstr, "cust_firstName");
+                    serializer.startTag(empstr, "cust_firstName");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("cust_firstName")));
+                    serializer.endTag(empstr, "cust_firstName");
 
-                serializer.startTag(empstr, "cust_lastName");
-                serializer.text(cursor.getString(cursor.getColumnIndex("cust_lastName")));
-                serializer.endTag(empstr, "cust_lastName");
+                    serializer.startTag(empstr, "cust_lastName");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("cust_lastName")));
+                    serializer.endTag(empstr, "cust_lastName");
 
-                serializer.startTag(empstr, "CompanyName");
-                serializer.text(cursor.getString(cursor.getColumnIndex("CompanyName")));
-                serializer.endTag(empstr, "CompanyName");
+                    serializer.startTag(empstr, "CompanyName");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("CompanyName")));
+                    serializer.endTag(empstr, "CompanyName");
 
-                serializer.startTag(empstr, "cust_contact");
-                serializer.text(cursor.getString(cursor.getColumnIndex("cust_contact")));
-                serializer.endTag(empstr, "cust_contact");
+                    serializer.startTag(empstr, "cust_contact");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("cust_contact")));
+                    serializer.endTag(empstr, "cust_contact");
 
-                serializer.startTag(empstr, "cust_phone");
-                serializer.text(cursor.getString(cursor.getColumnIndex("cust_phone")));
-                serializer.endTag(empstr, "cust_phone");
+                    serializer.startTag(empstr, "cust_phone");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("cust_phone")));
+                    serializer.endTag(empstr, "cust_phone");
 
-                serializer.startTag(empstr, "cust_email");
-                serializer.text(cursor.getString(cursor.getColumnIndex("cust_email")));
-                serializer.endTag(empstr, "cust_email");
+                    serializer.startTag(empstr, "cust_email");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("cust_email")));
+                    serializer.endTag(empstr, "cust_email");
 
-                serializer.startTag(empstr, "cust_birthDate");
-                serializer.text(cursor.getString(cursor.getColumnIndex("cust_dob")));
-                serializer.endTag(empstr, "cust_birthDate");
+                    serializer.startTag(empstr, "cust_birthDate");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("cust_dob")));
+                    serializer.endTag(empstr, "cust_birthDate");
 
-                serializer.startTag(empstr, "cust_addresses");
-                buildCustomerAddress(serializer, cursor.getString(cursor.getColumnIndex("cust_id")));
-                serializer.endTag(empstr, "cust_addresses");
-                buildCustomerCustomFields(serializer, cursor.getString(cursor.getColumnIndex("cust_id")));
+                    serializer.startTag(empstr, "cust_addresses");
+                    buildCustomerAddress(serializer, cursor.getString(cursor.getColumnIndex("cust_id")));
+                    serializer.endTag(empstr, "cust_addresses");
+                    buildCustomerCustomFields(serializer, cursor.getString(cursor.getColumnIndex("cust_id")));
 
-                serializer.endTag(empstr, "new_customer");
+                    serializer.endTag(empstr, "new_customer");
 
-                cursor.moveToNext();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+                    cursor.moveToNext();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+
             }
-
+            cursor.close();
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
         }
-        cursor.close();
 
     }
 
@@ -509,93 +516,100 @@ public class GenerateXML {
 
     public void buildCustomerAddress(XmlSerializer serializer, String custID) {
         AddressHandler addrHandler = new AddressHandler(context);
-        Cursor cursor = addrHandler.getCursorAddress(custID);
-        cursor.moveToFirst();
-        int size = cursor.getCount();
+        Cursor cursor = null;
+        try {
+            cursor = addrHandler.getCursorAddress(custID);
+            cursor.moveToFirst();
+            int size = cursor.getCount();
 
-        for (int i = 0; i < size; i++) {
-            try {
-                serializer.startTag(empstr, "cust_address");
+            for (int i = 0; i < size; i++) {
+                try {
+                    serializer.startTag(empstr, "cust_address");
 
-                serializer.startTag(empstr, "addr_id");
-                serializer.text(cursor.getString(cursor.getColumnIndex("addr_id")));
-                serializer.endTag(empstr, "addr_id");
+                    serializer.startTag(empstr, "addr_id");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("addr_id")));
+                    serializer.endTag(empstr, "addr_id");
 
-                serializer.startTag(empstr, "addr_b_type");
-                serializer.text(cursor.getString(cursor.getColumnIndex("addr_b_type")));
-                serializer.endTag(empstr, "addr_b_type");
+                    serializer.startTag(empstr, "addr_b_type");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("addr_b_type")));
+                    serializer.endTag(empstr, "addr_b_type");
 
-                serializer.startTag(empstr, "addr_b_str1");
-                serializer.text(cursor.getString(cursor.getColumnIndex("addr_b_str1")));
-                serializer.endTag(empstr, "addr_b_str1");
+                    serializer.startTag(empstr, "addr_b_str1");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("addr_b_str1")));
+                    serializer.endTag(empstr, "addr_b_str1");
 
-                serializer.startTag(empstr, "addr_b_str2");
-                serializer.text(cursor.getString(cursor.getColumnIndex("addr_b_str2")));
-                serializer.endTag(empstr, "addr_b_str2");
+                    serializer.startTag(empstr, "addr_b_str2");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("addr_b_str2")));
+                    serializer.endTag(empstr, "addr_b_str2");
 
-                serializer.startTag(empstr, "addr_b_str3");
-                serializer.text(cursor.getString(cursor.getColumnIndex("addr_b_str3")));
-                serializer.endTag(empstr, "addr_b_str3");
+                    serializer.startTag(empstr, "addr_b_str3");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("addr_b_str3")));
+                    serializer.endTag(empstr, "addr_b_str3");
 
-                serializer.startTag(empstr, "addr_b_city");
-                serializer.text(cursor.getString(cursor.getColumnIndex("addr_b_city")));
-                serializer.endTag(empstr, "addr_b_city");
+                    serializer.startTag(empstr, "addr_b_city");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("addr_b_city")));
+                    serializer.endTag(empstr, "addr_b_city");
 
-                serializer.startTag(empstr, "addr_b_state");
-                serializer.text(cursor.getString(cursor.getColumnIndex("addr_b_state")));
-                serializer.endTag(empstr, "addr_b_state");
+                    serializer.startTag(empstr, "addr_b_state");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("addr_b_state")));
+                    serializer.endTag(empstr, "addr_b_state");
 
-                serializer.startTag(empstr, "addr_b_country");
-                serializer.text(cursor.getString(cursor.getColumnIndex("addr_b_country")));
-                serializer.endTag(empstr, "addr_b_country");
+                    serializer.startTag(empstr, "addr_b_country");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("addr_b_country")));
+                    serializer.endTag(empstr, "addr_b_country");
 
-                serializer.startTag(empstr, "addr_b_zipcode");
-                serializer.text(cursor.getString(cursor.getColumnIndex("addr_b_zipcode")));
-                serializer.endTag(empstr, "addr_b_zipcode");
+                    serializer.startTag(empstr, "addr_b_zipcode");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("addr_b_zipcode")));
+                    serializer.endTag(empstr, "addr_b_zipcode");
 
-                serializer.startTag(empstr, "addr_s_type");
-                serializer.text(cursor.getString(cursor.getColumnIndex("addr_s_type")));
-                serializer.endTag(empstr, "addr_s_type");
+                    serializer.startTag(empstr, "addr_s_type");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("addr_s_type")));
+                    serializer.endTag(empstr, "addr_s_type");
 
-                serializer.startTag(empstr, "addr_s_str1");
-                serializer.text(cursor.getString(cursor.getColumnIndex("addr_s_str1")));
-                serializer.endTag(empstr, "addr_s_str1");
+                    serializer.startTag(empstr, "addr_s_str1");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("addr_s_str1")));
+                    serializer.endTag(empstr, "addr_s_str1");
 
-                serializer.startTag(empstr, "addr_s_str2");
-                serializer.text(cursor.getString(cursor.getColumnIndex("addr_s_str2")));
-                serializer.endTag(empstr, "addr_s_str2");
+                    serializer.startTag(empstr, "addr_s_str2");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("addr_s_str2")));
+                    serializer.endTag(empstr, "addr_s_str2");
 
-                serializer.startTag(empstr, "addr_s_str3");
-                serializer.text(cursor.getString(cursor.getColumnIndex("addr_s_str3")));
-                serializer.endTag(empstr, "addr_s_str3");
+                    serializer.startTag(empstr, "addr_s_str3");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("addr_s_str3")));
+                    serializer.endTag(empstr, "addr_s_str3");
 
-                serializer.startTag(empstr, "addr_s_city");
-                serializer.text(cursor.getString(cursor.getColumnIndex("addr_s_city")));
-                serializer.endTag(empstr, "addr_s_city");
+                    serializer.startTag(empstr, "addr_s_city");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("addr_s_city")));
+                    serializer.endTag(empstr, "addr_s_city");
 
-                serializer.startTag(empstr, "addr_s_state");
-                serializer.text(cursor.getString(cursor.getColumnIndex("addr_s_state")));
-                serializer.endTag(empstr, "addr_s_state");
+                    serializer.startTag(empstr, "addr_s_state");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("addr_s_state")));
+                    serializer.endTag(empstr, "addr_s_state");
 
-                serializer.startTag(empstr, "addr_s_country");
-                serializer.text(cursor.getString(cursor.getColumnIndex("addr_s_country")));
-                serializer.endTag(empstr, "addr_s_country");
+                    serializer.startTag(empstr, "addr_s_country");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("addr_s_country")));
+                    serializer.endTag(empstr, "addr_s_country");
 
-                serializer.startTag(empstr, "addr_s_zipcode");
-                serializer.text(cursor.getString(cursor.getColumnIndex("addr_s_zipcode")));
-                serializer.endTag(empstr, "addr_s_zipcode");
+                    serializer.startTag(empstr, "addr_s_zipcode");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("addr_s_zipcode")));
+                    serializer.endTag(empstr, "addr_s_zipcode");
 
-                serializer.endTag(empstr, "cust_address");
+                    serializer.endTag(empstr, "cust_address");
 
-                cursor.moveToNext();
+                    cursor.moveToNext();
 
-            } catch (Exception e) {
+                } catch (Exception e) {
 
-                throw new RuntimeException(e);
+                    throw new RuntimeException(e);
+                }
+            }
+
+            cursor.close();
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
             }
         }
-
-        cursor.close();
     }
 
     public String synchOrders(boolean isOnHold) {
@@ -1132,188 +1146,202 @@ public class GenerateXML {
 
     public void buildOrderProducts(XmlSerializer serializer, String limiter, boolean isRestMode, boolean isOnHold) {
         OrderProductsHandler orderProductsHandler = new OrderProductsHandler(context);
-        Cursor cursor = orderProductsHandler.getCursorData(limiter);
-        cursor.moveToFirst();
-        int size = cursor.getCount();
+        Cursor cursor = null;
+        try {
+            cursor = orderProductsHandler.getCursorData(limiter);
+            cursor.moveToFirst();
+            int size = cursor.getCount();
 
-        for (int i = 0; i < size; i++) {
-            try {
-                OrderProduct product = orderProductsHandler.getOrderProduct(cursor);
-                if (!isRestMode || (isRestMode && ((!product.isAddon())
-                        || (product.isAddon() && isOnHold)))) {
-                    serializer.startTag(empstr, "OrderProduct");
+            for (int i = 0; i < size; i++) {
+                try {
+                    OrderProduct product = orderProductsHandler.getOrderProduct(cursor);
+                    if (!isRestMode || (isRestMode && ((!product.isAddon())
+                            || (product.isAddon() && isOnHold)))) {
+                        serializer.startTag(empstr, "OrderProduct");
 
-                    String assignedSeat = product.getAssignedSeat();
-                    serializer.startTag(empstr, "assignedSeat");
-                    serializer.text(StringUtil.nullStringToEmpty(assignedSeat));
-                    serializer.endTag(empstr, "assignedSeat");
+                        String assignedSeat = product.getAssignedSeat();
+                        serializer.startTag(empstr, "assignedSeat");
+                        serializer.text(StringUtil.nullStringToEmpty(assignedSeat));
+                        serializer.endTag(empstr, "assignedSeat");
 
-                    String parentAddonOrderProductId = product.getAddon_ordprod_id();
-                    serializer.startTag(empstr, "parentAddonOrderProductId");
-                    serializer.text(StringUtil.nullStringToEmpty(parentAddonOrderProductId));
-                    serializer.endTag(empstr, "parentAddonOrderProductId");
+                        String parentAddonOrderProductId = product.getAddon_ordprod_id();
+                        serializer.startTag(empstr, "parentAddonOrderProductId");
+                        serializer.text(StringUtil.nullStringToEmpty(parentAddonOrderProductId));
+                        serializer.endTag(empstr, "parentAddonOrderProductId");
 
-                    String seatGroupId = String.valueOf(product.getSeatGroupId());
-                    serializer.startTag(empstr, "seatGroupId");
-                    serializer.text(StringUtil.nullStringToEmpty(seatGroupId));
-                    serializer.endTag(empstr, "seatGroupId");
+                        String seatGroupId = String.valueOf(product.getSeatGroupId());
+                        serializer.startTag(empstr, "seatGroupId");
+                        serializer.text(StringUtil.nullStringToEmpty(seatGroupId));
+                        serializer.endTag(empstr, "seatGroupId");
 
 
-                    serializer.startTag(empstr, "isAddon");
-                    serializer.text(String.valueOf(product.isAddon()));
-                    serializer.endTag(empstr, "isAddon");
+                        serializer.startTag(empstr, "isAddon");
+                        serializer.text(String.valueOf(product.isAddon()));
+                        serializer.endTag(empstr, "isAddon");
 
-                    serializer.startTag(empstr, "isAdded");
-                    serializer.text(String.valueOf(product.isAdded()));
-                    serializer.endTag(empstr, "isAdded");
+                        serializer.startTag(empstr, "isAdded");
+                        serializer.text(String.valueOf(product.isAdded()));
+                        serializer.endTag(empstr, "isAdded");
 
-                    serializer.startTag(empstr, "isPrinted");
+                        serializer.startTag(empstr, "isPrinted");
 
-                    if (!isOnHold)
-                        serializer.text(String.valueOf(product.isPrinted()));
-                    else
-                        serializer.text("true");
+                        if (!isOnHold)
+                            serializer.text(String.valueOf(product.isPrinted()));
+                        else
+                            serializer.text("true");
 
-                    serializer.endTag(empstr, "isPrinted");
+                        serializer.endTag(empstr, "isPrinted");
 
-                    String itemVoid = product.getItem_void();
-                    if (!TextUtils.isEmpty(itemVoid)) {
-                        serializer.startTag(empstr, "item_void");
-                        serializer.text(product.getItem_void());
-                        serializer.endTag(empstr, "item_void");
+                        String itemVoid = product.getItem_void();
+                        if (!TextUtils.isEmpty(itemVoid)) {
+                            serializer.startTag(empstr, "item_void");
+                            serializer.text(product.getItem_void());
+                            serializer.endTag(empstr, "item_void");
+                        }
+                        serializer.startTag(empstr, "ordprod_id");
+                        serializer.text(product.getOrdprod_id());
+                        serializer.endTag(empstr, "ordprod_id");
+
+                        serializer.startTag(empstr, "ord_id");
+                        serializer.text(product.getOrd_id());
+                        serializer.endTag(empstr, "ord_id");
+
+                        serializer.startTag(empstr, "prod_id");
+                        serializer.text(product.getProd_id());
+                        serializer.endTag(empstr, "prod_id");
+
+                        serializer.startTag(empstr, "cat_id");
+                        serializer.text(StringUtil.nullStringToEmpty(product.getCat_id()));
+                        serializer.endTag(empstr, "cat_id");
+
+                        serializer.startTag(empstr, "cat_name");
+                        serializer.text(StringUtil.nullStringToEmpty(product.getCat_name()));
+                        serializer.endTag(empstr, "cat_name");
+
+                        serializer.startTag(empstr, "ordprod_qty");
+                        serializer.text(product.getOrdprod_qty());
+                        serializer.endTag(empstr, "ordprod_qty");
+                        //                    BigDecimal price = new BigDecimal(cursor.getString(cursor.getColumnIndex("overwrite_price")))
+                        //                            .multiply(new BigDecimal(cursor.getString(cursor.getColumnIndex("ordprod_qty"))));
+                        serializer.startTag(empstr, "overwrite_price");
+                        serializer.text(product.getFinalPrice());
+                        serializer.endTag(empstr, "overwrite_price");
+
+                        serializer.startTag(empstr, "reason_id");
+                        serializer.text(product.getReason_id());
+                        serializer.endTag(empstr, "reason_id");
+
+                        serializer.startTag(empstr, "ordprod_name");
+                        serializer.text(product.getOrdprod_name());
+                        serializer.endTag(empstr, "ordprod_name");
+
+                        serializer.startTag(empstr, "ordprod_desc");
+                        serializer.text(product.getOrdprod_desc());
+                        serializer.endTag(empstr, "ordprod_desc");
+
+                        serializer.startTag(empstr, "pricelevel_id");
+                        serializer.text(product.getPricelevel_id());
+                        serializer.endTag(empstr, "pricelevel_id");
+
+                        serializer.startTag(empstr, "prod_seq");
+                        serializer.text(product.getProd_seq());
+                        serializer.endTag(empstr, "prod_seq");
+
+                        serializer.startTag(empstr, "uom_name");
+                        serializer.text(product.getUom_name());
+                        serializer.endTag(empstr, "uom_name");
+
+                        // <uom_id>Packet</uom_id>
+                        serializer.startTag(empstr, "uom_id");
+                        serializer.text(product.getUom_id());
+                        serializer.endTag(empstr, "uom_id");
+
+                        serializer.startTag(empstr, "uom_conversion");
+                        serializer.text(product.getUom_conversion());
+                        serializer.endTag(empstr, "uom_conversion");
+
+                        serializer.startTag(empstr, "prod_taxId");
+                        serializer.text(product.getProd_taxId());
+                        serializer.endTag(empstr, "prod_taxId");
+
+                        serializer.startTag(empstr, "totalLineValue");
+                        serializer.text(product.getItemTotal());
+                        serializer.endTag(empstr, "totalLineValue");
+                        String prod_taxValue = String.valueOf(Global.getRoundBigDecimal(product.getProd_taxValue(), 2));
+
+                        serializer.startTag(empstr, "prod_taxValue");
+                        serializer.text(prod_taxValue);
+                        serializer.endTag(empstr, "prod_taxValue");
+
+                        serializer.startTag(empstr, "prod_discountId");
+                        serializer.text(product.getDiscount_id());
+                        serializer.endTag(empstr, "prod_discountId");
+
+                        serializer.startTag(empstr, "prod_discountValue");
+                        serializer.text(product.getDiscount_value());
+                        serializer.endTag(empstr, "prod_discountValue");
+
+                        // <Attributes/>
+                        serializer.startTag(empstr, "Attributes");
+                        buildOrdProdAttr(serializer, cursor.getString(cursor.getColumnIndex("ordprod_id")));
+                        serializer.endTag(empstr, "Attributes");
+
+                        serializer.endTag(empstr, "OrderProduct");
                     }
-                    serializer.startTag(empstr, "ordprod_id");
-                    serializer.text(product.getOrdprod_id());
-                    serializer.endTag(empstr, "ordprod_id");
 
-                    serializer.startTag(empstr, "ord_id");
-                    serializer.text(product.getOrd_id());
-                    serializer.endTag(empstr, "ord_id");
+                    cursor.moveToNext();
 
-                    serializer.startTag(empstr, "prod_id");
-                    serializer.text(product.getProd_id());
-                    serializer.endTag(empstr, "prod_id");
-
-                    serializer.startTag(empstr, "cat_id");
-                    serializer.text(StringUtil.nullStringToEmpty(product.getCat_id()));
-                    serializer.endTag(empstr, "cat_id");
-
-                    serializer.startTag(empstr, "cat_name");
-                    serializer.text(StringUtil.nullStringToEmpty(product.getCat_name()));
-                    serializer.endTag(empstr, "cat_name");
-
-                    serializer.startTag(empstr, "ordprod_qty");
-                    serializer.text(product.getOrdprod_qty());
-                    serializer.endTag(empstr, "ordprod_qty");
-                    //                    BigDecimal price = new BigDecimal(cursor.getString(cursor.getColumnIndex("overwrite_price")))
-                    //                            .multiply(new BigDecimal(cursor.getString(cursor.getColumnIndex("ordprod_qty"))));
-                    serializer.startTag(empstr, "overwrite_price");
-                    serializer.text(product.getFinalPrice());
-                    serializer.endTag(empstr, "overwrite_price");
-
-                    serializer.startTag(empstr, "reason_id");
-                    serializer.text(product.getReason_id());
-                    serializer.endTag(empstr, "reason_id");
-
-                    serializer.startTag(empstr, "ordprod_name");
-                    serializer.text(product.getOrdprod_name());
-                    serializer.endTag(empstr, "ordprod_name");
-
-                    serializer.startTag(empstr, "ordprod_desc");
-                    serializer.text(product.getOrdprod_desc());
-                    serializer.endTag(empstr, "ordprod_desc");
-
-                    serializer.startTag(empstr, "pricelevel_id");
-                    serializer.text(product.getPricelevel_id());
-                    serializer.endTag(empstr, "pricelevel_id");
-
-                    serializer.startTag(empstr, "prod_seq");
-                    serializer.text(product.getProd_seq());
-                    serializer.endTag(empstr, "prod_seq");
-
-                    serializer.startTag(empstr, "uom_name");
-                    serializer.text(product.getUom_name());
-                    serializer.endTag(empstr, "uom_name");
-
-                    // <uom_id>Packet</uom_id>
-                    serializer.startTag(empstr, "uom_id");
-                    serializer.text(product.getUom_id());
-                    serializer.endTag(empstr, "uom_id");
-
-                    serializer.startTag(empstr, "uom_conversion");
-                    serializer.text(product.getUom_conversion());
-                    serializer.endTag(empstr, "uom_conversion");
-
-                    serializer.startTag(empstr, "prod_taxId");
-                    serializer.text(product.getProd_taxId());
-                    serializer.endTag(empstr, "prod_taxId");
-
-                    serializer.startTag(empstr, "totalLineValue");
-                    serializer.text(product.getItemTotal());
-                    serializer.endTag(empstr, "totalLineValue");
-                    String prod_taxValue = String.valueOf(Global.getRoundBigDecimal(product.getProd_taxValue(), 2));
-
-                    serializer.startTag(empstr, "prod_taxValue");
-                    serializer.text(prod_taxValue);
-                    serializer.endTag(empstr, "prod_taxValue");
-
-                    serializer.startTag(empstr, "prod_discountId");
-                    serializer.text(product.getDiscount_id());
-                    serializer.endTag(empstr, "prod_discountId");
-
-                    serializer.startTag(empstr, "prod_discountValue");
-                    serializer.text(product.getDiscount_value());
-                    serializer.endTag(empstr, "prod_discountValue");
-
-                    // <Attributes/>
-                    serializer.startTag(empstr, "Attributes");
-                    buildOrdProdAttr(serializer, cursor.getString(cursor.getColumnIndex("ordprod_id")));
-                    serializer.endTag(empstr, "Attributes");
-
-                    serializer.endTag(empstr, "OrderProduct");
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
                 }
 
-                cursor.moveToNext();
-
-            } catch (Exception e) {
-                throw new RuntimeException(e);
             }
-
+            cursor.close();
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
         }
-        cursor.close();
 
     }
 
     private void buildOrdProdAttr(XmlSerializer serializer, String value) {
         OrderProductsAttr_DB handler = new OrderProductsAttr_DB(context);
-        Cursor c = handler.getOrdProdAttr(value);
-        c.moveToFirst();
-        int size = c.getCount();
+        Cursor c = null;
+        try {
+            c = handler.getOrdProdAttr(value);
+            c.moveToFirst();
+            int size = c.getCount();
 
-        for (int i = 0; i < size; i++) {
-            try {
-                serializer.startTag(empstr, "Attribute");
+            for (int i = 0; i < size; i++) {
+                try {
+                    serializer.startTag(empstr, "Attribute");
 
-                serializer.startTag(empstr, "attribute_id");
-                serializer.text(c.getString(c.getColumnIndex("attribute_id")));
-                serializer.endTag(empstr, "attribute_id");
+                    serializer.startTag(empstr, "attribute_id");
+                    serializer.text(c.getString(c.getColumnIndex("attribute_id")));
+                    serializer.endTag(empstr, "attribute_id");
 
-                serializer.startTag(empstr, "name");
-                serializer.text(c.getString(c.getColumnIndex("name")));
-                serializer.endTag(empstr, "name");
+                    serializer.startTag(empstr, "name");
+                    serializer.text(c.getString(c.getColumnIndex("name")));
+                    serializer.endTag(empstr, "name");
 
-                serializer.startTag(empstr, "value");
-                serializer.text(c.getString(c.getColumnIndex("value")));
-                serializer.endTag(empstr, "value");
+                    serializer.startTag(empstr, "value");
+                    serializer.text(c.getString(c.getColumnIndex("value")));
+                    serializer.endTag(empstr, "value");
 
-                serializer.endTag(empstr, "Attribute");
-                c.moveToNext();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+                    serializer.endTag(empstr, "Attribute");
+                    c.moveToNext();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+
             }
-
+            c.close();
+        } finally {
+            if (c != null && !c.isClosed()) {
+                c.close();
+            }
         }
-        c.close();
     }
 
     public String synchPayments() {
@@ -1600,31 +1628,38 @@ public class GenerateXML {
 
     public void buildVoidTransactions(XmlSerializer serializer) {
         VoidTransactionsHandler handler = new VoidTransactionsHandler();
-        Cursor cursor = handler.getUnsyncVoids();
-        cursor.moveToFirst();
-        int size = cursor.getCount();
-        for (int i = 0; i < size; i++) {
-            try {
+        Cursor cursor = null;
+        try {
+            cursor = handler.getUnsyncVoids();
+            cursor.moveToFirst();
+            int size = cursor.getCount();
+            for (int i = 0; i < size; i++) {
+                try {
 
-                serializer.startTag(empstr, "void");
+                    serializer.startTag(empstr, "void");
 
-                serializer.startTag(empstr, "ord_id");
-                serializer.text(cursor.getString(cursor.getColumnIndex("ord_id")));
-                serializer.endTag(empstr, "ord_id");
+                    serializer.startTag(empstr, "ord_id");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("ord_id")));
+                    serializer.endTag(empstr, "ord_id");
 
-                serializer.startTag(empstr, "ord_type");
-                serializer.text(cursor.getString(cursor.getColumnIndex("ord_type")));
-                serializer.endTag(empstr, "ord_type");
+                    serializer.startTag(empstr, "ord_type");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("ord_type")));
+                    serializer.endTag(empstr, "ord_type");
 
-                serializer.endTag(empstr, "void");
-                cursor.moveToNext();
+                    serializer.endTag(empstr, "void");
+                    cursor.moveToNext();
 
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            cursor.close();
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
             }
         }
-
-        cursor.close();
     }
 
     public String synchTemplates() {
@@ -1654,60 +1689,67 @@ public class GenerateXML {
     private void buildTemplate(XmlSerializer serializer) {
 
         TemplateHandler handler = new TemplateHandler(context);
-        Cursor cursor = handler.getUnsyncTemplates();
-        cursor.moveToFirst();
-        int size = cursor.getCount();
-        String str;
-        for (int i = 0; i < size; i++) {
-            try {
-                serializer.startTag(empstr, "Template");
+        Cursor cursor = null;
+        try {
+            cursor = handler.getUnsyncTemplates();
+            cursor.moveToFirst();
+            int size = cursor.getCount();
+            String str;
+            for (int i = 0; i < size; i++) {
+                try {
+                    serializer.startTag(empstr, "Template");
 
-                serializer.startTag(empstr, "cust_id");
-                serializer.text(cursor.getString(cursor.getColumnIndex("cust_id")));
-                serializer.endTag(empstr, "cust_id");
+                    serializer.startTag(empstr, "cust_id");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("cust_id")));
+                    serializer.endTag(empstr, "cust_id");
 
-                serializer.startTag(empstr, "product_id");
-                serializer.text(cursor.getString(cursor.getColumnIndex("product_id")));
-                serializer.endTag(empstr, "product_id");
+                    serializer.startTag(empstr, "product_id");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("product_id")));
+                    serializer.endTag(empstr, "product_id");
 
-                serializer.startTag(empstr, "quantity");
-                serializer.text(cursor.getString(cursor.getColumnIndex("quantity")));
-                serializer.endTag(empstr, "quantity");
+                    serializer.startTag(empstr, "quantity");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("quantity")));
+                    serializer.endTag(empstr, "quantity");
 
-                serializer.startTag(empstr, "price_level_id");
-                serializer.text(cursor.getString(cursor.getColumnIndex("price_level_id")));
-                serializer.endTag(empstr, "price_level_id");
+                    serializer.startTag(empstr, "price_level_id");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("price_level_id")));
+                    serializer.endTag(empstr, "price_level_id");
 
-                serializer.startTag(empstr, "price_level");
-                serializer.text(cursor.getString(cursor.getColumnIndex("price_level")));
-                serializer.endTag(empstr, "price_level");
+                    serializer.startTag(empstr, "price_level");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("price_level")));
+                    serializer.endTag(empstr, "price_level");
 
-                serializer.startTag(empstr, "name");
-                serializer.text(cursor.getString(cursor.getColumnIndex("name")));
-                serializer.endTag(empstr, "name");
+                    serializer.startTag(empstr, "name");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("name")));
+                    serializer.endTag(empstr, "name");
 
-                serializer.startTag(empstr, "price");
-                str = cursor.getString(cursor.getColumnIndex("price"));
-                if (str != null)
-                    serializer.text(str);
-                else
-                    serializer.text("");
-                serializer.endTag(empstr, "price");
+                    serializer.startTag(empstr, "price");
+                    str = cursor.getString(cursor.getColumnIndex("price"));
+                    if (str != null)
+                        serializer.text(str);
+                    else
+                        serializer.text("");
+                    serializer.endTag(empstr, "price");
 
-                serializer.startTag(empstr, "overwrite_price");
-                serializer.text(cursor.getString(cursor.getColumnIndex("overwrite_price")));
-                serializer.endTag(empstr, "overwrite_price");
+                    serializer.startTag(empstr, "overwrite_price");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("overwrite_price")));
+                    serializer.endTag(empstr, "overwrite_price");
 
-                serializer.endTag(empstr, "Template");
+                    serializer.endTag(empstr, "Template");
 
-                cursor.moveToNext();
+                    cursor.moveToNext();
 
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+
             }
-
+            cursor.close();
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
         }
-        cursor.close();
     }
 
     public String synchCustomerInventory() {
@@ -1733,44 +1775,51 @@ public class GenerateXML {
     }
 
     private void buildCustomerInventory(XmlSerializer serializer) {
-        CustomerInventoryHandler handler = new CustomerInventoryHandler(context);
-        Cursor cursor = handler.getUnsychedItems();
-        cursor.moveToFirst();
-        int size = cursor.getCount();
-        for (int i = 0; i < size; i++) {
-            try {
-                serializer.startTag(empstr, "Inventory");
+        Cursor cursor = null;
+        try {
+            CustomerInventoryHandler handler = new CustomerInventoryHandler(context);
+            cursor = handler.getUnsychedItems();
+            cursor.moveToFirst();
+            int size = cursor.getCount();
+            for (int i = 0; i < size; i++) {
+                try {
+                    serializer.startTag(empstr, "Inventory");
 
-                serializer.startTag(empstr, "cust_id");
-                serializer.text(cursor.getString(cursor.getColumnIndex("cust_id")));
-                serializer.endTag(empstr, "cust_id");
+                    serializer.startTag(empstr, "cust_id");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("cust_id")));
+                    serializer.endTag(empstr, "cust_id");
 
-                serializer.startTag(empstr, "prod_id");
-                serializer.text(cursor.getString(cursor.getColumnIndex("prod_id")));
-                serializer.endTag(empstr, "prod_id");
+                    serializer.startTag(empstr, "prod_id");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("prod_id")));
+                    serializer.endTag(empstr, "prod_id");
 
-                serializer.startTag(empstr, "qty");
-                serializer.text(cursor.getString(cursor.getColumnIndex("qty")));
-                serializer.endTag(empstr, "qty");
+                    serializer.startTag(empstr, "qty");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("qty")));
+                    serializer.endTag(empstr, "qty");
 
-                serializer.startTag(empstr, "price");
-                serializer.text(cursor.getString(cursor.getColumnIndex("price")));
-                serializer.endTag(empstr, "price");
+                    serializer.startTag(empstr, "price");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("price")));
+                    serializer.endTag(empstr, "price");
 
-                serializer.startTag(empstr, "cust_update");
-                serializer.text(cursor.getString(cursor.getColumnIndex("cust_update")));
-                serializer.endTag(empstr, "cust_update");
+                    serializer.startTag(empstr, "cust_update");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("cust_update")));
+                    serializer.endTag(empstr, "cust_update");
 
-                serializer.endTag(empstr, "Inventory");
+                    serializer.endTag(empstr, "Inventory");
 
-                cursor.moveToNext();
+                    cursor.moveToNext();
 
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+
             }
-
+            cursor.close();
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
         }
-        cursor.close();
     }
 
     public String synchConsignmentTransaction() {
@@ -1798,87 +1847,94 @@ public class GenerateXML {
     private void buildConsignmentTransaction(XmlSerializer serializer) {
 
         ConsignmentTransactionHandler handler = new ConsignmentTransactionHandler(context);
-        Cursor cursor = handler.getUnsychedItems();
-        cursor.moveToFirst();
-        int size = cursor.getCount();
-        for (int i = 0; i < size; i++) {
-            try {
-                serializer.startTag(empstr, "Transaction");
+        Cursor cursor = null;
+        try {
+            cursor = handler.getUnsychedItems();
+            cursor.moveToFirst();
+            int size = cursor.getCount();
+            for (int i = 0; i < size; i++) {
+                try {
+                    serializer.startTag(empstr, "Transaction");
 
-                serializer.startTag(empstr, "ConsTrans_ID");
-                serializer.text(cursor.getString(cursor.getColumnIndex("ConsTrans_ID")));
-                serializer.endTag(empstr, "ConsTrans_ID");
+                    serializer.startTag(empstr, "ConsTrans_ID");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("ConsTrans_ID")));
+                    serializer.endTag(empstr, "ConsTrans_ID");
 
-                serializer.startTag(empstr, "ConsEmp_ID");
-                serializer.text(cursor.getString(cursor.getColumnIndex("ConsEmp_ID")));
-                serializer.endTag(empstr, "ConsEmp_ID");
+                    serializer.startTag(empstr, "ConsEmp_ID");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("ConsEmp_ID")));
+                    serializer.endTag(empstr, "ConsEmp_ID");
 
-                serializer.startTag(empstr, "ConsCust_ID");
-                serializer.text(cursor.getString(cursor.getColumnIndex("ConsCust_ID")));
-                serializer.endTag(empstr, "ConsCust_ID");
+                    serializer.startTag(empstr, "ConsCust_ID");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("ConsCust_ID")));
+                    serializer.endTag(empstr, "ConsCust_ID");
 
-                serializer.startTag(empstr, "ConsInvoice_ID");
-                serializer.text(cursor.getString(cursor.getColumnIndex("ConsInvoice_ID")));
-                serializer.endTag(empstr, "ConsInvoice_ID");
+                    serializer.startTag(empstr, "ConsInvoice_ID");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("ConsInvoice_ID")));
+                    serializer.endTag(empstr, "ConsInvoice_ID");
 
-                serializer.startTag(empstr, "ConsReturn_ID");
-                serializer.text(cursor.getString(cursor.getColumnIndex("ConsReturn_ID")));
-                serializer.endTag(empstr, "ConsReturn_ID");
+                    serializer.startTag(empstr, "ConsReturn_ID");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("ConsReturn_ID")));
+                    serializer.endTag(empstr, "ConsReturn_ID");
 
-                serializer.startTag(empstr, "ConsDispatch_ID");
-                serializer.text(cursor.getString(cursor.getColumnIndex("ConsDispatch_ID")));
-                serializer.endTag(empstr, "ConsDispatch_ID");
+                    serializer.startTag(empstr, "ConsDispatch_ID");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("ConsDispatch_ID")));
+                    serializer.endTag(empstr, "ConsDispatch_ID");
 
-                serializer.startTag(empstr, "ConsPickup_ID");
-                serializer.text(cursor.getString(cursor.getColumnIndex("ConsPickup_ID")));
-                serializer.endTag(empstr, "ConsPickup_ID");
+                    serializer.startTag(empstr, "ConsPickup_ID");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("ConsPickup_ID")));
+                    serializer.endTag(empstr, "ConsPickup_ID");
 
-                serializer.startTag(empstr, "ConsProd_ID");
-                serializer.text(cursor.getString(cursor.getColumnIndex("ConsProd_ID")));
-                serializer.endTag(empstr, "ConsProd_ID");
+                    serializer.startTag(empstr, "ConsProd_ID");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("ConsProd_ID")));
+                    serializer.endTag(empstr, "ConsProd_ID");
 
-                serializer.startTag(empstr, "ConsInventory_Qty");
-                serializer.text(cursor.getString(cursor.getColumnIndex("ConsOriginal_Qty")));
-                serializer.endTag(empstr, "ConsInventory_Qty");
+                    serializer.startTag(empstr, "ConsInventory_Qty");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("ConsOriginal_Qty")));
+                    serializer.endTag(empstr, "ConsInventory_Qty");
 
-                serializer.startTag(empstr, "ConsStock_Qty");
-                serializer.text(cursor.getString(cursor.getColumnIndex("ConsStock_Qty")));
-                serializer.endTag(empstr, "ConsStock_Qty");
+                    serializer.startTag(empstr, "ConsStock_Qty");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("ConsStock_Qty")));
+                    serializer.endTag(empstr, "ConsStock_Qty");
 
-                serializer.startTag(empstr, "ConsInvoice_Qty");
-                serializer.text(cursor.getString(cursor.getColumnIndex("ConsInvoice_Qty")));
-                serializer.endTag(empstr, "ConsInvoice_Qty");
+                    serializer.startTag(empstr, "ConsInvoice_Qty");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("ConsInvoice_Qty")));
+                    serializer.endTag(empstr, "ConsInvoice_Qty");
 
-                serializer.startTag(empstr, "ConsReturn_Qty");
-                serializer.text(cursor.getString(cursor.getColumnIndex("ConsReturn_Qty")));
-                serializer.endTag(empstr, "ConsReturn_Qty");
+                    serializer.startTag(empstr, "ConsReturn_Qty");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("ConsReturn_Qty")));
+                    serializer.endTag(empstr, "ConsReturn_Qty");
 
-                serializer.startTag(empstr, "ConsDispatch_Qty");
-                serializer.text(cursor.getString(cursor.getColumnIndex("ConsDispatch_Qty")));
-                serializer.endTag(empstr, "ConsDispatch_Qty");
+                    serializer.startTag(empstr, "ConsDispatch_Qty");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("ConsDispatch_Qty")));
+                    serializer.endTag(empstr, "ConsDispatch_Qty");
 
-                serializer.startTag(empstr, "ConsPickup_Qty");
-                serializer.text(cursor.getString(cursor.getColumnIndex("ConsPickup_Qty")));
-                serializer.endTag(empstr, "ConsPickup_Qty");
+                    serializer.startTag(empstr, "ConsPickup_Qty");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("ConsPickup_Qty")));
+                    serializer.endTag(empstr, "ConsPickup_Qty");
 
-                serializer.startTag(empstr, "ConsNew_Qty");
-                serializer.text(cursor.getString(cursor.getColumnIndex("ConsNew_Qty")));
-                serializer.endTag(empstr, "ConsNew_Qty");
+                    serializer.startTag(empstr, "ConsNew_Qty");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("ConsNew_Qty")));
+                    serializer.endTag(empstr, "ConsNew_Qty");
 
-                serializer.startTag(empstr, "Cons_timecreated");
-                serializer.text(cursor.getString(cursor.getColumnIndex("Cons_timecreated")));
-                serializer.endTag(empstr, "Cons_timecreated");
+                    serializer.startTag(empstr, "Cons_timecreated");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("Cons_timecreated")));
+                    serializer.endTag(empstr, "Cons_timecreated");
 
-                serializer.endTag(empstr, "Transaction");
+                    serializer.endTag(empstr, "Transaction");
 
-                cursor.moveToNext();
+                    cursor.moveToNext();
 
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+
             }
-
+            cursor.close();
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
         }
-        cursor.close();
     }
 
     public String synchTimeClock() {
@@ -1906,43 +1962,50 @@ public class GenerateXML {
     private void buildTimeClock(XmlSerializer serializer) {
 
         TimeClockHandler tcHandler = new TimeClockHandler(context);
-        Cursor cursor = tcHandler.getAllUnsync();
-        cursor.moveToFirst();
-        int size = cursor.getCount();
-        for (int i = 0; i < size; i++) {
-            try {
-                serializer.startTag(empstr, "TimeClock");
+        Cursor cursor = null;
+        try {
+            cursor = tcHandler.getAllUnsync();
+            cursor.moveToFirst();
+            int size = cursor.getCount();
+            for (int i = 0; i < size; i++) {
+                try {
+                    serializer.startTag(empstr, "TimeClock");
 
-                serializer.startTag(empstr, "timeclockid");
-                serializer.text(cursor.getString(cursor.getColumnIndex("timeclockid")));
-                serializer.endTag(empstr, "timeclockid");
+                    serializer.startTag(empstr, "timeclockid");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("timeclockid")));
+                    serializer.endTag(empstr, "timeclockid");
 
-                serializer.startTag(empstr, "emp_id");
-                serializer.text(cursor.getString(cursor.getColumnIndex("emp_id")));
-                serializer.endTag(empstr, "emp_id");
+                    serializer.startTag(empstr, "emp_id");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("emp_id")));
+                    serializer.endTag(empstr, "emp_id");
 
-                serializer.startTag(empstr, "status");
-                serializer.text(cursor.getString(cursor.getColumnIndex("status")));
-                serializer.endTag(empstr, "status");
+                    serializer.startTag(empstr, "status");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("status")));
+                    serializer.endTag(empstr, "status");
 
-                serializer.startTag(empstr, "issync");
-                serializer.text(cursor.getString(cursor.getColumnIndex("issync")));
-                serializer.endTag(empstr, "issync");
+                    serializer.startTag(empstr, "issync");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("issync")));
+                    serializer.endTag(empstr, "issync");
 
-                serializer.startTag(empstr, "punchtime");
-                serializer.text(cursor.getString(cursor.getColumnIndex("punchtime")));
-                serializer.endTag(empstr, "punchtime");
+                    serializer.startTag(empstr, "punchtime");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("punchtime")));
+                    serializer.endTag(empstr, "punchtime");
 
-                serializer.endTag(empstr, "TimeClock");
+                    serializer.endTag(empstr, "TimeClock");
 
-                cursor.moveToNext();
+                    cursor.moveToNext();
 
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+
             }
-
+            cursor.close();
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
         }
-        cursor.close();
     }
 
     public String synchInventoryTransfer() {
@@ -1969,75 +2032,89 @@ public class GenerateXML {
 
     private void buildUpdateInventory(XmlSerializer serializer) {
         TransferLocations_DB handler = new TransferLocations_DB(context);
-        Cursor c = handler.getUnsyncTransfers();
-        c.moveToFirst();
-        int size = c.getCount();
-        for (int i = 0; i < size; i++) {
-            try {
-                serializer.startTag(empstr, "Location");
+        Cursor c = null;
+        try {
+            c = handler.getUnsyncTransfers();
+            c.moveToFirst();
+            int size = c.getCount();
+            for (int i = 0; i < size; i++) {
+                try {
+                    serializer.startTag(empstr, "Location");
 
-                serializer.startTag(empstr, TransferLocations_DB.trans_id);
-                serializer.text(c.getString(c.getColumnIndex(TransferLocations_DB.trans_id)));
-                serializer.endTag(empstr, TransferLocations_DB.trans_id);
+                    serializer.startTag(empstr, TransferLocations_DB.trans_id);
+                    serializer.text(c.getString(c.getColumnIndex(TransferLocations_DB.trans_id)));
+                    serializer.endTag(empstr, TransferLocations_DB.trans_id);
 
-                serializer.startTag(empstr, TransferLocations_DB.loc_key_from);
-                serializer.text(c.getString(c.getColumnIndex(TransferLocations_DB.loc_key_from)));
-                serializer.endTag(empstr, TransferLocations_DB.loc_key_from);
+                    serializer.startTag(empstr, TransferLocations_DB.loc_key_from);
+                    serializer.text(c.getString(c.getColumnIndex(TransferLocations_DB.loc_key_from)));
+                    serializer.endTag(empstr, TransferLocations_DB.loc_key_from);
 
-                serializer.startTag(empstr, TransferLocations_DB.loc_key_to);
-                serializer.text(c.getString(c.getColumnIndex(TransferLocations_DB.loc_key_to)));
-                serializer.endTag(empstr, TransferLocations_DB.loc_key_to);
+                    serializer.startTag(empstr, TransferLocations_DB.loc_key_to);
+                    serializer.text(c.getString(c.getColumnIndex(TransferLocations_DB.loc_key_to)));
+                    serializer.endTag(empstr, TransferLocations_DB.loc_key_to);
 
-                serializer.startTag(empstr, TransferLocations_DB.emp_id);
-                serializer.text(c.getString(c.getColumnIndex(TransferLocations_DB.emp_id)));
-                serializer.endTag(empstr, TransferLocations_DB.emp_id);
+                    serializer.startTag(empstr, TransferLocations_DB.emp_id);
+                    serializer.text(c.getString(c.getColumnIndex(TransferLocations_DB.emp_id)));
+                    serializer.endTag(empstr, TransferLocations_DB.emp_id);
 
-                serializer.startTag(empstr, TransferLocations_DB.trans_timecreated);
-                serializer.text(c.getString(c.getColumnIndex(TransferLocations_DB.trans_timecreated)));
-                serializer.endTag(empstr, TransferLocations_DB.trans_timecreated);
+                    serializer.startTag(empstr, TransferLocations_DB.trans_timecreated);
+                    serializer.text(c.getString(c.getColumnIndex(TransferLocations_DB.trans_timecreated)));
+                    serializer.endTag(empstr, TransferLocations_DB.trans_timecreated);
 
-                serializer.startTag(empstr, "InventoryTransactions");
-                buildInventoryTransactions(serializer, c.getString(c.getColumnIndex(TransferLocations_DB.trans_id)));
-                serializer.endTag(empstr, "InventoryTransactions");
+                    serializer.startTag(empstr, "InventoryTransactions");
+                    buildInventoryTransactions(serializer, c.getString(c.getColumnIndex(TransferLocations_DB.trans_id)));
+                    serializer.endTag(empstr, "InventoryTransactions");
 
-                serializer.endTag(empstr, "Location");
+                    serializer.endTag(empstr, "Location");
 
-                c.moveToNext();
+                    c.moveToNext();
 
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            c.close();
+        } finally {
+            if (c != null && !c.isClosed()) {
+                c.close();
             }
         }
-        c.close();
     }
 
     private void buildInventoryTransactions(XmlSerializer serializer, String _trans_id) {
         TransferInventory_DB handler = new TransferInventory_DB();
-        Cursor c = handler.getInventoryTransactions(_trans_id);
-        c.moveToFirst();
-        int size = c.getCount();
-        for (int i = 0; i < size; i++) {
-            try {
-                serializer.startTag(empstr, "Transaction");
+        Cursor c = null;
+        try {
+            c = handler.getInventoryTransactions(_trans_id);
+            c.moveToFirst();
+            int size = c.getCount();
+            for (int i = 0; i < size; i++) {
+                try {
+                    serializer.startTag(empstr, "Transaction");
 
-                serializer.startTag(empstr, TransferInventory_DB.prod_id);
-                serializer.text(c.getString(c.getColumnIndex(TransferInventory_DB.prod_id)));
-                serializer.endTag(empstr, TransferInventory_DB.prod_id);
+                    serializer.startTag(empstr, TransferInventory_DB.prod_id);
+                    serializer.text(c.getString(c.getColumnIndex(TransferInventory_DB.prod_id)));
+                    serializer.endTag(empstr, TransferInventory_DB.prod_id);
 
-                serializer.startTag(empstr, TransferInventory_DB.prod_qty);
-                serializer.text(c.getString(c.getColumnIndex(TransferInventory_DB.prod_qty)));
-                serializer.endTag(empstr, TransferInventory_DB.prod_qty);
+                    serializer.startTag(empstr, TransferInventory_DB.prod_qty);
+                    serializer.text(c.getString(c.getColumnIndex(TransferInventory_DB.prod_qty)));
+                    serializer.endTag(empstr, TransferInventory_DB.prod_qty);
 
-                serializer.endTag(empstr, "Transaction");
+                    serializer.endTag(empstr, "Transaction");
 
-                c.moveToNext();
+                    c.moveToNext();
 
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+
             }
-
+            c.close();
+        } finally {
+            if (c != null && !c.isClosed()) {
+                c.close();
+            }
         }
-        c.close();
     }
 
     public String synchShift() {
@@ -2174,623 +2251,636 @@ public class GenerateXML {
         CustomersHandler custHandler = new CustomersHandler(context);
         HashMap<String, String> custInfo;
         HashMap<String, String> orderInfo = memoHandler.getOrderInfo();
-        Cursor c = handler.getTupyxOrders();
-        c.moveToFirst();
-        int size = c.getCount();
-        for (int i = 0; i < size; i++) {
-            try {
-                serializer.startTag(empstr, "Order");
+        Cursor c = null;
+        try {
+            c = handler.getTupyxOrders();
+            c.moveToFirst();
+            int size = c.getCount();
+            for (int i = 0; i < size; i++) {
+                try {
+                    serializer.startTag(empstr, "Order");
 
-                serializer.startTag(empstr, "OrderInfo");
+                    serializer.startTag(empstr, "OrderInfo");
 
-                serializer.startTag(empstr, "MERCHANT_NAME");
-                serializer.text(StringUtil.nullStringToEmpty(orderInfo.get("MERCHANT_NAME")));
-                serializer.endTag(empstr, "MERCHANT_NAME");
+                    serializer.startTag(empstr, "MERCHANT_NAME");
+                    serializer.text(StringUtil.nullStringToEmpty(orderInfo.get("MERCHANT_NAME")));
+                    serializer.endTag(empstr, "MERCHANT_NAME");
 
-                serializer.startTag(empstr, "MERCHANT_EMAIL");
-                serializer.text(StringUtil.nullStringToEmpty(orderInfo.get("MERCHANT_EMAIL")));
-                serializer.endTag(empstr, "MERCHANT_EMAIL");
+                    serializer.startTag(empstr, "MERCHANT_EMAIL");
+                    serializer.text(StringUtil.nullStringToEmpty(orderInfo.get("MERCHANT_EMAIL")));
+                    serializer.endTag(empstr, "MERCHANT_EMAIL");
 
-                serializer.startTag(empstr, "header1");
-                serializer.text(StringUtil.nullStringToEmpty(orderInfo.get("header1")));
-                serializer.endTag(empstr, "header1");
+                    serializer.startTag(empstr, "header1");
+                    serializer.text(StringUtil.nullStringToEmpty(orderInfo.get("header1")));
+                    serializer.endTag(empstr, "header1");
 
-                serializer.startTag(empstr, "header2");
-                serializer.text(StringUtil.nullStringToEmpty(orderInfo.get("header2")));
-                serializer.endTag(empstr, "header2");
+                    serializer.startTag(empstr, "header2");
+                    serializer.text(StringUtil.nullStringToEmpty(orderInfo.get("header2")));
+                    serializer.endTag(empstr, "header2");
 
-                serializer.startTag(empstr, "header3");
-                serializer.text(StringUtil.nullStringToEmpty(orderInfo.get("header3")));
-                serializer.endTag(empstr, "header3");
+                    serializer.startTag(empstr, "header3");
+                    serializer.text(StringUtil.nullStringToEmpty(orderInfo.get("header3")));
+                    serializer.endTag(empstr, "header3");
 
-                serializer.startTag(empstr, "footer1");
-                serializer.text(StringUtil.nullStringToEmpty(orderInfo.get("footer1")));
-                serializer.endTag(empstr, "footer1");
+                    serializer.startTag(empstr, "footer1");
+                    serializer.text(StringUtil.nullStringToEmpty(orderInfo.get("footer1")));
+                    serializer.endTag(empstr, "footer1");
 
-                serializer.startTag(empstr, "footer2");
-                serializer.text(StringUtil.nullStringToEmpty(orderInfo.get("footer2")));
-                serializer.endTag(empstr, "footer2");
+                    serializer.startTag(empstr, "footer2");
+                    serializer.text(StringUtil.nullStringToEmpty(orderInfo.get("footer2")));
+                    serializer.endTag(empstr, "footer2");
 
-                serializer.startTag(empstr, "footer3");
-                serializer.text(StringUtil.nullStringToEmpty(orderInfo.get("footer3")));
-                serializer.endTag(empstr, "footer3");
+                    serializer.startTag(empstr, "footer3");
+                    serializer.text(StringUtil.nullStringToEmpty(orderInfo.get("footer3")));
+                    serializer.endTag(empstr, "footer3");
 
-                serializer.startTag(empstr, "EMPLOYEE_NAME");
-                serializer.text(orderInfo.get("EMPLOYEE_NAME"));
-                serializer.endTag(empstr, "EMPLOYEE_NAME");
+                    serializer.startTag(empstr, "EMPLOYEE_NAME");
+                    serializer.text(orderInfo.get("EMPLOYEE_NAME"));
+                    serializer.endTag(empstr, "EMPLOYEE_NAME");
 
-                serializer.startTag(empstr, "CLERK_NAME");
-                serializer.text(orderInfo.get("CLERK_NAME"));
-                serializer.endTag(empstr, "CLERK_NAME");
+                    serializer.startTag(empstr, "CLERK_NAME");
+                    serializer.text(orderInfo.get("CLERK_NAME"));
+                    serializer.endTag(empstr, "CLERK_NAME");
 
-                serializer.endTag(empstr, "OrderInfo");
+                    serializer.endTag(empstr, "OrderInfo");
 
-                serializer.startTag(empstr, "tupyx_user_id");
-                serializer.text(c.getString(c.getColumnIndex("tupyx_user_id")));
-                serializer.endTag(empstr, "tupyx_user_id");
+                    serializer.startTag(empstr, "tupyx_user_id");
+                    serializer.text(c.getString(c.getColumnIndex("tupyx_user_id")));
+                    serializer.endTag(empstr, "tupyx_user_id");
 
-                serializer.startTag(empstr, "ord_id");
-                serializer.text(c.getString(c.getColumnIndex("ord_id")));
-                serializer.endTag(empstr, "ord_id");
+                    serializer.startTag(empstr, "ord_id");
+                    serializer.text(c.getString(c.getColumnIndex("ord_id")));
+                    serializer.endTag(empstr, "ord_id");
 
-                serializer.startTag(empstr, "qbord_id");
-                serializer.text(c.getString(c.getColumnIndex("qbord_id")));
-                serializer.endTag(empstr, "qbord_id");
+                    serializer.startTag(empstr, "qbord_id");
+                    serializer.text(c.getString(c.getColumnIndex("qbord_id")));
+                    serializer.endTag(empstr, "qbord_id");
 
-                serializer.startTag(empstr, "emp_id");
-                serializer.text(c.getString(c.getColumnIndex("emp_id")));
-                serializer.endTag(empstr, "emp_id");
+                    serializer.startTag(empstr, "emp_id");
+                    serializer.text(c.getString(c.getColumnIndex("emp_id")));
+                    serializer.endTag(empstr, "emp_id");
 
-                serializer.startTag(empstr, "cust_id");
-                serializer.text(StringUtil.nullStringToEmpty(c.getString(c.getColumnIndex("cust_id"))));
-                serializer.endTag(empstr, "cust_id");
+                    serializer.startTag(empstr, "cust_id");
+                    serializer.text(StringUtil.nullStringToEmpty(c.getString(c.getColumnIndex("cust_id"))));
+                    serializer.endTag(empstr, "cust_id");
 
-                serializer.startTag(empstr, "clerk_id");
-                serializer.text(c.getString(c.getColumnIndex("clerk_id")));
-                serializer.endTag(empstr, "clerk_id");
+                    serializer.startTag(empstr, "clerk_id");
+                    serializer.text(c.getString(c.getColumnIndex("clerk_id")));
+                    serializer.endTag(empstr, "clerk_id");
 
-                serializer.startTag(empstr, "cust_name");
-                serializer.text(StringUtil.nullStringToEmpty(c.getString(c.getColumnIndex("cust_name"))));
-                serializer.endTag(empstr, "cust_name");
+                    serializer.startTag(empstr, "cust_name");
+                    serializer.text(StringUtil.nullStringToEmpty(c.getString(c.getColumnIndex("cust_name"))));
+                    serializer.endTag(empstr, "cust_name");
 
-                serializer.startTag(empstr, "cust_email");
-                serializer.text(c.getString(c.getColumnIndex("c_email")));
-                serializer.endTag(empstr, "cust_email");
+                    serializer.startTag(empstr, "cust_email");
+                    serializer.text(c.getString(c.getColumnIndex("c_email")));
+                    serializer.endTag(empstr, "cust_email");
 
-                serializer.startTag(empstr, "ord_signature");
-                serializer.text(c.getString(c.getColumnIndex("ord_signature")));
-                serializer.endTag(empstr, "ord_signature");
+                    serializer.startTag(empstr, "ord_signature");
+                    serializer.text(c.getString(c.getColumnIndex("ord_signature")));
+                    serializer.endTag(empstr, "ord_signature");
 
-                serializer.startTag(empstr, "ord_po");
-                serializer.text(c.getString(c.getColumnIndex("ord_po")));
-                serializer.endTag(empstr, "ord_po");
+                    serializer.startTag(empstr, "ord_po");
+                    serializer.text(c.getString(c.getColumnIndex("ord_po")));
+                    serializer.endTag(empstr, "ord_po");
 
-                serializer.startTag(empstr, "total_lines");
-                serializer.text(c.getString(c.getColumnIndex("total_lines")));
-                serializer.endTag(empstr, "total_lines");
+                    serializer.startTag(empstr, "total_lines");
+                    serializer.text(c.getString(c.getColumnIndex("total_lines")));
+                    serializer.endTag(empstr, "total_lines");
 
-                serializer.startTag(empstr, "total_lines_pay");
-                serializer.text(c.getString(c.getColumnIndex("total_lines_pay")));
-                serializer.endTag(empstr, "total_lines_pay");
+                    serializer.startTag(empstr, "total_lines_pay");
+                    serializer.text(c.getString(c.getColumnIndex("total_lines_pay")));
+                    serializer.endTag(empstr, "total_lines_pay");
 
-                serializer.startTag(empstr, "ord_total");
-                serializer.text(c.getString(c.getColumnIndex("ord_total")));
-                serializer.endTag(empstr, "ord_total");
+                    serializer.startTag(empstr, "ord_total");
+                    serializer.text(c.getString(c.getColumnIndex("ord_total")));
+                    serializer.endTag(empstr, "ord_total");
 
-                serializer.startTag(empstr, "ord_comment");
-                serializer.text(c.getString(c.getColumnIndex("ord_comment")));
-                serializer.endTag(empstr, "ord_comment");
+                    serializer.startTag(empstr, "ord_comment");
+                    serializer.text(c.getString(c.getColumnIndex("ord_comment")));
+                    serializer.endTag(empstr, "ord_comment");
 
-                serializer.startTag(empstr, "ord_delivery");
-                serializer.text(c.getString(c.getColumnIndex("ord_delivery")));
-                serializer.endTag(empstr, "ord_delivery");
+                    serializer.startTag(empstr, "ord_delivery");
+                    serializer.text(c.getString(c.getColumnIndex("ord_delivery")));
+                    serializer.endTag(empstr, "ord_delivery");
 
-                serializer.startTag(empstr, "ord_timecreated");
-                serializer.text(c.getString(c.getColumnIndex("ord_timecreated")));
-                serializer.endTag(empstr, "ord_timecreated");
+                    serializer.startTag(empstr, "ord_timecreated");
+                    serializer.text(c.getString(c.getColumnIndex("ord_timecreated")));
+                    serializer.endTag(empstr, "ord_timecreated");
 
-                serializer.startTag(empstr, "ord_timesync");
-                serializer.text(c.getString(c.getColumnIndex("ord_timesync")));
-                serializer.endTag(empstr, "ord_timesync");
+                    serializer.startTag(empstr, "ord_timesync");
+                    serializer.text(c.getString(c.getColumnIndex("ord_timesync")));
+                    serializer.endTag(empstr, "ord_timesync");
 
-                serializer.startTag(empstr, "qb_synctime");
-                serializer.text(c.getString(c.getColumnIndex("qb_synctime")));
-                serializer.endTag(empstr, "qb_synctime");
+                    serializer.startTag(empstr, "qb_synctime");
+                    serializer.text(c.getString(c.getColumnIndex("qb_synctime")));
+                    serializer.endTag(empstr, "qb_synctime");
 
-                serializer.startTag(empstr, "emailed");
-                serializer.text(c.getString(c.getColumnIndex("emailed")));
-                serializer.endTag(empstr, "emailed");
+                    serializer.startTag(empstr, "emailed");
+                    serializer.text(c.getString(c.getColumnIndex("emailed")));
+                    serializer.endTag(empstr, "emailed");
 
-                serializer.startTag(empstr, "processed");
-                serializer.text(c.getString(c.getColumnIndex("processed")));
-                serializer.endTag(empstr, "processed");
+                    serializer.startTag(empstr, "processed");
+                    serializer.text(c.getString(c.getColumnIndex("processed")));
+                    serializer.endTag(empstr, "processed");
 
-                serializer.startTag(empstr, "ord_type");
-                serializer.text(c.getString(c.getColumnIndex("ord_type")));
-                serializer.endTag(empstr, "ord_type");
+                    serializer.startTag(empstr, "ord_type");
+                    serializer.text(c.getString(c.getColumnIndex("ord_type")));
+                    serializer.endTag(empstr, "ord_type");
 
-                serializer.startTag(empstr, "ord_claimnumber");
-                serializer.text(c.getString(c.getColumnIndex("ord_claimnumber")));
-                serializer.endTag(empstr, "ord_claimnumber");
+                    serializer.startTag(empstr, "ord_claimnumber");
+                    serializer.text(c.getString(c.getColumnIndex("ord_claimnumber")));
+                    serializer.endTag(empstr, "ord_claimnumber");
 
-                serializer.startTag(empstr, "ord_rganumber");
-                serializer.text(c.getString(c.getColumnIndex("ord_rganumber")));
-                serializer.endTag(empstr, "ord_rganumber");
+                    serializer.startTag(empstr, "ord_rganumber");
+                    serializer.text(c.getString(c.getColumnIndex("ord_rganumber")));
+                    serializer.endTag(empstr, "ord_rganumber");
 
-                serializer.startTag(empstr, "ord_returns_pu");
-                serializer.text(c.getString(c.getColumnIndex("ord_returns_pu")));
-                serializer.endTag(empstr, "ord_returns_pu");
+                    serializer.startTag(empstr, "ord_returns_pu");
+                    serializer.text(c.getString(c.getColumnIndex("ord_returns_pu")));
+                    serializer.endTag(empstr, "ord_returns_pu");
 
-                serializer.startTag(empstr, "ord_inventory");
-                serializer.text(c.getString(c.getColumnIndex("ord_inventory")));
-                serializer.endTag(empstr, "ord_inventory");
+                    serializer.startTag(empstr, "ord_inventory");
+                    serializer.text(c.getString(c.getColumnIndex("ord_inventory")));
+                    serializer.endTag(empstr, "ord_inventory");
 
-                serializer.startTag(empstr, "ord_issync");
-                serializer.text(c.getString(c.getColumnIndex("ord_issync")));
-                serializer.endTag(empstr, "ord_issync");
+                    serializer.startTag(empstr, "ord_issync");
+                    serializer.text(c.getString(c.getColumnIndex("ord_issync")));
+                    serializer.endTag(empstr, "ord_issync");
 
-                serializer.startTag(empstr, "tax_id");
-                serializer.text(c.getString(c.getColumnIndex("tax_id")));
-                serializer.endTag(empstr, "tax_id");
+                    serializer.startTag(empstr, "tax_id");
+                    serializer.text(c.getString(c.getColumnIndex("tax_id")));
+                    serializer.endTag(empstr, "tax_id");
 
-                serializer.startTag(empstr, "ord_shipvia");
-                serializer.text(c.getString(c.getColumnIndex("ord_shipvia")));
-                serializer.endTag(empstr, "ord_shipvia");
+                    serializer.startTag(empstr, "ord_shipvia");
+                    serializer.text(c.getString(c.getColumnIndex("ord_shipvia")));
+                    serializer.endTag(empstr, "ord_shipvia");
 
-                serializer.startTag(empstr, "ord_shipto");
-                serializer.text(c.getString(c.getColumnIndex("ord_shipto")));
-                serializer.endTag(empstr, "ord_shipto");
+                    serializer.startTag(empstr, "ord_shipto");
+                    serializer.text(c.getString(c.getColumnIndex("ord_shipto")));
+                    serializer.endTag(empstr, "ord_shipto");
 
-                serializer.startTag(empstr, "ord_terms");
-                serializer.text(c.getString(c.getColumnIndex("ord_terms")));
-                serializer.endTag(empstr, "ord_terms");
+                    serializer.startTag(empstr, "ord_terms");
+                    serializer.text(c.getString(c.getColumnIndex("ord_terms")));
+                    serializer.endTag(empstr, "ord_terms");
 
-                serializer.startTag(empstr, "ord_custmsg");
-                serializer.text(c.getString(c.getColumnIndex("ord_custmsg")));
-                serializer.endTag(empstr, "ord_custmsg");
+                    serializer.startTag(empstr, "ord_custmsg");
+                    serializer.text(c.getString(c.getColumnIndex("ord_custmsg")));
+                    serializer.endTag(empstr, "ord_custmsg");
 
-                serializer.startTag(empstr, "ord_class");
-                serializer.text(c.getString(c.getColumnIndex("ord_class")));
-                serializer.endTag(empstr, "ord_class");
+                    serializer.startTag(empstr, "ord_class");
+                    serializer.text(c.getString(c.getColumnIndex("ord_class")));
+                    serializer.endTag(empstr, "ord_class");
 
-                serializer.startTag(empstr, "ord_subtotal");
-                serializer.text(c.getString(c.getColumnIndex("ord_subtotal")));
-                serializer.endTag(empstr, "ord_subtotal");
+                    serializer.startTag(empstr, "ord_subtotal");
+                    serializer.text(c.getString(c.getColumnIndex("ord_subtotal")));
+                    serializer.endTag(empstr, "ord_subtotal");
 
-                serializer.startTag(empstr, "ord_taxamount");
-                serializer.text(c.getString(c.getColumnIndex("ord_taxamount")));
-                serializer.endTag(empstr, "ord_taxamount");
+                    serializer.startTag(empstr, "ord_taxamount");
+                    serializer.text(c.getString(c.getColumnIndex("ord_taxamount")));
+                    serializer.endTag(empstr, "ord_taxamount");
 
-                serializer.startTag(empstr, "ord_discount");
-                serializer.text(c.getString(c.getColumnIndex("ord_discount")));
-                serializer.endTag(empstr, "ord_discount");
+                    serializer.startTag(empstr, "ord_discount");
+                    serializer.text(c.getString(c.getColumnIndex("ord_discount")));
+                    serializer.endTag(empstr, "ord_discount");
 
-                serializer.startTag(empstr, "ord_discount_id");
-                serializer.text(c.getString(c.getColumnIndex("ord_discount_id")));
-                serializer.endTag(empstr, "ord_discount_id");
+                    serializer.startTag(empstr, "ord_discount_id");
+                    serializer.text(c.getString(c.getColumnIndex("ord_discount_id")));
+                    serializer.endTag(empstr, "ord_discount_id");
 
-                serializer.startTag(empstr, "ord_discount_value");
-                serializer.text(c.getString(c.getColumnIndex("ord_discount")));
-                serializer.endTag(empstr, "ord_discount_value");
+                    serializer.startTag(empstr, "ord_discount_value");
+                    serializer.text(c.getString(c.getColumnIndex("ord_discount")));
+                    serializer.endTag(empstr, "ord_discount_value");
 
-                serializer.startTag(empstr, "ord_discount_type");
-                serializer.text(c.getString(c.getColumnIndex("ord_discount_id")));
-                serializer.endTag(empstr, "ord_discount_type");
+                    serializer.startTag(empstr, "ord_discount_type");
+                    serializer.text(c.getString(c.getColumnIndex("ord_discount_id")));
+                    serializer.endTag(empstr, "ord_discount_type");
 
-                serializer.startTag(empstr, "ord_latitude");
-                serializer.text(c.getString(c.getColumnIndex("ord_latitude")));
-                serializer.endTag(empstr, "ord_latitude");
+                    serializer.startTag(empstr, "ord_latitude");
+                    serializer.text(c.getString(c.getColumnIndex("ord_latitude")));
+                    serializer.endTag(empstr, "ord_latitude");
 
-                serializer.startTag(empstr, "ord_longitude");
-                serializer.text(c.getString(c.getColumnIndex("ord_longitude")));
-                serializer.endTag(empstr, "ord_longitude");
+                    serializer.startTag(empstr, "ord_longitude");
+                    serializer.text(c.getString(c.getColumnIndex("ord_longitude")));
+                    serializer.endTag(empstr, "ord_longitude");
 
-                serializer.startTag(empstr, "tipAmount");
-                serializer.text(c.getString(c.getColumnIndex("pay_tip")));
-                serializer.endTag(empstr, "tipAmount");
+                    serializer.startTag(empstr, "tipAmount");
+                    serializer.text(c.getString(c.getColumnIndex("pay_tip")));
+                    serializer.endTag(empstr, "tipAmount");
 
-                serializer.startTag(empstr, "ShippingRate");
-                serializer.text(empstr);
-                serializer.endTag(empstr, "ShippingRate");
+                    serializer.startTag(empstr, "ShippingRate");
+                    serializer.text(empstr);
+                    serializer.endTag(empstr, "ShippingRate");
 
-                if (c.getString(c.getColumnIndex("cust_id")) != null) {
-                    custInfo = custHandler.getXMLCustAddr(c.getString(c.getColumnIndex("cust_id")));
-                    serializer.startTag(empstr, "cust_fname");
-                    serializer.text(getCustAddr(custInfo, "cust_fname"));
-                    serializer.endTag(empstr, "cust_fname");
+                    if (c.getString(c.getColumnIndex("cust_id")) != null) {
+                        custInfo = custHandler.getXMLCustAddr(c.getString(c.getColumnIndex("cust_id")));
+                        serializer.startTag(empstr, "cust_fname");
+                        serializer.text(getCustAddr(custInfo, "cust_fname"));
+                        serializer.endTag(empstr, "cust_fname");
 
-                    serializer.startTag(empstr, "cust_lname");
-                    serializer.text(getCustAddr(custInfo, "cust_lname"));
-                    serializer.endTag(empstr, "cust_lname");
+                        serializer.startTag(empstr, "cust_lname");
+                        serializer.text(getCustAddr(custInfo, "cust_lname"));
+                        serializer.endTag(empstr, "cust_lname");
 
-                    serializer.startTag(empstr, "Billing");
+                        serializer.startTag(empstr, "Billing");
 
-                    serializer.attribute(empstr, "type", "Business");
-                    serializer.startTag(empstr, "addr_b_str1");
-                    serializer.text(getCustAddr(custInfo, "addr_b_str1"));
-                    serializer.endTag(empstr, "addr_b_str1");
-                    serializer.startTag(empstr, "addr_b_str2");
-                    serializer.text(getCustAddr(custInfo, "addr_b_str2"));
-                    serializer.endTag(empstr, "addr_b_str2");
-                    serializer.startTag(empstr, "addr_b_str3");
-                    serializer.text(getCustAddr(custInfo, "addr_b_str3"));
-                    serializer.endTag(empstr, "addr_b_str3");
-                    serializer.startTag(empstr, "addr_b_city");
-                    serializer.text(getCustAddr(custInfo, "addr_b_city"));
-                    serializer.endTag(empstr, "addr_b_city");
-                    serializer.startTag(empstr, "addr_b_state");
-                    serializer.text(getCustAddr(custInfo, "addr_b_state"));
-                    serializer.endTag(empstr, "addr_b_state");
-                    serializer.startTag(empstr, "addr_b_country");
-                    serializer.text(getCustAddr(custInfo, "addr_b_country"));
-                    serializer.endTag(empstr, "addr_b_country");
-                    serializer.startTag(empstr, "addr_b_zipcode");
-                    serializer.text(getCustAddr(custInfo, "addr_b_zipcode"));
-                    serializer.endTag(empstr, "addr_b_zipcode");
+                        serializer.attribute(empstr, "type", "Business");
+                        serializer.startTag(empstr, "addr_b_str1");
+                        serializer.text(getCustAddr(custInfo, "addr_b_str1"));
+                        serializer.endTag(empstr, "addr_b_str1");
+                        serializer.startTag(empstr, "addr_b_str2");
+                        serializer.text(getCustAddr(custInfo, "addr_b_str2"));
+                        serializer.endTag(empstr, "addr_b_str2");
+                        serializer.startTag(empstr, "addr_b_str3");
+                        serializer.text(getCustAddr(custInfo, "addr_b_str3"));
+                        serializer.endTag(empstr, "addr_b_str3");
+                        serializer.startTag(empstr, "addr_b_city");
+                        serializer.text(getCustAddr(custInfo, "addr_b_city"));
+                        serializer.endTag(empstr, "addr_b_city");
+                        serializer.startTag(empstr, "addr_b_state");
+                        serializer.text(getCustAddr(custInfo, "addr_b_state"));
+                        serializer.endTag(empstr, "addr_b_state");
+                        serializer.startTag(empstr, "addr_b_country");
+                        serializer.text(getCustAddr(custInfo, "addr_b_country"));
+                        serializer.endTag(empstr, "addr_b_country");
+                        serializer.startTag(empstr, "addr_b_zipcode");
+                        serializer.text(getCustAddr(custInfo, "addr_b_zipcode"));
+                        serializer.endTag(empstr, "addr_b_zipcode");
 
-                    serializer.endTag(empstr, "Billing");
+                        serializer.endTag(empstr, "Billing");
 
-                    serializer.startTag(empstr, "Shipping");
+                        serializer.startTag(empstr, "Shipping");
 
-                    serializer.attribute(empstr, "type", "Business");
-                    serializer.startTag(empstr, "addr_s_str1");
-                    serializer.text(getCustAddr(custInfo, "addr_s_str1"));
-                    serializer.endTag(empstr, "addr_s_str1");
-                    serializer.startTag(empstr, "addr_s_str2");
-                    serializer.text(getCustAddr(custInfo, "addr_s_str2"));
-                    serializer.endTag(empstr, "addr_s_str2");
-                    serializer.startTag(empstr, "addr_s_str3");
-                    serializer.text(getCustAddr(custInfo, "addr_s_str3"));
-                    serializer.endTag(empstr, "addr_s_str3");
-                    serializer.startTag(empstr, "addr_s_city");
-                    serializer.text(getCustAddr(custInfo, "addr_s_city"));
-                    serializer.endTag(empstr, "addr_s_city");
-                    serializer.startTag(empstr, "addr_s_state");
-                    serializer.text(getCustAddr(custInfo, "addr_s_state"));
-                    serializer.endTag(empstr, "addr_s_state");
-                    serializer.startTag(empstr, "addr_s_country");
-                    serializer.text(getCustAddr(custInfo, "addr_s_country"));
-                    serializer.endTag(empstr, "addr_s_country");
-                    serializer.startTag(empstr, "addr_s_zipcode");
-                    serializer.text(getCustAddr(custInfo, "addr_s_zipcode"));
-                    serializer.endTag(empstr, "addr_s_zipcode");
+                        serializer.attribute(empstr, "type", "Business");
+                        serializer.startTag(empstr, "addr_s_str1");
+                        serializer.text(getCustAddr(custInfo, "addr_s_str1"));
+                        serializer.endTag(empstr, "addr_s_str1");
+                        serializer.startTag(empstr, "addr_s_str2");
+                        serializer.text(getCustAddr(custInfo, "addr_s_str2"));
+                        serializer.endTag(empstr, "addr_s_str2");
+                        serializer.startTag(empstr, "addr_s_str3");
+                        serializer.text(getCustAddr(custInfo, "addr_s_str3"));
+                        serializer.endTag(empstr, "addr_s_str3");
+                        serializer.startTag(empstr, "addr_s_city");
+                        serializer.text(getCustAddr(custInfo, "addr_s_city"));
+                        serializer.endTag(empstr, "addr_s_city");
+                        serializer.startTag(empstr, "addr_s_state");
+                        serializer.text(getCustAddr(custInfo, "addr_s_state"));
+                        serializer.endTag(empstr, "addr_s_state");
+                        serializer.startTag(empstr, "addr_s_country");
+                        serializer.text(getCustAddr(custInfo, "addr_s_country"));
+                        serializer.endTag(empstr, "addr_s_country");
+                        serializer.startTag(empstr, "addr_s_zipcode");
+                        serializer.text(getCustAddr(custInfo, "addr_s_zipcode"));
+                        serializer.endTag(empstr, "addr_s_zipcode");
 
-                    serializer.endTag(empstr, "Shipping");
+                        serializer.endTag(empstr, "Shipping");
+                    }
+
+                    serializer.startTag(empstr, "OrderProduct");
+                    walletOrderProducts(serializer, c.getString(c.getColumnIndex("ord_id")));
+                    serializer.endTag(empstr, "OrderProduct");
+
+                    serializer.startTag(empstr, "Payments");
+                    serializer.startTag(empstr, "Payment");
+
+                    serializer.startTag(empstr, "paymentMethodName");
+                    serializer.text(c.getString(c.getColumnIndex("card_type")));
+                    serializer.endTag(empstr, "paymentMethodName");
+
+                    serializer.startTag(empstr, "amount");
+                    serializer.text(c.getString(c.getColumnIndex("pay_amount")));
+                    serializer.endTag(empstr, "amount");
+
+                    serializer.startTag(empstr, "merchantAccount");
+                    serializer.text(empstr);
+                    serializer.endTag(empstr, "merchantAccount");
+
+                    serializer.startTag(empstr, "RetrievalReferenceNumber");
+                    serializer.text(empstr);
+                    serializer.endTag(empstr, "RetrievalReferenceNumber");
+
+                    serializer.startTag(empstr, "BatchNumber");
+                    serializer.text(empstr);
+                    serializer.endTag(empstr, "BatchNumber");
+
+                    serializer.startTag(empstr, "TerminalNumber");
+                    serializer.text(empstr);
+                    serializer.endTag(empstr, "TerminalNumber");
+
+                    serializer.startTag(empstr, "pay_id");
+                    serializer.text(c.getString(c.getColumnIndex("pay_id")));
+                    serializer.endTag(empstr, "pay_id");
+
+                    serializer.startTag(empstr, "group_pay_id");
+                    serializer.text(c.getString(c.getColumnIndex("group_pay_id")));
+                    serializer.endTag(empstr, "group_pay_id");
+
+                    serializer.startTag(empstr, "trans_type");
+                    serializer.text(c.getString(c.getColumnIndex("pay_type")));
+                    serializer.endTag(empstr, "trans_type");
+
+                    serializer.startTag(empstr, "cust_id");
+                    serializer.text(StringUtil.nullStringToEmpty(c.getString(c.getColumnIndex("cust_id"))));
+                    serializer.endTag(empstr, "cust_id");
+
+                    serializer.startTag(empstr, "cust_id_key");
+                    serializer.text(StringUtil.nullStringToEmpty(c.getString(c.getColumnIndex("cust_id_ref"))));
+                    serializer.endTag(empstr, "cust_id_key");
+
+                    serializer.startTag(empstr, "pay_latitude");
+                    serializer.text(c.getString(c.getColumnIndex("pay_latitude")));
+                    serializer.endTag(empstr, "pay_latitude");
+
+                    serializer.startTag(empstr, "pay_longitude");
+                    serializer.text(c.getString(c.getColumnIndex("pay_longitude")));
+                    serializer.endTag(empstr, "pay_longitude");
+
+                    serializer.startTag(empstr, "emp_id");
+                    serializer.text(c.getString(c.getColumnIndex("emp_id")));
+                    serializer.endTag(empstr, "emp_id");
+
+                    serializer.startTag(empstr, "paymethod_id");
+                    serializer.text(c.getString(c.getColumnIndex("paymethod_id")));
+                    serializer.endTag(empstr, "paymethod_id");
+
+                    serializer.startTag(empstr, "pay_ccfournum");
+                    serializer.text(c.getString(c.getColumnIndex("ccnum_last4")));
+                    serializer.endTag(empstr, "pay_ccfournum");
+
+                    serializer.startTag(empstr, "pay_check");
+                    serializer.text(c.getString(c.getColumnIndex("pay_check")));
+                    serializer.endTag(empstr, "pay_check");
+
+                    serializer.startTag(empstr, "pay_receipt");
+                    serializer.text(c.getString(c.getColumnIndex("pay_receipt")));
+                    serializer.endTag(empstr, "pay_receipt");
+
+                    serializer.startTag(empstr, "pay_amount");
+                    serializer.text(c.getString(c.getColumnIndex("pay_amount")));
+                    serializer.endTag(empstr, "pay_amount");
+
+                    serializer.startTag(empstr, "tipAmount");
+                    serializer.text(c.getString(c.getColumnIndex("pay_tip")));
+                    serializer.endTag(empstr, "tipAmount");
+
+                    serializer.startTag(empstr, "pay_comment");
+                    serializer.text(c.getString(c.getColumnIndex("pay_comment")));
+                    serializer.endTag(empstr, "pay_comment");
+
+                    serializer.startTag(empstr, "pay_timecreated");
+                    serializer.text(c.getString(c.getColumnIndex("pay_timecreated")));
+                    serializer.endTag(empstr, "pay_timecreated");
+
+                    serializer.startTag(empstr, "pay_timesync");
+                    serializer.text(c.getString(c.getColumnIndex("pay_timesync")));
+                    serializer.endTag(empstr, "pay_timesync");
+
+                    serializer.startTag(empstr, "account_id");
+                    serializer.text(c.getString(c.getColumnIndex("account_id")));
+                    serializer.endTag(empstr, "account_id");
+
+                    serializer.startTag(empstr, "pay_issync");
+                    serializer.text(c.getString(c.getColumnIndex("pay_issync")));
+                    serializer.endTag(empstr, "pay_issync");
+
+                    serializer.startTag(empstr, "pay_name");
+                    serializer.text(c.getString(c.getColumnIndex("pay_name")));
+                    serializer.endTag(empstr, "pay_name");
+
+                    serializer.startTag(empstr, "processed");
+                    serializer.text(c.getString(c.getColumnIndex("processed")));
+                    serializer.endTag(empstr, "processed");
+
+                    serializer.startTag(empstr, "pay_poscode");
+                    serializer.text(c.getString(c.getColumnIndex("pay_poscode")));
+                    serializer.endTag(empstr, "pay_poscode");
+
+                    serializer.startTag(empstr, "pay_seccode");
+                    serializer.text(c.getString(c.getColumnIndex("pay_seccode")));
+                    serializer.endTag(empstr, "pay_seccode");
+
+                    serializer.startTag(empstr, "pay_resultcode");
+                    serializer.text(c.getString(c.getColumnIndex("pay_resultcode")));
+                    serializer.endTag(empstr, "pay_resultcode");
+
+                    serializer.startTag(empstr, "pay_resultmessage");
+                    serializer.text(c.getString(c.getColumnIndex("pay_resultmessage")));
+                    serializer.endTag(empstr, "pay_resultmessage");
+
+                    serializer.startTag(empstr, "pay_result");
+                    serializer.text(c.getString(c.getColumnIndex("pay_result")));
+                    serializer.endTag(empstr, "pay_result");
+
+                    serializer.startTag(empstr, "pay_date");
+                    serializer.text(c.getString(c.getColumnIndex("pay_date")));
+                    serializer.endTag(empstr, "pay_date");
+
+                    serializer.startTag(empstr, "recordnumber");
+                    serializer.text(c.getString(c.getColumnIndex("recordnumber")));
+                    serializer.endTag(empstr, "recordnumber");
+
+                    serializer.startTag(empstr, "authcode");
+                    serializer.text(c.getString(c.getColumnIndex("authcode")));
+                    serializer.endTag(empstr, "authcode");
+
+                    serializer.startTag(empstr, "pay_transid");
+                    serializer.text(c.getString(c.getColumnIndex("pay_transid")));
+                    serializer.endTag(empstr, "pay_transid");
+
+                    serializer.startTag(empstr, "status");
+                    serializer.text(c.getString(c.getColumnIndex("status")));
+                    serializer.endTag(empstr, "status");
+
+                    serializer.startTag(empstr, "job_id");
+                    serializer.text(c.getString(c.getColumnIndex("job_id")));
+                    serializer.endTag(empstr, "job_id");
+
+                    serializer.startTag(empstr, "inv_id");
+                    serializer.text(c.getString(c.getColumnIndex("inv_id")));
+                    serializer.endTag(empstr, "inv_id");
+
+                    serializer.startTag(empstr, "clerk_id");
+                    serializer.text(c.getString(c.getColumnIndex("clerk_id")));
+                    serializer.endTag(empstr, "clerk_id");
+
+                    serializer.startTag(empstr, "refNumber");
+                    serializer.text(c.getString(c.getColumnIndex("ref_num")));
+                    serializer.endTag(empstr, "refNumber");
+
+                    serializer.startTag(empstr, "pay_cardtype");
+                    serializer.text(c.getString(c.getColumnIndex("card_type")));
+                    serializer.endTag(empstr, "pay_cardtype");
+
+                    serializer.startTag(empstr, "cashReturned");
+                    serializer.text("0");
+                    serializer.endTag(empstr, "cashReturned");
+
+                    if (Global.isIvuLoto) {
+                        serializer.startTag(empstr, "ivuLotto");
+
+                        serializer.startTag(empstr, "ivuLottoDrawDate");
+                        serializer.text(c.getString(c.getColumnIndex("IvuLottoDrawDate")));
+                        serializer.endTag(empstr, "ivuLottoDrawDate");
+                        serializer.startTag(empstr, "ivuLottoNumber");
+                        serializer.text(c.getString(c.getColumnIndex("IvuLottoNumber")));
+                        serializer.endTag(empstr, "ivuLottoNumber");
+                        serializer.startTag(empstr, "Tax1");
+                        serializer.text(c.getString(c.getColumnIndex("Tax1_amount")));
+                        serializer.endTag(empstr, "Tax1");
+                        serializer.startTag(empstr, "Tax2");
+                        serializer.text(c.getString(c.getColumnIndex("Tax2_amount")));
+                        serializer.endTag(empstr, "Tax2");
+
+                        serializer.endTag(empstr, "ivuLotto");
+                    }
+
+                    // buildInvoicePayment(serializer,payID);
+
+                    serializer.endTag(empstr, "Payment");
+                    serializer.endTag(empstr, "Payments");
+
+                    serializer.endTag(empstr, "Order");
+
+                    c.moveToNext();
+
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
                 }
 
-                serializer.startTag(empstr, "OrderProduct");
-                walletOrderProducts(serializer, c.getString(c.getColumnIndex("ord_id")));
-                serializer.endTag(empstr, "OrderProduct");
-
-                serializer.startTag(empstr, "Payments");
-                serializer.startTag(empstr, "Payment");
-
-                serializer.startTag(empstr, "paymentMethodName");
-                serializer.text(c.getString(c.getColumnIndex("card_type")));
-                serializer.endTag(empstr, "paymentMethodName");
-
-                serializer.startTag(empstr, "amount");
-                serializer.text(c.getString(c.getColumnIndex("pay_amount")));
-                serializer.endTag(empstr, "amount");
-
-                serializer.startTag(empstr, "merchantAccount");
-                serializer.text(empstr);
-                serializer.endTag(empstr, "merchantAccount");
-
-                serializer.startTag(empstr, "RetrievalReferenceNumber");
-                serializer.text(empstr);
-                serializer.endTag(empstr, "RetrievalReferenceNumber");
-
-                serializer.startTag(empstr, "BatchNumber");
-                serializer.text(empstr);
-                serializer.endTag(empstr, "BatchNumber");
-
-                serializer.startTag(empstr, "TerminalNumber");
-                serializer.text(empstr);
-                serializer.endTag(empstr, "TerminalNumber");
-
-                serializer.startTag(empstr, "pay_id");
-                serializer.text(c.getString(c.getColumnIndex("pay_id")));
-                serializer.endTag(empstr, "pay_id");
-
-                serializer.startTag(empstr, "group_pay_id");
-                serializer.text(c.getString(c.getColumnIndex("group_pay_id")));
-                serializer.endTag(empstr, "group_pay_id");
-
-                serializer.startTag(empstr, "trans_type");
-                serializer.text(c.getString(c.getColumnIndex("pay_type")));
-                serializer.endTag(empstr, "trans_type");
-
-                serializer.startTag(empstr, "cust_id");
-                serializer.text(StringUtil.nullStringToEmpty(c.getString(c.getColumnIndex("cust_id"))));
-                serializer.endTag(empstr, "cust_id");
-
-                serializer.startTag(empstr, "cust_id_key");
-                serializer.text(StringUtil.nullStringToEmpty(c.getString(c.getColumnIndex("cust_id_ref"))));
-                serializer.endTag(empstr, "cust_id_key");
-
-                serializer.startTag(empstr, "pay_latitude");
-                serializer.text(c.getString(c.getColumnIndex("pay_latitude")));
-                serializer.endTag(empstr, "pay_latitude");
-
-                serializer.startTag(empstr, "pay_longitude");
-                serializer.text(c.getString(c.getColumnIndex("pay_longitude")));
-                serializer.endTag(empstr, "pay_longitude");
-
-                serializer.startTag(empstr, "emp_id");
-                serializer.text(c.getString(c.getColumnIndex("emp_id")));
-                serializer.endTag(empstr, "emp_id");
-
-                serializer.startTag(empstr, "paymethod_id");
-                serializer.text(c.getString(c.getColumnIndex("paymethod_id")));
-                serializer.endTag(empstr, "paymethod_id");
-
-                serializer.startTag(empstr, "pay_ccfournum");
-                serializer.text(c.getString(c.getColumnIndex("ccnum_last4")));
-                serializer.endTag(empstr, "pay_ccfournum");
-
-                serializer.startTag(empstr, "pay_check");
-                serializer.text(c.getString(c.getColumnIndex("pay_check")));
-                serializer.endTag(empstr, "pay_check");
-
-                serializer.startTag(empstr, "pay_receipt");
-                serializer.text(c.getString(c.getColumnIndex("pay_receipt")));
-                serializer.endTag(empstr, "pay_receipt");
-
-                serializer.startTag(empstr, "pay_amount");
-                serializer.text(c.getString(c.getColumnIndex("pay_amount")));
-                serializer.endTag(empstr, "pay_amount");
-
-                serializer.startTag(empstr, "tipAmount");
-                serializer.text(c.getString(c.getColumnIndex("pay_tip")));
-                serializer.endTag(empstr, "tipAmount");
-
-                serializer.startTag(empstr, "pay_comment");
-                serializer.text(c.getString(c.getColumnIndex("pay_comment")));
-                serializer.endTag(empstr, "pay_comment");
-
-                serializer.startTag(empstr, "pay_timecreated");
-                serializer.text(c.getString(c.getColumnIndex("pay_timecreated")));
-                serializer.endTag(empstr, "pay_timecreated");
-
-                serializer.startTag(empstr, "pay_timesync");
-                serializer.text(c.getString(c.getColumnIndex("pay_timesync")));
-                serializer.endTag(empstr, "pay_timesync");
-
-                serializer.startTag(empstr, "account_id");
-                serializer.text(c.getString(c.getColumnIndex("account_id")));
-                serializer.endTag(empstr, "account_id");
-
-                serializer.startTag(empstr, "pay_issync");
-                serializer.text(c.getString(c.getColumnIndex("pay_issync")));
-                serializer.endTag(empstr, "pay_issync");
-
-                serializer.startTag(empstr, "pay_name");
-                serializer.text(c.getString(c.getColumnIndex("pay_name")));
-                serializer.endTag(empstr, "pay_name");
-
-                serializer.startTag(empstr, "processed");
-                serializer.text(c.getString(c.getColumnIndex("processed")));
-                serializer.endTag(empstr, "processed");
-
-                serializer.startTag(empstr, "pay_poscode");
-                serializer.text(c.getString(c.getColumnIndex("pay_poscode")));
-                serializer.endTag(empstr, "pay_poscode");
-
-                serializer.startTag(empstr, "pay_seccode");
-                serializer.text(c.getString(c.getColumnIndex("pay_seccode")));
-                serializer.endTag(empstr, "pay_seccode");
-
-                serializer.startTag(empstr, "pay_resultcode");
-                serializer.text(c.getString(c.getColumnIndex("pay_resultcode")));
-                serializer.endTag(empstr, "pay_resultcode");
-
-                serializer.startTag(empstr, "pay_resultmessage");
-                serializer.text(c.getString(c.getColumnIndex("pay_resultmessage")));
-                serializer.endTag(empstr, "pay_resultmessage");
-
-                serializer.startTag(empstr, "pay_result");
-                serializer.text(c.getString(c.getColumnIndex("pay_result")));
-                serializer.endTag(empstr, "pay_result");
-
-                serializer.startTag(empstr, "pay_date");
-                serializer.text(c.getString(c.getColumnIndex("pay_date")));
-                serializer.endTag(empstr, "pay_date");
-
-                serializer.startTag(empstr, "recordnumber");
-                serializer.text(c.getString(c.getColumnIndex("recordnumber")));
-                serializer.endTag(empstr, "recordnumber");
-
-                serializer.startTag(empstr, "authcode");
-                serializer.text(c.getString(c.getColumnIndex("authcode")));
-                serializer.endTag(empstr, "authcode");
-
-                serializer.startTag(empstr, "pay_transid");
-                serializer.text(c.getString(c.getColumnIndex("pay_transid")));
-                serializer.endTag(empstr, "pay_transid");
-
-                serializer.startTag(empstr, "status");
-                serializer.text(c.getString(c.getColumnIndex("status")));
-                serializer.endTag(empstr, "status");
-
-                serializer.startTag(empstr, "job_id");
-                serializer.text(c.getString(c.getColumnIndex("job_id")));
-                serializer.endTag(empstr, "job_id");
-
-                serializer.startTag(empstr, "inv_id");
-                serializer.text(c.getString(c.getColumnIndex("inv_id")));
-                serializer.endTag(empstr, "inv_id");
-
-                serializer.startTag(empstr, "clerk_id");
-                serializer.text(c.getString(c.getColumnIndex("clerk_id")));
-                serializer.endTag(empstr, "clerk_id");
-
-                serializer.startTag(empstr, "refNumber");
-                serializer.text(c.getString(c.getColumnIndex("ref_num")));
-                serializer.endTag(empstr, "refNumber");
-
-                serializer.startTag(empstr, "pay_cardtype");
-                serializer.text(c.getString(c.getColumnIndex("card_type")));
-                serializer.endTag(empstr, "pay_cardtype");
-
-                serializer.startTag(empstr, "cashReturned");
-                serializer.text("0");
-                serializer.endTag(empstr, "cashReturned");
-
-                if (Global.isIvuLoto) {
-                    serializer.startTag(empstr, "ivuLotto");
-
-                    serializer.startTag(empstr, "ivuLottoDrawDate");
-                    serializer.text(c.getString(c.getColumnIndex("IvuLottoDrawDate")));
-                    serializer.endTag(empstr, "ivuLottoDrawDate");
-                    serializer.startTag(empstr, "ivuLottoNumber");
-                    serializer.text(c.getString(c.getColumnIndex("IvuLottoNumber")));
-                    serializer.endTag(empstr, "ivuLottoNumber");
-                    serializer.startTag(empstr, "Tax1");
-                    serializer.text(c.getString(c.getColumnIndex("Tax1_amount")));
-                    serializer.endTag(empstr, "Tax1");
-                    serializer.startTag(empstr, "Tax2");
-                    serializer.text(c.getString(c.getColumnIndex("Tax2_amount")));
-                    serializer.endTag(empstr, "Tax2");
-
-                    serializer.endTag(empstr, "ivuLotto");
-                }
-
-                // buildInvoicePayment(serializer,payID);
-
-                serializer.endTag(empstr, "Payment");
-                serializer.endTag(empstr, "Payments");
-
-                serializer.endTag(empstr, "Order");
-
-                c.moveToNext();
-
-            } catch (Exception e) {
-                throw new RuntimeException(e);
             }
-
+            c.close();
+        } finally {
+            if (c != null && !c.isClosed()) {
+                c.close();
+            }
         }
-        c.close();
         // myDB.close();
     }
 
-    private void walletOrderProducts(XmlSerializer serializer, String ordID)
-            throws IllegalArgumentException, IllegalStateException, IOException {
-        OrderProductsHandler handler = new OrderProductsHandler(context);
-        Cursor c = handler.getWalletOrdProd(ordID);
-        c.moveToFirst();
-        int size = c.getCount();
-        boolean isRestMode = info.isRestaurantMode();
+    private void walletOrderProducts(XmlSerializer serializer, String ordID) throws IllegalArgumentException, IllegalStateException, IOException {
+        Cursor c = null;
+        try {
+            OrderProductsHandler handler = new OrderProductsHandler(context);
+            c = handler.getWalletOrdProd(ordID);
+            c.moveToFirst();
+            int size = c.getCount();
+            boolean isRestMode = info.isRestaurantMode();
 
-        for (int i = 0; i < size; i++) {
-            if (!isRestMode || (isRestMode && ((c.getString(c.getColumnIndex("addon")).equals("false"))))) {
-                serializer.startTag(empstr, "OrderProduct");
+            for (int i = 0; i < size; i++) {
+                if (!isRestMode || (isRestMode && ((c.getString(c.getColumnIndex("addon")).equals("false"))))) {
+                    serializer.startTag(empstr, "OrderProduct");
 
-                serializer.startTag(empstr, "isAddon");
-                serializer.text(c.getString(c.getColumnIndex("addon")));
-                serializer.endTag(empstr, "isAddon");
+                    serializer.startTag(empstr, "isAddon");
+                    serializer.text(c.getString(c.getColumnIndex("addon")));
+                    serializer.endTag(empstr, "isAddon");
 
-                serializer.startTag(empstr, "isAdded");
-                serializer.text(c.getString(c.getColumnIndex("isAdded")));
-                serializer.endTag(empstr, "isAdded");
+                    serializer.startTag(empstr, "isAdded");
+                    serializer.text(c.getString(c.getColumnIndex("isAdded")));
+                    serializer.endTag(empstr, "isAdded");
 
-                serializer.startTag(empstr, "isPrinted");
+                    serializer.startTag(empstr, "isPrinted");
 
-                serializer.text(c.getString(c.getColumnIndex("isPrinted")));
+                    serializer.text(c.getString(c.getColumnIndex("isPrinted")));
 
-                serializer.endTag(empstr, "isPrinted");
+                    serializer.endTag(empstr, "isPrinted");
 
-                serializer.startTag(empstr, "item_void");
-                serializer.text(c.getString(c.getColumnIndex("item_void")));
-                serializer.endTag(empstr, "item_void");
+                    serializer.startTag(empstr, "item_void");
+                    serializer.text(c.getString(c.getColumnIndex("item_void")));
+                    serializer.endTag(empstr, "item_void");
 
-                serializer.startTag(empstr, "ordprod_id");
-                serializer.text(c.getString(c.getColumnIndex("ordprod_id")));
-                serializer.endTag(empstr, "ordprod_id");
+                    serializer.startTag(empstr, "ordprod_id");
+                    serializer.text(c.getString(c.getColumnIndex("ordprod_id")));
+                    serializer.endTag(empstr, "ordprod_id");
 
-                serializer.startTag(empstr, "ord_id");
-                serializer.text(c.getString(c.getColumnIndex("ord_id")));
-                serializer.endTag(empstr, "ord_id");
+                    serializer.startTag(empstr, "ord_id");
+                    serializer.text(c.getString(c.getColumnIndex("ord_id")));
+                    serializer.endTag(empstr, "ord_id");
 
-                serializer.startTag(empstr, "prod_id");
-                serializer.text(c.getString(c.getColumnIndex("prod_id")));
-                serializer.endTag(empstr, "prod_id");
+                    serializer.startTag(empstr, "prod_id");
+                    serializer.text(c.getString(c.getColumnIndex("prod_id")));
+                    serializer.endTag(empstr, "prod_id");
 
-                serializer.startTag(empstr, "ordprod_qty");
-                serializer.text(c.getString(c.getColumnIndex("ordprod_qty")));
-                serializer.endTag(empstr, "ordprod_qty");
+                    serializer.startTag(empstr, "ordprod_qty");
+                    serializer.text(c.getString(c.getColumnIndex("ordprod_qty")));
+                    serializer.endTag(empstr, "ordprod_qty");
 
-                serializer.startTag(empstr, "overwrite_price");
-                serializer.text(c.getString(c.getColumnIndex("overwrite_price")));
-                serializer.endTag(empstr, "overwrite_price");
+                    serializer.startTag(empstr, "overwrite_price");
+                    serializer.text(c.getString(c.getColumnIndex("overwrite_price")));
+                    serializer.endTag(empstr, "overwrite_price");
 
-                serializer.startTag(empstr, "ordprod_pointsUsedToPay");
-                serializer.text("0");
-                serializer.endTag(empstr, "ordprod_pointsUsedToPay");
+                    serializer.startTag(empstr, "ordprod_pointsUsedToPay");
+                    serializer.text("0");
+                    serializer.endTag(empstr, "ordprod_pointsUsedToPay");
 
-                serializer.startTag(empstr, "reason_id");
-                serializer.text(c.getString(c.getColumnIndex("reason_id")));
-                serializer.endTag(empstr, "reason_id");
+                    serializer.startTag(empstr, "reason_id");
+                    serializer.text(c.getString(c.getColumnIndex("reason_id")));
+                    serializer.endTag(empstr, "reason_id");
 
-                serializer.startTag(empstr, "ordprod_name");
-                serializer.text(c.getString(c.getColumnIndex("ordprod_name")));
-                serializer.endTag(empstr, "ordprod_name");
+                    serializer.startTag(empstr, "ordprod_name");
+                    serializer.text(c.getString(c.getColumnIndex("ordprod_name")));
+                    serializer.endTag(empstr, "ordprod_name");
 
-                serializer.startTag(empstr, "ordprod_desc");
-                serializer.text(c.getString(c.getColumnIndex("ordprod_desc")));
-                serializer.endTag(empstr, "ordprod_desc");
+                    serializer.startTag(empstr, "ordprod_desc");
+                    serializer.text(c.getString(c.getColumnIndex("ordprod_desc")));
+                    serializer.endTag(empstr, "ordprod_desc");
 
-                serializer.startTag(empstr, "pricelevel_id");
-                serializer.text(c.getString(c.getColumnIndex("pricelevel_id")));
-                serializer.endTag(empstr, "pricelevel_id");
+                    serializer.startTag(empstr, "pricelevel_id");
+                    serializer.text(c.getString(c.getColumnIndex("pricelevel_id")));
+                    serializer.endTag(empstr, "pricelevel_id");
 
-                serializer.startTag(empstr, "prod_seq");
-                serializer.text(c.getString(c.getColumnIndex("prod_seq")));
-                serializer.endTag(empstr, "prod_seq");
+                    serializer.startTag(empstr, "prod_seq");
+                    serializer.text(c.getString(c.getColumnIndex("prod_seq")));
+                    serializer.endTag(empstr, "prod_seq");
 
-                serializer.startTag(empstr, "uom_name");
-                serializer.text(c.getString(c.getColumnIndex("uom_name")));
-                serializer.endTag(empstr, "uom_name");
+                    serializer.startTag(empstr, "uom_name");
+                    serializer.text(c.getString(c.getColumnIndex("uom_name")));
+                    serializer.endTag(empstr, "uom_name");
 
-                // <uom_id>Packet</uom_id>
-                serializer.startTag(empstr, "uom_id");
-                serializer.text(c.getString(c.getColumnIndex("uom_id")));
-                serializer.endTag(empstr, "uom_id");
+                    // <uom_id>Packet</uom_id>
+                    serializer.startTag(empstr, "uom_id");
+                    serializer.text(c.getString(c.getColumnIndex("uom_id")));
+                    serializer.endTag(empstr, "uom_id");
 
-                serializer.startTag(empstr, "uom_conversion");
-                serializer.text(c.getString(c.getColumnIndex("uom_conversion")));
-                serializer.endTag(empstr, "uom_conversion");
+                    serializer.startTag(empstr, "uom_conversion");
+                    serializer.text(c.getString(c.getColumnIndex("uom_conversion")));
+                    serializer.endTag(empstr, "uom_conversion");
 
-                serializer.startTag(empstr, "prod_taxId");
-                serializer.text(c.getString(c.getColumnIndex("prod_taxId")));
-                serializer.endTag(empstr, "prod_taxId");
-                String prod_taxValue = String.valueOf(Global.getRoundBigDecimal(new BigDecimal(c.getDouble(c.getColumnIndex("prod_taxValue")))));
+                    serializer.startTag(empstr, "prod_taxId");
+                    serializer.text(c.getString(c.getColumnIndex("prod_taxId")));
+                    serializer.endTag(empstr, "prod_taxId");
+                    String prod_taxValue = String.valueOf(Global.getRoundBigDecimal(new BigDecimal(c.getDouble(c.getColumnIndex("prod_taxValue")))));
 
-                serializer.startTag(empstr, "prod_taxValue");
-                serializer.text(prod_taxValue);
-                serializer.endTag(empstr, "prod_taxValue");
+                    serializer.startTag(empstr, "prod_taxValue");
+                    serializer.text(prod_taxValue);
+                    serializer.endTag(empstr, "prod_taxValue");
 
-                serializer.startTag(empstr, "prod_discountId");
-                serializer.text(c.getString(c.getColumnIndex("discount_id")));
-                serializer.endTag(empstr, "prod_discountId");
+                    serializer.startTag(empstr, "prod_discountId");
+                    serializer.text(c.getString(c.getColumnIndex("discount_id")));
+                    serializer.endTag(empstr, "prod_discountId");
 
-                serializer.startTag(empstr, "prod_discountValue");
-                serializer.text(c.getString(c.getColumnIndex("discount_value")));
-                serializer.endTag(empstr, "prod_discountValue");
+                    serializer.startTag(empstr, "prod_discountValue");
+                    serializer.text(c.getString(c.getColumnIndex("discount_value")));
+                    serializer.endTag(empstr, "prod_discountValue");
 
-                serializer.startTag(empstr, "ProductImageURL");
-                serializer.text(StringUtil.nullStringToEmpty(c.getString(c.getColumnIndex("prod_img_name"))));
-                serializer.endTag(empstr, "ProductImageURL");
+                    serializer.startTag(empstr, "ProductImageURL");
+                    serializer.text(StringUtil.nullStringToEmpty(c.getString(c.getColumnIndex("prod_img_name"))));
+                    serializer.endTag(empstr, "ProductImageURL");
 
-                serializer.startTag(empstr, "product_total");
-                serializer.text(c.getString(c.getColumnIndex("itemTotal")));
-                serializer.endTag(empstr, "product_total");
+                    serializer.startTag(empstr, "product_total");
+                    serializer.text(c.getString(c.getColumnIndex("itemTotal")));
+                    serializer.endTag(empstr, "product_total");
 
-                serializer.endTag(empstr, "OrderProduct");
+                    serializer.endTag(empstr, "OrderProduct");
+                }
+                c.moveToNext();
             }
-            c.moveToNext();
+            c.close();
+        } finally {
+            if (c != null && !c.isClosed()) {
+                c.close();
+            }
         }
-        c.close();
     }
 
 

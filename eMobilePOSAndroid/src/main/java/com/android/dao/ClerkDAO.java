@@ -205,7 +205,9 @@ public class ClerkDAO {
                 clerk = r.copyFromRealm(associate);
             }
         } finally {
-            r.close();
+            if(r!=null) {
+                r.close();
+            }
         }
         return clerk;
     }

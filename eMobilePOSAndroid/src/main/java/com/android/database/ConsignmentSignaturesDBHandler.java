@@ -69,19 +69,26 @@ public class ConsignmentSignaturesDBHandler {
 		
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT encoded_signature FROM ").append(TABLE_NAME).append(" WHERE ConsTrans_ID = ?");
-		
-		Cursor c = DBManager.getDatabase().rawQuery(sb.toString(), new String[]{_ConsTrans_ID});
-		
-		String value = "";
-		if(c.moveToFirst())
-		{
-			value = c.getString(c.getColumnIndex(encoded_signature));
+		Cursor c=null;
+		try {
+			 c = DBManager.getDatabase().rawQuery(sb.toString(), new String[]{_ConsTrans_ID});
+
+			String value = "";
+			if (c.moveToFirst()) {
+				value = c.getString(c.getColumnIndex(encoded_signature));
+			}
+
+			c.close();
+			//db.close();
+
+			return value;
 		}
-		
-		c.close();
-		//db.close();
-		
-		return value;
+		finally {
+			if(c!=null && !c.isClosed() )
+			{
+			c.close();
+			}
+		}
 		
 		
 	}

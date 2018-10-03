@@ -20,7 +20,9 @@ public class OrderAttributesDAO {
             r.insertOrUpdate(orderAttributes);
         } finally {
             r.commitTransaction();
-            r.close();
+            if(r!=null) {
+                r.close();
+            }
         }
     }
 
@@ -29,7 +31,9 @@ public class OrderAttributesDAO {
         try {
             return r.copyFromRealm(r.where(OrderAttributes.class).findAll());
         } finally {
-            r.close();
+            if(r!=null) {
+                r.close();
+            }
         }
     }
 

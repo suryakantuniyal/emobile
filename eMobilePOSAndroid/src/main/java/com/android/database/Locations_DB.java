@@ -65,11 +65,11 @@ public class Locations_DB {
 
     public void insert(List<String[]> data, List<HashMap<String, Integer>> dictionary) {
         DBManager.getDatabase().beginTransaction();
-
+        SQLiteStatement insert=null;
         try {
             prodData = data;
             dictionaryListMap = dictionary;
-            SQLiteStatement insert;
+
             insert = DBManager.getDatabase().compileStatement("INSERT INTO " + TABLE_NAME + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
 
             int size = prodData.size();
@@ -87,6 +87,10 @@ public class Locations_DB {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
+            if(insert!=null)
+            {
+                insert.close();
+            }
             DBManager.getDatabase().endTransaction();
         }
     }
@@ -97,40 +101,57 @@ public class Locations_DB {
     }
 
     public List<Locations_Holder> getLocationsList() {
-        List<Locations_Holder> list = new ArrayList<>();
-        Cursor c = DBManager.getDatabase().rawQuery("SELECT * FROM " + TABLE_NAME + " ORDER BY loc_name ASC", null);
-        if (c.moveToFirst()) {
-            int i_loc_key = c.getColumnIndex(loc_key);
-            int i_loc_id = c.getColumnIndex(loc_id);
-            int i_loc_name = c.getColumnIndex(loc_name);
+        Cursor c=null;
+        try {
+            List<Locations_Holder> list = new ArrayList<>();
+             c = DBManager.getDatabase().rawQuery("SELECT * FROM " + TABLE_NAME + " ORDER BY loc_name ASC", null);
+            if (c.moveToFirst()) {
+                int i_loc_key = c.getColumnIndex(loc_key);
+                int i_loc_id = c.getColumnIndex(loc_id);
+                int i_loc_name = c.getColumnIndex(loc_name);
 
-            Locations_Holder location;
-            do {
-                location = new Locations_Holder();
-                location.setLoc_id(c.getString(i_loc_id));
-                location.setLoc_key(c.getString(i_loc_key));
-                location.setLoc_name(c.getString(i_loc_name));
-                list.add(location);
+                Locations_Holder location;
+                do {
+                    location = new Locations_Holder();
+                    location.setLoc_id(c.getString(i_loc_id));
+                    location.setLoc_key(c.getString(i_loc_key));
+                    location.setLoc_name(c.getString(i_loc_name));
+                    list.add(location);
 
-            } while (c.moveToNext());
+                } while (c.moveToNext());
+            }
+            c.close();
+            return list;
         }
-        c.close();
-        return list;
+        finally {
+            if(c!=null && !c.isClosed())
+            {
+                c.close();
+            }
+        }
+
     }
 
     public Locations_Holder getLocationInfo(String _loc_key) {
-        Cursor c = DBManager.getDatabase().rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE loc_key = ?", new String[]{_loc_key});
-        Locations_Holder location = new Locations_Holder();
-        if (c.moveToFirst()) {
-            int i_loc_key = c.getColumnIndex(loc_key);
-            int i_loc_id = c.getColumnIndex(loc_id);
-            int i_loc_name = c.getColumnIndex(loc_name);
+        Cursor c = null;
+        try {
+            c = DBManager.getDatabase().rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE loc_key = ?", new String[]{_loc_key});
+            Locations_Holder location = new Locations_Holder();
+            if (c.moveToFirst()) {
+                int i_loc_key = c.getColumnIndex(loc_key);
+                int i_loc_id = c.getColumnIndex(loc_id);
+                int i_loc_name = c.getColumnIndex(loc_name);
 
-            location.setLoc_id(c.getString(i_loc_id));
-            location.setLoc_key(c.getString(i_loc_key));
-            location.setLoc_name(c.getString(i_loc_name));
+                location.setLoc_id(c.getString(i_loc_id));
+                location.setLoc_key(c.getString(i_loc_key));
+                location.setLoc_name(c.getString(i_loc_name));
+            }
+            c.close();
+            return location;
+        } finally {
+            if (c != null && !c.isClosed()) {
+                c.close();
+            }
         }
-        c.close();
-        return location;
     }
 }

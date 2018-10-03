@@ -104,35 +104,44 @@ public class TimeClockHandler
 	}
 
 	public List<TimeClock> getEmployeeTimeClock(String empID) {
-		TimeClock tempTC = new TimeClock();
-		List<TimeClock> listTC = new ArrayList<TimeClock>();
-		StringBuilder sb = new StringBuilder();
-		// SQLiteDatabase db = dbManager.openReadableDB();
+		Cursor c=null;
 
-		sb.append("SELECT * FROM ").append(table_name).append(" WHERE emp_id = ? ORDER BY punchtime DESC LIMIT 2");
+		try {
+			TimeClock tempTC = new TimeClock();
+			List<TimeClock> listTC = new ArrayList<TimeClock>();
+			StringBuilder sb = new StringBuilder();
+			// SQLiteDatabase db = dbManager.openReadableDB();
 
-		Cursor c = DBManager.getDatabase().rawQuery(sb.toString(), new String[] { empID });
+			sb.append("SELECT * FROM ").append(table_name).append(" WHERE emp_id = ? ORDER BY punchtime DESC LIMIT 2");
 
-		if (c.moveToFirst()) {
-			int i_timeclockid = c.getColumnIndex(timeclockid);
-			int i_emp_id = c.getColumnIndex(emp_id);
-			int i_status = c.getColumnIndex(status);
-			int i_punchtime = c.getColumnIndex(punchtime);
+			c = DBManager.getDatabase().rawQuery(sb.toString(), new String[]{empID});
 
-			do {
-				tempTC.timeclockid = c.getString(i_timeclockid);
-				tempTC.emp_id = c.getString(i_emp_id);
-				tempTC.status = c.getString(i_status);
-				tempTC.punchtime = c.getString(i_punchtime);
+			if (c.moveToFirst()) {
+				int i_timeclockid = c.getColumnIndex(timeclockid);
+				int i_emp_id = c.getColumnIndex(emp_id);
+				int i_status = c.getColumnIndex(status);
+				int i_punchtime = c.getColumnIndex(punchtime);
 
-				listTC.add(tempTC);
-				tempTC = new TimeClock();
+				do {
+					tempTC.timeclockid = c.getString(i_timeclockid);
+					tempTC.emp_id = c.getString(i_emp_id);
+					tempTC.status = c.getString(i_status);
+					tempTC.punchtime = c.getString(i_punchtime);
 
-			} while (c.moveToNext());
+					listTC.add(tempTC);
+					tempTC = new TimeClock();
+
+				} while (c.moveToNext());
+			}
+			c.close();
+			// db.close();
+			return listTC;
+		}finally {
+			if(c!=null && !c.isClosed())
+			{
+				c.close();
+			}
 		}
-		c.close();
-		// db.close();
-		return listTC;
 
 	}
 

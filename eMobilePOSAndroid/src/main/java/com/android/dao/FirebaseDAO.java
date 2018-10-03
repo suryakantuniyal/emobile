@@ -18,7 +18,9 @@ public class FirebaseDAO {
             }
             return first;
         } finally {
-            r.close();
+            if(r!=null) {
+                r.close();
+            }
         }
     }
 
@@ -29,7 +31,9 @@ public class FirebaseDAO {
             r.insertOrUpdate(settings);
         } finally {
             r.commitTransaction();
-            r.close();
+            if(r!=null) {
+                r.close();
+            }
         }
     }
 
@@ -56,7 +60,9 @@ public class FirebaseDAO {
             r.insertOrUpdate(settings);
         } finally {
             r.commitTransaction();
-            r.close();
+            if(r!=null) {
+                r.close();
+            }
         }
     }
 }
