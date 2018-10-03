@@ -1,6 +1,5 @@
 package com.android.emobilepos.firebase;
 
-import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -63,10 +62,10 @@ public class PollingNotificationService extends Service {
     private static final int delay = 5000; // delay for 3 sec before first start
     public static int FOREGROUND_SERVICE = 101;
     Timer autoSyncTimer;
+    MyPreferences preferences;
     private Timer timer;
     private Date lastPolled;
     private String accountNumber;
-    MyPreferences preferences;
 
     public static boolean isServiceRunning(Context context) {
         ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
@@ -159,18 +158,17 @@ public class PollingNotificationService extends Service {
                     NotificationManager notificationManager = getSystemService(NotificationManager.class);
                     notificationManager.createNotificationChannel(channel);
                 }
-                Notification notification = new NotificationCompat.Builder(this,channelId)
+                Notification notification = new NotificationCompat.Builder(this, channelId)
                         .setContentTitle("eMobilePOS")
                         .setTicker("eMobilePOS")
                         .setContentText("Synchronizing")
                         .setSmallIcon(R.drawable.emobile_icon_notification)
-                        .setChannelId(channelId)
                         .setLargeIcon(
                                 Bitmap.createScaledBitmap(icon, 128, 128, false))
 //                    .setContentIntent(pendingIntent)
                         .setOngoing(true).build();
 
-                        startForeground(FOREGROUND_SERVICE,
+                startForeground(FOREGROUND_SERVICE,
                         notification);
             } else if (intent.getAction().equals(STOP_ACTION)) {
                 Log.i(TAG, "Received Stop Foreground Intent");

@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class DrawInfoHandler {
+    private static final String table_name = "DrawDateInfo";
     private final String ID = "ID";
     private final String CalendarVersionID = "CalendarVersionID";
     private final String DrawNumber = "DrawNumber";
@@ -22,16 +23,12 @@ public class DrawInfoHandler {
     private final String CutOffTime = "CutOffTime";
     private final String CutOffDateTime = "CutOffDateTime";
     private final String OpportunityFactor = "OpportunityFactor";
-
-
     private final List<String> attr = Arrays.asList(ID, CalendarVersionID, DrawNumber, DrawDate, CutOffDate,
             CutOffTime, CutOffDateTime, OpportunityFactor);
-
     private StringBuilder sb1, sb2;
     private HashMap<String, Integer> attrHash;
     private List<String[]> addrData;
     private List<HashMap<String, Integer>> dictionaryListMap;
-    private static final String table_name = "DrawDateInfo";
 
     public DrawInfoHandler(Context activity) {
         attrHash = new HashMap<>();
@@ -69,7 +66,7 @@ public class DrawInfoHandler {
 
     public void insert(List<String[]> data, List<HashMap<String, Integer>> dictionary) {
         DBManager.getDatabase().beginTransaction();
-        SQLiteStatement insert=null;
+        SQLiteStatement insert = null;
         try {
 
             addrData = data;
@@ -102,8 +99,7 @@ public class DrawInfoHandler {
 //			Tracker tracker = EasyTracker.getInstance(activity);
 //			tracker.send(MapBuilder.createException(sb.toString(), false).build());
         } finally {
-            if(insert!=null)
-            {
+            if (insert != null) {
                 insert.close();
             }
             DBManager.getDatabase().endTransaction();
@@ -118,29 +114,27 @@ public class DrawInfoHandler {
 
     public String getDrawDate() {
         //SQLiteDatabase db = dbManager.openReadableDB();
-        net.sqlcipher.Cursor cursor=null;
+        Cursor cursor = null;
         try {
-    cursor = DBManager.getDatabase().rawQuery("SELECT DrawNumber,DrawDate FROM DrawDateInfo WHERE datetime(CutOffDateTime,'localtime') >= datetime('" + DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss) + "','localtime') ORDER BY CutOffDate ", null);
+            cursor = DBManager.getDatabase().rawQuery("SELECT DrawNumber,DrawDate FROM DrawDateInfo WHERE datetime(CutOffDateTime,'localtime') >= datetime('" + DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss) + "','localtime') ORDER BY CutOffDate ", null);
 
-    String drawDate = "N/A";
-    if (cursor.moveToFirst()) {
-        drawDate = "EN DRAW000 00000000";
+            String drawDate = "N/A";
+            if (cursor.moveToFirst()) {
+                drawDate = "EN DRAW000 00000000";
 // 	drawDate = "EN DRAW"+cursor.getString(cursor.getColumnIndex(DrawNumber))+" "+cursor.getString(cursor.getColumnIndex(DrawDate));
-    }
+            }
 
-    cursor.close();
-    //db.close();
+            cursor.close();
+            //db.close();
 
-    //drawDate = "EC DRAW001 Jan/01/12";
+            //drawDate = "EC DRAW001 Jan/01/12";
 
-    return drawDate;
-   }
-    finally {
-    if(cursor!=null && !cursor.isClosed())
-    {
-        cursor.close();
-    }
-}
+            return drawDate;
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
+        }
     }
 
 

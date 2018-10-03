@@ -112,8 +112,7 @@ public class MemoTextHandler {
 //			Tracker tracker = EasyTracker.getInstance(activity);
 //			tracker.send(MapBuilder.createException(sb.toString(), false).build());
         } finally {
-            if(insert!=null)
-            {
+            if (insert != null) {
                 insert.close();
             }
             DBManager.getDatabase().endTransaction();
@@ -128,7 +127,7 @@ public class MemoTextHandler {
 
     public String[] getHeader() {
         //SQLiteDatabase db = dbManager.openReadableDB();
-        net.sqlcipher.Cursor cursor = null;
+        Cursor cursor = null;
         try {
             String[] header = new String[3];
             String query = "SELECT memo_headerLine1,memo_headerLine2,memo_headerLine3 FROM memotext";
@@ -187,7 +186,7 @@ public class MemoTextHandler {
     }
 
     public String[] getFooter() {
-        net.sqlcipher.Cursor cursor = null;
+        Cursor cursor = null;
         try {
             //SQLiteDatabase db =dbManager.openReadableDB();
             String[] footer = new String[3];

@@ -32,9 +32,8 @@ public class StoredPaymentsDAO {
             if (first != null) {
                 first = realm.copyFromRealm(first);
             }
-        }
-        finally {
-            if(realm!=null) {
+        } finally {
+            if (realm != null) {
                 realm.close();
             }
         }
@@ -63,9 +62,8 @@ public class StoredPaymentsDAO {
                     .equalTo("payment.is_retry", "1").findAll().size();
             realm.close();
             return size;
-        }finally {
-            if(realm!=null)
-            {
+        } finally {
+            if (realm != null) {
                 realm.close();
             }
         }
@@ -79,10 +77,8 @@ public class StoredPaymentsDAO {
                     .equalTo("payment.job_id", job_id).findAll().size();
             realm.close();
             return size;
-        }
-        finally {
-            if(realm!=null)
-            {
+        } finally {
+            if (realm != null) {
                 realm.close();
             }
         }
@@ -100,7 +96,7 @@ public class StoredPaymentsDAO {
             }
         } finally {
             realm.commitTransaction();
-            if(realm!=null) {
+            if (realm != null) {
                 realm.close();
             }
         }
@@ -117,7 +113,7 @@ public class StoredPaymentsDAO {
                 payment = realm.copyFromRealm(first.getPayment());
             }
         } finally {
-            if(realm!=null) {
+            if (realm != null) {
                 realm.close();
             }
         }
@@ -128,52 +124,50 @@ public class StoredPaymentsDAO {
                 sb.append("SELECT " + "IFNULL(c.cust_name,'Unknown') as 'cust_name' " + "FROM Customers c where c.cust_id = '").append(custId).append("'");
                 break;
         }
-       Cursor cursor=null;
+        Cursor cursor = null;
         try {
-       cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
-       PaymentDetails paymentDetails = new PaymentDetails();
-       boolean haveCustomer = cursor.moveToFirst();
-        if (payment != null) {
-        if (TextUtils.isEmpty(payment.getPaymethod_id()) || payment.getPaymethod_id().equalsIgnoreCase("Genius")) {
-            paymentDetails.setPaymethod_name(payment.getCard_type());
-        } else {
-            paymentDetails.setPaymethod_name(payment.getPaymentMethod().getPaymethod_name());
-        }
-        paymentDetails.setPay_date(Global.formatToDisplayDate(payment.getPay_date(), 0));
-        paymentDetails.setCustomerId(payment.getCust_id());
-        paymentDetails.setPay_timecreated(Global.formatToDisplayDate(payment.getPay_timecreated(), 2));
-        paymentDetails.setCust_name(haveCustomer ? cursor.getString(cursor.getColumnIndex("cust_name")) : "Unknown");
-        paymentDetails.setOrd_total(payment.getPay_amount());
-        paymentDetails.setPay_amount(payment.getPay_amount());
-        paymentDetails.setChange(new BigDecimal(payment.getAmountTender()).subtract(new BigDecimal(payment.getPay_amount())).toString());
-        paymentDetails.setPay_signature(payment.getPay_signature());
-        paymentDetails.setPay_transid(payment.getPay_transid());
-        paymentDetails.setCcnum_last4(payment.getCcnum_last4());
-        paymentDetails.setPay_check(payment.getPay_check());
-        paymentDetails.setIs_refund(payment.getIs_refund());
-        paymentDetails.setIvuLottoDrawDate(payment.getIvuLottoDrawDate());
-        paymentDetails.setIvuLottoNumber(payment.getIvuLottoNumber());
-        paymentDetails.setIvuLottoQR(payment.getIvuLottoQR());
-        paymentDetails.setPay_dueamount(payment.getPay_dueamount());
-        paymentDetails.setInv_id(payment.getInv_id());
-        paymentDetails.setJob_id(payment.getJob_id());
-        paymentDetails.setTax1_amount(payment.getTax1_amount());
-        paymentDetails.setTax2_amount(payment.getTax2_amount());
-        paymentDetails.setTax1_name(payment.getTax1_name());
-        paymentDetails.setTax2_name(payment.getTax2_name());
-        paymentDetails.setEmvContainer(payment.getEmvContainer());
+            cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
+            PaymentDetails paymentDetails = new PaymentDetails();
+            boolean haveCustomer = cursor.moveToFirst();
+            if (payment != null) {
+                if (TextUtils.isEmpty(payment.getPaymethod_id()) || payment.getPaymethod_id().equalsIgnoreCase("Genius")) {
+                    paymentDetails.setPaymethod_name(payment.getCard_type());
+                } else {
+                    paymentDetails.setPaymethod_name(payment.getPaymentMethod().getPaymethod_name());
+                }
+                paymentDetails.setPay_date(Global.formatToDisplayDate(payment.getPay_date(), 0));
+                paymentDetails.setCustomerId(payment.getCust_id());
+                paymentDetails.setPay_timecreated(Global.formatToDisplayDate(payment.getPay_timecreated(), 2));
+                paymentDetails.setCust_name(haveCustomer ? cursor.getString(cursor.getColumnIndex("cust_name")) : "Unknown");
+                paymentDetails.setOrd_total(payment.getPay_amount());
+                paymentDetails.setPay_amount(payment.getPay_amount());
+                paymentDetails.setChange(new BigDecimal(payment.getAmountTender()).subtract(new BigDecimal(payment.getPay_amount())).toString());
+                paymentDetails.setPay_signature(payment.getPay_signature());
+                paymentDetails.setPay_transid(payment.getPay_transid());
+                paymentDetails.setCcnum_last4(payment.getCcnum_last4());
+                paymentDetails.setPay_check(payment.getPay_check());
+                paymentDetails.setIs_refund(payment.getIs_refund());
+                paymentDetails.setIvuLottoDrawDate(payment.getIvuLottoDrawDate());
+                paymentDetails.setIvuLottoNumber(payment.getIvuLottoNumber());
+                paymentDetails.setIvuLottoQR(payment.getIvuLottoQR());
+                paymentDetails.setPay_dueamount(payment.getPay_dueamount());
+                paymentDetails.setInv_id(payment.getInv_id());
+                paymentDetails.setJob_id(payment.getJob_id());
+                paymentDetails.setTax1_amount(payment.getTax1_amount());
+                paymentDetails.setTax2_amount(payment.getTax2_amount());
+                paymentDetails.setTax1_name(payment.getTax1_name());
+                paymentDetails.setTax2_name(payment.getTax2_name());
+                paymentDetails.setEmvContainer(payment.getEmvContainer());
 
-    }
+            }
 
-        cursor.close();
-        return paymentDetails;
-        }
-        finally {
-            if(cursor!=null && !cursor.isClosed())
-            {
+            cursor.close();
+            return paymentDetails;
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
                 cursor.close();
             }
-}
+        }
 
     }
 
@@ -186,7 +180,7 @@ public class StoredPaymentsDAO {
                 storeAndForwards = realm.copyFromRealm(storeAndForwards);
             }
         } finally {
-            if(realm!=null) {
+            if (realm != null) {
                 realm.close();
             }
         }
@@ -222,7 +216,7 @@ public class StoredPaymentsDAO {
             }
         } finally {
             realm.commitTransaction();
-            if(realm!=null) {
+            if (realm != null) {
                 realm.close();
             }
         }
@@ -237,7 +231,7 @@ public class StoredPaymentsDAO {
                     .findAll().deleteAllFromRealm();
         } finally {
             realm.commitTransaction();
-            if(realm!=null) {
+            if (realm != null) {
                 realm.close();
             }
         }
@@ -250,7 +244,7 @@ public class StoredPaymentsDAO {
             storeAndForward.setRetry(true);
         } finally {
             realm.commitTransaction();
-            if(realm!=null) {
+            if (realm != null) {
                 realm.close();
             }
         }
@@ -271,12 +265,11 @@ public class StoredPaymentsDAO {
             storeAndForward.setId(System.currentTimeMillis());
             realm.insertOrUpdate(storeAndForward);
             realm.commitTransaction();
-           // realm.close();
+            // realm.close();
         } catch (Exception e) {
             realm.cancelTransaction();
-        }
-        finally {
-            if(realm!=null) {
+        } finally {
+            if (realm != null) {
                 realm.close();
             }
         }
@@ -291,7 +284,7 @@ public class StoredPaymentsDAO {
             storeAndForward.setRetry(true);
         } finally {
             realm.commitTransaction();
-            if(realm!=null) {
+            if (realm != null) {
                 realm.close();
             }
         }
@@ -327,10 +320,8 @@ public class StoredPaymentsDAO {
                 }
                 myPref.setLastPayID(lastPayID);
                 realm.close();
-            }
-            finally {
-                if(realm!=null)
-                {
+            } finally {
+                if (realm != null) {
                     realm.close();
                 }
             }
@@ -347,10 +338,8 @@ public class StoredPaymentsDAO {
             }
             realm.close();
             return all;
-        }
-        finally {
-            if(realm!=null)
-            {
+        } finally {
+            if (realm != null) {
                 realm.close();
             }
         }

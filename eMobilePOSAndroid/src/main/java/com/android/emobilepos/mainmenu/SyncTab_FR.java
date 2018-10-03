@@ -217,7 +217,7 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
                 dialog.setMessage(getString(R.string.sync_inprogress));
                 if (!getActivity().isFinishing()) {
                     dialog.show();
-                }   dialog.show();
+                }
                 DBManager dbManager = new DBManager(getActivity(), Global.FROM_SYNCH_ACTIVITY);
                 SynchMethods sm = new SynchMethods(dbManager);
                 if (NetworkUtils.isConnectedToInternet(getActivity())) {

@@ -1,11 +1,7 @@
 package com.android.emobilepos;
 
-
-import android.app.Activity;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.PowerManager;
 import android.view.View;
 
 import com.android.support.Global;
@@ -13,10 +9,8 @@ import com.android.support.MyPreferences;
 import com.android.support.TouchImageView;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 
 import java.io.File;

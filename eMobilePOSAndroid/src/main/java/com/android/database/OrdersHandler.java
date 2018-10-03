@@ -212,7 +212,7 @@ public class OrdersHandler {
     }
 
     private static String getOrderAssignedTable(String orderId) {
-        net.sqlcipher.Cursor cursor = null;
+        Cursor cursor = null;
         try {
             String tableNumber = "0";
             cursor = DBManager.getDatabase().query(table_name, attr, "ord_id=?",
@@ -322,7 +322,7 @@ public class OrdersHandler {
 
                 dbUtils.executeAuditedDB();
                 sqlinsert.clearBindings();
-                //  sqlinsert.close();
+                sqlinsert.close();
 //                Log.d("Order Insert:", order.toString());
                 DinningTableOrderDAO.createDinningTableOrder(order);
                 if (GenerateNewID.isValidLastId(order.ord_id, GenerateNewID.IdType.ORDER_ID)) {
@@ -427,7 +427,7 @@ public class OrdersHandler {
     public List<Order> getUnsyncOrders() // Will populate all unsynchronized orders
     // for XML post
     {
-        net.sqlcipher.Cursor cursor = null;
+        Cursor cursor = null;
         try {
             StringBuilder sb = new StringBuilder();
             if (Global.isForceUpload)
@@ -805,7 +805,7 @@ public class OrdersHandler {
     }
 
     public Order getPrintedOrder(String ordID) {
-        net.sqlcipher.Cursor cursor = null;
+        Cursor cursor = null;
         try {
             Order anOrder = new Order(activity);
             OrderProductsHandler productsHandler = new OrderProductsHandler(activity);
@@ -920,7 +920,7 @@ public class OrdersHandler {
     }
 
     public List<Order> getARTransactionsDayReport(String clerk_id, String date) {
-        net.sqlcipher.Cursor c = null;
+        Cursor c = null;
         try {
             List<Order> listOrder = new ArrayList<>();
 

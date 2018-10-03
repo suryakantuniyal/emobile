@@ -58,6 +58,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             discount_rate = new BigDecimal("0"), discountable_sub_total = new BigDecimal("0"),
             sub_total = new BigDecimal("0"), gran_total = new BigDecimal("0");
     public static BigDecimal itemsDiscountTotal = new BigDecimal(0);
+    private static ReCalculate recalculateTask;
     private Spinner taxSpinner, discountSpinner;
     private List<Tax> taxList;
     private List<Discount> discountList;
@@ -71,7 +72,6 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
     private TaxesGroupHandler taxGroupHandler;
     private AssignEmployee assignEmployee;
     private boolean isToGo;
-    private static ReCalculate recalculateTask;
 
     public static OrderTotalDetails_FR init(int val) {
         OrderTotalDetails_FR frag = new OrderTotalDetails_FR();
@@ -646,9 +646,8 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
 
     private void setupTaxesHolder() {
         int size = listMapTaxes.size();
-        ArrayList<DataTaxes> dataTaxes = new ArrayList<DataTaxes>();
-        if(dataTaxes!=null) {
-            getOrderingMainFa().setListOrderTaxes(dataTaxes);
+        if (getActivity() != null) {
+            getOrderingMainFa().setListOrderTaxes(new ArrayList<DataTaxes>());
         }
         DataTaxes tempTaxes;
         for (int i = 0; i < size; i++) {
@@ -682,8 +681,8 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
 
     private static class ReCalculate extends AsyncTask<List<OrderProduct>, Void, OrderTotalDetails> {
 
-        private OrderingMain_FA activity;
         MyPreferences myPref;
+        private OrderingMain_FA activity;
 
         public ReCalculate(Activity activity) {
             myPref = new MyPreferences(activity);

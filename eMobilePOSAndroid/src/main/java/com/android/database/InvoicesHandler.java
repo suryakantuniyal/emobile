@@ -1,6 +1,5 @@
 package com.android.database;
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -280,7 +279,7 @@ public class InvoicesHandler {
 
     public String[] getSpecificInvoice(String invID) {
         // SQLiteDatabase db = dbManager.openReadableDB();
-        net.sqlcipher.Cursor cursor = null;
+        Cursor cursor = null;
         try {
             StringBuilder sb = new StringBuilder();
             sb.append(

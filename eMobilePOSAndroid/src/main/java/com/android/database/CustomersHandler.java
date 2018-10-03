@@ -7,7 +7,7 @@ import android.util.Log;
 
 import com.android.emobilepos.models.Address;
 import com.android.support.Customer;
-import com.android.support.StringUtils;
+
 import com.crashlytics.android.Crashlytics;
 
 import net.sqlcipher.database.SQLiteStatement;
@@ -116,31 +116,28 @@ public class CustomersHandler {
     }
 
     public long getNumUnsyncCustomers() {
-        SQLiteStatement stmt=null;
+        SQLiteStatement stmt = null;
         try {
             stmt = DBManager.getDatabase().compileStatement("SELECT Count(*) FROM " + table_name + " WHERE qb_sync = '0'");
             long count = stmt.simpleQueryForLong();
             stmt.close();
             return count;
-        }finally {
-            if(stmt!=null)
-            {
+        } finally {
+            if (stmt != null) {
                 stmt.close();
             }
         }
     }
 
     public boolean unsyncCustomersLeft() {
-        SQLiteStatement stmt=null;
+        SQLiteStatement stmt = null;
         try {
             stmt = DBManager.getDatabase().compileStatement("SELECT Count(*) FROM " + table_name + " WHERE qb_sync = '0'");
             long count = stmt.simpleQueryForLong();
             stmt.close();
             return count != 0;
-        }
-        finally {
-            if(stmt!=null)
-            {
+        } finally {
+            if (stmt != null) {
                 stmt.close();
             }
         }
@@ -167,12 +164,12 @@ public class CustomersHandler {
     }
 
     public String getSpecificValue(String field, String param) {
-        net.sqlcipher.Cursor cursor=null;
+        Cursor cursor = null;
         try {
             String data = "";
             String[] fields = new String[]{field};
             String[] arguments = new String[]{param};
-             cursor = DBManager.getDatabase().query(true, table_name, fields, "cust_id=?", arguments, null, null, null, null);
+            cursor = DBManager.getDatabase().query(true, table_name, fields, "cust_id=?", arguments, null, null, null, null);
             if (cursor.moveToFirst()) {
                 do {
                     data = cursor.getString(cursor.getColumnIndex(field));
@@ -180,23 +177,21 @@ public class CustomersHandler {
             }
             cursor.close();
             return data;
-        }
-        finally {
-            if(cursor!=null && !cursor.isClosed())
-            {
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
                 cursor.close();
             }
         }
     }
 
     public HashMap<String, String> getCustomerMap(String id) {
-        net.sqlcipher.Cursor cursor=null;
+        Cursor cursor = null;
         try {
             HashMap<String, String> tempMap = new HashMap<>();
             String[] fields = new String[]{cust_name, cust_phone, cust_email};
             String[] arguments = new String[]{id};
 
-             cursor = DBManager.getDatabase().query(true, table_name, fields, "cust_id=?", arguments, null, null, null, null);
+            cursor = DBManager.getDatabase().query(true, table_name, fields, "cust_id=?", arguments, null, null, null, null);
 
             if (cursor.moveToFirst()) {
                 do {
@@ -208,9 +203,8 @@ public class CustomersHandler {
 
             cursor.close();
             return tempMap;
-        }finally {
-            if(cursor!=null && !cursor.isClosed())
-            {
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
                 cursor.close();
             }
         }
@@ -227,26 +221,25 @@ public class CustomersHandler {
     }
 
     public HashMap<String, String> getCustomerInfo(String custID) {
-        net.sqlcipher.Cursor c=null;
-        try{
-        String query = "SELECT cust_id,cust_name,cust_taxable,cust_salestaxcode,custidkey,pricelevel_id,cust_email FROM Customers WHERE cust_id = ?";
-         c = DBManager.getDatabase().rawQuery(query, new String[]{custID});
-        HashMap<String, String> map = new HashMap<>();
-        if (c.moveToFirst()) {
-            map.put(cust_id, c.getString(c.getColumnIndex(cust_id)));
-            map.put(cust_name, c.getString(c.getColumnIndex(cust_name)));
-            map.put(cust_taxable, c.getString(c.getColumnIndex(cust_taxable)));
-            map.put(cust_salestaxcode, c.getString(c.getColumnIndex(cust_salestaxcode)));
-            map.put(custidkey, c.getString(c.getColumnIndex(custidkey)));
-            map.put(pricelevel_id, c.getString(c.getColumnIndex(pricelevel_id)));
-            map.put(cust_email, c.getString(c.getColumnIndex(cust_email)));
-        }
+        Cursor c = null;
+        try {
+            String query = "SELECT cust_id,cust_name,cust_taxable,cust_salestaxcode,custidkey,pricelevel_id,cust_email FROM Customers WHERE cust_id = ?";
+            c = DBManager.getDatabase().rawQuery(query, new String[]{custID});
+            HashMap<String, String> map = new HashMap<>();
+            if (c.moveToFirst()) {
+                map.put(cust_id, c.getString(c.getColumnIndex(cust_id)));
+                map.put(cust_name, c.getString(c.getColumnIndex(cust_name)));
+                map.put(cust_taxable, c.getString(c.getColumnIndex(cust_taxable)));
+                map.put(cust_salestaxcode, c.getString(c.getColumnIndex(cust_salestaxcode)));
+                map.put(custidkey, c.getString(c.getColumnIndex(custidkey)));
+                map.put(pricelevel_id, c.getString(c.getColumnIndex(pricelevel_id)));
+                map.put(cust_email, c.getString(c.getColumnIndex(cust_email)));
+            }
 
-        c.close();
-        return map;}
-        finally {
-            if(c!=null && !c.isClosed())
-            {
+            c.close();
+            return map;
+        } finally {
+            if (c != null && !c.isClosed()) {
                 c.close();
             }
         }
@@ -360,8 +353,7 @@ public class CustomersHandler {
         return value.trim();
     }
 
-    public Cursor getSearchCust(String search)
-    {
+    public Cursor getSearchCust(String search) {
         String sb = "SELECT cust_id as _id,c.AccountNumnber, custidkey, cust_name, cust_firstName, cust_firstName ||' '|| cust_lastName as 'fullName', cust_lastName,c.pricelevel_id,pl.pricelevel_name,cust_taxable,cust_salestaxcode," +
                 "cust_email,CompanyName,cust_phone FROM Customers c LEFT OUTER JOIN PriceLevel pl ON c.pricelevel_id = pl.pricelevel_id " +
                 "WHERE c.cust_name LIKE ? OR c.cust_lastName LIKE ? " +
@@ -376,14 +368,14 @@ public class CustomersHandler {
     }
 
     public HashMap<String, String> getXMLCustAddr(String custID) {
-        net.sqlcipher.Cursor cursor=null;
+        Cursor cursor = null;
         try {
             HashMap<String, String> mapValues = new HashMap<>();
             if (custID != null && !custID.isEmpty()) {
                 String sb = "SELECT c.cust_firstName,c.cust_lastName,b.addr_b_str1,b.addr_b_str2,b.addr_b_str3,b.addr_b_city,b.addr_b_state,b.addr_b_country," +
                         "b.addr_b_zipcode,b.addr_s_str1,b.addr_s_str2,b.addr_s_str3,b.addr_s_city,b.addr_s_state,b.addr_s_country,b.addr_s_zipcode " +
                         "FROM Customers c LEFT OUTER JOIN Address b ON c.cust_id = b.cust_id WHERE c.cust_id = ?";
-                 cursor = DBManager.getDatabase().rawQuery(sb, new String[]{custID});
+                cursor = DBManager.getDatabase().rawQuery(sb, new String[]{custID});
                 if (cursor.moveToFirst()) {
                     mapValues.put("cust_fname", cursor.getString(cursor.getColumnIndex(cust_firstName)));
                     mapValues.put("cust_lname", cursor.getString(cursor.getColumnIndex(cust_lastName)));
@@ -405,94 +397,92 @@ public class CustomersHandler {
                 cursor.close();
             }
             return mapValues;
-        }finally {
-            if(cursor!=null && !cursor.isClosed())
-            {
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
                 cursor.close();
             }
         }
     }
 
     public Customer getCustomer(String customerId) {
-        net.sqlcipher.Cursor cursor=null;
+        Cursor cursor = null;
         try {
-    Customer customer = new Customer();
-    customer.setShippingAddress(new Address());
-    customer.setBillingAddress(new Address());
-    if (customerId != null && !customerId.isEmpty()) {
-        String sb = ("SELECT c.*, " +
-                " b.addr_b_str1,b.addr_b_str2,b.addr_b_str3,b.addr_b_city,b.cust_id,AccountNumnber," +
-                " b.addr_b_state,b.addr_b_country,") +
-                " b.addr_b_zipcode,b.addr_s_str1,b.addr_s_str2,b.addr_s_str3,b.addr_s_city,b.addr_s_state,b.addr_s_country," +
-                " b.addr_s_zipcode" +
-                " FROM Customers c LEFT OUTER JOIN Address b ON c.cust_id = b.cust_id WHERE c.cust_id = ?";
+            Customer customer = new Customer();
+            customer.setShippingAddress(new Address());
+            customer.setBillingAddress(new Address());
+            if (customerId != null && !customerId.isEmpty()) {
+                String sb = ("SELECT c.*, " +
+                        " b.addr_b_str1,b.addr_b_str2,b.addr_b_str3,b.addr_b_city,b.cust_id,AccountNumnber," +
+                        " b.addr_b_state,b.addr_b_country,") +
+                        " b.addr_b_zipcode,b.addr_s_str1,b.addr_s_str2,b.addr_s_str3,b.addr_s_city,b.addr_s_state,b.addr_s_country," +
+                        " b.addr_s_zipcode" +
+                        " FROM Customers c LEFT OUTER JOIN Address b ON c.cust_id = b.cust_id WHERE c.cust_id = ?";
 
-         cursor = DBManager.getDatabase().rawQuery(sb, new String[]{customerId});
+                cursor = DBManager.getDatabase().rawQuery(sb, new String[]{customerId});
 
-        if (cursor.moveToFirst()) {
-            customer.setCust_id(customerId);
-            customer.setCustAccountNumber(cursor.getString(cursor.getColumnIndex(AccountNumnber)));
-            customer.setCust_name(cursor.getString(cursor.getColumnIndex(cust_name)));
-            customer.setCust_firstName(cursor.getString(cursor.getColumnIndex(cust_firstName)));
-            customer.setCust_lastName(cursor.getString(cursor.getColumnIndex(cust_lastName)));
-            customer.setCust_middleName(cursor.getString(cursor.getColumnIndex(cust_middleName)));
-            customer.setCompanyName(cursor.getString(cursor.getColumnIndex(CompanyName)));
-            customer.setCust_balance(cursor.getString(cursor.getColumnIndex(cust_balance)));
-            customer.setCust_chain(cursor.getString(cursor.getColumnIndex(cust_chain)));
-            customer.setCust_contact(cursor.getString(cursor.getColumnIndex(cust_contact)));
-            customer.setCust_dob(cursor.getString(cursor.getColumnIndex(cust_dob)));
-            customer.setCust_email(cursor.getString(cursor.getColumnIndex(cust_email)));
-            customer.setCust_fax(cursor.getString(cursor.getColumnIndex(cust_fax)));
-            customer.setCustIdNumeric(cursor.getString(cursor.getColumnIndex(cust_id_numeric)));
-            customer.setCust_id_ref(cursor.getString(cursor.getColumnIndex(cust_id_ref)));
-            customer.setPricelevel_id(cursor.getString(cursor.getColumnIndex(pricelevel_id)));
-            customer.setCust_limit(cursor.getString(cursor.getColumnIndex(cust_limit)));
-            customer.setCust_ordertype(cursor.getString(cursor.getColumnIndex(cust_ordertype)));
-            customer.setCust_phone(cursor.getString(cursor.getColumnIndex(cust_phone)));
-            customer.setCust_points(cursor.getString(cursor.getColumnIndex(cust_points)));
-            customer.setCust_pwd(cursor.getString(cursor.getColumnIndex(cust_pwd)));
-            customer.setCust_salestaxcode(cursor.getString(cursor.getColumnIndex(cust_salestaxcode)));
-            customer.setCust_securityanswer(cursor.getString(cursor.getColumnIndex(cust_securityanswer)));
-            customer.setCust_securityquestion(cursor.getString(cursor.getColumnIndex(cust_securityquestion)));
-            customer.setCust_taxable(cursor.getString(cursor.getColumnIndex(cust_taxable)));
-            customer.setCust_terms(cursor.getString(cursor.getColumnIndex(cust_terms)));
-            customer.setCust_update(cursor.getString(cursor.getColumnIndex(cust_update)));
+                if (cursor.moveToFirst()) {
+                    customer.setCust_id(customerId);
+                    customer.setCustAccountNumber(cursor.getString(cursor.getColumnIndex(AccountNumnber)));
+                    customer.setCust_name(cursor.getString(cursor.getColumnIndex(cust_name)));
+                    customer.setCust_firstName(cursor.getString(cursor.getColumnIndex(cust_firstName)));
+                    customer.setCust_lastName(cursor.getString(cursor.getColumnIndex(cust_lastName)));
+                    customer.setCust_middleName(cursor.getString(cursor.getColumnIndex(cust_middleName)));
+                    customer.setCompanyName(cursor.getString(cursor.getColumnIndex(CompanyName)));
+                    customer.setCust_balance(cursor.getString(cursor.getColumnIndex(cust_balance)));
+                    customer.setCust_chain(cursor.getString(cursor.getColumnIndex(cust_chain)));
+                    customer.setCust_contact(cursor.getString(cursor.getColumnIndex(cust_contact)));
+                    customer.setCust_dob(cursor.getString(cursor.getColumnIndex(cust_dob)));
+                    customer.setCust_email(cursor.getString(cursor.getColumnIndex(cust_email)));
+                    customer.setCust_fax(cursor.getString(cursor.getColumnIndex(cust_fax)));
+                    customer.setCustIdNumeric(cursor.getString(cursor.getColumnIndex(cust_id_numeric)));
+                    customer.setCust_id_ref(cursor.getString(cursor.getColumnIndex(cust_id_ref)));
+                    customer.setPricelevel_id(cursor.getString(cursor.getColumnIndex(pricelevel_id)));
+                    customer.setCust_limit(cursor.getString(cursor.getColumnIndex(cust_limit)));
+                    customer.setCust_ordertype(cursor.getString(cursor.getColumnIndex(cust_ordertype)));
+                    customer.setCust_phone(cursor.getString(cursor.getColumnIndex(cust_phone)));
+                    customer.setCust_points(cursor.getString(cursor.getColumnIndex(cust_points)));
+                    customer.setCust_pwd(cursor.getString(cursor.getColumnIndex(cust_pwd)));
+                    customer.setCust_salestaxcode(cursor.getString(cursor.getColumnIndex(cust_salestaxcode)));
+                    customer.setCust_securityanswer(cursor.getString(cursor.getColumnIndex(cust_securityanswer)));
+                    customer.setCust_securityquestion(cursor.getString(cursor.getColumnIndex(cust_securityquestion)));
+                    customer.setCust_taxable(cursor.getString(cursor.getColumnIndex(cust_taxable)));
+                    customer.setCust_terms(cursor.getString(cursor.getColumnIndex(cust_terms)));
+                    customer.setCust_update(cursor.getString(cursor.getColumnIndex(cust_update)));
 
-            customer.getBillingAddress().setAddr_b_str1(cursor.getString(cursor.getColumnIndex("addr_b_str1")));
-            customer.getBillingAddress().setAddr_b_str2(cursor.getString(cursor.getColumnIndex("addr_b_str2")));
-            customer.getBillingAddress().setAddr_b_str3(cursor.getString(cursor.getColumnIndex("addr_b_str3")));
-            customer.getBillingAddress().setAddr_b_city(cursor.getString(cursor.getColumnIndex("addr_b_city")));
-            customer.getBillingAddress().setAddr_b_state(cursor.getString(cursor.getColumnIndex("addr_b_state")));
-            customer.getBillingAddress().setAddr_b_country(cursor.getString(cursor.getColumnIndex("addr_b_country")));
-            customer.getBillingAddress().setAddr_b_zipcode(cursor.getString(cursor.getColumnIndex("addr_b_zipcode")));
-            customer.getShippingAddress().setAddr_s_str1(cursor.getString(cursor.getColumnIndex("addr_s_str1")));
-            customer.getShippingAddress().setAddr_s_str2(cursor.getString(cursor.getColumnIndex("addr_s_str2")));
-            customer.getShippingAddress().setAddr_s_str3(cursor.getString(cursor.getColumnIndex("addr_s_str3")));
-            customer.getShippingAddress().setAddr_s_city(cursor.getString(cursor.getColumnIndex("addr_s_city")));
-            customer.getShippingAddress().setAddr_s_state(cursor.getString(cursor.getColumnIndex("addr_s_state")));
-            customer.getShippingAddress().setAddr_s_country(cursor.getString(cursor.getColumnIndex("addr_s_country")));
-            customer.getShippingAddress().setAddr_s_zipcode(cursor.getString(cursor.getColumnIndex("addr_s_zipcode")));
-            customer.setCust_taxable(cursor.getString(cursor.getColumnIndex("cust_taxable")));
-            customer.setCust_salestaxcode(cursor.getString(cursor.getColumnIndex("cust_salestaxcode")));
+                    customer.getBillingAddress().setAddr_b_str1(cursor.getString(cursor.getColumnIndex("addr_b_str1")));
+                    customer.getBillingAddress().setAddr_b_str2(cursor.getString(cursor.getColumnIndex("addr_b_str2")));
+                    customer.getBillingAddress().setAddr_b_str3(cursor.getString(cursor.getColumnIndex("addr_b_str3")));
+                    customer.getBillingAddress().setAddr_b_city(cursor.getString(cursor.getColumnIndex("addr_b_city")));
+                    customer.getBillingAddress().setAddr_b_state(cursor.getString(cursor.getColumnIndex("addr_b_state")));
+                    customer.getBillingAddress().setAddr_b_country(cursor.getString(cursor.getColumnIndex("addr_b_country")));
+                    customer.getBillingAddress().setAddr_b_zipcode(cursor.getString(cursor.getColumnIndex("addr_b_zipcode")));
+                    customer.getShippingAddress().setAddr_s_str1(cursor.getString(cursor.getColumnIndex("addr_s_str1")));
+                    customer.getShippingAddress().setAddr_s_str2(cursor.getString(cursor.getColumnIndex("addr_s_str2")));
+                    customer.getShippingAddress().setAddr_s_str3(cursor.getString(cursor.getColumnIndex("addr_s_str3")));
+                    customer.getShippingAddress().setAddr_s_city(cursor.getString(cursor.getColumnIndex("addr_s_city")));
+                    customer.getShippingAddress().setAddr_s_state(cursor.getString(cursor.getColumnIndex("addr_s_state")));
+                    customer.getShippingAddress().setAddr_s_country(cursor.getString(cursor.getColumnIndex("addr_s_country")));
+                    customer.getShippingAddress().setAddr_s_zipcode(cursor.getString(cursor.getColumnIndex("addr_s_zipcode")));
+                    customer.setCust_taxable(cursor.getString(cursor.getColumnIndex("cust_taxable")));
+                    customer.setCust_salestaxcode(cursor.getString(cursor.getColumnIndex("cust_salestaxcode")));
 
+                }
+
+                cursor.close();
+                // db.close();
+            }
+            return customer;
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
         }
-
-        cursor.close();
-        // db.close();
-    }
-    return customer;
-    }finally {
-    if(cursor!=null && !cursor.isClosed())
-    {
-        cursor.close();
-    }
-    }
     }
 
     public String[] getContactInfoBlock(String custID) {
-        net.sqlcipher.Cursor cursor=null;
+        Cursor cursor = null;
         try {
-             cursor = DBManager.getDatabase().rawQuery("SELECT cust_phone,cust_email FROM Customers WHERE cust_id = ?", new String[]{custID});
+            cursor = DBManager.getDatabase().rawQuery("SELECT cust_phone,cust_email FROM Customers WHERE cust_id = ?", new String[]{custID});
             String[] data = new String[2];
             if (cursor.moveToFirst()) {
                 data[0] = cursor.getString(cursor.getColumnIndex("cust_phone"));
@@ -500,10 +490,8 @@ public class CustomersHandler {
             }
             cursor.close();
             return data;
-        }
-        finally {
-            if(cursor!=null && !cursor.isClosed())
-            {
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
                 cursor.close();
             }
         }
@@ -562,7 +550,7 @@ public class CustomersHandler {
             e.printStackTrace();
             throw e;
         } finally {
-            if(insert!=null) {
+            if (insert != null) {
                 insert.close();
             }
             DBManager.getDatabase().endTransaction();

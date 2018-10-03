@@ -4,7 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 
 import com.android.emobilepos.models.EMSCategory;
-import com.android.support.Global;
+
 import com.android.support.MyPreferences;
 
 import net.sqlcipher.database.SQLiteStatement;
@@ -22,25 +22,23 @@ public class CategoriesHandler {
     private static final String isactive = "isactive";
     private static final String parentID = "parentID";
     private static final String url_icon = "url_icon";
-
+    private static final String table_name = "Categories";
     private final List<String> attr = Arrays.asList(cat_id, cat_name, cat_update, isactive, parentID, url_icon);
     private StringBuilder sb1, sb2;
     private HashMap<String, Integer> attrHash;
-
     private List<String[]> catData;
     private MyPreferences myPref;
     private List<HashMap<String, Integer>> dictionaryListMap;
-    private static final String table_name = "Categories";
 
-	public CategoriesHandler(Context activity) {
-		attrHash = new HashMap<>();
-		catData = new ArrayList<>();
-		sb1 = new StringBuilder();
-		sb2 = new StringBuilder();
-		myPref = new MyPreferences(activity);
-		new DBManager(activity);
-		initDictionary();
-	}
+    public CategoriesHandler(Context activity) {
+        attrHash = new HashMap<>();
+        catData = new ArrayList<>();
+        sb1 = new StringBuilder();
+        sb2 = new StringBuilder();
+        myPref = new MyPreferences(activity);
+        new DBManager(activity);
+        initDictionary();
+    }
 
     private void initDictionary() {
         int size = attr.size();
@@ -93,7 +91,7 @@ public class CategoriesHandler {
             DBManager.getDatabase().setTransactionSuccessful();
         } catch (Exception e) {
         } finally {
-            if(insert!=null) {
+            if (insert != null) {
                 insert.close();
             }
             DBManager.getDatabase().endTransaction();
@@ -144,19 +142,17 @@ public class CategoriesHandler {
     public String[] getCategory(String categoryId) {
         String[] data = new String[2];
         String[] fields = new String[]{cat_name, cat_id};
-        net.sqlcipher.Cursor cursor=null;
+        Cursor cursor = null;
         try {
-             cursor = DBManager.getDatabase().query(true, table_name, fields, null, null, null, null, cat_name, null);
+            cursor = DBManager.getDatabase().query(true, table_name, fields, null, null, null, null, cat_name, null);
             if (cursor.moveToFirst()) {
                 data[0] = cursor.getString(cursor.getColumnIndex(cat_name));
                 data[1] = cursor.getString(cursor.getColumnIndex(cat_id));
             }
             cursor.close();
             return data;
-        }
-        finally {
-            if(cursor!=null && !cursor.isClosed())
-            {
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
                 cursor.close();
             }
         }
@@ -166,7 +162,7 @@ public class CategoriesHandler {
         List<String[]> list = new ArrayList<>();
         String[] data;
         String[] fields = new String[]{cat_name, cat_id};
-        Cursor cursor=null;
+        Cursor cursor = null;
         Cursor cursor2 = null;
         StringBuilder sb = new StringBuilder();
         if (myPref.getPreferences(MyPreferences.pref_enable_multi_category))
@@ -199,14 +195,11 @@ public class CategoriesHandler {
             }
             cursor.close();
             return list;
-        }
-        finally {
-            if(cursor!=null && !cursor.isClosed())
-            {
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
                 cursor.close();
             }
-            if(cursor2!=null && !cursor2.isClosed())
-            {
+            if (cursor2 != null && !cursor2.isClosed()) {
                 cursor2.close();
             }
         }
@@ -233,15 +226,14 @@ public class CategoriesHandler {
             sb.append("  WHERE c1.parentID='' ");
         }
         sb.append(" ORDER BY c1.cat_name");
-        net.sqlcipher.Cursor cursor=null;
+        Cursor cursor = null;
         try {
-             cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
+            cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
             List<EMSCategory> categories = getCategoriesFromCursor(cursor);
             cursor.close();
             return categories;
-        }
-        finally {
-            if(cursor!=null && !cursor.isClosed()) {
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
                 cursor.close();
             }
         }

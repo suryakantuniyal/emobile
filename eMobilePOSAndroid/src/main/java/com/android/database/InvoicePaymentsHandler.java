@@ -1,6 +1,5 @@
 package com.android.database;
 
-import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 
@@ -140,7 +139,7 @@ public class InvoicePaymentsHandler {
 
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT txnID FROM InvoicePayments WHERE pay_id = '").append(payID).append("' GROUP BY txnID");
-        net.sqlcipher.Cursor cursor = null;
+        Cursor cursor = null;
         try {
 
             cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
@@ -165,7 +164,7 @@ public class InvoicePaymentsHandler {
 
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT inv_id,applied_amount FROM InvoicePayments WHERE pay_id = '").append(payID).append("'");
-        net.sqlcipher.Cursor cursor = null;
+        Cursor cursor = null;
         try {
             List<String[]> list = new ArrayList<String[]>();
             String[] content = new String[2];
