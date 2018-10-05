@@ -371,7 +371,8 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                 Global.showPrompt(ProcessGenius_FA.this, R.string.dlog_title_error, getString(R.string.failed_genius_connectivity));
             } else if (!boProcessed) {
                 Global.showPrompt(ProcessGenius_FA.this, R.string.dlog_title_error, response.getErrorMessage());
-            } else if (response != null && (response.getStatus().equalsIgnoreCase("APPROVED") ||
+            } else if (response != null && response.getStatus() != null &&
+                    (response.getStatus().equalsIgnoreCase("APPROVED") ||
                     response.getStatus().equalsIgnoreCase("DECLINED") ||
                     response.getStatus().equalsIgnoreCase("UserCancelled") ||
                     response.getStatus().equalsIgnoreCase("TERMINATED"))) {
