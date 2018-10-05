@@ -117,9 +117,13 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                 if (Global.btSwiper != null && Global.btSwiper.getCurrentDevice() != null)
                     Global.btSwiper.getCurrentDevice().loadScanner(emsCallBack);
                 if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)
-                    Global.mainPrinterManager.getCurrentDevice().loadScanner(emsCallBack);
+                    if (emsCallBack != null) {
+                        Global.mainPrinterManager.getCurrentDevice().loadScanner(emsCallBack);
+                    }
                 if (Global.btSled != null && Global.btSled.getCurrentDevice() != null)
-                    Global.btSled.getCurrentDevice().loadScanner(emsCallBack);
+                    if (emsCallBack != null) {
+                        Global.btSled.getCurrentDevice().loadScanner(emsCallBack);
+                    }
             }
         }
     };
@@ -135,6 +139,31 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                 }
         }
 
+    }
+
+    private static boolean validateClerkShift(Global.TransactionType transactionType, Context context) {
+        SecurityManager.SecurityResponse response = SecurityManager.validateClerkShift(context, transactionType);
+        switch (response) {
+            case CHECK_USER_CLERK_REQUIRED_SETTING:
+                Global.showPrompt(context, R.string.dlog_title_error, context.getString(R.string.use_clerk_check_required));
+                return false;
+            case OPEN_SHIFT_REQUIRED:
+                if (transactionType != Global.TransactionType.SHIFTS) {
+                    Global.showPrompt(context, R.string.dlog_title_error, context.getString(R.string.dlog_msg_error_shift_needs_to_be_open));
+                    return false;
+                }
+                break;
+            case SHIFT_ALREADY_OPEN:
+                Shift openShift = ShiftDAO.getOpenShift();
+                Clerk clerk = null;
+                if (openShift != null) {
+                    clerk = ClerkDAO.getByEmpId(openShift.getClerkId());
+                }
+                Global.showPrompt(context, R.string.dlog_title_error,
+                        String.format(context.getString(R.string.dlog_msg_error_shift_already_open), clerk != null ? clerk.getEmpName() : ""));
+                return false;
+        }
+        return true;
     }
 
     @Override
@@ -807,31 +836,6 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
             }
         });
         dialog.show();
-    }
-
-    private static boolean validateClerkShift(Global.TransactionType transactionType, Context context) {
-        SecurityManager.SecurityResponse response = SecurityManager.validateClerkShift(context, transactionType);
-        switch (response) {
-            case CHECK_USER_CLERK_REQUIRED_SETTING:
-                Global.showPrompt(context, R.string.dlog_title_error, context.getString(R.string.use_clerk_check_required));
-                return false;
-            case OPEN_SHIFT_REQUIRED:
-                if (transactionType != Global.TransactionType.SHIFTS) {
-                    Global.showPrompt(context, R.string.dlog_title_error, context.getString(R.string.dlog_msg_error_shift_needs_to_be_open));
-                    return false;
-                }
-                break;
-            case SHIFT_ALREADY_OPEN:
-                Shift openShift = ShiftDAO.getOpenShift();
-                Clerk clerk = null;
-                if (openShift != null) {
-                    clerk = ClerkDAO.getByEmpId(openShift.getClerkId());
-                }
-                Global.showPrompt(context, R.string.dlog_title_error,
-                        String.format(context.getString(R.string.dlog_msg_error_shift_already_open), clerk != null ? clerk.getEmpName() : ""));
-                return false;
-        }
-        return true;
     }
 
     private void askEatInToGo() {
