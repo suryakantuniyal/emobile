@@ -46,8 +46,6 @@ public class DrawReceiptActivity extends Activity implements OnClickListener {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         // Set full screen view
-
-
         context = this;
         activity = this;
         global = (Global) getApplication();
