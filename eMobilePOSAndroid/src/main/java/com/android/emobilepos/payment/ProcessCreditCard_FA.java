@@ -374,6 +374,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
     }
 
     public static int getCreditLogo(String cardName) {
+
         if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_AMEX)
                 || cardName.trim().contains("amex") || cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_AMEX)) {
             return R.drawable.americanexpress;
@@ -398,6 +399,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         } else {
             return R.drawable.debitcard;
         }
+
     }
 
     public static String getCreditName(String cardName) {
@@ -923,7 +925,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                 transactionId,
                 authcode);
 
-        if (cardInfoManager.getEmvContainer() != null && cardInfoManager.getEmvContainer().getHandpointResponse() != null) {
+        if (cardInfoManager.getEmvContainer() != null && cardInfoManager.getEmvContainer().getHandpointResponse().getCardSchemeName() != null) {
             payment.setCard_type(getCreditName(cardInfoManager.getEmvContainer().getHandpointResponse().getCardSchemeName()));
         }
 
