@@ -36,10 +36,9 @@ import com.crashlytics.android.Crashlytics;
 public class HistoryTransactions_FA extends BaseFragmentActivityActionBar implements OnTabChangeListener {
 
     private static final String[] TABS = new String[]{"orders", "returns", "invoices", "estimates", "receipts"};
-    private static String[] TABS_TAG;
     private static final int[] TABS_ID = new int[]{R.id.orders_tab, R.id.returns_tab, R.id.invoices_tab,
             R.id.estimates_tab, R.id.receipts_tab};
-
+    private static String[] TABS_TAG;
     private boolean hasBeenCreated = false;
     private Global global;
     private Activity activity;
@@ -216,28 +215,13 @@ public class HistoryTransactions_FA extends BaseFragmentActivityActionBar implem
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (myCursor != null)
+        if (myCursor != null && !myCursor.isClosed())
             myCursor.close();
     }
 
     private void updateMyTabs(String tabID, int placeHolder) {
         getCursorData(placeHolder);
     }
-
-    public enum Limiters {
-        orders, returns, invoices, estimates, receipts;
-
-        public static Limiters toLimit(String str) {
-            try {
-                return valueOf(str);
-            } catch (Exception e) {
-                e.printStackTrace();
-                Crashlytics.logException(e);
-                return null;
-            }
-        }
-    }
-
 
     @Override
     public void onTabChanged(String tabID) {
@@ -262,7 +246,6 @@ public class HistoryTransactions_FA extends BaseFragmentActivityActionBar implem
         }
     }
 
-
     public void performSearch(String text) {
         if (myCursor != null)
             myCursor.close();
@@ -276,6 +259,20 @@ public class HistoryTransactions_FA extends BaseFragmentActivityActionBar implem
 
     }
 
+
+    public enum Limiters {
+        orders, returns, invoices, estimates, receipts;
+
+        public static Limiters toLimit(String str) {
+            try {
+                return valueOf(str);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
+                return null;
+            }
+        }
+    }
 
     private class CustomCursorAdapter extends CursorAdapter {
         LayoutInflater inflater;
