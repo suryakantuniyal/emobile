@@ -54,7 +54,7 @@ public class TaxesCalculator {
         HashMap<String, String[]> prodTaxes = new HashMap<>();
         if (preferences.isRetailTaxes() && order.getOrderProducts() != null) {
             for (OrderProduct product : order.getOrderProducts()) {
-                if(product.getTaxes()!=null) {
+                if (product.getTaxes() != null) {
                     for (Tax tax : product.getTaxes()) {
                         if (prodTaxes.containsKey(tax.getTaxRate())) {
                             BigDecimal taxAmount = new BigDecimal(prodTaxes.get(tax.getTaxRate())[1]);
@@ -85,8 +85,10 @@ public class TaxesCalculator {
                     BigDecimal taxAmount = new BigDecimal(0);
                     List<BigDecimal> rates = new ArrayList<>();
                     rates.add(new BigDecimal(tax.getTax_rate()));
-                    for (OrderProduct product : order.getOrderProducts()) {
-                        taxAmount = taxAmount.add(TaxesCalculator.calculateTax(product.getProductPriceTaxableAmountCalculated(), rates));
+                    if (order.getOrderProducts() != null) {
+                        for (OrderProduct product : order.getOrderProducts()) {
+                            taxAmount = taxAmount.add(TaxesCalculator.calculateTax(product.getProductPriceTaxableAmountCalculated(), rates));
+                        }
                     }
                     String[] arr = new String[2];
                     arr[0] = tax.getTax_name();
