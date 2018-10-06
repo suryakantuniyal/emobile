@@ -309,7 +309,7 @@ public class Global extends MultiDexApplication {
                         realm.insertOrUpdate(payment);
                         realm.commitTransaction();
                     } finally {
-                        if(realm!=null) {
+                        if (realm != null) {
                             realm.close();
                         }
                     }
@@ -318,9 +318,8 @@ public class Global extends MultiDexApplication {
             }
         }
     };
-    private com.android.support.LocationServices locationServices;
-    private static Dialog popDlog;
     public static long MAX_ACTIVITY_TRANSITION_TIME_MS = 15000;
+    private static Dialog popDlog;
     public String encodedImage = "";
     public int orientation;
     // For new addon views
@@ -336,6 +335,7 @@ public class Global extends MultiDexApplication {
     public String lastInvID = "";
     public int lastProdOrdID = 0;
     public List<HashMap<String, Integer>> dictionary;
+    private com.android.support.LocationServices locationServices;
     // Handle application transition for background
     private Timer mActivityTransitionTimer;
     private TimerTask mActivityTransitionTimerTask;
@@ -443,7 +443,7 @@ public class Global extends MultiDexApplication {
                 public void onConnected(@Nullable Bundle bundle) {
                     if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                         FusedLocationProviderClient lastLocation = com.google.android.gms.location.LocationServices.getFusedLocationProviderClient(activity);
-                        lastLocation .getLastLocation().addOnSuccessListener((Activity) activity, new OnSuccessListener<Location>() {
+                        lastLocation.getLastLocation().addOnSuccessListener((Activity) activity, new OnSuccessListener<Location>() {
                             @Override
                             public void onSuccess(Location location) {
                                 if (location == null) {
@@ -452,8 +452,7 @@ public class Global extends MultiDexApplication {
                                     LocationServices.mLastLocation = location;
                                 }
                                 global.locationServices.disconnect();
-                                synchronized (global.locationServices)
-                                {
+                                synchronized (global.locationServices) {
                                     global.locationServices.notifyAll();
                                 }
 
@@ -478,8 +477,7 @@ public class Global extends MultiDexApplication {
 
         }
 
-        synchronized (global.locationServices)
-        {
+        synchronized (global.locationServices) {
             if (LocationServices.mLastLocation == null || reload) {
                 global.locationServices.connect();
                 try {
@@ -509,7 +507,9 @@ public class Global extends MultiDexApplication {
         if (popDlog == null)
             popDlog = new Dialog(activity, R.style.Theme_TransparentTest);
         else {
-            popDlog.dismiss();
+            if (popDlog != null && popDlog.isShowing()) {
+                popDlog.dismiss();
+            }
             popDlog = new Dialog(activity, R.style.Theme_TransparentTest);
         }
         popDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -527,7 +527,9 @@ public class Global extends MultiDexApplication {
 
             @Override
             public void onClick(View v) {
-                popDlog.dismiss();
+                if (popDlog != null && popDlog.isShowing()) {
+                    popDlog.dismiss();
+                }
             }
         });
         popDlog.show();

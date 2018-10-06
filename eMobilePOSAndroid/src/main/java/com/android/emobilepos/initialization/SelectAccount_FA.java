@@ -31,6 +31,7 @@ import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.crashlytics.android.Crashlytics;
 
 import io.fabric.sdk.android.Fabric;
+
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
@@ -47,39 +48,6 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
     private ProgressDialog myProgressDialog;
     private Dialog promptDialog;
     private DBManager dbManager;
-
-    public enum PermissionType {
-        ACCESS_FINE_LOCATION(0), ACCESS_COARSE_LOCATION(1), WRITE_EXTERNAL_STORAGE(2), CAMERA(3), READ_PHONE_STATE(4), ACCESS_MICROPHONE(5), NONE(99);
-
-        private int code;
-
-        public int getCode() {
-            return this.code;
-        }
-
-        PermissionType(int code) {
-            this.code = code;
-        }
-
-        public static PermissionType getByCode(int code) {
-            switch (code) {
-                case 0:
-                    return ACCESS_FINE_LOCATION;
-                case 1:
-                    return ACCESS_COARSE_LOCATION;
-                case 2:
-                    return WRITE_EXTERNAL_STORAGE;
-                case 3:
-                    return CAMERA;
-                case 4:
-                    return READ_PHONE_STATE;
-                case 5:
-                    return ACCESS_MICROPHONE;
-                default:
-                    return NONE;
-            }
-        }
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -154,95 +122,6 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
                 }
             });
             checkLocationPermissions();
-        }
-    }
-
-    private class SyncReceiveTask extends AsyncTask<DBManager, Void, Boolean> {
-        ProgressDialog dialog;
-
-        @Override
-        protected void onPreExecute() {
-            dialog = new ProgressDialog(SelectAccount_FA.this);
-            dialog.setTitle(R.string.sync_title);
-            dialog.setIndeterminate(true);
-            dialog.setMessage(getString(R.string.sync_inprogress));
-            dialog.show();
-        }
-
-        @Override
-        protected Boolean doInBackground(DBManager... params) {
-            DBManager dbManager = params[0];
-            SynchMethods sm = new SynchMethods(dbManager);
-            return sm.syncReceive();
-        }
-
-        @Override
-        protected void onPostExecute(Boolean result) {
-            dialog.dismiss();
-            if (!result) {
-                Global.showPrompt(SelectAccount_FA.this, R.string.sync_title, getString(R.string.sync_fail));
-            } else {
-                Intent intent = new Intent(SelectAccount_FA.this, MainMenu_FA.class);
-                setResult(-1);
-                startActivity(intent);
-                finish();
-            }
-        }
-    }
-
-    private class validateLoginAsync extends AsyncTask<String, String, Boolean> {
-
-        @Override
-        protected void onPreExecute() {
-            myProgressDialog = new ProgressDialog(thisContext);
-            myProgressDialog.setMessage(getString(R.string.loading));
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            myProgressDialog.show();
-        }
-
-        @Override
-        protected Boolean doInBackground(String... params) {
-            Post post = new Post(SelectAccount_FA.this);
-            SAXParserFactory spf = SAXParserFactory.newInstance();
-            SaxLoginHandler handler = new SaxLoginHandler();
-            boolean proceed = false;
-            try {
-                String xml = post.postData(0, "");
-                InputSource inSource = new InputSource(new StringReader(xml));
-                SAXParser sp = spf.newSAXParser();
-                XMLReader xr = sp.getXMLReader();
-                xr.setContentHandler(handler);
-                xr.parse(inSource);
-                proceed = Boolean.parseBoolean(handler.getData().toLowerCase(Locale.getDefault()));
-            } catch (Exception e) {
-                Crashlytics.logException(e);
-            }
-            return proceed;
-        }
-
-        @Override
-        protected void onPostExecute(Boolean proceed) {
-            myProgressDialog.dismiss();
-            MyPreferences myPref = new MyPreferences(SelectAccount_FA.this);
-            if (proceed) {
-                Intent intent = new Intent(thisContext, SelectEmployee_FA.class);
-                startActivityForResult(intent, 0);
-
-            } else {
-                myPref.setLogIn(false);
-                AlertDialog.Builder dialog = new AlertDialog.Builder(thisContext);
-                dialog.setTitle("Error");
-                dialog.setMessage("The provided information could not be validated. Please try again.");
-                dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-                dialog.create().show();
-            }
         }
     }
 
@@ -331,6 +210,132 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
                     requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO},
                             PermissionType.ACCESS_MICROPHONE.ordinal());
                 }
+            }
+        }
+    }
+
+    public enum PermissionType {
+        ACCESS_FINE_LOCATION(0), ACCESS_COARSE_LOCATION(1), WRITE_EXTERNAL_STORAGE(2), CAMERA(3), READ_PHONE_STATE(4), ACCESS_MICROPHONE(5), NONE(99);
+
+        private int code;
+
+        PermissionType(int code) {
+            this.code = code;
+        }
+
+        public static PermissionType getByCode(int code) {
+            switch (code) {
+                case 0:
+                    return ACCESS_FINE_LOCATION;
+                case 1:
+                    return ACCESS_COARSE_LOCATION;
+                case 2:
+                    return WRITE_EXTERNAL_STORAGE;
+                case 3:
+                    return CAMERA;
+                case 4:
+                    return READ_PHONE_STATE;
+                case 5:
+                    return ACCESS_MICROPHONE;
+                default:
+                    return NONE;
+            }
+        }
+
+        public int getCode() {
+            return this.code;
+        }
+    }
+
+    private class SyncReceiveTask extends AsyncTask<DBManager, Void, Boolean> {
+        ProgressDialog dialog;
+
+        @Override
+        protected void onPreExecute() {
+            dialog = new ProgressDialog(SelectAccount_FA.this);
+            dialog.setTitle(R.string.sync_title);
+            dialog.setIndeterminate(true);
+            dialog.setMessage(getString(R.string.sync_inprogress));
+            dialog.show();
+        }
+
+        @Override
+        protected Boolean doInBackground(DBManager... params) {
+            DBManager dbManager = params[0];
+            SynchMethods sm = new SynchMethods(dbManager);
+            return sm.syncReceive();
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            if (dialog != null && dialog.isShowing()) {
+                dialog.dismiss();
+            }
+            if (!result) {
+                Global.showPrompt(SelectAccount_FA.this, R.string.sync_title, getString(R.string.sync_fail));
+            } else {
+                Intent intent = new Intent(SelectAccount_FA.this, MainMenu_FA.class);
+                setResult(-1);
+                startActivity(intent);
+                finish();
+            }
+        }
+    }
+
+    private class validateLoginAsync extends AsyncTask<String, String, Boolean> {
+
+        @Override
+        protected void onPreExecute() {
+            myProgressDialog = new ProgressDialog(thisContext);
+            myProgressDialog.setMessage(getString(R.string.loading));
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setCancelable(false);
+            myProgressDialog.show();
+        }
+
+        @Override
+        protected Boolean doInBackground(String... params) {
+            Post post = new Post(SelectAccount_FA.this);
+            SAXParserFactory spf = SAXParserFactory.newInstance();
+            SaxLoginHandler handler = new SaxLoginHandler();
+            boolean proceed = false;
+            try {
+                String xml = post.postData(0, "");
+                InputSource inSource = new InputSource(new StringReader(xml));
+                SAXParser sp = spf.newSAXParser();
+                XMLReader xr = sp.getXMLReader();
+                xr.setContentHandler(handler);
+                xr.parse(inSource);
+                proceed = Boolean.parseBoolean(handler.getData().toLowerCase(Locale.getDefault()));
+            } catch (Exception e) {
+                Crashlytics.logException(e);
+            }
+            return proceed;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean proceed) {
+            if (myProgressDialog != null && myProgressDialog.isShowing()) {
+                myProgressDialog.dismiss();
+            }
+            MyPreferences myPref = new MyPreferences(SelectAccount_FA.this);
+            if (proceed) {
+                Intent intent = new Intent(thisContext, SelectEmployee_FA.class);
+                startActivityForResult(intent, 0);
+
+            } else {
+                myPref.setLogIn(false);
+                AlertDialog.Builder dialog = new AlertDialog.Builder(thisContext);
+                dialog.setTitle("Error");
+                dialog.setMessage("The provided information could not be validated. Please try again.");
+                dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+                dialog.create().show();
             }
         }
     }
