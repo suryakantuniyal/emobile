@@ -651,7 +651,9 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
 
         @Override
         protected void onPostExecute(String unused) {
-            myProgressDialog.dismiss();
+            if (myProgressDialog != null && myProgressDialog.isShowing()) {
+                myProgressDialog.dismiss();
+            }
             if (!printSuccessful) {
                 showPrintDlg(false);
             } else if (myPref.isMultiplePrints()) {
@@ -728,7 +730,9 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
 
         @Override
         protected void onPostExecute(Void unused) {
-            myProgressDialog.dismiss();
+            if (myProgressDialog != null && myProgressDialog.isShowing()) {
+                myProgressDialog.dismiss();
+            }
             btnVoid.setEnabled(false);
             btnVoid.setClickable(false);
             Global.showPrompt(activity, R.string.dlog_title_success, getString(R.string.dlog_msg_transaction_voided));

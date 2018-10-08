@@ -31,11 +31,11 @@ import main.EMSDeviceManager;
  * Created by Guarionex on 12/9/2015.
  */
 public class BaseFragmentActivityActionBar extends FragmentActivity {
+    static Clerk clerk;
     private static MyPreferences myPref;
     private static String[] navigationbarByModels;
     public Menu menu;
     protected ActionBar myBar;
-    static Clerk clerk;
     private boolean showNavigationbar = false;
 
     protected void setActionBar() {
@@ -176,8 +176,8 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
 
     public class AutoConnectPrinter extends AsyncTask<String, String, String> {
         boolean isUSB = false;
-        private boolean loadMultiPrinter;
         ProgressDialog driversProgressDialog;
+        private boolean loadMultiPrinter;
 
         @Override
         protected void onPreExecute() {
@@ -234,7 +234,7 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
                 driversProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                 driversProgressDialog.setCancelable(true);
             }
-                driversProgressDialog.show();
+            driversProgressDialog.show();
 
         }
     }

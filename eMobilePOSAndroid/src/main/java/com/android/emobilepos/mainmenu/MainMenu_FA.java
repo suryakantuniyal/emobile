@@ -117,6 +117,47 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         }
     };
 
+    /**
+     * Check the device to make sure it has the Google Play Services APK. If
+     * it doesn't, display a dialog that allows users to download the APK from
+     * the Google Play Store or enable it in the device's system settings.
+     */
+    public static boolean checkPlayServices(Context context) {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(context);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+            } else {
+                Log.i("checkPlayServices", "This device is not supported by Google Play Services.");
+            }
+            return false;
+        }
+        return true;
+    }
+
+//    public void ToastNotify(final String notificationMessage) {
+//        runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                Toast.makeText(MainMenu_FA.this, notificationMessage, Toast.LENGTH_LONG).show();
+////                TextView helloText = (TextView) findViewById(R.id.);
+////                helloText.setText(notificationMessage);
+//            }
+//        });
+//    }
+
+    private static void startPollingService(Context context) {
+        MyPreferences myPref = new MyPreferences(context);
+        int flags = 0;
+        if (myPref.isPollingHoldsEnable()) {
+            flags = PollingNotificationService.PollingServicesFlag.ONHOLDS.getCode() | PollingNotificationService.PollingServicesFlag.DINING_TABLES.getCode();
+        }
+        if (myPref.isAutoSyncEnable()) {
+            flags = flags | PollingNotificationService.PollingServicesFlag.AUTO_SYNC.getCode();
+        }
+        PollingNotificationService.start(context, flags);
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
@@ -169,35 +210,6 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
     }
 
-//    public void ToastNotify(final String notificationMessage) {
-//        runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                Toast.makeText(MainMenu_FA.this, notificationMessage, Toast.LENGTH_LONG).show();
-////                TextView helloText = (TextView) findViewById(R.id.);
-////                helloText.setText(notificationMessage);
-//            }
-//        });
-//    }
-
-    /**
-     * Check the device to make sure it has the Google Play Services APK. If
-     * it doesn't, display a dialog that allows users to download the APK from
-     * the Google Play Store or enable it in the device's system settings.
-     */
-    public static boolean checkPlayServices(Context context) {
-        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
-        int resultCode = apiAvailability.isGooglePlayServicesAvailable(context);
-        if (resultCode != ConnectionResult.SUCCESS) {
-            if (apiAvailability.isUserResolvableError(resultCode)) {
-            } else {
-                Log.i("checkPlayServices", "This device is not supported by Google Play Services.");
-            }
-            return false;
-        }
-        return true;
-    }
-
     public void registerWithNotificationHubs() {
         if (checkPlayServices(this)) {
 //            if (false) {
@@ -238,7 +250,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         if ((myPref.isPollingHoldsEnable() || myPref.isAutoSyncEnable()) && !PollingNotificationService.isServiceRunning(this)) {
             startPollingService(this);
         }
-        if(myPref.isUse_syncplus_services() && myPref.isSyncplus_AutoScan()) {
+        if (myPref.isUse_syncplus_services() && myPref.isSyncplus_AutoScan()) {
             SyncConfigServerService.startService(this);
         }
 //        Intent service = new Intent(this, SyncConfigServerService.class);
@@ -272,18 +284,6 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         forceTabs();
     }
 
-    private static void startPollingService(Context context) {
-        MyPreferences myPref = new MyPreferences(context);
-        int flags = 0;
-        if (myPref.isPollingHoldsEnable()) {
-            flags = PollingNotificationService.PollingServicesFlag.ONHOLDS.getCode() | PollingNotificationService.PollingServicesFlag.DINING_TABLES.getCode();
-        }
-        if (myPref.isAutoSyncEnable()) {
-            flags = flags | PollingNotificationService.PollingServicesFlag.AUTO_SYNC.getCode();
-        }
-        PollingNotificationService.start(context, flags);
-    }
-
     private void stopPollingService() {
         PollingNotificationService.stop(this);
     }
@@ -307,7 +307,6 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         }
         return super.onKeyDown(keyCode, event);
     }
-
 
 
     private void dismissProgressDialog() {
@@ -355,7 +354,6 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
     public TextView getSynchTextView() {
         return synchTextView;
     }
-
 
 
     private class AdapterTabs extends FragmentPagerAdapter

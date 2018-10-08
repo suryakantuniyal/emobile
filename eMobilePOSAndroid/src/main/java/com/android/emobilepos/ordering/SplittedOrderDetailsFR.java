@@ -349,7 +349,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
             }
             global.order.processed = "10";
         } else {
-            if(global.order.ord_id!= null) {
+            if (global.order.ord_id != null) {
                 splitedOrder.ord_id = global.order.ord_id;
             }
         }
@@ -378,7 +378,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                 global.encodedImage = "";
                 productsHandler.insert(splitedOrder.getOrderProducts());
                 if (splitedOrder.getListOrderTaxes() != null && splitedOrder.getListOrderTaxes().size() > 0) {
-                    if(splitedOrder.ord_id!=null) {
+                    if (splitedOrder.ord_id != null) {
                         ordTaxesDB.insert(splitedOrder.getListOrderTaxes(), splitedOrder.ord_id);
                     }
                 }
@@ -397,7 +397,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                 splitedOrder.syncOrderProductIds();
                 ordersHandler.insert(splitedOrder);
                 productsHandler.insert(splitedOrder.getOrderProducts());
-                if(splitedOrder.ord_id!=null) {
+                if (splitedOrder.ord_id != null) {
                     ordTaxesDB.insert(splitedOrder.getListOrderTaxes(), splitedOrder.ord_id);
                 }
             }
