@@ -1164,6 +1164,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     }
 
                     global.clearListViewData();
+                    Global.isInventoryTransfer = false;
                     msrWasLoaded = false;
                     cardReaderConnected = false;
                     leftFragment.mainLVAdapter.notifyDataSetChanged();

@@ -1227,6 +1227,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         dbLocations.insert(Global.transferLocation);
         dbInventory.insert(Global.transferInventory);
         reloadDefaultTransaction();
+        Global.isInventoryTransfer = false;
     }
 
     private void processConsignment() {
