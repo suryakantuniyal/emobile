@@ -26,7 +26,6 @@ import android.support.v4.app.ActivityCompat;
 import android.text.Html;
 import android.text.InputType;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.Surface;
@@ -74,8 +73,6 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.android.gms.location.FusedLocationProviderClient;
 
 import org.springframework.util.support.Base64;
 
@@ -1403,7 +1400,6 @@ public class Global extends MultiDexApplication {
         Global.overallPaidAmount = 0;
         Global.isFromOnHold = false;
         isConsignment = false;
-        isInventoryTransfer = false;
         consignmentType = OrderType.ORDER;
         consignment_order = null;
         cons_issue_order = null;

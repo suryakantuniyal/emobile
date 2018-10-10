@@ -604,10 +604,16 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             tempPrice = "0";
         product.setProdOnHand(tempPrice);
         if (Global.isInventoryTransfer) {
-            tempPrice = c.getString(c.getColumnIndex("location_qty"));
-            if (tempPrice == null || tempPrice.isEmpty())
-                tempPrice = "0";
-            product.setProdOnHand(tempPrice);
+            String locationQuantity = "0";
+            try {
+                locationQuantity = c.getString(c.getColumnIndex("location_qty"));
+                if (locationQuantity == null || locationQuantity.isEmpty())
+                    locationQuantity = "0";
+            } catch (Exception e) {
+                // no quantity
+            } finally {
+                product.setProdOnHand(locationQuantity);
+            }
         }
         product.setProdImgName(c.getString(c.getColumnIndex("prod_img_name")));
         product.setProdIstaxable(c.getString(c.getColumnIndex("prod_istaxable")));
