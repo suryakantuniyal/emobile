@@ -97,6 +97,80 @@ public class ConsignmentPickup_FR extends Fragment implements OnClickListener {
         myAdapter.notifyDataSetChanged();
     }
 
+    private void finishConsignment() {
+        myProgressDialog.dismiss();
+
+        activity.finish();
+    }
+
+    private void showPrintDlg(int title, int msg) {
+        final Dialog dlog = new Dialog(activity, R.style.Theme_TransparentTest);
+        dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dlog.setCancelable(false);
+        dlog.setContentView(R.layout.dlog_btn_left_right_layout);
+
+        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+        viewTitle.setText(title);
+        viewMsg.setText(msg);
+        Button btnYes = (Button) dlog.findViewById(R.id.btnDlogLeft);
+        Button btnNo = (Button) dlog.findViewById(R.id.btnDlogRight);
+        dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
+        btnYes.setText(R.string.button_yes);
+        btnNo.setText(R.string.button_no);
+        btnYes.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                dlog.dismiss();
+                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
+            }
+        });
+        btnNo.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                dlog.dismiss();
+                finishConsignment();
+            }
+        });
+        dlog.show();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == Global.FROM_DRAW_RECEIPT_PORTRAIT) {
+            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+        }
+
+
+        Global.consignment_order.ord_signature = "";
+
+
+        signatureData.put("encoded_signature", global.encodedImage);
+        ConsignmentSignaturesDBHandler signHandler = new ConsignmentSignaturesDBHandler(activity);
+        signHandler.insert(signatureData);
+
+        Global.consignment_order.processed = "1";
+        ordersHandler.insert(Global.consignment_order);
+        orderProductsHandler.insert(Global.consignment_products);
+        ConsignmentTransactionHandler cih = new ConsignmentTransactionHandler(activity);
+        cih.insert(consTransactionList);
+
+
+        if (myPref.getPreferences(MyPreferences.pref_enable_printing)) {
+            if (!myPref.getPreferences(MyPreferences.pref_automatic_printing))
+                showPrintDlg(R.string.dlog_title_confirm, R.string.dlog_msg_want_to_print);
+            else
+                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        } else
+            finishConsignment();
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 
     private class processAsync extends AsyncTask<String, String, String> {
         ConsignmentTransaction consTransaction;
@@ -169,8 +243,6 @@ public class ConsignmentPickup_FR extends Fragment implements OnClickListener {
         @Override
         protected void onPostExecute(String unused) {
             myProgressDialog.dismiss();
-
-
             global.encodedImage = "";
             orientation = getResources().getConfiguration().orientation;
             Intent intent = new Intent(getActivity(), DrawReceiptActivity.class);
@@ -182,51 +254,6 @@ public class ConsignmentPickup_FR extends Fragment implements OnClickListener {
 
         }
     }
-
-
-    private void finishConsignment() {
-        myProgressDialog.dismiss();
-
-        activity.finish();
-    }
-
-
-    private void showPrintDlg(int title, int msg) {
-        final Dialog dlog = new Dialog(activity, R.style.Theme_TransparentTest);
-        dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dlog.setCancelable(false);
-        dlog.setContentView(R.layout.dlog_btn_left_right_layout);
-
-        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
-        viewTitle.setText(title);
-        viewMsg.setText(msg);
-        Button btnYes = (Button) dlog.findViewById(R.id.btnDlogLeft);
-        Button btnNo = (Button) dlog.findViewById(R.id.btnDlogRight);
-        dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
-        btnYes.setText(R.string.button_yes);
-        btnNo.setText(R.string.button_no);
-        btnYes.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                // TODO Auto-generated method stub
-                dlog.dismiss();
-                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
-            }
-        });
-        btnNo.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                // TODO Auto-generated method stub
-                dlog.dismiss();
-                finishConsignment();
-            }
-        });
-        dlog.show();
-    }
-
 
     private class printAsync extends AsyncTask<String, String, String> {
         private boolean printSuccessful = true;
@@ -255,48 +282,16 @@ public class ConsignmentPickup_FR extends Fragment implements OnClickListener {
 
         @Override
         protected void onPostExecute(String unused) {
-            myProgressDialog.dismiss();
+            //Applied here check for progressdialog by gurleen
+            if (myProgressDialog != null && myProgressDialog.isShowing()) {
+                myProgressDialog.dismiss();
+            }
             if (printSuccessful)
                 showPrintDlg(R.string.dlog_title_confirm, R.string.dlog_msg_want_to_print);
             else
                 showPrintDlg(R.string.dlog_title_error, R.string.dlog_msg_failed_print);
         }
     }
-
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == Global.FROM_DRAW_RECEIPT_PORTRAIT) {
-            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-        }
-
-
-        Global.consignment_order.ord_signature = "";
-
-
-        signatureData.put("encoded_signature", global.encodedImage);
-        ConsignmentSignaturesDBHandler signHandler = new ConsignmentSignaturesDBHandler(activity);
-        signHandler.insert(signatureData);
-
-        Global.consignment_order.processed = "1";
-        ordersHandler.insert(Global.consignment_order);
-        orderProductsHandler.insert(Global.consignment_products);
-        ConsignmentTransactionHandler cih = new ConsignmentTransactionHandler(activity);
-        cih.insert(consTransactionList);
-
-
-        if (myPref.getPreferences(MyPreferences.pref_enable_printing)) {
-            if (!myPref.getPreferences(MyPreferences.pref_automatic_printing))
-                showPrintDlg(R.string.dlog_title_confirm, R.string.dlog_msg_want_to_print);
-            else
-                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        } else
-            finishConsignment();
-
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
 
     private class CustomAdapter_LV extends BaseAdapter {
         private LayoutInflater mInflater;
@@ -341,13 +336,6 @@ public class ConsignmentPickup_FR extends Fragment implements OnClickListener {
             return convertView;
         }
 
-
-        public class ViewHolder {
-            TextView prodName, prodID, pickupQty, originalQty;
-
-        }
-
-
         private String getContentValues(int position, int type) {
             String value = new String();
             String empStr = "";
@@ -378,7 +366,6 @@ public class ConsignmentPickup_FR extends Fragment implements OnClickListener {
             return value;
         }
 
-
         @Override
         public long getItemId(int position) {
             // TODO Auto-generated method stub
@@ -395,6 +382,11 @@ public class ConsignmentPickup_FR extends Fragment implements OnClickListener {
         public Object getItem(int position) {
             // TODO Auto-generated method stub
             return idList.get(position);
+        }
+
+        public class ViewHolder {
+            TextView prodName, prodID, pickupQty, originalQty;
+
         }
     }
 }

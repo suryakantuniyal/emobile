@@ -191,6 +191,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
             HashMap<String, String[]> orderTaxes = TaxesCalculator.getOrderTaxes(this, global.order.getListOrderTaxes(), global.order);
             int i = 0;
             Iterator it = orderTaxes.entrySet().iterator();
+            //Applied here iterator  null check by gurleen
             if (it != null) {
                 while (it.hasNext()) {
                     Map.Entry<String, String[]> map = (Map.Entry<String, String[]>) it.next();
@@ -1077,7 +1078,11 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
             myProgressDialog.setCancelable(false);
             if (myProgressDialog.isShowing())
                 myProgressDialog.dismiss();
-            myProgressDialog.show();
+            //Applied check here as if progress dialog is not showing then show dialog by gurleen
+            if (activity != null && !activity.isFinishing() && !myProgressDialog.isShowing()) {
+                myProgressDialog.show();
+            }
+
 
         }
 

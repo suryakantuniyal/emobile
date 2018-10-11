@@ -507,6 +507,7 @@ public class Global extends MultiDexApplication {
         if (popDlog == null)
             popDlog = new Dialog(activity, R.style.Theme_TransparentTest);
         else {
+            //Apply here dialog null check and check is dialog showing or not? by gurleen
             if (popDlog != null && popDlog.isShowing()) {
                 popDlog.dismiss();
             }
@@ -1198,7 +1199,7 @@ public class Global extends MultiDexApplication {
                 isDestroyed = true;
             }
         }
-        if (dialog != null && activity != null && !activity.isFinishing() && !isDestroyed && dialog.isShowing()) {
+        if (dialog != null && activity != null && !activity.isFinishing() && dialog.isShowing()) {
             dialog.dismiss();
         }
     }
