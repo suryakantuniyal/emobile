@@ -1027,7 +1027,10 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
             progressDialog.setMessage(getString(R.string.processing_payment_msg));
             progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             progressDialog.setCancelable(false);
-            progressDialog.show();
+            //Applied check here as if progress dialog is not showing then show dialog by gurleen
+            if (activity != null && !activity.isFinishing() && progressDialog != null && !progressDialog.isShowing()) {
+                progressDialog.show();
+            }
         }
 
 
@@ -1079,7 +1082,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
             if (myProgressDialog.isShowing())
                 myProgressDialog.dismiss();
             //Applied check here as if progress dialog is not showing then show dialog by gurleen
-            if (activity != null && !activity.isFinishing() && !myProgressDialog.isShowing()) {
+            if (activity != null && !activity.isFinishing() && myProgressDialog != null && !myProgressDialog.isShowing()) {
                 myProgressDialog.show();
             }
 
