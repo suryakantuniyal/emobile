@@ -232,7 +232,7 @@ dependencies {
 
     implementation 'com.microsoft.azure:notification-hubs-android-sdk:0.4@aar'
     implementation 'com.microsoft.azure:azure-notifications-handler:1.0.1@aar'
-    implementation 'net.zetetic:android-database-sqlcipher:3.5.4@aar'
+    implementation 'net.zetetic:android-database-sqlcipher:3.5.9@aar'
     implementation 'com.microsoft.azure.android:azure-storage-android:0.8.0@aar'
 }
 
