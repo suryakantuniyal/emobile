@@ -42,10 +42,6 @@ public class MenuProdGV_Adapter extends CursorAdapter {
     private boolean isFastScanning = false;
     private boolean isRestMode = false;
 
-    public interface ProductClickedCallback {
-        void productClicked(int position);
-    }
-
     public MenuProdGV_Adapter(Catalog_FR _this, Activity context, Cursor c, int flags, ImageLoader _imageLoader) {
         super(context, c, flags);
         activity = context;
@@ -81,7 +77,7 @@ public class MenuProdGV_Adapter extends CursorAdapter {
                 holder.title.setText(Global.getValidString(cursor.getString(holder.i_prod_name)));
 
             String urlLink = cursor.getString(holder.i_prod_img_name);
-            if(holder.itemImage!=null) {
+            if (holder.itemImage.getTag() != null) {
                 if ((holder.itemImage.getTag() != null && !holder.itemImage.getTag().equals(urlLink)) || holder.itemImage.getTag() == null) {
                     holder.itemImage.setTag(urlLink);
                     if (urlLink != null || TextUtils.isEmpty(cursor.getString(holder.i_prod_name)) || holder.productNameTxt == null) {
@@ -200,6 +196,10 @@ public class MenuProdGV_Adapter extends CursorAdapter {
         }
         retView.setTag(holder);
         return retView;
+    }
+
+    public interface ProductClickedCallback {
+        void productClicked(int position);
     }
 
     private class ViewHolder {
