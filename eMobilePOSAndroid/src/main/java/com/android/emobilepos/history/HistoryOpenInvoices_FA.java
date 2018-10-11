@@ -93,12 +93,19 @@ public class HistoryOpenInvoices_FA extends BaseFragmentActivityActionBar implem
         myPref = new MyPreferences(this);
 
         if (!isFromMainMenu) {
+            //Applied here cursor close by gurleen
+            if (myCursor != null) {
+                myCursor.close();
+            }
             myCursor = handler.getInvoicesList();
             payButton.setVisibility(View.INVISIBLE);
         } else {
+            //Applied here cursor close by gurleen
+            if (myCursor != null) {
+                myCursor.close();
+            }
             myCursor = handler.getListSpecificInvoice(myPref.getCustID());
         }
-
 
         EditText field = findViewById(R.id.searchField);
         field.setOnEditorActionListener(getEditorActionListener());
@@ -138,6 +145,14 @@ public class HistoryOpenInvoices_FA extends BaseFragmentActivityActionBar implem
         global.startActivityTransitionTimer();
     }
 
+    @Override
+    public void onDestroy() {
+        //Applied here cursor close by gurleen
+        if (myCursor != null && !myCursor.isClosed()) {
+            myCursor.close();
+        }
+        super.onDestroy();
+    }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -178,8 +193,9 @@ public class HistoryOpenInvoices_FA extends BaseFragmentActivityActionBar implem
                                       int arg3) {
                 String test = s.toString().trim();
                 if (test.isEmpty()) {
-                    if (myCursor != null)
+                    if (myCursor != null) {
                         myCursor.close();
+                    }
 
                     if (!isFromMainMenu)
                         myCursor = handler.getInvoicesList();
@@ -388,6 +404,78 @@ public class HistoryOpenInvoices_FA extends BaseFragmentActivityActionBar implem
         dlog.show();
     }
 
+    private double[] toPrimitiveDouble(Double[] val) {
+        int size = val.length;
+        double[] tempArray = new double[size];
+        for (int i = 0; i < size; i++) {
+            tempArray[i] = val[i];
+        }
+        return tempArray;
+    }
+
+    public void performSearch(String text) {
+        if (myCursor != null)
+            myCursor.close();
+
+        myCursor = this.handler.getSearchedInvoicesList(text, isFromMainMenu);
+
+        myAdapter = new CustomCursorAdapter(this, myCursor,
+                CursorAdapter.NO_SELECTION);
+        myListView.setAdapter(myAdapter);
+
+    }
+
+    public String format(String text) {
+        DecimalFormat frmt = new DecimalFormat("0.00");
+        if (TextUtils.isEmpty(text))
+            return "0.00";
+        return frmt.format(Double.parseDouble(text));
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == Global.FROM_PAYMENT || resultCode == 3) {
+            InvoicesHandler invHandler = new InvoicesHandler(this);
+            if (!isMultiInvoice) {
+
+                String t = Global.addSubsStrings(false, Global.formatNumToLocale(Double.parseDouble(balanceDue)), Global.formatNumToLocale(Global.overallPaidAmount));
+                Global.overallPaidAmount = 0;
+
+
+                double remainingBalance = Global.formatNumFromLocale(t);
+
+                if (remainingBalance <= 0) {
+                    // has been paid in total
+                    invHandler.updateIsPaid(true, chosenInvID, null);
+                } else {
+                    // hasn't been paid in total
+                    invHandler.updateIsPaid(false, chosenInvID, Double.toString(remainingBalance));
+                }
+            } else {
+                InvoicePaymentsHandler invPayHandler = new InvoicePaymentsHandler(this);
+                double invPaid;
+                int size = inv_list.size();
+                double remainingBalance;
+                for (int i = 0; i < size; i++) {
+                    invPaid = invPayHandler.getTotalPaidAmount(inv_list.get(i));
+                    if (invPaid != -1) {
+                        remainingBalance = total_list.get(i) - invPaid;
+                        if (remainingBalance <= 0)
+                            invHandler.updateIsPaid(true, chosenInvIDList.get(i), null);
+                        else
+                            invHandler.updateIsPaid(false, chosenInvIDList.get(i), Double.toString(remainingBalance));
+                    }
+                }
+
+            }
+            finish();
+        } else if (resultCode == Global.FROM_OPEN_INVOICES_DETAILS) {
+            finish();
+        } else
+            myAdapter.notifyDataSetChanged();
+    }
 
     private class printAsync extends AsyncTask<String, String, String> {
         private String _inv_id = "";
@@ -424,30 +512,6 @@ public class HistoryOpenInvoices_FA extends BaseFragmentActivityActionBar implem
         }
     }
 
-
-    private double[] toPrimitiveDouble(Double[] val) {
-        int size = val.length;
-        double[] tempArray = new double[size];
-        for (int i = 0; i < size; i++) {
-            tempArray[i] = val[i];
-        }
-        return tempArray;
-    }
-
-
-    public void performSearch(String text) {
-        if (myCursor != null)
-            myCursor.close();
-
-        myCursor = this.handler.getSearchedInvoicesList(text, isFromMainMenu);
-
-        myAdapter = new CustomCursorAdapter(this, myCursor,
-                CursorAdapter.NO_SELECTION);
-        myListView.setAdapter(myAdapter);
-
-    }
-
-
     public class CustomCursorAdapter extends CursorAdapter {
         LayoutInflater inflater;
         boolean isPaidDivider = false;
@@ -456,6 +520,16 @@ public class HistoryOpenInvoices_FA extends BaseFragmentActivityActionBar implem
         boolean insideOpened = false;
         boolean insidePaid = false;
         SparseBooleanArray mSparseBooleanArray;
+        OnCheckedChangeListener mCheckedChangeListener = new OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,
+                                         boolean isChecked) {
+                mSparseBooleanArray.put((Integer) buttonView.getTag(), isChecked);
+
+            }
+
+        };
 
         public CustomCursorAdapter(Context context, Cursor c, int flags) {
             super(context, c, flags);
@@ -603,71 +677,6 @@ public class HistoryOpenInvoices_FA extends BaseFragmentActivityActionBar implem
             return counter;
         }
 
-
-        OnCheckedChangeListener mCheckedChangeListener = new OnCheckedChangeListener() {
-
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView,
-                                         boolean isChecked) {
-                mSparseBooleanArray.put((Integer) buttonView.getTag(), isChecked);
-
-            }
-
-        };
-
-    }
-
-    public String format(String text) {
-        DecimalFormat frmt = new DecimalFormat("0.00");
-        if (TextUtils.isEmpty(text))
-            return "0.00";
-        return frmt.format(Double.parseDouble(text));
-    }
-
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (resultCode == Global.FROM_PAYMENT || resultCode == 3) {
-            InvoicesHandler invHandler = new InvoicesHandler(this);
-            if (!isMultiInvoice) {
-
-                String t = Global.addSubsStrings(false, Global.formatNumToLocale(Double.parseDouble(balanceDue)), Global.formatNumToLocale(Global.overallPaidAmount));
-                Global.overallPaidAmount = 0;
-
-
-                double remainingBalance = Global.formatNumFromLocale(t);
-
-                if (remainingBalance <= 0) {
-                    // has been paid in total
-                    invHandler.updateIsPaid(true, chosenInvID, null);
-                } else {
-                    // hasn't been paid in total
-                    invHandler.updateIsPaid(false, chosenInvID, Double.toString(remainingBalance));
-                }
-            } else {
-                InvoicePaymentsHandler invPayHandler = new InvoicePaymentsHandler(this);
-                double invPaid;
-                int size = inv_list.size();
-                double remainingBalance;
-                for (int i = 0; i < size; i++) {
-                    invPaid = invPayHandler.getTotalPaidAmount(inv_list.get(i));
-                    if (invPaid != -1) {
-                        remainingBalance = total_list.get(i) - invPaid;
-                        if (remainingBalance <= 0)
-                            invHandler.updateIsPaid(true, chosenInvIDList.get(i), null);
-                        else
-                            invHandler.updateIsPaid(false, chosenInvIDList.get(i), Double.toString(remainingBalance));
-                    }
-                }
-
-            }
-            finish();
-        } else if (resultCode == Global.FROM_OPEN_INVOICES_DETAILS) {
-            finish();
-        } else
-            myAdapter.notifyDataSetChanged();
     }
 
 }

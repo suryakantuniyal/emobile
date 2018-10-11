@@ -25,157 +25,160 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
-public class HistoryInventoryTransfer_FA extends BaseFragmentActivityActionBar implements OnItemClickListener{
-	
-	private Activity activity;
-	private Cursor c;
-	private TransferLocations_DB dbHandler;
-	private Global global;
-	private boolean hasBeenCreated = false;
-	private ListView lView;
-	private CustomCursorAdapter adapter;
-	MyPreferences preferences;
-	@Override
-	public void onCreate(Bundle savedInstanceState) 
-	{
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.history_inventory_transfer_layout);
-		activity = this;
-		preferences=new MyPreferences(this);
-		global = (Global)getApplication();
-		lView = (ListView)findViewById(R.id.listView);
-		dbHandler = new TransferLocations_DB(this);
-		c = dbHandler.getAllTransactions();
-		adapter = new CustomCursorAdapter(this, c, CursorAdapter.NO_SELECTION);
-		lView.setAdapter(adapter);
-		lView.setOnItemClickListener(this);
-		
-		hasBeenCreated = true;
-	}
+public class HistoryInventoryTransfer_FA extends BaseFragmentActivityActionBar implements OnItemClickListener {
+
+    MyPreferences preferences;
+    private Activity activity;
+    private Cursor c;
+    private TransferLocations_DB dbHandler;
+    private Global global;
+    private boolean hasBeenCreated = false;
+    private ListView lView;
+    private CustomCursorAdapter adapter;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.history_inventory_transfer_layout);
+        activity = this;
+        preferences = new MyPreferences(this);
+        global = (Global) getApplication();
+        lView = (ListView) findViewById(R.id.listView);
+        dbHandler = new TransferLocations_DB(this);
+        //Applied here cursor close by gurleen
+        if (c != null) {
+            c.close();
+        }
+        c = dbHandler.getAllTransactions();
+        adapter = new CustomCursorAdapter(this, c, CursorAdapter.NO_SELECTION);
+        lView.setAdapter(adapter);
+        lView.setOnItemClickListener(this);
+
+        hasBeenCreated = true;
+    }
 
 
-	@Override
-	public void onResume() {
+    @Override
+    public void onResume() {
 
-		if(global.isApplicationSentToBackground())
-			Global.loggedIn = false;
-		global.stopActivityTransitionTimer();
-		
-		if(hasBeenCreated&&!Global.loggedIn)
-		{
-			if(global.getGlobalDlog()!=null)
-				global.getGlobalDlog().dismiss();
-			global.promptForMandatoryLogin(activity);
-		}
-		super.onResume();
-	}
-	
-	@Override
-	public void onPause()
-	{
-		super.onPause();
+        if (global.isApplicationSentToBackground())
+            Global.loggedIn = false;
+        global.stopActivityTransitionTimer();
+
+        if (hasBeenCreated && !Global.loggedIn) {
+            if (global.getGlobalDlog() != null)
+                global.getGlobalDlog().dismiss();
+            global.promptForMandatoryLogin(activity);
+        }
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
 //		MyPreferences myPref = new MyPreferences(this);
 //		PowerManager powerManager = (PowerManager)getSystemService(POWER_SERVICE);
 //		boolean isScreenOn = powerManager.isScreenOn();
 //		if(!isScreenOn && myPref.isExpireUserSession())
 //			Global.loggedIn = false;
-		global.startActivityTransitionTimer();
-	}
-	
-	
-	
-	public void performSearch(String text) {
-		if (c != null)
-			c.close();
+        global.startActivityTransitionTimer();
+    }
 
-		adapter = new CustomCursorAdapter(activity, c, CursorAdapter.NO_SELECTION);
-		lView.setAdapter(adapter);
-	}
-	
-	
-	
-	public class CustomCursorAdapter extends CursorAdapter {
-		
-		
-		LayoutInflater inflater;
-		CustomersHandler custHandler = new CustomersHandler(activity);
-		Global global = (Global) activity.getApplication();
-		ViewHolder myHolder;
-		String temp = new String();
-		String empStr = "";
+    @Override
+    protected void onDestroy() {
+        //Applied here cursor close by gurleen
+        if (c != null && !c.isClosed()) {
+            c.close();
+        }
+        super.onDestroy();
+    }
 
-		public CustomCursorAdapter(Context context, Cursor c, int flags) {
-			super(context, c, flags);
-			// TODO Auto-generated constructor stub
-			inflater = LayoutInflater.from(context);
-		}
+    public void performSearch(String text) {
+        if (c != null)
+            c.close();
 
-		@Override
-		public void bindView(View view, Context context, Cursor cursor) {
-			// TODO Auto-generated method stub
+        adapter = new CustomCursorAdapter(activity, c, CursorAdapter.NO_SELECTION);
+        lView.setAdapter(adapter);
+    }
 
-			myHolder = (ViewHolder)view.getTag();
-			
-			myHolder.transaction_id.setText(cursor.getString(myHolder.i_trans_id));
-			//myHolder.clientName.setText(cursor.getString(myHolder.i_cust_name));
-			
-			
-			
-			if(cursor.getString(myHolder.i_is_synched).equals("1")) //it is synched
-				myHolder.syncIcon.setImageResource(R.drawable.is_sync);
-			else
-				myHolder.syncIcon.setImageResource(R.drawable.is_not_sync);
-			
-		}
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        // TODO Auto-generated method stub
+        c.moveToPosition(position);
+        Intent intent = new Intent(this, HistoryInventoryTransferDetails_FA.class);
+        intent.putExtra("transfer_id", c.getString(c.getColumnIndex(TransferLocations_DB.trans_id)));
+        intent.putExtra("trans_date", c.getString(c.getColumnIndex(TransferLocations_DB.trans_timecreated)));
+        intent.putExtra("loc_key_from", c.getString(c.getColumnIndex(TransferLocations_DB.loc_key_from)));
+        intent.putExtra("loc_key_to", c.getString(c.getColumnIndex(TransferLocations_DB.loc_key_to)));
+        startActivity(intent);
+    }
 
-		public String format(String text) {
-
-			if (TextUtils.isEmpty(text))
-				return Global.formatDoubleToCurrency(0.00);
-			return Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(text)));
-		}
-
-		@Override
-		public View newView(Context context, Cursor cursor, ViewGroup parent) {
-			// TODO Auto-generated method stub
-
-			View view = inflater.inflate(R.layout.history_transfer_lv_adapter, parent, false);
-			
-			ViewHolder holder = new ViewHolder();
-			holder.transaction_id = (TextView) view.findViewById(R.id.transferID);
-			holder.from_location = (TextView) view.findViewById(R.id.transferFrom);
-			holder.to_location = (TextView)view.findViewById(R.id.transferTo);
-			holder.syncIcon = (ImageView)view.findViewById(R.id.syncIcon);
-			
-			holder.i_trans_id = cursor.getColumnIndex(TransferLocations_DB.trans_id);
-			//holder.i_cust_name = cursor.getColumnIndex(TransferLocations_DB.);
-			holder.i_is_synched = cursor.getColumnIndex(TransferLocations_DB.issync);
-			
-			
-			view.setTag(holder);
-			return view;
-		}
-		
-		private class ViewHolder
-		{
-			TextView transaction_id,from_location,to_location;
-			ImageView syncIcon;
-			
-			int i_trans_id,i_from_location,i_to_location,i_is_synched;
-		}
-	}
+    public class CustomCursorAdapter extends CursorAdapter {
 
 
+        LayoutInflater inflater;
+        CustomersHandler custHandler = new CustomersHandler(activity);
+        Global global = (Global) activity.getApplication();
+        ViewHolder myHolder;
+        String temp = new String();
+        String empStr = "";
 
-	@Override
-	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		// TODO Auto-generated method stub
-		c.moveToPosition(position);
-		Intent intent = new Intent(this, HistoryInventoryTransferDetails_FA.class);
-		intent.putExtra("transfer_id", c.getString(c.getColumnIndex(TransferLocations_DB.trans_id)));
-		intent.putExtra("trans_date", c.getString(c.getColumnIndex(TransferLocations_DB.trans_timecreated)));
-		intent.putExtra("loc_key_from", c.getString(c.getColumnIndex(TransferLocations_DB.loc_key_from)));
-		intent.putExtra("loc_key_to", c.getString(c.getColumnIndex(TransferLocations_DB.loc_key_to)));
-		startActivity(intent);
-	}
+        public CustomCursorAdapter(Context context, Cursor c, int flags) {
+            super(context, c, flags);
+            // TODO Auto-generated constructor stub
+            inflater = LayoutInflater.from(context);
+        }
+
+        @Override
+        public void bindView(View view, Context context, Cursor cursor) {
+            // TODO Auto-generated method stub
+
+            myHolder = (ViewHolder) view.getTag();
+
+            myHolder.transaction_id.setText(cursor.getString(myHolder.i_trans_id));
+            //myHolder.clientName.setText(cursor.getString(myHolder.i_cust_name));
+
+
+            if (cursor.getString(myHolder.i_is_synched).equals("1")) //it is synched
+                myHolder.syncIcon.setImageResource(R.drawable.is_sync);
+            else
+                myHolder.syncIcon.setImageResource(R.drawable.is_not_sync);
+
+        }
+
+        public String format(String text) {
+
+            if (TextUtils.isEmpty(text))
+                return Global.formatDoubleToCurrency(0.00);
+            return Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(text)));
+        }
+
+        @Override
+        public View newView(Context context, Cursor cursor, ViewGroup parent) {
+            // TODO Auto-generated method stub
+
+            View view = inflater.inflate(R.layout.history_transfer_lv_adapter, parent, false);
+
+            ViewHolder holder = new ViewHolder();
+            holder.transaction_id = (TextView) view.findViewById(R.id.transferID);
+            holder.from_location = (TextView) view.findViewById(R.id.transferFrom);
+            holder.to_location = (TextView) view.findViewById(R.id.transferTo);
+            holder.syncIcon = (ImageView) view.findViewById(R.id.syncIcon);
+
+            holder.i_trans_id = cursor.getColumnIndex(TransferLocations_DB.trans_id);
+            //holder.i_cust_name = cursor.getColumnIndex(TransferLocations_DB.);
+            holder.i_is_synched = cursor.getColumnIndex(TransferLocations_DB.issync);
+
+
+            view.setTag(holder);
+            return view;
+        }
+
+        private class ViewHolder {
+            TextView transaction_id, from_location, to_location;
+            ImageView syncIcon;
+
+            int i_trans_id, i_from_location, i_to_location, i_is_synched;
+        }
+    }
 }

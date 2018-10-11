@@ -490,6 +490,9 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         if (onRestaurantMode && categoryToLoad == null && categoryStack.size() > 0) {
             categoryToLoad = categoryStack.get(categoryStack.size() - 1);
         }
+        if (myCursor != null) {
+            myCursor.close();
+        }
 
         return new Catalog_Loader(getActivity(), Integer.parseInt(getString(R.string.sqlLimit)), 0, categoryToLoad, search_text, search_type, onRestaurantMode);
     }
@@ -564,7 +567,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
     public void automaticAddOrder(Product product) {
         getOrderingMainFa().disableCheckoutButton();
-        OrderingMain_FA.automaticAddOrder(getActivity(), false, global, new OrderProduct(product), ((OrderingMain_FA) getActivity()).getSelectedSeatNumber(),((OrderingMain_FA) getActivity()).mTransType);
+        OrderingMain_FA.automaticAddOrder(getActivity(), false, global, new OrderProduct(product), ((OrderingMain_FA) getActivity()).getSelectedSeatNumber(), ((OrderingMain_FA) getActivity()).mTransType);
         refreshListView();
         callBackRefreshView.refreshView();
     }
@@ -637,7 +640,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             String json = gson.toJson(new OrderProduct(product));
             intent.putExtra("orderProduct", json);
             intent.putExtra("isToGo", isToGo);
-            intent.putExtra("transType",getOrderingMainFa().mTransType);
+            intent.putExtra("transType", getOrderingMainFa().mTransType);
 
             if (Global.isConsignment)
                 intent.putExtra("consignment_qty", myCursor.getString(myCursor.getColumnIndex("consignment_qty")));
@@ -708,7 +711,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                 intent.putExtra("prod_upc", product.getProd_upc());
                 intent.putExtra("prod_price_points", product.getProdPricePoints());
                 intent.putExtra("prod_value_points", product.getProdValuePoints());
-                intent.putExtra("transType",getOrderingMainFa().mTransType);
+                intent.putExtra("transType", getOrderingMainFa().mTransType);
 
                 startActivityForResult(intent, 0);
             } else {
@@ -754,7 +757,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                         intent.putExtra("prod_upc", product.getProd_upc());
                         intent.putExtra("prod_price_points", product.getProdPricePoints());
                         intent.putExtra("prod_value_points", product.getProdValuePoints());
-                        intent.putExtra("transType",getOrderingMainFa().mTransType);
+                        intent.putExtra("transType", getOrderingMainFa().mTransType);
 
                         startActivityForResult(intent, 0);
                     } else {
