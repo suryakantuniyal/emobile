@@ -651,6 +651,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
 
         @Override
         protected void onPostExecute(String unused) {
+            //Apply here dialog check by gurleen
             if (myProgressDialog != null && myProgressDialog.isShowing()) {
                 myProgressDialog.dismiss();
             }
@@ -730,6 +731,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
 
         @Override
         protected void onPostExecute(Void unused) {
+            //Apply here dialog check by gurleen
             if (myProgressDialog != null && myProgressDialog.isShowing()) {
                 myProgressDialog.dismiss();
             }

@@ -215,6 +215,7 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
                 dialog = new ProgressDialog(getActivity());
                 dialog.setIndeterminate(true);
                 dialog.setMessage(getString(R.string.sync_inprogress));
+                //Apply here dialog check by gurleen
                 if (!getActivity().isFinishing()) {
                     dialog.show();
                 }
@@ -223,6 +224,7 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
                 if (NetworkUtils.isConnectedToInternet(getActivity())) {
                     sm.synchSend(Global.FROM_SYNCH_ACTIVITY, true);
                 } else {
+                    //Apply here dialog check by gurleen
                     if ((this.dialog != null) && this.dialog.isShowing()) {
                         dialog.dismiss();
                     }
@@ -253,6 +255,7 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
             dialog.setIndeterminate(true);
             dialog.setMessage(getString(R.string.sync_inprogress));
             dialog.setCancelable(false);
+            //Apply here dialog check by gurleen
             if (!getActivity().isFinishing()) {
                 dialog.show();
             }
@@ -268,6 +271,7 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
         @Override
         protected void onPostExecute(Boolean result) {
             Activity activity = getActivity();
+            //Applied here check for activity not null and is added by gurleen
             if (activity != null && isAdded()) {
                 Global.releaseOrientation(activity);
                 Global.dismissDialog(activity, dialog);
@@ -287,6 +291,7 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
             dialog = new ProgressDialog(getActivity());
             dialog.setIndeterminate(true);
             dialog.setMessage(getString(R.string.loading));
+            //Applied here dialog check by gurleen
             if (!getActivity().isFinishing()) {
                 dialog.show();
             }
@@ -321,6 +326,7 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
             }
             List<BixolonTransaction> failedTrans = BixolonDAO.getFailedTransactions();
             ((TextView) getView().findViewById(R.id.bixolonFailedTransactionsNumbertextView)).setText(failedTrans != null ? String.valueOf(failedTrans.size()) : "0");
+            //Applied here dialog check by gurleen
             if ((this.dialog != null) && this.dialog.isShowing()) {
                 dialog.dismiss();
             }

@@ -360,6 +360,7 @@ public class SemiClosedSlidingDrawer
                 mTouchDelta = (int) x - left;
                 prepareTracking(left);
             }
+            //Apply velocity tracker null check by gurleen
             if (mVelocityTracker != null) {
                 mVelocityTracker.addMovement(event);
             }
@@ -375,6 +376,7 @@ public class SemiClosedSlidingDrawer
         }
 
         if (mTracking) {
+            //Apply velocity tracker null check by gurleen
             if (mVelocityTracker != null) {
                 mVelocityTracker.addMovement(event);
             }

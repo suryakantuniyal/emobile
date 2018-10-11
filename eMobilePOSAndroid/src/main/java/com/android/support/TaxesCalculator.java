@@ -85,6 +85,7 @@ public class TaxesCalculator {
                     BigDecimal taxAmount = new BigDecimal(0);
                     List<BigDecimal> rates = new ArrayList<>();
                     rates.add(new BigDecimal(tax.getTax_rate()));
+                    //Applied here order.getOrderProducts null check by gurleen
                     if (order.getOrderProducts() != null) {
                         for (OrderProduct product : order.getOrderProducts()) {
                             taxAmount = taxAmount.add(TaxesCalculator.calculateTax(product.getProductPriceTaxableAmountCalculated(), rates));

@@ -38,6 +38,7 @@ public class GenerateNewID {
                 String lastOrderID = AssignEmployeeDAO.getAssignEmployee().getMSLastOrderID();
                 EmobilePosId newId = new EmobilePosId(id);
                 EmobilePosId lastId = new EmobilePosId(lastOrderID);
+                //Applied here isEmpty,isDigitsOnly check  for newid.getyear and lastId.getyear by gurleen
                 if (!TextUtils.isEmpty(newId.getYear()) && TextUtils.isDigitsOnly(newId.getYear()) && !TextUtils.isEmpty(lastId.getYear()) && TextUtils.isDigitsOnly(lastId.getYear())) {
                     if (Integer.parseInt(newId.getYear()) > Integer.parseInt(lastId.getYear())) {
                         return true;
