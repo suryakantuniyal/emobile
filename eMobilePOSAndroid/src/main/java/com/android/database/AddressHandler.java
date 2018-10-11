@@ -130,7 +130,7 @@ public class AddressHandler {
         } catch (Exception e) {
 
         } finally {
-            if(insert!=null) {
+            if (insert != null) {
                 insert.close();
             }
             DBManager.getDatabase().endTransaction();
@@ -140,7 +140,7 @@ public class AddressHandler {
 
 
     public void insertOneAddress(Address address) {
-        SQLiteStatement insert=null;
+        SQLiteStatement insert = null;
         DBManager.getDatabase().beginTransaction();
         try {
 
@@ -179,7 +179,7 @@ public class AddressHandler {
         } catch (Exception e) {
 
         } finally {
-            if(insert!=null) {
+            if (insert != null) {
                 insert.close();
             }
             DBManager.getDatabase().endTransaction();
@@ -250,8 +250,9 @@ public class AddressHandler {
             cursor.close();
             return addresses;
         }
+        //Applied here finally and close cursor  by gurleen
         finally {
-            if(cursor!=null && !cursor.isClosed()) {
+            if (cursor != null && !cursor.isClosed()) {
                 cursor.close();
             }
         }
@@ -263,36 +264,35 @@ public class AddressHandler {
                 " AND cust_id != '' ORDER BY addr_id";
 
 
-
-       Cursor cursor = DBManager.getDatabase().rawQuery(sb, new String[]{StringUtil.nullStringToEmpty(myPref.getCustID())});
+        Cursor cursor = DBManager.getDatabase().rawQuery(sb, new String[]{StringUtil.nullStringToEmpty(myPref.getCustID())});
         List<String[]> arrayList = new ArrayList<>();
         String[] arrayValues = new String[8];
 
         if (cursor.moveToFirst()) {
-        int addrIDIndex = cursor.getColumnIndex(addr_id);
-        int addrSTR1Index = cursor.getColumnIndex(addr_s_str1);
-        int addrSTR2Index = cursor.getColumnIndex(addr_s_str2);
-        int addrSTR3Index = cursor.getColumnIndex(addr_s_str3);
-        int addrCountryIndex = cursor.getColumnIndex(addr_s_country);
-        int addrCityIndex = cursor.getColumnIndex(addr_s_city);
-        int addrStateIndex = cursor.getColumnIndex(addr_s_state);
-        int addrZipCodeIndex = cursor.getColumnIndex(addr_s_zipcode);
-        do {
-            arrayValues[0] = cursor.getString(addrIDIndex);
-            arrayValues[1] = cursor.getString(addrSTR1Index);
-            arrayValues[2] = cursor.getString(addrSTR2Index);
-            arrayValues[3] = cursor.getString(addrSTR3Index);
-            arrayValues[4] = cursor.getString(addrCountryIndex);
-            arrayValues[5] = cursor.getString(addrCityIndex);
-            arrayValues[6] = cursor.getString(addrStateIndex);
-            arrayValues[7] = cursor.getString(addrZipCodeIndex);
+            int addrIDIndex = cursor.getColumnIndex(addr_id);
+            int addrSTR1Index = cursor.getColumnIndex(addr_s_str1);
+            int addrSTR2Index = cursor.getColumnIndex(addr_s_str2);
+            int addrSTR3Index = cursor.getColumnIndex(addr_s_str3);
+            int addrCountryIndex = cursor.getColumnIndex(addr_s_country);
+            int addrCityIndex = cursor.getColumnIndex(addr_s_city);
+            int addrStateIndex = cursor.getColumnIndex(addr_s_state);
+            int addrZipCodeIndex = cursor.getColumnIndex(addr_s_zipcode);
+            do {
+                arrayValues[0] = cursor.getString(addrIDIndex);
+                arrayValues[1] = cursor.getString(addrSTR1Index);
+                arrayValues[2] = cursor.getString(addrSTR2Index);
+                arrayValues[3] = cursor.getString(addrSTR3Index);
+                arrayValues[4] = cursor.getString(addrCountryIndex);
+                arrayValues[5] = cursor.getString(addrCityIndex);
+                arrayValues[6] = cursor.getString(addrStateIndex);
+                arrayValues[7] = cursor.getString(addrZipCodeIndex);
 
-            arrayList.add(arrayValues);
-            arrayValues = new String[8];
-        } while (cursor.moveToNext());
-    }
+                arrayList.add(arrayValues);
+                arrayValues = new String[8];
+            } while (cursor.moveToNext());
+        }
 
-         cursor.close();
+        cursor.close();
         return arrayList;
 
     }
