@@ -282,7 +282,6 @@ public class ConsignmentPickup_FR extends Fragment implements OnClickListener {
 
         @Override
         protected void onPostExecute(String unused) {
-            //Applied here check for progressdialog by gurleen
             if (myProgressDialog != null && myProgressDialog.isShowing()) {
                 myProgressDialog.dismiss();
             }

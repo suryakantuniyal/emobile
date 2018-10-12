@@ -92,7 +92,6 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
         mTransType = (Global.TransactionType) extras.get("transType");
         orderProduct = gson.fromJson(extras.getString("orderProduct"), OrderProduct.class);
         parentAddons = prodAddonsHandler.getParentAddons(orderProduct.getProd_id());
-        // Appled check here for cursor close by gurleen
         if (c != null) {
             c.close();
         }

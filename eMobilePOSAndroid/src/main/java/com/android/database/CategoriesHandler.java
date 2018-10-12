@@ -91,7 +91,6 @@ public class CategoriesHandler {
             DBManager.getDatabase().setTransactionSuccessful();
         } catch (Exception e) {
         }
-        //Applied here finally and close cursor  by gurleen
         finally {
             if (insert != null) {
                 insert.close();
@@ -154,7 +153,6 @@ public class CategoriesHandler {
             cursor.close();
             return data;
         }
-        //Applied here finally and close cursor  by gurleen
         finally {
             if (cursor != null && !cursor.isClosed()) {
                 cursor.close();
@@ -199,7 +197,7 @@ public class CategoriesHandler {
             }
             cursor.close();
             return list;
-        }  //Applied here finally and close cursor  by gurleen
+        }
         finally {
             if (cursor != null && !cursor.isClosed()) {
                 cursor.close();

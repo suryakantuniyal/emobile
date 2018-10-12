@@ -268,7 +268,6 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
 
         @Override
         protected void onPostExecute(Boolean result) {
-            //Applied here dialog check by gurleen
             if (dialog != null && dialog.isShowing()) {
                 dialog.dismiss();
             }

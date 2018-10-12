@@ -205,7 +205,6 @@ public class HistoryPayments_FA extends BaseFragmentActivityActionBar implements
 
 
     private void getCursorData(int _tab_id) {
-        //Applied here cursor close by gurleen
         if (myCursor != null) {
             myCursor.close();
         }
@@ -271,7 +270,6 @@ public class HistoryPayments_FA extends BaseFragmentActivityActionBar implements
     }
 
     public void performSearch(String text) {
-        //Applied here cursor close by gurleen
         if (myCursor != null)
             myCursor.close();
 
@@ -310,7 +308,6 @@ public class HistoryPayments_FA extends BaseFragmentActivityActionBar implements
 
     @Override
     protected void onDestroy() {
-        //Applied here cursor close by gurleen
         if (myCursor != null && !myCursor.isClosed()) {
             myCursor.close();
         }

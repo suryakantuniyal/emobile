@@ -45,7 +45,6 @@ public class HistoryInventoryTransfer_FA extends BaseFragmentActivityActionBar i
         global = (Global) getApplication();
         lView = (ListView) findViewById(R.id.listView);
         dbHandler = new TransferLocations_DB(this);
-        //Applied here cursor close by gurleen
         if (c != null) {
             c.close();
         }
@@ -86,7 +85,6 @@ public class HistoryInventoryTransfer_FA extends BaseFragmentActivityActionBar i
 
     @Override
     protected void onDestroy() {
-        //Applied here cursor close by gurleen
         if (c != null && !c.isClosed()) {
             c.close();
         }

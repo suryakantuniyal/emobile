@@ -208,7 +208,6 @@ public class HistoryTransactions_FA extends BaseFragmentActivityActionBar implem
             }
             myCursor = ordersHandler.getReceipts1CustData(orderTypes, receivedCustID);
         } else {
-            //Applied here cursor close by gurleen
             if (myCursor != null) {
                 myCursor.close();
             }

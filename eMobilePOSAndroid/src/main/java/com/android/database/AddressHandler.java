@@ -250,7 +250,6 @@ public class AddressHandler {
             cursor.close();
             return addresses;
         }
-        //Applied here finally and close cursor  by gurleen
         finally {
             if (cursor != null && !cursor.isClosed()) {
                 cursor.close();

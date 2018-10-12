@@ -135,7 +135,6 @@ public class HistoryGiftRewardLoyalty_FA extends BaseFragmentActivityActionBar i
 
     @Override
     protected void onDestroy() {
-        //Applied here cursor close by gurleen
         if (myCursor != null && !myCursor.isClosed()) {
             myCursor.close();
         }
@@ -256,19 +255,16 @@ public class HistoryGiftRewardLoyalty_FA extends BaseFragmentActivityActionBar i
                 break;
             case R.id.addbalance_tab:
                 if (cardTypeCase == CASE_GIFTCARD) {
-                    //Applied here cursor close by gurleen
                     if (myCursor != null) {
                         myCursor.close();
                     }
                     myCursor = handler.getGiftCardAddBalance();
                 } else if (cardTypeCase == CASE_LOYALTY) {
-                    //Applied here cursor close by gurleen
                     if (myCursor != null) {
                         myCursor.close();
                     }
                     myCursor = handler.getLoyaltyAddBalance();
                 } else {
-                    //Applied here cursor close by gurleen
                     if (myCursor != null) {
                         myCursor.close();
                     }

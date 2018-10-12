@@ -93,14 +93,12 @@ public class HistoryOpenInvoices_FA extends BaseFragmentActivityActionBar implem
         myPref = new MyPreferences(this);
 
         if (!isFromMainMenu) {
-            //Applied here cursor close by gurleen
             if (myCursor != null) {
                 myCursor.close();
             }
             myCursor = handler.getInvoicesList();
             payButton.setVisibility(View.INVISIBLE);
         } else {
-            //Applied here cursor close by gurleen
             if (myCursor != null) {
                 myCursor.close();
             }
@@ -147,7 +145,6 @@ public class HistoryOpenInvoices_FA extends BaseFragmentActivityActionBar implem
 
     @Override
     public void onDestroy() {
-        //Applied here cursor close by gurleen
         if (myCursor != null && !myCursor.isClosed()) {
             myCursor.close();
         }

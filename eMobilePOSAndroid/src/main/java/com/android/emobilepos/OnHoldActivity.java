@@ -479,7 +479,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            //Apply here dialog check by gurleen
             if (myProgressDialog != null && myProgressDialog.isShowing()) {
                 myProgressDialog.dismiss();
             }

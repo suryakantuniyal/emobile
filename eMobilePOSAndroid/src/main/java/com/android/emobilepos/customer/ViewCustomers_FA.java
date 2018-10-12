@@ -365,7 +365,6 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
     }
 
     private String getSelectedCustomerPhone() {
-        //Apply here check for selectedCustPosition  by gurleen
         if (0 <= selectedCustPosition && selectedCustPosition < myCursor.getCount()) {
             myCursor.moveToPosition(selectedCustPosition);
         }

@@ -172,7 +172,6 @@ public class HistoryConsignment_FA extends BaseFragmentActivityActionBar impleme
 
     @Override
     protected void onDestroy() {
-        //Applied here cursor close by gurleen
         if (myCursor != null && !myCursor.isClosed())
             myCursor.close();
         super.onDestroy();
@@ -208,13 +207,11 @@ public class HistoryConsignment_FA extends BaseFragmentActivityActionBar impleme
 
     private void updateMyTabs(String tabID, int placeHolder) {
         if (tabID.equals(TABS[0])) {
-            //Applied here cursor close by gurleen
             if (myCursor != null) {
                 myCursor.close();
             }
             myCursor = handler.getConsignmentCursor(false);
         } else {
-            //Applied here cursor close by gurleen
             if (myCursor != null) {
                 myCursor.close();
             }

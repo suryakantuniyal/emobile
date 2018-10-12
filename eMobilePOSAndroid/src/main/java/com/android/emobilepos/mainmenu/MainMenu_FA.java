@@ -310,7 +310,6 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
 
     private void dismissProgressDialog() {
-        //Applied dialog check here by gurleen
         if (driversProgressDialog != null && driversProgressDialog.isShowing()) {
             driversProgressDialog.dismiss();
         }
