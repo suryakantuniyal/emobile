@@ -20,7 +20,7 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:gravity="center_vertical"
-            android:text="@string/pax"
+            android:text="@string/e_secure_pay"
             android:textAppearance="@style/white_text_appearance"
             android:textSize="@dimen/header_txt_size"
             android:textStyle="bold" />
@@ -59,7 +59,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="20dp"
                 android:adjustViewBounds="true"
-                android:src="@drawable/logo_pax" />
+                android:src="@drawable/logo_securepay" />
 
             <com.android.support.MyEditText
                 android:id="@+id/invoiceJobIdTextView"
