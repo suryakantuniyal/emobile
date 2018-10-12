@@ -1333,6 +1333,7 @@
     <string name="elobcr_menu">BCR</string>
     <string name="config_pay_with_card_on_file">Pagar con "Card on File"</string>
     <string name="card_on_file">Card on File</string>
+    <string name="pax">PAX</string>
     <string name="genius">Genius</string>
     <string name="invoice_job_id">Invoice/Job ID</string>
     <string name="fingerprints">Huellas dactilares</string>

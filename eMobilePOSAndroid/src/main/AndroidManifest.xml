@@ -539,6 +539,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.android.emobilepos.settings.printers.DeviceListActivity" />
         </activity>
+        <activity android:name=".payment.ProcessPax_FA"
+            android:configChanges="orientation|screenSize"
+            android:exported="false"
+            android:windowSoftInputMode="stateAlwaysHidden">
+            <intent-filter>
+                <action android:name="com.emobilepos.app.VIEW_RESPONSE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         <service android:name="com.printer.service.PrinterPrintService"
 
             android:label="PrinterPrintService">
