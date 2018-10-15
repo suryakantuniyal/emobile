@@ -135,7 +135,6 @@ public class HistoryTransactions_FA extends BaseFragmentActivityActionBar implem
         hasBeenCreated = true;
     }
 
-
     @Override
     public void onResume() {
         if (global.isApplicationSentToBackground())
@@ -203,20 +202,26 @@ public class HistoryTransactions_FA extends BaseFragmentActivityActionBar implem
                 orderTypes = new Global.OrderType[]{Global.OrderType.SALES_RECEIPT};//"'5'";
                 break;
         }
-        if (isFromCustomers)
+        if (isFromCustomers) {
+            if (myCursor != null && !myCursor.isClosed()) {
+                myCursor.close();
+            }
             myCursor = ordersHandler.getReceipts1CustData(orderTypes, receivedCustID);
-        else
+        } else {
+            if (myCursor != null) {
+                myCursor.close();
+            }
             myCursor = ordersHandler.getReceipts1Data(orderTypes);
-
-        myAdapter = new CustomCursorAdapter(activity, myCursor, CursorAdapter.NO_SELECTION);
-        lView.setAdapter(myAdapter);
+            myAdapter = new CustomCursorAdapter(activity, myCursor, CursorAdapter.NO_SELECTION);
+            lView.setAdapter(myAdapter);
+        }
     }
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         if (myCursor != null && !myCursor.isClosed())
             myCursor.close();
+        super.onDestroy();
     }
 
     private void updateMyTabs(String tabID, int placeHolder) {

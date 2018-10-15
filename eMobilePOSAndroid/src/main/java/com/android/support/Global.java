@@ -1195,7 +1195,7 @@ public class Global extends MultiDexApplication {
                 isDestroyed = true;
             }
         }
-        if (dialog != null && activity != null && !activity.isFinishing() && !isDestroyed && dialog.isShowing()) {
+        if (dialog != null && activity != null && !activity.isFinishing() && dialog.isShowing()) {
             dialog.dismiss();
         }
     }

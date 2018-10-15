@@ -90,7 +90,8 @@ public class CategoriesHandler {
 
             DBManager.getDatabase().setTransactionSuccessful();
         } catch (Exception e) {
-        } finally {
+        }
+        finally {
             if (insert != null) {
                 insert.close();
             }
@@ -151,7 +152,8 @@ public class CategoriesHandler {
             }
             cursor.close();
             return data;
-        } finally {
+        }
+        finally {
             if (cursor != null && !cursor.isClosed()) {
                 cursor.close();
             }
@@ -195,7 +197,8 @@ public class CategoriesHandler {
             }
             cursor.close();
             return list;
-        } finally {
+        }
+        finally {
             if (cursor != null && !cursor.isClosed()) {
                 cursor.close();
             }

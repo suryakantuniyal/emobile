@@ -336,7 +336,9 @@ public class OrdersHandler {
             if (sqlinsert != null) {
                 sqlinsert.close();
             }
-            DBManager.getDatabase().endTransaction();
+            if (DBManager.getDatabase() != null && DBManager.getDatabase().inTransaction()) {
+                DBManager.getDatabase().endTransaction();
+            }
 
         }
     }
