@@ -77,7 +77,7 @@ public class MenuProdGV_Adapter extends CursorAdapter {
                 holder.title.setText(Global.getValidString(cursor.getString(holder.i_prod_name)));
 
             String urlLink = cursor.getString(holder.i_prod_img_name);
-            if (holder.itemImage.getTag() != null) {
+            if (holder.itemImage != null) {
                 if ((holder.itemImage.getTag() != null && !holder.itemImage.getTag().equals(urlLink)) || holder.itemImage.getTag() == null) {
                     holder.itemImage.setTag(urlLink);
                     if (urlLink != null || TextUtils.isEmpty(cursor.getString(holder.i_prod_name)) || holder.productNameTxt == null) {
