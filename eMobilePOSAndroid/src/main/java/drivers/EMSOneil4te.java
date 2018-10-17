@@ -254,9 +254,6 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        } catch (StarIOPortException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         } catch (JAException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -666,9 +663,6 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
             // TODO Auto-generated catch block
             // e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (StarIOPortException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (JAException e) {
