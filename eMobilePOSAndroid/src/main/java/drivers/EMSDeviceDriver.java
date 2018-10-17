@@ -67,7 +67,6 @@ import com.elo.device.peripherals.Printer;
 import com.miurasystems.miuralibrary.api.executor.MiuraManager;
 import com.miurasystems.miuralibrary.api.listener.MiuraDefaultListener;
 import com.mpowa.android.sdk.powapos.PowaPOS;
-/*import com.partner.pt100.printer.PrinterApiContext;*/
 import com.printer.aidl.PService;
 import com.printer.command.EscCommand;
 import com.printer.command.PrinterCom;
@@ -123,7 +122,6 @@ import plaintext.EMSPlainTextHelper;
 import util.StringUtil;
 
 import static drivers.EMSGPrinterPT380.PRINTER_ID;
-
 
 public class EMSDeviceDriver {
     private static final boolean PRINT_TO_LOG = BuildConfig.PRINT_TO_LOG;
@@ -1266,9 +1264,6 @@ public class EMSDeviceDriver {
             printTermsNConds();
             printEnablerWebSite(lineWidth);
             cutPaper();
-        } catch (StarIOPortException e) {
-            e.printStackTrace();
-            Crashlytics.logException(e);
         } catch (JAException e) {
             e.printStackTrace();
             Crashlytics.logException(e);
@@ -1382,7 +1377,7 @@ public class EMSDeviceDriver {
         }
     }
 
-    protected void printImage(int type) throws StarIOPortException, JAException {
+    protected void printImage(int type) throws JAException {
         if (PRINT_TO_LOG) {
             Log.d("Print", "*******Image Print***********");
             return;
@@ -1417,29 +1412,16 @@ public class EMSDeviceDriver {
         if (myBitmap != null) {
             if (this instanceof EMSBluetoothStarPrinter) {
                 byte[] data;
-                if (isPOSPrinter) {
-                    data = PrinterFunctions.createCommandsEnglishRasterModeCoupon(PAPER_WIDTH,
-                            ICommandBuilder.BitmapConverterRotation.Normal,
-                            myBitmap, emulation);
+                StarIoExt.Emulation emu = emulation;
+                if (!isPOSPrinter) {
+                    emu = StarIoExt.Emulation.EscPosMobile;
+                }
+                try {
+                    data = PrinterFunctions.createCommandsEnglishRasterModeCoupon(
+                            myBitmap, emu, PAPER_WIDTH);
                     Communication.sendCommands(data, port, this.activity); // 10000mS!!!
-                } else {
-                    Bitmap bmp = myBitmap.copy(Bitmap.Config.ARGB_8888, true);
-                    int w = bmp.getWidth();
-                    int h = bmp.getHeight();
-                    int pixel;
-                    try {
-                        for (int x = 0; x < w; x++) {
-                            for (int y = 0; y < h; y++) {
-                                pixel = bmp.getPixel(x, y);
-                                if (pixel == Color.TRANSPARENT)
-                                    bmp.setPixel(x, y, Color.WHITE);
-                            }
-                        }
-                        MiniPrinterFunctions.PrintBitmapImage(activity, port.getPortName(), port.getPortSettings(),
-                                bmp, PAPER_WIDTH, false, false);
-                    } catch (Exception e) {
-                        Crashlytics.logException(e);
-                    }
+                } catch (Exception e) {
+                    Crashlytics.logException(e);
                 }
             } else if (this instanceof EMSBlueBambooP25) {
                 EMSBambooImageLoader loader = new EMSBambooImageLoader();
@@ -1507,54 +1489,6 @@ public class EMSDeviceDriver {
                     Bitmap rotatedBmp = Bitmap.createBitmap(myBitmap, 0, 0, myBitmap.getWidth(), myBitmap.getHeight(), matrix, true);
                     eloPrinterApi.print_image(activity, rotatedBmp);
                 }
-            } else if (this instanceof EMSMiura) {
-//                try {
-//                    InputStream inputStream = activity.getAssets().open("image.bmp");
-//
-//                    int size = inputStream.available();
-//                    byte[] buffer = new byte[size];
-//                    inputStream.read(buffer);
-//                    inputStream.close();
-//                    MiuraManager.getInstance().uploadBinary(buffer, "image.bmp", new MiuraDefaultListener() {
-//                        @Override
-//                        public void onSuccess() {
-//                            MiuraManager.getInstance().hardReset(new MiuraDefaultListener() {
-//                                @Override
-//                                public void onSuccess() {
-//                                    MiuraManager.getInstance().spoolImage("image.bmp", new MiuraDefaultListener() {
-//                                        @Override
-//                                        public void onSuccess() {
-////                                            MiuraManager.getInstance().spoolPrint(new MiuraDefaultListener() {
-////                                                @Override
-////                                                public void onSuccess() {
-////                                                    Log.d("Print Image", "Success");
-////                                                }
-////
-////                                                @Override
-////                                                public void onError() {
-////                                                }
-////                                            });
-//                                        }
-//
-//                                        @Override
-//                                        public void onError() {
-//                                        }
-//                                    });
-//                                }
-//
-//                                @Override
-//                                public void onError() {
-//                                }
-//                            });
-//                        }
-//
-//                        @Override
-//                        public void onError() {
-//                        }
-//                    });
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
             } else if (this instanceof EMSGPrinterPT380) {
                 // print logo
                 esc = new EscCommand();
@@ -1594,7 +1528,7 @@ public class EMSDeviceDriver {
 
     }
 
-    protected void printImage(Bitmap bitmap) throws StarIOPortException, JAException {
+    protected void printImage(Bitmap bitmap) {
         if (PRINT_TO_LOG) {
             Log.d("Print", "*******Image Print***********");
             return;
@@ -1606,31 +1540,16 @@ public class EMSDeviceDriver {
                 StarIoExt.Emulation emulation = setting.getEmulation();
                 byte[] data;
 
-                if (isPOSPrinter) {
-                    data = drivers.star.utils.sdk31.starprntsdk.functions.PrinterFunctions
-                            .createRasterData(emulation, bitmap, PAPER_WIDTH, true);
-
-//                    data = PrinterFunctions.createCommandsEnglishRasterModeCoupon(PAPER_WIDTH, SCBBitmapConverter.Rotation.Normal,
-//                            bitmap);
-                    Communication.sendCommands(data, port, this.activity); // 10000mS!!!
-
-                } else {
-                    Bitmap bmp = bitmap.copy(Bitmap.Config.ARGB_8888, true);
-                    int w = bmp.getWidth();
-                    int h = bmp.getHeight();
-                    int pixel;
-                    for (int x = 0; x < w; x++) {
-                        for (int y = 0; y < h; y++) {
-                            pixel = bmp.getPixel(x, y);
-                            if (pixel == Color.TRANSPARENT)
-                                bmp.setPixel(x, y, Color.WHITE);
-                        }
-                    }
-
-                    MiniPrinterFunctions.PrintBitmapImage(activity, port.getPortName(), port.getPortSettings(),
-                            bmp, PAPER_WIDTH, false, false);
+                if (!isPOSPrinter) {
+                    emulation = StarIoExt.Emulation.EscPosMobile;
                 }
-
+                try {
+                    data = PrinterFunctions.createCommandsEnglishRasterModeCoupon(
+                            bitmap, emulation, PAPER_WIDTH);
+                    Communication.sendCommands(data, port, this.activity); // 10000mS!!!
+                } catch (Exception e) {
+                    Crashlytics.logException(e);
+                }
             } else if (this instanceof EMSmePOS) {
                 mePOSReceipt.addLine(new MePOSReceiptImageLine(bitmap));
             } else if (this instanceof EMSBlueBambooP25) {
@@ -1726,6 +1645,7 @@ public class EMSDeviceDriver {
             sb.append(textHandler.centeredString(header[2], lineWidth));
 
         if (!TextUtils.isEmpty(sb.toString())) {
+            sb.insert(0, textHandler.newLines(1));
             sb.append(textHandler.newLines(1));
             print(sb.toString(), 0, PrinterFunctions.Alignment.Left);
         }
@@ -1886,8 +1806,6 @@ public class EMSDeviceDriver {
             sb.setLength(0);
             printEnablerWebSite(lineWidth);
             cutPaper();
-        } catch (StarIOPortException ignored) {
-
         } catch (JAException e) {
             e.printStackTrace();
         }
@@ -2078,8 +1996,6 @@ public class EMSDeviceDriver {
             printTermsNConds();
             printEnablerWebSite(lineWidth);
             cutPaper();
-        } catch (StarIOPortException ignored) {
-
         } catch (JAException e) {
             e.printStackTrace();
         }
@@ -2241,8 +2157,6 @@ public class EMSDeviceDriver {
             print(textHandler.newLines(1), FORMAT);
             printEnablerWebSite(lineWidth);
             cutPaper();
-        } catch (StarIOPortException e) {
-            Crashlytics.logException(e);
         } catch (JAException e) {
             Crashlytics.logException(e);
             e.printStackTrace();
@@ -2338,16 +2252,12 @@ public class EMSDeviceDriver {
                 printFooter(lineWidth);
             try {
                 printImage(1);
-            } catch (StarIOPortException e) {
-                e.printStackTrace();
             } catch (JAException e) {
                 e.printStackTrace();
             }
             printEnablerWebSite(lineWidth);
             print(textHandler.newLines(1), FORMAT);
             cutPaper();
-        } catch (StarIOPortException ignored) {
-
         } catch (JAException e) {
             e.printStackTrace();
         }
@@ -2451,7 +2361,6 @@ public class EMSDeviceDriver {
             print(textHandler.newLines(3), FORMAT);
             printEnablerWebSite(lineWidth);
             cutPaper();
-        } catch (StarIOPortException ignored) {
         } catch (JAException e) {
             e.printStackTrace();
         }
@@ -2513,7 +2422,6 @@ public class EMSDeviceDriver {
             }
             printEnablerWebSite(lineWidth);
             cutPaper();
-        } catch (StarIOPortException ignored) {
         } catch (JAException e) {
             e.printStackTrace();
         }
