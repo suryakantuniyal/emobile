@@ -1084,6 +1084,10 @@ public class EMSDeviceDriver {
                     print(sb.toString(), FORMAT);
                     sb.setLength(0);
 
+                    if (this instanceof EMSBluetoothStarPrinter && !isPOSPrinter && size > 20) {
+                        // wait to fix printing incomplete issues on SM-T300i models.
+                        Thread.sleep(100);
+                    }
                 }
             }
             print(sb.toString(), FORMAT);
