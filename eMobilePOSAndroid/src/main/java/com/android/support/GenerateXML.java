@@ -1155,142 +1155,138 @@ public class GenerateXML {
             for (int i = 0; i < size; i++) {
                 try {
                     OrderProduct product = orderProductsHandler.getOrderProduct(cursor);
-                    if (!isRestMode || (isRestMode && ((!product.isAddon())
-                            || (product.isAddon() && isOnHold)))) {
-                        serializer.startTag(empstr, "OrderProduct");
 
-                        String assignedSeat = product.getAssignedSeat();
-                        serializer.startTag(empstr, "assignedSeat");
-                        serializer.text(StringUtil.nullStringToEmpty(assignedSeat));
-                        serializer.endTag(empstr, "assignedSeat");
+                    serializer.startTag(empstr, "OrderProduct");
 
-                        String parentAddonOrderProductId = product.getAddon_ordprod_id();
-                        serializer.startTag(empstr, "parentAddonOrderProductId");
-                        serializer.text(StringUtil.nullStringToEmpty(parentAddonOrderProductId));
-                        serializer.endTag(empstr, "parentAddonOrderProductId");
+                    String assignedSeat = product.getAssignedSeat();
+                    serializer.startTag(empstr, "assignedSeat");
+                    serializer.text(StringUtil.nullStringToEmpty(assignedSeat));
+                    serializer.endTag(empstr, "assignedSeat");
 
-                        String seatGroupId = String.valueOf(product.getSeatGroupId());
-                        serializer.startTag(empstr, "seatGroupId");
-                        serializer.text(StringUtil.nullStringToEmpty(seatGroupId));
-                        serializer.endTag(empstr, "seatGroupId");
+                    String parentAddonOrderProductId = product.getAddon_ordprod_id();
+                    serializer.startTag(empstr, "parentAddonOrderProductId");
+                    serializer.text(StringUtil.nullStringToEmpty(parentAddonOrderProductId));
+                    serializer.endTag(empstr, "parentAddonOrderProductId");
+
+                    String seatGroupId = String.valueOf(product.getSeatGroupId());
+                    serializer.startTag(empstr, "seatGroupId");
+                    serializer.text(StringUtil.nullStringToEmpty(seatGroupId));
+                    serializer.endTag(empstr, "seatGroupId");
 
 
-                        serializer.startTag(empstr, "isAddon");
-                        serializer.text(String.valueOf(product.isAddon()));
-                        serializer.endTag(empstr, "isAddon");
+                    serializer.startTag(empstr, "isAddon");
+                    serializer.text(String.valueOf(product.isAddon()));
+                    serializer.endTag(empstr, "isAddon");
 
-                        serializer.startTag(empstr, "isAdded");
-                        serializer.text(String.valueOf(product.isAdded()));
-                        serializer.endTag(empstr, "isAdded");
+                    serializer.startTag(empstr, "isAdded");
+                    serializer.text(String.valueOf(product.isAdded()));
+                    serializer.endTag(empstr, "isAdded");
 
-                        serializer.startTag(empstr, "isPrinted");
+                    serializer.startTag(empstr, "isPrinted");
 
-                        if (!isOnHold)
-                            serializer.text(String.valueOf(product.isPrinted()));
-                        else
-                            serializer.text("true");
+                    if (!isOnHold)
+                        serializer.text(String.valueOf(product.isPrinted()));
+                    else
+                        serializer.text("true");
 
-                        serializer.endTag(empstr, "isPrinted");
+                    serializer.endTag(empstr, "isPrinted");
 
-                        String itemVoid = product.getItem_void();
-                        if (!TextUtils.isEmpty(itemVoid)) {
-                            serializer.startTag(empstr, "item_void");
-                            serializer.text(product.getItem_void());
-                            serializer.endTag(empstr, "item_void");
-                        }
-                        serializer.startTag(empstr, "ordprod_id");
-                        serializer.text(product.getOrdprod_id());
-                        serializer.endTag(empstr, "ordprod_id");
-
-                        serializer.startTag(empstr, "ord_id");
-                        serializer.text(product.getOrd_id());
-                        serializer.endTag(empstr, "ord_id");
-
-                        serializer.startTag(empstr, "prod_id");
-                        serializer.text(product.getProd_id());
-                        serializer.endTag(empstr, "prod_id");
-
-                        serializer.startTag(empstr, "cat_id");
-                        serializer.text(StringUtil.nullStringToEmpty(product.getCat_id()));
-                        serializer.endTag(empstr, "cat_id");
-
-                        serializer.startTag(empstr, "cat_name");
-                        serializer.text(StringUtil.nullStringToEmpty(product.getCat_name()));
-                        serializer.endTag(empstr, "cat_name");
-
-                        serializer.startTag(empstr, "ordprod_qty");
-                        serializer.text(product.getOrdprod_qty());
-                        serializer.endTag(empstr, "ordprod_qty");
-                        //                    BigDecimal price = new BigDecimal(cursor.getString(cursor.getColumnIndex("overwrite_price")))
-                        //                            .multiply(new BigDecimal(cursor.getString(cursor.getColumnIndex("ordprod_qty"))));
-                        serializer.startTag(empstr, "overwrite_price");
-                        serializer.text(product.getFinalPrice());
-                        serializer.endTag(empstr, "overwrite_price");
-
-                        serializer.startTag(empstr, "reason_id");
-                        serializer.text(product.getReason_id());
-                        serializer.endTag(empstr, "reason_id");
-
-                        serializer.startTag(empstr, "ordprod_name");
-                        serializer.text(product.getOrdprod_name());
-                        serializer.endTag(empstr, "ordprod_name");
-
-                        serializer.startTag(empstr, "ordprod_desc");
-                        serializer.text(product.getOrdprod_desc());
-                        serializer.endTag(empstr, "ordprod_desc");
-
-                        serializer.startTag(empstr, "pricelevel_id");
-                        serializer.text(product.getPricelevel_id());
-                        serializer.endTag(empstr, "pricelevel_id");
-
-                        serializer.startTag(empstr, "prod_seq");
-                        serializer.text(product.getProd_seq());
-                        serializer.endTag(empstr, "prod_seq");
-
-                        serializer.startTag(empstr, "uom_name");
-                        serializer.text(product.getUom_name());
-                        serializer.endTag(empstr, "uom_name");
-
-                        // <uom_id>Packet</uom_id>
-                        serializer.startTag(empstr, "uom_id");
-                        serializer.text(product.getUom_id());
-                        serializer.endTag(empstr, "uom_id");
-
-                        serializer.startTag(empstr, "uom_conversion");
-                        serializer.text(product.getUom_conversion());
-                        serializer.endTag(empstr, "uom_conversion");
-
-                        serializer.startTag(empstr, "prod_taxId");
-                        serializer.text(product.getProd_taxId());
-                        serializer.endTag(empstr, "prod_taxId");
-
-                        serializer.startTag(empstr, "totalLineValue");
-                        serializer.text(product.getItemTotal());
-                        serializer.endTag(empstr, "totalLineValue");
-                        String prod_taxValue = String.valueOf(Global.getRoundBigDecimal(product.getProd_taxValue(), 2));
-
-                        serializer.startTag(empstr, "prod_taxValue");
-                        serializer.text(prod_taxValue);
-                        serializer.endTag(empstr, "prod_taxValue");
-
-                        serializer.startTag(empstr, "prod_discountId");
-                        serializer.text(product.getDiscount_id());
-                        serializer.endTag(empstr, "prod_discountId");
-
-                        serializer.startTag(empstr, "prod_discountValue");
-                        serializer.text(product.getDiscount_value());
-                        serializer.endTag(empstr, "prod_discountValue");
-
-                        // <Attributes/>
-                        serializer.startTag(empstr, "Attributes");
-                        buildOrdProdAttr(serializer, cursor.getString(cursor.getColumnIndex("ordprod_id")));
-                        serializer.endTag(empstr, "Attributes");
-
-                        serializer.endTag(empstr, "OrderProduct");
+                    String itemVoid = product.getItem_void();
+                    if (!TextUtils.isEmpty(itemVoid)) {
+                        serializer.startTag(empstr, "item_void");
+                        serializer.text(product.getItem_void());
+                        serializer.endTag(empstr, "item_void");
                     }
+                    serializer.startTag(empstr, "ordprod_id");
+                    serializer.text(product.getOrdprod_id());
+                    serializer.endTag(empstr, "ordprod_id");
+
+                    serializer.startTag(empstr, "ord_id");
+                    serializer.text(product.getOrd_id());
+                    serializer.endTag(empstr, "ord_id");
+
+                    serializer.startTag(empstr, "prod_id");
+                    serializer.text(product.getProd_id());
+                    serializer.endTag(empstr, "prod_id");
+
+                    serializer.startTag(empstr, "cat_id");
+                    serializer.text(StringUtil.nullStringToEmpty(product.getCat_id()));
+                    serializer.endTag(empstr, "cat_id");
+
+                    serializer.startTag(empstr, "cat_name");
+                    serializer.text(StringUtil.nullStringToEmpty(product.getCat_name()));
+                    serializer.endTag(empstr, "cat_name");
+
+                    serializer.startTag(empstr, "ordprod_qty");
+                    serializer.text(product.getOrdprod_qty());
+                    serializer.endTag(empstr, "ordprod_qty");
+
+                    serializer.startTag(empstr, "overwrite_price");
+                    serializer.text(product.getFinalPrice());
+                    serializer.endTag(empstr, "overwrite_price");
+
+                    serializer.startTag(empstr, "reason_id");
+                    serializer.text(product.getReason_id());
+                    serializer.endTag(empstr, "reason_id");
+
+                    serializer.startTag(empstr, "ordprod_name");
+                    serializer.text(product.getOrdprod_name());
+                    serializer.endTag(empstr, "ordprod_name");
+
+                    serializer.startTag(empstr, "ordprod_desc");
+                    serializer.text(product.getOrdprod_desc());
+                    serializer.endTag(empstr, "ordprod_desc");
+
+                    serializer.startTag(empstr, "pricelevel_id");
+                    serializer.text(product.getPricelevel_id());
+                    serializer.endTag(empstr, "pricelevel_id");
+
+                    serializer.startTag(empstr, "prod_seq");
+                    serializer.text(product.getProd_seq());
+                    serializer.endTag(empstr, "prod_seq");
+
+                    serializer.startTag(empstr, "uom_name");
+                    serializer.text(product.getUom_name());
+                    serializer.endTag(empstr, "uom_name");
+
+                    // <uom_id>Packet</uom_id>
+                    serializer.startTag(empstr, "uom_id");
+                    serializer.text(product.getUom_id());
+                    serializer.endTag(empstr, "uom_id");
+
+                    serializer.startTag(empstr, "uom_conversion");
+                    serializer.text(product.getUom_conversion());
+                    serializer.endTag(empstr, "uom_conversion");
+
+                    serializer.startTag(empstr, "prod_taxId");
+                    serializer.text(product.getProd_taxId());
+                    serializer.endTag(empstr, "prod_taxId");
+
+                    serializer.startTag(empstr, "totalLineValue");
+                    serializer.text(product.getItemTotal());
+                    serializer.endTag(empstr, "totalLineValue");
+                    String prod_taxValue = String.valueOf(Global.getRoundBigDecimal(product.getProd_taxValue(), 2));
+
+                    serializer.startTag(empstr, "prod_taxValue");
+                    serializer.text(prod_taxValue);
+                    serializer.endTag(empstr, "prod_taxValue");
+
+                    serializer.startTag(empstr, "prod_discountId");
+                    serializer.text(product.getDiscount_id());
+                    serializer.endTag(empstr, "prod_discountId");
+
+                    serializer.startTag(empstr, "prod_discountValue");
+                    serializer.text(product.getDiscount_value());
+                    serializer.endTag(empstr, "prod_discountValue");
+
+                    // <Attributes/>
+                    serializer.startTag(empstr, "Attributes");
+                    buildOrdProdAttr(serializer, cursor.getString(cursor.getColumnIndex("ordprod_id")));
+                    serializer.endTag(empstr, "Attributes");
+
+                    serializer.endTag(empstr, "OrderProduct");
 
                     cursor.moveToNext();
-
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }

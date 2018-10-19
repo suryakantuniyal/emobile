@@ -396,22 +396,16 @@ public class Order implements Cloneable, Serializable {
         return ord_type.equalsIgnoreCase("1");
     }
 
-    public double getTotalLines() {
+    public int getTotalLines() {
         if (orderProducts == null || orderProducts.isEmpty()) {
             return 0;
         } else {
             int count = 0;
             for (OrderProduct orderProduct : getOrderProducts()) {
-                double consigmentQty = TextUtils.isEmpty(orderProduct.getConsignment_qty()) ? 0 : Double.parseDouble(orderProduct.getConsignment_qty());
-                double qty = Double.parseDouble(orderProduct.getOrdprod_qty());
-                if (consigmentQty == 0 && qty > 0) {
-                    count++;
-                } else if (consigmentQty > 0 && consigmentQty > qty) {
-                    count++;
-                }
+                count++;
+                count += orderProduct.addonsProducts.size();
             }
             return count;
         }
-
     }
 }
