@@ -490,9 +490,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         if (onRestaurantMode && categoryToLoad == null && categoryStack.size() > 0) {
             categoryToLoad = categoryStack.get(categoryStack.size() - 1);
         }
-        if (myCursor != null) {
-            myCursor.close();
-        }
 
         return new Catalog_Loader(getActivity(), Integer.parseInt(getString(R.string.sqlLimit)), 0, categoryToLoad, search_text, search_type, onRestaurantMode);
     }
