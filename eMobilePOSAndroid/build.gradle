@@ -10,8 +10,17 @@ android {
         javaMaxHeapSize "4g"
     }
     packagingOptions {
+        exclude 'META-INF/DEPENDENCIES.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
         exclude "lib/arm64-v8a/librealm-jni.so"
         exclude "lib/x86_64/librealm-jni.so"
+
+        // force 32-bits sqlcipher
+        exclude 'lib/arm64-v8a/libsqlcipher.so'
+        exclude 'lib/x86_64/libsqlcipher.so'
     }
     defaultConfig {
         applicationId "com.emobilepos.app"
@@ -29,13 +38,6 @@ android {
 //        }
 //    }
 
-    packagingOptions {
-        exclude 'META-INF/DEPENDENCIES.txt'
-        exclude 'META-INF/NOTICE'
-        exclude 'META-INF/NOTICE.txt'
-        exclude 'META-INF/LICENSE'
-        exclude 'META-INF/LICENSE.txt'
-    }
     flavorDimensions "ems"
     productFlavors {
         ems {
