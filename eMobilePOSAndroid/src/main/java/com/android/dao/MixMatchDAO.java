@@ -95,7 +95,6 @@ public class MixMatchDAO {
                 .or()
                 .equalTo("mixMatchType", 2)
                 .findAll();
-        realm.close();
         return realmResults;
     }
 }

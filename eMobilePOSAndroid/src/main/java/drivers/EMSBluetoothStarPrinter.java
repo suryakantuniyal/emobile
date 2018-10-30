@@ -265,7 +265,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     public void verifyConnectivity() throws StarIOPortException, InterruptedException {
         try {
             connectionRetries++;
-            if (port == null )
+            if (port == null)
                 port = getStarIOPort();
         } catch (StarIOPortException e) {
             releasePrinter();
@@ -1086,43 +1086,44 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 String t;
                 boolean doneParsing = false;
                 while (!stopLoop) {
-                    if (port.readPort(mcrData1, 0, 1) > 0) {
-                        if (!doneParsing) {
-                            t = new String(mcrData1, "windows-1252");
-                            if (t.equals("\r") || t.equals("\n")) {
-                                for (String data : listTrack) {
-                                    if (data.contains("B")) {
-                                        if (!data.startsWith("%"))
-                                            tr1.append("%");
-                                        tr1.append(data);
+                    if (port != null) {
+                        if (port.readPort(mcrData1, 0, 1) > 0) {
+                            if (!doneParsing) {
+                                t = new String(mcrData1, "windows-1252");
+                                if (t.equals("\r") || t.equals("\n")) {
+                                    for (String data : listTrack) {
+                                        if (data.contains("B")) {
+                                            if (!data.startsWith("%"))
+                                                tr1.append("%");
+                                            tr1.append(data);
 
-                                        if (!data.endsWith("?"))
-                                            tr1.append("?");
-                                    } else if (data.contains("=")) {
-                                        if (!data.startsWith(";"))
-                                            tr1.append(";");
+                                            if (!data.endsWith("?"))
+                                                tr1.append("?");
+                                        } else if (data.contains("=")) {
+                                            if (!data.startsWith(";"))
+                                                tr1.append(";");
 
-                                        tr1.append(data);
+                                            tr1.append(data);
 
-                                        if (!data.endsWith("?"))
-                                            tr1.append("?");
+                                            if (!data.endsWith("?"))
+                                                tr1.append("?");
+                                        }
                                     }
-
+                                    cardManager = new CreditCardInfo();
+                                    CardParser.parseCreditCard(activity, tr1.toString(), cardManager);
+                                    doneParsing = true;
+                                    handler.post(doUpdateViews);
+                                    tr1.setLength(0);
+                                } else if (mcrData1[0] == 28 && tr2.length() > 0) {
+                                    listTrack.add(tr2.toString());
+                                    tr2.setLength(0);
+                                } else {
+                                    tr2.append(t.trim());
                                 }
-                                cardManager = new CreditCardInfo();
-                                CardParser.parseCreditCard(activity, tr1.toString(), cardManager);
-                                doneParsing = true;
-                                handler.post(doUpdateViews);
-                                tr1.setLength(0);
-
-                            } else if (mcrData1[0] == 28 && tr2.length() > 0) {
-
-                                listTrack.add(tr2.toString());
-                                tr2.setLength(0);
-                            } else {
-                                tr2.append(t.trim());
                             }
                         }
+                    } else {
+                        stopLoop = true;
                     }
                 }
             } catch (StarIOPortException ignored) {

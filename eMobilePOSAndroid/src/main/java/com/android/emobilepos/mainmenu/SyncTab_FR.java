@@ -179,29 +179,36 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
             TransferLocations_DB transferDB = new TransferLocations_DB(getActivity());
             int unsyncTransfer = (int) transferDB.getNumUnsyncTransfers();
             syncTransfersQty.setText(String.valueOf(unsyncTransfer));
-            synchFeedText.setText(getWifiConnectivityName());
+            synchFeedText.setText(getConnectionStatus());
             synchSendDate.setText(preferences.getLastSendSync());
             synchReceiveDate.setText(preferences.getLastReceiveSync());
         }
     }
 
-    private String getWifiConnectivityName() {
-        String wifiName = getString(R.string.sync_no_connectivity);
+    private String getConnectionStatus() {
+        String connectionStatus = getString(R.string.sync_no_connectivity);
         StringBuilder sb = new StringBuilder();
 
         ConnectivityManager connManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo myWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        NetworkInfo myMobile = connManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-        if (myWifi != null && myWifi.isConnected()) {
-            WifiManager wifiManager = (WifiManager) getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-            WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-            sb.append(getString(R.string.sync_connected_to)).append(": ").append(wifiInfo.getSSID());
-            wifiName = sb.toString();
-        } else if (myMobile != null && myMobile.isConnected()) {
-            wifiName = sb.append(getString(R.string.sync_connected_to)).append(": Carrier's Network").toString();
+        if (connManager != null) {
+            NetworkInfo myWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+            NetworkInfo myEthernet = connManager.getNetworkInfo(ConnectivityManager.TYPE_ETHERNET);
+            NetworkInfo myMobile = connManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+            if (myWifi != null && myWifi.isConnected()) {
+                WifiManager wifiManager = (WifiManager) getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+                if (wifiManager != null) {
+                    WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+                    sb.append(getString(R.string.sync_connected_to)).append(": ").append(wifiInfo.getSSID());
+                    connectionStatus = sb.toString();
+                }
+            } else if (myEthernet != null && myEthernet.isConnected()) {
+                connectionStatus = getString(R.string.sync_ethernet_connected);
+            } else if (myMobile != null && myMobile.isConnected()) {
+                connectionStatus = sb.append(getString(R.string.sync_connected_to)).append(": Carrier's Network").toString();
+            }
         }
 
-        return wifiName;
+        return connectionStatus;
     }
 
     @Override

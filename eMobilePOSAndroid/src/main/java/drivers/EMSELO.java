@@ -122,10 +122,10 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     }
 
     /*
- *
- * Prints/Displays Text on Customer Facing Display.
- *
- * */
+     *
+     * Prints/Displays Text on Customer Facing Display.
+     *
+     * */
     public static void printTextOnCFD(String Line1, String Line2, Context context) {
         DeviceManager deviceManager;
         try {
@@ -481,28 +481,6 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
             m_scra.setConnectionRetry(true);
             m_scra.openDevice();
         }
-//        eloCardSwiper = new MagStripDriver(activity);
-//        eloCardSwiper.startDevice();
-//        eloCardSwiper.registerMagStripeListener(new MagStripDriver.MagStripeListener() { //MageStripe Reader's Listener for notifying various events.
-//
-//            @Override
-//            public void OnDeviceDisconnected() { //Fired when the Device has been Disconnected.
-//                Toast.makeText(activity, "Magnetic-Stripe Device Disconnected !", Toast.LENGTH_SHORT).show();
-//            }
-//
-//            @Override
-//            public void OnDeviceConnected() { //Fired when the Device has been Connected.
-//                Toast.makeText(activity, "Magnetic-Stripe Device Connected !", Toast.LENGTH_SHORT).show();
-//            }
-//
-//            @Override
-//            public void OnCardSwiped(MagTeklibDynamag cardData) { //Fired when a card has been swiped on the device.
-//                Log.d("Card Data", cardData.toString());
-//                CreditCardInfo creditCardInfo = new CreditCardInfo();
-//                boolean parsed = CardParser.parseCreditCard(activity, cardData.getCardData(), creditCardInfo);
-//                callBack.cardWasReadSuccessfully(parsed, creditCardInfo);
-//            }
-//        });
     }
 
     @Override
@@ -598,27 +576,6 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
         }
     }
 
-//    @Override
-//    public void printReceiptPreview(View view) {
-//
-//        try {
-//            SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
-//            eloPrinterApi = new PrinterAPI(eloPrinterPort);
-//            setPaperWidth(LINE_WIDTH);
-//            Bitmap bitmap = loadBitmapFromView(view);
-//            super.printReceiptPreview(bitmap, LINE_WIDTH);
-//            eloPrinterPort.getInputStream().close();
-//            eloPrinterPort.getOutputStream().close();
-//            eloPrinterPort.close();
-//        } catch (JAException e) {
-//            e.printStackTrace();
-//        } catch (StarIOPortException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
-
     @Override
     public void salePayment(Payment payment, CreditCardInfo creditCardInfo) {
 
@@ -666,7 +623,21 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
 
     @Override
     public void printClockInOut(List<ClockInOut> timeClocks, String clerkID) {
-        super.printClockInOut(timeClocks, LINE_WIDTH, clerkID);
+        try {
+            if (DeviceManager.getPlatformInfo().eloPlatform == EloPlatform.PAYPOINT_REFRESH) {
+                eloPrinterRefresh = DeviceManager.getInstance(DeviceManager.getPlatformInfo().eloPlatform, activity).getPrinter();
+                super.printClockInOut(timeClocks, LINE_WIDTH, clerkID);
+            } else {
+                SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
+                eloPrinterApi = new PrinterAPI(eloPrinterPort);
+                super.printClockInOut(timeClocks, LINE_WIDTH, clerkID);
+                eloPrinterPort.getInputStream().close();
+                eloPrinterPort.getOutputStream().close();
+                eloPrinterPort.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -675,12 +646,12 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     }
 
     /*
-         *
-         * Code to Read Barcode through Barcode Reader.
-         * BarcodeReader automatically populates the widget that is currently in focus.
-         * Here the "bar_code" edittext widget has focus.
-         *
-         * */
+     *
+     * Code to Read Barcode through Barcode Reader.
+     * BarcodeReader automatically populates the widget that is currently in focus.
+     * Here the "bar_code" edittext widget has focus.
+     *
+     * */
     private void readBarcode() {
         turnOnBCR();
     }

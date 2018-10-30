@@ -134,6 +134,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             } else if (!group.getOrderProducts().isEmpty()) {
                 orderProducts.addAll(group.getOrderProducts());
             }
+            mixMatches.getRealm().close();
         }
         orderProducts.addAll(noMixMatchProducts);
     }

@@ -2,11 +2,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:baselineAligned="false"
     android:gravity="center_vertical"
     android:minHeight="?android:attr/listPreferredItemHeight"
+    android:paddingStart="2dip"
     android:paddingLeft="2dip"
-    android:baselineAligned="false"
-   >
+    android:paddingRight="2dip">
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -14,14 +15,16 @@
         android:gravity="center"
         android:minWidth="0dp"
         android:orientation="horizontal"
-        android:visibility="gone" >
+        android:visibility="gone">
 
         <ImageView
-            android:id="@+android:id/icon"
+            android:id="@android:id/icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:minWidth="48dp"
+            android:paddingLeft="1dip"
+            android:paddingEnd="1dip"
             android:paddingRight="1dip" />
     </LinearLayout>
 
@@ -29,33 +32,30 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:paddingBottom="6dip"
-        android:paddingTop="6dip" >
+        android:paddingTop="6dip"
+        android:paddingBottom="6dip">
 
         <TextView
-            android:id="@+android:id/title"
+            android:id="@android:id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="marquee"
-            
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <TextView
-            android:id="@+android:id/summary"
+            android:id="@android:id/summary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@android:id/title"
             android:layout_below="@android:id/title"
+            android:layout_alignStart="@android:id/title"
+            android:layout_alignLeft="@android:id/title"
             android:maxLines="4"
-            android:textColor="#808080"
             android:textAppearance="?android:attr/textAppearanceSmall"
-             />
+            android:textColor="#808080" />
     </RelativeLayout>
 
-    <!-- Preference should place its actual preference widget here. -->
-
     <LinearLayout
-        android:id="@+android:id/widget_frame"
+        android:id="@android:id/widget_frame"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:gravity="center"
