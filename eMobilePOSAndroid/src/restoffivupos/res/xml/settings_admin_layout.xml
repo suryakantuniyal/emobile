@@ -311,6 +311,10 @@
             android:key="pref_print_receipt_transaction_payment"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_print_receipt_transaction_payments" />
+        <CheckBoxPreference
+            android:key="pref_print_taxes_brake_down"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_print_taxes_brake_down" />
         <Preference
             android:key="pref_printek_info"
             android:layout="@layout/settings_custom_layout"
