@@ -226,10 +226,7 @@ public class OrdersHandler {
             if (cursor != null && !cursor.isClosed()) {
                 cursor.close();
             }
-
         }
-
-
     }
 
     public void initDictionary() {
@@ -323,7 +320,6 @@ public class OrdersHandler {
                 dbUtils.executeAuditedDB();
                 sqlinsert.clearBindings();
                 sqlinsert.close();
-//                Log.d("Order Insert:", order.toString());
                 DinningTableOrderDAO.createDinningTableOrder(order);
                 if (GenerateNewID.isValidLastId(order.ord_id, GenerateNewID.IdType.ORDER_ID)) {
                     AssignEmployeeDAO.updateLastOrderId(order.ord_id);
@@ -339,7 +335,6 @@ public class OrdersHandler {
             if (DBManager.getDatabase() != null && DBManager.getDatabase().inTransaction()) {
                 DBManager.getDatabase().endTransaction();
             }
-
         }
     }
 
@@ -391,8 +386,6 @@ public class OrdersHandler {
                 cursor.close();
             }
         }
-
-
     }
 
     public boolean existsOrder(String orderId) {
@@ -412,8 +405,6 @@ public class OrdersHandler {
                 cursor.close();
             }
         }
-
-
     }
 
     private List<Order> getOrders(Cursor cursor) {
@@ -447,8 +438,6 @@ public class OrdersHandler {
                 cursor.close();
             }
         }
-
-
     }
 
     public Cursor getTupyxOrders() {
@@ -577,7 +566,6 @@ public class OrdersHandler {
         } finally {
             if (cursor != null && !cursor.isClosed()) {
                 cursor.close();
-
             }
             if (stmt != null) {
                 stmt.close();
@@ -656,7 +644,6 @@ public class OrdersHandler {
         Cursor cursor = DBManager.getDatabase().rawQuery(subquery1 + getOrderTypesAsSQLArray(orderTypes) + subquery2 + subquery3, new String[]{custID});
         cursor.moveToFirst();
         return cursor;
-
     }
 
     public Cursor getSearchOrder(Global.OrderType[] orderTypes, String search, String customerID) // Transactions
@@ -664,7 +651,6 @@ public class OrdersHandler {
     // first
     // listview
     {
-
         String subqueries[] = new String[4];
         StringBuilder sb = new StringBuilder();
         String[] params;
@@ -688,7 +674,6 @@ public class OrdersHandler {
     }
 
     public void updateIsSync(List<String[]> list) {
-
         StringBuilder sb = new StringBuilder();
         sb.append(ord_id).append(" = ?");
 
@@ -803,7 +788,6 @@ public class OrdersHandler {
         } finally {
             c.close();
         }
-
     }
 
     public Order getPrintedOrder(String ordID) {
@@ -847,6 +831,9 @@ public class OrdersHandler {
                     } else {
                         anOrder.orderAttributes = new ArrayList<>();
                     }
+                    taxes_db = getOrderTaxes_DB();
+                    List<DataTaxes> orderTaxes = taxes_db.getOrderTaxes(anOrder.ord_id);
+                    anOrder.setListOrderTaxes(orderTaxes);
 
                 } while (cursor.moveToNext());
             }
@@ -977,26 +964,6 @@ public class OrdersHandler {
     public void insert(Order order) {
         insert(Arrays.asList(order));
     }
-
-//    public void insert(Order order) {
-//        OrderProductsHandler productsHandler = new OrderProductsHandler(activity);
-//        GenerateNewID newID = new GenerateNewID(activity);
-//        order.processed = "1";
-//        AssignEmployee assignEmployee;
-//        for (int i = 0; i < 500; i++) {
-//            assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
-//            insert(Arrays.asList(order));
-//            productsHandler.insert(order.getOrderProducts());
-//            order.ord_id = newID.getNextID(GenerateNewID.IdType.ORDER_ID);
-//            List<OrderProduct> products = order.getOrderProducts();
-//            for (OrderProduct product : products) {
-//                UUID uuid = UUID.randomUUID();
-//                String randomUUIDString = uuid.toString();
-//                product.setOrdprod_id(randomUUIDString);
-//                product.setOrd_id(order.ord_id);
-//            }
-//        }
-//    }
 
     public int deleteOnHoldsOrders(List<Order> ordersToDelete) {
         int delete = 0;
