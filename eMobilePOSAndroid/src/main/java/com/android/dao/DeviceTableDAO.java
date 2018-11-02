@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.UUID;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -24,6 +25,9 @@ public class DeviceTableDAO {
         }.getType();
         try {
             List<Device> devices = gson.fromJson(json, listType);
+            for (Device device: devices) {
+                device.setId(UUID.randomUUID().toString());
+            }
             DeviceTableDAO.insert(devices);
         } catch (Exception e) {
             e.printStackTrace();

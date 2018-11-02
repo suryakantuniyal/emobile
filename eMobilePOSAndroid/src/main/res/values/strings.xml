@@ -947,6 +947,7 @@
     <string name="config_wholesale_printout">Wholesale Printout</string>
     <string name="config_prompt_customer_copy">Prompt print receipt copy for CC payments</string>
     <string name="config_print_receipt_transaction_payments">Print receipt of transaction payments</string>
+    <string name="config_print_taxes_brake_down">Print taxes brake down</string>
     <string name="config_handwritten_signature">Handwritten signature</string>
 
     <string name="config_allow_decimal_quantities">Allow Decimal Quantities</string>
@@ -1070,7 +1071,7 @@
     <string name="none_uppercase_lbl">NONE</string>
     <string name="enabler_prefix">EN</string>
     <string name="enabler_website" translatable="false">www.emobilepos.com/</string>
-    <string name="powered_by_enabler">Powered by Enabler</string>
+    <string name="powered_by_enabler">Powered by e-Nabler</string>
     <string name="ivuloto_control_label">"CONTROL: "</string>
     <string name="menu_back">Back</string>
     <string name="selectinvoices">Select Invoices</string>

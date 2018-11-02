@@ -1,23 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:layout="@layout/fragment_sales_associate_configuration"
-    android:orientation="horizontal" >
+    android:orientation="horizontal"
+    tools:layout="@layout/fragment_sales_associate_configuration">
 
     <fragment
+        android:id="@+id/associateListfragment"
+        android:name="com.android.emobilepos.settings.SalesAssociateListFragment"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:name="com.android.emobilepos.settings.SalesAssociateListFragment"
-        android:id="@+id/associateListfragment"
         android:layout_weight="0.4"
         tools:layout="@layout/fragment_sales_associate_configuration" />
 
     <fragment
+        android:id="@+id/dinningTablesGridfragment"
+        android:name="com.android.emobilepos.settings.DinningTablesGridFragment"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:name="com.android.emobilepos.settings.DinningTablesGridFragment"
-        android:id="@+id/dinningTablesGridfragment"
         android:layout_gravity="center_vertical"
         android:layout_weight="1"
         tools:layout="@layout/salesassociates_dinningtable_selection_grid_layout" />
