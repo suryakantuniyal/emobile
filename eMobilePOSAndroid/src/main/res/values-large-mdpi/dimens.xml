@@ -1,19 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name = "add_orders_sliding_drawer_size">270dp</dimen>
-    <dimen name = "add_orders_total_grandtotal_txt_size_land">16sp</dimen>
-    
-        <dimen name = "add_orders_loyalty_label_txt_size">14sp</dimen>
-    <dimen name = "add_orders_loyalty_field_txt_size">15sp</dimen>
-    
-            <dimen name = "add_orders_loyalty_label_txt_size_land">17sp</dimen>
-    <dimen name = "add_orders_loyalty_field_txt_size_land">17sp</dimen>
-    
-    
-    
-    
-      <dimen name = "txt_receipt_small">12sp</dimen>
-    <dimen name = "txt_receipt_medium">18sp</dimen>
-    <dimen name = "txt_receipt_large">20sp</dimen>
-    
+    <dimen name="add_orders_sliding_drawer_size">270dp</dimen>
+    <dimen name="add_orders_total_grandtotal_txt_size_land">16sp</dimen>
+
+    <dimen name="add_orders_loyalty_label_txt_size">14sp</dimen>
+    <dimen name="add_orders_loyalty_field_txt_size">15sp</dimen>
+
+    <dimen name="add_orders_loyalty_label_txt_size_land">17sp</dimen>
+    <dimen name="add_orders_loyalty_field_txt_size_land">17sp</dimen>
+
+    <dimen name="txt_receipt_small">12sp</dimen>
+    <dimen name="txt_receipt_medium">18sp</dimen>
+    <dimen name="txt_receipt_large">20sp</dimen>
 </resources>
