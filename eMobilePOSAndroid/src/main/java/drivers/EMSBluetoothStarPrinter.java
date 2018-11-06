@@ -594,9 +594,9 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     public String printStationPrinter(List<Orders> orders, String ordID, boolean cutPaper,
                                       boolean printHeader) {
         String receipt;
-//        setStartIOPort();
+        setStartIOPort();
         receipt = printStationPrinterReceipt(orders, ordID, 42, cutPaper, printHeader);
-//        releasePrinter();
+        releasePrinter();
         return receipt;
     }
 
