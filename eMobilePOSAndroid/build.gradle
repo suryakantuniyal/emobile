@@ -109,8 +109,6 @@ android {
             buildConfigField "int", "BCR_TIMEOUT", "15000"
             buildConfigField "int", "AUTOSYNC_PERIOD", "1000"
             buildConfigField "boolean", "PRINT_TO_LOG", "false"
-            buildConfigField "boolean", "DEBUG_NOMAD", "true"
-            buildConfigField "boolean", "USE_DUMMY_START_PRINTER", "false"
             buildConfigField "boolean", "DELETE_INVALID_HOLDS", "true"
             minifyEnabled false
             multiDexEnabled true
@@ -123,8 +121,6 @@ android {
             buildConfigField "int", "POLLING_PERIOD", "5000"
             buildConfigField "int", "BCR_TIMEOUT", "15000"
             buildConfigField "int", "AUTOSYNC_PERIOD", "60000"
-            buildConfigField "boolean", "DEBUG_NOMAD", "false"
-            buildConfigField "boolean", "USE_DUMMY_START_PRINTER", "false"
             buildConfigField "boolean", "DELETE_INVALID_HOLDS", "false"
             minifyEnabled false
             multiDexEnabled true

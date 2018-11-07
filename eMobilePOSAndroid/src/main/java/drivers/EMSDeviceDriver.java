@@ -110,7 +110,6 @@ import POSSDK.POSSDK;
 import datamaxoneil.connection.Connection_Bluetooth;
 import datamaxoneil.printer.DocumentLP;
 import drivers.elo.utils.PrinterAPI;
-import drivers.star.utils.Communication;
 import drivers.star.utils.MiniPrinterFunctions;
 import drivers.star.utils.PrinterFunctions;
 import drivers.star.utils.sdk31.starprntsdk.PrinterSetting;
@@ -309,10 +308,11 @@ public class EMSDeviceDriver {
             if (port != null) {
                 try {
                     StarIOPort.releasePort(port);
-                    port = null;
                 } catch (Exception e) {
                     e.printStackTrace();
                     Crashlytics.logException(e);
+                } finally {
+                    port = null;
                 }
             }
         } else if (this instanceof EMSOneil4te) {
@@ -1423,7 +1423,7 @@ public class EMSDeviceDriver {
                 try {
                     data = PrinterFunctions.createCommandsEnglishRasterModeCoupon(
                             myBitmap, emu, PAPER_WIDTH);
-                    Communication.sendCommands(data, port, this.activity); // 10000mS!!!
+                    port.writePort(data, 0, data.length);
                 } catch (Exception e) {
                     Crashlytics.logException(e);
                 }
@@ -1550,7 +1550,7 @@ public class EMSDeviceDriver {
                 try {
                     data = PrinterFunctions.createCommandsEnglishRasterModeCoupon(
                             bitmap, emulation, PAPER_WIDTH);
-                    Communication.sendCommands(data, port, this.activity); // 10000mS!!!
+                    port.writePort(data, 0, data.length);
                 } catch (Exception e) {
                     Crashlytics.logException(e);
                 }
