@@ -8,7 +8,6 @@ import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.orders.OrderProduct;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -21,32 +20,40 @@ import java.util.Map;
 public class TaxesCalculator {
 
     public static BigDecimal calculateTax(BigDecimal taxableAmount, List<BigDecimal> rates) {
-        BigDecimal totalTaxAmount = new BigDecimal(0);
-        BigDecimal taxRateGlobal = new BigDecimal(0);
+        BigDecimal totalTaxRate = new BigDecimal(0);
         for (BigDecimal rate : rates) {
-            taxRateGlobal = taxRateGlobal.add(rate);
+            totalTaxRate = totalTaxRate.add(rate);
         }
         BigDecimal taxAmount = taxableAmount
-                .multiply(taxRateGlobal.divide(new BigDecimal(100)))
-                .setScale(2, RoundingMode.HALF_UP);
-        totalTaxAmount = totalTaxAmount.add(Global.getRoundBigDecimal(Global.getRoundBigDecimal(taxAmount, 2), 2));
-        return totalTaxAmount;
+                .multiply(totalTaxRate.divide(new BigDecimal(100)));
+        return taxRounder(taxAmount);
     }
 
     public static BigDecimal calculateTax(BigDecimal taxableAmount, BigDecimal rate) {
-        BigDecimal totalTaxAmount = new BigDecimal(0);
         BigDecimal taxAmount = taxableAmount
-                .multiply(rate
-                        .divide(new BigDecimal(100)))
-                .setScale(2, RoundingMode.HALF_UP);
-        totalTaxAmount = totalTaxAmount.add(Global.getRoundBigDecimal(Global.getRoundBigDecimal(taxAmount, 2), 2));
-
-        return totalTaxAmount;
+                .multiply(rate.divide(new BigDecimal(100)));
+        return taxRounder(taxAmount);
     }
 
     public static BigDecimal taxRounder(BigDecimal amount) {
-        BigDecimal roundBigDecimal = Global.getRoundBigDecimal(Global.getRoundBigDecimal(amount, 3), 2);
-        return roundBigDecimal;
+        return Global.getRoundBigDecimal(Global.getRoundBigDecimal(amount, 3), 2);
+    }
+
+    public static void calculateOrderTaxesAmount(Order order) {
+        List<DataTaxes> dataTaxes = order.getListOrderTaxes();
+        if (dataTaxes != null) {
+            BigDecimal taxTotal = BigDecimal.ZERO;
+            for (DataTaxes dataTax : dataTaxes) {
+                for (OrderProduct orderProduct : order.getOrderProducts()) {
+                    taxTotal = taxTotal.add(
+                            calculateTax(
+                                    orderProduct.getProductPriceTaxableAmountCalculated(),
+                                    new BigDecimal(dataTax.getTax_rate())));
+                }
+                dataTax.setTax_amount(String.valueOf(taxTotal));
+                taxTotal = BigDecimal.ZERO;
+            }
+        }
     }
 
     public static HashMap<String, String[]> getOrderTaxes(Context context, List<DataTaxes> taxes, Order order) {
