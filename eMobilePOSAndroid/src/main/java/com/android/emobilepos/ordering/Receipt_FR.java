@@ -94,7 +94,6 @@ import com.android.support.SemiClosedSlidingDrawer.OnDrawerOpenListener;
 import com.android.support.SynchMethods;
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
-import com.starmicronics.stario.StarIOPortException;
 import com.viewpagerindicator.CirclePageIndicator;
 
 import java.math.BigDecimal;
@@ -2301,35 +2300,17 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                             printHeader = splitByCat;
                             currentPrinterName = currentDevice.getPortName();
                             if (splitByCat) {
-                                if (currentDevice instanceof EMSBluetoothStarPrinter) {
-                                    try {
-                                        currentDevice.verifyConnectivity();
-                                    } catch (StarIOPortException e) {
-                                        e.printStackTrace();
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
                                 currentDevice.print(receipt.toString(), 1, PrinterFunctions.Alignment.Left);
                                 receipt.setLength(0);
                                 currentDevice.cutPaper();
-                                currentDevice.releasePrinter();
                             }
                         }
                     }
                 }
                 if (currentDevice != null && !TextUtils.isEmpty(receipt)) {
-                    try {
-                        currentDevice.verifyConnectivity();
-                        currentDevice.print(receipt.toString(), 1, PrinterFunctions.Alignment.Left);
-                        receipt.setLength(0);
-                        currentDevice.cutPaper();
-                        currentDevice.releasePrinter();
-                    } catch (StarIOPortException e) {
-                        e.printStackTrace();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                    currentDevice.print(receipt.toString(), 1, PrinterFunctions.Alignment.Left);
+                    receipt.setLength(0);
+                    currentDevice.cutPaper();
                 }
             }
             return null;

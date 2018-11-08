@@ -43,7 +43,7 @@ android {
         ems {
             minSdkVersion 16
             applicationId 'com.emobilepos.app'
-            versionName "1.2.5.0"
+            versionName "1.2.5.1"
             versionCode 167
             targetSdkVersion 27
             multiDexEnabled = true
@@ -58,7 +58,7 @@ android {
         icmpevo {
             minSdkVersion 16
             applicationId 'com.emobilepos.icmpevo.app'
-            versionName "1.2.5.0"
+            versionName "1.2.5.1"
             versionCode 167
             targetSdkVersion 27
             multiDexEnabled = true
@@ -87,7 +87,7 @@ android {
         ivupos {
             minSdkVersion 16
             applicationId 'com.emobilepos.ivupos.app'
-            versionName "1.2.5.0"
+            versionName "1.2.5.1"
             versionCode 167
             targetSdkVersion 27
             multiDexEnabled = true
@@ -109,8 +109,6 @@ android {
             buildConfigField "int", "BCR_TIMEOUT", "15000"
             buildConfigField "int", "AUTOSYNC_PERIOD", "1000"
             buildConfigField "boolean", "PRINT_TO_LOG", "false"
-            buildConfigField "boolean", "DEBUG_NOMAD", "true"
-            buildConfigField "boolean", "USE_DUMMY_START_PRINTER", "false"
             buildConfigField "boolean", "DELETE_INVALID_HOLDS", "true"
             minifyEnabled false
             multiDexEnabled true
@@ -123,8 +121,6 @@ android {
             buildConfigField "int", "POLLING_PERIOD", "5000"
             buildConfigField "int", "BCR_TIMEOUT", "15000"
             buildConfigField "int", "AUTOSYNC_PERIOD", "60000"
-            buildConfigField "boolean", "DEBUG_NOMAD", "false"
-            buildConfigField "boolean", "USE_DUMMY_START_PRINTER", "false"
             buildConfigField "boolean", "DELETE_INVALID_HOLDS", "false"
             minifyEnabled false
             multiDexEnabled true
@@ -177,8 +173,8 @@ dependencies {
     api files('libs/roverapi-android-2.4.0.jar')
     api files('libs/spring-android-core-1.0.1.RELEASE.jar')
 //    api files('libs/sqlcipher.jar')
-    api files('libs/StarIO_Extension.jar')
     api files('libs/StarIOPort3.1.jar')
+    api files('libs/starioextension.jar')
     api files('libs/jcc-bate-0.7.3.jar')
     api files('libs/ksoap2-android-assembly-2.5.2-jar-with-dependencies.jar')
     api files('libs/printersdkv22(standard_neutral).jar')
