@@ -46,7 +46,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="right"
-            android:text="Net Total"
+            android:text="Total"
             android:textAppearance="?android:attr/textAppearanceMedium" />
     </LinearLayout>
 

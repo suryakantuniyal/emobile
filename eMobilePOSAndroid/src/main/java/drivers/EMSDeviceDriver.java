@@ -2487,7 +2487,7 @@ public class EMSDeviceDriver {
             sb_ord_types.append(textHandler.twoColumnLineWithLeftAlignedText("SubTotal", Global.getCurrencyFormat(ord.ord_subtotal), lineWidth, 3));
             sb_ord_types.append(textHandler.twoColumnLineWithLeftAlignedText("Discount Total", Global.getCurrencyFormat(ord.ord_discount), lineWidth, 3));
             sb_ord_types.append(textHandler.twoColumnLineWithLeftAlignedText("Tax Total", Global.getCurrencyFormat(ord.ord_taxamount), lineWidth, 3));
-            sb_ord_types.append(textHandler.twoColumnLineWithLeftAlignedText("Net Total", Global.getCurrencyFormat(ord.ord_total), lineWidth, 3));
+            sb_ord_types.append(textHandler.twoColumnLineWithLeftAlignedText("Total", Global.getCurrencyFormat(ord.ord_total), lineWidth, 3));
         }
         if (listOrderHolds != null && !listOrderHolds.isEmpty()) {
             onHoldAmount = new BigDecimal(listOrderHolds.get(0).ord_total);
