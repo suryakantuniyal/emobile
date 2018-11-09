@@ -36,6 +36,7 @@ public class Catalog_Loader extends AsyncTaskLoader<Cursor> {
 
     @Override
     public Cursor loadInBackground() {
+
         // Quick bail if on restaurant mode and no parameters were supplied
         if (onRestaurantMode && category == null && TextUtils.isEmpty(searchText)) {
             return getEmptyCursor();
@@ -43,9 +44,7 @@ public class Catalog_Loader extends AsyncTaskLoader<Cursor> {
 //        if (offset == 0 && context instanceof OrderingMain_FA && ((OrderingMain_FA) context).getRightFragment() != null) {
 //            ((OrderingMain_FA) context).getRightFragment().closeCursor();
 //        }
-
         Cursor cursor;
-
         ProductsHandler productsHandler = new ProductsHandler(context);
         if (!TextUtils.isEmpty(searchText) && !TextUtils.isEmpty(searchType)) {
             cursor = productsHandler.searchProducts(searchText, searchType);
@@ -54,7 +53,9 @@ public class Catalog_Loader extends AsyncTaskLoader<Cursor> {
             if (category != null) {
                 categoryId = category.getCategoryId();
             }
+
             cursor = productsHandler.getCatalogData(categoryId, limit, offset);
+
         }
         return cursor;
     }
@@ -252,13 +253,13 @@ public class Catalog_Loader extends AsyncTaskLoader<Cursor> {
             }
 
             @Override
-            public void setExtras(Bundle extras) {
-
+            public Bundle getExtras() {
+                return null;
             }
 
             @Override
-            public Bundle getExtras() {
-                return null;
+            public void setExtras(Bundle extras) {
+
             }
 
             @Override

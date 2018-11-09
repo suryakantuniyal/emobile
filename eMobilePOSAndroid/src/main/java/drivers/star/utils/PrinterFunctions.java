@@ -7,42 +7,25 @@ import com.starmicronics.starioextension.StarIoExt;
 
 public class PrinterFunctions {
 
-	public enum CorrectionLevelOption {Low, Middle, Q, High}
+    public enum CorrectionLevelOption {Low, Middle, Q, High}
 
-	public enum Alignment {Left, Center, Right}
+    public enum Alignment {Left, Center, Right}
 
+    public static byte[] createCommandsEnglishRasterModeCoupon(Bitmap bitmap,
+                                                               StarIoExt.Emulation emulation,
+                                                               int paperWidth) {
 
+        int logoPosition = (paperWidth - bitmap.getWidth()) / 2;
+        ICommandBuilder builder = StarIoExt.createCommandBuilder(emulation);
+        builder.beginDocument();
+        builder.appendBitmapWithAbsolutePosition(bitmap, false, logoPosition);
+        builder.endDocument();
+        return builder.getCommands();
+    }
 
-
-	public  static byte[] createCommandsEnglishRasterModeCoupon(int width, ICommandBuilder.BitmapConverterRotation rotation,
-																Bitmap bitmap, StarIoExt.Emulation emulation) {
-
-
-		// Bitmap bitmap = BitmapFactory.decodeResource( resource,
-		// R.drawable.amex);
-
-		ICommandBuilder builder = StarIoExt.createCommandBuilder(emulation);
-
-		builder.beginDocument();
-		builder.appendBitmap(bitmap, false, width, false, rotation);
-
-//		List<byte[]> listBuf = builder.getBuffer();
-//
-//		for (byte[] buf : listBuf) {
-//			commands.add(buf);
-//		}
-
-		// commands.add(0x1b, 0x64, 0x03); // Cut Paper
-		builder.endDocument();
-		return builder.getCommands();
-	}
-
-	public static byte[] createCommandsOpenCashDrawer() {
-		byte[] commands = new byte[1];
-
-		commands[0] = 0x07; // BEL
-
-		return commands;
-	}
-
+    public static byte[] createCommandsOpenCashDrawer() {
+        byte[] commands = new byte[1];
+        commands[0] = 0x07; // BEL
+        return commands;
+    }
 }

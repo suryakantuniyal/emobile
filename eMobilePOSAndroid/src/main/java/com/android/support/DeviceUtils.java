@@ -56,13 +56,14 @@ public class DeviceUtils {
         EMSDeviceManager edm = null;
         connectStarTS650BT(activity);
         if (forceReload || Global.multiPrinterMap.size() != devices.size()) {
+            Global.multiPrinterMap = new HashMap<>();
             int i = 0;
             for (Device device : devices) {
                 if (device.isRemoteDevice()) {
-                    if (tempMap.containsKey(device.getId())) {
-                        Global.multiPrinterMap.put(device.getCategoryId(), tempMap.get(device.getId()));
+                    if (tempMap.containsKey(device.getIpAddress())) {
+                        Global.multiPrinterMap.put(device.getCategoryId(), tempMap.get(device.getIpAddress()));
                     } else {
-                        tempMap.put(device.getId(), i);
+                        tempMap.put(device.getIpAddress(), i);
                         Global.multiPrinterMap.put(device.getCategoryId(), i);
 
                         edm = new EMSDeviceManager();

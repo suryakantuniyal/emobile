@@ -38,6 +38,10 @@ public class GenerateNewID {
                 String lastOrderID = AssignEmployeeDAO.getAssignEmployee().getMSLastOrderID();
                 EmobilePosId newId = new EmobilePosId(id);
                 EmobilePosId lastId = new EmobilePosId(lastOrderID);
+                if (newId.getDeviceId() != null && lastId.getDeviceId() != null &&
+                        !newId.getDeviceId().equals(lastId.getDeviceId())) {
+                    return false;
+                }
                 if (!TextUtils.isEmpty(newId.getYear()) && TextUtils.isDigitsOnly(newId.getYear()) && !TextUtils.isEmpty(lastId.getYear()) && TextUtils.isDigitsOnly(lastId.getYear())) {
                     if (Integer.parseInt(newId.getYear()) > Integer.parseInt(lastId.getYear())) {
                         return true;

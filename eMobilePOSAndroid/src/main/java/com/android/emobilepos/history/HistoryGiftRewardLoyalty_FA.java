@@ -37,9 +37,8 @@ public class HistoryGiftRewardLoyalty_FA extends BaseFragmentActivityActionBar i
 
     public static final int CASE_GIFTCARD = 0, CASE_LOYALTY = 1, CASE_REWARD = 2;
     private static final String[] TABS = new String[]{"payments", "addbalance"};
-    private static String[] TABS_TAG;// = new String[] { "Cash", "Check", "Card", "Other" };
     private static final int[] TABS_ID = new int[]{R.id.payment_tab, R.id.addbalance_tab};
-
+    private static String[] TABS_TAG;// = new String[] { "Cash", "Check", "Card", "Other" };
     private TabHost tabHost;
     private Activity activity;
 
@@ -134,6 +133,14 @@ public class HistoryGiftRewardLoyalty_FA extends BaseFragmentActivityActionBar i
         global.startActivityTransitionTimer();
     }
 
+    @Override
+    protected void onDestroy() {
+        if (myCursor != null && !myCursor.isClosed()) {
+            myCursor.close();
+        }
+        super.onDestroy();
+    }
+
 
     private void initTabs() {
         tabHost.setup();
@@ -179,8 +186,9 @@ public class HistoryGiftRewardLoyalty_FA extends BaseFragmentActivityActionBar i
                 // TODO Auto-generated method stub
                 String test = s.toString().trim();
                 if (test.isEmpty()) {
-                    if (myCursor != null)
+                    if (myCursor != null) {
                         myCursor.close();
+                    }
                     getCursorData(currSelectedTab);
                 }
             }
@@ -216,8 +224,14 @@ public class HistoryGiftRewardLoyalty_FA extends BaseFragmentActivityActionBar i
     public void onTabChanged(String tabId) {
         // TODO Auto-generated method stub
         if (tabId.equals(TABS[0])) {
+            if (myCursor != null) {
+                myCursor.close();
+            }
             updateMyTabs(tabId, TABS_ID[0]);
         } else {
+            if (myCursor != null) {
+                myCursor.close();
+            }
             updateMyTabs(tabId, TABS_ID[1]);
         }
     }
@@ -226,6 +240,9 @@ public class HistoryGiftRewardLoyalty_FA extends BaseFragmentActivityActionBar i
     private void getCursorData(int _tab_id) {
         switch (_tab_id) {
             case R.id.payment_tab:
+                if (myCursor != null) {
+                    myCursor.close();
+                }
                 if (cardTypeCase == CASE_GIFTCARD) {
                     myCursor = handler.getCashCheckGiftPayment("GiftCard", false);
                 } else if (cardTypeCase == CASE_LOYALTY) {
@@ -238,10 +255,19 @@ public class HistoryGiftRewardLoyalty_FA extends BaseFragmentActivityActionBar i
                 break;
             case R.id.addbalance_tab:
                 if (cardTypeCase == CASE_GIFTCARD) {
+                    if (myCursor != null) {
+                        myCursor.close();
+                    }
                     myCursor = handler.getGiftCardAddBalance();
                 } else if (cardTypeCase == CASE_LOYALTY) {
+                    if (myCursor != null) {
+                        myCursor.close();
+                    }
                     myCursor = handler.getLoyaltyAddBalance();
                 } else {
+                    if (myCursor != null) {
+                        myCursor.close();
+                    }
                     myCursor = handler.getRewardAddBalance();
                 }
 
@@ -284,6 +310,23 @@ public class HistoryGiftRewardLoyalty_FA extends BaseFragmentActivityActionBar i
 
     }
 
+    @Override
+    public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+        // TODO Auto-generated method stub
+        Intent intent = new Intent(arg0.getContext(), HistoryPaymentDetails_FA.class);
+        intent.putExtra("histpay", true);
+
+        myCursor.moveToPosition(position);
+        String pay_id = myCursor.getString(myCursor.getColumnIndex("_id")); // pay_id is returned as _id
+        intent.putExtra("pay_id", pay_id);
+        intent.putExtra("job_id", myCursor.getString(myCursor.getColumnIndex("job_id")));
+        intent.putExtra("pay_amount", myCursor.getString(myCursor.getColumnIndex("pay_amount")));
+        intent.putExtra("cust_name", myCursor.getString(myCursor.getColumnIndex("cust_name")));
+
+        intent.putExtra("paymethod_name", "LoyaltyCard");
+
+        startActivity(intent);
+    }
 
     public class CustomCursorAdapter extends CursorAdapter {
         LayoutInflater inflater;
@@ -378,25 +421,6 @@ public class HistoryGiftRewardLoyalty_FA extends BaseFragmentActivityActionBar i
 
             int i_cust_name, i_pay_amount, i_pay_issync, i_isVoid, i_pay_tip;
         }
-    }
-
-
-    @Override
-    public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-        // TODO Auto-generated method stub
-        Intent intent = new Intent(arg0.getContext(), HistoryPaymentDetails_FA.class);
-        intent.putExtra("histpay", true);
-
-        myCursor.moveToPosition(position);
-        String pay_id = myCursor.getString(myCursor.getColumnIndex("_id")); // pay_id is returned as _id
-        intent.putExtra("pay_id", pay_id);
-        intent.putExtra("job_id", myCursor.getString(myCursor.getColumnIndex("job_id")));
-        intent.putExtra("pay_amount", myCursor.getString(myCursor.getColumnIndex("pay_amount")));
-        intent.putExtra("cust_name", myCursor.getString(myCursor.getColumnIndex("cust_name")));
-
-        intent.putExtra("paymethod_name", "LoyaltyCard");
-
-        startActivity(intent);
     }
 
 }

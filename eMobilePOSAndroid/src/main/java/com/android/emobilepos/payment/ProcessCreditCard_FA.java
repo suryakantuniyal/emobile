@@ -1323,6 +1323,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                 double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
                 amountToTip = 0;
                 grandTotalAmount = amountToBePaid;
+                btnProcess.setEnabled(true);
                 dialog.dismiss();
             }
         });
@@ -1381,6 +1382,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
             @Override
             public void onClick(View v) {
+                btnProcess.setEnabled(true);
                 dialog.dismiss();
             }
         });

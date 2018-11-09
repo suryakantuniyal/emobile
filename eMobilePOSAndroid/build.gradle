@@ -2,24 +2,23 @@ apply plugin: 'com.android.application'
 apply from: '../artifacts.gradle'
 apply plugin: 'realm-android'
 apply plugin: 'io.fabric'
+
 android {
     useLibrary 'org.apache.http.legacy'
     compileSdkVersion 27
-    buildToolsVersion '27.0.3'
     dexOptions {
         preDexLibraries = false
         javaMaxHeapSize "4g"
     }
-    packagingOptions {
-        exclude "lib/arm64-v8a/librealm-jni.so"
-        exclude "lib/x86_64/librealm-jni.so"
-    }
+
     defaultConfig {
         applicationId "com.emobilepos.app"
         minSdkVersion 16
         targetSdkVersion 27
-        multiDexEnabled = true
+        versionName "1.2.5.2"
+        versionCode 167
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
+        multiDexEnabled = true
     }
 
 //    splits {
@@ -30,90 +29,54 @@ android {
 //        }
 //    }
 
+    flavorDimensions "ems"
+    productFlavors {
+        ems {
+            applicationId 'com.emobilepos.app'
+            dimension "ems"
+        }
+        icmpevo {
+            applicationId 'com.emobilepos.icmpevo.app'
+            dimension "ems"
+        }
+//        emsblue {
+//            applicationId 'com.emobilepos.app'
+//            dimension "ems"
+//        }
+        ivupos {
+            applicationId 'com.emobilepos.ivupos.app'
+            dimension "ems"
+        }
+    }
+
     packagingOptions {
         exclude 'META-INF/DEPENDENCIES.txt'
         exclude 'META-INF/NOTICE'
         exclude 'META-INF/NOTICE.txt'
         exclude 'META-INF/LICENSE'
         exclude 'META-INF/LICENSE.txt'
+        exclude "lib/arm64-v8a/librealm-jni.so"
+        exclude "lib/x86_64/librealm-jni.so"
+
+        // force 32-bits sqlcipher
+        exclude 'lib/arm64-v8a/libsqlcipher.so'
+        exclude 'lib/x86_64/libsqlcipher.so'
     }
-    flavorDimensions "ems"
-    productFlavors {
-        ems {
-            minSdkVersion 16
-            applicationId 'com.emobilepos.app'
-            versionName "1.2.4.7"
-            versionCode 167
-            targetSdkVersion 27
-            multiDexEnabled = true
-            dimension "ems"
-            repositories {
-                maven { url 'https://maven.fabric.io/public' }
-                flatDir {
-                    dirs 'libs'
-                }
-            }
-        }
-        icmpevo {
-            minSdkVersion 16
-            applicationId 'com.emobilepos.icmpevo.app'
-            versionName "1.2.4.7"
-            versionCode 167
-            targetSdkVersion 27
-            multiDexEnabled = true
-            dimension "ems"
-            repositories {
-                maven { url 'https://maven.fabric.io/public' }
-                flatDir {
-                    dirs 'libs'
-                }
-            }
-        }
-//        emsblue {
-//            minSdkVersion 15
-//            applicationId 'com.emobilepos.app'
-//            versionName "1.2.1.0"
-//            versionCode 118
-//            targetSdkVersion 23
-//            multiDexEnabled = true
-//            repositories {
-//                maven { url 'https://maven.fabric.io/public' }
-//                flatDir {
-//                    dirs 'libs'
-//                }
-//            }
-//        }
-        ivupos {
-            minSdkVersion 16
-            applicationId 'com.emobilepos.ivupos.app'
-            versionName "1.2.4.7"
-            versionCode 167
-            targetSdkVersion 27
-            multiDexEnabled = true
-            dimension "ems"
-            repositories {
-                maven { url 'https://maven.fabric.io/public' }
-                flatDir {
-                    dirs 'libs'
-                }
-            }
-        }
-    }
+
     buildTypes {
         debug {
             // Disable fabric build ID generation for debug builds
             ext.enableCrashlytics = false
             buildConfigField "String", "OS", "\"Android\""
-            buildConfigField "int", "POLLING_PERIOD", "1000"
+            buildConfigField "int", "POLLING_PERIOD", "5000"
             buildConfigField "int", "BCR_TIMEOUT", "15000"
-            buildConfigField "int", "AUTOSYNC_PERIOD", "1000"
+            buildConfigField "int", "AUTOSYNC_PERIOD", "10000"
             buildConfigField "boolean", "PRINT_TO_LOG", "false"
-            buildConfigField "boolean", "DEBUG_NOMAD", "true"
-            buildConfigField "boolean", "USE_DUMMY_START_PRINTER", "false"
             buildConfigField "boolean", "DELETE_INVALID_HOLDS", "true"
             minifyEnabled false
             multiDexEnabled true
         }
+
         release {
             // Disable fabric build ID generation for debug builds
             ext.enableCrashlytics = true
@@ -122,8 +85,6 @@ android {
             buildConfigField "int", "POLLING_PERIOD", "5000"
             buildConfigField "int", "BCR_TIMEOUT", "15000"
             buildConfigField "int", "AUTOSYNC_PERIOD", "60000"
-            buildConfigField "boolean", "DEBUG_NOMAD", "false"
-            buildConfigField "boolean", "USE_DUMMY_START_PRINTER", "false"
             buildConfigField "boolean", "DELETE_INVALID_HOLDS", "false"
             minifyEnabled false
             multiDexEnabled true
@@ -131,16 +92,26 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
     }
 }
+
+repositories {
+    maven { url 'https://maven.fabric.io/public' }
+    flatDir {
+        dirs 'libs'
+    }
+}
+
 configurations {
     configurations.all {
         resolutionStrategy.force 'com.google.code.findbugs:jsr305:3.0.2'
     }
 }
+
 dependencies {
     icmpevoApi(name: 'evoSnapSdk-icmp-release', ext: 'aar')
     icmpevoApi files('libs_icmpevo/Android_Platform_Adapter.jar')
@@ -176,8 +147,8 @@ dependencies {
     api files('libs/roverapi-android-2.4.0.jar')
     api files('libs/spring-android-core-1.0.1.RELEASE.jar')
 //    api files('libs/sqlcipher.jar')
-    api files('libs/StarIO_Extension.jar')
     api files('libs/StarIOPort3.1.jar')
+    api files('libs/starioextension.jar')
     api files('libs/jcc-bate-0.7.3.jar')
     api files('libs/ksoap2-android-assembly-2.5.2-jar-with-dependencies.jar')
     api files('libs/printersdkv22(standard_neutral).jar')
@@ -232,7 +203,7 @@ dependencies {
 
     implementation 'com.microsoft.azure:notification-hubs-android-sdk:0.4@aar'
     implementation 'com.microsoft.azure:azure-notifications-handler:1.0.1@aar'
-    implementation 'net.zetetic:android-database-sqlcipher:3.5.4@aar'
+    implementation 'net.zetetic:android-database-sqlcipher:3.5.9@aar'
     implementation 'com.microsoft.azure.android:azure-storage-android:0.8.0@aar'
 }
 

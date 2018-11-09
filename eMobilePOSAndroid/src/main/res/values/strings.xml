@@ -180,6 +180,7 @@
     <string name="sync_receive">Receive</string>
     <string name="sync_status">Status:</string>
     <string name="sync_connected_to">Connected to </string>
+    <string name="sync_ethernet_connected">Ethernet Cable Connected</string>
     <string name="sync_no_connectivity">No connectivity detected </string>
     <string name="sync_pending">Pending:</string>
     <string name="sync_payments">Payments</string>
@@ -946,6 +947,7 @@
     <string name="config_wholesale_printout">Wholesale Printout</string>
     <string name="config_prompt_customer_copy">Prompt print receipt copy for CC payments</string>
     <string name="config_print_receipt_transaction_payments">Print receipt of transaction payments</string>
+    <string name="config_print_taxes_brake_down">Print taxes brake down</string>
     <string name="config_handwritten_signature">Handwritten signature</string>
 
     <string name="config_allow_decimal_quantities">Allow Decimal Quantities</string>
@@ -1069,7 +1071,7 @@
     <string name="none_uppercase_lbl">NONE</string>
     <string name="enabler_prefix">EN</string>
     <string name="enabler_website" translatable="false">www.emobilepos.com/</string>
-    <string name="powered_by_enabler">Powered by Enabler</string>
+    <string name="powered_by_enabler">Powered by e-Nabler</string>
     <string name="ivuloto_control_label">"CONTROL: "</string>
     <string name="menu_back">Back</string>
     <string name="selectinvoices">Select Invoices</string>
@@ -1122,7 +1124,7 @@
     <string name="voiding_payments">Voiding Payments…</string>
     <string name="processing_refund">Processing Refund…</string>
     <string name="coundnot_proceess_payment">Could not process the payment.</string>
-    <string name="endofday_report">End of day report</string>
+    <string name="endofday_report">End Of Day Report</string>
     <string name="subtotal_receipt">Subtotal:</string>
     <string name="move_product_seat">Change product seat</string>
     <string name="join_seats">Join Seats</string>

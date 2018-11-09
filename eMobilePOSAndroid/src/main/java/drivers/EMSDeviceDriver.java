@@ -67,7 +67,6 @@ import com.elo.device.peripherals.Printer;
 import com.miurasystems.miuralibrary.api.executor.MiuraManager;
 import com.miurasystems.miuralibrary.api.listener.MiuraDefaultListener;
 import com.mpowa.android.sdk.powapos.PowaPOS;
-/*import com.partner.pt100.printer.PrinterApiContext;*/
 import com.printer.aidl.PService;
 import com.printer.command.EscCommand;
 import com.printer.command.PrinterCom;
@@ -111,7 +110,6 @@ import POSSDK.POSSDK;
 import datamaxoneil.connection.Connection_Bluetooth;
 import datamaxoneil.printer.DocumentLP;
 import drivers.elo.utils.PrinterAPI;
-import drivers.star.utils.Communication;
 import drivers.star.utils.MiniPrinterFunctions;
 import drivers.star.utils.PrinterFunctions;
 import drivers.star.utils.sdk31.starprntsdk.PrinterSetting;
@@ -123,7 +121,6 @@ import plaintext.EMSPlainTextHelper;
 import util.StringUtil;
 
 import static drivers.EMSGPrinterPT380.PRINTER_ID;
-
 
 public class EMSDeviceDriver {
     private static final boolean PRINT_TO_LOG = BuildConfig.PRINT_TO_LOG;
@@ -260,48 +257,48 @@ public class EMSDeviceDriver {
     }
 
     private void addTaxesLine(List<DataTaxes> taxes, Order order, int lineWidth, StringBuilder sb) {
-        if (myPref.isRetailTaxes()) {
-            HashMap<String, String[]> prodTaxes = new HashMap<>();
-            for (OrderProduct product : order.getOrderProducts()) {
-                if (product.getTaxes() != null) {
-                    for (Tax tax : product.getTaxes()) {
-                        if (prodTaxes.containsKey(tax.getTaxRate())) {
-                            BigDecimal taxAmount = new BigDecimal(prodTaxes.get(tax.getTaxRate())[1]);
-                            taxAmount = taxAmount.add(TaxesCalculator.taxRounder(tax.getTaxAmount()));
-                            String[] arr = new String[2];
-                            arr[0] = tax.getTaxName();
-                            arr[1] = String.valueOf(taxAmount);
-                            prodTaxes.put(tax.getTaxRate(), arr);
-                        } else {
-                            BigDecimal taxAmount = TaxesCalculator.taxRounder(tax.getTaxAmount());
-                            String[] arr = new String[2];
-                            arr[0] = tax.getTaxName();
-                            arr[1] = String.valueOf(taxAmount);
-                            prodTaxes.put(tax.getTaxRate(), arr);
+        if (myPref.getPreferences(MyPreferences.pref_print_taxes_brake_down)) {
+            if (myPref.isRetailTaxes()) {
+                HashMap<String, String[]> prodTaxes = new HashMap<>();
+                for (OrderProduct product : order.getOrderProducts()) {
+                    if (product.getTaxes() != null) {
+                        for (Tax tax : product.getTaxes()) {
+                            if (prodTaxes.containsKey(tax.getTaxRate())) {
+                                BigDecimal taxAmount = new BigDecimal(prodTaxes.get(tax.getTaxRate())[1]);
+                                taxAmount = taxAmount.add(TaxesCalculator.taxRounder(tax.getTaxAmount()));
+                                String[] arr = new String[2];
+                                arr[0] = tax.getTaxName();
+                                arr[1] = String.valueOf(taxAmount);
+                                prodTaxes.put(tax.getTaxRate(), arr);
+                            } else {
+                                BigDecimal taxAmount = TaxesCalculator.taxRounder(tax.getTaxAmount());
+                                String[] arr = new String[2];
+                                arr[0] = tax.getTaxName();
+                                arr[1] = String.valueOf(taxAmount);
+                                prodTaxes.put(tax.getTaxRate(), arr);
+                            }
                         }
                     }
                 }
-            }
-            Iterator it = prodTaxes.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry<String, String[]> pair = (Map.Entry<String, String[]>) it.next();
+                Iterator it = prodTaxes.entrySet().iterator();
+                while (it.hasNext()) {
+                    Map.Entry<String, String[]> pair = (Map.Entry<String, String[]>) it.next();
 
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText(pair.getValue()[0],
-                        Global.getCurrencyFormat(String.valueOf(pair.getValue()[1])), lineWidth, 2));
-                it.remove();
-            }
-
-
-        } else if (taxes != null) {
-            for (DataTaxes tax : taxes) {
-                BigDecimal taxAmount = new BigDecimal(0);
-                List<BigDecimal> rates = new ArrayList<>();
-                rates.add(new BigDecimal(tax.getTax_rate()));
-                for (OrderProduct product : order.getOrderProducts()) {
-                    taxAmount = taxAmount.add(TaxesCalculator.calculateTax(product.getProductPriceTaxableAmountCalculated(), rates));
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(pair.getValue()[0],
+                            Global.getCurrencyFormat(String.valueOf(pair.getValue()[1])), lineWidth, 2));
+                    it.remove();
                 }
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText(tax.getTax_name(),
-                        Global.getCurrencyFormat(String.valueOf(taxAmount)), lineWidth, 2));
+            } else if (taxes != null) {
+                for (DataTaxes tax : taxes) {
+                    BigDecimal taxAmount = new BigDecimal(0);
+                    List<BigDecimal> rates = new ArrayList<>();
+                    rates.add(new BigDecimal(tax.getTax_rate()));
+                    for (OrderProduct product : order.getOrderProducts()) {
+                        taxAmount = taxAmount.add(TaxesCalculator.calculateTax(product.getProductPriceTaxableAmountCalculated(), rates));
+                    }
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(tax.getTax_name(),
+                            Global.getCurrencyFormat(String.valueOf(taxAmount)), lineWidth, 2));
+                }
             }
         }
     }
@@ -311,10 +308,11 @@ public class EMSDeviceDriver {
             if (port != null) {
                 try {
                     StarIOPort.releasePort(port);
-                    port = null;
                 } catch (Exception e) {
                     e.printStackTrace();
                     Crashlytics.logException(e);
+                } finally {
+                    port = null;
                 }
             }
         } else if (this instanceof EMSOneil4te) {
@@ -1086,6 +1084,10 @@ public class EMSDeviceDriver {
                     print(sb.toString(), FORMAT);
                     sb.setLength(0);
 
+                    if (this instanceof EMSBluetoothStarPrinter && !isPOSPrinter && size > 20) {
+                        // wait to fix printing incomplete issues on SM-T300i models.
+                        Thread.sleep(100);
+                    }
                 }
             }
             print(sb.toString(), FORMAT);
@@ -1266,9 +1268,6 @@ public class EMSDeviceDriver {
             printTermsNConds();
             printEnablerWebSite(lineWidth);
             cutPaper();
-        } catch (StarIOPortException e) {
-            e.printStackTrace();
-            Crashlytics.logException(e);
         } catch (JAException e) {
             e.printStackTrace();
             Crashlytics.logException(e);
@@ -1382,7 +1381,7 @@ public class EMSDeviceDriver {
         }
     }
 
-    protected void printImage(int type) throws StarIOPortException, JAException {
+    protected void printImage(int type) throws JAException {
         if (PRINT_TO_LOG) {
             Log.d("Print", "*******Image Print***********");
             return;
@@ -1417,29 +1416,16 @@ public class EMSDeviceDriver {
         if (myBitmap != null) {
             if (this instanceof EMSBluetoothStarPrinter) {
                 byte[] data;
-                if (isPOSPrinter) {
-                    data = PrinterFunctions.createCommandsEnglishRasterModeCoupon(PAPER_WIDTH,
-                            ICommandBuilder.BitmapConverterRotation.Normal,
-                            myBitmap, emulation);
-                    Communication.sendCommands(data, port, this.activity); // 10000mS!!!
-                } else {
-                    Bitmap bmp = myBitmap.copy(Bitmap.Config.ARGB_8888, true);
-                    int w = bmp.getWidth();
-                    int h = bmp.getHeight();
-                    int pixel;
-                    try {
-                        for (int x = 0; x < w; x++) {
-                            for (int y = 0; y < h; y++) {
-                                pixel = bmp.getPixel(x, y);
-                                if (pixel == Color.TRANSPARENT)
-                                    bmp.setPixel(x, y, Color.WHITE);
-                            }
-                        }
-                        MiniPrinterFunctions.PrintBitmapImage(activity, port.getPortName(), port.getPortSettings(),
-                                bmp, PAPER_WIDTH, false, false);
-                    } catch (Exception e) {
-                        Crashlytics.logException(e);
-                    }
+                StarIoExt.Emulation emu = emulation;
+                if (!isPOSPrinter) {
+                    emu = StarIoExt.Emulation.EscPosMobile;
+                }
+                try {
+                    data = PrinterFunctions.createCommandsEnglishRasterModeCoupon(
+                            myBitmap, emu, PAPER_WIDTH);
+                    port.writePort(data, 0, data.length);
+                } catch (Exception e) {
+                    Crashlytics.logException(e);
                 }
             } else if (this instanceof EMSBlueBambooP25) {
                 EMSBambooImageLoader loader = new EMSBambooImageLoader();
@@ -1507,54 +1493,6 @@ public class EMSDeviceDriver {
                     Bitmap rotatedBmp = Bitmap.createBitmap(myBitmap, 0, 0, myBitmap.getWidth(), myBitmap.getHeight(), matrix, true);
                     eloPrinterApi.print_image(activity, rotatedBmp);
                 }
-            } else if (this instanceof EMSMiura) {
-//                try {
-//                    InputStream inputStream = activity.getAssets().open("image.bmp");
-//
-//                    int size = inputStream.available();
-//                    byte[] buffer = new byte[size];
-//                    inputStream.read(buffer);
-//                    inputStream.close();
-//                    MiuraManager.getInstance().uploadBinary(buffer, "image.bmp", new MiuraDefaultListener() {
-//                        @Override
-//                        public void onSuccess() {
-//                            MiuraManager.getInstance().hardReset(new MiuraDefaultListener() {
-//                                @Override
-//                                public void onSuccess() {
-//                                    MiuraManager.getInstance().spoolImage("image.bmp", new MiuraDefaultListener() {
-//                                        @Override
-//                                        public void onSuccess() {
-////                                            MiuraManager.getInstance().spoolPrint(new MiuraDefaultListener() {
-////                                                @Override
-////                                                public void onSuccess() {
-////                                                    Log.d("Print Image", "Success");
-////                                                }
-////
-////                                                @Override
-////                                                public void onError() {
-////                                                }
-////                                            });
-//                                        }
-//
-//                                        @Override
-//                                        public void onError() {
-//                                        }
-//                                    });
-//                                }
-//
-//                                @Override
-//                                public void onError() {
-//                                }
-//                            });
-//                        }
-//
-//                        @Override
-//                        public void onError() {
-//                        }
-//                    });
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
             } else if (this instanceof EMSGPrinterPT380) {
                 // print logo
                 esc = new EscCommand();
@@ -1594,7 +1532,7 @@ public class EMSDeviceDriver {
 
     }
 
-    protected void printImage(Bitmap bitmap) throws StarIOPortException, JAException {
+    protected void printImage(Bitmap bitmap) {
         if (PRINT_TO_LOG) {
             Log.d("Print", "*******Image Print***********");
             return;
@@ -1606,31 +1544,16 @@ public class EMSDeviceDriver {
                 StarIoExt.Emulation emulation = setting.getEmulation();
                 byte[] data;
 
-                if (isPOSPrinter) {
-                    data = drivers.star.utils.sdk31.starprntsdk.functions.PrinterFunctions
-                            .createRasterData(emulation, bitmap, PAPER_WIDTH, true);
-
-//                    data = PrinterFunctions.createCommandsEnglishRasterModeCoupon(PAPER_WIDTH, SCBBitmapConverter.Rotation.Normal,
-//                            bitmap);
-                    Communication.sendCommands(data, port, this.activity); // 10000mS!!!
-
-                } else {
-                    Bitmap bmp = bitmap.copy(Bitmap.Config.ARGB_8888, true);
-                    int w = bmp.getWidth();
-                    int h = bmp.getHeight();
-                    int pixel;
-                    for (int x = 0; x < w; x++) {
-                        for (int y = 0; y < h; y++) {
-                            pixel = bmp.getPixel(x, y);
-                            if (pixel == Color.TRANSPARENT)
-                                bmp.setPixel(x, y, Color.WHITE);
-                        }
-                    }
-
-                    MiniPrinterFunctions.PrintBitmapImage(activity, port.getPortName(), port.getPortSettings(),
-                            bmp, PAPER_WIDTH, false, false);
+                if (!isPOSPrinter) {
+                    emulation = StarIoExt.Emulation.EscPosMobile;
                 }
-
+                try {
+                    data = PrinterFunctions.createCommandsEnglishRasterModeCoupon(
+                            bitmap, emulation, PAPER_WIDTH);
+                    port.writePort(data, 0, data.length);
+                } catch (Exception e) {
+                    Crashlytics.logException(e);
+                }
             } else if (this instanceof EMSmePOS) {
                 mePOSReceipt.addLine(new MePOSReceiptImageLine(bitmap));
             } else if (this instanceof EMSBlueBambooP25) {
@@ -1726,6 +1649,7 @@ public class EMSDeviceDriver {
             sb.append(textHandler.centeredString(header[2], lineWidth));
 
         if (!TextUtils.isEmpty(sb.toString())) {
+            sb.insert(0, textHandler.newLines(1));
             sb.append(textHandler.newLines(1));
             print(sb.toString(), 0, PrinterFunctions.Alignment.Left);
         }
@@ -1886,8 +1810,6 @@ public class EMSDeviceDriver {
             sb.setLength(0);
             printEnablerWebSite(lineWidth);
             cutPaper();
-        } catch (StarIOPortException ignored) {
-
         } catch (JAException e) {
             e.printStackTrace();
         }
@@ -2078,8 +2000,6 @@ public class EMSDeviceDriver {
             printTermsNConds();
             printEnablerWebSite(lineWidth);
             cutPaper();
-        } catch (StarIOPortException ignored) {
-
         } catch (JAException e) {
             e.printStackTrace();
         }
@@ -2241,8 +2161,6 @@ public class EMSDeviceDriver {
             print(textHandler.newLines(1), FORMAT);
             printEnablerWebSite(lineWidth);
             cutPaper();
-        } catch (StarIOPortException e) {
-            Crashlytics.logException(e);
         } catch (JAException e) {
             Crashlytics.logException(e);
             e.printStackTrace();
@@ -2338,16 +2256,12 @@ public class EMSDeviceDriver {
                 printFooter(lineWidth);
             try {
                 printImage(1);
-            } catch (StarIOPortException e) {
-                e.printStackTrace();
             } catch (JAException e) {
                 e.printStackTrace();
             }
             printEnablerWebSite(lineWidth);
             print(textHandler.newLines(1), FORMAT);
             cutPaper();
-        } catch (StarIOPortException ignored) {
-
         } catch (JAException e) {
             e.printStackTrace();
         }
@@ -2451,7 +2365,6 @@ public class EMSDeviceDriver {
             print(textHandler.newLines(3), FORMAT);
             printEnablerWebSite(lineWidth);
             cutPaper();
-        } catch (StarIOPortException ignored) {
         } catch (JAException e) {
             e.printStackTrace();
         }
@@ -2513,7 +2426,6 @@ public class EMSDeviceDriver {
             }
             printEnablerWebSite(lineWidth);
             cutPaper();
-        } catch (StarIOPortException ignored) {
         } catch (JAException e) {
             e.printStackTrace();
         }
@@ -2549,6 +2461,7 @@ public class EMSDeviceDriver {
 
         sb_ord_types.append(textHandler.centeredString("Totals By Order Types", lineWidth));
         List<Order> listOrder = ordHandler.getOrderDayReport(null, mDate, false);
+        HashMap<String, List<DataTaxes>> taxesBreakdownHashMap = ordHandler.getOrderDayReportTaxesBreakdown(null, mDate);
         List<Order> listOrderHolds = ordHandler.getOrderDayReport(null, mDate, true);
         for (Order ord : listOrder) {
             switch (Global.OrderType.getByCode(Integer.parseInt(ord.ord_type))) {
@@ -2573,9 +2486,18 @@ public class EMSDeviceDriver {
             }
 
             sb_ord_types.append(textHandler.twoColumnLineWithLeftAlignedText("SubTotal", Global.getCurrencyFormat(ord.ord_subtotal), lineWidth, 3));
-            sb_ord_types.append(textHandler.twoColumnLineWithLeftAlignedText("Discount Total", Global.getCurrencyFormat(ord.ord_discount), lineWidth, 3));
-            sb_ord_types.append(textHandler.twoColumnLineWithLeftAlignedText("Tax Total", Global.getCurrencyFormat(ord.ord_taxamount), lineWidth, 3));
-            sb_ord_types.append(textHandler.twoColumnLineWithLeftAlignedText("Net Total", Global.getCurrencyFormat(ord.ord_total), lineWidth, 3));
+            sb_ord_types.append(textHandler.twoColumnLineWithLeftAlignedText("Discounts", Global.getCurrencyFormat(ord.ord_discount), lineWidth, 3));
+
+            if (taxesBreakdownHashMap.containsKey(ord.ord_type)) {
+                sb_ord_types.append(textHandler.oneColumnLineWithLeftAlignedText("Taxes", lineWidth, 3));
+                for (DataTaxes dataTax : taxesBreakdownHashMap.get(ord.ord_type)) {
+                    sb_ord_types.append(textHandler.twoColumnLineWithLeftAlignedText(dataTax.getTax_name(), Global.getCurrencyFormat(dataTax.getTax_amount()), lineWidth, 6));
+                }
+            } else {
+                sb_ord_types.append(textHandler.twoColumnLineWithLeftAlignedText("Taxes", "N/A", lineWidth, 3));
+            }
+
+            sb_ord_types.append(textHandler.twoColumnLineWithLeftAlignedText("Total", Global.getCurrencyFormat(ord.ord_total), lineWidth, 3));
         }
         if (listOrderHolds != null && !listOrderHolds.isEmpty()) {
             onHoldAmount = new BigDecimal(listOrderHolds.get(0).ord_total);

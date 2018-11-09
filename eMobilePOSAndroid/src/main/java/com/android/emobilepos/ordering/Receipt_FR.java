@@ -92,9 +92,9 @@ import com.android.support.SemiClosedSlidingDrawer;
 import com.android.support.SemiClosedSlidingDrawer.OnDrawerCloseListener;
 import com.android.support.SemiClosedSlidingDrawer.OnDrawerOpenListener;
 import com.android.support.SynchMethods;
+import com.android.support.TaxesCalculator;
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
-import com.starmicronics.stario.StarIOPortException;
 import com.viewpagerindicator.CirclePageIndicator;
 
 import java.math.BigDecimal;
@@ -973,6 +973,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     private void processOrder(Order order, String emailHolder, OrderingMain_FA.OrderingAction orderingAction,
                               boolean isFromOnHold, boolean voidOnHold) {
 
+        TaxesCalculator.calculateOrderTaxesAmount(order);
         OrdersHandler ordersHandler = new OrdersHandler(getActivity());
         OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB();
         getOrderingMainFa().global.order = order;
@@ -1001,19 +1002,9 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     productsAttrDb.insert(getOrderingMainFa().global.ordProdAttr);
                     if (myPref.isRestaurantMode()) {
                         new PrintAsync(orderingAction).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
-//                        synchronized (getOrderingMainFa().global.order) {
-//                            try {
-//                                getOrderingMainFa().global.order.wait(5000);
-//                            } catch (InterruptedException e) {
-//                                e.printStackTrace();
-//                            }
-//                        }
                     } else {
                         new SyncOnHolds().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                     }
-//                    DBManager dbManager = new DBManager(getActivity());
-//                    SynchMethods sm = new SynchMethods(dbManager);
-//                    sm.synchSendOnHold(false, false, getActivity(), null);
                 } else {
                     if (getOrderingMainFa().global.order.ord_HoldName == null || getOrderingMainFa().global.order.ord_HoldName.isEmpty()) {
                         showOnHoldPromptName(ordersHandler, orderProductsHandler);
@@ -1039,9 +1030,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                 getOrderingMainFa().global.order.ord_id);
                     if (myPref.isRestaurantMode())
                         new PrintAsync(orderingAction).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
-//                    DBManager dbManager = new DBManager(getActivity());
-//                    SynchMethods sm = new SynchMethods(dbManager);
-//                    sm.synchSendOnHold(false, true, getActivity(), global.order.ord_id);
                     new OnHoldAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, CHECK_OUT_HOLD, voidOnHold);
                 } else {
                     ordersHandler.updateFinishOnHold(Global.lastOrdID);
@@ -1087,7 +1075,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 }
                 if (myPref.isRestaurantMode())
                     new PrintAsync(orderingAction).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
-
             }
         }
 
@@ -2301,35 +2288,17 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                             printHeader = splitByCat;
                             currentPrinterName = currentDevice.getPortName();
                             if (splitByCat) {
-                                if (currentDevice instanceof EMSBluetoothStarPrinter) {
-                                    try {
-                                        currentDevice.verifyConnectivity();
-                                    } catch (StarIOPortException e) {
-                                        e.printStackTrace();
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
                                 currentDevice.print(receipt.toString(), 1, PrinterFunctions.Alignment.Left);
                                 receipt.setLength(0);
                                 currentDevice.cutPaper();
-                                currentDevice.releasePrinter();
                             }
                         }
                     }
                 }
                 if (currentDevice != null && !TextUtils.isEmpty(receipt)) {
-                    try {
-                        currentDevice.verifyConnectivity();
-                        currentDevice.print(receipt.toString(), 1, PrinterFunctions.Alignment.Left);
-                        receipt.setLength(0);
-                        currentDevice.cutPaper();
-                        currentDevice.releasePrinter();
-                    } catch (StarIOPortException e) {
-                        e.printStackTrace();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                    currentDevice.print(receipt.toString(), 1, PrinterFunctions.Alignment.Left);
+                    receipt.setLength(0);
+                    currentDevice.cutPaper();
                 }
             }
             return null;

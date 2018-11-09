@@ -33,6 +33,9 @@ import java.util.List;
 
 import util.json.JsonUtils;
 
+import static com.android.database.OrderTaxes_DB.tax_amount;
+import static com.android.database.OrderTaxes_DB.tax_name;
+
 public class OrdersHandler {
     public static final String table_name = "Orders";
     private final static String ord_id = "ord_id";
@@ -226,10 +229,7 @@ public class OrdersHandler {
             if (cursor != null && !cursor.isClosed()) {
                 cursor.close();
             }
-
         }
-
-
     }
 
     public void initDictionary() {
@@ -323,7 +323,6 @@ public class OrdersHandler {
                 dbUtils.executeAuditedDB();
                 sqlinsert.clearBindings();
                 sqlinsert.close();
-//                Log.d("Order Insert:", order.toString());
                 DinningTableOrderDAO.createDinningTableOrder(order);
                 if (GenerateNewID.isValidLastId(order.ord_id, GenerateNewID.IdType.ORDER_ID)) {
                     AssignEmployeeDAO.updateLastOrderId(order.ord_id);
@@ -336,8 +335,9 @@ public class OrdersHandler {
             if (sqlinsert != null) {
                 sqlinsert.close();
             }
-            DBManager.getDatabase().endTransaction();
-
+            if (DBManager.getDatabase() != null && DBManager.getDatabase().inTransaction()) {
+                DBManager.getDatabase().endTransaction();
+            }
         }
     }
 
@@ -389,8 +389,6 @@ public class OrdersHandler {
                 cursor.close();
             }
         }
-
-
     }
 
     public boolean existsOrder(String orderId) {
@@ -410,8 +408,6 @@ public class OrdersHandler {
                 cursor.close();
             }
         }
-
-
     }
 
     private List<Order> getOrders(Cursor cursor) {
@@ -445,8 +441,6 @@ public class OrdersHandler {
                 cursor.close();
             }
         }
-
-
     }
 
     public Cursor getTupyxOrders() {
@@ -575,7 +569,6 @@ public class OrdersHandler {
         } finally {
             if (cursor != null && !cursor.isClosed()) {
                 cursor.close();
-
             }
             if (stmt != null) {
                 stmt.close();
@@ -654,7 +647,6 @@ public class OrdersHandler {
         Cursor cursor = DBManager.getDatabase().rawQuery(subquery1 + getOrderTypesAsSQLArray(orderTypes) + subquery2 + subquery3, new String[]{custID});
         cursor.moveToFirst();
         return cursor;
-
     }
 
     public Cursor getSearchOrder(Global.OrderType[] orderTypes, String search, String customerID) // Transactions
@@ -662,7 +654,6 @@ public class OrdersHandler {
     // first
     // listview
     {
-
         String subqueries[] = new String[4];
         StringBuilder sb = new StringBuilder();
         String[] params;
@@ -686,7 +677,6 @@ public class OrdersHandler {
     }
 
     public void updateIsSync(List<String[]> list) {
-
         StringBuilder sb = new StringBuilder();
         sb.append(ord_id).append(" = ?");
 
@@ -801,7 +791,6 @@ public class OrdersHandler {
         } finally {
             c.close();
         }
-
     }
 
     public Order getPrintedOrder(String ordID) {
@@ -845,6 +834,9 @@ public class OrdersHandler {
                     } else {
                         anOrder.orderAttributes = new ArrayList<>();
                     }
+                    taxes_db = getOrderTaxes_DB();
+                    List<DataTaxes> orderTaxes = taxes_db.getOrderTaxes(anOrder.ord_id);
+                    anOrder.setListOrderTaxes(orderTaxes);
 
                 } while (cursor.moveToNext());
             }
@@ -919,6 +911,84 @@ public class OrdersHandler {
         }
     }
 
+    public HashMap<String, List<DataTaxes>> getOrderDayReportTaxesBreakdown(
+            String clerk_id, String date) {
+        Cursor c = null;
+        try {
+            HashMap<String, List<DataTaxes>> taxesBreakdownHashMap = new HashMap<>();
+            List<DataTaxes> dataTaxesList = new ArrayList<>();
+            DataTaxes dataTax;
+            StringBuilder query = new StringBuilder();
+
+            query.append(
+                    "SELECT " +
+                            "ord_type, " +
+                            "tax_id, " +
+                            "tax_name, " +
+                            "sum(tax_amount) AS 'tax_amount' , " +
+                            "date(ord_timecreated,'localtime') as 'date' " +
+                            "FROM Orders " +
+                            "INNER JOIN OrderTaxes ON Orders.ord_id = OrderTaxes.ord_id ");
+
+            String[] where_values = null;
+            if (clerk_id != null && !clerk_id.isEmpty()) {
+                query.append("WHERE " +
+                        "clerk_id = ? " +
+                        "AND isVoid = '0' ");
+                where_values = new String[]{clerk_id};
+
+                if (date != null && !date.isEmpty()) {
+                    query.append(" AND date = ? ");
+                    where_values = new String[]{clerk_id, date};
+                }
+            } else if (date != null && !date.isEmpty()) {
+                query.append(" WHERE " +
+                        "date = ? " +
+                        "AND isVoid = '0' ");
+                where_values = new String[]{date};
+            } else {
+                query.append(" WHERE " +
+                        "isVoid = '0' ");
+            }
+
+            query.append(
+                    "AND Orders.ord_id IN (SELECT job_id FROM Payments GROUP BY job_id) " +
+                    "GROUP BY ord_type, tax_name");
+
+            c = DBManager.getDatabase().rawQuery(query.toString(), where_values);
+            if (c.moveToFirst()) {
+                String orderTypeBreaker = "-1";
+                String orderType;
+                int i_ord_type = c.getColumnIndex(ord_type);
+                int i_tax_name = c.getColumnIndex(tax_name);
+                int i_tax_amount = c.getColumnIndex(tax_amount);
+                do {
+                    orderType = c.getString(i_ord_type);
+                    dataTax = new DataTaxes();
+                    dataTax.setTax_name(c.getString(i_tax_name));
+                    dataTax.setTax_amount(c.getString(i_tax_amount));
+
+                    if (!orderType.equalsIgnoreCase(orderTypeBreaker)) {
+                        taxesBreakdownHashMap.put(orderTypeBreaker, dataTaxesList);
+                        dataTaxesList = new ArrayList<>();
+                        orderTypeBreaker = orderType;
+                    }
+
+                    dataTaxesList.add(dataTax);
+
+                } while (c.moveToNext());
+                taxesBreakdownHashMap.put(orderTypeBreaker, dataTaxesList);
+            }
+
+            c.close();
+            return taxesBreakdownHashMap;
+        } finally {
+            if (c != null && !c.isClosed()) {
+                c.close();
+            }
+        }
+    }
+
     public List<Order> getARTransactionsDayReport(String clerk_id, String date) {
         Cursor c = null;
         try {
@@ -975,26 +1045,6 @@ public class OrdersHandler {
     public void insert(Order order) {
         insert(Arrays.asList(order));
     }
-
-//    public void insert(Order order) {
-//        OrderProductsHandler productsHandler = new OrderProductsHandler(activity);
-//        GenerateNewID newID = new GenerateNewID(activity);
-//        order.processed = "1";
-//        AssignEmployee assignEmployee;
-//        for (int i = 0; i < 500; i++) {
-//            assignEmployee = AssignEmployeeDAO.getAssignEmployee(false);
-//            insert(Arrays.asList(order));
-//            productsHandler.insert(order.getOrderProducts());
-//            order.ord_id = newID.getNextID(GenerateNewID.IdType.ORDER_ID);
-//            List<OrderProduct> products = order.getOrderProducts();
-//            for (OrderProduct product : products) {
-//                UUID uuid = UUID.randomUUID();
-//                String randomUUIDString = uuid.toString();
-//                product.setOrdprod_id(randomUUIDString);
-//                product.setOrd_id(order.ord_id);
-//            }
-//        }
-//    }
 
     public int deleteOnHoldsOrders(List<Order> ordersToDelete) {
         int delete = 0;

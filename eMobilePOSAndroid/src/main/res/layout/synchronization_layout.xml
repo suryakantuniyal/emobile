@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/bg_white_page"
@@ -27,6 +28,7 @@
                 android:layout_marginRight="5dp"
                 android:layout_weight="1"
                 android:background="@drawable/blue_btn_selector"
+                android:drawableStart="@drawable/ic_cloud_upload_black_48dp"
                 android:drawableLeft="@drawable/ic_cloud_upload_black_48dp"
                 android:padding="15dp"
                 android:text="@string/sync_send_btn"
@@ -41,19 +43,19 @@
                 android:layout_marginRight="5dp"
                 android:layout_weight="1"
                 android:background="@drawable/blue_btn_selector"
+                android:drawableStart="@drawable/ic_cloud_download_black_48dp"
                 android:drawableLeft="@drawable/ic_cloud_download_black_48dp"
                 android:padding="15dp"
                 android:text="@string/sync_receive_btn"
                 android:textSize="@dimen/large_button_text_size" />
         </LinearLayout>
 
-
         <LinearLayout
             android:layout_width="@dimen/sync_adapter_1"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
+            android:layout_marginBottom="10dp"
             android:background="@drawable/shadow_layer"
             android:clickable="false"
             android:gravity="center"
@@ -103,7 +105,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.5"
-                android:gravity="left"
+                android:gravity="start"
                 android:text="@string/sync_payments"
                 android:textAppearance="@style/blue_text_appearance_unbold"
                 android:textSize="@dimen/sync_pending_content_text_size" />
@@ -113,19 +115,20 @@
                 style="@style/text_shadow"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
                 android:layout_marginRight="8dp"
                 android:layout_weight="1"
-                android:gravity="right"
-                android:text="TextView"
+                android:gravity="end"
                 android:textAppearance="@style/red_text_appearance_bold"
-                android:textSize="@dimen/sync_pending_content_text_size" />
+                android:textSize="@dimen/sync_pending_content_text_size"
+                tools:text="0" />
 
             <TextView
                 style="@style/text_shadow"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.5"
-                android:gravity="left"
+                android:gravity="start"
                 android:text="@string/sync_templates"
                 android:textAppearance="@style/blue_text_appearance_unbold"
                 android:textSize="@dimen/sync_pending_content_text_size" />
@@ -136,10 +139,10 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="right"
-                android:text="TextView"
+                android:gravity="end"
                 android:textAppearance="@style/red_text_appearance_bold"
-                android:textSize="@dimen/sync_pending_content_text_size" />
+                android:textSize="@dimen/sync_pending_content_text_size"
+                tools:text="0" />
         </LinearLayout>
 
         <LinearLayout
@@ -154,7 +157,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.5"
-                android:gravity="left"
+                android:gravity="start"
                 android:text="@string/sync_sales"
                 android:textAppearance="@style/blue_text_appearance_unbold"
                 android:textSize="@dimen/sync_pending_content_text_size" />
@@ -164,19 +167,20 @@
                 style="@style/text_shadow"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
                 android:layout_marginRight="8dp"
                 android:layout_weight="1"
-                android:gravity="right"
-                android:text="TextView"
+                android:gravity="end"
                 android:textAppearance="@style/red_text_appearance_bold"
-                android:textSize="@dimen/sync_pending_content_text_size" />
+                android:textSize="@dimen/sync_pending_content_text_size"
+                tools:text="0" />
 
             <TextView
                 style="@style/text_shadow"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.5"
-                android:gravity="left"
+                android:gravity="start"
                 android:text="@string/sync_customers"
                 android:textAppearance="@style/blue_text_appearance_unbold"
                 android:textSize="@dimen/sync_pending_content_text_size" />
@@ -187,10 +191,10 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="right"
-                android:text="TextView"
+                android:gravity="end"
                 android:textAppearance="@style/red_text_appearance_bold"
-                android:textSize="@dimen/sync_pending_content_text_size" />
+                android:textSize="@dimen/sync_pending_content_text_size"
+                tools:text="0" />
         </LinearLayout>
 
         <LinearLayout
@@ -205,7 +209,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.5"
-                android:gravity="left"
+                android:gravity="start"
                 android:text="@string/sync_signatures"
                 android:textAppearance="@style/blue_text_appearance_unbold"
                 android:textSize="@dimen/sync_pending_content_text_size" />
@@ -215,19 +219,20 @@
                 style="@style/text_shadow"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
                 android:layout_marginRight="8dp"
                 android:layout_weight="1"
-                android:gravity="right"
-                android:text="TextView"
+                android:gravity="end"
                 android:textAppearance="@style/red_text_appearance_bold"
-                android:textSize="@dimen/sync_pending_content_text_size" />
+                android:textSize="@dimen/sync_pending_content_text_size"
+                tools:text="0" />
 
             <TextView
                 style="@style/text_shadow"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.5"
-                android:gravity="left"
+                android:gravity="start"
                 android:text="@string/sync_void"
                 android:textAppearance="@style/blue_text_appearance_unbold"
                 android:textSize="@dimen/sync_pending_content_text_size" />
@@ -238,10 +243,10 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="right"
-                android:text="TextView"
+                android:gravity="end"
                 android:textAppearance="@style/red_text_appearance_bold"
-                android:textSize="@dimen/sync_pending_content_text_size" />
+                android:textSize="@dimen/sync_pending_content_text_size"
+                tools:text="0" />
         </LinearLayout>
 
         <LinearLayout
@@ -256,7 +261,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.5"
-                android:gravity="left"
+                android:gravity="start"
                 android:text="@string/sync_consignment"
                 android:textAppearance="@style/blue_text_appearance_unbold"
                 android:textSize="@dimen/sync_pending_content_text_size" />
@@ -266,19 +271,20 @@
                 style="@style/text_shadow"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
                 android:layout_marginRight="8dp"
                 android:layout_weight="1"
-                android:gravity="right"
-                android:text="TextView"
+                android:gravity="end"
                 android:textAppearance="@style/red_text_appearance_bold"
-                android:textSize="@dimen/sync_pending_content_text_size" />
+                android:textSize="@dimen/sync_pending_content_text_size"
+                tools:text="0" />
 
             <TextView
                 style="@style/text_shadow"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.5"
-                android:gravity="left"
+                android:gravity="start"
                 android:text="@string/sync_transfer"
                 android:textAppearance="@style/blue_text_appearance_unbold"
                 android:textSize="@dimen/sync_pending_content_text_size" />
@@ -289,12 +295,11 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="right"
-                android:text="TextView"
+                android:gravity="end"
                 android:textAppearance="@style/red_text_appearance_bold"
-                android:textSize="@dimen/sync_pending_content_text_size" />
+                android:textSize="@dimen/sync_pending_content_text_size"
+                tools:text="0" />
         </LinearLayout>
-
 
         <LinearLayout
             android:layout_width="@dimen/sync_adapter_1"
@@ -336,10 +341,10 @@
                     android:layout_width="0dip"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
-                    android:gravity="right"
-                    android:text="Jul 16, 2012 9:22AM"
+                    android:gravity="end"
                     android:textAppearance="@style/dark_blue_text_appearance"
-                    android:textSize="@dimen/sync_date_text_size" />
+                    android:textSize="@dimen/sync_date_text_size"
+                    tools:text="Oct 18, 2018 2:02 PM" />
             </LinearLayout>
 
             <LinearLayout
@@ -362,10 +367,10 @@
                     android:layout_width="0dip"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
-                    android:gravity="right"
-                    android:text="Jul 16, 2012 9:22AM"
+                    android:gravity="end"
                     android:textAppearance="@style/dark_blue_text_appearance"
-                    android:textSize="@dimen/sync_date_text_size" />
+                    android:textSize="@dimen/sync_date_text_size"
+                    tools:text="Oct 18, 2018 2:02 PM" />
             </LinearLayout>
         </LinearLayout>
 
@@ -390,44 +395,40 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:orientation="horizontal">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/textView"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:text="@string/bixolonFailedTrans"
-                        android:textAppearance="@style/dark_blue_text_appearance_unbold"
-                        android:textSize="@dimen/sync_date_text_size"
-                        android:layout_weight="1" />
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/bixolonFailedTrans"
+                    android:textAppearance="@style/dark_blue_text_appearance_unbold"
+                    android:textSize="@dimen/sync_date_text_size" />
 
 
-                    <Button
-                        android:id="@+id/bixolonFailedReviewbutton"
-                        style="@android:style/Widget.DeviceDefault.Button.Small"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/blue_btn_selector"
-                        android:paddingLeft="8dp"
-                        android:paddingRight="14dp"
-                        android:text="@string/review" />
+                <Button
+                    android:id="@+id/bixolonFailedReviewbutton"
+                    style="@android:style/Widget.DeviceDefault.Button.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/blue_btn_selector"
+                    android:paddingStart="8dp"
+                    android:paddingLeft="8dp"
+                    android:paddingEnd="14dp"
+                    android:paddingRight="14dp"
+                    android:text="@string/review" />
 
-                    <TextView
-                        android:id="@+id/bixolonFailedTransactionsNumbertextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:gravity="right"
-                        android:text="12"
-                        android:textAppearance="@style/dark_blue_text_appearance"
-                        android:textSize="@dimen/sync_date_text_size" />
-                </LinearLayout>
-
+                <TextView
+                    android:id="@+id/bixolonFailedTransactionsNumbertextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:gravity="end"
+                    android:textAppearance="@style/dark_blue_text_appearance"
+                    android:textSize="@dimen/sync_date_text_size"
+                    tools:text="12" />
             </LinearLayout>
 
             <TextView
@@ -457,10 +458,10 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:gravity="right"
-                    android:text="AABBCC11223344556"
+                    android:gravity="end"
                     android:textAppearance="@style/dark_blue_text_appearance"
-                    android:textSize="@dimen/sync_date_text_size" />
+                    android:textSize="@dimen/sync_date_text_size"
+                    tools:text="AABBCC11223344556" />
             </LinearLayout>
 
             <LinearLayout
@@ -481,10 +482,10 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:gravity="right"
-                    android:text="AABBCC11223344556"
+                    android:gravity="end"
                     android:textAppearance="@style/dark_blue_text_appearance"
-                    android:textSize="@dimen/sync_date_text_size" />
+                    android:textSize="@dimen/sync_date_text_size"
+                    tools:text="AABBCC11223344556" />
             </LinearLayout>
 
             <LinearLayout
@@ -505,10 +506,10 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:gravity="right"
-                    android:text="AABBCC11223344556"
+                    android:gravity="end"
                     android:textAppearance="@style/dark_blue_text_appearance"
-                    android:textSize="@dimen/sync_date_text_size" />
+                    android:textSize="@dimen/sync_date_text_size"
+                    tools:text="AABBCC11223344556" />
             </LinearLayout>
 
             <LinearLayout
@@ -529,10 +530,10 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:gravity="right"
-                    android:text="AABBCC11223344556"
+                    android:gravity="end"
                     android:textAppearance="@style/dark_blue_text_appearance"
-                    android:textSize="@dimen/sync_date_text_size" />
+                    android:textSize="@dimen/sync_date_text_size"
+                    tools:text="AABBCC11223344556" />
             </LinearLayout>
 
             <LinearLayout
@@ -553,11 +554,12 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:gravity="right"
-                    android:text="AABBCC11223344556"
+                    android:gravity="end"
                     android:textAppearance="@style/dark_blue_text_appearance"
-                    android:textSize="@dimen/sync_date_text_size" />
+                    android:textSize="@dimen/sync_date_text_size"
+                    tools:text="AABBCC11223344556" />
             </LinearLayout>
+
         </LinearLayout>
 
     </LinearLayout>

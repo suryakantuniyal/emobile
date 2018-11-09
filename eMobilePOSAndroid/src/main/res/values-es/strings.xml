@@ -175,6 +175,7 @@
     <string name="sync_receive">"Recibir"</string>
     <string name="sync_status">"Estado:"</string>
     <string name="sync_connected_to">"Conectado a "</string>
+    <string name="sync_ethernet_connected">"Cable Ethernet conectado"</string>
     <string name="sync_no_connectivity">"No se detectó ninguna conectividad "</string>
     <string name="sync_pending">"Pendiente:"</string>
     <string name="sync_payments">"Pagos"</string>
@@ -936,6 +937,7 @@
     <string name="config_wholesale_printout">"Impresión al por mayor"</string>
     <string name="config_prompt_customer_copy">"Solicitar copia de recibo de impresión para los pagos de CC"</string>
     <string name="config_print_receipt_transaction_payments">"Imprimir recibo de pagos de transacciones"</string>
+    <string name="config_print_taxes_brake_down">"Imprimir desglose de impuestos"</string>
     <string name="config_handwritten_signature">"Firma manuscrita"</string>
 
     <string name="config_allow_decimal_quantities">"Permitir cantidades decimales"</string>
@@ -1058,7 +1060,7 @@
     <string name="amount_zero_lbl">"0,00"</string>
     <string name="none_uppercase_lbl">"NINGUNA"</string>
     <string name="enabler_prefix">"EN"</string>
-    <string name="powered_by_enabler">"Desarrollado por Enabler"</string>
+    <string name="powered_by_enabler">"Desarrollado por e-Nabler"</string>
     <string name="ivuloto_control_label">"CONTROL: "</string>
     <string name="menu_back">"Regresar"</string>
     <string name="selectinvoices">"Seleccionar facturas"</string>
