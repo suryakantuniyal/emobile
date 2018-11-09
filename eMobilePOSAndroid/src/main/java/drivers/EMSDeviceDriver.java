@@ -2461,6 +2461,7 @@ public class EMSDeviceDriver {
 
         sb_ord_types.append(textHandler.centeredString("Totals By Order Types", lineWidth));
         List<Order> listOrder = ordHandler.getOrderDayReport(null, mDate, false);
+        HashMap<String, List<DataTaxes>> taxesBreakdownHashMap = ordHandler.getOrderDayReportTaxesBreakdown(null, mDate);
         List<Order> listOrderHolds = ordHandler.getOrderDayReport(null, mDate, true);
         for (Order ord : listOrder) {
             switch (Global.OrderType.getByCode(Integer.parseInt(ord.ord_type))) {
@@ -2485,8 +2486,17 @@ public class EMSDeviceDriver {
             }
 
             sb_ord_types.append(textHandler.twoColumnLineWithLeftAlignedText("SubTotal", Global.getCurrencyFormat(ord.ord_subtotal), lineWidth, 3));
-            sb_ord_types.append(textHandler.twoColumnLineWithLeftAlignedText("Discount Total", Global.getCurrencyFormat(ord.ord_discount), lineWidth, 3));
-            sb_ord_types.append(textHandler.twoColumnLineWithLeftAlignedText("Tax Total", Global.getCurrencyFormat(ord.ord_taxamount), lineWidth, 3));
+            sb_ord_types.append(textHandler.twoColumnLineWithLeftAlignedText("Discounts", Global.getCurrencyFormat(ord.ord_discount), lineWidth, 3));
+
+            if (taxesBreakdownHashMap.containsKey(ord.ord_type)) {
+                sb_ord_types.append(textHandler.oneColumnLineWithLeftAlignedText("Taxes", lineWidth, 3));
+                for (DataTaxes dataTax : taxesBreakdownHashMap.get(ord.ord_type)) {
+                    sb_ord_types.append(textHandler.twoColumnLineWithLeftAlignedText(dataTax.getTax_name(), Global.getCurrencyFormat(dataTax.getTax_amount()), lineWidth, 6));
+                }
+            } else {
+                sb_ord_types.append(textHandler.twoColumnLineWithLeftAlignedText("Taxes", "N/A", lineWidth, 3));
+            }
+
             sb_ord_types.append(textHandler.twoColumnLineWithLeftAlignedText("Total", Global.getCurrencyFormat(ord.ord_total), lineWidth, 3));
         }
         if (listOrderHolds != null && !listOrderHolds.isEmpty()) {

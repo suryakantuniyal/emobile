@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="right"
-            android:text="Discount Total"
+            android:text="Discounts"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView
@@ -38,7 +38,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="right"
-            android:text="Tax Total"
+            android:text="Taxes"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView
