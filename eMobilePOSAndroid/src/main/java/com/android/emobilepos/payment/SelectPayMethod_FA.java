@@ -1111,7 +1111,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 paxPaymentMethod.setOriginalTransid("true");
                 paxPaymentMethod.setIsactive("1");
                 paxPaymentMethod.setPaymentmethod_type("PAX");
-                paxPaymentMethod.setPaymethod_id("PAX-001");
+                paxPaymentMethod.setPaymethod_id("SoundPayments");
                 paxPaymentMethod.setPaymethod_name("PAX");
                 paxPaymentMethod.setPaymethod_showOnline("0");
                 paxPaymentMethod.setPriority(0);
