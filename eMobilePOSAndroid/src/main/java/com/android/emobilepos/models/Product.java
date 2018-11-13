@@ -90,6 +90,7 @@ public class Product {
     private String prod_weight;
     private String prod_disc_type_points;
     private String categoryName;
+    private String priceLevelId;
 
     public String getId() {
         return id;
@@ -452,5 +453,13 @@ public class Product {
 
     public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;
+    }
+
+    public String getPriceLevelId() {
+        return priceLevelId;
+    }
+
+    public void setPriceLevelId(String priceLevelId) {
+        this.priceLevelId = priceLevelId;
     }
 }
