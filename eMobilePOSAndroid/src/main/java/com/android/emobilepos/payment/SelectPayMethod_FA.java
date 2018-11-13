@@ -1099,7 +1099,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
             payTypeList = PayMethodsDAO.getAllSortByName();
 
-            if (true) {
+            if (myPref.getPreferences(MyPreferences.pref_use_pax)) {
                 List<PaymentMethod> itemsToDelete = new ArrayList<>();
                 for (PaymentMethod method : payTypeList) {
                     if (!method.getPaymethod_name().equalsIgnoreCase("Cash")) {
@@ -1107,15 +1107,15 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                     }
                 }
                 payTypeList.removeAll(itemsToDelete);
-                PaymentMethod poyntPaymentMethod = new PaymentMethod();
-                poyntPaymentMethod.setOriginalTransid("true");
-                poyntPaymentMethod.setIsactive("1");
-                poyntPaymentMethod.setPaymentmethod_type("PAX");
-                poyntPaymentMethod.setPaymethod_id("PAX-001");
-                poyntPaymentMethod.setPaymethod_name("PAX");
-                poyntPaymentMethod.setPaymethod_showOnline("0");
-                poyntPaymentMethod.setPriority(0);
-                payTypeList.add(poyntPaymentMethod);
+                PaymentMethod paxPaymentMethod = new PaymentMethod();
+                paxPaymentMethod.setOriginalTransid("true");
+                paxPaymentMethod.setIsactive("1");
+                paxPaymentMethod.setPaymentmethod_type("PAX");
+                paxPaymentMethod.setPaymethod_id("PAX-001");
+                paxPaymentMethod.setPaymethod_name("PAX");
+                paxPaymentMethod.setPaymethod_showOnline("0");
+                paxPaymentMethod.setPriority(0);
+                payTypeList.add(paxPaymentMethod);
             }
         }
 

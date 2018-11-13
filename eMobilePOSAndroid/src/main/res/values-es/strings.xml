@@ -898,6 +898,7 @@
     <string name="config_mw_with_genius">"Cayan Genius"</string>
     <string name="config_genius_peripheral">"Configurar Genius Peripheral"</string>
     <string name="config_pay_with_boloro">"Pago con Boloro"</string>
+    <string name="config_use_pax">"Usar SecurePay (PAX)"</string>
 
     <string name="config_customer_display">"Terminal de visualización de clientes"</string>
 

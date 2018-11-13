@@ -908,6 +908,7 @@
     <string name="config_mw_with_genius">Cayan Genius</string>
     <string name="config_genius_peripheral">Configure Genius Peripheral</string>
     <string name="config_pay_with_boloro">Pay with Boloro</string>
+    <string name="config_use_pax">Use SecurePay (PAX)</string>
 
     <string name="config_customer_display">Customer Display Terminal</string>
 
