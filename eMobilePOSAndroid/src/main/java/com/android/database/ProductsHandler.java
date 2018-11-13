@@ -522,6 +522,8 @@ public class ProductsHandler {
                             if (temp == null || temp.isEmpty())
                                 temp = "0";
                         }
+                    } else {
+                        product.setPriceLevelId(priceLevelID);
                     }
                 }
                 product.setProdPrice(temp);
@@ -658,6 +660,8 @@ public class ProductsHandler {
                             temp = cursor.getString(cursor.getColumnIndex("master_price"));
                             product.setMasterPrice(temp);
                         }
+                    } else {
+                        product.setPriceLevelId(priceLevelID);
                     }
                 }
 //            data[2] = temp;

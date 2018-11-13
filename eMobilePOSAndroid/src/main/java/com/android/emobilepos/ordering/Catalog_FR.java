@@ -43,6 +43,7 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.database.CategoriesHandler;
 import com.android.database.ProductAddonsHandler;
 import com.android.database.ProductsHandler;
@@ -52,6 +53,7 @@ import com.android.emobilepos.models.EMSCategory;
 import com.android.emobilepos.models.ParentAddon;
 import com.android.emobilepos.models.Product;
 import com.android.emobilepos.models.orders.OrderProduct;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.support.Global;
 import com.android.support.MyEditText;
 import com.android.support.MyPreferences;
@@ -66,6 +68,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import util.StringUtil;
 import util.json.JsonUtils;
 import util.json.UIUtils;
 
@@ -587,6 +590,15 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
                 if (tempPrice == null || tempPrice.isEmpty())
                     tempPrice = c.getString(c.getColumnIndex("master_price"));
+            } else {
+                String priceLevelID;
+                if (myPref.isCustSelected())
+                    priceLevelID = myPref.getCustPriceLevel();
+                else {
+                    AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+                    priceLevelID = StringUtil.nullStringToEmpty(assignEmployee.getPricelevelId());
+                }
+                product.setPriceLevelId(priceLevelID);
             }
         } else if (global.order.getOrderProducts().contains(product.getId())) {
             BigDecimal origQty = Global.getBigDecimalNum(OrderProductUtils.getOrderProductQty(global.order.getOrderProducts(), product.getId()));
