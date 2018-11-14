@@ -140,42 +140,20 @@ public class DeviceUtils {
                 Global.embededMSR = edm.getManager();
                 if (Global.embededMSR.loadMultiDriver(activity, Global.PAT215, 0, false, "", "")) {
                     sb.append(Global.BuildModel.PAT215.name()).append(": ").append("Connected\n\r");
-//                    List<Device> list = new ArrayList<>();
-//                    Device device = DeviceTableDAO.getByName(Global.BuildModel.PAT215.name());
-//                    if (device == null) {
-//                        device = new Device();
-//                    }
-//                    device.setId(Global.BuildModel.PAT215.name());
-//                    device.setName(Global.BuildModel.PAT215.name());
-//                    device.setType(String.valueOf(Global.PAT215));
-//                    device.setRemoteDevice(false);
-//                    device.setEmsDeviceManager(Global.embededMSR);
-//                    list.add(device);
-//                    DeviceTableDAO.insert(list);
                 } else {
                     sb.append(Global.BuildModel.PAT215.name()).append(": ").append("Failed to connect\n\r");
                 }
             }
-        } else if (myPref.isESY13P1() && myPref.getPrinterType() == -1) {
-            myPref.setPrinterType(Global.ELOPAYPOINT);
+        } else if (myPref.isESY13P1()) {
+            if (myPref.getPrinterType() == -1) {
+                myPref.setPrinterType(Global.ELOPAYPOINT);
+            }
             if (DeviceManager.getPlatformInfo().eloPlatform == EloPlatform.PAYPOINT_2) {
-                if (Global.embededMSR == null || forceReload) {
+                if (Global.embededMSR == null) {
                     edm = new EMSDeviceManager();
                     Global.embededMSR = edm.getManager();
-                    if (Global.embededMSR.loadMultiDriver(activity, Global.ELOPAYPOINT, 0, false, "", "")) {
+                    if (Global.embededMSR.loadMultiDriver(activity, Global.MAGTEK_EMBEDDED, 0, false, "", "")) {
                         sb.append(Global.BuildModel.PayPoint_ESY13P1.name()).append(": ").append("Connected\n\r");
-//                        List<Device> list = new ArrayList<>();
-//                        Device device = DeviceTableDAO.getByName(Global.BuildModel.PayPoint_ESY13P1.name());
-//                        if (device == null) {
-//                            device = new Device();
-//                        }
-//                        device.setId(Global.BuildModel.PayPoint_ESY13P1.name());
-//                        device.setName(Global.BuildModel.PayPoint_ESY13P1.name());
-//                        device.setType(String.valueOf(Global.ELOPAYPOINT));
-//                        device.setRemoteDevice(false);
-//                        device.setEmsDeviceManager(Global.embededMSR);
-//                        list.add(device);
-//                        DeviceTableDAO.insert(list);
                     } else {
                         sb.append(Global.BuildModel.PayPoint_ESY13P1.name()).append(": ").append("Failed to connect\n\r");
                     }
@@ -186,19 +164,6 @@ public class DeviceUtils {
                 Global.embededMSR = Global.mainPrinterManager;
                 if (Global.mainPrinterManager.loadMultiDriver(activity, Global.ELOPAYPOINT, 0, true, "", "")) {
                     sb.append(Global.BuildModel.PayPoint_ESY13P1.name()).append(": ").append("Connected\n\r");
-//                    List<Device> list = new ArrayList<>();
-//                    Device device = DeviceTableDAO.getByName(Global.BuildModel.PayPoint_ESY13P1.name());
-//                    if (device == null) {
-//                        device = new Device();
-//                    }
-//                    device.setId(Global.BuildModel.PayPoint_ESY13P1.name());
-//                    device.setName(Global.BuildModel.PayPoint_ESY13P1.name());
-//                    device.setType(String.valueOf(Global.ELOPAYPOINT));
-//                    device.setRemoteDevice(false);
-//                    device.setEmsDeviceManager(Global.mainPrinterManager);
-//                    list.add(device);
-//                    DeviceTableDAO.insert(list);
-//                    Global.printerDevices.add(device);
                 } else {
                     sb.append(Global.BuildModel.PayPoint_ESY13P1.name()).append(": ").append("Failed to connect\n\r");
                 }
@@ -247,35 +212,6 @@ public class DeviceUtils {
                         forceReload = true;
                     }
                 }
-//                if (Global.mainPrinterManager == null || Global.mainPrinterManager.getCurrentDevice() == null
-//                        || forceReload) {
-//                    if (Global.mainPrinterManager == null) {
-//                        edm = new EMSDeviceManager();
-//                        Global.mainPrinterManager = edm.getManager();
-//                    }
-//                    if (Global.mainPrinterManager.loadMultiDriver(activity, myPref.getPrinterType(), txtAreaSize,
-//                            isPOS, _portName, _portNumber)) {
-//                        sb.append(_peripheralName).append(": ").append("Connected\n\r");
-////                        List<Device> list = new ArrayList<>();
-//                        Device device = DeviceTableDAO.getByName(_portName);
-//                        if (device != null) {
-//                            device.setEmsDeviceManager(Global.mainPrinterManager);
-//                            Global.printerDevices.add(device);
-//                        }
-////                        device.setId(_portName);
-////                        device.setName(_portName);
-////                        device.setTcpPort(_portNumber);
-////                        device.setType(String.valueOf(myPref.getPrinterType()));
-////                        device.setRemoteDevice(false);
-////                        device.setEmsDeviceManager(Global.mainPrinterManager);
-////                        list.add(device);
-////                        DeviceTableDAO.insert(list);
-//
-//                    } else {
-//                        sb.append(_peripheralName).append(": ").append("Failed to connect\n\r");
-//                    }
-//                    Global.multiPrinterManager.add(edm);
-//                }
             }
         } else if (!TextUtils.isEmpty(myPref.getStarIPAddress())) {
             if (Global.mainPrinterManager == null || forceReload) {
@@ -291,14 +227,6 @@ public class DeviceUtils {
                         device.setEmsDeviceManager(Global.mainPrinterManager);
                         Global.printerDevices.add(device);
                     }
-//                    device.setId("TCP:" + myPref.getStarIPAddress());
-//                    device.setName("TCP:" + myPref.getStarIPAddress());
-//                    device.setType(String.valueOf(Global.STAR));
-//                    device.setRemoteDevice(false);
-//                    device.setEmsDeviceManager(Global.mainPrinterManager);
-//                    list.add(device);
-//                    DeviceTableDAO.insert(list);
-
                 } else {
                     sb.append(myPref.getStarIPAddress()).append(": ").append("Failed to connect\n\r");
                 }
