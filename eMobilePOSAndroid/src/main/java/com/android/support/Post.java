@@ -3,7 +3,6 @@ package com.android.support;
 import android.content.Context;
 
 import com.android.emobilepos.R;
-import com.android.emobilepos.service.SyncConfigServerService;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -272,6 +271,11 @@ public class Post {
                 break;
             case Global.S_SUBMIT_WORKINGKEY_REQUEST:
                 postLink = context.getString(R.string.genius_token_url);//"https://epay.enablermobile.com/index.ashx";
+                entity = varyingVariable;
+                httpMethod = HttpClient.HTTPMethod.POST;
+                break;
+            case Global.S_SUBMIT_SOUNDPAYMENTS:
+                postLink = "https://epaysouthpre-staging.azurewebsites.net/index.ashx";
                 entity = varyingVariable;
                 httpMethod = HttpClient.HTTPMethod.POST;
                 break;
