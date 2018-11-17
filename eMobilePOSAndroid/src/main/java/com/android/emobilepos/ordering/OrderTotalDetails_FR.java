@@ -51,6 +51,7 @@ import java.util.Map;
 
 import io.realm.RealmResults;
 import io.realm.Sort;
+import util.StringUtil;
 
 public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.RecalculateCallback {
     public static String discountID = "", taxID = "";
@@ -107,7 +108,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                     mixMatchProductGroup.setOrderProducts(new ArrayList<OrderProduct>());
                     mixMatchProductGroup.getOrderProducts().add(product);
                     mixMatchProductGroup.setGroupId(product.getPricesXGroupid());
-                    mixMatchProductGroup.setPriceLevelId(product.getPricelevel_id());
+                    mixMatchProductGroup.setPriceLevelId(StringUtil.nullStringToEmpty(product.getPricelevel_id()));
                     mixMatchProductGroup.setQuantity(Double.valueOf(product.getOrdprod_qty()).intValue());
                     mixMatchProductGroupHashMap.put(product.getPricesXGroupid(), mixMatchProductGroup);
                 }
@@ -138,10 +139,6 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         }
         orderProducts.addAll(noMixMatchProducts);
     }
-
-//    public static void resetView() {
-//        myFrag = null;
-//    }
 
     private static List<OrderProduct> applyXYZMixMatchToGroup(MixMatchProductGroup group, RealmResults<MixMatch> mixMatches, boolean isGroupBySKU) {
 
@@ -194,7 +191,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         Collections.sort(mixMatchXYZProducts, new Comparator<MixMatchXYZProduct>() {
             @Override
             public int compare(MixMatchXYZProduct a, MixMatchXYZProduct b) {
-                return a.getPrice().compareTo(b.getPrice());
+                return b.getPrice().compareTo(a.getPrice());
             }
         });
         orderProducts.clear();
