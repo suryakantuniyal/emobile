@@ -1056,6 +1056,7 @@
     <string name="paymethod_tax1_amount_label">Tax1</string>
     <string name="paymethod_tax2_amount_label">Tax2</string>
     <string name="processing_payment_msg">Processing Payment…</string>
+    <string name="error_status_code">Code: %s\n%s</string>
     <string name="changeLbl">Change:</string>
     <string name="cash_invoice_lbl">Cash Invoice</string>
     <string name="card_invoice">Card Invoice</string>

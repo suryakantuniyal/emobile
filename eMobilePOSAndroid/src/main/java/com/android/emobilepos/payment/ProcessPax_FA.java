@@ -181,6 +181,8 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
         payment.setProcessed("9");
         payment.setPaymethod_id(PayMethodsHandler.getPayMethodID(spResponse.getCardType()));
 
+        Global.dismissDialog(ProcessPax_FA.this, myProgressDialog);
+
         if (spResponse.getEpayStatusCode().equalsIgnoreCase(APPROVED)) {
 
 
@@ -207,16 +209,14 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
             else {
                 finish();
             }
-
         } else {
             payHandler.insertDeclined(payment);
             setResult(0, result);
+            String errorMsg = String.format(getString(R.string.error_status_code),
+                    spResponse.getStatusCode(), spResponse.getStatusMessage());
+            showErrorDlog(errorMsg);
         }
-
-
-        Global.dismissDialog(ProcessPax_FA.this, myProgressDialog);
     }
-
 
     private void sendRequest(final String request) {
         myProgressDialog = new ProgressDialog(this);
@@ -229,8 +229,15 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
             @Override
             public void run() {
                 Post post = new Post(ProcessPax_FA.this);
-                String response = post.postData(Global.S_SUBMIT_SOUNDPAYMENTS, request);
-                processResponse(response);
+                final String response = post.postData(Global.S_SUBMIT_SOUNDPAYMENTS, request);
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        processResponse(response);
+                    }
+                });
+
             }
         }).start();
     }
@@ -265,6 +272,29 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
         });
         btnNo.setOnClickListener(new View.OnClickListener() {
 
+            @Override
+            public void onClick(View v) {
+                dlog.dismiss();
+                finish();
+            }
+        });
+        dlog.show();
+    }
+
+    private void showErrorDlog(String msg) {
+        final Dialog dlog = new Dialog(this, R.style.Theme_TransparentTest);
+        dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dlog.setCancelable(false);
+        dlog.setContentView(R.layout.dlog_btn_single_layout);
+
+        TextView viewTitle = dlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = dlog.findViewById(R.id.dlogMessage);
+        viewTitle.setText(R.string.dlog_title_error);
+        viewMsg.setText(msg);
+
+        Button btnOk = dlog.findViewById(R.id.btnDlogSingle);
+        btnOk.setText(R.string.button_ok);
+        btnOk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dlog.dismiss();

@@ -1046,6 +1046,7 @@
     <string name="paymethod_tax1_amount_label">"Tax1"</string>
     <string name="paymethod_tax2_amount_label">"Tax2"</string>
     <string name="processing_payment_msg">"Procesando el pago…"</string>
+    <string name="error_status_code">"Código: %s\n%s"</string>
     <string name="changeLbl">"Cambio:"</string>
     <string name="cash_invoice_lbl">"Factura en efectivo"</string>
     <string name="card_invoice">"Factura de tarjeta"</string>
