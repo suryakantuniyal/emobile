@@ -3,6 +3,7 @@ package com.android.emobilepos.payment;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.Selection;
@@ -15,20 +16,31 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.dao.ShiftDAO;
+import com.android.database.DrawInfoHandler;
 import com.android.database.PayMethodsHandler;
 import com.android.database.PaymentsHandler;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.EMVContainer;
+import com.android.emobilepos.models.genius.AdditionalParameters;
+import com.android.emobilepos.models.genius.ApplicationInformation;
+import com.android.emobilepos.models.genius.EMV;
+import com.android.emobilepos.models.genius.GeniusResponse;
 import com.android.emobilepos.models.pax.SoundPaymentsResponse;
+import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.models.realms.Payment;
+import com.android.ivu.MersenneTwisterFast;
 import com.android.payments.EMSPayGate_Default;
+import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NumberUtils;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.google.gson.Gson;
 
 import java.math.BigDecimal;
 
+import main.EMSDeviceManager;
 import util.XmlUtils;
 
 import static com.android.payments.EMSPayGate_Default.EAction.SoundPaymentsCharge;
@@ -114,6 +126,13 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
 
         payment = new Payment(this);
 
+        if (Global.isIvuLoto) {
+            DrawInfoHandler drawDateInfo = new DrawInfoHandler(this);
+            MersenneTwisterFast mersenneTwister = new MersenneTwisterFast();
+            payment.setIvuLottoDrawDate(drawDateInfo.getDrawDate());
+            payment.setIvuLottoNumber(mersenneTwister.generateIVULoto());
+        }
+
         if (!this.extras.getBoolean("histinvoices"))
             payment.setJob_id(invoiceJobIdTextView.getText().toString());
         else
@@ -164,14 +183,12 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
         Intent result = new Intent();
         PaymentsHandler payHandler = new PaymentsHandler(ProcessPax_FA.this);
 
-        payment.setPay_transid(spResponse.getCreditCardTransID());
+        BigDecimal payAmount = new BigDecimal(spResponse.getAuthorizedAmount());
+        Global.amountPaid = String.valueOf(Global.getRoundBigDecimal(payAmount));
+        payment.setPay_amount(Global.amountPaid);
         payment.setTipAmount("0.00");
         payment.setPay_tip("0.00");
-
-        BigDecimal payAmount = new BigDecimal(spResponse.getAuthorizedAmount());
-        payment.setPay_amount(String.valueOf(Global.getRoundBigDecimal(payAmount)));
-        Global.amountPaid = payment.getPay_amount();
-
+        payment.setPay_transid(spResponse.getCreditCardTransID());
         payment.setAuthcode(spResponse.getAuthorizationCode());
         payment.setCcnum_last4(spResponse.getCCLast4());
         payment.setPay_resultcode(spResponse.getPay_resultcode());
@@ -181,27 +198,41 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
         payment.setProcessed("9");
         payment.setPaymethod_id(PayMethodsHandler.getPayMethodID(spResponse.getCardType()));
 
+        // Set EMV
+        ApplicationInformation applicationInformation = new ApplicationInformation();
+        applicationInformation.setAid(spResponse.getAID());
+        applicationInformation.setApplicationLabel(spResponse.getAPPLAB());
+
+        EMV emv = new EMV();
+        emv.setApplicationInformation(applicationInformation);
+        emv.setPINStatement(spResponse.getCVMMSG());
+        emv.setEntryModeMessage(spResponse.getEntryModeMsg());
+        emv.setTVR(spResponse.getTVR());
+        emv.setIAD(spResponse.getIAD());
+        emv.setTSI(spResponse.getATC());
+        emv.setAC(spResponse.getAC());
+
+        AdditionalParameters additionalParameters = new AdditionalParameters();
+        additionalParameters.setEMV(emv);
+
+        GeniusResponse geniusResponse = new GeniusResponse();
+        geniusResponse.setStatus("");
+        geniusResponse.setPaymentType("");
+        geniusResponse.setAdditionalParameters(additionalParameters);
+
+        payment.setEmvContainer(new EMVContainer(geniusResponse));
+
         Global.dismissDialog(ProcessPax_FA.this, myProgressDialog);
 
         if (spResponse.getEpayStatusCode().equalsIgnoreCase(APPROVED)) {
-
-
-//            payment.setEmvContainer(new EMVContainer(response));
-
-
             payHandler.insert(payment);
-
-
-//            EMVContainer emvContainer = new EMVContainer(response);
-
 
             String paid_amount = NumberUtils.cleanCurrencyFormatedNumber(
                     amountTextView.getText().toString());
 
             result.putExtra("total_amount", paid_amount);
-
-//            result.putExtra("emvcontainer", new Gson().toJson(emvContainer, EMVContainer.class));
-
+            result.putExtra("emvcontainer",
+                    new Gson().toJson(payment.getEmvContainer(), EMVContainer.class));
             setResult(-2, result);
 
             if (myPref.getPreferences(MyPreferences.pref_prompt_customer_copy))
@@ -267,7 +298,7 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
             @Override
             public void onClick(View v) {
                 dlog.dismiss();
-//                printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
         });
         btnNo.setOnClickListener(new View.OnClickListener() {
@@ -339,11 +370,35 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
         global.startActivityTransitionTimer();
     }
 
-//    @Override
-//    protected void onDestroy() {
-//        super.onDestroy();
-//        if (dialog != null) {
-//            dialog.create().dismiss();
-//        }
-//    }
+    private class printAsync extends AsyncTask<Void, Void, Void> {
+        private boolean printSuccessful = true;
+
+        @Override
+        protected void onPreExecute() {
+            myProgressDialog = new ProgressDialog(ProcessPax_FA.this);
+            myProgressDialog.setMessage(getString(R.string.printing_message));
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setCancelable(false);
+            myProgressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            EMSDeviceManager emsDeviceManager = DeviceUtils.getEmsDeviceManager(Device.Printables.PAYMENT_RECEIPT, Global.printerDevices);
+            if (emsDeviceManager != null && emsDeviceManager.getCurrentDevice() != null) {
+                printSuccessful = emsDeviceManager.getCurrentDevice().printPaymentDetails(payment.getPay_id(), 1, false, payment.getEmvContainer());
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void unused) {
+            myProgressDialog.dismiss();
+            if (printSuccessful)
+                finish();
+            else {
+                showPrintDlg();
+            }
+        }
+    }
 }

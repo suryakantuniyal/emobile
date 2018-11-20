@@ -1083,6 +1083,11 @@
     <string name="config_toggle_elo_bcr">"Elo lector de código de barras on / off"</string>
     <string name="config_use_navigationbar">"Habilitar barra de navegación"</string>
     <string name="genius_application_label">"Etiqueta de la aplicación:"</string>
+    <string name="pax_entry_method">"Método de entrada:"</string>
+    <string name="pax_tvr">"TVR:"</string>
+    <string name="pax_iad">"IAD:"</string>
+    <string name="pax_tsi_atc">"TSI:"</string>
+    <string name="pax_ac">"AC:"</string>
     <string name="receipt_amount">"Cantidad:"</string>
     <string name="modify">"Modificar"</string>
     <string name="config_restaurant_settings">"Configuración de restaurante"</string>

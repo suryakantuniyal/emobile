@@ -1098,6 +1098,11 @@
     <string name="config_toggle_elo_bcr">Elo barcode reader on/off</string>
     <string name="config_use_navigationbar">Enable Navigation Bar</string>
     <string name="genius_application_label">Application Label:</string>
+    <string name="pax_entry_method">Entry Method:</string>
+    <string name="pax_tvr">TVR:</string>
+    <string name="pax_iad">IAD:</string>
+    <string name="pax_tsi_atc">TSI:</string>
+    <string name="pax_ac">AC:</string>
     <string name="receipt_amount">Amount:</string>
     <string name="modify">Modify</string>
     <string name="config_restaurant_settings">Restaurant Settings</string>
