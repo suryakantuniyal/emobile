@@ -198,7 +198,7 @@ public class Post {
                 httpMethod = HttpClient.HTTPMethod.POST;
                 break;
             case 13:
-                postLink = context.getString(R.string.genius_token_url);//"https://epay.enablermobile.com/index.ashx";
+                postLink = context.getString(R.string.genius_token_url);
                 entity = varyingVariable;
                 httpMethod = HttpClient.HTTPMethod.POST;
                 break;
@@ -260,7 +260,7 @@ public class Post {
                 httpMethod = HttpClient.HTTPMethod.GET;
                 break;
             case Global.S_SUBMIT_TIP_ADJUSTMENT:
-                postLink = context.getString(R.string.genius_token_url);//"https://epay.enablermobile.com/index.ashx";
+                postLink = context.getString(R.string.epay_enablermobile);
                 entity = varyingVariable;
                 httpMethod = HttpClient.HTTPMethod.POST;
                 break;
@@ -270,12 +270,12 @@ public class Post {
                 isShortResponse = true;
                 break;
             case Global.S_SUBMIT_WORKINGKEY_REQUEST:
-                postLink = context.getString(R.string.genius_token_url);//"https://epay.enablermobile.com/index.ashx";
+                postLink = context.getString(R.string.epay_enablermobile);
                 entity = varyingVariable;
                 httpMethod = HttpClient.HTTPMethod.POST;
                 break;
             case Global.S_SUBMIT_SOUNDPAYMENTS:
-                postLink = "https://epaysouthpre-staging.azurewebsites.net/index.ashx";
+                postLink = context.getString(R.string.epay_enablermobile);
                 entity = varyingVariable;
                 httpMethod = HttpClient.HTTPMethod.POST;
                 break;
