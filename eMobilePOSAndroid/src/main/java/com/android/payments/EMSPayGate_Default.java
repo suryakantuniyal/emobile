@@ -75,7 +75,8 @@ public class EMSPayGate_Default {
         ReverseCheckAction(9992), ReverseCreditCardAction(9993), ReverseDebitCardAction(9994),
         ProcessBoloroCheckout(10000), CancelBoloroTransaction(10001), GetTelcoInfoByTag(10002),
         GetMarketTelcos(10003), BoloroPolling(10004), HandpointWorkingKey(7001),
-        CardOnFileCharge(1023), CardOnFileRefund(3023);
+        CardOnFileCharge(1023), CardOnFileRefund(3023), SoundPaymentsCharge(77771),
+        SoundPaymentsRefund(77772), SoundPaymentsVoid(2010);
 
         private int code;
 
@@ -413,6 +414,18 @@ public class EMSPayGate_Default {
                     generateContactInfoBlock(payment.getCust_id());
                     generateBoloroBlock();
                     generateOrderBlock(payment.getJob_id());
+
+                    break;
+                case SoundPaymentsCharge:
+                case SoundPaymentsRefund:
+                    generateERP();
+                    generateAmountBlock();
+
+                    break;
+                case SoundPaymentsVoid:
+                    generateERP();
+                    generateAmountBlock();
+                    generateVoidBlock();
 
                     break;
                 default:

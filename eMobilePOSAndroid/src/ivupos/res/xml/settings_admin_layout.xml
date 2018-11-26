@@ -224,6 +224,10 @@
             android:key="pref_mw_with_genius"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_mw_with_genius" />
+        <CheckBoxPreference
+            android:key="pref_use_pax"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_use_pax" />
         <Preference
             android:key="pref_config_genius_peripheral"
             android:layout="@layout/settings_custom_layout"

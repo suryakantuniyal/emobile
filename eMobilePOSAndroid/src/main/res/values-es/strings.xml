@@ -898,6 +898,7 @@
     <string name="config_mw_with_genius">"Cayan Genius"</string>
     <string name="config_genius_peripheral">"Configurar Genius Peripheral"</string>
     <string name="config_pay_with_boloro">"Pago con Boloro"</string>
+    <string name="config_use_pax">"Usar SecurePay (PAX)"</string>
 
     <string name="config_customer_display">"Terminal de visualización de clientes"</string>
 
@@ -1045,6 +1046,7 @@
     <string name="paymethod_tax1_amount_label">"Tax1"</string>
     <string name="paymethod_tax2_amount_label">"Tax2"</string>
     <string name="processing_payment_msg">"Procesando el pago…"</string>
+    <string name="error_status_code">"Código: %s\n%s"</string>
     <string name="changeLbl">"Cambio:"</string>
     <string name="cash_invoice_lbl">"Factura en efectivo"</string>
     <string name="card_invoice">"Factura de tarjeta"</string>
@@ -1081,6 +1083,11 @@
     <string name="config_toggle_elo_bcr">"Elo lector de código de barras on / off"</string>
     <string name="config_use_navigationbar">"Habilitar barra de navegación"</string>
     <string name="genius_application_label">"Etiqueta de la aplicación:"</string>
+    <string name="pax_entry_method">"Método de entrada:"</string>
+    <string name="pax_tvr">"TVR:"</string>
+    <string name="pax_iad">"IAD:"</string>
+    <string name="pax_tsi_atc">"TSI:"</string>
+    <string name="pax_ac">"AC:"</string>
     <string name="receipt_amount">"Cantidad:"</string>
     <string name="modify">"Modificar"</string>
     <string name="config_restaurant_settings">"Configuración de restaurante"</string>
@@ -1335,6 +1342,7 @@
     <string name="elobcr_menu">BCR</string>
     <string name="config_pay_with_card_on_file">Pagar con "Card on File"</string>
     <string name="card_on_file">Card on File</string>
+    <string name="e_secure_pay">e-SecurePay</string>
     <string name="genius">Genius</string>
     <string name="invoice_job_id">Invoice/Job ID</string>
     <string name="fingerprints">Huellas dactilares</string>

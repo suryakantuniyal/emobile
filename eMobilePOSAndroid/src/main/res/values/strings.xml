@@ -908,6 +908,7 @@
     <string name="config_mw_with_genius">Cayan Genius</string>
     <string name="config_genius_peripheral">Configure Genius Peripheral</string>
     <string name="config_pay_with_boloro">Pay with Boloro</string>
+    <string name="config_use_pax">Use SecurePay (PAX)</string>
 
     <string name="config_customer_display">Customer Display Terminal</string>
 
@@ -1055,6 +1056,7 @@
     <string name="paymethod_tax1_amount_label">Tax1</string>
     <string name="paymethod_tax2_amount_label">Tax2</string>
     <string name="processing_payment_msg">Processing Payment…</string>
+    <string name="error_status_code">Code: %s\n%s</string>
     <string name="changeLbl">Change:</string>
     <string name="cash_invoice_lbl">Cash Invoice</string>
     <string name="card_invoice">Card Invoice</string>
@@ -1096,6 +1098,11 @@
     <string name="config_toggle_elo_bcr">Elo barcode reader on/off</string>
     <string name="config_use_navigationbar">Enable Navigation Bar</string>
     <string name="genius_application_label">Application Label:</string>
+    <string name="pax_entry_method">Entry Method:</string>
+    <string name="pax_tvr">TVR:</string>
+    <string name="pax_iad">IAD:</string>
+    <string name="pax_tsi_atc">TSI:</string>
+    <string name="pax_ac">AC:</string>
     <string name="receipt_amount">Amount:</string>
     <string name="modify">Modify</string>
     <string name="config_restaurant_settings">Restaurant Settings</string>
@@ -1376,6 +1383,7 @@
     <string name="elobcr_menu">BCR</string>
     <string name="admin_process_live_cash">"Process cash on line"</string>
     <string name="card_on_file">Card on File</string>
+    <string name="e_secure_pay">e-SecurePay</string>
     <string name="genius">Genius</string>
     <string name="invoice_job_id">Invoice/Job ID</string>
     <string name="fingerprint_enrollment">Place any finger to start enrollment.</string>

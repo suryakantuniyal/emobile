@@ -82,6 +82,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -1017,6 +1018,12 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());
             intent.putExtras(extras);
             initIntents(extras, intent);
+        } else if (payTypeList.get(position).getPaymentmethod_type().equals("PAX")) {
+            Intent intent = new Intent(this, ProcessPax_FA.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());
+            intent.putExtras(extras);
+            initIntents(extras, intent);
         } else if (payTypeList.get(position).getPaymentmethod_type().equals("Genius")) {
             Intent intent = new Intent(this, ProcessGenius_FA.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
@@ -1091,6 +1098,25 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             myInflater = LayoutInflater.from(context);
 
             payTypeList = PayMethodsDAO.getAllSortByName();
+
+            if (myPref.getPreferences(MyPreferences.pref_use_pax)) {
+                List<PaymentMethod> itemsToDelete = new ArrayList<>();
+                for (PaymentMethod method : payTypeList) {
+                    if (!method.getPaymethod_name().equalsIgnoreCase("Cash")) {
+                        itemsToDelete.add(method);
+                    }
+                }
+                payTypeList.removeAll(itemsToDelete);
+                PaymentMethod paxPaymentMethod = new PaymentMethod();
+                paxPaymentMethod.setOriginalTransid("true");
+                paxPaymentMethod.setIsactive("1");
+                paxPaymentMethod.setPaymentmethod_type("PAX");
+                paxPaymentMethod.setPaymethod_id("SoundPayments");
+                paxPaymentMethod.setPaymethod_name("PAX");
+                paxPaymentMethod.setPaymethod_showOnline("0");
+                paxPaymentMethod.setPriority(0);
+                payTypeList.add(paxPaymentMethod);
+            }
         }
 
         @Override

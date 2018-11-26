@@ -733,13 +733,34 @@ public class EMSDeviceDriver {
             StringBuilder sb = new StringBuilder();
             if (emvContainer.getGeniusResponse().getAdditionalParameters() != null &&
                     emvContainer.getGeniusResponse().getAdditionalParameters().getEMV() != null) {
-                String applicationLabel = emvContainer.getGeniusResponse().getAdditionalParameters().getEMV().getApplicationInformation().getApplicationLabel();
+
+                // Entry Method
+                String entryMethod = emvContainer.getGeniusResponse()
+                        .getAdditionalParameters().getEMV().getEntryModeMessage();
+                if (!TextUtils.isEmpty(entryMethod)) {
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                            getString(R.string.pax_entry_method),
+                            entryMethod, lineWidth, 0));
+                }
+
+                // Application Label
+                String applicationLabel = emvContainer.getGeniusResponse().getAdditionalParameters()
+                        .getEMV().getApplicationInformation().getApplicationLabel();
                 if (!TextUtils.isEmpty(applicationLabel)) {
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.genius_application_label),
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                            getString(R.string.genius_application_label),
                             applicationLabel, lineWidth, 0));
                 }
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.genius_aid),
-                        emvContainer.getGeniusResponse().getAdditionalParameters().getEMV().getApplicationInformation().getAid(), lineWidth, 0));
+
+                // AID
+                String aid = emvContainer.getGeniusResponse().getAdditionalParameters()
+                        .getEMV().getApplicationInformation().getAid();
+                if (!TextUtils.isEmpty(aid)) {
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                            getString(R.string.genius_aid),
+                            aid, lineWidth, 0));
+                }
+
                 if (emvContainer.getGeniusResponse().getPaymentType().equalsIgnoreCase(ProcessGenius_FA.Limiters.DISCOVER.name()) ||
                         emvContainer.getGeniusResponse().getPaymentType().equalsIgnoreCase(ProcessGenius_FA.Limiters.AMEX.name()) ||
                         emvContainer.getGeniusResponse().getPaymentType().equalsIgnoreCase("EMVCo")) {
@@ -752,10 +773,52 @@ public class EMSDeviceDriver {
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.cryptogram),
                             emvContainer.getGeniusResponse().getAdditionalParameters().getEMV().getApplicationCryptogram().getCryptogram(), lineWidth, 0));
                 }
-                if (!TextUtils.isEmpty(emvContainer.getGeniusResponse().getAdditionalParameters().getEMV().getPINStatement())) {
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.pin_statement),
-                            emvContainer.getGeniusResponse().getAdditionalParameters().getEMV().getPINStatement(), lineWidth, 0));
+
+                // PIN Statement
+                String pinStatement = emvContainer.getGeniusResponse().getAdditionalParameters()
+                        .getEMV().getPINStatement();
+                if (!TextUtils.isEmpty(pinStatement)) {
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                            getString(R.string.pin_statement),
+                            pinStatement, lineWidth, 0));
                 }
+
+                // TVR
+                String tvr = emvContainer.getGeniusResponse().getAdditionalParameters()
+                        .getEMV().getTVR();
+                if (!TextUtils.isEmpty(tvr)) {
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                            getString(R.string.pax_tvr),
+                            tvr, lineWidth, 0));
+                }
+
+                // IAD
+                String iad = emvContainer.getGeniusResponse().getAdditionalParameters()
+                        .getEMV().getIAD();
+                if (!TextUtils.isEmpty(iad)) {
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                            getString(R.string.pax_iad),
+                            iad, lineWidth, 0));
+                }
+
+                // TSI
+                String tsi = emvContainer.getGeniusResponse().getAdditionalParameters()
+                        .getEMV().getTSI();
+                if (!TextUtils.isEmpty(tsi)) {
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                            getString(R.string.pax_tsi_atc),
+                            tsi, lineWidth, 0));
+                }
+
+                // AC
+                String ac = emvContainer.getGeniusResponse().getAdditionalParameters()
+                        .getEMV().getAC();
+                if (!TextUtils.isEmpty(ac)) {
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                            getString(R.string.pax_ac),
+                            ac, lineWidth, 0));
+                }
+
                 sb.append("\n\n");
                 print(sb.toString());
             }

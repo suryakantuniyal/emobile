@@ -23,6 +23,13 @@ public class EMV {
     private String IssuerActionCodeOnline;
     private String AuthorizationResponseCode;
 
+    // PAX EMV Fields
+    private String EntryModeMessage;
+    private String TVR;
+    private String IAD;
+    private String TSI;
+    private String AC;
+
     public com.android.emobilepos.models.genius.ApplicationInformation getApplicationInformation() {
         return ApplicationInformation;
     }
@@ -165,5 +172,45 @@ public class EMV {
 
     public void setAuthorizationResponseCode(String authorizationResponseCode) {
         AuthorizationResponseCode = authorizationResponseCode;
+    }
+
+    public String getEntryModeMessage() {
+        return EntryModeMessage;
+    }
+
+    public void setEntryModeMessage(String entryModeMessage) {
+        EntryModeMessage = entryModeMessage;
+    }
+
+    public String getTVR() {
+        return TVR;
+    }
+
+    public void setTVR(String TVR) {
+        this.TVR = TVR;
+    }
+
+    public String getIAD() {
+        return IAD;
+    }
+
+    public void setIAD(String IAD) {
+        this.IAD = IAD;
+    }
+
+    public String getTSI() {
+        return TSI;
+    }
+
+    public void setTSI(String TSI) {
+        this.TSI = TSI;
+    }
+
+    public String getAC() {
+        return AC;
+    }
+
+    public void setAC(String AC) {
+        this.AC = AC;
     }
 }
