@@ -519,6 +519,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
             setPaperWidth(LINE_WIDTH);
             verifyConnectivity();
             super.print(str, FORMAT, size, alignment);
+            releasePrinter();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -529,6 +530,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
             setPaperWidth(LINE_WIDTH);
             verifyConnectivity();
             super.print(str);
+            releasePrinter();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -539,6 +541,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
             setPaperWidth(LINE_WIDTH);
             verifyConnectivity();
             super.print(str, FORMAT);
+            releasePrinter();
         } catch (Exception e) {
             e.printStackTrace();
         }

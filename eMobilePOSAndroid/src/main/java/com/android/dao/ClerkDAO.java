@@ -127,10 +127,12 @@ public class ClerkDAO {
         Realm realm = Realm.getDefaultInstance();
         try {
             Clerk clerk = getByEmpId(selectedClerk.getEmpId());
-            clerk.getAssignedDinningTables().remove(table);
-            clerk.getAssignedDinningTables().add(table);
-            insertOrUpdate(clerk);
-            selectedClerk = clerk;
+            if (clerk != null) {
+                clerk.getAssignedDinningTables().remove(table);
+                clerk.getAssignedDinningTables().add(table);
+                insertOrUpdate(clerk);
+                selectedClerk = clerk;
+            }
         } finally {
             if(realm!=null) {
                 realm.close();
