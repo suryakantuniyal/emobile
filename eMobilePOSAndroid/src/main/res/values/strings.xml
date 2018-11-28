@@ -1020,6 +1020,7 @@
     <string name="processing_reward">Processing reward\u002E\u002E\u002E</string>
     <string name="processing_credit_card">Processing credit card\u002E\u002E\u002E</string>
     <string name="failed_genius_connectivity">There appears to be no connectivity with the genius device</string>
+    <string name="failed_pax_connectivity">Apparently there are communication problems with the terminal.</string>
     <string name="employee_could_not_be_processed">This employee selection could not be processed. Please try again.</string>
     <string name="enter_cash_close_amount">Enter cash close amount</string>
     <string name="close_amount_is">Close amount is</string>

@@ -1010,6 +1010,7 @@
     <string name="processing_reward">"Procesando recompensa"</string>
     <string name="processing_credit_card">"Procesando tarjeta de crédito"</string>
     <string name="failed_genius_connectivity">"Parece que no hay conectividad con el dispositivo genius"</string>
+    <string name="failed_pax_connectivity">"Al parecer hay problemas de comunicación con el terminal."</string>
     <string name="employee_could_not_be_processed">"No se pudo procesar esta selección de empleados. Vuelve a intentarlo."</string>
     <string name="enter_cash_close_amount">"Introduzca el monto de cierre de efectivo"</string>
     <string name="close_amount_is">"La cantidad de cierre es"</string>
