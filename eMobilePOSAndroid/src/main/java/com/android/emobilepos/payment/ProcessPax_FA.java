@@ -53,14 +53,12 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
 
     private static final String APPROVED = "APPROVED";
     private Global global;
-    private String paymethod_id;
     private Bundle extras;
     private EditText invoiceJobIdTextView, amountTextView;
     private ProgressDialog myProgressDialog;
     private Payment payment;
     private boolean hasBeenCreated = false;
     private boolean isRefund = false;
-    private boolean isMultiInvoice = false;
     private MyPreferences myPref;
 
     @Override
@@ -119,7 +117,7 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
     }
 
     private void processPayment() {
-        paymethod_id = extras.getString("paymethod_id");
+        String paymethod_id = extras.getString("paymethod_id");
 
         if (extras.getBoolean("salesrefund"))
             isRefund = true;
@@ -180,72 +178,78 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
 
     private void processResponse(String response) {
         SoundPaymentsResponse spResponse = XmlUtils.getSoundPaymentsResponse(response);
-        Intent result = new Intent();
-        PaymentsHandler payHandler = new PaymentsHandler(ProcessPax_FA.this);
+        if (spResponse.getEpayStatusCode() != null) {
+            Intent result = new Intent();
+            PaymentsHandler payHandler = new PaymentsHandler(ProcessPax_FA.this);
 
-        BigDecimal payAmount = new BigDecimal(spResponse.getAuthorizedAmount());
-        Global.amountPaid = String.valueOf(Global.getRoundBigDecimal(payAmount));
-        payment.setPay_amount(Global.amountPaid);
-        payment.setTipAmount("0.00");
-        payment.setPay_tip("0.00");
-        payment.setPay_transid(spResponse.getCreditCardTransID());
-        payment.setAuthcode(spResponse.getAuthorizationCode());
-        payment.setCcnum_last4(spResponse.getCCLast4());
-        payment.setPay_resultcode(spResponse.getPay_resultcode());
-        payment.setPay_resultmessage(spResponse.getPay_resultmessage());
-        payment.setPay_name("");
-        payment.setCard_type(spResponse.getCardType());
-        payment.setProcessed("9");
-        payment.setPaymethod_id(PayMethodsHandler.getPayMethodID(spResponse.getCardType()));
+            BigDecimal payAmount = new BigDecimal(spResponse.getAuthorizedAmount());
+            Global.amountPaid = String.valueOf(Global.getRoundBigDecimal(payAmount));
+            payment.setPay_amount(Global.amountPaid);
+            payment.setTipAmount("0.00");
+            payment.setPay_tip("0.00");
+            payment.setPay_transid(spResponse.getCreditCardTransID());
+            payment.setAuthcode(spResponse.getAuthorizationCode());
+            payment.setCcnum_last4(spResponse.getCCLast4());
+            payment.setPay_resultcode(spResponse.getPay_resultcode());
+            payment.setPay_resultmessage(spResponse.getPay_resultmessage());
+            payment.setPay_name("");
+            payment.setCard_type(spResponse.getCardType());
+            payment.setProcessed("9");
+            payment.setPaymethod_id(PayMethodsHandler.getPayMethodID(spResponse.getCardType()));
 
-        // Set EMV
-        ApplicationInformation applicationInformation = new ApplicationInformation();
-        applicationInformation.setAid(spResponse.getAID());
-        applicationInformation.setApplicationLabel(spResponse.getAPPLAB());
+            // Set EMV
+            ApplicationInformation applicationInformation = new ApplicationInformation();
+            applicationInformation.setAid(spResponse.getAID());
+            applicationInformation.setApplicationLabel(spResponse.getAPPLAB());
 
-        EMV emv = new EMV();
-        emv.setApplicationInformation(applicationInformation);
-        emv.setPINStatement(spResponse.getCVMMSG());
-        emv.setEntryModeMessage(spResponse.getEntryModeMsg());
-        emv.setTVR(spResponse.getTVR());
-        emv.setIAD(spResponse.getIAD());
-        emv.setTSI(spResponse.getATC());
-        emv.setAC(spResponse.getAC());
+            EMV emv = new EMV();
+            emv.setApplicationInformation(applicationInformation);
+            emv.setPINStatement(spResponse.getCVMMSG());
+            emv.setEntryModeMessage(spResponse.getEntryModeMsg());
+            emv.setTVR(spResponse.getTVR());
+            emv.setIAD(spResponse.getIAD());
+            emv.setTSI(spResponse.getATC());
+            emv.setAC(spResponse.getAC());
 
-        AdditionalParameters additionalParameters = new AdditionalParameters();
-        additionalParameters.setEMV(emv);
+            AdditionalParameters additionalParameters = new AdditionalParameters();
+            additionalParameters.setEMV(emv);
 
-        GeniusResponse geniusResponse = new GeniusResponse();
-        geniusResponse.setStatus("");
-        geniusResponse.setPaymentType("");
-        geniusResponse.setAdditionalParameters(additionalParameters);
+            GeniusResponse geniusResponse = new GeniusResponse();
+            geniusResponse.setStatus("");
+            geniusResponse.setPaymentType("");
+            geniusResponse.setAdditionalParameters(additionalParameters);
 
-        payment.setEmvContainer(new EMVContainer(geniusResponse));
+            payment.setEmvContainer(new EMVContainer(geniusResponse));
 
-        Global.dismissDialog(ProcessPax_FA.this, myProgressDialog);
+            Global.dismissDialog(ProcessPax_FA.this, myProgressDialog);
 
-        if (spResponse.getEpayStatusCode().equalsIgnoreCase(APPROVED)) {
-            payHandler.insert(payment);
+            if (spResponse.getEpayStatusCode().equalsIgnoreCase(APPROVED)) {
+                payHandler.insert(payment);
 
-            String paid_amount = NumberUtils.cleanCurrencyFormatedNumber(
-                    amountTextView.getText().toString());
+                String paid_amount = NumberUtils.cleanCurrencyFormatedNumber(
+                        amountTextView.getText().toString());
 
-            result.putExtra("total_amount", paid_amount);
-            result.putExtra("emvcontainer",
-                    new Gson().toJson(payment.getEmvContainer(), EMVContainer.class));
-            setResult(-2, result);
+                payment.getEmvContainer().getGeniusResponse().setStatus(APPROVED);
 
-            if (myPref.getPreferences(MyPreferences.pref_prompt_customer_copy))
-                showPrintDlg();
-            else {
-                finish();
+                result.putExtra("total_amount", paid_amount);
+                result.putExtra("emvcontainer",
+                        new Gson().toJson(payment.getEmvContainer(), EMVContainer.class));
+                setResult(-2, result);
+
+                if (myPref.getPreferences(MyPreferences.pref_prompt_customer_copy))
+                    showPrintDlg();
+                else {
+                    finish();
+                }
+            } else {
+                payHandler.insertDeclined(payment);
+                setResult(0, result);
+                String errorMsg = String.format(getString(R.string.error_status_code),
+                        spResponse.getStatusCode(), spResponse.getStatusMessage());
+                showErrorDlog(errorMsg);
             }
         } else {
-            payHandler.insertDeclined(payment);
-            setResult(0, result);
-            String errorMsg = String.format(getString(R.string.error_status_code),
-                    spResponse.getStatusCode(), spResponse.getStatusMessage());
-            showErrorDlog(errorMsg);
+            showErrorDlog(getString(R.string.failed_pax_connectivity));
         }
     }
 
