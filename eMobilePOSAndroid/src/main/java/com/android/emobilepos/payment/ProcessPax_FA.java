@@ -13,7 +13,6 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.dao.ShiftDAO;
 import com.android.database.DrawInfoHandler;
@@ -109,8 +108,6 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.processButton:
-                Toast.makeText(this, getString(R.string.processing_payment_msg),
-                        Toast.LENGTH_LONG).show();
                 processPayment();
                 break;
         }
@@ -179,6 +176,12 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
     private void processResponse(String response) {
         SoundPaymentsResponse spResponse = XmlUtils.getSoundPaymentsResponse(response);
         if (spResponse.getEpayStatusCode() != null) {
+            if (spResponse.getStatusCode().equalsIgnoreCase("102")) {
+                String errorMsg = String.format(getString(R.string.error_status_code),
+                        spResponse.getStatusCode(), spResponse.getStatusMessage());
+                showErrorDlog(errorMsg);
+                return;
+            }
             Intent result = new Intent();
             PaymentsHandler payHandler = new PaymentsHandler(ProcessPax_FA.this);
 
