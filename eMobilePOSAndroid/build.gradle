@@ -125,6 +125,7 @@ dependencies {
     api(name: 'nostraLoader-release', ext: 'aar')
     api(name: 'viewPagerIndicator-release', ext: 'aar')
     api(name: 'elo-peripherals-refresh-sdk-release', ext: 'aar')
+    api(name: 'ingenico-mpos-sdk-v1.8.1.3-release', ext: 'aar')
     ivuposApi files('libs/Android_Platform_Adapter.jar')
     ivuposApi files('libs/RBA_SDK.jar')
     ivuposApi files('libs/evoSnapSDK.jar')
