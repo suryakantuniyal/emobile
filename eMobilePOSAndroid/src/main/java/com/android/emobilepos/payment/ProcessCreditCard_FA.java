@@ -620,7 +620,11 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         hiddenField.addTextChangedListener(new CreditCardTextWatcher(activity, hiddenField, cardNum, cardInfoManager, Global.isEncryptSwipe, this));
 
         setUpCardReader();
-        if (myPref.getSwiperType() == Global.NOMAD || myPref.getSwiperType() == Global.HANDPOINT || myPref.getSwiperType() == Global.ICMPEVO || isEverpay) {
+        if (myPref.getSwiperType() == Global.NOMAD ||
+                myPref.getSwiperType() == Global.HANDPOINT ||
+                myPref.getSwiperType() == Global.ICMPEVO ||
+                myPref.getSwiperType() == Global.INGENICOMOBY85 ||
+                isEverpay) {
             setHandopintUIFields();
         }
     }

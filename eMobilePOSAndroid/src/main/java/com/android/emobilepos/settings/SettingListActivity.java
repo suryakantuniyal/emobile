@@ -1481,6 +1481,15 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                                 list.add(device);
                                 DeviceTableDAO.insert(list);
                                 Global.printerDevices.add(device);
+
+                            } else if (strUpperDeviceName.contains("MOB85")) {
+                                myPref.setSwiperType(Global.INGENICOMOBY85);
+                                myPref.setSwiperMACAddress(macAddressList.get(pos));
+                                myPref.setSwiperName(strDeviceName);
+                                EMSDeviceManager edm = new EMSDeviceManager();
+                                Global.btSwiper = edm.getManager();
+                                Global.btSwiper.loadDrivers(getActivity(), Global.INGENICOMOBY85, EMSDeviceManager.PrinterInterfase.BLUETOOTH);
+
                             } else if (strUpperDeviceName.startsWith("KDC")) {
                                 myPref.setSwiperMACAddress(macAddressList.get(pos));
                                 myPref.setSwiperType(Global.KDC425);
