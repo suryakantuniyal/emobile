@@ -34,6 +34,7 @@ import drivers.EMSGPrinterPT380;
 import drivers.EMSHandpoint;
 import drivers.EMSIngenico;
 import drivers.EMSIngenicoEVO;
+import drivers.EMSIngenicoMoby85;
 import drivers.EMSKDC425;
 import drivers.EMSMagtekAudioCardReader;
 import drivers.EMSMagtekSwiper;
@@ -136,6 +137,10 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 aDevice = new EMSOT310();
                 aDevice.connect(activity, -1, false, this);
                 break;
+            case Global.INGENICOMOBY85:
+                aDevice = new EMSIngenicoMoby85();
+                aDevice.connect(activity, -1, false, this);
+                break;
             case Global.KDC425:
                 aDevice = new EMSKDC425();
                 aDevice.connect(activity, -1, false, this);
@@ -220,6 +225,9 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 break;
             case Global.OT310:
                 aDevice = new EMSOT310();
+                break;
+            case Global.INGENICOMOBY85:
+                aDevice = new EMSIngenicoMoby85();
                 break;
             case Global.KDC425:
                 aDevice = new EMSKDC425();
