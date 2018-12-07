@@ -98,6 +98,8 @@ import interfaces.EMSCallBack;
 import main.EMSDeviceManager;
 import util.json.UIUtils;
 
+import static drivers.ingenico.utils.MobilePosSdkHelper.getResponseCodeString;
+
 public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar
         implements
         EMSCallBack,
@@ -1975,7 +1977,6 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar
                                     }
                                 }
                             } else {
-                                // Ingenico Moby/8500
                                 startIngenicoMoby85Transaction();
                             }
                         }
@@ -2144,15 +2145,21 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar
             Log.v("eMobilePOS", "Response : " + response.toString());
             switch (responseCode) {
                 case ResponseCode.Success:
-                    // process response
-                    showErrorDlog("Success");
+                    processIngenicoResponse(response);
                     break;
                 case ResponseCode.PaymentDeviceNotAvailable:
-                    showErrorDlog("Turn on device.");
+                    showErrorDlog("Device not available, please turn on device and connect.");
                     break;
-
+                default:
+                    showErrorDlog(String.format(getString(R.string.error_status_code),
+                            String.valueOf(responseCode), getResponseCodeString(responseCode)));
+                    break;
             }
         }
+    }
+
+    private void processIngenicoResponse(TransactionResponse response) {
+        showErrorDlog("Success");
     }
 
     private void showErrorDlog(String msg) {

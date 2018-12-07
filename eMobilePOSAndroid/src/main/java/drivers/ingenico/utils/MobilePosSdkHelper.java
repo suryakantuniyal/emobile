@@ -3,6 +3,7 @@ package drivers.ingenico.utils;
 import com.ingenico.mpos.sdk.Ingenico;
 import com.ingenico.mpos.sdk.callbacks.ApplicationSelectionCallback;
 import com.ingenico.mpos.sdk.callbacks.TransactionCallback;
+import com.ingenico.mpos.sdk.constants.ResponseCode;
 import com.ingenico.mpos.sdk.data.Amount;
 import com.ingenico.mpos.sdk.request.CreditSaleTransactionRequest;
 import com.ingenico.mpos.sdk.response.TransactionResponse;
@@ -82,7 +83,59 @@ public class MobilePosSdkHelper {
         return val;
     }
 
-    public class CreditSaleTransactionCallbackImpl implements TransactionCallback {
+    public static String getResponseCodeString(int responseCode) {
+        switch (responseCode) {
+            case ResponseCode.Success:
+                return "Success";
+            case ResponseCode.PaymentDeviceNotAvailable:
+                return "Payment Device Not Available";
+            case ResponseCode.PaymentDeviceError:
+                return "Payment Device Not Error";
+            case ResponseCode.PaymentDeviceTimeout:
+                return "Payment Device Timeouts";
+            case ResponseCode.NotSupportedByPaymentDevice:
+                return "Not Supported by Payment Device";
+            case ResponseCode.CardBlocked:
+                return "Card Blocked";
+            case ResponseCode.ApplicationBlocked:
+                return "Application Blocked";
+            case ResponseCode.InvalidCard:
+                return "Invalid Card";
+            case ResponseCode.HostExpiredCard:
+                return "Expired Card";
+            case ResponseCode.InvalidApplication:
+                return "Invalid Card Application";
+            case ResponseCode.TransactionCancelled:
+                return "Transaction Cancelled";
+            case ResponseCode.CardReaderGeneralError:
+                return "Card Reader General Error";
+            case ResponseCode.CardInterfaceGeneralError:
+                return "Card Not Accepted";
+            case ResponseCode.BatteryTooLowError:
+                return "Battery Too Low";
+            case ResponseCode.BadCardSwipe:
+                return "Bad Card Swipe";
+            case ResponseCode.TransactionDeclined:
+                return "Transaction Declined";
+            case ResponseCode.TransactionReversalCardRemovedFailed:
+                return "Transaction Reversal Card Removed Failed";
+            case ResponseCode.TransactionReversalCardRemovedSuccess:
+                return "Transaction Reversal Card Removed Success";
+            case ResponseCode.TransactionReversalChipDeclineFailed:
+                return "Transaction Reversal Chip Decline  Failed";
+            case ResponseCode.TransactionReversalChipDeclineSuccess:
+                return "Transaction Reversal Chip Decline Success";
+            case ResponseCode.TransactionRefusedBecauseOfTransactionWithPendingSignature:
+                return "Transaction Refused Because Of Transaction With Pending Signature";
+            case ResponseCode.UnsupportedCard:
+            case ResponseCode.HostInconsistentData:
+            case ResponseCode.DecryptionError:
+                return "Unsupported Card";
+        }
+        return String.valueOf(responseCode);
+    }
+
+    private class CreditSaleTransactionCallbackImpl implements TransactionCallback {
 
         @Override
         public void updateProgress(Integer integer, String s) {
