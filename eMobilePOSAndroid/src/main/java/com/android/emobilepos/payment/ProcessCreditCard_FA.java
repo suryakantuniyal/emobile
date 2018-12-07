@@ -18,6 +18,7 @@ import android.text.Selection;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -66,6 +67,8 @@ import com.android.support.textwatcher.CreditCardTextWatcher;
 import com.android.support.textwatcher.TextWatcherCallback;
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
+import com.ingenico.mpos.sdk.constants.ResponseCode;
+import com.ingenico.mpos.sdk.response.TransactionResponse;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -90,11 +93,18 @@ import drivers.EMSIDTechUSB;
 import drivers.EMSMagtekAudioCardReader;
 import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
+import drivers.ingenico.utils.MobilePosSdkHelper;
 import interfaces.EMSCallBack;
 import main.EMSDeviceManager;
 import util.json.UIUtils;
 
-public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener, TextWatcherCallback, CompoundButton.OnCheckedChangeListener {
+public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar
+        implements
+        EMSCallBack,
+        OnClickListener,
+        TextWatcherCallback,
+        CompoundButton.OnCheckedChangeListener,
+        MobilePosSdkHelper.OnIngenicoTransactionCallback {
 
     public static final String CREDITCARD_TYPE_JCB = "JCB", CREDITCARD_TYPE_CUP = "CUP",
             CREDITCARD_TYPE_DISCOVER = "Discover", CREDITCARD_TYPE_VISA = "Visa", CREDITCARD_TYPE_DINERS = "DinersClub",
@@ -577,7 +587,6 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         if (isDebit) {
             zipCode.setVisibility(View.GONE);
             secCode.setVisibility(View.GONE);
-
         }
 
         btnProcess = findViewById(R.id.processButton);
@@ -620,6 +629,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         hiddenField.addTextChangedListener(new CreditCardTextWatcher(activity, hiddenField, cardNum, cardInfoManager, Global.isEncryptSwipe, this));
 
         setUpCardReader();
+
         if (myPref.getSwiperType() == Global.NOMAD ||
                 myPref.getSwiperType() == Global.HANDPOINT ||
                 myPref.getSwiperType() == Global.ICMPEVO ||
@@ -1925,40 +1935,48 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                     amountPaidField.setText(amountDueField.getText().toString());
                     break;
                 case R.id.processButton:
-                    if (myPref.getSwiperType() == Global.NOMAD || myPref.getSwiperType() == Global.HANDPOINT
-                            || myPref.getSwiperType() == Global.ICMPEVO || isEverpay) {
+                    if (myPref.getSwiperType() == Global.NOMAD ||
+                            myPref.getSwiperType() == Global.HANDPOINT ||
+                            myPref.getSwiperType() == Global.ICMPEVO ||
+                            myPref.getSwiperType() == Global.INGENICOMOBY85 ||
+                            isEverpay) {
                         boolean valid = validateProcessPayment();
                         if (!valid) {
                             String errorMsg = getString(R.string.card_validation_error);
                             Global.showPrompt(activity, R.string.validation_failed, errorMsg);
                         } else {
-                            myProgressDialog = new ProgressDialog(activity);
-                            myProgressDialog.setMessage(activity.getString(R.string.swipe_insert_card));
-                            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                            myProgressDialog.setCancelable(true);
-                            myProgressDialog.show();
-                            if (isRefund) {
-                                Payment p = new Payment(activity);
-                                p.setPay_amount(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
+                            if (myPref.getSwiperType() != Global.INGENICOMOBY85) {
+                                myProgressDialog = new ProgressDialog(activity);
+                                myProgressDialog.setMessage(activity.getString(R.string.swipe_insert_card));
+                                myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                                myProgressDialog.setCancelable(true);
+                                myProgressDialog.show();
+                                if (isRefund) {
+                                    Payment p = new Payment(activity);
+                                    p.setPay_amount(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
 
-                                if (isEverpay)
-                                    openEverpayApp(p);
-                                else {
-                                    populateCardInfo();
-                                    Global.btSwiper.getCurrentDevice().loadCardReader(callBack, false);
-                                    Global.btSwiper.getCurrentDevice().refund(p, cardInfoManager);
+                                    if (isEverpay)
+                                        openEverpayApp(p);
+                                    else {
+                                        populateCardInfo();
+                                        Global.btSwiper.getCurrentDevice().loadCardReader(callBack, false);
+                                        Global.btSwiper.getCurrentDevice().refund(p, cardInfoManager);
+                                    }
+                                } else {
+                                    Payment p = new Payment(activity);
+                                    p.setPay_amount(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
+                                    p.setTipAmount(String.valueOf(Global.getBigDecimalNum(NumberUtils.cleanCurrencyFormatedNumber(tipAmount), 2)));
+                                    if (Global.btSwiper != null && Global.btSwiper.getCurrentDevice() != null) {
+                                        populateCardInfo();
+                                        Global.btSwiper.getCurrentDevice().loadCardReader(callBack, false);
+                                        Global.btSwiper.getCurrentDevice().salePayment(p, cardInfoManager);
+                                    } else if (isEverpay) {
+                                        openEverpayApp(p);
+                                    }
                                 }
                             } else {
-                                Payment p = new Payment(activity);
-                                p.setPay_amount(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
-                                p.setTipAmount(String.valueOf(Global.getBigDecimalNum(NumberUtils.cleanCurrencyFormatedNumber(tipAmount), 2)));
-                                if (Global.btSwiper != null && Global.btSwiper.getCurrentDevice() != null) {
-                                    populateCardInfo();
-                                    Global.btSwiper.getCurrentDevice().loadCardReader(callBack, false);
-                                    Global.btSwiper.getCurrentDevice().salePayment(p, cardInfoManager);
-                                } else if (isEverpay) {
-                                    openEverpayApp(p);
-                                }
+                                // Ingenico Moby/8500
+                                startIngenicoMoby85Transaction();
                             }
                         }
                     } else {
@@ -1996,7 +2014,11 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         month.setBackgroundResource(android.R.drawable.edit_text);
         amountPaidField.setBackgroundResource(android.R.drawable.edit_text);
         boolean error = false;
-        if (myPref.getSwiperType() != Global.NOMAD && myPref.getSwiperType() != Global.HANDPOINT && myPref.getSwiperType() != Global.ICMPEVO && !isEverpay) {
+        if (myPref.getSwiperType() != Global.NOMAD &&
+                myPref.getSwiperType() != Global.HANDPOINT &&
+                myPref.getSwiperType() != Global.ICMPEVO &&
+                myPref.getSwiperType() != Global.INGENICOMOBY85 &&
+                !isEverpay) {
             if (cardNum.getText().toString().isEmpty() || cardNum.getText().toString().length() < 14
                     || (!wasReadFromReader && !cardIsValid(cardNum.getText().toString()))) {
                 cardNum.setBackgroundResource(R.drawable.edittext_wrong_input);
@@ -2099,9 +2121,60 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         }
     }
 
-
     public enum PAYMENT_GIFT_CARDS {
         GIFTCARDS, LOYALTYCARD, REWARD
+    }
+
+    private void startIngenicoMoby85Transaction() {
+        myProgressDialog = new ProgressDialog(activity);
+        myProgressDialog.setMessage(activity.getString(R.string.check_ingenico_device));
+        myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        myProgressDialog.setCancelable(true);
+        myProgressDialog.show();
+
+        MobilePosSdkHelper mobilePosSdkHelper = new MobilePosSdkHelper(this);
+        mobilePosSdkHelper.startTransaction(
+                NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
+    }
+
+    @Override
+    public void onIngenicoTransactionDone(Integer responseCode, TransactionResponse response) {
+        myProgressDialog.dismiss();
+        if (response != null) {
+            Log.v("eMobilePOS", "Response : " + response.toString());
+            switch (responseCode) {
+                case ResponseCode.Success:
+                    // process response
+                    showErrorDlog("Success");
+                    break;
+                case ResponseCode.PaymentDeviceNotAvailable:
+                    showErrorDlog("Turn on device.");
+                    break;
+
+            }
+        }
+    }
+
+    private void showErrorDlog(String msg) {
+        final Dialog dlog = new Dialog(this, R.style.Theme_TransparentTest);
+        dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dlog.setCancelable(false);
+        dlog.setContentView(R.layout.dlog_btn_single_layout);
+
+        TextView viewTitle = dlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = dlog.findViewById(R.id.dlogMessage);
+        viewTitle.setText(R.string.dlog_title_error);
+        viewMsg.setText(msg);
+
+        Button btnOk = dlog.findViewById(R.id.btnDlogSingle);
+        btnOk.setText(R.string.button_ok);
+        btnOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dlog.dismiss();
+            }
+        });
+        dlog.show();
     }
 
     private class processLivePaymentAsync extends AsyncTask<Object, String, Payment> {

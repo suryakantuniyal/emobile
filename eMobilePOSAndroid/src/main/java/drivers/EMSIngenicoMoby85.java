@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.widget.Toast;
 
 import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.models.ClockInOut;
@@ -19,6 +20,9 @@ import com.android.support.CreditCardInfo;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.ingenico.mpos.sdk.Ingenico;
+import com.ingenico.mpos.sdk.callbacks.LoginCallback;
+import com.ingenico.mpos.sdk.constants.ResponseCode;
+import com.ingenico.mpos.sdk.data.UserProfile;
 import com.roam.roamreaderunifiedapi.constants.CommunicationType;
 import com.roam.roamreaderunifiedapi.constants.DeviceType;
 import com.roam.roamreaderunifiedapi.data.Device;
@@ -33,95 +37,93 @@ import main.EMSDeviceManager;
 /**
  * Created by Luis Camayd on 12/4/2018.
  */
-public class EMSIngenicoMoby85 extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
-
+public class EMSIngenicoMoby85
+        extends EMSDeviceDriver
+        implements EMSDeviceManagerPrinterDelegate {
 
     private final static String API_KEY = "CAT6-64a80ac1-0ff3-4d32-ac92-5558a6870a88";
     private final static String DEFAULT_BASE_URL = "https://uatmcm.roamdata.com/";
     private final static String CLIENT_VERSION = "0.1";
     private final static String DEVICE_NAME = "MOBY8500";
+    private final static String USERNAME = "enablercorptest1";
+    private final static String PASSWORD = "ForIngenico100";
     private final static DeviceType DEVICE_TYPE = DeviceType.MOBY8500;
     private final static CommunicationType COMMUNICATION_TYPE = CommunicationType.Bluetooth;
-    private OnFragmentInteractionListener mListener;
-    private Device mDevice;
-
-
-    public interface OnFragmentInteractionListener {
-        void setupIngenicoSDK(String apiKey, String baseURL, DeviceType deviceType,
-                              CommunicationType type);
-
-        void onDeviceSelected(Device device);
-
-        void onTurnOnDeviceButtonClicked();
-
-        void onPairButtonClicked();
-    }
 
     @Override
-    public void connect(Context activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
+    public void connect(Context activity, int paperSize, boolean isPOSPrinter,
+                        EMSDeviceManager edm) {
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
 
         if (myPref.getSwiperMACAddress() != null) {
-            mDevice = new Device(
-                    DEVICE_TYPE,
-                    COMMUNICATION_TYPE,
-                    DEVICE_NAME,
-                    myPref.getSwiperMACAddress()
-            );
-            initializeSDK(mDevice);
+            initializeIngenicoSDK();
         }
-
-
     }
 
     @Override
-    public boolean autoConnect(Activity activity, EMSDeviceManager edm, int paperSize, boolean isPOSPrinter, String portName, String portNumber) {
-        return super.autoConnect(activity, edm, paperSize, isPOSPrinter, portName, portNumber);
-    }
+    public boolean autoConnect(Activity activity, EMSDeviceManager edm, int paperSize,
+                               boolean isPOSPrinter, String portName, String portNumber) {
+        this.activity = activity;
+        myPref = new MyPreferences(this.activity);
 
+        if (myPref.getSwiperMACAddress() != null) {
+            initializeIngenicoSDK();
+            return true;
+        }
+        return false;
+    }
 
     @SuppressLint("MissingPermission")
-    private void initializeSDK(Device device) {
-        Ingenico ingenico = Ingenico.getInstance();
-        ingenico.initialize(
-                activity.getApplicationContext(),
-                DEFAULT_BASE_URL,
-                API_KEY,
-                CLIENT_VERSION
+    private void initializeIngenicoSDK() {
+        Device device = new Device(
+                DEVICE_TYPE,
+                COMMUNICATION_TYPE,
+                DEVICE_NAME,
+                myPref.getSwiperMACAddress()
         );
+
+        Ingenico ingenico = Ingenico.getInstance();
+        ingenico.initialize(activity.getApplicationContext(),
+                DEFAULT_BASE_URL, API_KEY, CLIENT_VERSION);
         ingenico.setLogging(BuildConfig.DEBUG);
         ingenico.device().setDeviceType(DEVICE_TYPE);
-
-        if (device != null) {
-            ingenico.device().select(device);
-            ingenico.device().initialize(activity.getApplicationContext());
-        }
+        ingenico.device().select(device);
+        ingenico.device().initialize(activity.getApplicationContext());
+        Ingenico.getInstance().user().login(USERNAME, PASSWORD, new LoginCallbackImpl());
     }
 
+    // region Device Driver Unused Methods
 
     @Override
-    public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
+    public boolean printTransaction(String ordID, Global.OrderType saleTypes,
+                                    boolean isFromHistory, boolean fromOnHold,
+                                    EMVContainer emvContainer) {
         return false;
     }
 
     @Override
-    public boolean printTransaction(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
+    public boolean printTransaction(Order order, Global.OrderType saleTypes,
+                                    boolean isFromHistory, boolean fromOnHold,
+                                    EMVContainer emvContainer) {
         return false;
     }
 
     @Override
-    public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
+    public boolean printTransaction(String ordID, Global.OrderType saleTypes,
+                                    boolean isFromHistory, boolean fromOnHold) {
         return false;
     }
 
     @Override
-    public boolean printTransaction(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
+    public boolean printTransaction(Order order, Global.OrderType saleTypes,
+                                    boolean isFromHistory, boolean fromOnHold) {
         return false;
     }
 
     @Override
-    public boolean printPaymentDetails(String payID, int isFromMainMenu, boolean isReprint, EMVContainer emvContainer) {
+    public boolean printPaymentDetails(String payID, int isFromMainMenu,
+                                       boolean isReprint, EMVContainer emvContainer) {
         return false;
     }
 
@@ -131,22 +133,26 @@ public class EMSIngenicoMoby85 extends EMSDeviceDriver implements EMSDeviceManag
     }
 
     @Override
-    public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSignature) {
+    public boolean printConsignment(List<ConsignmentTransaction> myConsignment,
+                                    String encodedSignature) {
         return false;
     }
 
     @Override
-    public boolean printConsignmentPickup(List<ConsignmentTransaction> myConsignment, String encodedSignature) {
+    public boolean printConsignmentPickup(List<ConsignmentTransaction> myConsignment,
+                                          String encodedSignature) {
         return false;
     }
 
     @Override
-    public boolean printConsignmentHistory(HashMap<String, String> map, Cursor c, boolean isPickup) {
+    public boolean printConsignmentHistory(HashMap<String, String> map, Cursor c,
+                                           boolean isPickup) {
         return false;
     }
 
     @Override
-    public String printStationPrinter(List<Orders> orderProducts, String ordID, boolean cutPaper, boolean printHeader) {
+    public String printStationPrinter(List<Orders> orderProducts, String ordID,
+                                      boolean cutPaper, boolean printHeader) {
         return null;
     }
 
@@ -256,7 +262,8 @@ public class EMSIngenicoMoby85 extends EMSDeviceDriver implements EMSDeviceManag
     }
 
     @Override
-    public void saleReversal(Payment payment, String originalTransactionId, CreditCardInfo creditCardInfo) {
+    public void saleReversal(Payment payment, String originalTransactionId,
+                             CreditCardInfo creditCardInfo) {
 
     }
 
@@ -266,7 +273,8 @@ public class EMSIngenicoMoby85 extends EMSDeviceDriver implements EMSDeviceManag
     }
 
     @Override
-    public void refundReversal(Payment payment, String originalTransactionId, CreditCardInfo creditCardInfo) {
+    public void refundReversal(Payment payment, String originalTransactionId,
+                               CreditCardInfo creditCardInfo) {
 
     }
 
@@ -303,5 +311,21 @@ public class EMSIngenicoMoby85 extends EMSDeviceDriver implements EMSDeviceManag
     @Override
     public void printExpenseReceipt(ShiftExpense expense) {
 
+    }
+
+    // endregion
+
+    private class LoginCallbackImpl implements LoginCallback {
+        @Override
+        public void done(Integer responseCode, UserProfile user) {
+            String msg;
+            if (ResponseCode.Success == responseCode) {
+                String sessionToken = user.getSession().getSessionToken();
+                msg = "Logged in as " + USERNAME + "\nSession Token: " + sessionToken;
+            } else {
+                msg = "Login failed";
+            }
+            Toast.makeText(activity, msg, Toast.LENGTH_SHORT).show();
+        }
     }
 }

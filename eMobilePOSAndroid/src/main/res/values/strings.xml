@@ -1063,6 +1063,7 @@
     <string name="card_invoice">Card Invoice</string>
     <string name="status_connected">Connected</string>
     <string name="swipe_insert_card">Swipe/Insert Card…</string>
+    <string name="check_ingenico_device">Follow intructions in the mobile card reader…</string>
     <string name="printing_message">Printing...</string>
     <string name="please_wait_message">Please wait…</string>
     <string name="ivu_control">"CONTROL: "</string>

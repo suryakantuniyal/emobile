@@ -1053,6 +1053,7 @@
     <string name="card_invoice">"Factura de tarjeta"</string>
     <string name="status_connected">"Conectado"</string>
     <string name="swipe_insert_card">"Deslizar / insertar tarjeta …"</string>
+    <string name="check_ingenico_device">"Siga las instrucciones en el lector de tarjetas móvil…"</string>
     <string name="printing_message">"Imprimiendo…"</string>
     <string name="please_wait_message">"Por favor, espere…"</string>
     <string name="ivu_control">"CONTROL: "</string>
