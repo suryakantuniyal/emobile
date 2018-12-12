@@ -23,6 +23,7 @@ import com.ingenico.mpos.sdk.Ingenico;
 import com.ingenico.mpos.sdk.callbacks.LoginCallback;
 import com.ingenico.mpos.sdk.constants.ResponseCode;
 import com.ingenico.mpos.sdk.data.UserProfile;
+import com.roam.roamreaderunifiedapi.callback.DeviceStatusHandler;
 import com.roam.roamreaderunifiedapi.constants.CommunicationType;
 import com.roam.roamreaderunifiedapi.constants.DeviceType;
 import com.roam.roamreaderunifiedapi.data.Device;
@@ -39,10 +40,10 @@ import main.EMSDeviceManager;
  */
 public class EMSIngenicoMoby85
         extends EMSDeviceDriver
-        implements EMSDeviceManagerPrinterDelegate {
+        implements EMSDeviceManagerPrinterDelegate, DeviceStatusHandler {
 
     private final static String API_KEY = "CAT6-64a80ac1-0ff3-4d32-ac92-5558a6870a88";
-    private final static String DEFAULT_BASE_URL = "https://uatmcm.roamdata.com/";
+    private final static String BASE_URL = "https://uatmcm.roamdata.com/";
     private final static String CLIENT_VERSION = "0.1";
     private final static String DEVICE_NAME = "MOBY8500";
     private final static String USERNAME = "enablercorptest1";
@@ -50,11 +51,17 @@ public class EMSIngenicoMoby85
     private final static DeviceType DEVICE_TYPE = DeviceType.MOBY8500;
     private final static CommunicationType COMMUNICATION_TYPE = CommunicationType.Bluetooth;
 
+    private EMSDeviceManager edm;
+    private boolean isAutoConnect = false;
+
+
     @Override
     public void connect(Context activity, int paperSize, boolean isPOSPrinter,
                         EMSDeviceManager edm) {
         this.activity = activity;
+        this.edm = edm;
         myPref = new MyPreferences(this.activity);
+        isAutoConnect = false;
 
         if (myPref.getSwiperMACAddress() != null) {
             initializeIngenicoSDK();
@@ -65,7 +72,9 @@ public class EMSIngenicoMoby85
     public boolean autoConnect(Activity activity, EMSDeviceManager edm, int paperSize,
                                boolean isPOSPrinter, String portName, String portNumber) {
         this.activity = activity;
+        this.edm = edm;
         myPref = new MyPreferences(this.activity);
+        isAutoConnect = true;
 
         if (myPref.getSwiperMACAddress() != null) {
             initializeIngenicoSDK();
@@ -84,14 +93,15 @@ public class EMSIngenicoMoby85
         );
 
         Ingenico ingenico = Ingenico.getInstance();
-        ingenico.initialize(activity.getApplicationContext(),
-                DEFAULT_BASE_URL, API_KEY, CLIENT_VERSION);
+        ingenico.initialize(activity.getApplicationContext(), BASE_URL, API_KEY, CLIENT_VERSION);
         ingenico.setLogging(BuildConfig.DEBUG);
         ingenico.device().setDeviceType(DEVICE_TYPE);
         ingenico.device().select(device);
         ingenico.device().initialize(activity.getApplicationContext());
-        Ingenico.getInstance().user().login(USERNAME, PASSWORD, new LoginCallbackImpl());
+        ingenico.device().registerConnectionStatusUpdates(EMSIngenicoMoby85.this);
+        ingenico.user().login(USERNAME, PASSWORD, new LoginCallbackImpl());
     }
+
 
     // region Device Driver Unused Methods
 
@@ -315,17 +325,48 @@ public class EMSIngenicoMoby85
 
     // endregion
 
+
+    @Override
+    public void onConnected() {
+        if (isAutoConnect) {
+            edm.driverDidConnectToDevice(EMSIngenicoMoby85.this,
+                    false, activity);
+        } else {
+            edm.driverDidConnectToDevice(EMSIngenicoMoby85.this,
+                    true, activity);
+        }
+    }
+
+    @Override
+    public void onDisconnected() {
+        ((Activity) activity).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(activity, "Payment Device Disconnected!", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    @Override
+    public void onError(String s) {
+        if (isAutoConnect) {
+            edm.driverDidNotConnectToDevice(EMSIngenicoMoby85.this,
+                    null, false, activity);
+        } else {
+            edm.driverDidNotConnectToDevice(EMSIngenicoMoby85.this,
+                    "Please turn the payment device on and try again.",
+                    true, activity);
+        }
+    }
+
     private class LoginCallbackImpl implements LoginCallback {
         @Override
         public void done(Integer responseCode, UserProfile user) {
-            String msg;
-            if (ResponseCode.Success == responseCode) {
-                String sessionToken = user.getSession().getSessionToken();
-                msg = "Logged in as " + USERNAME + "\nSession Token: " + sessionToken;
-            } else {
-                msg = "Login failed";
+            if (ResponseCode.Success != responseCode) {
+                edm.driverDidNotConnectToDevice(EMSIngenicoMoby85.this,
+                        "Ingenico's user login failed. Please check credentials and try again.",
+                        true, activity);
             }
-            Toast.makeText(activity, msg, Toast.LENGTH_SHORT).show();
         }
     }
 }

@@ -90,6 +90,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import drivers.EMSIDTechUSB;
+import drivers.EMSIngenicoMoby85;
 import drivers.EMSMagtekAudioCardReader;
 import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
@@ -2148,7 +2149,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar
                     processIngenicoResponse(response);
                     break;
                 case ResponseCode.PaymentDeviceNotAvailable:
-                    showErrorDlog("Device not available, please turn on device and connect.");
+                    showConnectPaymentDeviceDlog();
                     break;
                 default:
                     showErrorDlog(String.format(getString(R.string.error_status_code),
@@ -2160,6 +2161,44 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar
 
     private void processIngenicoResponse(TransactionResponse response) {
         showErrorDlog("Success");
+    }
+
+    private void showConnectPaymentDeviceDlog() {
+        final Dialog dlog = new Dialog(activity, R.style.Theme_TransparentTest);
+        dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dlog.setCancelable(false);
+        dlog.setContentView(R.layout.dlog_btn_left_right_layout);
+
+        TextView viewTitle = dlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = dlog.findViewById(R.id.dlogMessage);
+        viewTitle.setText(R.string.dlog_title_confirm);
+        viewTitle.setText("Connect Payment Device");
+        viewMsg.setText("Device not available, please turn it on (keep green " +
+                "button pressed for three seconds) and hit Connect.\n" +
+                "Note: Wait until the Bluetooth logo appears in the upper\n" +
+                "left corner of the device's screen to continue.");
+        dlog.findViewById(R.id.btnDlogRight).setVisibility(View.GONE);
+
+        Button btnConnect = dlog.findViewById(R.id.btnDlogLeft);
+        Button btnCancel = dlog.findViewById(R.id.btnDlogCancel);
+        btnConnect.setText(R.string.button_connect);
+
+        btnConnect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dlog.dismiss();
+                EMSIngenicoMoby85 emsIngenicoMoby85 = new EMSIngenicoMoby85();
+                EMSDeviceManager edm = new EMSDeviceManager();
+                emsIngenicoMoby85.connect(activity, -1, false, edm.getManager());
+            }
+        });
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dlog.dismiss();
+            }
+        });
+        dlog.show();
     }
 
     private void showErrorDlog(String msg) {
