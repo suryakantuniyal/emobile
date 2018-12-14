@@ -38,8 +38,10 @@ import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.ShiftDAO;
 import com.android.dao.StoredPaymentsDAO;
 import com.android.database.CustomersHandler;
+import com.android.database.DrawInfoHandler;
 import com.android.database.InvoicePaymentsHandler;
 import com.android.database.OrdersHandler;
+import com.android.database.PayMethodsHandler;
 import com.android.database.PaymentsHandler;
 import com.android.database.PaymentsXML_DB;
 import com.android.database.TaxesHandler;
@@ -52,6 +54,7 @@ import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.StoreAndForward;
+import com.android.ivu.MersenneTwisterFast;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.CreditCardInfo;
@@ -62,6 +65,7 @@ import com.android.support.MyPreferences;
 import com.android.support.NetworkUtils;
 import com.android.support.NumberUtils;
 import com.android.support.Post;
+import com.android.support.StringUtils;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.android.support.textwatcher.CreditCardTextWatcher;
 import com.android.support.textwatcher.TextWatcherCallback;
@@ -97,6 +101,7 @@ import drivers.EMSUniMagDriver;
 import drivers.ingenico.utils.MobilePosSdkHelper;
 import interfaces.EMSCallBack;
 import main.EMSDeviceManager;
+import util.MoneyUtils;
 import util.json.UIUtils;
 
 import static drivers.ingenico.utils.MobilePosSdkHelper.getResponseCodeString;
@@ -140,6 +145,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar
     private EditText phoneNumberField, customerEmailField, commentsField;
     private EditText authIDField, transIDField;
     private EditText subtotal, tax1, tax2;
+    private TextView tax1Lbl, tax2Lbl;
     private List<GroupTax> groupTaxRate;
     private boolean isMultiInvoice = false, isOpenInvoice = false;
     private String[] inv_id_array, txnID_array;
@@ -509,8 +515,8 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar
         subtotal = findViewById(R.id.subtotalCardAmount);
         tax1 = findViewById(R.id.tax1CardAmount);
         tax2 = findViewById(R.id.tax2CardAmount);
-        TextView tax1Lbl = findViewById(R.id.tax1CreditCardLbl);
-        TextView tax2Lbl = findViewById(R.id.tax2CreditCardLbl);
+        tax1Lbl = findViewById(R.id.tax1CreditCardLbl);
+        tax2Lbl = findViewById(R.id.tax2CreditCardLbl);
 
         tax1.setText(Global.getCurrencyFormat(extras.getString("Tax1_amount")));
         tax2.setText(Global.getCurrencyFormat(extras.getString("Tax2_amount")));
@@ -2142,25 +2148,135 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar
     @Override
     public void onIngenicoTransactionDone(Integer responseCode, TransactionResponse response) {
         myProgressDialog.dismiss();
-        if (response != null) {
-            Log.v("eMobilePOS", "Response : " + response.toString());
-            switch (responseCode) {
-                case ResponseCode.Success:
+        switch (responseCode) {
+            case ResponseCode.Success:
+                if (response != null) {
+                    Log.v("eMobilePOS", "Response : " + response.toString());
                     processIngenicoResponse(response);
-                    break;
-                case ResponseCode.PaymentDeviceNotAvailable:
-                    showConnectPaymentDeviceDlog();
-                    break;
-                default:
-                    showErrorDlog(String.format(getString(R.string.error_status_code),
-                            String.valueOf(responseCode), getResponseCodeString(responseCode)));
-                    break;
-            }
+                }
+                break;
+            case ResponseCode.PaymentDeviceNotAvailable:
+                showConnectPaymentDeviceDlog();
+                break;
+            case ResponseCode.InvalidSession:
+                showErrorDlog("Ingenico's user login failed. Please check credentials and try again.");
+                break;
+            default:
+                showErrorDlog(String.format(getString(R.string.error_status_code),
+                        String.valueOf(responseCode), getResponseCodeString(responseCode)));
+                break;
         }
     }
 
     private void processIngenicoResponse(TransactionResponse response) {
-        showErrorDlog("Success");
+        if (extras.getBoolean("salesrefund", false))
+            isRefund = true;
+
+        Payment payment = new Payment(this);
+
+        if (Global.isIvuLoto) {
+            DrawInfoHandler drawDateInfo = new DrawInfoHandler(this);
+            MersenneTwisterFast mersenneTwister = new MersenneTwisterFast();
+            payment.setIvuLottoDrawDate(drawDateInfo.getDrawDate());
+            payment.setIvuLottoNumber(mersenneTwister.generateIVULoto());
+
+            String taxName1 = null;
+            String taxName2 = null;
+            String taxAmnt1 = null;
+            String taxAmnt2 = null;
+
+            if (!TextUtils.isEmpty(extras.getString("Tax1_amount"))) {
+                taxAmnt1 = extras.getString("Tax1_amount");
+                taxName1 = extras.getString("Tax1_name");
+
+                taxAmnt2 = extras.getString("Tax2_amount");
+                taxName2 = extras.getString("Tax2_name");
+            } else {
+                taxAmnt1 = Double.toString(Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(tax1)));
+                if (groupTaxRate.size() > 0)
+                    taxName1 = groupTaxRate.get(0).getTaxName();
+                taxAmnt2 = Double.toString(Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(tax2)));
+                if (groupTaxRate.size() > 1)
+                    taxName2 = groupTaxRate.get(1).getTaxName();
+            }
+
+            payment.setTax1_amount(taxAmnt1);
+            payment.setTax1_name(taxName1);
+            payment.setTax2_amount(taxAmnt2);
+            payment.setTax2_name(taxName2);
+        }
+
+        if (!this.extras.getBoolean("histinvoices", false))
+            payment.setJob_id(inv_id);
+        else
+            payment.setInv_id(inv_id);
+
+        if (myPref.isUseClerks()) {
+            payment.setClerk_id(myPref.getClerkID());
+        } else {
+            if (ShiftDAO.isShiftOpen() && ShiftDAO.getOpenShift() != null) {
+                payment.setClerk_id(String.valueOf(ShiftDAO.getOpenShift().getClerkId()));
+            }
+        }
+
+        if (myPref.isCustSelected()) {
+            payment.setCust_id(myPref.getCustID());
+        }
+
+        payment.setPay_id(extras.getString("pay_id"));
+        payment.setOriginalTotalAmount("0");
+        payment.setPay_type("0");
+
+        if (isRefund) {
+            payment.setIs_refund("1");
+            payment.setPay_type("2");
+        }
+
+        Global.amountPaid = String.valueOf(
+                MoneyUtils.convertCentsToDollars(response.getAuthorizedAmount()));
+
+        double actualAmount = Global.formatNumFromLocale(
+                NumberUtils.cleanCurrencyFormatedNumber(amountDueField));
+
+        double amountTender = Global.formatNumFromLocale(Global.amountPaid);
+
+        payment.setPay_amount(Global.amountPaid);
+
+        payment.setPay_dueamount(Double.toString(actualAmount - amountTender));
+        payment.setAmountTender(amountTender);
+        if (amountTender > actualAmount)
+            payment.setPay_amount(Double.toString(actualAmount));
+        else
+            payment.setPay_amount(Double.toString(amountTender));
+
+        payment.setTipAmount("0.00");
+        payment.setPay_tip("0.00");
+        payment.setPay_transid(response.getTransactionId());
+        payment.setAuthcode(response.getAuthCode());
+        payment.setCcnum_last4(StringUtils.getLastFour(response.getRedactedCardNumber()));
+        payment.setPay_resultcode(response.getTransactionResponseCode().name());
+        payment.setPay_resultmessage(response.getClerkDisplay());
+        payment.setPay_expmonth("12");
+        payment.setPay_expyear("2020");
+        payment.setPay_name("");
+        payment.setCard_type(response.getCardType().name());
+        payment.setProcessed("1");
+        payment.setPaymethod_id(PayMethodsHandler.getPayMethodID(response.getCardType().name()));
+
+        PaymentsHandler payHandler = new PaymentsHandler(activity);
+        payHandler.insert(payment);
+
+        Intent result = new Intent();
+        result.putExtra("total_amount", NumberUtils.cleanCurrencyFormatedNumber(Global.amountPaid));
+//        result.putExtra("emvcontainer",
+//                new Gson().toJson(payment.getEmvContainer(), EMVContainer.class));
+        setResult(-2, result);
+
+        if (myPref.getPreferences(MyPreferences.pref_prompt_customer_copy))
+            showPrintDlg(false, false, payment);
+        else {
+            finish();
+        }
     }
 
     private void showConnectPaymentDeviceDlog() {

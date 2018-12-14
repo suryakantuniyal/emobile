@@ -11,6 +11,8 @@ import com.roam.roamreaderunifiedapi.data.ApplicationIdentifier;
 
 import java.util.List;
 
+import util.MoneyUtils;
+
 /**
  * Created by Luis Camayd on 12/7/2018.
  */
@@ -34,7 +36,7 @@ public class MobilePosSdkHelper {
 
     private CreditSaleTransactionRequest getCardSaleTransactionRequest(String totalAmount) {
         Amount saleAmount = createNewAmount(
-                totalAmount.replace(".", ""),
+                String.valueOf(MoneyUtils.convertDollarsToCents(totalAmount)),
                 "0",
                 "0",
                 "0",
