@@ -2141,7 +2141,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar
         myProgressDialog.show();
 
         MobilePosSdkHelper mobilePosSdkHelper = new MobilePosSdkHelper(this);
-        mobilePosSdkHelper.startTransaction(
+        mobilePosSdkHelper.startTransaction(isRefund,
                 NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
     }
 
@@ -2169,9 +2169,6 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar
     }
 
     private void processIngenicoResponse(TransactionResponse response) {
-        if (extras.getBoolean("salesrefund", false))
-            isRefund = true;
-
         Payment payment = new Payment(this);
 
         if (Global.isIvuLoto) {
@@ -2230,10 +2227,11 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar
         if (isRefund) {
             payment.setIs_refund("1");
             payment.setPay_type("2");
+            Global.amountPaid = NumberUtils.cleanCurrencyFormatedNumber(amountPaidField);
+        } else {
+            Global.amountPaid = String.valueOf(
+                    MoneyUtils.convertCentsToDollars(response.getAuthorizedAmount()));
         }
-
-        Global.amountPaid = String.valueOf(
-                MoneyUtils.convertCentsToDollars(response.getAuthorizedAmount()));
 
         double actualAmount = Global.formatNumFromLocale(
                 NumberUtils.cleanCurrencyFormatedNumber(amountDueField));
@@ -2256,8 +2254,8 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar
         payment.setCcnum_last4(StringUtils.getLastFour(response.getRedactedCardNumber()));
         payment.setPay_resultcode(response.getTransactionResponseCode().name());
         payment.setPay_resultmessage(response.getClerkDisplay());
-        payment.setPay_expmonth("12");
-        payment.setPay_expyear("2020");
+        payment.setPay_expmonth(StringUtils.right(response.getCardExpirationDate(), 2));
+        payment.setPay_expyear("20" + StringUtils.left(response.getCardExpirationDate(), 2));
         payment.setPay_name("");
         payment.setCard_type(response.getCardType().name());
         payment.setProcessed("1");
@@ -2289,10 +2287,10 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar
         TextView viewMsg = dlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_confirm);
         viewTitle.setText("Connect Payment Device");
-        viewMsg.setText("Device not available, please turn it on (keep green " +
-                "button pressed for three seconds) and hit Connect.\n" +
-                "Note: Wait until the Bluetooth logo appears in the upper\n" +
-                "left corner of the device's screen to continue.");
+        viewMsg.setText("Device not available, please turn it on (keep green\n" +
+                "button pressed for three seconds) and hit Connect.\n\n" +
+                "Note: Wait until the Bluetooth logo appears in the\n" +
+                " upper left corner of the device's screen to continue.");
         dlog.findViewById(R.id.btnDlogRight).setVisibility(View.GONE);
 
         Button btnConnect = dlog.findViewById(R.id.btnDlogLeft);
