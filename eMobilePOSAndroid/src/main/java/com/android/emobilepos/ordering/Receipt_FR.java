@@ -2267,38 +2267,28 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 EMSBluetoothStarPrinter currentDevice = null;
                 boolean printHeader = true;
                 StringBuffer receipt = new StringBuffer();
-                String currentPrinterName = null;
                 for (String aSArr : sArr) {
                     if (Global.multiPrinterMap.containsKey(aSArr)) {
                         printMap = Global.multiPrinterMap.get(aSArr);
                         if (Global.multiPrinterManager.get(printMap) != null
                                 && Global.multiPrinterManager.get(printMap).getCurrentDevice() != null) {
-                            if (currentPrinterName == null || !currentPrinterName.equalsIgnoreCase(((EMSBluetoothStarPrinter)
-                                    Global.multiPrinterManager.get(printMap).getCurrentDevice()).getPortName())) {
-                                printHeader = true;
-                                if (currentDevice != null) {
-                                    currentDevice.print(receipt.toString(), 1, PrinterFunctions.Alignment.Left);
-                                    receipt.setLength(0);
-                                    currentDevice.cutPaper();
-                                }
-                            }
+
                             currentDevice = (EMSBluetoothStarPrinter) Global.multiPrinterManager.get(printMap).getCurrentDevice();
-                            receipt.append(currentDevice.printStationPrinter(temp.get(aSArr),
-                                    getOrderingMainFa().global.order.ord_id, splitByCat, printHeader));
-                            printHeader = splitByCat;
-                            currentPrinterName = currentDevice.getPortName();
-                            if (splitByCat) {
+                            if (currentDevice != null) {
+                                receipt.append(currentDevice.printStationPrinter(temp.get(aSArr),
+                                        getOrderingMainFa().global.order.ord_id, splitByCat, printHeader));
                                 currentDevice.print(receipt.toString(), 1, PrinterFunctions.Alignment.Left);
                                 receipt.setLength(0);
                                 currentDevice.cutPaper();
+                                // we need to wait so it can print them all
+                                try {
+                                    Thread.sleep(750);
+                                } catch (InterruptedException e) {
+                                    // do nothing
+                                }
                             }
                         }
                     }
-                }
-                if (currentDevice != null && !TextUtils.isEmpty(receipt)) {
-                    currentDevice.print(receipt.toString(), 1, PrinterFunctions.Alignment.Left);
-                    receipt.setLength(0);
-                    currentDevice.cutPaper();
                 }
             }
             return null;
