@@ -59,6 +59,10 @@
     <string name="dlog_title_success">"Éxito"</string>
     <string name="dlog_title_choose_action">"Elige la Acción"</string>
     <string name="dlog_title_transaction_failed_to_process">"Algunas transacciones no procesaron"</string>
+    <string name="dlog_title_conn_payment_device">"Conecte el dispositivo de pago"</string>
+    <string name="dlog_msg_conn_payment_device">"El dispositivo no está disponible, enciéndalo (mantenga presionado el botón verde \ n durante tres segundos) y presione Conectar. \ N \ nNota: espere hasta que aparezca el logotipo de Bluetooth en la esquina superior izquierda de la pantalla del dispositivo para continuar."</string>
+    <string name="dlog_msg_turnon_payment_device">"El dispositivo no está disponible, enciéndalo (mantenga presionado el botón verde \ n durante tres segundos) y vuelva a intentarlo."</string>
+    <string name="dlog_msg_ingenico_login_failed">"El inicio de sesión de Ingenico ha fallado. Por favor, verifique las credenciales y vuelva a intentarlo."</string>
     <string name="dlog_msg_orders_changed_invoice">"Órdenes cambiadas al tipo Invoice"</string>
     <string name="dlog_msg_pending_stored_forward">"Existen transacciones almacenar y reenviar pendientes a procesar"</string>
     <string name="dlog_msg_please_try_again">"Por favor, inténtelo de nuevo más tarde"</string>

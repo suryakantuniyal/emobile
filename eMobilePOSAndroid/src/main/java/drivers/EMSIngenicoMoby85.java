@@ -5,9 +5,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.widget.Toast;
 
 import com.android.emobilepos.BuildConfig;
+import com.android.emobilepos.R;
 import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
@@ -339,12 +339,12 @@ public class EMSIngenicoMoby85
 
     @Override
     public void onDisconnected() {
-        ((Activity) activity).runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(activity, "Payment Device Disconnected!", Toast.LENGTH_SHORT).show();
-            }
-        });
+//        ((Activity) activity).runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                Toast.makeText(activity, "Payment Device Disconnected!", Toast.LENGTH_SHORT).show();
+//            }
+//        });
     }
 
     @Override
@@ -354,7 +354,7 @@ public class EMSIngenicoMoby85
                     null, false, activity);
         } else {
             edm.driverDidNotConnectToDevice(EMSIngenicoMoby85.this,
-                    "Please turn the payment device on and try again.",
+                    activity.getString(R.string.dlog_msg_turnon_payment_device),
                     true, activity);
         }
     }
@@ -364,7 +364,7 @@ public class EMSIngenicoMoby85
         public void done(Integer responseCode, UserProfile user) {
             if (ResponseCode.Success != responseCode) {
                 edm.driverDidNotConnectToDevice(EMSIngenicoMoby85.this,
-                        "Ingenico's user login failed. Please check credentials and try again.",
+                        activity.getString(R.string.dlog_msg_ingenico_login_failed),
                         true, activity);
             }
         }

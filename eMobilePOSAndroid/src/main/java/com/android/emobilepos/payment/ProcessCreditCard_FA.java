@@ -2159,7 +2159,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar
                 showConnectPaymentDeviceDlog();
                 break;
             case ResponseCode.InvalidSession:
-                showErrorDlog("Ingenico's user login failed. Please check credentials and try again.");
+                showErrorDlog(getString(R.string.dlog_msg_ingenico_login_failed));
                 break;
             default:
                 showErrorDlog(String.format(getString(R.string.error_status_code),
@@ -2285,12 +2285,8 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar
 
         TextView viewTitle = dlog.findViewById(R.id.dlogTitle);
         TextView viewMsg = dlog.findViewById(R.id.dlogMessage);
-        viewTitle.setText(R.string.dlog_title_confirm);
-        viewTitle.setText("Connect Payment Device");
-        viewMsg.setText("Device not available, please turn it on (keep green\n" +
-                "button pressed for three seconds) and hit Connect.\n\n" +
-                "Note: Wait until the Bluetooth logo appears in the\n" +
-                " upper left corner of the device's screen to continue.");
+        viewTitle.setText(R.string.dlog_title_conn_payment_device);
+        viewMsg.setText(R.string.dlog_msg_conn_payment_device);
         dlog.findViewById(R.id.btnDlogRight).setVisibility(View.GONE);
 
         Button btnConnect = dlog.findViewById(R.id.btnDlogLeft);
