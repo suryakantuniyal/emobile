@@ -170,6 +170,7 @@
     <string name="refund">Refund</string>
     <string name="route">Route</string>
     <string name="on_hold">Recall Check</string>
+    <string name="hold_offline">OFFLINE</string>
     <string name="master_counter">Master Counter</string>
     <string name="consignment">Consignment</string>
 

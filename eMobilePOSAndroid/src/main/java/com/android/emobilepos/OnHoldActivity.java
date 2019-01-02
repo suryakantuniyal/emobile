@@ -697,23 +697,20 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             String seats = cursor.getString(myHolder.i_numberOfSeats);
             String createdTime = cursor.getString(myHolder.i_timeCreated);
             String total = Global.getCurrencyFormat(cursor.getString(myHolder.i_orderTotal));
+            myHolder.orderTotal.setText(total);
             Map<TimeUnit, Long> map = DateUtils.computeDiff(DateUtils.getDateStringAsDate(createdTime, DateUtils.DATE_yyyy_MM_ddTHH_mm_ss), new Date());
             String timeOnSite = String.format(Locale.getDefault(), "%02d:%02d", map.get(TimeUnit.HOURS), map.get(TimeUnit.MINUTES));
             if (TextUtils.isEmpty(table)) {
                 myHolder.tableTextView.setVisibility(View.INVISIBLE);
                 myHolder.guestsNumber.setVisibility(View.INVISIBLE);
                 myHolder.timeOnSite.setVisibility(View.INVISIBLE);
-                myHolder.orderTotal.setVisibility(View.INVISIBLE);
             } else {
-                myHolder.tableTextView.setVisibility(View.VISIBLE);
                 myHolder.tableTextView.setVisibility(View.VISIBLE);
                 myHolder.guestsNumber.setVisibility(View.VISIBLE);
                 myHolder.timeOnSite.setVisibility(View.VISIBLE);
-                myHolder.orderTotal.setVisibility(View.VISIBLE);
                 myHolder.tableTextView.setText(table);
                 myHolder.guestsNumber.setText(seats);
                 myHolder.timeOnSite.setText(timeOnSite);
-                myHolder.orderTotal.setText(total);
             }
         }
 

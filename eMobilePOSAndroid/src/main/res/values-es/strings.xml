@@ -165,6 +165,7 @@
     <string name="refund">"Reembolso"</string>
     <string name="route">"Ruta"</string>
     <string name="on_hold">"Registro Cuenta"</string>
+    <string name="hold_offline">"DESCONECTADO"</string>
     <string name="master_counter">"Contador principal"</string>
     <string name="consignment">"Consignación"</string>
 
