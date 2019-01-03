@@ -122,6 +122,8 @@ public class MobilePosSdkHelper {
         switch (responseCode) {
             case ResponseCode.Success:
                 return "Success";
+            case ResponseCode.MissingAPIKey:
+                return "Missing API Key";
             case ResponseCode.PaymentDeviceNotAvailable:
                 return "Payment Device Not Available";
             case ResponseCode.PaymentDeviceError:

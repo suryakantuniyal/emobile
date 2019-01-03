@@ -38,10 +38,6 @@ public class EMSPayGate_Default {
     private boolean isTupyx = false;
     private CreditCardInfo cardManager;
 
-//    private static final int CHARGE_CREDIT_CARD = 1010;
-//    private static final int CHARGE_DEBIT_CARD = 1014;
-//    private static final int CHARGE_CHECK = 1012;
-
     private static final int REVERSE_CREDIT_CARD = 9993;
     private static final int REVERSE_DEBIT_CARD = 9994;
     private static final int REVERSE_CHECK = 9992;
@@ -67,7 +63,6 @@ public class EMSPayGate_Default {
         CreditCardAdjustTipAmountAction(1011), VoidCreditCardAction(2010), VoidCheckAction(2012),
         ReturnCreditCardAction(3010), ReturnDebitAction(3014), ReturnGeniusAction(3017), VoidGiftCardAction(2018),
         ReturnGiftCardAction(3018), ActivateGiftCardAction(5000), VoidRewardCardAction(2021),
-        //        DeactivateGiftCardAction(5010),
         AddValueGiftCardAction(5010), BalanceGiftCardAction(5020), ActivateLoyaltyCardAction(6000),
         AddValueLoyaltyCardAction(6010), BalanceLoyaltyCardAction(6020), ActivateRewardAction(6100),
         AddValueRewardAction(6110), BalanceRewardAction(6120), CheckTransactionStatus(7003),
@@ -76,7 +71,7 @@ public class EMSPayGate_Default {
         ProcessBoloroCheckout(10000), CancelBoloroTransaction(10001), GetTelcoInfoByTag(10002),
         GetMarketTelcos(10003), BoloroPolling(10004), HandpointWorkingKey(7001),
         CardOnFileCharge(1023), CardOnFileRefund(3023), SoundPaymentsCharge(77771),
-        SoundPaymentsRefund(77772), SoundPaymentsVoid(2010);
+        SoundPaymentsRefund(77772), SoundPaymentsVoid(2010), IngenicoCredentials(7001);
 
         private int code;
 

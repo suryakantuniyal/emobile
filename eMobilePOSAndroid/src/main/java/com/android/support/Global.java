@@ -224,6 +224,7 @@ public class Global extends MultiDexApplication {
     public final static int FROM_CUSTOMER_SELECTION_ACTIVITY = 113;
     public final static int S_SUBMIT_PAYMENT_SIGNATURES = 114;
     public final static int S_SUBMIT_SOUNDPAYMENTS = 115;
+    public final static int S_GET_INGENICO_CREDENTIALS = 116;
 
     public final static int BLUEBAMBOO = 0;
     public final static int BLUESTAR = 1;

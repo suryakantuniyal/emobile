@@ -12,13 +12,16 @@ import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplittedOrder;
+import com.android.emobilepos.models.ingenico.CredentialsResponse;
 import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.ShiftExpense;
+import com.android.payments.EMSPayGate_Default;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.Post;
 import com.ingenico.mpos.sdk.Ingenico;
 import com.ingenico.mpos.sdk.callbacks.LoginCallback;
 import com.ingenico.mpos.sdk.constants.ResponseCode;
@@ -34,6 +37,9 @@ import java.util.List;
 import interfaces.EMSCallBack;
 import interfaces.EMSDeviceManagerPrinterDelegate;
 import main.EMSDeviceManager;
+import util.XmlUtils;
+
+import static com.android.payments.EMSPayGate_Default.EAction.IngenicoCredentials;
 
 /**
  * Created by Luis Camayd on 12/4/2018.
@@ -42,12 +48,12 @@ public class EMSIngenicoMoby85
         extends EMSDeviceDriver
         implements EMSDeviceManagerPrinterDelegate, DeviceStatusHandler {
 
-    private final static String API_KEY = "CAT6-64a80ac1-0ff3-4d32-ac92-5558a6870a88";
-    private final static String BASE_URL = "https://uatmcm.roamdata.com/";
+    private static String API_KEY = "";//"CAT6-64a80ac1-0ff3-4d32-ac92-5558a6870a88";
+    private static String BASE_URL = "";//https://uatmcm.roamdata.com/";
+    private static String USERNAME = "";//"enablercorptest1";
+    private static String PASSWORD = "";//"ForIngenico100";
     private final static String CLIENT_VERSION = "0.1";
     private final static String DEVICE_NAME = "MOBY8500";
-    private final static String USERNAME = "enablercorptest1";
-    private final static String PASSWORD = "ForIngenico100";
     private final static DeviceType DEVICE_TYPE = DeviceType.MOBY8500;
     private final static CommunicationType COMMUNICATION_TYPE = CommunicationType.Bluetooth;
 
@@ -85,6 +91,10 @@ public class EMSIngenicoMoby85
 
     @SuppressLint("MissingPermission")
     private void initializeIngenicoSDK() {
+        if (API_KEY.isEmpty() || BASE_URL.isEmpty() || USERNAME.isEmpty() || PASSWORD.isEmpty()) {
+            getCredentials();
+        }
+
         Device device = new Device(
                 DEVICE_TYPE,
                 COMMUNICATION_TYPE,
@@ -357,6 +367,25 @@ public class EMSIngenicoMoby85
                     activity.getString(R.string.dlog_msg_turnon_payment_device),
                     true, activity);
         }
+    }
+
+    private void getCredentials() {
+        EMSPayGate_Default payGate = new EMSPayGate_Default(activity, new Payment());
+        final String requestXml = payGate.paymentWithAction(
+                IngenicoCredentials, false, "", null);
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Post post = new Post(activity);
+                final String response = post.postData(Global.S_GET_INGENICO_CREDENTIALS, requestXml);
+                CredentialsResponse credentials = XmlUtils.getCredentialsResponse(response);
+                API_KEY = credentials.getApiKey();
+                BASE_URL = credentials.getUrl();
+                USERNAME = credentials.getUsername();
+                PASSWORD = credentials.getPassword();
+            }
+        }).start();
     }
 
     private class LoginCallbackImpl implements LoginCallback {
