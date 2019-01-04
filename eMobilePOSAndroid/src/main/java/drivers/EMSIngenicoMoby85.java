@@ -93,23 +93,23 @@ public class EMSIngenicoMoby85
     private void initializeIngenicoSDK() {
         if (API_KEY.isEmpty() || BASE_URL.isEmpty() || USERNAME.isEmpty() || PASSWORD.isEmpty()) {
             getCredentials();
+        } else {
+            Device device = new Device(
+                    DEVICE_TYPE,
+                    COMMUNICATION_TYPE,
+                    DEVICE_NAME,
+                    myPref.getSwiperMACAddress()
+            );
+
+            Ingenico ingenico = Ingenico.getInstance();
+            ingenico.initialize(activity.getApplicationContext(), BASE_URL, API_KEY, CLIENT_VERSION);
+            ingenico.setLogging(BuildConfig.DEBUG);
+            ingenico.device().setDeviceType(DEVICE_TYPE);
+            ingenico.device().select(device);
+            ingenico.device().initialize(activity.getApplicationContext());
+            ingenico.device().registerConnectionStatusUpdates(EMSIngenicoMoby85.this);
+            ingenico.user().login(USERNAME, PASSWORD, new LoginCallbackImpl());
         }
-
-        Device device = new Device(
-                DEVICE_TYPE,
-                COMMUNICATION_TYPE,
-                DEVICE_NAME,
-                myPref.getSwiperMACAddress()
-        );
-
-        Ingenico ingenico = Ingenico.getInstance();
-        ingenico.initialize(activity.getApplicationContext(), BASE_URL, API_KEY, CLIENT_VERSION);
-        ingenico.setLogging(BuildConfig.DEBUG);
-        ingenico.device().setDeviceType(DEVICE_TYPE);
-        ingenico.device().select(device);
-        ingenico.device().initialize(activity.getApplicationContext());
-        ingenico.device().registerConnectionStatusUpdates(EMSIngenicoMoby85.this);
-        ingenico.user().login(USERNAME, PASSWORD, new LoginCallbackImpl());
     }
 
 
@@ -384,6 +384,13 @@ public class EMSIngenicoMoby85
                 BASE_URL = credentials.getUrl();
                 USERNAME = credentials.getUsername();
                 PASSWORD = credentials.getPassword();
+
+                ((Activity) activity).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        initializeIngenicoSDK();
+                    }
+                });
             }
         }).start();
     }
