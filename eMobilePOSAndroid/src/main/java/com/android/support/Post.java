@@ -279,6 +279,11 @@ public class Post {
                 entity = varyingVariable;
                 httpMethod = HttpClient.HTTPMethod.POST;
                 break;
+            case Global.S_GET_INGENICO_CREDENTIALS:
+                postLink = context.getString(R.string.epay_enablermobile);
+                entity = varyingVariable;
+                httpMethod = HttpClient.HTTPMethod.POST;
+                break;
         }
 //Testing png download with the 2016 ssl cert
 //		try {

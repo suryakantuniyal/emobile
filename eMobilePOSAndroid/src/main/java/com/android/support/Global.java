@@ -137,6 +137,7 @@ public class Global extends MultiDexApplication {
     public static final int TEAMSABLE = 23;
     public static final int GPRINTER = 24;
     public static final int MAGTEK_EMBEDDED = 25;
+    public static final int INGENICOMOBY85 = 26;
 
     public static final String AUDIO_MSR_UNIMAG = "0";
     public static final String AUDIO_MSR_MAGTEK = "1";
@@ -223,6 +224,7 @@ public class Global extends MultiDexApplication {
     public final static int FROM_CUSTOMER_SELECTION_ACTIVITY = 113;
     public final static int S_SUBMIT_PAYMENT_SIGNATURES = 114;
     public final static int S_SUBMIT_SOUNDPAYMENTS = 115;
+    public final static int S_GET_INGENICO_CREDENTIALS = 116;
 
     public final static int BLUEBAMBOO = 0;
     public final static int BLUESTAR = 1;
@@ -414,6 +416,9 @@ public class Global extends MultiDexApplication {
                 break;
             case EM70:
                 _name = "EM70";
+                break;
+            case INGENICOMOBY85:
+                _name = "Ingenico Moby/8500";
                 break;
             case KDC425:
                 _name = "KDC425";

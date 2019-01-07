@@ -1,5 +1,6 @@
 package util;
 
+import com.android.emobilepos.models.ingenico.CredentialsResponse;
 import com.android.emobilepos.models.pax.SoundPaymentsResponse;
 import com.android.emobilepos.models.xml.EMSPayment;
 import com.crashlytics.android.Crashlytics;
@@ -153,6 +154,48 @@ public class XmlUtils {
         }
 
         return soundPaymentsResponse;
+    }
+
+    public static CredentialsResponse getCredentialsResponse(String xml) {
+        CredentialsResponse credentialsResponse = new CredentialsResponse();
+        credentialsResponse.setApiKey("");
+        credentialsResponse.setUrl("");
+        credentialsResponse.setUsername("");
+        credentialsResponse.setPassword("");
+        try {
+            XmlPullParserFactory xmlFactoryObject = XmlPullParserFactory.newInstance();
+            XmlPullParser parser = xmlFactoryObject.newPullParser();
+            parser.setInput(new StringReader(xml));
+            int event = parser.getEventType();
+            String name;
+            while (event != XmlPullParser.END_DOCUMENT) {
+                switch (event) {
+                    case XmlPullParser.START_TAG:
+                        name = parser.getName();
+                        if (name != null) {
+                            if (name.equalsIgnoreCase("APIKey")) {
+                                credentialsResponse.setApiKey(parser.nextText());
+                            } else if (name.equalsIgnoreCase("URL")) {
+                                credentialsResponse.setUrl(parser.nextText());
+                            } else if (name.equalsIgnoreCase("Username")) {
+                                credentialsResponse.setUsername(parser.nextText());
+                            } else if (name.equalsIgnoreCase("Password")) {
+                                credentialsResponse.setPassword(parser.nextText());
+                            }
+                        }
+                        break;
+                }
+                event = parser.next();
+            }
+        } catch (XmlPullParserException e) {
+            Crashlytics.logException(e);
+        } catch (UnsupportedEncodingException e) {
+            Crashlytics.logException(e);
+        } catch (IOException e) {
+            Crashlytics.logException(e);
+        }
+
+        return credentialsResponse;
     }
 
     public static String replaceAction(String xml, String newAction) {
