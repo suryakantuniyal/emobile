@@ -2219,6 +2219,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         boolean printSuccessful = true;
         private ProgressDialog myProgressDialog;
         private OrderingMain_FA.OrderingAction orderingAction;
+        private String orderId;
 
         public PrintAsync(OrderingMain_FA.OrderingAction orderingAction) {
             this.orderingAction = orderingAction;
@@ -2238,7 +2239,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     && getOrderingMainFa()._msrUsbSams.isDeviceOpen()) {
                 getOrderingMainFa()._msrUsbSams.CloseTheDevice();
             }
-
+            orderId = getOrderingMainFa().global.order.ord_id;
         }
 
         @Override
@@ -2251,14 +2252,14 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 if (emsDeviceManager != null
                         && emsDeviceManager.getCurrentDevice() != null) {
                     printSuccessful = emsDeviceManager.getCurrentDevice()
-                            .printTransaction(getOrderingMainFa().global.order.ord_id, type, false,
+                            .printTransaction(orderId, type, false,
                                     false);
                 }
             } else {
                 OrderProductsHandler orderProductsHandler = new OrderProductsHandler(
                         getActivity());
                 HashMap<String, List<Orders>> temp = orderProductsHandler
-                        .getStationPrinterProducts(getOrderingMainFa().global.order.ord_id);
+                        .getStationPrinterProducts(orderId);
 
                 String[] sArr = temp.keySet().toArray(
                         new String[temp.keySet().size()]);
@@ -2276,16 +2277,9 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                             currentDevice = (EMSBluetoothStarPrinter) Global.multiPrinterManager.get(printMap).getCurrentDevice();
                             if (currentDevice != null) {
                                 receipt.append(currentDevice.printStationPrinter(temp.get(aSArr),
-                                        getOrderingMainFa().global.order.ord_id, splitByCat, printHeader));
-                                currentDevice.print(receipt.toString(), 1, PrinterFunctions.Alignment.Left);
+                                        orderId, splitByCat, printHeader));
+                                currentDevice.printRemote(receipt.toString(), 1, PrinterFunctions.Alignment.Left);
                                 receipt.setLength(0);
-                                currentDevice.cutPaper();
-                                // we need to wait so it can print them all
-                                try {
-                                    Thread.sleep(750);
-                                } catch (InterruptedException e) {
-                                    // do nothing
-                                }
                             }
                         }
                     }

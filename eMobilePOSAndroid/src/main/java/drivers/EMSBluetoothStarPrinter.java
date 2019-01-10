@@ -221,6 +221,8 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            releasePrinter();
         }
         if (didConnect) {
             this.edm.driverDidConnectToDevice(thisInstance, false, activity);
@@ -263,14 +265,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
     @Override
     public boolean printTransaction(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
-        try {
-            setPaperWidth(LINE_WIDTH);
-            verifyConnectivity();
-            printReceipt(order, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, emvContainer);
-            releasePrinter();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        printReceipt(order, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, emvContainer);
         return true;
     }
 
@@ -451,33 +446,34 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
     @Override
     public void releaseCardReader() {
-        if (!isPOSPrinter) {
-            callBack = null;
-            try {
-                if (port != null) {
-                    port.writePort(new byte[]{0x04}, 0, 1);
-                    stopLoop = true;
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            } catch (StarIOPortException e) {
-                e.printStackTrace();
-            }
-        }
+//        if (!isPOSPrinter) {
+//            callBack = null;
+//            try {
+//                if (port != null) {
+//                    port.writePort(new byte[]{0x04}, 0, 1);
+//                    Log.d("eMobilePOS", "### port.writePort ### @ releaseCardReader()");
+//                    stopLoop = true;
+//                    try {
+//                        Thread.sleep(500);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            } catch (StarIOPortException e) {
+//                e.printStackTrace();
+//            }
+//        }
     }
 
     @Override
     public void loadCardReader(EMSCallBack _callBack, boolean isDebitCard) {
-        callBack = _callBack;
-        if (handler == null)
-            handler = new Handler();
-        if (!isPOSPrinter) {
-            StartCardReaderThread temp = new StartCardReaderThread();
-            temp.start();
-        }
+//        callBack = _callBack;
+//        if (handler == null)
+//            handler = new Handler();
+//        if (!isPOSPrinter) {
+//            StartCardReaderThread temp = new StartCardReaderThread();
+//            temp.start();
+//        }
     }
 
     @Override
@@ -514,37 +510,28 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         return printStationPrinterReceipt(orders, ordID, 42, cutPaper, printHeader);
     }
 
-    public void print(String str, int size, PrinterFunctions.Alignment alignment) {
+    public void printRemote(String str, int size, PrinterFunctions.Alignment alignment) {
         try {
             setPaperWidth(LINE_WIDTH);
             verifyConnectivity();
             super.print(str, FORMAT, size, alignment);
+            super.cutPaper();
             releasePrinter();
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void print(String str, int size, PrinterFunctions.Alignment alignment) {
+        super.print(str, FORMAT, size, alignment);
     }
 
     public void print(String str) {
-        try {
-            setPaperWidth(LINE_WIDTH);
-            verifyConnectivity();
-            super.print(str);
-            releasePrinter();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        super.print(str);
     }
 
     public void print(String str, String FORMAT) {
-        try {
-            setPaperWidth(LINE_WIDTH);
-            verifyConnectivity();
-            super.print(str, FORMAT);
-            releasePrinter();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        super.print(str, FORMAT);
     }
 
     @Override
@@ -905,6 +892,8 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 }
             } catch (Exception e) {
                 msg = "Failed: \n" + e.getMessage();
+            } finally {
+                releasePrinter();
             }
 
             return null;
@@ -932,22 +921,23 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         }
     }
 
-    private class StartCardReaderThread extends Thread {
-        public void run() {
-            try {
-                if (port == null) {
-                    port = getStarIOPort();
-                }
-                stopLoop = false;
-                ReceiveThread receiveThread = new ReceiveThread();
-                receiveThread.start();
-                port.writePort(new byte[]{0x1b, 0x4d, 0x45}, 0, 3);
-                handler.post(doUpdateDidConnect);
-            } catch (StarIOPortException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+//    private class StartCardReaderThread extends Thread {
+//        public void run() {
+//            try {
+//                if (port == null) {
+//                    port = getStarIOPort();
+//                }
+//                stopLoop = false;
+//                ReceiveThread receiveThread = new ReceiveThread();
+//                receiveThread.start();
+//                port.writePort(new byte[]{0x1b, 0x4d, 0x45}, 0, 3);
+//                Log.d("eMobilePOS", "### port.writePort ### @ StartCardReaderThread()");
+//                handler.post(doUpdateDidConnect);
+//            } catch (StarIOPortException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
 
     class ReceiveThread extends Thread {
         public void run() {
