@@ -31,6 +31,8 @@ import com.magtek.mobile.android.mtlib.MTSCRAEvent;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import interfaces.EMSCallBack;
 import interfaces.EMSDeviceManagerPrinterDelegate;
@@ -332,6 +334,28 @@ public class EMSMagtekSwiper extends EMSDeviceDriver implements EMSDeviceManager
                                 cardInfo.setMagnePrintStatus(m_scra.getMagnePrintStatus());
                                 cardInfo.setTrackDataKSN(m_scra.getKSN());
                             }
+
+//                            // debug
+//                            Log.d("eMobilePOS", "@@@@@ READER @@@@@");
+//                            Log.d("eMobilePOS", "TrackDecodeStatus: " + m_scra.getTrackDecodeStatus());
+//                            Log.d("eMobilePOS", "ksn: " + cardInfo.getTrackDataKSN());
+//                            Log.d("eMobilePOS", "magnePrint: " + cardInfo.getMagnePrint());
+//                            Log.d("eMobilePOS", "magnePrintStatus: " + cardInfo.getMagnePrintStatus());
+//                            Log.d("eMobilePOS", "deviceSerialNumber: " + cardInfo.getDeviceSerialNumber());
+//                            Log.d("eMobilePOS", "encryptedTrack1: " + cardInfo.getEncryptedTrack1());
+//                            Log.d("eMobilePOS", "encryptedTrack2: " + cardInfo.getEncryptedTrack2());
+//                            Log.d("eMobilePOS", "@@@@@ READER @@@@@");
+
+                            // bad swipe manual detection (when invalid, it returns weird
+                            // characters in the serial number, ex: "10518AA����<?>"F")
+                            Pattern pattern = Pattern.compile("[^A-Za-z0-9]", Pattern.CASE_INSENSITIVE);
+                            Matcher matcher = pattern.matcher(cardInfo.getDeviceSerialNumber());
+                            boolean containsWeirdCharacters = matcher.find();
+                            if (containsWeirdCharacters) {
+                                scannerCallBack.cardWasReadSuccessfully(false, null);
+                                break;
+                            }
+
                             scannerCallBack.cardWasReadSuccessfully(true, cardInfo);
                         }
                         break;
