@@ -1996,6 +1996,9 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         } else {
             if (!Global.isFromOnHold) {
                 getActivity().finish();
+            } else if (caseSelected == Global.TransactionType.INVOICE ||
+                    caseSelected == Global.TransactionType.RETURN) {
+                getActivity().finish();
             }
         }
     }
@@ -2153,8 +2156,15 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         @Override
         protected void onPostExecute(Boolean voidOnHold) {
             Global.dismissDialog(getActivity(), myProgressDialog);
-//            if (voidOnHold)
-            if (caseSelected != Global.TransactionType.INVOICE) {
+
+            if (Global.isFromOnHold) {
+                if (caseSelected != Global.TransactionType.SALE_RECEIPT &&
+                        caseSelected != Global.TransactionType.RETURN &&
+                        caseSelected != Global.TransactionType.INVOICE) {
+                    getActivity().finish();
+                }
+            } else if (caseSelected != Global.TransactionType.RETURN &&
+                    caseSelected != Global.TransactionType.INVOICE) {
                 getActivity().finish();
             }
         }
