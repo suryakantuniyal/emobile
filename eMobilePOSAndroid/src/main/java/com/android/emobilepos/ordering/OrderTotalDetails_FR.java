@@ -141,7 +141,6 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
     }
 
     private static List<OrderProduct> applyXYZMixMatchToGroup(MixMatchProductGroup group, RealmResults<MixMatch> mixMatches, boolean isGroupBySKU) {
-
         List<OrderProduct> orderProducts = new ArrayList<>();
         MixMatch mixMatch1 = mixMatches.get(0);
         MixMatch mixMatch2 = mixMatches.get(1);
@@ -154,18 +153,15 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         }
 
         int qtyAtRegularPrice;
-//        int qtyAtDiscountPrice;
         int groupQty = group.getQuantity();
         int completeGroupSize = qtyRequired + qtyDiscounted;
         int numberOfCompletedGroups = groupQty / completeGroupSize;
         int remainingItems = groupQty % completeGroupSize;
 
         qtyAtRegularPrice = numberOfCompletedGroups * qtyRequired;
-//        qtyAtDiscountPrice = numberOfCompletedGroups * qtyDiscounted;
 
         if (remainingItems > qtyRequired) {
             qtyAtRegularPrice += qtyRequired;
-//            qtyAtDiscountPrice += (remainingItems - qtyRequired);
         } else {
             qtyAtRegularPrice += remainingItems;
         }
@@ -212,7 +208,6 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                     orderProduct.setOrdprod_qty(String.valueOf(prodQty));
                     orderProduct.setMixMatchQtyApplied(prodQty);
                     orderProduct.setItemTotal(String.valueOf(xyzProduct.getPrice().multiply(Global.getBigDecimalNum(orderProduct.getOrdprod_qty()))));
-//                    orderProduct.setItemSubtotal(String.valueOf(xyzProduct.getPrice().multiply(Global.getBigDecimalNum(orderProduct.getOrdprod_qty()))));
                     orderProducts.add(orderProduct);
                 } else {
                     for (OrderProduct orderProduct : xyzProduct.getOrderProducts()) {
@@ -227,7 +222,6 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                         clone.setProd_price(String.valueOf(xyzProduct.getPrice()));
                         clone.setMixMatchQtyApplied(1);
                         clone.setItemTotal(clone.getProd_price());
-//                        clone.setItemSubtotal(clone.getProd_price());
                         orderProducts.add(clone);
                     }
                 }
@@ -249,8 +243,6 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                         orderProduct.setMixMatchQtyApplied(regularPriced);
                         orderProduct.setItemTotal(String.valueOf(xyzProduct.getPrice()
                                 .multiply(Global.getBigDecimalNum(orderProduct.getOrdprod_qty()))));
-//                        orderProduct.setItemSubtotal(String.valueOf(xyzProduct.getPrice()
-//                                .multiply(Global.getBigDecimalNum(orderProduct.getOrdprod_qty()))));
 
                         orderProducts.add(orderProduct);
                     } else {
@@ -261,7 +253,6 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                                 clone.setOrdprod_qty("1");
                                 clone.setMixMatchQtyApplied(1);
                                 clone.setItemTotal(clone.getProd_price());
-//                                clone.setItemSubtotal(clone.getProd_price());
                                 orderProducts.add(clone);
                             } catch (CloneNotSupportedException e) {
                                 e.printStackTrace();
@@ -293,8 +284,6 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                         }
                         orderProduct.setProd_price(String.valueOf(discountPrice));
                         orderProduct.setItemTotal(String.valueOf(Global.getBigDecimalNum(orderProduct.getProd_price()).multiply(Global.getBigDecimalNum(orderProduct.getOrdprod_qty()))));
-//                        orderProduct.setItemSubtotal(String.valueOf(Global.getBigDecimalNum(orderProduct.getProd_price()).multiply(Global.getBigDecimalNum(orderProduct.getOrdprod_qty()))));
-
                         orderProducts.add(orderProduct);
                     } else {
                         for (int i = 0; i < discountPriced; i++) {
@@ -313,7 +302,6 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                                 }
                                 clone.setProd_price(String.valueOf(discountPrice));
                                 clone.setItemTotal(clone.getProd_price());
-//                                clone.setItemSubtotal(clone.getProd_price());
                                 orderProducts.add(clone);
                             } catch (CloneNotSupportedException e) {
                                 e.printStackTrace();
@@ -322,12 +310,10 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                         }
 
                     }
-//                    qtyAtDiscountPrice -= discountPriced;
                 }
 
             }
         }
-
         return orderProducts;
     }
 
@@ -428,13 +414,6 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         granTotal = view.findViewById(R.id.grandTotalValue);
         activity = getActivity();
         myPref = new MyPreferences(activity);
-
-//        if (!myPref.isTablet() && leftHolder != null) {
-//            leftHolder.setVisibility(View.GONE);
-//        }
-//        else if (myPref.isTablet() && leftHolder != null)
-//            itemCount = (TextView) view.findViewById(R.id.itemCount);
-
         return view;
     }
 
@@ -625,19 +604,6 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         Global.discountAmount = discount_amount;
     }
 
-//    private void calculateTaxes(OrderProduct orderProduct) {
-//        Discount dis = null;
-//        if (discountSelected > 0) {
-//            dis = discountList.get(discountSelected - 1);
-//        }
-//        if (taxSelected > 0) {
-//            TaxesCalculator taxesCalculator = new TaxesCalculator(activity, orderProduct, Global.taxID,
-//                    taxList.get(taxSelected - 1), dis, discountable_sub_total, itemsDiscountTotal);
-//            tempTaxableAmount = tempTaxableAmount.add(taxesCalculator.getTaxableAmount());
-//            getOrderingMainFa().setListOrderTaxes(taxesCalculator.getListOrderTaxes());
-//        }
-//    }
-
     private OrderingMain_FA getOrderingMainFa() {
         return (OrderingMain_FA) getActivity();
     }
@@ -659,14 +625,12 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
     }
 
     public synchronized void reCalculate(List<OrderProduct> orderProducts) {
-
         if (getOrderingMainFa().global == null) {
             return;
         }
         if (getOrderingMainFa() != null) {
             recalculateTask = new ReCalculate(getActivity());
             recalculateTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, orderProducts);
-//            new ReCalculate().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, orderProducts);
         }
     }
 
@@ -698,7 +662,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             try {
                 List<OrderProduct> orderProducts = params[0];
                 if (myPref.isMixAnMatch() && orderProducts != null && !orderProducts.isEmpty()) {
-                    boolean isGroupBySKU = myPref.isGroupReceiptBySku(activity.isToGo);//myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku) && isToGo;
+                    boolean isGroupBySKU = myPref.isGroupReceiptBySku(activity.isToGo);
                     calculateMixAndMatch(orderProducts, isGroupBySKU);
                 }
                 Discount discount = activity.getLeftFragment().orderTotalDetailsFr.discountSelected > 0 ?
