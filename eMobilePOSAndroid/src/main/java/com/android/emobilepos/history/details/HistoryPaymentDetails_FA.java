@@ -13,7 +13,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.PowerManager;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -49,6 +48,8 @@ import com.android.support.MyPreferences;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.crashlytics.android.Crashlytics;
+import com.ingenico.mpos.sdk.constants.ResponseCode;
+import com.ingenico.mpos.sdk.response.TransactionResponse;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -68,11 +69,15 @@ import java.util.Locale;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import drivers.ingenico.utils.MobilePosSdkHelper;
 import interfaces.EMSCallBack;
 import interfaces.EMSDeviceManagerPrinterDelegate;
 import main.EMSDeviceManager;
 
-public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener {
+import static drivers.ingenico.utils.MobilePosSdkHelper.MOBY8500;
+
+public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar
+        implements EMSCallBack, OnClickListener, MobilePosSdkHelper.OnIngenicoTransactionCallback {
 
     private boolean hasBeenCreated = false;
     private Global global;
@@ -297,7 +302,6 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
 
     }
 
-
     private class printAsync extends AsyncTask<String, String, String> {
         private boolean printSuccessful = true;
 
@@ -391,8 +395,15 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
                 device.saleReversal(paymentToBeRefunded, paymentToBeRefunded.getPay_transid(), null);
             }
         } else if (paymethod_name.equals("Card")) {
-            EMSPayGate_Default payGate = new EMSPayGate_Default(activity, paymentToBeRefunded);
-            new processCardVoidAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, payGate.paymentWithAction(EAction.VoidCreditCardAction, false, paymentToBeRefunded.getCard_type(), null));
+            if (!paymentToBeRefunded.getPay_stamp().equals(MOBY8500)) {
+                EMSPayGate_Default payGate = new EMSPayGate_Default(activity, paymentToBeRefunded);
+                new processCardVoidAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, payGate.paymentWithAction(EAction.VoidCreditCardAction, false, paymentToBeRefunded.getCard_type(), null));
+            } else {
+                payHandler.createVoidPayment(paymentToBeRefunded, false, null);
+                MobilePosSdkHelper mobilePosSdkHelper = new MobilePosSdkHelper(this);
+                mobilePosSdkHelper.startVoid(
+                        paymentToBeRefunded.getJob_id(), paymentToBeRefunded.getPay_transid());
+            }
         } else if (paymethod_name.equals("GiftCard") || paymethod_name.equals("LoyaltyCard")) {
             EMSPayGate_Default payGate = new EMSPayGate_Default(activity, paymentToBeRefunded);
             new processCardVoidAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, payGate.paymentWithAction(EAction.VoidGiftCardAction, false, paymentToBeRefunded.getCard_type(), null));
@@ -406,6 +417,24 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
         } else {
             payHandler.createVoidPayment(paymentToBeRefunded, false, null);
             Global.showPrompt(activity, R.string.payment_void_title, getString(R.string.payment_void_completed));
+        }
+    }
+
+    @Override
+    public void onIngenicoTransactionDone(Integer responseCode, TransactionResponse response) {
+        switch (responseCode) {
+            case ResponseCode.Success:
+                Global.showPrompt(activity, R.string.dlog_title_success,
+                        getString(R.string.dlog_msg_ingenico_payment_voided));
+                break;
+            case ResponseCode.EntityNotFound:
+                Global.showPrompt(activity, R.string.dlog_title_error,
+                        getString(R.string.dlog_msg_ingenico_payment_not_found));
+                break;
+            default:
+                Global.showPrompt(activity, R.string.dlog_title_error,
+                        getString(R.string.dlog_msg_ingenico_payment_error));
+                break;
         }
     }
 

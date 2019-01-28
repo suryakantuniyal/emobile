@@ -8,6 +8,7 @@ import com.ingenico.mpos.sdk.constants.UCIFormat;
 import com.ingenico.mpos.sdk.data.Amount;
 import com.ingenico.mpos.sdk.request.CreditCardRefundTransactionRequest;
 import com.ingenico.mpos.sdk.request.CreditSaleTransactionRequest;
+import com.ingenico.mpos.sdk.request.VoidTransactionRequest;
 import com.ingenico.mpos.sdk.response.TransactionResponse;
 import com.roam.roamreaderunifiedapi.data.ApplicationIdentifier;
 
@@ -19,6 +20,8 @@ import util.MoneyUtils;
  * Created by Luis Camayd on 12/7/2018.
  */
 public class MobilePosSdkHelper {
+
+    public static final String MOBY8500 = "MOBY8500";
 
     private OnIngenicoTransactionCallback callback;
 
@@ -40,6 +43,13 @@ public class MobilePosSdkHelper {
                     getCardSaleTransactionRequest(totalAmount),
                     new CreditSaleTransactionCallbackImpl());
         }
+    }
+
+    public void startVoid(String orderId, String originalTransactionId) {
+        Ingenico.getInstance().payment().processVoidTransaction(
+                getVoidTransactionRequest(orderId, originalTransactionId),
+                new VoidTransactionCallbackImpl()
+        );
     }
 
     private CreditSaleTransactionRequest getCardSaleTransactionRequest(String totalAmount) {
@@ -84,6 +94,16 @@ public class MobilePosSdkHelper {
                 "",
                 null,
                 UCIFormat.Ingenico
+        );
+    }
+
+    private VoidTransactionRequest getVoidTransactionRequest(String ordId, String txnId) {
+        return new VoidTransactionRequest(
+                txnId,
+                "0",
+                "0",
+                "0",
+                ordId
         );
     }
 
@@ -196,6 +216,25 @@ public class MobilePosSdkHelper {
 
         @Override
         public void updateProgress(Integer integer, String s) {
+            // do nothing
+        }
+
+        @Override
+        public void applicationSelection(
+                List<ApplicationIdentifier> appList,
+                ApplicationSelectionCallback applicationcallback) {
+            // do nothing
+        }
+
+        @Override
+        public void done(Integer responseCode, TransactionResponse response) {
+            callback.onIngenicoTransactionDone(responseCode, response);
+        }
+    }
+
+    private class VoidTransactionCallbackImpl implements TransactionCallback {
+        @Override
+        public void updateProgress(Integer progressCode, String extraMessage) {
             // do nothing
         }
 

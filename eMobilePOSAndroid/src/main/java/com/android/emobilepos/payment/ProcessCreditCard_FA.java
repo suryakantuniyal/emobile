@@ -104,6 +104,7 @@ import main.EMSDeviceManager;
 import util.MoneyUtils;
 import util.json.UIUtils;
 
+import static drivers.ingenico.utils.MobilePosSdkHelper.MOBY8500;
 import static drivers.ingenico.utils.MobilePosSdkHelper.getResponseCodeString;
 
 public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar
@@ -2159,6 +2160,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar
                 showConnectPaymentDeviceDlog();
                 break;
             case ResponseCode.InvalidSession:
+            case ResponseCode.InitializationRequired:
                 showErrorDlog(getString(R.string.dlog_msg_ingenico_login_failed));
                 break;
             default:
@@ -2260,6 +2262,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar
         payment.setCard_type(response.getCardType().name());
         payment.setProcessed("1");
         payment.setPaymethod_id(PayMethodsHandler.getPayMethodID(response.getCardType().name()));
+        payment.setPay_stamp(MOBY8500); // identify transactions done in MOBY8500 payment devices
 
         PaymentsHandler payHandler = new PaymentsHandler(activity);
         payHandler.insert(payment);
