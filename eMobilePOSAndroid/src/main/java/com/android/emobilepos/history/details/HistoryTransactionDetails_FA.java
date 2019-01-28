@@ -14,7 +14,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.PowerManager;
 import android.text.InputType;
 import android.util.Base64;
 import android.util.DisplayMetrics;
@@ -57,6 +56,8 @@ import com.android.support.NumberUtils;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.crashlytics.android.Crashlytics;
+import com.ingenico.mpos.sdk.constants.ResponseCode;
+import com.ingenico.mpos.sdk.response.TransactionResponse;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -82,10 +83,16 @@ import java.util.Locale;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import drivers.ingenico.utils.MobilePosSdkHelper;
 import interfaces.EMSCallBack;
 import main.EMSDeviceManager;
 
-public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener, OnItemClickListener {
+import static drivers.ingenico.utils.MobilePosSdkHelper.MOBY8500;
+
+public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar
+        implements EMSCallBack, OnClickListener, OnItemClickListener,
+        MobilePosSdkHelper.OnIngenicoTransactionCallback {
+
     private static List<String> allInfoLeft;
     private final int CASE_TOTAL = 0;
     private final int CASE_OVERALL_PAID_AMOUNT = 1;
@@ -708,16 +715,30 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                     } else if (paymentType.equals("CASH")) {
                         payHandler.createVoidPayment(listVoidPayments.get(i), false, null);
                     } else if (!paymentType.equals("CHECK") && !paymentType.equals("WALLET")) {
-                        payGate = new EMSPayGate_Default(activity, listVoidPayments.get(i));
-                        xml = post.postData(13, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidCreditCardAction, false, listVoidPayments.get(i).getCard_type(), null));
-                        inSource = new InputSource(new StringReader(xml));
-                        xr.setContentHandler(handler);
-                        xr.parse(inSource);
-                        parsedMap = handler.getData();
-                        if (parsedMap != null && parsedMap.size() > 0 && parsedMap.get("epayStatusCode").equals("APPROVED"))
-                            payHandler.createVoidPayment(listVoidPayments.get(i), true, parsedMap);
-                        if (parsedMap != null) {
-                            parsedMap.clear();
+                        if (!listVoidPayments.get(i).getPay_stamp().equals(MOBY8500)) {
+                            payGate = new EMSPayGate_Default(activity, listVoidPayments.get(i));
+                            xml = post.postData(13, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidCreditCardAction, false, listVoidPayments.get(i).getCard_type(), null));
+                            inSource = new InputSource(new StringReader(xml));
+                            xr.setContentHandler(handler);
+                            xr.parse(inSource);
+                            parsedMap = handler.getData();
+                            if (parsedMap != null && parsedMap.size() > 0 && parsedMap.get("epayStatusCode").equals("APPROVED"))
+                                payHandler.createVoidPayment(listVoidPayments.get(i), true, parsedMap);
+                            if (parsedMap != null) {
+                                parsedMap.clear();
+                            }
+                        } else {
+                            final Payment voidPayment = listVoidPayments.get(i);
+                            payHandler.createVoidPayment(voidPayment, false, null);
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    MobilePosSdkHelper mobilePosSdkHelper =
+                                            new MobilePosSdkHelper(HistoryTransactionDetails_FA.this);
+                                    mobilePosSdkHelper.startVoid(
+                                            voidPayment.getJob_id(), voidPayment.getPay_transid());
+                                }
+                            });
                         }
                     }
                 }
@@ -736,6 +757,24 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
             btnVoid.setEnabled(false);
             btnVoid.setClickable(false);
             Global.showPrompt(activity, R.string.dlog_title_success, getString(R.string.dlog_msg_transaction_voided));
+        }
+    }
+
+    @Override
+    public void onIngenicoTransactionDone(Integer responseCode, TransactionResponse response) {
+        switch (responseCode) {
+            case ResponseCode.Success:
+                Global.showPrompt(activity, R.string.dlog_title_success,
+                        getString(R.string.dlog_msg_ingenico_payment_voided));
+                break;
+            case ResponseCode.EntityNotFound:
+                Global.showPrompt(activity, R.string.dlog_title_error,
+                        getString(R.string.dlog_msg_ingenico_payment_not_found));
+                break;
+            default:
+                Global.showPrompt(activity, R.string.dlog_title_error,
+                        getString(R.string.dlog_msg_ingenico_payment_error));
+                break;
         }
     }
 

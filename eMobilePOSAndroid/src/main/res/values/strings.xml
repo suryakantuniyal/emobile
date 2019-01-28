@@ -65,6 +65,7 @@
     <string name="dlog_title_choose_action">Choose Action</string>
     <string name="dlog_title_transaction_failed_to_process">Some transactions failed to process</string>
     <string name="dlog_title_conn_payment_device">Connect Payment Device</string>
+    <string name="error_getting_credentials">An error occurred while getting Ingenico\'s credentials.</string>
     <string name="dlog_msg_conn_payment_device">Device not available, please turn it on (keep green\nbutton pressed for three seconds) and hit Connect.\n\nNote: Wait until the Bluetooth logo appears in the\nupper left corner of the device\'s screen to continue.</string>
     <string name="dlog_msg_turnon_payment_device">Please turn the payment device on (keep green\nbutton pressed for three seconds) and try again.</string>
     <string name="dlog_msg_ingenico_login_failed">Ingenico\'s user login failed. Please check credentials and try again.</string>
@@ -78,6 +79,9 @@
     <string name="dlog_msg_enter_qty">Enter the quantity to be added</string>
     <string name="dlog_msg_want_to_print">Do you want to print?</string>
     <string name="dlog_msg_transaction_voided">Transaction was voided</string>
+    <string name="dlog_msg_ingenico_payment_voided">Ingenico payment voided!</string>
+    <string name="dlog_msg_ingenico_payment_not_found">Error: Ingenico Payment Not Found.</string>
+    <string name="dlog_msg_ingenico_payment_error">Error voiding Ingenico payment.</string>
     <string name="dlog_msg_failed_print">Printing failed please verify printer status.\nWould you like to retry printing?</string>
     <string name="dlog_msg_want_to_reprint">Do you want to re-print?</string>
     <string name="dlog_msg_want_to_make_refund">Do you want to make a refund?</string>

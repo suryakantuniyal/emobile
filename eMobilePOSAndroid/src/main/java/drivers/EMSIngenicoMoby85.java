@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.widget.Toast;
 
 import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.R;
@@ -349,12 +350,6 @@ public class EMSIngenicoMoby85
 
     @Override
     public void onDisconnected() {
-//        ((Activity) activity).runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                Toast.makeText(activity, "Payment Device Disconnected!", Toast.LENGTH_SHORT).show();
-//            }
-//        });
     }
 
     @Override
@@ -388,7 +383,14 @@ public class EMSIngenicoMoby85
                 ((Activity) activity).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        initializeIngenicoSDK();
+                        if (!API_KEY.isEmpty() && !BASE_URL.isEmpty() &&
+                                !USERNAME.isEmpty() && !PASSWORD.isEmpty()) {
+                            initializeIngenicoSDK();
+                        } else {
+                            Toast.makeText(activity, activity.getString(
+                                    R.string.error_getting_credentials),
+                                    Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
             }
