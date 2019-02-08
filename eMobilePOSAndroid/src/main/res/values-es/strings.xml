@@ -422,6 +422,9 @@
 
     <!-- Clocks Main Tab -->
     <string name="clock_title">"Reloj"</string>
+    <string name="clock_last_status">"Último estado"</string>
+    <string name="clock_clock_in">"Ponche de entrada"</string>
+    <string name="clock_clock_out">"Ponche de salida"</string>
 
     <!-- About Main Tab -->
     <string name="about_title">"Acerca de"</string>

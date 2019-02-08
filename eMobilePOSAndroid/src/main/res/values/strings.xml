@@ -428,6 +428,9 @@
 
     <!-- Clocks Main Tab -->
     <string name="clock_title">Clock</string>
+    <string name="clock_last_status">Last Status</string>
+    <string name="clock_clock_in">Clock In</string>
+    <string name="clock_clock_out">Clock Out</string>
 
     <!-- About Main Tab -->
     <string name="about_title">About</string>

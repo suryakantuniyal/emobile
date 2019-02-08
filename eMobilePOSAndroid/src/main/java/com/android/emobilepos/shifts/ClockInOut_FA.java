@@ -7,7 +7,6 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.PowerManager;
 import android.support.v4.app.FragmentActivity;
 import android.text.InputType;
 import android.view.View;
@@ -68,6 +67,7 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
     private MyPreferences myPref;
     private long hourDifference = 0;
     private List<TimeClock> listTimeClock;
+    private List<TimeClock> listTimeClockToPrint;
     private boolean validPassword = true;
     private String mClerkID = "";
 
@@ -83,14 +83,15 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
         String mClerkName = extras.getString("clerk_name");
         mClerkID = String.valueOf(extras.getInt("clerk_id"));
         listTimeClock = new ArrayList<>();
+        listTimeClockToPrint = new ArrayList<>();
         timeClockHandler = new TimeClockHandler(activity);
-        TextView clockTodayDate = (TextView) findViewById(R.id.topDate);
+        TextView clockTodayDate = findViewById(R.id.topDate);
         clockTodayDate.setText(Global.formatToDisplayDate(DateUtils.getDateAsString(new Date()), 0));
-        TextView clerkName = (TextView) findViewById(R.id.clockClerkNameID);
-        clockType = (TextView) findViewById(R.id.clockType);
-        clockDateTime = (TextView) findViewById(R.id.clockDateTime);
-        clockIn = (Button) findViewById(R.id.clockIn);
-        clockOut = (Button) findViewById(R.id.clockOut);
+        TextView clerkName = findViewById(R.id.clockClerkNameID);
+        clockType = findViewById(R.id.clockType);
+        clockDateTime = findViewById(R.id.clockDateTime);
+        clockIn = findViewById(R.id.clockIn);
+        clockOut = findViewById(R.id.clockOut);
         clerkName.setText(String.format("%s (%s)", mClerkName, mClerkID));
         hasBeenCreated = true;
         clockOut.setOnClickListener(this);
@@ -116,10 +117,6 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
     @Override
     public void onPause() {
         super.onPause();
-//        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-//        boolean isScreenOn = powerManager.isScreenOn();
-//        if (!isScreenOn && myPref.isExpireUserSession())
-//            Global.loggedIn = false;
         global.startActivityTransitionTimer();
     }
 
@@ -130,15 +127,17 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
                 if (clockInOn) {
                     switchButton(false);
                     listTimeClock.add(createTimeClock(false, DateUtils.getDateAsString(new Date())));
+                    listTimeClockToPrint.add(listTimeClock.get(0));
                     timeClockHandler.insert(listTimeClock, false);
                     listTimeClock.clear();
-                    new SendUnsyncTimeClock().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
+                    new SendUnsyncTimeClock().execute(false);
                 }
                 break;
             case R.id.clockOut:
                 if (clockOutOn && hourDifference <= 12) {
                     switchButton(true);
                     listTimeClock.add(createTimeClock(true, DateUtils.getDateAsString(new Date())));
+                    listTimeClockToPrint.add(listTimeClock.get(0));
                     timeClockHandler.insert(listTimeClock, false);
                     listTimeClock.clear();
                     new SendUnsyncTimeClock().execute(false);
@@ -147,9 +146,7 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
                 }
                 break;
         }
-        List<TimeClock> timeClocks = timeClockHandler.getEmployeeTimeClock(mClerkID);
-        new PrintClockInOut().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, timeClocks);
-//        printClockinOut(timeClocks);
+        new PrintClockInOut().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, listTimeClockToPrint);
     }
 
     private TimeClock createTimeClock(boolean isOut, String date) {
@@ -190,8 +187,8 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
 
     private void promptDateTime() {
         View view = activity.getLayoutInflater().inflate(R.layout.date_time_picker_layout, null);
-        final TimePicker tp = (TimePicker) view.findViewById(R.id.timePicker);
-        final DatePicker dp = (DatePicker) view.findViewById(R.id.datePicker);
+        final TimePicker tp = view.findViewById(R.id.timePicker);
+        final DatePicker dp = view.findViewById(R.id.datePicker);
 
         AlertDialog.Builder adb = new AlertDialog.Builder(activity);
         adb.setView(view);
@@ -235,7 +232,7 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
         sdfTZ.setTimeZone(tz);
         String cur_date = sdf.format(calendar.getTime());
         String TimeZone = sdfTZ.format(calendar.getTime());
-        String ending = TimeZone.substring(TimeZone.length() - 2, TimeZone.length());
+        String ending = TimeZone.substring(TimeZone.length() - 2);
         String begining = TimeZone.substring(0, TimeZone.length() - 2);
         return String.format("%s%s:%s", cur_date, begining, ending);
     }
@@ -249,10 +246,10 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
         globalDlog.setCancelable(false);
         globalDlog.setContentView(R.layout.dlog_field_single_two_btn);
 
-        final EditText viewField = (EditText) globalDlog.findViewById(R.id.dlogFieldSingle);
+        final EditText viewField = globalDlog.findViewById(R.id.dlogFieldSingle);
         viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        TextView viewTitle = (TextView) globalDlog.findViewById(R.id.dlogTitle);
-        TextView viewMsg = (TextView) globalDlog.findViewById(R.id.dlogMessage);
+        TextView viewTitle = globalDlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = globalDlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_confirm);
         if (!validPassword)
             viewTitle.setText(R.string.invalid_password);
@@ -261,9 +258,9 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
 
         viewMsg.setText(sb);
 
-        Button btnLeft = (Button) globalDlog.findViewById(R.id.btnDlogLeft);
+        Button btnLeft = globalDlog.findViewById(R.id.btnDlogLeft);
         btnLeft.setText(R.string.button_ok);
-        Button btnRight = (Button) globalDlog.findViewById(R.id.btnDlogRight);
+        Button btnRight = globalDlog.findViewById(R.id.btnDlogRight);
         btnRight.setText(R.string.button_cancel);
         btnLeft.setOnClickListener(new View.OnClickListener() {
 
@@ -500,6 +497,11 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
                     }
                 }
             }
+
+            if (listTC.size() > 0) {
+                listTimeClockToPrint.add(listTC.get(0));
+            }
+
             return null;
         }
 
@@ -525,7 +527,8 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
         }
 
     }
-    private class PrintClockInOut extends AsyncTask<List, Void, Void>{
+
+    private class PrintClockInOut extends AsyncTask<List, Void, Void> {
 
         @Override
         protected Void doInBackground(List... timeClocks) {
