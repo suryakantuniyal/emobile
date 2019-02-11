@@ -55,12 +55,6 @@ android {
         exclude 'META-INF/NOTICE.txt'
         exclude 'META-INF/LICENSE'
         exclude 'META-INF/LICENSE.txt'
-        exclude "lib/arm64-v8a/librealm-jni.so"
-        exclude "lib/x86_64/librealm-jni.so"
-
-        // force 32-bits sqlcipher
-        exclude 'lib/arm64-v8a/libsqlcipher.so'
-        exclude 'lib/x86_64/libsqlcipher.so'
     }
 
     buildTypes {
