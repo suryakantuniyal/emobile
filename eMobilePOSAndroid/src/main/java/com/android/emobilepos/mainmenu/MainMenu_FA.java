@@ -53,10 +53,6 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
-    static {
-        System.loadLibrary("serial_port");
-    }
-
     private MyPreferences myPref;
     private Global global;
     private boolean hasBeenCreated = false;
