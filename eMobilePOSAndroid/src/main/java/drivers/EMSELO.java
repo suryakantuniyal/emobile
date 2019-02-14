@@ -34,8 +34,6 @@ import com.elo.device.enums.Status;
 import com.elo.device.exceptions.UnsupportedEloPlatform;
 import com.elo.device.peripherals.BarCodeReader;
 import com.elotouch.paypoint.register.barcodereader.BarcodeReader;
-import com.elotouch.paypoint.register.cd.CashDrawer;
-import com.elotouch.paypoint.register.cfd.CFD;
 import com.elotouch.paypoint.register.printer.SerialPort;
 import com.magtek.mobile.android.mtlib.MTConnectionType;
 import com.magtek.mobile.android.mtlib.MTEMVEvent;
@@ -59,30 +57,6 @@ import main.EMSDeviceManager;
  * Created by Guarionex on 12/3/2015.
  */
 public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
-    //Load JNI from the library project. Refer MainActivity.java from library project elotouchBarcodeReader.
-    // In constructor we are loading .so file for Barcode Reader.
-
-    private static CFD customerFacingDisplay;
-
-    //Load JNI from the library project. Refer MainActivity.java from library project elotouchCashDrawer.
-    // In constructor we are loading .so file for Cash Drawer.
-    static {
-        try {
-
-
-            System.loadLibrary("cashdrawerjni");
-            System.loadLibrary("cfdjni");
-            System.loadLibrary("barcodereaderjni");
-            System.loadLibrary("serial_port");
-        } catch (UnsatisfiedLinkError error) {
-            // Output expected UnsatisfiedLinkErrors.
-            //Logging.log(error);
-        } catch (Error | Exception error) {
-            // Output unexpected Errors and Exceptions.
-            //Logging.log(error, false);
-        }
-    }
-
     private final int LINE_WIDTH = 32;
     String scannedData = "";
     BarCodeReaderAdapter barcodereader;
@@ -114,13 +88,6 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
         }
     }
 
-    public static CFD getTerminalDisp() {
-        if (customerFacingDisplay == null) {
-            customerFacingDisplay = new CFD();
-        }
-        return customerFacingDisplay;
-    }
-
     /*
      *
      * Prints/Displays Text on Customer Facing Display.
@@ -140,11 +107,6 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
                         cfd.setLine(2, Line2);
                     }
                 }
-            } else {
-                getTerminalDisp().setBacklight(true);
-                getTerminalDisp().clearDisplay();
-                getTerminalDisp().setLine1(Line1);
-                getTerminalDisp().setLine2(Line2);
             }
         } catch (UnsupportedEloPlatform unsupportedEloPlatform) {
 
@@ -517,13 +479,6 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
                 }
             } catch (UnsupportedEloPlatform unsupportedEloPlatform) {
 
-            }
-        } else {
-            CashDrawer cash_drawer = new CashDrawer();
-            if (cash_drawer.isDrawerOpen()) {
-                Toast.makeText(activity, "The Cash Drawer is already open !", Toast.LENGTH_SHORT).show();
-            } else {
-                cash_drawer.openCashDrawer();
             }
         }
     }

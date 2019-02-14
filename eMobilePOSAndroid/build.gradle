@@ -152,8 +152,6 @@ dependencies {
     api files('libs/zxing.jar')
     api files('libs/com.oem.barcode.sdk.jar')
     api files('libs/misccom.jar')
-    api files('libs/elotouchcashdrawer.jar')
-    api files('libs/elotouchcfd.jar')
     api files('libs/magtek-usb.jar')
     api files('libs/redlasersdk.jar')
     api files('libs/powa-platform-android-1.5.1-SNAPSHOT.jar')
