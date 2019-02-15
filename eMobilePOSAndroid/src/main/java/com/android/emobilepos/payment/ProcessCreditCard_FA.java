@@ -521,11 +521,13 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar
 
         tax1.setText(Global.getCurrencyFormat(extras.getString("Tax1_amount")));
         tax2.setText(Global.getCurrencyFormat(extras.getString("Tax2_amount")));
-        List<OrderProduct> orderProducts = global.order == null
-                ? new ArrayList<OrderProduct>() : global.order.getOrderProducts();
         double subtotalDbl = 0;
-        for (OrderProduct products : orderProducts) {
-            subtotalDbl += products.getItemSubtotalCalculated().doubleValue();
+        if (!isFromMainMenu) {
+            List<OrderProduct> orderProducts = global.order == null
+                    ? new ArrayList<OrderProduct>() : global.order.getOrderProducts();
+            for (OrderProduct products : orderProducts) {
+                subtotalDbl += products.getItemSubtotalCalculated().doubleValue();
+            }
         }
         subtotal.setText(Global.formatDoubleToCurrency(subtotalDbl));
         this.amountDueField = findViewById(R.id.processCardAmount);
