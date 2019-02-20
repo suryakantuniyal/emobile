@@ -528,7 +528,7 @@ public class OrderProductsHandler {
 
 
     public HashMap<String, List<Orders>> getStationPrinterProducts(String ordID) {
-        Cursor c=null;
+        Cursor c = null;
         try {
             List<Orders> list;
             c = DBManager.getDatabase().rawQuery("SELECT op.ordprod_id,op.ordprod_name,op.ordprod_desc,op.overwrite_price," +
@@ -599,10 +599,8 @@ public class OrderProductsHandler {
             }
             c.close();
             return tempMap;
-        }
-        finally {
-            if(c!=null && !c.isClosed())
-            {
+        } finally {
+            if (c != null && !c.isClosed()) {
                 c.close();
             }
         }
@@ -752,7 +750,7 @@ public class OrderProductsHandler {
                             "sum(CASE WHEN overwrite_price = '' THEN prod_price * ordprod_qty " +
                             "ELSE IFNULL(overwrite_price, prod_price) * ordprod_qty  END) as 'overwrite_price', ");
             query.append(sqlDateFunction);
-            query.append("(o.ord_timecreated, 'utc') as 'date'" +
+            query.append("(o.ord_timecreated) as 'date'" +
                     "FROM " + table_name + " op ");
             query.append(
                     "LEFT JOIN Categories c ON op.cat_id = c.cat_id " +
