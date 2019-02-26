@@ -25,6 +25,14 @@ import com.android.support.DeviceUtils;
 import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.ingenico.rba_sdk.Comm_Settings;
+import com.ingenico.rba_sdk.Comm_Settings_Constants;
+import com.ingenico.rba_sdk.Comm_Timeout;
+import com.ingenico.rba_sdk.ERROR_ID;
+import com.ingenico.rba_sdk.EventHandlerInterface;
+import com.ingenico.rba_sdk.MESSAGE_ID;
+import com.ingenico.rba_sdk.PARAMETER_ID;
+import com.ingenico.rba_sdk.RBA_API;
 
 import org.springframework.util.support.Base64;
 
@@ -35,14 +43,6 @@ import java.util.List;
 import interfaces.EMSCallBack;
 import interfaces.EMSDeviceManagerPrinterDelegate;
 import main.EMSDeviceManager;
-import rba_sdk.Comm_Settings;
-import rba_sdk.Comm_Settings_Constants;
-import rba_sdk.Comm_Timeout;
-import rba_sdk.ERROR_ID;
-import rba_sdk.EventHandlerInterface;
-import rba_sdk.MESSAGE_ID;
-import rba_sdk.PARAMETER_ID;
-import rba_sdk.RBA_API;
 
 public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate, EventHandlerInterface {
 
