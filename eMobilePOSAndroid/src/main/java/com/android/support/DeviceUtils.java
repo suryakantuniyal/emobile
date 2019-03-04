@@ -194,6 +194,31 @@ public class DeviceUtils {
                     }
                 }
             }
+        } else if (MyPreferences.isPaxA920()) {
+            if (Global.mainPrinterManager == null || forceReload) {
+                edm = new EMSDeviceManager();
+                Global.mainPrinterManager = edm.getManager();
+
+                String paxPrinter = "PAX A920 Printer";
+                if (Global.mainPrinterManager.loadMultiDriver(activity, Global.PAX_A920,
+                        32, true, "", "")) {
+                    sb.append(paxPrinter).append(": ").append("Connected\n\r");
+                    Device device = DeviceTableDAO.getByName(paxPrinter);
+                    if (device == null) {
+                        device = new Device();
+                    }
+                    device.setId(paxPrinter);
+                    device.setName(paxPrinter);
+                    device.setType(String.valueOf(Global.PAX_A920));
+                    device.setRemoteDevice(false);
+                    device.setEmsDeviceManager(Global.mainPrinterManager);
+                    devices.add(device);
+                    DeviceTableDAO.insert(devices);
+                    Global.printerDevices.add(device);
+                } else {
+                    sb.append(paxPrinter).append(": ").append("Failed to connect\n\r");
+                }
+            }
         }
 
         if ((myPref.getPrinterType() != -1)) {
@@ -221,7 +246,6 @@ public class DeviceUtils {
                 if (Global.mainPrinterManager.loadMultiDriver(activity, Global.STAR, 48, true,
                         "TCP:" + myPref.getStarIPAddress(), myPref.getStarPort())) {
                     sb.append(myPref.getStarIPAddress()).append(": ").append("Connected\n\r");
-                    List<Device> list = new ArrayList<>();
                     Device device = DeviceTableDAO.getByName("TCP:" + myPref.getStarIPAddress());
                     if (device != null) {
                         device.setEmsDeviceManager(Global.mainPrinterManager);

@@ -215,6 +215,10 @@ public class MyPreferences {
                 Build.MODEL.toUpperCase().equalsIgnoreCase("15N-A-RM");
     }
 
+    public static boolean isPaxA920() {
+        return Build.MODEL.toUpperCase().equals("A920");
+    }
+
     public String getApplicationPassword() {
         return (prefs.getString(ApplicationPassword, ""));
     }

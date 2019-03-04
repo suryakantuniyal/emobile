@@ -67,6 +67,10 @@ import com.elo.device.peripherals.Printer;
 import com.miurasystems.miuralibrary.api.executor.MiuraManager;
 import com.miurasystems.miuralibrary.api.listener.MiuraDefaultListener;
 import com.mpowa.android.sdk.powapos.PowaPOS;
+import com.pax.poslink.CommSetting;
+import com.pax.poslink.peripheries.POSLinkPrinter;
+import com.pax.poslink.peripheries.POSLinkScanner;
+import com.pax.poslink.peripheries.ProcessResult;
 import com.printer.aidl.PService;
 import com.printer.command.EscCommand;
 import com.printer.command.PrinterCom;
@@ -153,6 +157,8 @@ public class EMSDeviceDriver {
     private double saveAmount;
     private StarIoExt.Emulation emulation = StarIoExt.Emulation.StarGraphic;
     private EscCommand esc;
+    POSLinkPrinter.PrintDataFormatter printDataFormatter;
+    POSLinkScanner posLinkScanner;
 
     private static byte[] convertFromListbyteArrayTobyteArray(List<byte[]> ByteArray) {
         int dataLength = 0;
@@ -423,6 +429,30 @@ public class EMSDeviceDriver {
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
+        } else if (this instanceof EMSPaxA920) {
+            try {
+                if (!str.isEmpty()) {
+                    printDataFormatter.clear();
+                    printDataFormatter.addLeftAlign().addContent(str);
+                    POSLinkPrinter.getInstance(activity).print(printDataFormatter.build(),
+                            POSLinkPrinter.CutMode.FULL_PAPER_CUT,
+                            getCommSettingFromFile(),
+                            new POSLinkPrinter.PrintListener() {
+                                @Override
+                                public void onSuccess() {
+                                }
+
+                                @Override
+                                public void onError(ProcessResult processResult) {
+
+                                }
+                            });
+                }
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -488,6 +518,31 @@ public class EMSDeviceDriver {
                 } catch (JposException e) {
                     e.printStackTrace();
                 }
+            }
+        } else if (this instanceof EMSPaxA920) {
+            try {
+                String str = new String(byteArray);
+                if (!str.isEmpty()) {
+                    printDataFormatter.clear();
+                    printDataFormatter.addLeftAlign().addContent(str);
+                    POSLinkPrinter.getInstance(activity).print(printDataFormatter.build(),
+                            POSLinkPrinter.CutMode.FULL_PAPER_CUT,
+                            getCommSettingFromFile(),
+                            new POSLinkPrinter.PrintListener() {
+                                @Override
+                                public void onSuccess() {
+                                }
+
+                                @Override
+                                public void onError(ProcessResult processResult) {
+
+                                }
+                            });
+                }
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
@@ -586,6 +641,18 @@ public class EMSDeviceDriver {
             esc.addQueryPrinterStatus();
             printGPrinter(esc);
         }
+    }
+
+    public static CommSetting getCommSettingFromFile() {
+        CommSetting commsetting = new CommSetting();
+        commsetting.setTimeOut("60000");
+        commsetting.setType("AIDL");
+        commsetting.setSerialPort("COM1");
+        commsetting.setBaudRate("9600");
+        commsetting.setDestIP("172.16.20.15");
+        commsetting.setDestPort("10009");
+        commsetting.setMacAddr("");
+        return commsetting;
     }
 
     private void printGPrinter(EscCommand escCommand) {
@@ -724,8 +791,31 @@ public class EMSDeviceDriver {
                     e.printStackTrace();
                 }
             }
-        }
+        } else if (this instanceof EMSPaxA920) {
+            try {
+                if (!str.isEmpty()) {
+                    printDataFormatter.clear();
+                    printDataFormatter.addLeftAlign().addContent(str);
+                    POSLinkPrinter.getInstance(activity).print(printDataFormatter.build(),
+                            POSLinkPrinter.CutMode.FULL_PAPER_CUT,
+                            getCommSettingFromFile(),
+                            new POSLinkPrinter.PrintListener() {
+                                @Override
+                                public void onSuccess() {
+                                }
 
+                                @Override
+                                public void onError(ProcessResult processResult) {
+
+                                }
+                            });
+                }
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void printEMVSection(EMVContainer emvContainer, int lineWidth) {
@@ -1585,6 +1675,26 @@ public class EMSDeviceDriver {
                     } catch (JposException e) {
                         e.printStackTrace();
                     }
+                }
+            } else if (this instanceof EMSPaxA920) {
+                try {
+                    if (myBitmap.getHeight() > 0 && myBitmap.getWidth() > 0) {
+                        POSLinkPrinter.getInstance(activity).print(myBitmap,
+                                POSLinkPrinter.CutMode.FULL_PAPER_CUT,
+                                new POSLinkPrinter.PrintListener() {
+                                    @Override
+                                    public void onSuccess() {
+                                    }
+
+                                    @Override
+                                    public void onError(ProcessResult processResult) {
+                                    }
+                                });
+                    }
+                } catch (IllegalArgumentException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
             try {
