@@ -19,6 +19,7 @@ import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.models.realms.Device;
+import com.android.emobilepos.models.realms.RealmString;
 import com.crashlytics.android.Crashlytics;
 import com.elo.device.DeviceManager;
 import com.elo.device.enums.EloPlatform;
@@ -37,6 +38,7 @@ import drivers.EMSDeviceDriver;
 import drivers.EMSPowaPOS;
 import drivers.EMSmePOS;
 import drivers.EMSsnbc;
+import io.realm.RealmList;
 import main.EMSDeviceManager;
 
 import static com.android.emobilepos.customer.ViewCustomerDetails_FA.ACTION_USB_PERMISSION;
@@ -204,8 +206,10 @@ public class DeviceUtils {
                         32, true, "", "")) {
                     sb.append(paxPrinter).append(": ").append("Connected\n\r");
                     Device device = DeviceTableDAO.getByName(paxPrinter);
+                    boolean deviceIsNew = false;
                     if (device == null) {
                         device = new Device();
+                        deviceIsNew = true;
                     }
                     device.setId(paxPrinter);
                     device.setName(paxPrinter);
@@ -215,6 +219,17 @@ public class DeviceUtils {
                     devices.add(device);
                     DeviceTableDAO.insert(devices);
                     Global.printerDevices.add(device);
+                    if (deviceIsNew) {
+                        RealmList<RealmString> values = new RealmList<>();
+                        values.add(Device.Printables.PAYMENT_RECEIPT.getRealmString());
+                        values.add(Device.Printables.PAYMENT_RECEIPT_REPRINT.getRealmString());
+                        values.add(Device.Printables.TRANSACTION_RECEIPT.getRealmString());
+                        values.add(Device.Printables.TRANSACTION_RECEIPT_REPRINT.getRealmString());
+                        values.add(Device.Printables.REPORTS.getRealmString());
+                        DeviceTableDAO.remove(values);
+                        device.setSelectedPritables(values);
+                        DeviceTableDAO.upsert(device);
+                    }
                 } else {
                     sb.append(paxPrinter).append(": ").append("Failed to connect\n\r");
                 }
