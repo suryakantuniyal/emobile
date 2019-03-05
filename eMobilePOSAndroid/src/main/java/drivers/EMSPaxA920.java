@@ -30,7 +30,7 @@ import main.EMSDeviceManager;
  */
 public class EMSPaxA920 extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
 
-    private int LINE_WIDTH = 32;
+    private int LINE_WIDTH = 28;
     private EMSDeviceManager edm;
 
     @Override
