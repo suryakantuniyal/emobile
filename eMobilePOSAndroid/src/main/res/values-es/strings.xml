@@ -448,6 +448,7 @@
     <string name="button_global_tax">"Impuesto global"</string>
 
     <string name="button_load">"Cargar"</string>
+    <string name="button_scan">Scan</string>
     <string name="button_checkout">"Finalizar Compra"</string>
     <string name="button_template">"Plantilla"</string>
     <string name="button_hold">"Guardar"</string>
