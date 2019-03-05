@@ -15,7 +15,7 @@ android {
         applicationId "com.emobilepos.app"
         minSdkVersion 16
         targetSdkVersion 27
-        versionName "1.2.6.13"
+        versionName "1.2.7.0"
         versionCode 167
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
         multiDexEnabled = true
@@ -171,6 +171,8 @@ dependencies {
     api files('libs/TfhkaAndroid.jar')
     api files('libs/bbdevice-android-3.4.2.jar')
     api files('libs/UniMag_SDK_v5.0.jar')
+    api files('libs/GLComm_V1.02.00_20180402.jar')
+    api files('libs/PAX_POSLinkAndroid_20181119.jar')
 
     implementation 'com.android.support:design:27.1.1'
     implementation 'com.android.support:support-v4:27.1.1'

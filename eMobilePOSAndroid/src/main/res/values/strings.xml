@@ -456,6 +456,7 @@
     <string name="button_global_tax">Global Tax</string>
 
     <string name="button_load">Load</string>
+    <string name="button_scan">Scan</string>
     <string name="button_checkout">Checkout</string>
     <string name="button_template">Template</string>
     <string name="button_hold">Hold</string>

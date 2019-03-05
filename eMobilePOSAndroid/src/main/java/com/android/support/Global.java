@@ -138,6 +138,7 @@ public class Global extends MultiDexApplication {
     public static final int GPRINTER = 24;
     public static final int MAGTEK_EMBEDDED = 25;
     public static final int INGENICOMOBY85 = 26;
+    public static final int PAX_A920 = 27;
 
     public static final String AUDIO_MSR_UNIMAG = "0";
     public static final String AUDIO_MSR_MAGTEK = "1";
