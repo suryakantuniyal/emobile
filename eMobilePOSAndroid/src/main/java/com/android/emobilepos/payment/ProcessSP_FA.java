@@ -65,7 +65,7 @@ public class ProcessSP_FA extends BaseFragmentActivityActionBar implements View.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.process_pax_layout);
+        setContentView(R.layout.process_sp_layout);
         global = (Global) getApplication();
         myPref = new MyPreferences(this);
         extras = this.getIntent().getExtras();
