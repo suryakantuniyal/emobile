@@ -219,6 +219,10 @@
             android:key="pref_use_pax"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_use_pax" />
+        <CheckBoxPreference
+            android:key="pref_use_sound_payments"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_use_sound_payments" />
         <Preference
             android:key="pref_config_genius_peripheral"
             android:layout="@layout/settings_custom_layout"
