@@ -67,7 +67,6 @@ import com.elo.device.peripherals.Printer;
 import com.miurasystems.miuralibrary.api.executor.MiuraManager;
 import com.miurasystems.miuralibrary.api.listener.MiuraDefaultListener;
 import com.mpowa.android.sdk.powapos.PowaPOS;
-import com.pax.poslink.CommSetting;
 import com.pax.poslink.peripheries.POSLinkPrinter;
 import com.pax.poslink.peripheries.POSLinkScanner;
 import com.pax.poslink.peripheries.ProcessResult;
@@ -114,6 +113,7 @@ import POSSDK.POSSDK;
 import datamaxoneil.connection.Connection_Bluetooth;
 import datamaxoneil.printer.DocumentLP;
 import drivers.elo.utils.PrinterAPI;
+import drivers.pax.utils.PosLinkHelper;
 import drivers.star.utils.MiniPrinterFunctions;
 import drivers.star.utils.PrinterFunctions;
 import drivers.star.utils.sdk31.starprntsdk.PrinterSetting;
@@ -436,7 +436,7 @@ public class EMSDeviceDriver {
                     printDataFormatter.addLeftAlign().addContent(str);
                     POSLinkPrinter.getInstance(activity).print(printDataFormatter.build(),
                             POSLinkPrinter.CutMode.FULL_PAPER_CUT,
-                            getCommSettingFromFile(),
+                            PosLinkHelper.getCommSetting(),
                             new POSLinkPrinter.PrintListener() {
                                 @Override
                                 public void onSuccess() {
@@ -527,7 +527,7 @@ public class EMSDeviceDriver {
                     printDataFormatter.addLeftAlign().addContent(str);
                     POSLinkPrinter.getInstance(activity).print(printDataFormatter.build(),
                             POSLinkPrinter.CutMode.FULL_PAPER_CUT,
-                            getCommSettingFromFile(),
+                            PosLinkHelper.getCommSetting(),
                             new POSLinkPrinter.PrintListener() {
                                 @Override
                                 public void onSuccess() {
@@ -641,18 +641,6 @@ public class EMSDeviceDriver {
             esc.addQueryPrinterStatus();
             printGPrinter(esc);
         }
-    }
-
-    public static CommSetting getCommSettingFromFile() {
-        CommSetting commsetting = new CommSetting();
-        commsetting.setTimeOut("60000");
-        commsetting.setType("AIDL");
-        commsetting.setSerialPort("COM1");
-        commsetting.setBaudRate("9600");
-        commsetting.setDestIP("172.16.20.15");
-        commsetting.setDestPort("10009");
-        commsetting.setMacAddr("");
-        return commsetting;
     }
 
     private void printGPrinter(EscCommand escCommand) {
@@ -798,7 +786,7 @@ public class EMSDeviceDriver {
                     printDataFormatter.addLeftAlign().addContent(str);
                     POSLinkPrinter.getInstance(activity).print(printDataFormatter.build(),
                             POSLinkPrinter.CutMode.FULL_PAPER_CUT,
-                            getCommSettingFromFile(),
+                            PosLinkHelper.getCommSetting(),
                             new POSLinkPrinter.PrintListener() {
                                 @Override
                                 public void onSuccess() {
