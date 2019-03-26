@@ -149,6 +149,7 @@ public class EMSDeviceDriver {
     PrinterAPI eloPrinterApi;
     Printer eloPrinterRefresh;
     POSPrinter bixolonPrinter;
+    POSPrinter hpPrinter;
     PService mPService = null;
     MePOSReceipt mePOSReceipt;
     InputStream inputStream;
@@ -404,6 +405,21 @@ public class EMSDeviceDriver {
             }
         } else if (this instanceof EMSOneil4te) {
             device.write(str);
+        } else if (this instanceof EMSHPEngageOnePrimePrinter) {
+            try {
+                hpPrinter.open("HPEngageOnePrimePrinter");
+                hpPrinter.claim(10000);
+                hpPrinter.setDeviceEnabled(true);
+                hpPrinter.printNormal(POSPrinterConst.PTR_S_RECEIPT, str);
+            } catch (JposException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    hpPrinter.close();
+                } catch (JposException e) {
+                    e.printStackTrace();
+                }
+            }
         } else if (this instanceof EMSBixolon) {
             try {
                 bixolonPrinter.open(myPref.getPrinterName());
@@ -503,6 +519,21 @@ public class EMSDeviceDriver {
                 pos_sdk.textPrint(send_buf, send_buf.length);
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
+            }
+        } else if (this instanceof EMSHPEngageOnePrimePrinter) {
+            try {
+                hpPrinter.open("HPEngageOnePrimePrinter");
+                hpPrinter.claim(10000);
+                hpPrinter.setDeviceEnabled(true);
+                hpPrinter.printNormal(POSPrinterConst.PTR_S_RECEIPT, new String(byteArray));
+            } catch (JposException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    hpPrinter.close();
+                } catch (JposException e) {
+                    e.printStackTrace();
+                }
             }
         } else if (this instanceof EMSBixolon) {
             try {
@@ -775,6 +806,8 @@ public class EMSDeviceDriver {
         } else if (this instanceof EMSPowaPOS) {
             powaPOS.printText(str);
         } else if (this instanceof EMSsnbc) {
+            print(str);
+        } else if (this instanceof EMSHPEngageOnePrimePrinter) {
             print(str);
         } else if (this instanceof EMSBixolon) {
             try {
@@ -1075,6 +1108,7 @@ public class EMSDeviceDriver {
     }
 
     protected void printReceipt(Order anOrder, int lineWidth, boolean fromOnHold, Global.OrderType type, boolean isFromHistory, EMVContainer emvContainer) {
+
         try {
             if (myPref.isUsePermitReceipt()) {
                 printTicketReceipt(anOrder, lineWidth);
@@ -1493,6 +1527,22 @@ public class EMSDeviceDriver {
         }
         if (this instanceof EMSBixolonRD) {
             SendCmd(String.format("81*%s", " "));
+        } else if (this instanceof EMSHPEngageOnePrimePrinter) {
+            try {
+                hpPrinter.open("HPEngageOnePrimePrinter");
+                hpPrinter.claim(10000);
+                hpPrinter.setDeviceEnabled(true);
+                hpPrinter.cutPaper(100);
+            } catch (JposException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    hpPrinter.setDeviceEnabled(false);
+                    hpPrinter.close();
+                } catch (JposException e) {
+                    e.printStackTrace();
+                }
+            }
         } else if (this instanceof EMSsnbc) {
             // ******************************************************************************************
             // print in page mode
@@ -1665,13 +1715,30 @@ public class EMSDeviceDriver {
                     bixolonPrinter.open(myPref.getPrinterName());
                     bixolonPrinter.claim(10000);
                     bixolonPrinter.setDeviceEnabled(true);
-                    bixolonPrinter.printBitmap(buffer.getInt(0), myBitmap,
-                            bixolonPrinter.getRecLineWidth(), POSPrinterConst.PTR_BM_LEFT);
+//                    bixolonPrinter.printBitmap(buffer.getInt(0), myBitmap,
+//                            bixolonPrinter.getRecLineWidth(), POSPrinterConst.PTR_BM_LEFT);
                 } catch (JposException e) {
                     e.printStackTrace();
                 } finally {
                     try {
                         bixolonPrinter.close();
+                    } catch (JposException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } else if (this instanceof EMSHPEngageOnePrimePrinter) {
+                try {
+                    hpPrinter.open("HPEngageOnePrimePrinter");
+                    hpPrinter.claim(10000);
+                    hpPrinter.setDeviceEnabled(true);
+                    hpPrinter.printNormal(POSPrinterConst.PTR_S_RECEIPT, "****LOGO GOES HERE****");
+//                    bixolonPrinter.printBitmap(buffer.getInt(0), myBitmap,
+//                            bixolonPrinter.getRecLineWidth(), POSPrinterConst.PTR_BM_LEFT);
+                } catch (JposException e) {
+                    e.printStackTrace();
+                } finally {
+                    try {
+                        hpPrinter.close();
                     } catch (JposException e) {
                         e.printStackTrace();
                     }
@@ -1779,8 +1846,8 @@ public class EMSDeviceDriver {
                     bixolonPrinter.open(myPref.getPrinterName());
                     bixolonPrinter.claim(10000);
                     bixolonPrinter.setDeviceEnabled(true);
-                    bixolonPrinter.printBitmap(buffer.getInt(0), bitmap,
-                            bixolonPrinter.getRecLineWidth(), POSPrinterConst.PTR_BM_CENTER);
+//                    bixolonPrinter.printBitmap(buffer.getInt(0), bitmap,
+//                            bixolonPrinter.getRecLineWidth(), POSPrinterConst.PTR_BM_CENTER);
                 } catch (JposException e) {
                     e.printStackTrace();
                 } finally {
