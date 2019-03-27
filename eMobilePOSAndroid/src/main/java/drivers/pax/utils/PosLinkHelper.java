@@ -19,29 +19,52 @@ public class PosLinkHelper {
         return commsetting;
     }
 
-    public static String getStatus(int reportedStatus) {
-        String status = "";
+    public static String getStatus(String reportedStatus) {
+        String[] status = {
+                "Ready for CARD INPUT",
+                "Ready for PIN ENTRY",
+                "Ready for SIGNATURE",
+                "Ready for ONLINE PROCESSING",
+                "Ready for NEW CARD INPUT"
+        };
         try {
-            switch (reportedStatus) {
-                case 0:
-                    status = "Ready for CARD INPUT";
-                    break;
-                case 1:
-                    status = "Ready for PIN ENTRY";
-                    break;
-                case 2:
-                    status = "Ready for SIGNATURE";
-                    break;
-                case 3:
-                    status = "Ready for ONLINE PROCESSING";
-                    break;
-                case 4:
-                    status = "Ready for NEW CARD INPUT";
-                    break;
-            }
+            return status[Integer.parseInt(reportedStatus)];
         } catch (Exception e) {
-            e.printStackTrace();
+            return "";
         }
-        return status;
+    }
+
+    public static String getEntryModeValue(String entryMode) {
+        String[] entryModeValues = {
+                "Manual",
+                "Swipe",
+                "Contactless",
+                "Scanner",
+                "Chip",
+                "Chip Fall Back Swipe"
+        };
+        try {
+            return entryModeValues[Integer.parseInt(entryMode)];
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+    public static String getCvmMessage(String cvm) {
+        String[] cvmMessages = {
+                "Fail CVM processing",
+                "Plaintext Offline PIN Verification",
+                "OnlinePIN",
+                "Plaintext Offline PIN and Signature",
+                "Enciphered Offline PIN Verification",
+                "Enciphered Offline PIN Verification and Signature",
+                "Signature",
+                "No CVM Required"
+        };
+        try {
+            return cvmMessages[Integer.parseInt(cvm)];
+        } catch (Exception e) {
+            return "";
+        }
     }
 }

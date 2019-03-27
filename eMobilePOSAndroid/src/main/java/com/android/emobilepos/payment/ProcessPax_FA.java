@@ -19,6 +19,11 @@ import com.android.database.DrawInfoHandler;
 import com.android.database.PayMethodsHandler;
 import com.android.database.PaymentsHandler;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.EMVContainer;
+import com.android.emobilepos.models.genius.AdditionalParameters;
+import com.android.emobilepos.models.genius.ApplicationInformation;
+import com.android.emobilepos.models.genius.EMV;
+import com.android.emobilepos.models.genius.GeniusResponse;
 import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.ivu.MersenneTwisterFast;
@@ -27,6 +32,7 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NumberUtils;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.google.gson.Gson;
 import com.pax.poslink.POSLinkAndroid;
 import com.pax.poslink.PaymentRequest;
 import com.pax.poslink.PaymentResponse;
@@ -40,6 +46,7 @@ import java.math.BigDecimal;
 import drivers.pax.utils.PosLinkHelper;
 import main.EMSDeviceManager;
 import util.MoneyUtils;
+import util.XmlUtils;
 
 import static drivers.pax.utils.Constant.CARD_EXPIRED;
 import static drivers.pax.utils.Constant.TRANSACTION_CANCELED;
@@ -234,12 +241,51 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
             payment.setProcessed("1");
             payment.setPaymethod_id(PayMethodsHandler.getPayMethodID(response.CardType));
 
+            // Set EMV
+            ApplicationInformation applicationInformation = new ApplicationInformation();
+            applicationInformation.setAid(
+                    XmlUtils.findXMl(poslink.PaymentResponse.ExtData, "AID"));
+            applicationInformation.setApplicationLabel(
+                    XmlUtils.findXMl(poslink.PaymentResponse.ExtData, "APPLAB"));
+
+            EMV emv = new EMV();
+            emv.setApplicationInformation(applicationInformation);
+            emv.setPINStatement(
+                    PosLinkHelper.getCvmMessage(
+                            XmlUtils.findXMl(poslink.PaymentResponse.ExtData, "CVM")));
+            emv.setEntryModeMessage(
+                    PosLinkHelper.getEntryModeValue(
+                            XmlUtils.findXMl(poslink.PaymentResponse.ExtData, "PLEntryMode")));
+            emv.setTVR(
+                    XmlUtils.findXMl(poslink.PaymentResponse.ExtData, "TVR"));
+            emv.setIAD(
+                    XmlUtils.findXMl(poslink.PaymentResponse.ExtData, "IAD"));
+            emv.setTSI(
+                    XmlUtils.findXMl(poslink.PaymentResponse.ExtData, "TSI"));
+            emv.setAC(
+                    XmlUtils.findXMl(poslink.PaymentResponse.ExtData, "AC"));
+
+            AdditionalParameters additionalParameters = new AdditionalParameters();
+            additionalParameters.setEMV(emv);
+
+            GeniusResponse geniusResponse = new GeniusResponse();
+            geniusResponse.setStatus("");
+            geniusResponse.setPaymentType("");
+            geniusResponse.setAdditionalParameters(additionalParameters);
+
+            payment.setEmvContainer(new EMVContainer(geniusResponse));
+
             switch (response.ResultCode) {
                 case TRANSACTION_SUCCESS:
                     payHandler.insert(payment);
                     String paid_amount = NumberUtils.cleanCurrencyFormatedNumber(
                             amountTextView.getText().toString());
+
+                    payment.getEmvContainer().getGeniusResponse().setStatus(APPROVED);
+
                     result.putExtra("total_amount", paid_amount);
+                    result.putExtra("emvcontainer",
+                            new Gson().toJson(payment.getEmvContainer(), EMVContainer.class));
                     setResult(-2, result);
 
                     if (myPref.getPreferences(MyPreferences.pref_prompt_customer_copy))
