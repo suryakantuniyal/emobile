@@ -1165,12 +1165,10 @@ public class EMSDeviceDriver {
                                     Global.getCurrencyFormat(orderProducts.get(i).getItemTotal()), lineWidth, 3));
 
                             if (printPref.contains(MyPreferences.print_descriptions)) {
-                                StringTokenizer tokenizer = new StringTokenizer("orderProducts.get(i).getOrdprod_desc()", "<br/>");
-                                if (tokenizer.countTokens() > 0) {
-                                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
-                                            getString(R.string.receipt_description), "", lineWidth, 3));
-                                    sb.append(textHandler.oneColumnLineWithLeftAlignedText(tokenizer.nextElement().toString(), lineWidth, 5));
-                                }
+                                sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                                        getString(R.string.receipt_description), "", lineWidth, 3));
+                                sb.append(textHandler.oneColumnLineWithLeftAlignedText(
+                                        orderProducts.get(i).getOrdprod_desc(), lineWidth, 5));
                             }
                         }
                     } else {
