@@ -1477,6 +1477,11 @@ public class EMSDeviceDriver {
             Log.d("Cut", "Paper Cut");
             return;
         }
+
+        if (this instanceof EMSPaxA920) {
+            print(textHandler.newLines(4));
+        }
+
         if (this instanceof EMSBixolonRD) {
             SendCmd(String.format("81*%s", " "));
         } else if (this instanceof EMSsnbc) {

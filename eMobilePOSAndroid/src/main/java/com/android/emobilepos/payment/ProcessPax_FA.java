@@ -218,7 +218,7 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
             PaymentsHandler payHandler = new PaymentsHandler(ProcessPax_FA.this);
             BigDecimal payAmount = BigDecimal.ZERO;
             if (!response.ApprovedAmount.isEmpty()) {
-                payAmount = new BigDecimal(response.ApprovedAmount);
+                payAmount = MoneyUtils.convertCentsToDollars(response.ApprovedAmount);
             }
             Global.amountPaid = String.valueOf(Global.getRoundBigDecimal(payAmount));
             payment.setPay_amount(Global.amountPaid);
@@ -231,12 +231,11 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
             payment.setPay_resultmessage(response.Message);
             payment.setPay_name("");
             payment.setCard_type(response.CardType);
-            payment.setProcessed("9");
+            payment.setProcessed("1");
             payment.setPaymethod_id(PayMethodsHandler.getPayMethodID(response.CardType));
 
             switch (response.ResultCode) {
                 case TRANSACTION_SUCCESS:
-                    showErrorDlog("Approved!");
                     payHandler.insert(payment);
                     String paid_amount = NumberUtils.cleanCurrencyFormatedNumber(
                             amountTextView.getText().toString());
