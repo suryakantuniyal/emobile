@@ -68,7 +68,6 @@ import com.miurasystems.miuralibrary.api.executor.MiuraManager;
 import com.miurasystems.miuralibrary.api.listener.MiuraDefaultListener;
 import com.mpowa.android.sdk.powapos.PowaPOS;
 import com.pax.poslink.peripheries.POSLinkPrinter;
-import com.pax.poslink.peripheries.POSLinkScanner;
 import com.pax.poslink.peripheries.ProcessResult;
 import com.printer.aidl.PService;
 import com.printer.command.EscCommand;
@@ -158,7 +157,6 @@ public class EMSDeviceDriver {
     private StarIoExt.Emulation emulation = StarIoExt.Emulation.StarGraphic;
     private EscCommand esc;
     POSLinkPrinter.PrintDataFormatter printDataFormatter;
-    POSLinkScanner posLinkScanner;
 
     private static byte[] convertFromListbyteArrayTobyteArray(List<byte[]> ByteArray) {
         int dataLength = 0;
@@ -431,22 +429,10 @@ public class EMSDeviceDriver {
             }
         } else if (this instanceof EMSPaxA920) {
             try {
-                if (!str.isEmpty()) {
-                    printDataFormatter.clear();
-                    printDataFormatter.addLeftAlign().addContent(str);
-                    POSLinkPrinter.getInstance(activity).print(printDataFormatter.build(),
-                            POSLinkPrinter.CutMode.FULL_PAPER_CUT,
-                            PosLinkHelper.getCommSetting(),
-                            new POSLinkPrinter.PrintListener() {
-                                @Override
-                                public void onSuccess() {
-                                }
-
-                                @Override
-                                public void onError(ProcessResult processResult) {
-
-                                }
-                            });
+                if (myPref.isRasterModePrint()) {
+                    posLinkRasterPrint(str);
+                } else {
+                    posLinkPrint(str);
                 }
             } catch (IllegalArgumentException e) {
                 e.printStackTrace();
@@ -522,22 +508,10 @@ public class EMSDeviceDriver {
         } else if (this instanceof EMSPaxA920) {
             try {
                 String str = new String(byteArray);
-                if (!str.isEmpty()) {
-                    printDataFormatter.clear();
-                    printDataFormatter.addLeftAlign().addContent(str);
-                    POSLinkPrinter.getInstance(activity).print(printDataFormatter.build(),
-                            POSLinkPrinter.CutMode.FULL_PAPER_CUT,
-                            PosLinkHelper.getCommSetting(),
-                            new POSLinkPrinter.PrintListener() {
-                                @Override
-                                public void onSuccess() {
-                                }
-
-                                @Override
-                                public void onError(ProcessResult processResult) {
-
-                                }
-                            });
+                if (myPref.isRasterModePrint()) {
+                    posLinkRasterPrint(str);
+                } else {
+                    posLinkPrint(str);
                 }
             } catch (IllegalArgumentException e) {
                 e.printStackTrace();
@@ -640,6 +614,60 @@ public class EMSDeviceDriver {
             esc.addPrintAndFeedLines((byte) 3);
             esc.addQueryPrinterStatus();
             printGPrinter(esc);
+        }
+    }
+
+    private void posLinkPrint(String stringToPrint) {
+        if (!stringToPrint.isEmpty()) {
+            printDataFormatter.clear();
+            printDataFormatter.addLeftAlign().addContent(stringToPrint);
+            POSLinkPrinter.getInstance(activity).print(printDataFormatter.build(),
+                    POSLinkPrinter.CutMode.FULL_PAPER_CUT,
+                    PosLinkHelper.getCommSetting(),
+                    new POSLinkPrinter.PrintListener() {
+                        @Override
+                        public void onSuccess() {
+                        }
+
+                        @Override
+                        public void onError(ProcessResult processResult) {
+
+                        }
+                    });
+        }
+    }
+
+    private void posLinkPrint(Bitmap bitmapToPrint) {
+        if (bitmapToPrint.getHeight() > 0 && bitmapToPrint.getWidth() > 0) {
+            POSLinkPrinter.getInstance(activity).print(bitmapToPrint,
+                    POSLinkPrinter.CutMode.FULL_PAPER_CUT,
+                    new POSLinkPrinter.PrintListener() {
+                        @Override
+                        public void onSuccess() {
+                        }
+
+                        @Override
+                        public void onError(ProcessResult processResult) {
+                        }
+                    });
+        }
+    }
+
+    private void posLinkRasterPrint(String stringToPrint) {
+        Bitmap bitmapFromString = EMSBluetoothStarPrinter.createBitmapFromText(
+                stringToPrint, 26, 450, typeface);
+        if (bitmapFromString.getHeight() > 0 && bitmapFromString.getWidth() > 0) {
+            POSLinkPrinter.getInstance(activity).print(bitmapFromString,
+                    POSLinkPrinter.CutMode.FULL_PAPER_CUT,
+                    new POSLinkPrinter.PrintListener() {
+                        @Override
+                        public void onSuccess() {
+                        }
+
+                        @Override
+                        public void onError(ProcessResult processResult) {
+                        }
+                    });
         }
     }
 
@@ -781,22 +809,10 @@ public class EMSDeviceDriver {
             }
         } else if (this instanceof EMSPaxA920) {
             try {
-                if (!str.isEmpty()) {
-                    printDataFormatter.clear();
-                    printDataFormatter.addLeftAlign().addContent(str);
-                    POSLinkPrinter.getInstance(activity).print(printDataFormatter.build(),
-                            POSLinkPrinter.CutMode.FULL_PAPER_CUT,
-                            PosLinkHelper.getCommSetting(),
-                            new POSLinkPrinter.PrintListener() {
-                                @Override
-                                public void onSuccess() {
-                                }
-
-                                @Override
-                                public void onError(ProcessResult processResult) {
-
-                                }
-                            });
+                if (myPref.isRasterModePrint()) {
+                    posLinkRasterPrint(str);
+                } else {
+                    posLinkPrint(str);
                 }
             } catch (IllegalArgumentException e) {
                 e.printStackTrace();
@@ -1669,19 +1685,7 @@ public class EMSDeviceDriver {
                 }
             } else if (this instanceof EMSPaxA920) {
                 try {
-                    if (myBitmap.getHeight() > 0 && myBitmap.getWidth() > 0) {
-                        POSLinkPrinter.getInstance(activity).print(myBitmap,
-                                POSLinkPrinter.CutMode.FULL_PAPER_CUT,
-                                new POSLinkPrinter.PrintListener() {
-                                    @Override
-                                    public void onSuccess() {
-                                    }
-
-                                    @Override
-                                    public void onError(ProcessResult processResult) {
-                                    }
-                                });
-                    }
+                    posLinkPrint(myBitmap);
                 } catch (IllegalArgumentException e) {
                     e.printStackTrace();
                 } catch (Exception e) {
