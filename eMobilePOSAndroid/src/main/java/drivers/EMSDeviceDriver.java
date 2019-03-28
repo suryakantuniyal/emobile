@@ -67,9 +67,7 @@ import com.elo.device.peripherals.Printer;
 import com.miurasystems.miuralibrary.api.executor.MiuraManager;
 import com.miurasystems.miuralibrary.api.listener.MiuraDefaultListener;
 import com.mpowa.android.sdk.powapos.PowaPOS;
-import com.pax.poslink.CommSetting;
 import com.pax.poslink.peripheries.POSLinkPrinter;
-import com.pax.poslink.peripheries.POSLinkScanner;
 import com.pax.poslink.peripheries.ProcessResult;
 import com.printer.aidl.PService;
 import com.printer.command.EscCommand;
@@ -114,6 +112,7 @@ import POSSDK.POSSDK;
 import datamaxoneil.connection.Connection_Bluetooth;
 import datamaxoneil.printer.DocumentLP;
 import drivers.elo.utils.PrinterAPI;
+import drivers.pax.utils.PosLinkHelper;
 import drivers.star.utils.MiniPrinterFunctions;
 import drivers.star.utils.PrinterFunctions;
 import drivers.star.utils.sdk31.starprntsdk.PrinterSetting;
@@ -158,7 +157,6 @@ public class EMSDeviceDriver {
     private StarIoExt.Emulation emulation = StarIoExt.Emulation.StarGraphic;
     private EscCommand esc;
     POSLinkPrinter.PrintDataFormatter printDataFormatter;
-    POSLinkScanner posLinkScanner;
 
     private static byte[] convertFromListbyteArrayTobyteArray(List<byte[]> ByteArray) {
         int dataLength = 0;
@@ -431,22 +429,10 @@ public class EMSDeviceDriver {
             }
         } else if (this instanceof EMSPaxA920) {
             try {
-                if (!str.isEmpty()) {
-                    printDataFormatter.clear();
-                    printDataFormatter.addLeftAlign().addContent(str);
-                    POSLinkPrinter.getInstance(activity).print(printDataFormatter.build(),
-                            POSLinkPrinter.CutMode.FULL_PAPER_CUT,
-                            getCommSettingFromFile(),
-                            new POSLinkPrinter.PrintListener() {
-                                @Override
-                                public void onSuccess() {
-                                }
-
-                                @Override
-                                public void onError(ProcessResult processResult) {
-
-                                }
-                            });
+                if (myPref.isRasterModePrint()) {
+                    posLinkRasterPrint(str);
+                } else {
+                    posLinkPrint(str);
                 }
             } catch (IllegalArgumentException e) {
                 e.printStackTrace();
@@ -522,22 +508,10 @@ public class EMSDeviceDriver {
         } else if (this instanceof EMSPaxA920) {
             try {
                 String str = new String(byteArray);
-                if (!str.isEmpty()) {
-                    printDataFormatter.clear();
-                    printDataFormatter.addLeftAlign().addContent(str);
-                    POSLinkPrinter.getInstance(activity).print(printDataFormatter.build(),
-                            POSLinkPrinter.CutMode.FULL_PAPER_CUT,
-                            getCommSettingFromFile(),
-                            new POSLinkPrinter.PrintListener() {
-                                @Override
-                                public void onSuccess() {
-                                }
-
-                                @Override
-                                public void onError(ProcessResult processResult) {
-
-                                }
-                            });
+                if (myPref.isRasterModePrint()) {
+                    posLinkRasterPrint(str);
+                } else {
+                    posLinkPrint(str);
                 }
             } catch (IllegalArgumentException e) {
                 e.printStackTrace();
@@ -643,16 +617,58 @@ public class EMSDeviceDriver {
         }
     }
 
-    public static CommSetting getCommSettingFromFile() {
-        CommSetting commsetting = new CommSetting();
-        commsetting.setTimeOut("60000");
-        commsetting.setType("AIDL");
-        commsetting.setSerialPort("COM1");
-        commsetting.setBaudRate("9600");
-        commsetting.setDestIP("172.16.20.15");
-        commsetting.setDestPort("10009");
-        commsetting.setMacAddr("");
-        return commsetting;
+    private void posLinkPrint(String stringToPrint) {
+        if (!stringToPrint.isEmpty()) {
+            printDataFormatter.clear();
+            printDataFormatter.addLeftAlign().addContent(stringToPrint);
+            POSLinkPrinter.getInstance(activity).print(printDataFormatter.build(),
+                    POSLinkPrinter.CutMode.FULL_PAPER_CUT,
+                    PosLinkHelper.getCommSetting(),
+                    new POSLinkPrinter.PrintListener() {
+                        @Override
+                        public void onSuccess() {
+                        }
+
+                        @Override
+                        public void onError(ProcessResult processResult) {
+
+                        }
+                    });
+        }
+    }
+
+    private void posLinkPrint(Bitmap bitmapToPrint) {
+        if (bitmapToPrint.getHeight() > 0 && bitmapToPrint.getWidth() > 0) {
+            POSLinkPrinter.getInstance(activity).print(bitmapToPrint,
+                    POSLinkPrinter.CutMode.FULL_PAPER_CUT,
+                    new POSLinkPrinter.PrintListener() {
+                        @Override
+                        public void onSuccess() {
+                        }
+
+                        @Override
+                        public void onError(ProcessResult processResult) {
+                        }
+                    });
+        }
+    }
+
+    private void posLinkRasterPrint(String stringToPrint) {
+        Bitmap bitmapFromString = EMSBluetoothStarPrinter.createBitmapFromText(
+                stringToPrint, 26, 450, typeface);
+        if (bitmapFromString.getHeight() > 0 && bitmapFromString.getWidth() > 0) {
+            POSLinkPrinter.getInstance(activity).print(bitmapFromString,
+                    POSLinkPrinter.CutMode.FULL_PAPER_CUT,
+                    new POSLinkPrinter.PrintListener() {
+                        @Override
+                        public void onSuccess() {
+                        }
+
+                        @Override
+                        public void onError(ProcessResult processResult) {
+                        }
+                    });
+        }
     }
 
     private void printGPrinter(EscCommand escCommand) {
@@ -793,22 +809,10 @@ public class EMSDeviceDriver {
             }
         } else if (this instanceof EMSPaxA920) {
             try {
-                if (!str.isEmpty()) {
-                    printDataFormatter.clear();
-                    printDataFormatter.addLeftAlign().addContent(str);
-                    POSLinkPrinter.getInstance(activity).print(printDataFormatter.build(),
-                            POSLinkPrinter.CutMode.FULL_PAPER_CUT,
-                            getCommSettingFromFile(),
-                            new POSLinkPrinter.PrintListener() {
-                                @Override
-                                public void onSuccess() {
-                                }
-
-                                @Override
-                                public void onError(ProcessResult processResult) {
-
-                                }
-                            });
+                if (myPref.isRasterModePrint()) {
+                    posLinkRasterPrint(str);
+                } else {
+                    posLinkPrint(str);
                 }
             } catch (IllegalArgumentException e) {
                 e.printStackTrace();
@@ -1177,12 +1181,10 @@ public class EMSDeviceDriver {
                                     Global.getCurrencyFormat(orderProducts.get(i).getItemTotal()), lineWidth, 3));
 
                             if (printPref.contains(MyPreferences.print_descriptions)) {
-                                StringTokenizer tokenizer = new StringTokenizer("orderProducts.get(i).getOrdprod_desc()", "<br/>");
-                                if (tokenizer.countTokens() > 0) {
-                                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
-                                            getString(R.string.receipt_description), "", lineWidth, 3));
-                                    sb.append(textHandler.oneColumnLineWithLeftAlignedText(tokenizer.nextElement().toString(), lineWidth, 5));
-                                }
+                                sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                                        getString(R.string.receipt_description), "", lineWidth, 3));
+                                sb.append(textHandler.oneColumnLineWithLeftAlignedText(
+                                        orderProducts.get(i).getOrdprod_desc(), lineWidth, 5));
                             }
                         }
                     } else {
@@ -1491,6 +1493,11 @@ public class EMSDeviceDriver {
             Log.d("Cut", "Paper Cut");
             return;
         }
+
+        if (this instanceof EMSPaxA920) {
+            print(textHandler.newLines(4));
+        }
+
         if (this instanceof EMSBixolonRD) {
             SendCmd(String.format("81*%s", " "));
         } else if (this instanceof EMSsnbc) {
@@ -1678,19 +1685,7 @@ public class EMSDeviceDriver {
                 }
             } else if (this instanceof EMSPaxA920) {
                 try {
-                    if (myBitmap.getHeight() > 0 && myBitmap.getWidth() > 0) {
-                        POSLinkPrinter.getInstance(activity).print(myBitmap,
-                                POSLinkPrinter.CutMode.FULL_PAPER_CUT,
-                                new POSLinkPrinter.PrintListener() {
-                                    @Override
-                                    public void onSuccess() {
-                                    }
-
-                                    @Override
-                                    public void onError(ProcessResult processResult) {
-                                    }
-                                });
-                    }
+                    posLinkPrint(myBitmap);
                 } catch (IllegalArgumentException e) {
                     e.printStackTrace();
                 } catch (Exception e) {

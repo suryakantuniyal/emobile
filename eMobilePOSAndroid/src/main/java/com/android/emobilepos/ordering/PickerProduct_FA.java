@@ -832,9 +832,6 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         BigDecimal productPriceLevelTotal = Global.getBigDecimalNum(prLevTotal);
         if (OrderingMain_FA.returnItem)
             orderProduct.setReturned(true);
-//        if (isFromAddon) {
-//            productPriceLevelTotal = productPriceLevelTotal.add(new BigDecimal(Double.toString(Global.addonTotalAmount)));
-//        }
         BigDecimal total = num.multiply(productPriceLevelTotal.multiply(uomMultiplier)).setScale(2, RoundingMode.HALF_UP);
         calculateTaxDiscount(total);                    // calculate taxes and discount
         if (!myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities)) {
@@ -854,7 +851,6 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             disTotal = String.valueOf(Global.getBigDecimalNum(orderProduct.getFinalPrice()).multiply(Global.getBigDecimalNum(orderProduct.getOrdprod_qty())));
         }
         orderProduct.setDiscount_value(disTotal);
-//        orderProduct.setProd_taxId(prod_taxId);
         orderProduct.setDiscount_id(discount_id);
         orderProduct.setTaxAmount(taxAmount);
         orderProduct.setTaxTotal(taxTotal);
@@ -886,7 +882,6 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             itemTotal = total.subtract(Global.getBigDecimalNum(disTotal));
         }
         orderProduct.setItemTotal(itemTotal.toString());
-//        orderProduct.setItemSubtotal(total.toString());
         GenerateNewID generator = new GenerateNewID(this);
         if (!Global.isFromOnHold && Global.lastOrdID.isEmpty()) {
             Global.lastOrdID = generator.getNextID(IdType.ORDER_ID);
@@ -905,16 +900,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         orderProduct.setAttributesCompleted(OrderingMain_FA.isRequiredAttributeCompleted(this, Collections.singletonList(orderProduct)));
         if (isFromAddon) {
             Global.addonTotalAmount = 0;
-            StringBuilder sb = new StringBuilder();
-            sb.append(orderProduct.getOrdprod_desc());
-            int tempSize = orderProduct.addonsProducts.size();
-            for (int i = 0; i < tempSize; i++) {
-                if (!orderProduct.isAdded())
-                    sb.append("\n[NO ").append(orderProduct.getOrdprod_name()).append("]");
-                else
-                    sb.append("\n[").append(orderProduct.getOrdprod_name()).append("]");
-            }
-            orderProduct.setOrdprod_desc(sb.toString());
+            orderProduct.setOrdprod_desc(orderProduct.getOrdprod_desc());
         }
         String row1 = orderProduct.getOrdprod_name();
         String row2 = Global.getCurrencyFormat(orderProduct.getFinalPrice());

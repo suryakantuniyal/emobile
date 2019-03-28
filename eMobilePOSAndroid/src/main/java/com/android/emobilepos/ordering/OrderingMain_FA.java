@@ -287,17 +287,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
         if (isFromAddon) {
             Global.addonTotalAmount = 0;
-            StringBuilder sb = new StringBuilder();
-            sb.append(orderProduct.getOrdprod_desc());
-            int tempSize = orderProduct.addonsProducts.size();
-            for (int i = 0; i < tempSize; i++) {
-                sb.append("<br/>");
-                if (!orderProduct.addonsProducts.get(i).isAdded()) // Not
-                    sb.append("[NO ").append(orderProduct.addonsProducts.get(i).getOrdprod_name()).append("]");
-                else
-                    sb.append("[").append(orderProduct.addonsProducts.get(i).getOrdprod_name()).append("]");
-            }
-            orderProduct.setOrdprod_desc(sb.toString());
         }
         String row1 = orderProduct.getOrdprod_name();
         String row2 = Global.getCurrencyFormat(orderProduct.getFinalPrice());

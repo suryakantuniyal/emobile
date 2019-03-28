@@ -235,18 +235,9 @@ public class PickerAddonLV_Adapter extends CursorAdapter implements OnClickListe
             ord.setProd_type(c.getString(c.getColumnIndex("prod_type")));
             ord.setAddon(true);
             ord.setAdded(isAdded);
-            StringBuffer ordprod_desc = new StringBuffer(orderProduct.getOrdprod_desc());
-            if (!isAdded) {
-                ordprod_desc.append("\n[NO ").append(c.getString(c.getColumnIndex("prod_name"))).append("]");
-            } else {
-                ordprod_desc.append("\n[").append(c.getString(c.getColumnIndex("prod_name"))).append("]");
-            }
-            orderProduct.setOrdprod_desc(ordprod_desc.toString());
+            orderProduct.setOrdprod_desc(orderProduct.getOrdprod_desc());
             ord.setItemTotal(tempPrice);
-//            ord.setItemSubtotal(tempPrice);
             if (!Global.isFromOnHold) {
-//                GenerateNewID generator = new GenerateNewID(activity);
-//                Global.lastOrdID = generator.getNextID(GenerateNewID.IdType.ORDER_ID);
             }
             ord.setOrd_id(orderProduct.getOrd_id());
 
