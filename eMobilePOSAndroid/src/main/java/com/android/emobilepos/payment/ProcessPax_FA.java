@@ -27,6 +27,7 @@ import com.android.emobilepos.models.genius.GeniusResponse;
 import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.ivu.MersenneTwisterFast;
+import com.android.support.DateUtils;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -191,7 +192,7 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
         payrequest.Amount = String.valueOf(
                 MoneyUtils.convertDollarsToCents(
                         NumberUtils.cleanCurrencyFormatedNumber(amountTextView)));
-        payrequest.ECRRefNum = "1";
+        payrequest.ECRRefNum = DateUtils.getEpochTime();
         poslink.PaymentRequest = payrequest;
         poslink.SetCommSetting(PosLinkHelper.getCommSetting());
 
