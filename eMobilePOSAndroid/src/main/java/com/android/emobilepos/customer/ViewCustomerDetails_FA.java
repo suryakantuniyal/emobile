@@ -729,7 +729,7 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         addrData.setAddr_b_city(getEditText(R.id.newCustBillCity).getText().toString());
         addrData.setAddr_b_state(getEditText(R.id.newCustBillState).getText().toString());
         if (billingSelectedCountry > 0)
-            addrData.setAddr_b_country(isoCountries[billingSelectedCountry]);
+            addrData.setAddr_b_country(isoCountries[billingSelectedCountry - 1]);
         addrData.setAddr_b_zipcode(getEditText(R.id.newCustBillZip).getText().toString());
 
         // add addr_s_name
@@ -739,7 +739,7 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
         addrData.setAddr_s_city(getEditText(R.id.newCustShippingCity).getText().toString());
         addrData.setAddr_s_state(getEditText(R.id.newCustShippingState).getText().toString());
         if (shippingSelectedCountry > 0)
-            addrData.setAddr_s_country(isoCountries[shippingSelectedCountry]);
+            addrData.setAddr_s_country(isoCountries[shippingSelectedCountry - 1]);
         addrData.setAddr_s_zipcode(getEditText(R.id.newCustShippingZip).getText().toString());
 
         addrData.setAddr_b_type(addr_b_type);
