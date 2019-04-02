@@ -67,6 +67,7 @@ import com.android.emobilepos.models.realms.PaymentMethod;
 import com.android.emobilepos.models.realms.Shift;
 import com.android.emobilepos.models.response.ClerkEmployeePermissionResponse;
 import com.android.emobilepos.models.salesassociates.DinningLocationConfiguration;
+import com.android.emobilepos.models.xml.EMSPayment;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.emobilepos.service.SyncConfigServerService;
 import com.android.saxhandler.SAXParserPost;
@@ -126,6 +127,7 @@ import javax.xml.parsers.SAXParserFactory;
 import io.realm.Realm;
 import oauthclient.OAuthClient;
 import oauthclient.OAuthManager;
+import util.XmlUtils;
 import util.json.JsonUtils;
 
 public class SynchMethods {
@@ -560,13 +562,14 @@ public class SynchMethods {
      ************************************/
 
     private void sendReverse(Object task) {
+        Cursor c=null;
         try {
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
             HashMap<String, String> parsedMap;
 
             PaymentsXML_DB _paymentsXML_DB = new PaymentsXML_DB(context);
-            Cursor c = _paymentsXML_DB.getReversePayments();
+             c = _paymentsXML_DB.getReversePayments();
             int size = c.getCount();
             if (size > 0) {
                 if (Global.isForceUpload)
@@ -594,8 +597,19 @@ public class SynchMethods {
                                 && (parsedMap.get("epayStatusCode").equals(
                                 "APPROVED") || parsedMap.get(
                                 "epayStatusCode").equals("DECLINE"))) {
-                            _paymentsXML_DB.deleteRow(c.getString(c
-                                    .getColumnIndex("app_id")));
+
+                            _paymentsXML_DB.deleteRow(
+                                    c.getString(c.getColumnIndex("app_id")));
+
+                            EMSPayment emsPayment = XmlUtils.getEMSPayment(
+                                    c.getString(c.getColumnIndex("payment_xml")));
+
+                            if (!emsPayment.getJobId().isEmpty()) {
+                                OrdersHandler ordersHandler = new OrdersHandler(context);
+                                if (!ordersHandler.isOrderPaid(emsPayment.getJobId())) {
+                                    ordersHandler.updateIsVoid(emsPayment.getJobId());
+                                }
+                            }
                         }
                     }
 
@@ -604,6 +618,12 @@ public class SynchMethods {
             c.close();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        finally {
+            if(c!=null && !c.isClosed())
+            {
+                c.close();
+            }
         }
     }
 
@@ -1619,8 +1639,10 @@ public class SynchMethods {
             if (NetworkUtils.isConnectedToInternet(context)) {
                 try {
 
-                    synchStage = context.getString(R.string.sync_sending_reverse);
-                    sendReverse(this);
+                    if (!Global.isPaymentInProgress) {
+                        synchStage = context.getString(R.string.sync_sending_reverse);
+                        sendReverse(this);
+                    }
 
                     synchStage = context.getString(R.string.sync_sending_payment);
                     sendPayments(this);
@@ -1897,11 +1919,12 @@ public class SynchMethods {
 
         @Override
         protected String doInBackground(String... params) {
+            Cursor c=null;
             try {
                 updateProgress(context.getString(R.string.sync_dload_ordersonhold));
 //                synchOrdersOnHoldDetails(context, params[0]);
                 OrderProductsHandler orderProdHandler = new OrderProductsHandler(context);
-                Cursor c = orderProdHandler.getOrderProductsOnHold(params[0]);
+                 c = orderProdHandler.getOrderProductsOnHold(params[0]);
                 if (BuildConfig.DELETE_INVALID_HOLDS || (c != null && c.getCount() > 0)) {
                     proceedToView = true;
 //                    if (type == 0)
@@ -1913,6 +1936,12 @@ public class SynchMethods {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+            }
+            finally {
+                if(c!=null && !c.isClosed())
+                {
+                    c.close();
+                }
             }
             return null;
         }

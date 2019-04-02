@@ -68,6 +68,7 @@ public class MyPreferences {
     public static final String pref_cash_show_change = "pref_cash_show_change";
     public static final String pref_pay_with_tupyx = "pref_pay_with_tupyx";
     public static final String pref_pay_with_card_on_file = "pref_pay_with_card_on_file";
+    public static final String pref_use_pax = "pref_use_pax";
     public static final String pref_mw_with_genius = "pref_mw_with_genius";
     public static final String pref_config_genius_peripheral = "pref_config_genius_peripheral";
     public static final String pref_enable_location_inventory = "pref_enable_location_inventory";
@@ -95,6 +96,7 @@ public class MyPreferences {
     public static final String pref_handwritten_signature = "pref_handwritten_signature";
     public static final String pref_prompt_customer_copy = "pref_prompt_customer_copy";
     public static final String pref_print_receipt_transaction_payment = "pref_print_receipt_transaction_payment";
+    public static final String pref_print_taxes_brake_down = "pref_print_taxes_brake_down";
     public static final String pref_allow_decimal_quantities = "pref_allow_decimal_quantities";
     public static final String pref_group_receipt_by_sku = "pref_group_receipt_by_sku";
     public static final String pref_require_password_to_remove_void = "pref_require_password_to_remove_void";
@@ -208,7 +210,9 @@ public class MyPreferences {
     }
 
     public static boolean isTeamSable() {
-        return Build.MODEL.toUpperCase().startsWith("SABRESD") || Build.MODEL.toUpperCase().equalsIgnoreCase("TR");
+        return Build.MODEL.toUpperCase().startsWith("SABRESD") ||
+                Build.MODEL.toUpperCase().equalsIgnoreCase("TR") ||
+                Build.MODEL.toUpperCase().equalsIgnoreCase("15N-A-RM");
     }
 
     public String getApplicationPassword() {
@@ -867,7 +871,7 @@ public class MyPreferences {
         setIsICMPEVO(false);
         setIsKDC425(false);
         setIsOT310(false);
-        setIsPAT100(false);
+
         setPrinterName(""); //clean the printer name
         prefEditor.putInt(sled_type, -1);
         prefEditor.putInt(printer_type, -1);
@@ -915,17 +919,6 @@ public class MyPreferences {
         return false;
     }
 
-    public boolean isPAT100() {
-        String device_pat100 = "device_pat100";
-        return prefs.getBoolean(device_pat100, false);
-    }
-
-    public boolean setIsPAT100(boolean value) {
-        String device_em100 = "device_pat100";
-        prefEditor.putBoolean(device_em100, value);
-        prefEditor.commit();
-        return false;
-    }
 
     public boolean isPAT215() {
         String device_pat215 = "device_pat215";

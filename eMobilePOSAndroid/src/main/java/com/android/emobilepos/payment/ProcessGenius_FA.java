@@ -1,5 +1,6 @@
 package com.android.emobilepos.payment;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -31,6 +32,7 @@ import com.android.dao.StoredPaymentsDAO;
 import com.android.database.OrdersHandler;
 import com.android.database.PayMethodsHandler;
 import com.android.database.PaymentsHandler;
+import com.android.database.PaymentsXML_DB;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.genius.GeniusResponse;
@@ -38,6 +40,7 @@ import com.android.emobilepos.models.genius.GeniusTransportToken;
 import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.PaymentMethod;
+import com.android.emobilepos.models.xml.EMSPayment;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.saxhandler.SAXProcessGeniusHandler;
@@ -48,6 +51,7 @@ import com.android.support.MyPreferences;
 import com.android.support.NetworkUtils;
 import com.android.support.NumberUtils;
 import com.android.support.Post;
+import com.android.support.StringUtils;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
@@ -63,8 +67,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.math.BigDecimal;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.regex.Pattern;
 
@@ -72,7 +74,10 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import main.EMSDeviceManager;
+import util.XmlUtils;
 import util.json.JsonUtils;
+
+import static com.android.payments.EMSPayGate_Default.EAction.ChargeGeniusAction;
 
 public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements OnClickListener {
     public static final int REOPEN_PROCESS_GENIUS_SCREEN = 548;
@@ -88,7 +93,6 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
     private boolean hasBeenCreated = false;
     private boolean isRefund = false;
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,9 +105,6 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
         Button btnProcess = findViewById(R.id.processGeniusButton);
         btnProcess.setOnClickListener(this);
 
-//		Button btnExact = (Button)findViewById(R.id.btnExact);
-//		btnExact.setOnClickListener(this);
-
         myPref = new MyPreferences(this);
         geniusIP = myPref.getGeniusIP();
 
@@ -112,14 +113,12 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
             invJobView.setEnabled(false);
         }
 
-
         paymethod_id = extras.getString("paymethod_id");
         if (paymethod_id.equalsIgnoreCase(PaymentMethod.getCardOnFilePaymentMethod().getPaymethod_id())) {
             ImageView imageView = findViewById(R.id.cayanimageView1);
             imageView.setImageResource(R.drawable.debitcard);
             ((TextView) findViewById(R.id.geniusTitle)).setText(R.string.card_on_file);
             ((TextView) findViewById(R.id.add_main_title)).setText(R.string.payment);
-
         }
         String inv_id;
         if (extras.getBoolean("histinvoices"))
@@ -150,13 +149,11 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
             String response = extras.getString("LocalGeniusResponse");
             Gson gson = JsonUtils.getInstance();
             GeniusResponse geniusResponse = gson.fromJson(response, GeniusResponse.class);
-//            Payment payment = gson.fromJson(extras.getString("Payment"), Payment.class);
             invJobView.setText(extras.getString("job_id"));
             amountView.setText(
                     Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(extras.getString("amount")))));
             showResponse(geniusResponse);
         }
-
     }
 
     private void showResponse(GeniusResponse response) {
@@ -171,7 +168,6 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
             setResult(0, result);
             finish();
         }
-
     }
 
     private TextWatcher getTextWatcher(final EditText editText) {
@@ -200,20 +196,13 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                 global.getGlobalDlog().dismiss();
             global.promptForMandatoryLogin(this);
         }
-
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-
-//        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-//        boolean isScreenOn = powerManager.isScreenOn();
-//        if (!isScreenOn && myPref.isExpireUserSession())
-//            Global.loggedIn = false;
         global.startActivityTransitionTimer();
     }
-
 
     private void processPayment() {
         payment = new Payment(this);
@@ -241,28 +230,28 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
         payment.setPay_dueamount(NumberUtils.cleanCurrencyFormatedNumber(amountView.getText().toString()));
         payment.setPay_amount(NumberUtils.cleanCurrencyFormatedNumber(amountView.getText().toString()));
         payment.setOriginalTotalAmount("0");
-
+        payment.setPay_type("0");
 
         EMSPayGate_Default payGate = new EMSPayGate_Default(this, payment);
-        String generatedURL;
+        String geniusXml;
 
         if (isRefund) {
             payment.setIs_refund("1");
             payment.setPay_type("2");
             if (myPref.isPayWithCardOnFile()) {
-                generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.CardOnFileRefund, false, "", null);
+                geniusXml = payGate.paymentWithAction(EMSPayGate_Default.EAction.CardOnFileRefund, false, "", null);
             } else {
-                generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ReturnGeniusAction, false, "", null);
+                geniusXml = payGate.paymentWithAction(EMSPayGate_Default.EAction.ReturnGeniusAction, false, "", null);
             }
         } else if (myPref.isPayWithCardOnFile()) {
-            generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.CardOnFileCharge, false, "", null);
+            geniusXml = payGate.paymentWithAction(EMSPayGate_Default.EAction.CardOnFileCharge, false, "", null);
         } else {
-            generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ChargeGeniusAction, false, "", null);
+            geniusXml = payGate.paymentWithAction(ChargeGeniusAction, false, "", null);
         }
         if (myPref.isPayWithCardOnFile()) {
-            new ProcessCardOnFileLivePayments().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, generatedURL);
+            new ProcessCardOnFileLivePayments().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, geniusXml);
         } else {
-            new ProcessLivePaymentAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, generatedURL);
+            new ProcessLivePaymentAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, geniusXml);
         }
     }
 
@@ -272,8 +261,6 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
             case R.id.processGeniusButton:
                 Toast.makeText(this, getString(R.string.processing_payment_msg), Toast.LENGTH_LONG).show();
                 processPayment();
-                break;
-            case R.id.btnExact:
                 break;
         }
     }
@@ -296,7 +283,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
 
         private boolean boProcessed = false;
         private boolean geniusConnected = false;
-
+        private String paymentAppId = "";
 
         @Override
         protected void onPreExecute() {
@@ -318,8 +305,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                         @Override
                         public void run() {
                             Post post = new Post(ProcessGenius_FA.this);
-                            MyPreferences myPref = new MyPreferences(ProcessGenius_FA.this);
-                            post.postData(11, "http://" + myPref.getGeniusIP() + ":8080/v1/pos?Action=InitiateKeyedSale&Format=XML");
+                            post.postData(11, "http://" + geniusIP + ":8080/v1/pos?Action=InitiateKeyedSale&Format=XML");
                         }
                     }).start();
                 }
@@ -330,15 +316,16 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
         protected GeniusResponse doInBackground(String... params) {
             Gson gson = JsonUtils.getInstance();
             GeniusResponse geniusResponse = null;
-//            if (pingGeniusDevice()) {
             geniusConnected = true;
             Post post = new Post(ProcessGenius_FA.this);
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SAXProcessGeniusHandler handler = new SAXProcessGeniusHandler(ProcessGenius_FA.this);
 
             try {
-                String xml = post.postData(13, params[0]);
-                InputSource inSource = new InputSource(new StringReader(xml));
+                // get Genius TransportToken
+                String geniusRequestXml = params[0];
+                String geniusTransportTokenXml = post.postData(13, geniusRequestXml);
+                InputSource inSource = new InputSource(new StringReader(geniusTransportTokenXml));
 
                 SAXParser sp = spf.newSAXParser();
                 XMLReader xr = sp.getXMLReader();
@@ -348,8 +335,16 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
 
                 if (geniusTransportToken != null && geniusTransportToken.getStatusCode().equalsIgnoreCase("APPROVED")) {// && getData("statusCode", 0, 0).equals("APPROVED")) {
                     boProcessed = true;
-                    MyPreferences myPref = new MyPreferences(ProcessGenius_FA.this);
-                    String json = post.postData(11, "http://" + myPref.getGeniusIP() + ":8080/v2/pos?TransportKey=" + geniusTransportToken.getTransportkey() + "&Format=JSON");
+
+                    // set payment semaphore
+                    Global.isPaymentInProgress = true;
+
+                    // generate reverse in case communication is lost
+                    paymentAppId = generateAndSaveReverseXML(ProcessGenius_FA.this, geniusRequestXml);
+
+                    // start Genius transaction
+                    String json = post.postData(11, "http://" + geniusIP + ":8080/v2/pos?TransportKey=" + geniusTransportToken.getTransportkey() + "&Format=JSON");
+
                     geniusResponse = gson.fromJson(json, GeniusResponse.class);
                 } else {
                     geniusResponse = new GeniusResponse();
@@ -363,7 +358,6 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                 geniusResponse.setErrorMessage(e.getMessage());
             }
 
-//            }
             return geniusResponse;
         }
 
@@ -377,7 +371,8 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                 Global.showPrompt(ProcessGenius_FA.this, R.string.dlog_title_error, getString(R.string.failed_genius_connectivity));
             } else if (!boProcessed) {
                 Global.showPrompt(ProcessGenius_FA.this, R.string.dlog_title_error, response.getErrorMessage());
-            } else if (response != null && (response.getStatus().equalsIgnoreCase("APPROVED") ||
+            } else if (response != null && response.getStatus() != null &&
+                    (response.getStatus().equalsIgnoreCase("APPROVED") ||
                     response.getStatus().equalsIgnoreCase("DECLINED") ||
                     response.getStatus().equalsIgnoreCase("UserCancelled") ||
                     response.getStatus().equalsIgnoreCase("TERMINATED"))) {
@@ -405,7 +400,9 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                 payment.setPay_amount(String.valueOf(Global.getRoundBigDecimal(payAmount)));
                 Global.amountPaid = payment.getPay_amount();
                 payment.setAuthcode(response.getAuthorizationCode());
-                payment.setCcnum_last4(response.getAccountNumber());
+                payment.setCcnum_last4(StringUtils.getLastFour(response.getAccountNumber()));
+                payment.setPay_resultcode(response.getStatus());
+                payment.setPay_resultmessage(response.getStatus());
                 payment.setPay_name(response.getCardholder());
                 payment.setPay_date(DateUtils.getDateStringAsString(response.getTransactionDate(), "MM/dd/yyyy HH:mm:ss a"));
                 if (signa.contains("^"))
@@ -420,6 +417,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                 } else {
                     payHandler.insertDeclined(payment);
                 }
+
                 EMVContainer emvContainer = new EMVContainer(response);
 
                 String paid_amount = NumberUtils.cleanCurrencyFormatedNumber(amountView.getText().toString());//Double.toString(Global.formatNumFromLocale(amountView.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim()));
@@ -435,7 +433,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                 if (myPref.getPreferences(MyPreferences.pref_prompt_customer_copy))
                     showPrintDlg(false);
                 else {
-                    if (myPref.getGeniusIP().equalsIgnoreCase("127.0.0.1")) {
+                    if (geniusIP.equalsIgnoreCase("127.0.0.1")) {
                         Intent i = new Intent(ProcessGenius_FA.this, ProcessGenius_FA.class);
                         i.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
                         Gson gson = JsonUtils.getInstance();
@@ -450,7 +448,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                     }
                 }
             } else {
-                if (myPref.getGeniusIP().equalsIgnoreCase("127.0.0.1")) {
+                if (geniusIP.equalsIgnoreCase("127.0.0.1")) {
                     Intent i = new Intent(ProcessGenius_FA.this, ProcessGenius_FA.class);
                     i.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
                     i.putExtra("isReopen", true);
@@ -470,6 +468,13 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                     Global.showPrompt(ProcessGenius_FA.this, R.string.dlog_title_error, response != null ? response.getStatus() : getString(R.string.failed_genius_connectivity));
                 }
             }
+
+            // delete reverse since the payment is saved
+            PaymentsXML_DB _paymentXml_DB = new PaymentsXML_DB(ProcessGenius_FA.this);
+            _paymentXml_DB.deleteRow(paymentAppId);
+
+            // remove payment semaphore
+            Global.isPaymentInProgress = false;
         }
 
         private void showPrintDlg(boolean isRetry) {
@@ -516,23 +521,6 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
             dlog.show();
         }
 
-        private boolean pingGeniusDevice() {
-            boolean isReachable = true;
-            try {
-                URL url = new URL("http://" + geniusIP + ":8080");
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setConnectTimeout(2000);
-                int code = connection.getResponseCode();
-
-                isReachable = code == 200 || code == 400;
-            } catch (IOException e) {
-                e.printStackTrace();
-                Crashlytics.logException(e);
-                isReachable = false;
-            }
-            return isReachable;
-        }
-
         private String payMethodDictionary(String value) {
             Limiters test = Limiters.toLimit(value);
 
@@ -554,24 +542,6 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
             }
             return "";
         }
-
-
-//        private String getData(String tag, int record, int type) {
-//            Global global = (Global) getApplication();
-//            Integer i = global.dictionary.get(record).get(tag);
-//            if (i != null) {
-//                switch (type) {
-//                    case 0:
-//                        return returnedPost.get(record)[i];
-//                    case 1: {
-//                        if (i > 13)
-//                            i = i - 1;
-//                        return returnedGenius.get(record)[i];
-//                    }
-//                }
-//            }
-//            return "";
-//        }
 
         private void parseSignature(String signatureVector) {
             String[] splitFirstSentinel = signatureVector.split(Pattern.quote("^"));
@@ -610,7 +580,6 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                     global.encodedImage = Base64.encodeToString(b, Base64.DEFAULT);
                     payment.setPay_signature(global.encodedImage);
 
-
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                     Crashlytics.logException(e);
@@ -620,8 +589,6 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                 }
             }
         }
-
-
     }
 
     private void showPrintDlg(boolean isRetry) {
@@ -683,7 +650,6 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);
             myProgressDialog.show();
-
         }
 
         @Override
@@ -723,7 +689,6 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
             myProgressDialog.setCancelable(false);
             myProgressDialog.show();
         }
-
 
         @Override
         protected Void doInBackground(String... params) {
@@ -812,5 +777,21 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
             OrdersHandler dbOrders = new OrdersHandler(this);
             dbOrders.updateOrderStoredFwd(payment.getJob_id(), "1");
         }
+    }
+
+    public static String generateAndSaveReverseXML(Activity activity, String geniusXml) {
+        EMSPayment emsPayment = XmlUtils.getEMSPayment(geniusXml);
+
+        String reverseXml = XmlUtils.replaceAction(geniusXml,
+                EMSPayGate_Default.getReverseAction(ChargeGeniusAction));
+
+        HashMap<String, String> map = new HashMap<>();
+        map.put(PaymentsXML_DB.app_id, emsPayment.getAppId());
+        map.put(PaymentsXML_DB.payment_xml, reverseXml);
+
+        PaymentsXML_DB _payment_xml = new PaymentsXML_DB(activity);
+        _payment_xml.insert(map);
+
+        return emsPayment.getAppId();
     }
 }

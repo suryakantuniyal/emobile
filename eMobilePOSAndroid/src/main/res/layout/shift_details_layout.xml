@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <LinearLayout
         android:id="@+id/mainContainerLinearLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:background="#FFFFFF"
         android:orientation="vertical">
 
@@ -33,11 +34,12 @@
                 android:id="@+id/btnPrint"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_margin="5dp"
                 android:background="@drawable/blue_btn_selector"
-                android:text="Print"
+                android:text="@string/button_print"
                 android:textAppearance="@style/black_text_appearance"
                 android:textSize="@dimen/ordering_checkout_btn_txt_size" />
         </RelativeLayout>
@@ -65,8 +67,8 @@
                     style="@style/black_text_appearance"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="TextView"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                    tools:text="TextView" />
             </TableRow>
 
             <TableRow
@@ -88,8 +90,8 @@
                     style="@style/black_text_appearance"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="TextView"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                    tools:text="TextView" />
             </TableRow>
 
             <TableRow
@@ -117,6 +119,7 @@
                     style="@style/black_text_appearance_unbold"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
                     android:layout_marginLeft="15dp"
                     android:layout_weight="1"
                     android:text="@string/safe_drop"
@@ -126,8 +129,8 @@
                     android:id="@+id/safeDropExpensestextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="TextView"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                    tools:text="TextView" />
             </TableRow>
 
             <TableRow
@@ -140,6 +143,7 @@
                     style="@style/black_text_appearance_unbold"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
                     android:layout_marginLeft="15dp"
                     android:layout_weight="1"
                     android:text="@string/cash_drop"
@@ -149,8 +153,8 @@
                     android:id="@+id/cashDropExpensestextView2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="TextView"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                    tools:text="TextView" />
             </TableRow>
 
             <TableRow
@@ -163,6 +167,7 @@
                     style="@style/black_text_appearance_unbold"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
                     android:layout_marginLeft="15dp"
                     android:layout_weight="1"
                     android:text="@string/cash_in"
@@ -172,8 +177,8 @@
                     android:id="@+id/cashInExpensestextView4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="TextView"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                    tools:text="TextView" />
             </TableRow>
 
             <TableRow
@@ -186,6 +191,7 @@
                     style="@style/black_text_appearance_unbold"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
                     android:layout_marginLeft="15dp"
                     android:layout_weight="1"
                     android:text="@string/buy_goods_services"
@@ -195,8 +201,8 @@
                     android:id="@+id/buyGoodsServicesExpensestextView6"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="TextView"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                    tools:text="TextView" />
             </TableRow>
 
             <TableRow
@@ -209,6 +215,7 @@
                     style="@style/black_text_appearance_unbold"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
                     android:layout_marginLeft="15dp"
                     android:layout_weight="1"
                     android:text="@string/non_cash_gratuity"
@@ -218,8 +225,8 @@
                     android:id="@+id/nonCashGratuityExpensestextVie8"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="TextView"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                    tools:text="TextView" />
             </TableRow>
 
             <TableRow
@@ -242,32 +249,9 @@
                     style="@style/black_text_appearance"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="TextView"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                    tools:text="TextView" />
             </TableRow>
-
-            <!--<TableRow-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:layout_margin="8dp">-->
-
-            <!--<TextView-->
-            <!--android:id="@+id/textView27c"-->
-            <!--style="@style/black_text_appearance_unbold"-->
-            <!--android:layout_width="0dp"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_weight="1"-->
-            <!--android:text="@string/ending_petty_cash"-->
-            <!--android:textAppearance="@style/TextAppearance.AppCompat.Large" />-->
-
-            <!--<TextView-->
-            <!--android:id="@+id/endingPettyCashtextView26"-->
-            <!--style="@style/black_text_appearance"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:text="TextView"-->
-            <!--android:textAppearance="@style/TextAppearance.AppCompat.Large" />-->
-            <!--</TableRow>-->
 
             <TableRow
                 android:layout_width="match_parent"
@@ -288,8 +272,8 @@
                     style="@style/black_text_appearance"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="TextView"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                    tools:text="TextView" />
             </TableRow>
 
             <TableRow
@@ -311,8 +295,8 @@
                     style="@style/black_text_appearance"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="TextView"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                    tools:text="TextView" />
             </TableRow>
 
             <TableRow
@@ -334,8 +318,8 @@
                     style="@style/black_text_appearance"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="TextView"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                    tools:text="TextView" />
             </TableRow>
 
             <TableRow
@@ -357,8 +341,8 @@
                     style="@style/black_text_appearance"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="TextView"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                    tools:text="TextView" />
             </TableRow>
 
         </TableLayout>
@@ -368,10 +352,10 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:paddingEnd="8dp"
+            android:paddingStart="8dp"
             android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:paddingStart="8dp">
+            android:paddingEnd="8dp"
+            android:paddingRight="8dp">
 
             <TextView
                 android:id="@+id/textView67"
@@ -382,15 +366,16 @@
                 android:text="@string/eod_report_dept_sales"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large" />
         </LinearLayout>
+
         <LinearLayout
             android:id="@+id/deptReturnsLinearLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:paddingEnd="8dp"
+            android:paddingStart="8dp"
             android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:paddingStart="8dp">
+            android:paddingEnd="8dp"
+            android:paddingRight="8dp">
 
             <TextView
                 android:id="@+id/textView67a"

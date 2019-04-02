@@ -47,7 +47,9 @@ public class DinningTableDAO {
         } finally {
             realm.commitTransaction();
             removeInvalidLocations();
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -61,7 +63,9 @@ public class DinningTableDAO {
                     .findAll().deleteAllFromRealm();
         } finally {
             r.commitTransaction();
-            r.close();
+            if(r!=null) {
+                r.close();
+            }
         }
     }
 
@@ -80,7 +84,9 @@ public class DinningTableDAO {
                 tables = realm.copyFromRealm(tables);
             }
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
         return tables;
     }
@@ -92,7 +98,9 @@ public class DinningTableDAO {
             realm.delete(DinningTable.class);
         } finally {
             realm.commitTransaction();
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -106,7 +114,9 @@ public class DinningTableDAO {
                 table = realm.copyFromRealm(table);
             }
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
         return table;
     }
@@ -121,7 +131,9 @@ public class DinningTableDAO {
             }
             return first;
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 

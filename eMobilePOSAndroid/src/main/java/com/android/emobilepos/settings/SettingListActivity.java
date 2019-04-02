@@ -1024,7 +1024,9 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
 //                                        });
 
                             } finally {
-                                realm.close();
+                                if (realm != null) {
+                                    realm.close();
+                                }
                             }
                             break;
                     }
@@ -1404,6 +1406,20 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();
                                 Global.mainPrinterManager.loadDrivers(getActivity(), Global.BIXOLON, EMSDeviceManager.PrinterInterfase.BLUETOOTH);
+                                List<Device> list = new ArrayList<>();
+                                Device device = DeviceTableDAO.getByName(strDeviceName);
+                                if (device == null) {
+                                    device = new Device();
+                                }
+                                device.setId(String.format("BT:%s", val[pos]));
+                                device.setMacAddress("BT:" + macAddressList.get(pos));
+                                device.setName(strDeviceName);
+                                device.setType(String.valueOf(Global.BIXOLON));
+                                device.setRemoteDevice(false);
+                                device.setEmsDeviceManager(Global.mainPrinterManager);
+                                list.add(device);
+                                DeviceTableDAO.insert(list);
+                                Global.printerDevices.add(device);
                             } else if (strUpperDeviceName.contains("P25")) {
                                 myPref.setPrinterType(Global.BAMBOO);
                                 myPref.setPrinterMACAddress(macAddressList.get(pos));
@@ -1465,6 +1481,15 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                                 list.add(device);
                                 DeviceTableDAO.insert(list);
                                 Global.printerDevices.add(device);
+
+                            } else if (strUpperDeviceName.contains("MOB85")) {
+                                myPref.setSwiperType(Global.INGENICOMOBY85);
+                                myPref.setSwiperMACAddress(macAddressList.get(pos));
+                                myPref.setSwiperName(strDeviceName);
+                                EMSDeviceManager edm = new EMSDeviceManager();
+                                Global.btSwiper = edm.getManager();
+                                Global.btSwiper.loadDrivers(getActivity(), Global.INGENICOMOBY85, EMSDeviceManager.PrinterInterfase.BLUETOOTH);
+
                             } else if (strUpperDeviceName.startsWith("KDC")) {
                                 myPref.setSwiperMACAddress(macAddressList.get(pos));
                                 myPref.setSwiperType(Global.KDC425);
@@ -1541,10 +1566,6 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                 Global.mainPrinterManager = edm.getManager();
                 Global.mainPrinterManager.loadDrivers(getActivity(), Global.ASURA, EMSDeviceManager.PrinterInterfase.USB);
 
-            } else if (myPref.isPAT100()) {
-                myPref.setPrinterType(Global.PAT100);
-                Global.mainPrinterManager = edm.getManager();
-                Global.mainPrinterManager.loadDrivers(getActivity(), Global.PAT100, EMSDeviceManager.PrinterInterfase.USB);
             } else if (myPref.isPAT215()) {
                 edm = new EMSDeviceManager();
                 myPref.setPrinterType(Global.PAT215);

@@ -29,7 +29,6 @@ public class PriceLevelItemsHandler {
     private List<String[]> addrData;
     private List<HashMap<String, Integer>> dictionaryListMap;
     private static final String table_name = "PriceLevelItems";
-
     public PriceLevelItemsHandler(Context activity) {
         attrHash = new HashMap<>();
         addrData = new ArrayList<>();
@@ -68,8 +67,9 @@ public class PriceLevelItemsHandler {
 
     public void insert(List<ItemPriceLevel> itemPriceLevels) {
         DBManager.getDatabase().beginTransaction();
+        SQLiteStatement insert=null;
         try {
-            SQLiteStatement insert;
+
             insert = DBManager.getDatabase().compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
 
             for (ItemPriceLevel itemPriceLevel : itemPriceLevels) {
@@ -82,12 +82,16 @@ public class PriceLevelItemsHandler {
                 insert.execute();
                 insert.clearBindings();
             }
-            insert.close();
+          //  insert.close();
             DBManager.getDatabase().setTransactionSuccessful();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
+            if(insert!=null) {
+                insert.close();
+            }
             DBManager.getDatabase().endTransaction();
+
         }
 
     }

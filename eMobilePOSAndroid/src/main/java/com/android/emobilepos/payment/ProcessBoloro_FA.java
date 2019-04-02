@@ -14,7 +14,6 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.PowerManager;
 import android.text.Editable;
 import android.text.Selection;
 import android.text.TextWatcher;
@@ -246,8 +245,6 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
         if (Global.isIvuLoto) {
             payment.setIvuLottoNumber(extras.getString("IvuLottoNumber"));
             payment.setIvuLottoDrawDate(extras.getString("IvuLottoDrawDate"));
-            payment.setIvuLottoQR(Global.base64QRCode(extras.getString("IvuLottoNumber"), extras.getString("IvuLottoDrawDate")));
-
 
             if (!extras.getString("Tax1_amount").isEmpty()) {
                 payment.setTax1_amount(extras.getString("Tax1_amount"));
@@ -496,17 +493,24 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
                 generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.GetTelcoInfoByTag, false, null, null);
                 if (myPreferences.isPrefUseStoreForward()) {
                     Realm realm = Realm.getDefaultInstance();
-                    realm.beginTransaction();
-                    StoreAndForward storeAndForward = realm.createObject(StoreAndForward.class);
-                    storeAndForward.setCreationDate(new Date());
-                    storeAndForward.setId(storeForwardPaymentId);
-                    payment.setPay_id(String.valueOf(System.currentTimeMillis()));
-                    storeAndForward.setPayment(realm.copyToRealmOrUpdate(payment));
-                    storeAndForward.setPaymentXml(generatedURL);
-                    storeAndForward.setRetry(false);
-                    storeAndForward.setPaymentType(StoreAndForward.PaymentType.BOLORO);
-                    storeAndForward.setStoreAndForwatdStatus(StoreAndForward.StoreAndForwatdStatus.PENDING);
-                    realm.commitTransaction();
+                    try {
+
+                        realm.beginTransaction();
+                        StoreAndForward storeAndForward = realm.createObject(StoreAndForward.class);
+                        storeAndForward.setCreationDate(new Date());
+                        storeAndForward.setId(storeForwardPaymentId);
+                        payment.setPay_id(String.valueOf(System.currentTimeMillis()));
+                        storeAndForward.setPayment(realm.copyToRealmOrUpdate(payment));
+                        storeAndForward.setPaymentXml(generatedURL);
+                        storeAndForward.setRetry(false);
+                        storeAndForward.setPaymentType(StoreAndForward.PaymentType.BOLORO);
+                        storeAndForward.setStoreAndForwatdStatus(StoreAndForward.StoreAndForwatdStatus.PENDING);
+                        realm.commitTransaction();
+                    }
+                    finally {
+                        if(realm!=null) {
+                            realm.close();}
+                    }
                     return true;
                 } else {
                     Post httpClient = new Post(activity);

@@ -57,7 +57,6 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
     private String _prod_id = "";
     private StringBuilder _ord_desc = new StringBuilder();
     private BigDecimal addedAddon = new BigDecimal("0");
-
     private ImageLoader imageLoader;
     private DisplayImageOptions options;
     private ProductAddonsHandler prodAddonsHandler;
@@ -67,6 +66,7 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
     private Global.TransactionType mTransType;
     private List<View> listParentViews;
     private int index_selected_parent = 0;
+    private Cursor c;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -92,7 +92,10 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
         mTransType = (Global.TransactionType) extras.get("transType");
         orderProduct = gson.fromJson(extras.getString("orderProduct"), OrderProduct.class);
         parentAddons = prodAddonsHandler.getParentAddons(orderProduct.getProd_id());
-        Cursor c = prodAddonsHandler.getSpecificChildAddons(_prod_id, parentAddons.get(0).getCategoryId());
+        if (c != null) {
+            c.close();
+        }
+        c = prodAddonsHandler.getSpecificChildAddons(_prod_id, parentAddons.get(0).getCategoryId());
         myGridView = findViewById(R.id.asset_grid);
         isEditAddon = extras.getBoolean("isEditAddon", false);
         selectedSeatNumber = extras.getString("selectedSeatNumber");
@@ -153,6 +156,9 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if (c != null && !c.isClosed()) {
+            c.close();
+        }
     }
 
     @Override
@@ -190,7 +196,10 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
                             TextView temp2 = listParentViews.get(_curr_pos).findViewById(R.id.gridViewImageTitle);
                             temp2.setBackgroundColor(Color.rgb(0, 112, 60));
                             index_selected_parent = _curr_pos;
-                            Cursor c = prodAddonsHandler.getSpecificChildAddons(_prod_id, parentAddons.get(_curr_pos).getCategoryId());
+                            if (c != null) {
+                                c.close();
+                            }
+                            c = prodAddonsHandler.getSpecificChildAddons(_prod_id, parentAddons.get(_curr_pos).getCategoryId());
                             adapter = new PickerAddonLV_Adapter(activity, c, CursorAdapter.NO_SELECTION, imageLoader, orderProduct);
                             myGridView.setAdapter(adapter);
                         }

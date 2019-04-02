@@ -24,4 +24,32 @@ public class StringUtils {
         }
         return retVal;
     }
+
+    public static String left(String value, int length) {
+        if (value != null) {
+            if (value.length() >= length) {
+                return value.substring(0, length);
+            } else {
+                return value;
+            }
+        } else {
+            return "";
+        }
+    }
+
+    public static String right(String value, int length) {
+        if (value != null) {
+            if (value.length() >= length) {
+                return value.substring(value.length() - length);
+            } else {
+                return value;
+            }
+        } else {
+            return "";
+        }
+    }
+
+    public static String getLastFour(String value) {
+        return right(value, 4);
+    }
 }

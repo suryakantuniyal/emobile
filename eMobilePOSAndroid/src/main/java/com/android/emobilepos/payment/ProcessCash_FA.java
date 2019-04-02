@@ -67,7 +67,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
     private boolean isFromSalesReceipt = false;
     private boolean isFromMainMenu = false;
     private EditText paid, amountDue, reference, tipAmount, promptTipField, subtotal, tax1, tax2;//,tipAmount,promptTipField
-    private EditText customerNameField, customerEmailField, phoneNumberField;
+    private EditText customerNameField, customerEmailField, phoneNumberField, commentsField;
     private TextView change;
     private boolean isMultiInvoice = false;
     private String[] inv_id_array, txnID_array;
@@ -171,7 +171,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         customerNameField = findViewById(R.id.processCashName);
         customerEmailField = findViewById(R.id.processCashEmail);
         phoneNumberField = findViewById(R.id.processCashPhone);
-
+        commentsField = findViewById(R.id.commentsCashEdit);
 
         Button btnFive = findViewById(R.id.btnFive);
         Button btnTen = findViewById(R.id.btnTen);
@@ -191,14 +191,16 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
             HashMap<String, String[]> orderTaxes = TaxesCalculator.getOrderTaxes(this, global.order.getListOrderTaxes(), global.order);
             int i = 0;
             Iterator it = orderTaxes.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry<String, String[]> map = (Map.Entry<String, String[]>) it.next();
-                if (i == 0) {
-                    tax1.setText(Global.getCurrencyFormat(map.getValue()[1]));
-                } else if (i == 1) {
-                    tax2.setText(Global.getCurrencyFormat(map.getValue()[1]));
+            if (it != null) {
+                while (it.hasNext()) {
+                    Map.Entry<String, String[]> map = (Map.Entry<String, String[]>) it.next();
+                    if (i == 0) {
+                        tax1.setText(Global.getCurrencyFormat(map.getValue()[1]));
+                    } else if (i == 1) {
+                        tax2.setText(Global.getCurrencyFormat(map.getValue()[1]));
+                    }
+                    i++;
                 }
-                i++;
             }
         }
         custidkey = extras.getString("custidkey");
@@ -369,7 +371,6 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
             CustomersHandler handler2 = new CustomersHandler(activity);
             HashMap<String, String> customerInfo = handler2.getCustomerMap(extras.getString("cust_id"));
 
-
             if (customerInfo != null) {
                 if (customerInfo.containsKey("cust_name") &&
                         !customerInfo.get("cust_name").isEmpty())
@@ -381,8 +382,11 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
                         !customerInfo.get("cust_email").isEmpty())
                     customerEmailField.setText(customerInfo.get("cust_email"));
             }
-        } else if (!extras.getString("order_email", "").isEmpty()) {
-            customerEmailField.setText(extras.getString("order_email"));
+        }
+
+        if (!myPref.isSkipEmailPhone() && isFromSalesReceipt) {
+            customerEmailField.setText(extras.getString("order_email", ""));
+            phoneNumberField.setText(extras.getString("order_phone", ""));
         }
 
         hasBeenCreated = true;
@@ -696,16 +700,39 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         } else
             paymentType = "0";
 
-        Payment payment = new Payment(activity, extras.getString("pay_id"), extras.getString("cust_id"), invoiceId, jobId,
-                clerkId, custidkey, extras.getString("paymethod_id"),
-                actualAmount, amountTender,
-                customerNameField.getText().toString(), reference.getText().toString(), phoneNumberField.getText().toString(),
-                customerEmailField.getText().toString(), amountToTip, taxAmnt1, taxAmnt2, taxName1, taxName2,
-                isRef, paymentType, "Cash", null, null,
-                null, null,
-                null, null, null,
-                null, null, null);
-
+        Payment payment = new Payment(activity,
+                extras.getString("pay_id"),
+                extras.getString("cust_id"),
+                invoiceId,
+                jobId,
+                clerkId,
+                custidkey,
+                extras.getString("paymethod_id"),
+                actualAmount,
+                amountTender,
+                customerNameField.getText().toString(),
+                reference.getText().toString(),
+                phoneNumberField.getText().toString(),
+                customerEmailField.getText().toString(),
+                commentsField.getText().toString(),
+                amountToTip,
+                taxAmnt1,
+                taxAmnt2,
+                taxName1,
+                taxName2,
+                isRef,
+                paymentType,
+                "Cash",
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
 
         Global.amountPaid = Double.toString(amountTender);
 
@@ -791,23 +818,39 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         String invoiceId = "";
 
         String paymentType = "0";
-        Payment payment = new Payment(activity, extras.getString("pay_id"), extras.getString("cust_id"), invoiceId, null,
-                clerkId, custidkey, extras.getString("paymethod_id"),
-                actualAmount, amountToBePaid,
-                customerNameField.getText().toString(), reference.getText().toString(), phoneNumberField.getText().toString(),
-                customerEmailField.getText().toString(), amountToTip, null, null, null, null,
-                null, paymentType, "Cash", null, null,
-                null, null,
-                null, null, null,
-                null, null, null);
-
-//        Payment payment = new Payment(activity, extras.getString("pay_id"), extras.getString("cust_id"), invoiceId, null, clerkId,
-//                custidkey, extras.getString("paymethod_id"), actualAmount, amountToBePaid,
-//                customerNameField.getText().toString(), reference.getText().toString(), phoneNumberField.getText().toString(),
-//                customerEmailField.getText().toString(),
-//                amountToTip, null, null, null, null,
-//                null, paymentType, "Cash");
-
+        Payment payment = new Payment(activity,
+                extras.getString("pay_id"),
+                extras.getString("cust_id"),
+                invoiceId,
+                null,
+                clerkId,
+                custidkey,
+                extras.getString("paymethod_id"),
+                actualAmount,
+                amountToBePaid,
+                customerNameField.getText().toString(),
+                reference.getText().toString(),
+                phoneNumberField.getText().toString(),
+                customerEmailField.getText().toString(),
+                commentsField.getText().toString(),
+                amountToTip,
+                null,
+                null,
+                null,
+                null,
+                null,
+                paymentType,
+                "Cash",
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
 
         payHandler.insert(payment);
         if (!myPref.getLastPayID().isEmpty())
@@ -983,7 +1026,9 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
             progressDialog.setMessage(getString(R.string.processing_payment_msg));
             progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             progressDialog.setCancelable(false);
-            progressDialog.show();
+            if (activity != null && !activity.isFinishing() && progressDialog != null && !progressDialog.isShowing()) {
+                progressDialog.show();
+            }
         }
 
 
@@ -1001,8 +1046,9 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
 
         @Override
         protected void onPostExecute(Payment payment) {
-            progressDialog.dismiss();
-
+            if (progressDialog != null && progressDialog.isShowing()) {
+                progressDialog.dismiss();
+            }
             double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
             double actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDue));
 
@@ -1033,7 +1079,10 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
             myProgressDialog.setCancelable(false);
             if (myProgressDialog.isShowing())
                 myProgressDialog.dismiss();
-            myProgressDialog.show();
+            if (activity != null && !activity.isFinishing() && myProgressDialog != null && !myProgressDialog.isShowing()) {
+                myProgressDialog.show();
+            }
+
 
         }
 

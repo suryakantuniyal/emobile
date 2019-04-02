@@ -3,7 +3,6 @@ package com.android.support;
 import android.content.Context;
 
 import com.android.emobilepos.R;
-import com.android.emobilepos.service.SyncConfigServerService;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -199,7 +198,7 @@ public class Post {
                 httpMethod = HttpClient.HTTPMethod.POST;
                 break;
             case 13:
-                postLink = context.getString(R.string.genius_token_url);//"https://epay.enablermobile.com/index.ashx";
+                postLink = context.getString(R.string.genius_token_url);
                 entity = varyingVariable;
                 httpMethod = HttpClient.HTTPMethod.POST;
                 break;
@@ -261,7 +260,7 @@ public class Post {
                 httpMethod = HttpClient.HTTPMethod.GET;
                 break;
             case Global.S_SUBMIT_TIP_ADJUSTMENT:
-                postLink = context.getString(R.string.genius_token_url);//"https://epay.enablermobile.com/index.ashx";
+                postLink = context.getString(R.string.epay_enablermobile);
                 entity = varyingVariable;
                 httpMethod = HttpClient.HTTPMethod.POST;
                 break;
@@ -271,7 +270,17 @@ public class Post {
                 isShortResponse = true;
                 break;
             case Global.S_SUBMIT_WORKINGKEY_REQUEST:
-                postLink = context.getString(R.string.genius_token_url);//"https://epay.enablermobile.com/index.ashx";
+                postLink = context.getString(R.string.epay_enablermobile);
+                entity = varyingVariable;
+                httpMethod = HttpClient.HTTPMethod.POST;
+                break;
+            case Global.S_SUBMIT_SOUNDPAYMENTS:
+                postLink = context.getString(R.string.epay_enablermobile);
+                entity = varyingVariable;
+                httpMethod = HttpClient.HTTPMethod.POST;
+                break;
+            case Global.S_GET_INGENICO_CREDENTIALS:
+                postLink = context.getString(R.string.epay_enablermobile);
                 entity = varyingVariable;
                 httpMethod = HttpClient.HTTPMethod.POST;
                 break;

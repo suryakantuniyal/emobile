@@ -111,6 +111,7 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         if (!TextUtils.isEmpty(product.getProdPrice())) {
             this.setMixMatchOriginalPrice(new BigDecimal(product.getProdPrice()));
         }
+        this.setPricelevel_id(product.getPriceLevelId());
         this.setGC(product.isGC());
         this.setImgURL(product.getProdImgName());
         this.setProd_type(product.getProdType());
@@ -864,6 +865,10 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         }
         BigDecimal calculatedDiscount;
         BigDecimal disAmount = Global.getBigDecimalNum(getDisAmount());
+        if (disAmount.compareTo(BigDecimal.ZERO) < 1) {
+            setDisTotal(String.valueOf(Global.getRoundBigDecimal(BigDecimal.ZERO)));
+            return BigDecimal.ZERO;
+        }
         if (isDiscountFixed()) {
             calculatedDiscount = disAmount;
         } else {

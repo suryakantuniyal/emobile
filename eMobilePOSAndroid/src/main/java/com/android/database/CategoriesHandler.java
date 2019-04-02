@@ -4,7 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 
 import com.android.emobilepos.models.EMSCategory;
-import com.android.support.Global;
+
 import com.android.support.MyPreferences;
 
 import net.sqlcipher.database.SQLiteStatement;
@@ -22,25 +22,23 @@ public class CategoriesHandler {
     private static final String isactive = "isactive";
     private static final String parentID = "parentID";
     private static final String url_icon = "url_icon";
-
+    private static final String table_name = "Categories";
     private final List<String> attr = Arrays.asList(cat_id, cat_name, cat_update, isactive, parentID, url_icon);
     private StringBuilder sb1, sb2;
     private HashMap<String, Integer> attrHash;
-
     private List<String[]> catData;
     private MyPreferences myPref;
     private List<HashMap<String, Integer>> dictionaryListMap;
-    private static final String table_name = "Categories";
 
-	public CategoriesHandler(Context activity) {
-		attrHash = new HashMap<>();
-		catData = new ArrayList<>();
-		sb1 = new StringBuilder();
-		sb2 = new StringBuilder();
-		myPref = new MyPreferences(activity);
-		new DBManager(activity);
-		initDictionary();
-	}
+    public CategoriesHandler(Context activity) {
+        attrHash = new HashMap<>();
+        catData = new ArrayList<>();
+        sb1 = new StringBuilder();
+        sb2 = new StringBuilder();
+        myPref = new MyPreferences(activity);
+        new DBManager(activity);
+        initDictionary();
+    }
 
     private void initDictionary() {
         int size = attr.size();
@@ -71,11 +69,12 @@ public class CategoriesHandler {
 
 
     public void insert(List<String[]> data, List<HashMap<String, Integer>> dictionary) {
+        SQLiteStatement insert = null;
         DBManager.getDatabase().beginTransaction();
         try {
             catData = data;
             dictionaryListMap = dictionary;
-            SQLiteStatement insert;
+
             insert = DBManager.getDatabase().compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
             int size = catData.size();
             for (int j = 0; j < size; j++) {
@@ -88,10 +87,14 @@ public class CategoriesHandler {
                 insert.execute();
                 insert.clearBindings();
             }
-            insert.close();
+
             DBManager.getDatabase().setTransactionSuccessful();
         } catch (Exception e) {
-        } finally {
+        }
+        finally {
+            if (insert != null) {
+                insert.close();
+            }
             DBManager.getDatabase().endTransaction();
         }
     }
@@ -140,20 +143,29 @@ public class CategoriesHandler {
     public String[] getCategory(String categoryId) {
         String[] data = new String[2];
         String[] fields = new String[]{cat_name, cat_id};
-        Cursor cursor = DBManager.getDatabase().query(true, table_name, fields, null, null, null, null, cat_name, null);
-        if (cursor.moveToFirst()) {
-            data[0] = cursor.getString(cursor.getColumnIndex(cat_name));
-            data[1] = cursor.getString(cursor.getColumnIndex(cat_id));
+        Cursor cursor = null;
+        try {
+            cursor = DBManager.getDatabase().query(true, table_name, fields, null, null, null, null, cat_name, null);
+            if (cursor.moveToFirst()) {
+                data[0] = cursor.getString(cursor.getColumnIndex(cat_name));
+                data[1] = cursor.getString(cursor.getColumnIndex(cat_id));
+            }
+            cursor.close();
+            return data;
         }
-        cursor.close();
-        return data;
+        finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
+        }
     }
 
     public List<String[]> getCategories() {
         List<String[]> list = new ArrayList<>();
         String[] data;
         String[] fields = new String[]{cat_name, cat_id};
-        Cursor cursor, cursor2;
+        Cursor cursor = null;
+        Cursor cursor2 = null;
         StringBuilder sb = new StringBuilder();
         if (myPref.getPreferences(MyPreferences.pref_enable_multi_category))
             cursor = DBManager.getDatabase().query(true, table_name, fields, "parentID='' AND cat_id!=''", null, null, null, cat_name, null);
@@ -164,26 +176,36 @@ public class CategoriesHandler {
         } else {
             data = new String[3];
         }
-        if (cursor.moveToFirst()) {
-            do {
-                data[0] = cursor.getString(cursor.getColumnIndex(cat_name));
-                data[1] = cursor.getString(cursor.getColumnIndex(cat_id));
-                list.add(data);
-                if (!myPref.getPreferences(MyPreferences.pref_enable_multi_category))
-                    data = new String[2];
-                else {
-                    sb.append("SELECT Count(*) AS count FROM Categories WHERE parentID='").append(data[1]).append("'");
-                    cursor2 = DBManager.getDatabase().rawQuery(sb.toString(), null);
-                    cursor2.moveToFirst();
-                    data[2] = cursor2.getString(cursor2.getColumnIndex("count"));
-                    data = new String[3];
-                    sb.setLength(0);
-                    cursor2.close();
-                }
-            } while (cursor.moveToNext());
+        try {
+            if (cursor.moveToFirst()) {
+                do {
+                    data[0] = cursor.getString(cursor.getColumnIndex(cat_name));
+                    data[1] = cursor.getString(cursor.getColumnIndex(cat_id));
+                    list.add(data);
+                    if (!myPref.getPreferences(MyPreferences.pref_enable_multi_category))
+                        data = new String[2];
+                    else {
+                        sb.append("SELECT Count(*) AS count FROM Categories WHERE parentID='").append(data[1]).append("'");
+                        cursor2 = DBManager.getDatabase().rawQuery(sb.toString(), null);
+                        cursor2.moveToFirst();
+                        data[2] = cursor2.getString(cursor2.getColumnIndex("count"));
+                        data = new String[3];
+                        sb.setLength(0);
+                        cursor2.close();
+                    }
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+            return list;
         }
-        cursor.close();
-        return list;
+        finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
+            if (cursor2 != null && !cursor2.isClosed()) {
+                cursor2.close();
+            }
+        }
     }
 
     public Cursor getSubcategoriesCursor(String name) {
@@ -207,11 +229,17 @@ public class CategoriesHandler {
             sb.append("  WHERE c1.parentID='' ");
         }
         sb.append(" ORDER BY c1.cat_name");
-        Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
-        List<EMSCategory> categories = getCategoriesFromCursor(cursor);
-        cursor.close();
-
-        return categories;
+        Cursor cursor = null;
+        try {
+            cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
+            List<EMSCategory> categories = getCategoriesFromCursor(cursor);
+            cursor.close();
+            return categories;
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
+        }
     }
 
     public List<EMSCategory> getSubCategories(String parentCategoryId) {

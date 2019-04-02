@@ -20,7 +20,9 @@ public class PaymentMethodDAO {
             }
             return type;
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -34,7 +36,9 @@ public class PaymentMethodDAO {
             }
             return method;
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -45,7 +49,9 @@ public class PaymentMethodDAO {
             paymentMethod.incrementPriority();
         } finally {
             realm.commitTransaction();
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -56,7 +62,9 @@ public class PaymentMethodDAO {
             realm.insert(paymentMethods);
         } finally {
             realm.commitTransaction();
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -67,7 +75,9 @@ public class PaymentMethodDAO {
             realm.delete(PaymentMethod.class);
         } finally {
             realm.commitTransaction();
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -80,7 +90,9 @@ public class PaymentMethodDAO {
                 paymentMethods = realm.copyFromRealm(paymentMethods);
             }
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
         return paymentMethods;
     }

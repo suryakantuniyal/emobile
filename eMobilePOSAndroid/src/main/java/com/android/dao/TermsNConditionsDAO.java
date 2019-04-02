@@ -28,7 +28,9 @@ public class TermsNConditionsDAO {
                 realm.copyToRealm(terms);
             } finally {
                 realm.commitTransaction();
-                realm.close();
+                if(realm!=null) {
+                    realm.close();
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -45,7 +47,9 @@ public class TermsNConditionsDAO {
             }
             return new ArrayList<>();
         }finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 }

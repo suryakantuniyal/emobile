@@ -12,13 +12,13 @@ import android.media.AudioManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Message;
-import android.os.PowerManager;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.Selection;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -38,8 +38,10 @@ import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.ShiftDAO;
 import com.android.dao.StoredPaymentsDAO;
 import com.android.database.CustomersHandler;
+import com.android.database.DrawInfoHandler;
 import com.android.database.InvoicePaymentsHandler;
 import com.android.database.OrdersHandler;
+import com.android.database.PayMethodsHandler;
 import com.android.database.PaymentsHandler;
 import com.android.database.PaymentsXML_DB;
 import com.android.database.TaxesHandler;
@@ -52,6 +54,7 @@ import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.StoreAndForward;
+import com.android.ivu.MersenneTwisterFast;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.CreditCardInfo;
@@ -62,11 +65,14 @@ import com.android.support.MyPreferences;
 import com.android.support.NetworkUtils;
 import com.android.support.NumberUtils;
 import com.android.support.Post;
+import com.android.support.StringUtils;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.android.support.textwatcher.CreditCardTextWatcher;
 import com.android.support.textwatcher.TextWatcherCallback;
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
+import com.ingenico.mpos.sdk.constants.ResponseCode;
+import com.ingenico.mpos.sdk.response.TransactionResponse;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -88,14 +94,26 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import drivers.EMSIDTechUSB;
+import drivers.EMSIngenicoMoby85;
 import drivers.EMSMagtekAudioCardReader;
 import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
+import drivers.ingenico.utils.MobilePosSdkHelper;
 import interfaces.EMSCallBack;
 import main.EMSDeviceManager;
+import util.MoneyUtils;
 import util.json.UIUtils;
 
-public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener, TextWatcherCallback, CompoundButton.OnCheckedChangeListener {
+import static drivers.ingenico.utils.MobilePosSdkHelper.MOBY8500;
+import static drivers.ingenico.utils.MobilePosSdkHelper.getResponseCodeString;
+
+public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar
+        implements
+        EMSCallBack,
+        OnClickListener,
+        TextWatcherCallback,
+        CompoundButton.OnCheckedChangeListener,
+        MobilePosSdkHelper.OnIngenicoTransactionCallback {
 
     public static final String CREDITCARD_TYPE_JCB = "JCB", CREDITCARD_TYPE_CUP = "CUP",
             CREDITCARD_TYPE_DISCOVER = "Discover", CREDITCARD_TYPE_VISA = "Visa", CREDITCARD_TYPE_DINERS = "DinersClub",
@@ -125,9 +143,10 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
     private EditText tipAmount, reference, promptTipField;
     private EditText amountDueField;
     private EditText amountPaidField;
-    private EditText phoneNumberField, customerEmailField;
+    private EditText phoneNumberField, customerEmailField, commentsField;
     private EditText authIDField, transIDField;
     private EditText subtotal, tax1, tax2;
+    private TextView tax1Lbl, tax2Lbl;
     private List<GroupTax> groupTaxRate;
     private boolean isMultiInvoice = false, isOpenInvoice = false;
     private String[] inv_id_array, txnID_array;
@@ -375,6 +394,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
     }
 
     public static int getCreditLogo(String cardName) {
+
         if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_AMEX)
                 || cardName.trim().contains("amex") || cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_AMEX)) {
             return R.drawable.americanexpress;
@@ -399,6 +419,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         } else {
             return R.drawable.debitcard;
         }
+
     }
 
     public static String getCreditName(String cardName) {
@@ -495,16 +516,18 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         subtotal = findViewById(R.id.subtotalCardAmount);
         tax1 = findViewById(R.id.tax1CardAmount);
         tax2 = findViewById(R.id.tax2CardAmount);
-        TextView tax1Lbl = findViewById(R.id.tax1CreditCardLbl);
-        TextView tax2Lbl = findViewById(R.id.tax2CreditCardLbl);
+        tax1Lbl = findViewById(R.id.tax1CreditCardLbl);
+        tax2Lbl = findViewById(R.id.tax2CreditCardLbl);
 
         tax1.setText(Global.getCurrencyFormat(extras.getString("Tax1_amount")));
         tax2.setText(Global.getCurrencyFormat(extras.getString("Tax2_amount")));
-        List<OrderProduct> orderProducts = global.order == null
-                ? new ArrayList<OrderProduct>() : global.order.getOrderProducts();
         double subtotalDbl = 0;
-        for (OrderProduct products : orderProducts) {
-            subtotalDbl += products.getItemSubtotalCalculated().doubleValue();
+        if (!isFromMainMenu) {
+            List<OrderProduct> orderProducts = global.order == null
+                    ? new ArrayList<OrderProduct>() : global.order.getOrderProducts();
+            for (OrderProduct products : orderProducts) {
+                subtotalDbl += products.getItemSubtotalCalculated().doubleValue();
+            }
         }
         subtotal.setText(Global.formatDoubleToCurrency(subtotalDbl));
         this.amountDueField = findViewById(R.id.processCardAmount);
@@ -576,7 +599,6 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         if (isDebit) {
             zipCode.setVisibility(View.GONE);
             secCode.setVisibility(View.GONE);
-
         }
 
         btnProcess = findViewById(R.id.processButton);
@@ -599,11 +621,15 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
         phoneNumberField = findViewById(R.id.processCardPhone);
         customerEmailField = findViewById(R.id.processCardEmail);
+        commentsField = findViewById(R.id.fieldComments);
 
-        if (!Global.getValidString(extras.getString("cust_id")).isEmpty())
+        if (!Global.getValidString(extras.getString("cust_id")).isEmpty()) {
             prefillCustomerInfo();
-        else if (!extras.getString("order_email", "").isEmpty()) {
-            customerEmailField.setText(extras.getString("order_email"));
+        }
+
+        if (!myPref.isSkipEmailPhone()) {
+            customerEmailField.setText(extras.getString("order_email", ""));
+            phoneNumberField.setText(extras.getString("order_phone", ""));
         }
 
         hasBeenCreated = true;
@@ -615,7 +641,12 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         hiddenField.addTextChangedListener(new CreditCardTextWatcher(activity, hiddenField, cardNum, cardInfoManager, Global.isEncryptSwipe, this));
 
         setUpCardReader();
-        if (myPref.getSwiperType() == Global.NOMAD || myPref.getSwiperType() == Global.HANDPOINT || myPref.getSwiperType() == Global.ICMPEVO || isEverpay) {
+
+        if (myPref.getSwiperType() == Global.NOMAD ||
+                myPref.getSwiperType() == Global.HANDPOINT ||
+                myPref.getSwiperType() == Global.ICMPEVO ||
+                myPref.getSwiperType() == Global.INGENICOMOBY85 ||
+                isEverpay) {
             setHandopintUIFields();
         }
     }
@@ -785,16 +816,20 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             Intent i = getIntent();
             handleDecodeData(i);
             cardSwipe.setChecked(true);
-        } else if (myPref.isSam4s() || myPref.isPAT100() || EMSIDTechUSB.isUSBConnected(this)) {
+        } else if (myPref.isSam4s() || EMSIDTechUSB.isUSBConnected(this)) {
             cardSwipe.setChecked(true);
             _msrUsbSams = new EMSIDTechUSB(activity, callBack);
             if (_msrUsbSams.OpenDevice())
                 _msrUsbSams.StartReadingThread();
-        } else if ((myPref.isESY13P1() || MyPreferences.isTeamSable()) && Global.btSwiper == null) {
+        } else if ((myPref.isESY13P1()) && Global.btSwiper == null) {
             if (Global.embededMSR != null && Global.embededMSR.getCurrentDevice() != null) {
                 Global.embededMSR.getCurrentDevice().loadCardReader(callBack, isDebit);
                 cardSwipe.setChecked(true);
             }
+        } else if (MyPreferences.isTeamSable() && Global.embededMSR != null &&
+                Global.embededMSR.getCurrentDevice() != null) {
+            Global.embededMSR.getCurrentDevice().loadCardReader(callBack, isDebit);
+            cardSwipe.setChecked(true);
         } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310() || myPref.isKDC425()) {
             cardSwipe.setChecked(true);
         } else if (myPref.isPAT215() && Global.btSwiper == null) {
@@ -882,15 +917,41 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         String transactionId = null;
         String authcode = null;
         amountToTip = Global.getBigDecimalNum(String.valueOf(amountToTip), 2).doubleValue();
-        Payment payment = new Payment(activity, extras.getString("pay_id"), extras.getString("cust_id"), invoiceId, jobId, clerkId, custidkey, extras.getString("paymethod_id"),
-                actualAmount, amountTender,
-                cardInfoManager.getCardOwnerName(), reference.getText().toString(), phoneNumberField.getText().toString(),
-                customerEmailField.getText().toString(), amountToTip, taxAmnt1, taxAmnt2, taxName1, taxName2,
-                isRef, paymentType, creditCardType, cardInfoManager.getCardNumAESEncrypted(), cardInfoManager.getCardLast4(),
-                cardInfoManager.getCardExpMonth(), cardInfoManager.getCardExpYear(),
-                zipCode.getText().toString(), cardInfoManager.getCardEncryptedSecCode(), cardInfoManager.getEncryptedAESTrack1(),
-                cardInfoManager.getEncryptedAESTrack2(), transactionId, authcode);
-        if (cardInfoManager.getEmvContainer() != null && cardInfoManager.getEmvContainer().getHandpointResponse() != null) {
+        Payment payment = new Payment(activity,
+                extras.getString("pay_id"),
+                extras.getString("cust_id"),
+                invoiceId,
+                jobId,
+                clerkId,
+                custidkey,
+                extras.getString("paymethod_id"),
+                actualAmount,
+                amountTender,
+                cardInfoManager.getCardOwnerName(),
+                reference.getText().toString(),
+                phoneNumberField.getText().toString(),
+                customerEmailField.getText().toString(),
+                commentsField.getText().toString(),
+                amountToTip,
+                taxAmnt1,
+                taxAmnt2,
+                taxName1,
+                taxName2,
+                isRef,
+                paymentType,
+                creditCardType,
+                cardInfoManager.getCardNumAESEncrypted(),
+                cardInfoManager.getCardLast4(),
+                cardInfoManager.getCardExpMonth(),
+                cardInfoManager.getCardExpYear(),
+                zipCode.getText().toString(),
+                cardInfoManager.getCardEncryptedSecCode(),
+                cardInfoManager.getEncryptedAESTrack1(),
+                cardInfoManager.getEncryptedAESTrack2(),
+                transactionId,
+                authcode);
+
+        if (cardInfoManager.getEmvContainer() != null && cardInfoManager.getEmvContainer().getHandpointResponse().getCardSchemeName() != null) {
             payment.setCard_type(getCreditName(cardInfoManager.getEmvContainer().getHandpointResponse().getCardSchemeName()));
         }
 
@@ -1033,14 +1094,39 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         String authcode = null;
         String invoiceId = null;
         String jobId = null;
-        Payment payment = new Payment(activity, extras.getString("pay_id"), extras.getString("cust_id"), invoiceId, jobId, clerkId, custidkey, extras.getString("paymethod_id"),
-                actualAmount, amountToBePaid,
-                cardInfoManager.getCardOwnerName(), reference.getText().toString(), phoneNumberField.getText().toString(),
-                customerEmailField.getText().toString(), amountToTip, taxAmnt1, taxAmnt2, taxName1, taxName2,
-                isRef, paymentType, creditCardType, cardInfoManager.getCardNumAESEncrypted(), cardInfoManager.getCardLast4(),
-                cardInfoManager.getCardExpMonth(), cardInfoManager.getCardExpYear(),
-                zipCode.getText().toString(), cardInfoManager.getCardEncryptedSecCode(), cardInfoManager.getEncryptedAESTrack1(),
-                cardInfoManager.getEncryptedAESTrack2(), transactionId, authcode);
+        Payment payment = new Payment(activity,
+                extras.getString("pay_id"),
+                extras.getString("cust_id"),
+                invoiceId,
+                jobId,
+                clerkId,
+                custidkey,
+                extras.getString("paymethod_id"),
+                actualAmount,
+                amountToBePaid,
+                cardInfoManager.getCardOwnerName(),
+                reference.getText().toString(),
+                phoneNumberField.getText().toString(),
+                customerEmailField.getText().toString(),
+                commentsField.getText().toString(),
+                amountToTip,
+                taxAmnt1,
+                taxAmnt2,
+                taxName1,
+                taxName2,
+                isRef,
+                paymentType,
+                creditCardType,
+                cardInfoManager.getCardNumAESEncrypted(),
+                cardInfoManager.getCardLast4(),
+                cardInfoManager.getCardExpMonth(),
+                cardInfoManager.getCardExpYear(),
+                zipCode.getText().toString(),
+                cardInfoManager.getCardEncryptedSecCode(),
+                cardInfoManager.getEncryptedAESTrack1(),
+                cardInfoManager.getEncryptedAESTrack2(),
+                transactionId,
+                authcode);
 
         EMSPayGate_Default payGate = new EMSPayGate_Default(activity, payment);
         String generatedURL;
@@ -1263,6 +1349,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                 double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
                 amountToTip = 0;
                 grandTotalAmount = amountToBePaid;
+                btnProcess.setEnabled(true);
                 dialog.dismiss();
             }
         });
@@ -1321,6 +1408,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
             @Override
             public void onClick(View v) {
+                btnProcess.setEnabled(true);
                 dialog.dismiss();
             }
         });
@@ -1757,6 +1845,14 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
     @Override
     public void cardWasReadSuccessfully(boolean read, CreditCardInfo cardManager) {
+        if (!read && cardManager == null) {
+            month.setText("");
+            year.setText("");
+            ownersName.setText("");
+            cardNum.setText("");
+            Global.showPrompt(activity, R.string.payment, getString(R.string.card_swipe_failed));
+            return;
+        }
         if (isDebit) {
             cardManager.setCardType("DebitCard");
         }
@@ -1851,40 +1947,47 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                     amountPaidField.setText(amountDueField.getText().toString());
                     break;
                 case R.id.processButton:
-                    if (myPref.getSwiperType() == Global.NOMAD || myPref.getSwiperType() == Global.HANDPOINT
-                            || myPref.getSwiperType() == Global.ICMPEVO || isEverpay) {
+                    if (myPref.getSwiperType() == Global.NOMAD ||
+                            myPref.getSwiperType() == Global.HANDPOINT ||
+                            myPref.getSwiperType() == Global.ICMPEVO ||
+                            myPref.getSwiperType() == Global.INGENICOMOBY85 ||
+                            isEverpay) {
                         boolean valid = validateProcessPayment();
                         if (!valid) {
                             String errorMsg = getString(R.string.card_validation_error);
                             Global.showPrompt(activity, R.string.validation_failed, errorMsg);
                         } else {
-                            myProgressDialog = new ProgressDialog(activity);
-                            myProgressDialog.setMessage(activity.getString(R.string.swipe_insert_card));
-                            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                            myProgressDialog.setCancelable(true);
-                            myProgressDialog.show();
-                            if (isRefund) {
-                                Payment p = new Payment(activity);
-                                p.setPay_amount(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
+                            if (myPref.getSwiperType() != Global.INGENICOMOBY85) {
+                                myProgressDialog = new ProgressDialog(activity);
+                                myProgressDialog.setMessage(activity.getString(R.string.swipe_insert_card));
+                                myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                                myProgressDialog.setCancelable(true);
+                                myProgressDialog.show();
+                                if (isRefund) {
+                                    Payment p = new Payment(activity);
+                                    p.setPay_amount(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
 
-                                if (isEverpay)
-                                    openEverpayApp(p);
-                                else {
-                                    populateCardInfo();
-                                    Global.btSwiper.getCurrentDevice().loadCardReader(callBack, false);
-                                    Global.btSwiper.getCurrentDevice().refund(p, cardInfoManager);
+                                    if (isEverpay)
+                                        openEverpayApp(p);
+                                    else {
+                                        populateCardInfo();
+                                        Global.btSwiper.getCurrentDevice().loadCardReader(callBack, false);
+                                        Global.btSwiper.getCurrentDevice().refund(p, cardInfoManager);
+                                    }
+                                } else {
+                                    Payment p = new Payment(activity);
+                                    p.setPay_amount(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
+                                    p.setTipAmount(String.valueOf(Global.getBigDecimalNum(NumberUtils.cleanCurrencyFormatedNumber(tipAmount), 2)));
+                                    if (Global.btSwiper != null && Global.btSwiper.getCurrentDevice() != null) {
+                                        populateCardInfo();
+                                        Global.btSwiper.getCurrentDevice().loadCardReader(callBack, false);
+                                        Global.btSwiper.getCurrentDevice().salePayment(p, cardInfoManager);
+                                    } else if (isEverpay) {
+                                        openEverpayApp(p);
+                                    }
                                 }
                             } else {
-                                Payment p = new Payment(activity);
-                                p.setPay_amount(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
-                                p.setTipAmount(String.valueOf(Global.getBigDecimalNum(NumberUtils.cleanCurrencyFormatedNumber(tipAmount), 2)));
-                                if (Global.btSwiper != null && Global.btSwiper.getCurrentDevice() != null) {
-                                    populateCardInfo();
-                                    Global.btSwiper.getCurrentDevice().loadCardReader(callBack, false);
-                                    Global.btSwiper.getCurrentDevice().salePayment(p, cardInfoManager);
-                                } else if (isEverpay) {
-                                    openEverpayApp(p);
-                                }
+                                startIngenicoMoby85Transaction();
                             }
                         }
                     } else {
@@ -1922,7 +2025,11 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         month.setBackgroundResource(android.R.drawable.edit_text);
         amountPaidField.setBackgroundResource(android.R.drawable.edit_text);
         boolean error = false;
-        if (myPref.getSwiperType() != Global.NOMAD && myPref.getSwiperType() != Global.HANDPOINT && myPref.getSwiperType() != Global.ICMPEVO && !isEverpay) {
+        if (myPref.getSwiperType() != Global.NOMAD &&
+                myPref.getSwiperType() != Global.HANDPOINT &&
+                myPref.getSwiperType() != Global.ICMPEVO &&
+                myPref.getSwiperType() != Global.INGENICOMOBY85 &&
+                !isEverpay) {
             if (cardNum.getText().toString().isEmpty() || cardNum.getText().toString().length() < 14
                     || (!wasReadFromReader && !cardIsValid(cardNum.getText().toString()))) {
                 cardNum.setBackgroundResource(R.drawable.edittext_wrong_input);
@@ -2025,9 +2132,210 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         }
     }
 
-
     public enum PAYMENT_GIFT_CARDS {
         GIFTCARDS, LOYALTYCARD, REWARD
+    }
+
+    private void startIngenicoMoby85Transaction() {
+        myProgressDialog = new ProgressDialog(activity);
+        myProgressDialog.setMessage(activity.getString(R.string.check_ingenico_device));
+        myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        myProgressDialog.setCancelable(true);
+        myProgressDialog.show();
+
+        MobilePosSdkHelper mobilePosSdkHelper = new MobilePosSdkHelper(this);
+        mobilePosSdkHelper.startTransaction(isRefund,
+                NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
+    }
+
+    @Override
+    public void onIngenicoTransactionDone(Integer responseCode, TransactionResponse response) {
+        myProgressDialog.dismiss();
+        switch (responseCode) {
+            case ResponseCode.Success:
+                if (response != null) {
+                    Log.v("eMobilePOS", "Response : " + response.toString());
+                    processIngenicoResponse(response);
+                }
+                break;
+            case ResponseCode.PaymentDeviceNotAvailable:
+                showConnectPaymentDeviceDlog();
+                break;
+            case ResponseCode.InvalidSession:
+            case ResponseCode.InitializationRequired:
+                showErrorDlog(getString(R.string.dlog_msg_ingenico_login_failed));
+                break;
+            default:
+                showErrorDlog(String.format(getString(R.string.error_status_code),
+                        String.valueOf(responseCode), getResponseCodeString(responseCode)));
+                break;
+        }
+    }
+
+    private void processIngenicoResponse(TransactionResponse response) {
+        Payment payment = new Payment(this);
+
+        if (Global.isIvuLoto) {
+            DrawInfoHandler drawDateInfo = new DrawInfoHandler(this);
+            MersenneTwisterFast mersenneTwister = new MersenneTwisterFast();
+            payment.setIvuLottoDrawDate(drawDateInfo.getDrawDate());
+            payment.setIvuLottoNumber(mersenneTwister.generateIVULoto());
+
+            String taxName1 = null;
+            String taxName2 = null;
+            String taxAmnt1 = null;
+            String taxAmnt2 = null;
+
+            if (!TextUtils.isEmpty(extras.getString("Tax1_amount"))) {
+                taxAmnt1 = extras.getString("Tax1_amount");
+                taxName1 = extras.getString("Tax1_name");
+
+                taxAmnt2 = extras.getString("Tax2_amount");
+                taxName2 = extras.getString("Tax2_name");
+            } else {
+                taxAmnt1 = Double.toString(Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(tax1)));
+                if (groupTaxRate.size() > 0)
+                    taxName1 = groupTaxRate.get(0).getTaxName();
+                taxAmnt2 = Double.toString(Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(tax2)));
+                if (groupTaxRate.size() > 1)
+                    taxName2 = groupTaxRate.get(1).getTaxName();
+            }
+
+            payment.setTax1_amount(taxAmnt1);
+            payment.setTax1_name(taxName1);
+            payment.setTax2_amount(taxAmnt2);
+            payment.setTax2_name(taxName2);
+        }
+
+        if (!this.extras.getBoolean("histinvoices", false))
+            payment.setJob_id(inv_id);
+        else
+            payment.setInv_id(inv_id);
+
+        if (myPref.isUseClerks()) {
+            payment.setClerk_id(myPref.getClerkID());
+        } else {
+            if (ShiftDAO.isShiftOpen() && ShiftDAO.getOpenShift() != null) {
+                payment.setClerk_id(String.valueOf(ShiftDAO.getOpenShift().getClerkId()));
+            }
+        }
+
+        if (myPref.isCustSelected()) {
+            payment.setCust_id(myPref.getCustID());
+        }
+
+        payment.setPay_id(extras.getString("pay_id"));
+        payment.setOriginalTotalAmount("0");
+        payment.setPay_type("0");
+
+        if (isRefund) {
+            payment.setIs_refund("1");
+            payment.setPay_type("2");
+            Global.amountPaid = NumberUtils.cleanCurrencyFormatedNumber(amountPaidField);
+        } else {
+            Global.amountPaid = String.valueOf(
+                    MoneyUtils.convertCentsToDollars(response.getAuthorizedAmount()));
+        }
+
+        double actualAmount = Global.formatNumFromLocale(
+                NumberUtils.cleanCurrencyFormatedNumber(amountDueField));
+
+        double amountTender = Global.formatNumFromLocale(Global.amountPaid);
+
+        payment.setPay_amount(Global.amountPaid);
+
+        payment.setPay_dueamount(Double.toString(actualAmount - amountTender));
+        payment.setAmountTender(amountTender);
+        if (amountTender > actualAmount)
+            payment.setPay_amount(Double.toString(actualAmount));
+        else
+            payment.setPay_amount(Double.toString(amountTender));
+
+        payment.setTipAmount("0.00");
+        payment.setPay_tip("0.00");
+        payment.setPay_transid(response.getTransactionId());
+        payment.setAuthcode(response.getAuthCode());
+        payment.setCcnum_last4(StringUtils.getLastFour(response.getRedactedCardNumber()));
+        payment.setPay_resultcode(response.getTransactionResponseCode().name());
+        payment.setPay_resultmessage(response.getClerkDisplay());
+        payment.setPay_expmonth(StringUtils.right(response.getCardExpirationDate(), 2));
+        payment.setPay_expyear("20" + StringUtils.left(response.getCardExpirationDate(), 2));
+        payment.setPay_name("");
+        payment.setCard_type(response.getCardType().name());
+        payment.setProcessed("1");
+        payment.setPaymethod_id(PayMethodsHandler.getPayMethodID(response.getCardType().name()));
+        payment.setPay_stamp(MOBY8500); // identify transactions done in MOBY8500 payment devices
+
+        PaymentsHandler payHandler = new PaymentsHandler(activity);
+        payHandler.insert(payment);
+
+        Intent result = new Intent();
+        result.putExtra("total_amount", NumberUtils.cleanCurrencyFormatedNumber(Global.amountPaid));
+//        result.putExtra("emvcontainer",
+//                new Gson().toJson(payment.getEmvContainer(), EMVContainer.class));
+        setResult(-2, result);
+
+        if (myPref.getPreferences(MyPreferences.pref_prompt_customer_copy))
+            showPrintDlg(false, false, payment);
+        else {
+            finish();
+        }
+    }
+
+    private void showConnectPaymentDeviceDlog() {
+        final Dialog dlog = new Dialog(activity, R.style.Theme_TransparentTest);
+        dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dlog.setCancelable(false);
+        dlog.setContentView(R.layout.dlog_btn_left_right_layout);
+
+        TextView viewTitle = dlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = dlog.findViewById(R.id.dlogMessage);
+        viewTitle.setText(R.string.dlog_title_conn_payment_device);
+        viewMsg.setText(R.string.dlog_msg_conn_payment_device);
+        dlog.findViewById(R.id.btnDlogRight).setVisibility(View.GONE);
+
+        Button btnConnect = dlog.findViewById(R.id.btnDlogLeft);
+        Button btnCancel = dlog.findViewById(R.id.btnDlogCancel);
+        btnConnect.setText(R.string.button_connect);
+
+        btnConnect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dlog.dismiss();
+                EMSIngenicoMoby85 emsIngenicoMoby85 = new EMSIngenicoMoby85();
+                EMSDeviceManager edm = new EMSDeviceManager();
+                emsIngenicoMoby85.connect(activity, -1, false, edm.getManager());
+            }
+        });
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dlog.dismiss();
+            }
+        });
+        dlog.show();
+    }
+
+    private void showErrorDlog(String msg) {
+        final Dialog dlog = new Dialog(this, R.style.Theme_TransparentTest);
+        dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dlog.setCancelable(false);
+        dlog.setContentView(R.layout.dlog_btn_single_layout);
+
+        TextView viewTitle = dlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = dlog.findViewById(R.id.dlogMessage);
+        viewTitle.setText(R.string.dlog_title_error);
+        viewMsg.setText(msg);
+
+        Button btnOk = dlog.findViewById(R.id.btnDlogSingle);
+        btnOk.setText(R.string.button_ok);
+        btnOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dlog.dismiss();
+            }
+        });
+        dlog.show();
     }
 
     private class processLivePaymentAsync extends AsyncTask<Object, String, Payment> {
@@ -2051,9 +2359,6 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
         @Override
         protected Payment doInBackground(Object... params) {
-//            if (true) {
-//                openEverpayApp((Payment) params[1]);
-//            } else
             if (NetworkUtils.isConnectedToInternet(activity) && !livePaymentRunning) {
                 livePaymentRunning = true;
 
@@ -2143,7 +2448,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                 SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
 
                 try {
-                    String reverseXml = "";
+                    String reverseXml = reverseXMLMap.get(PaymentsXML_DB.payment_xml);
                     String xml = httpClient.postData(13, reverseXml);
 
                     if (xml.equals(Global.TIME_OUT) || xml.equals(Global.NOT_VALID_URL) || xml.isEmpty()) {

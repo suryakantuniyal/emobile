@@ -51,11 +51,11 @@ public class PaymentsXML_DB {
 
 	public void insert(HashMap<String,String> _data) {
 		//SQLiteDatabase db = dbManager.openWritableDB();
-
+		SQLiteStatement insert = null;
 		DBManager.getDatabase().beginTransaction();
 
 		try {
-			SQLiteStatement insert = null;
+
 			StringBuilder sb = new StringBuilder();
 			sb.append("INSERT INTO ").append(TABLE_NAME).append(" (").append(mainSB1.toString()).append(") ").append("VALUES (")
 					.append(mainSB2.toString()).append(")");
@@ -66,13 +66,17 @@ public class PaymentsXML_DB {
 			
 			insert.execute();
 			insert.clearBindings();
-			insert.close();
+			//insert.close();
 			DBManager.getDatabase().setTransactionSuccessful();
 		} catch (Exception e) {
 //			Tracker tracker = EasyTracker.getInstance(activity);
 //			tracker.send(MapBuilder.createException(Log.getStackTraceString(e), false).build());
 		} finally {
+			if(insert!=null) {
+				insert.close();
+			}
 			DBManager.getDatabase().endTransaction();
+
 		}
 	}
 	

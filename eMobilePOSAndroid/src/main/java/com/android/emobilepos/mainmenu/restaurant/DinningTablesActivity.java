@@ -1,14 +1,14 @@
 package com.android.emobilepos.mainmenu.restaurant;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.PowerManager;
-import android.support.v13.app.FragmentPagerAdapter;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 
@@ -23,7 +23,6 @@ import com.android.emobilepos.models.realms.DinningTableOrder;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.emobilepos.ordering.SplittedOrderSummary_FA;
 import com.android.support.Global;
-import com.android.support.MyPreferences;
 import com.android.support.NetworkUtils;
 import com.android.support.OnHoldsManager;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
@@ -59,14 +58,14 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
 
     public void refresh(int page) {
         if(findViewById(R.id.indicator)!=null) {
-            setmSectionsPagerAdapter(new SectionsPagerAdapter(getFragmentManager()));
+            setmSectionsPagerAdapter(new SectionsPagerAdapter(getSupportFragmentManager()));
             ViewPager mViewPager = findViewById(R.id.container);
             PageIndicator titlePageIndicator = (TitlePageIndicator) findViewById(R.id.indicator);
             mViewPager.setAdapter(getmSectionsPagerAdapter());
             titlePageIndicator.setViewPager(mViewPager);
             mViewPager.setCurrentItem(page);
         }else{
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.add(R.id.container, new TablesGridFragment());
             ft.commit();
         }
@@ -78,7 +77,7 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
      * {@link FragmentPagerAdapter} derivative, which will keep every
      * loaded fragment in memory. If this becomes too memory intensive, it
      * may be best to switch to a
-     * {@link android.support.v13.app.FragmentStatePagerAdapter}.
+     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
     public SectionsPagerAdapter getmSectionsPagerAdapter() {
         return mSectionsPagerAdapter;

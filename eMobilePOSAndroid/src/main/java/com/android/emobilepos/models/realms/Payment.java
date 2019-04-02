@@ -185,13 +185,39 @@ public class Payment extends RealmObject {
 
     }
 
-    public Payment(Activity activity, String paymentId, String customerId, String invoiceId, String jobId, String clerkId,
-                   String custidkey, String paymentMethod, Double actualAmount, Double amountTender,
-                   String customerName, String referenceNumber, String phoneNumber, String email, Double tipAmount,
-                   String taxAmount1, String taxAmount2, String taxName1, String taxName2,
-                   String isRefund, String paymentType, String creditCardType, String cardNumberEnc, String cardNumberLast4,
-                   String cardExpMonth, String cardExpYear, String cardPostalCode, String cardSecurityCode, String trackOne,
-                   String trackTwo, String transactionId, String authcode) {
+    public Payment(Activity activity,
+                   String paymentId,
+                   String customerId,
+                   String invoiceId,
+                   String jobId,
+                   String clerkId,
+                   String custidkey,
+                   String paymentMethod,
+                   Double actualAmount,
+                   Double amountTender,
+                   String customerName,
+                   String referenceNumber,
+                   String phoneNumber,
+                   String email,
+                   String comments,
+                   Double tipAmount,
+                   String taxAmount1,
+                   String taxAmount2,
+                   String taxName1,
+                   String taxName2,
+                   String isRefund,
+                   String paymentType,
+                   String creditCardType,
+                   String cardNumberEnc,
+                   String cardNumberLast4,
+                   String cardExpMonth,
+                   String cardExpYear,
+                   String cardPostalCode,
+                   String cardSecurityCode,
+                   String trackOne,
+                   String trackTwo,
+                   String transactionId,
+                   String authcode) {
         assignEmployee = AssignEmployeeDAO.getAssignEmployee();
         setPay_issync("0");
         setIsVoid("0");
@@ -233,6 +259,7 @@ public class Payment extends RealmObject {
         setRef_num(referenceNumber);
         setPay_phone(phoneNumber);
         setPay_email(email);
+        setPay_comment(comments);
         setPay_tip(String.valueOf(tipAmount));
         if (Global.isIvuLoto) {
             DrawInfoHandler drawDateInfo = new DrawInfoHandler(activity);
@@ -241,7 +268,6 @@ public class Payment extends RealmObject {
             String ivuLottoNum = mersenneTwister.generateIVULoto();
             setIvuLottoNumber(ivuLottoNum);
             setIvuLottoDrawDate(drawDate);
-            setIvuLottoQR(Global.base64QRCode(ivuLottoNum, drawDate));
             if (!TextUtils.isEmpty(taxAmount1)) {
                 setTax1_amount(taxAmount1);
                 setTax1_name(taxName1);

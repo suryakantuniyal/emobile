@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="genius_token_url" translatable="false">https://epay.enablermobile.com/index.ashx</string>
+    <string name="epay_enablermobile" translatable="false">https://epay.enablermobile.com/index.ashx</string>
     <string name="sync_enablermobile_local_holds" translatable="false">http://%s:%s/api/orders/holds</string>
     <string name="sync_enablermobile_local_checkstatusholds" translatable="false">http://%s:%s/api/orders/holds/status/</string>
     <string name="sync_enablermobile_local_detailholds" translatable="false">http://%s:%s/api/orders/holds/detail/</string>

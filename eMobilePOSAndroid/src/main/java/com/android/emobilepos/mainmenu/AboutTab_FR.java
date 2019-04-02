@@ -1,6 +1,5 @@
 package com.android.emobilepos.mainmenu;
 
-
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,6 +16,7 @@ import android.widget.Toast;
 
 import com.android.dao.AssignEmployeeDAO;
 import com.android.database.DBManager;
+import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.support.MyPreferences;
@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Calendar;
+import java.util.Locale;
 
 public class AboutTab_FR extends Fragment implements OnClickListener {
 
@@ -44,18 +46,23 @@ public class AboutTab_FR extends Fragment implements OnClickListener {
         TextView acctNumber = view.findViewById(R.id.acctNum);
         TextView employee = view.findViewById(R.id.employeeNameID);
         TextView version = view.findViewById(R.id.versionID);
+        TextView androidVersion = view.findViewById(R.id.androidVersionID);
+        TextView copyright = view.findViewById(R.id.copyrightText);
         TextView deviceName = view.findViewById(R.id.deviceModelText);
         deviceName.setText(Build.MODEL);
         posLogo = view.findViewById(R.id.aboutMainLogo);
         posLogo.setOnClickListener(this);
         acctNumber.setText(myPref.getAcctNumber());
         if (assignEmployee != null) {
-            employee.setText(assignEmployee.getEmpName() + " (" + assignEmployee.getEmpId() + ")");
+            employee.setText(String.format(Locale.getDefault(),
+                    "%s (%d)", assignEmployee.getEmpName(), assignEmployee.getEmpId()));
         } else {
             employee.setText(getString(R.string.unknown));
         }
-        version.setText(myPref.getBundleVersion());
-
+        version.setText(BuildConfig.VERSION_NAME);
+        androidVersion.setText(Build.VERSION.RELEASE);
+        copyright.setText(String.format(getString(R.string.about_copyright),
+                String.valueOf(Calendar.getInstance().get(Calendar.YEAR))));
         return view;
     }
 
@@ -89,7 +96,6 @@ public class AboutTab_FR extends Fragment implements OnClickListener {
             _last_time = System.currentTimeMillis();
         }
     }
-
 
     private class deleteTablesAsync extends AsyncTask<Void, Void, Void> {
 
@@ -140,5 +146,4 @@ public class AboutTab_FR extends Fragment implements OnClickListener {
             }
         }
     }
-
 }

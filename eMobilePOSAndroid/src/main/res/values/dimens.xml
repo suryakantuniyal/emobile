@@ -1,5 +1,4 @@
 <resources>
-
     <dimen name="padding_small">8dp</dimen>
     <dimen name="padding_medium">8dp</dimen>
     <dimen name="padding_large">16dp</dimen>
@@ -36,7 +35,6 @@
     <dimen name="sales_tab_button_height">50dp</dimen>
     <dimen name="cust_sel_button_height">50dp</dimen>
 
-
     <dimen name="grid_item_size">120dp</dimen>
     <dimen name="grid_item_width">100dp</dimen>
     <dimen name="grid_item_text_view_size">15dp</dimen>
@@ -46,10 +44,8 @@
 
     <dimen name="button_text_size">20sp</dimen>
 
-
     <dimen name="tip_confirmation_header">20sp</dimen>
     <dimen name="tip_confirmation_total_plus_tip">30sp</dimen>
-
 
     <dimen name="history_subtitle_text_size">14sp</dimen>
     <dimen name="history_title_text_size">18sp</dimen>
@@ -57,7 +53,6 @@
 
     <dimen name="catalog_image_size">130dp</dimen>
     <dimen name="catalog_listview_img_size">90dp</dimen>
-
 
     <dimen name="header_bar_button_height">35sp</dimen>
     <dimen name="add_orders_button_height">30dp</dimen>
@@ -78,13 +73,12 @@
     <dimen name="add_orders_slider_offset_size">160dp</dimen>
 
     <dimen name="catalog_portrait_image_size">90dp</dimen>
-
+    <dimen name="report_main_listview_txt_size">14dp</dimen>
 
     <dimen name="catalog_port_prod_name">12sp</dimen>
     <dimen name="catalog_port_prod_desc">10sp</dimen>
     <dimen name="catalog_port_prod_qty">12sp</dimen>
     <dimen name="catalog_port_prod_price">12sp</dimen>
-
 
     <dimen name="sync_button_text_size">25sp</dimen>
     <dimen name="sync_adapter_1">300dp</dimen>
@@ -101,17 +95,14 @@
     <dimen name="clock_medium_text_size">19sp</dimen>
     <dimen name="clock_width">300dp</dimen>
 
-
     <dimen name="lview_cust_name">14sp</dimen>
     <dimen name="lview_cust_company_name">12sp</dimen>
     <dimen name="lview_cust_id">12sp</dimen>
     <dimen name="lview_cust_phone">12sp</dimen>
     <dimen name="lview_cust_pricelevel">12sp</dimen>
 
-
     <dimen name="cp_dialog_width">200dp</dimen>
     <dimen name="cp_dialog_height">300dp</dimen>
-
 
     <dimen name="header_txt_size">20sp</dimen>
     <dimen name="header_txt_padding">10dp</dimen>
@@ -123,19 +114,15 @@
     <dimen name="field_general_txt_size">16sp</dimen>
     <dimen name="list_view_general_txt_size">13sp</dimen>
 
-
     <dimen name="camera_view_size">300dp</dimen>
-
 
     <dimen name="dlog_title_size">18sp</dimen>
     <dimen name="dlog_msg_size">16sp</dimen>
     <dimen name="dlog_btn_size">16sp</dimen>
 
-
     <dimen name="txt_receipt_small">12sp</dimen>
     <dimen name="txt_receipt_medium">14sp</dimen>
     <dimen name="txt_receipt_large">16sp</dimen>
-
 
     <dimen name="txt_size_change_label">20sp</dimen>
     <!-- Default screen margins, per the Android Design guidelines. -->
@@ -143,5 +130,6 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="item_width">200dp</dimen>
     <dimen name="text_margin">16dp</dimen>
-
+    <dimen name="add_orders_loyalty_label_txt_size_land">16sp</dimen>
+    <dimen name="add_orders_loyalty_field_txt_size_land">16sp</dimen>
 </resources>

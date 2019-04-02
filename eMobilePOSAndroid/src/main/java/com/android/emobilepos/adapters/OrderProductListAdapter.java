@@ -37,9 +37,9 @@ public class OrderProductListAdapter extends BaseAdapter {
     public List<OrderSeatProduct> orderSeatProductList;
     public List<OrderSeatProduct> orderSeatProductFullList;
     public int selectedPosition;
+    Activity activity;
     private Global global;
     private List<OrderProduct> orderProducts;
-    Activity activity;
     private OrderingMain_FA orderingMainFa;
     private LayoutInflater mInflater;
     private MyPreferences myPref;
@@ -268,10 +268,10 @@ public class OrderProductListAdapter extends BaseAdapter {
                 if (orderingMainFa.getSelectedSeatNumber().equalsIgnoreCase(orderSeatProductList.get(position).seatNumber)) {
                     selectedPosition = position;
                     convertView.setActivated(true);
-                    convertView.setBackgroundDrawable(activity.getResources().getDrawable(R.drawable.blue_row_selector));
+                    convertView.setBackground(activity.getResources().getDrawable(R.drawable.blue_row_selector));
                 } else {
                     convertView.setActivated(false);
-                    convertView.setBackgroundDrawable(null);
+                    convertView.setBackground(null);
                     convertView.setBackgroundResource(colorId);
                 }
                 convertView.setVisibility(orderSeatProductList.get(position).isDeleted ? View.GONE : View.VISIBLE);

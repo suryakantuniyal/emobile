@@ -43,6 +43,7 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.database.CategoriesHandler;
 import com.android.database.ProductAddonsHandler;
 import com.android.database.ProductsHandler;
@@ -52,6 +53,7 @@ import com.android.emobilepos.models.EMSCategory;
 import com.android.emobilepos.models.ParentAddon;
 import com.android.emobilepos.models.Product;
 import com.android.emobilepos.models.orders.OrderProduct;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.support.Global;
 import com.android.support.MyEditText;
 import com.android.support.MyPreferences;
@@ -66,6 +68,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import util.StringUtil;
 import util.json.JsonUtils;
 import util.json.UIUtils;
 
@@ -564,7 +567,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
     public void automaticAddOrder(Product product) {
         getOrderingMainFa().disableCheckoutButton();
-        OrderingMain_FA.automaticAddOrder(getActivity(), false, global, new OrderProduct(product), ((OrderingMain_FA) getActivity()).getSelectedSeatNumber(),((OrderingMain_FA) getActivity()).mTransType);
+        OrderingMain_FA.automaticAddOrder(getActivity(), false, global, new OrderProduct(product), ((OrderingMain_FA) getActivity()).getSelectedSeatNumber(), ((OrderingMain_FA) getActivity()).mTransType);
         refreshListView();
         callBackRefreshView.refreshView();
     }
@@ -587,6 +590,15 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
                 if (tempPrice == null || tempPrice.isEmpty())
                     tempPrice = c.getString(c.getColumnIndex("master_price"));
+            } else {
+                String priceLevelID;
+                if (myPref.isCustSelected())
+                    priceLevelID = myPref.getCustPriceLevel();
+                else {
+                    AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+                    priceLevelID = StringUtil.nullStringToEmpty(assignEmployee.getPricelevelId());
+                }
+                product.setPriceLevelId(priceLevelID);
             }
         } else if (global.order.getOrderProducts().contains(product.getId())) {
             BigDecimal origQty = Global.getBigDecimalNum(OrderProductUtils.getOrderProductQty(global.order.getOrderProducts(), product.getId()));
@@ -604,10 +616,16 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             tempPrice = "0";
         product.setProdOnHand(tempPrice);
         if (Global.isInventoryTransfer) {
-            tempPrice = c.getString(c.getColumnIndex("location_qty"));
-            if (tempPrice == null || tempPrice.isEmpty())
-                tempPrice = "0";
-            product.setProdOnHand(tempPrice);
+            String locationQuantity = "0";
+            try {
+                locationQuantity = c.getString(c.getColumnIndex("location_qty"));
+                if (locationQuantity == null || locationQuantity.isEmpty())
+                    locationQuantity = "0";
+            } catch (Exception e) {
+                // no quantity
+            } finally {
+                product.setProdOnHand(locationQuantity);
+            }
         }
         product.setProdImgName(c.getString(c.getColumnIndex("prod_img_name")));
         product.setProdIstaxable(c.getString(c.getColumnIndex("prod_istaxable")));
@@ -637,7 +655,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             String json = gson.toJson(new OrderProduct(product));
             intent.putExtra("orderProduct", json);
             intent.putExtra("isToGo", isToGo);
-            intent.putExtra("transType",getOrderingMainFa().mTransType);
+            intent.putExtra("transType", getOrderingMainFa().mTransType);
 
             if (Global.isConsignment)
                 intent.putExtra("consignment_qty", myCursor.getString(myCursor.getColumnIndex("consignment_qty")));
@@ -708,7 +726,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                 intent.putExtra("prod_upc", product.getProd_upc());
                 intent.putExtra("prod_price_points", product.getProdPricePoints());
                 intent.putExtra("prod_value_points", product.getProdValuePoints());
-                intent.putExtra("transType",getOrderingMainFa().mTransType);
+                intent.putExtra("transType", getOrderingMainFa().mTransType);
 
                 startActivityForResult(intent, 0);
             } else {
@@ -754,7 +772,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                         intent.putExtra("prod_upc", product.getProd_upc());
                         intent.putExtra("prod_price_points", product.getProdPricePoints());
                         intent.putExtra("prod_value_points", product.getProdValuePoints());
-                        intent.putExtra("transType",getOrderingMainFa().mTransType);
+                        intent.putExtra("transType", getOrderingMainFa().mTransType);
 
                         startActivityForResult(intent, 0);
                     } else {

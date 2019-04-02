@@ -34,8 +34,6 @@ import com.elo.device.enums.Status;
 import com.elo.device.exceptions.UnsupportedEloPlatform;
 import com.elo.device.peripherals.BarCodeReader;
 import com.elotouch.paypoint.register.barcodereader.BarcodeReader;
-import com.elotouch.paypoint.register.cd.CashDrawer;
-import com.elotouch.paypoint.register.cfd.CFD;
 import com.elotouch.paypoint.register.printer.SerialPort;
 import com.magtek.mobile.android.mtlib.MTConnectionType;
 import com.magtek.mobile.android.mtlib.MTEMVEvent;
@@ -59,20 +57,6 @@ import main.EMSDeviceManager;
  * Created by Guarionex on 12/3/2015.
  */
 public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
-    //Load JNI from the library project. Refer MainActivity.java from library project elotouchBarcodeReader.
-    // In constructor we are loading .so file for Barcode Reader.
-
-    private static CFD customerFacingDisplay;
-
-    //Load JNI from the library project. Refer MainActivity.java from library project elotouchCashDrawer.
-    // In constructor we are loading .so file for Cash Drawer.
-    static {
-        System.loadLibrary("cashdrawerjni");
-        System.loadLibrary("cfdjni");
-        System.loadLibrary("barcodereaderjni");
-        System.loadLibrary("serial_port");
-    }
-
     private final int LINE_WIDTH = 32;
     String scannedData = "";
     BarCodeReaderAdapter barcodereader;
@@ -104,18 +88,11 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
         }
     }
 
-    public static CFD getTerminalDisp() {
-        if (customerFacingDisplay == null) {
-            customerFacingDisplay = new CFD();
-        }
-        return customerFacingDisplay;
-    }
-
     /*
- *
- * Prints/Displays Text on Customer Facing Display.
- *
- * */
+     *
+     * Prints/Displays Text on Customer Facing Display.
+     *
+     * */
     public static void printTextOnCFD(String Line1, String Line2, Context context) {
         DeviceManager deviceManager;
         try {
@@ -130,11 +107,6 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
                         cfd.setLine(2, Line2);
                     }
                 }
-            } else {
-                getTerminalDisp().setBacklight(true);
-                getTerminalDisp().clearDisplay();
-                getTerminalDisp().setLine1(Line1);
-                getTerminalDisp().setLine2(Line2);
             }
         } catch (UnsupportedEloPlatform unsupportedEloPlatform) {
 
@@ -471,28 +443,6 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
             m_scra.setConnectionRetry(true);
             m_scra.openDevice();
         }
-//        eloCardSwiper = new MagStripDriver(activity);
-//        eloCardSwiper.startDevice();
-//        eloCardSwiper.registerMagStripeListener(new MagStripDriver.MagStripeListener() { //MageStripe Reader's Listener for notifying various events.
-//
-//            @Override
-//            public void OnDeviceDisconnected() { //Fired when the Device has been Disconnected.
-//                Toast.makeText(activity, "Magnetic-Stripe Device Disconnected !", Toast.LENGTH_SHORT).show();
-//            }
-//
-//            @Override
-//            public void OnDeviceConnected() { //Fired when the Device has been Connected.
-//                Toast.makeText(activity, "Magnetic-Stripe Device Connected !", Toast.LENGTH_SHORT).show();
-//            }
-//
-//            @Override
-//            public void OnCardSwiped(MagTeklibDynamag cardData) { //Fired when a card has been swiped on the device.
-//                Log.d("Card Data", cardData.toString());
-//                CreditCardInfo creditCardInfo = new CreditCardInfo();
-//                boolean parsed = CardParser.parseCreditCard(activity, cardData.getCardData(), creditCardInfo);
-//                callBack.cardWasReadSuccessfully(parsed, creditCardInfo);
-//            }
-//        });
     }
 
     @Override
@@ -529,13 +479,6 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
                 }
             } catch (UnsupportedEloPlatform unsupportedEloPlatform) {
 
-            }
-        } else {
-            CashDrawer cash_drawer = new CashDrawer();
-            if (cash_drawer.isDrawerOpen()) {
-                Toast.makeText(activity, "The Cash Drawer is already open !", Toast.LENGTH_SHORT).show();
-            } else {
-                cash_drawer.openCashDrawer();
             }
         }
     }
@@ -588,27 +531,6 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
         }
     }
 
-//    @Override
-//    public void printReceiptPreview(View view) {
-//
-//        try {
-//            SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
-//            eloPrinterApi = new PrinterAPI(eloPrinterPort);
-//            setPaperWidth(LINE_WIDTH);
-//            Bitmap bitmap = loadBitmapFromView(view);
-//            super.printReceiptPreview(bitmap, LINE_WIDTH);
-//            eloPrinterPort.getInputStream().close();
-//            eloPrinterPort.getOutputStream().close();
-//            eloPrinterPort.close();
-//        } catch (JAException e) {
-//            e.printStackTrace();
-//        } catch (StarIOPortException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
-
     @Override
     public void salePayment(Payment payment, CreditCardInfo creditCardInfo) {
 
@@ -656,7 +578,21 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
 
     @Override
     public void printClockInOut(List<ClockInOut> timeClocks, String clerkID) {
-        super.printClockInOut(timeClocks, LINE_WIDTH, clerkID);
+        try {
+            if (DeviceManager.getPlatformInfo().eloPlatform == EloPlatform.PAYPOINT_REFRESH) {
+                eloPrinterRefresh = DeviceManager.getInstance(DeviceManager.getPlatformInfo().eloPlatform, activity).getPrinter();
+                super.printClockInOut(timeClocks, LINE_WIDTH, clerkID);
+            } else {
+                SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
+                eloPrinterApi = new PrinterAPI(eloPrinterPort);
+                super.printClockInOut(timeClocks, LINE_WIDTH, clerkID);
+                eloPrinterPort.getInputStream().close();
+                eloPrinterPort.getOutputStream().close();
+                eloPrinterPort.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -665,12 +601,12 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     }
 
     /*
-         *
-         * Code to Read Barcode through Barcode Reader.
-         * BarcodeReader automatically populates the widget that is currently in focus.
-         * Here the "bar_code" edittext widget has focus.
-         *
-         * */
+     *
+     * Code to Read Barcode through Barcode Reader.
+     * BarcodeReader automatically populates the widget that is currently in focus.
+     * Here the "bar_code" edittext widget has focus.
+     *
+     * */
     private void readBarcode() {
         turnOnBCR();
     }

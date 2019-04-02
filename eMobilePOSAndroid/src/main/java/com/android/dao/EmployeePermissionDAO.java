@@ -19,7 +19,9 @@ public class EmployeePermissionDAO {
             r.insertOrUpdate(persmissions);
         } finally {
             r.commitTransaction();
-            r.close();
+            if(r!=null) {
+                r.close();
+            }
         }
     }
 
@@ -31,7 +33,9 @@ public class EmployeePermissionDAO {
             r.where(EmployeePersmission.class).findAll().deleteAllFromRealm();
         } finally {
             r.commitTransaction();
-            r.close();
+            if(r!=null) {
+                r.close();
+            }
         }
     }
 
@@ -48,7 +52,9 @@ public class EmployeePermissionDAO {
                 return null;
             }
         }finally {
-            r.close();
+            if(r!=null) {
+                r.close();
+            }
         }
     }
 }

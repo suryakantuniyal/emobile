@@ -379,4 +379,21 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
         }
     }
 
+    @Override
+    protected void onPause() {
+        if(myProgressDialog!=null && myProgressDialog.isShowing())
+        {
+            myProgressDialog.dismiss();
+        }
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if(myProgressDialog!=null && myProgressDialog.isShowing())
+        {
+            myProgressDialog.dismiss();
+        }
+        super.onDestroy();
+    }
 }

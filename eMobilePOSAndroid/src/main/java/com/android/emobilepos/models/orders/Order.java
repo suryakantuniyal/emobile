@@ -35,6 +35,7 @@ public class Order implements Cloneable, Serializable {
     public String cust_id = "";
     public String clerk_id = "";
     public String c_email = "";
+    public String c_phone = "";
     public String ord_signature = "";
     public String ord_po = "";
     public String total_lines = "";
@@ -95,7 +96,7 @@ public class Order implements Cloneable, Serializable {
         ord_issync = "0";
         isVoid = "0";
         processed = "0"; //need to be 1 when order has been processed or 9 if voided
-        ord_timecreated = DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss);
+        ord_timecreated = DateUtils.getDateAsString(new Date(), DateUtils.DATE_PATTERN);
     }
 
     public Order(Context activity) {
@@ -103,7 +104,7 @@ public class Order implements Cloneable, Serializable {
         ord_issync = "0";
         isVoid = "0";
         processed = "0"; //need to be 1 when order has been processed or 9 if voided
-        ord_timecreated = DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss);
+        ord_timecreated = DateUtils.getDateAsString(new Date(), DateUtils.DATE_PATTERN);
         AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
         emp_id = String.valueOf(assignEmployee != null ? assignEmployee.getEmpId() : "");
         custidkey = myPref.getCustIDKey();
@@ -395,22 +396,16 @@ public class Order implements Cloneable, Serializable {
         return ord_type.equalsIgnoreCase("1");
     }
 
-    public double getTotalLines() {
+    public int getTotalLines() {
         if (orderProducts == null || orderProducts.isEmpty()) {
             return 0;
         } else {
             int count = 0;
             for (OrderProduct orderProduct : getOrderProducts()) {
-                double consigmentQty = TextUtils.isEmpty(orderProduct.getConsignment_qty()) ? 0 : Double.parseDouble(orderProduct.getConsignment_qty());
-                double qty = Double.parseDouble(orderProduct.getOrdprod_qty());
-                if (consigmentQty == 0 && qty > 0) {
-                    count++;
-                } else if (consigmentQty > 0 && consigmentQty > qty) {
-                    count++;
-                }
+                count++;
+                count += orderProduct.addonsProducts.size();
             }
             return count;
         }
-
     }
 }

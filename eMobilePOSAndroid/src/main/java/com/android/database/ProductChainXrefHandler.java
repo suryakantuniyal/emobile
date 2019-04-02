@@ -69,11 +69,12 @@ public class ProductChainXrefHandler {
 
 	public void insert(List<String[]> data, List<HashMap<String, Integer>> dictionary) {
 		DBManager.getDatabase().beginTransaction();
+		SQLiteStatement insert = null;
 		try {
 
 			addrData = data;
 			dictionaryListMap = dictionary;
-			SQLiteStatement insert = null;
+
 			StringBuilder sb = new StringBuilder();
 			sb.append("INSERT INTO ").append(table_name).append(" (").append(sb1.toString()).append(") ").append("VALUES (").append(sb2.toString()).append(")");
 			insert = DBManager.getDatabase().compileStatement(sb.toString());
@@ -103,6 +104,10 @@ public class ProductChainXrefHandler {
 //			Tracker tracker = EasyTracker.getInstance(activity);
 //			tracker.send(MapBuilder.createException(sb.toString(), false).build());
 		} finally {
+			if(insert!=null)
+			{
+				insert.close();
+			}
 			DBManager.getDatabase().endTransaction();
 		}
 	}
@@ -117,21 +122,27 @@ public class ProductChainXrefHandler {
 	public long getNumOfCustomers(String custID)
 	//called from ProductsHandler no need to open/close db
 	{
-		
-		StringBuilder sb = new StringBuilder();
-		sb.append("SELECT Count(*) as 'count' FROM ").append(table_name).append(" WHERE cust_chain != '' AND cust_chain = ?");
+		Cursor c = null;
+		try {
+			StringBuilder sb = new StringBuilder();
+			sb.append("SELECT Count(*) as 'count' FROM ").append(table_name).append(" WHERE cust_chain != '' AND cust_chain = ?");
 
-		Cursor c = DBManager.getDatabase().rawQuery(sb.toString(), new String[]{custID});
-		long count = 0;
-		if(c.moveToFirst())
-		{
-			count = Long.parseLong(c.getString(c.getColumnIndex("count")));
-		}
+			c = DBManager.getDatabase().rawQuery(sb.toString(), new String[]{custID});
+			long count = 0;
+			if (c.moveToFirst()) {
+				count = Long.parseLong(c.getString(c.getColumnIndex("count")));
+			}
 		/*
 		SQLiteStatement stmt = db.compileStatement(sb.toString());
 		long count = stmt.simpleQueryForLong();*/
-		c.close();
+			c.close();
 
-		return count;
+			return count;
+		}finally {
+			if(c!=null && !c.isClosed())
+			{
+				c.close();
+			}
+		}
 	}
 }

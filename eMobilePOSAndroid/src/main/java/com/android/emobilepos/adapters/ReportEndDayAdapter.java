@@ -15,6 +15,7 @@ import com.android.database.OrderProductsHandler;
 import com.android.database.OrdersHandler;
 import com.android.database.PaymentsHandler;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.orders.OrderProduct;
 import com.android.emobilepos.models.realms.Clerk;
@@ -26,6 +27,7 @@ import com.android.support.Global;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
@@ -45,6 +47,7 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
     private PaymentsHandler paymentHandler;
     private String mDate, clerk_id;
     private List<Order> listSummary, listOrdTypes, listARTrans;
+    private HashMap<String, List<DataTaxes>> taxesBreakdownHashMap;
     private List<OrderProduct> listSold, listReturned, listDeptSales, listDeptReturns;
     private List<Payment> listPayment, listVoid, listRefund;
     private List<Shift> listShifts;
@@ -88,6 +91,7 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
 
     private void getOrders() {
         listOrdTypes = ordHandler.getOrderDayReport(clerk_id, mDate, false);
+        taxesBreakdownHashMap = ordHandler.getOrderDayReportTaxesBreakdown(clerk_id, mDate);
         listSummary = new ArrayList<>();
         List<Order> listOrdOnHoldTypes =
                 ordHandler.getOrderDayReport(clerk_id, mDate, true);
@@ -389,10 +393,24 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
                 mHolder.tvOrderType.setText(listOrdTypes.get(position - i_shifts).ord_type_name);
                 mHolder.tvOrdSubtTotal.setText(Global.getCurrencyFormat(listOrdTypes.get(
                         position - i_shifts).ord_subtotal));
-                mHolder.tvOrdTax.setText(Global.getCurrencyFormat(listOrdTypes.get(
-                        position - i_shifts).ord_taxamount));
                 mHolder.tvOrdDiscount.setText(Global.getCurrencyFormat(listOrdTypes.get(
                         position - i_shifts).ord_discount));
+
+                String orderType = listOrdTypes.get(position - i_shifts).ord_type;
+                if (taxesBreakdownHashMap.containsKey(orderType)) {
+                    StringBuilder taxesDetails = new StringBuilder();
+                    for (DataTaxes dataTax : taxesBreakdownHashMap.get(orderType)) {
+                        taxesDetails
+                                .append(dataTax.getTax_name())
+                                .append(" ")
+                                .append(Global.getCurrencyFormat(dataTax.getTax_amount()))
+                                .append("\n");
+                    }
+                    mHolder.tvOrdTax.setText(taxesDetails.toString());
+                } else {
+                    mHolder.tvOrdTax.setText("N/A");
+                }
+
                 mHolder.tvOrdNetTotal.setText(Global.getCurrencyFormat(listOrdTypes.get(
                         position - i_shifts).ord_total));
                 break;

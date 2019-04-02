@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.UUID;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -24,6 +25,9 @@ public class DeviceTableDAO {
         }.getType();
         try {
             List<Device> devices = gson.fromJson(json, listType);
+            for (Device device: devices) {
+                device.setId(UUID.randomUUID().toString());
+            }
             DeviceTableDAO.insert(devices);
         } catch (Exception e) {
             e.printStackTrace();
@@ -37,7 +41,9 @@ public class DeviceTableDAO {
             realm.copyToRealmOrUpdate(devices);
         } finally {
             realm.commitTransaction();
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -50,7 +56,9 @@ public class DeviceTableDAO {
                 all = realm.copyFromRealm(all);
             }
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
         return all;
     }
@@ -67,7 +75,9 @@ public class DeviceTableDAO {
             }
         } finally {
             realm.commitTransaction();
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -81,7 +91,10 @@ public class DeviceTableDAO {
             }
             return first;
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
+
         }
     }
 
@@ -95,7 +108,9 @@ public class DeviceTableDAO {
             }
             return first;
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -109,7 +124,9 @@ public class DeviceTableDAO {
             }
             return first;
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -120,7 +137,9 @@ public class DeviceTableDAO {
             realm.insertOrUpdate(device);
         } finally {
             realm.commitTransaction();
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -135,7 +154,9 @@ public class DeviceTableDAO {
             }
             return first;
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -162,7 +183,9 @@ public class DeviceTableDAO {
             }
         } finally {
             realm.commitTransaction();
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -180,7 +203,9 @@ public class DeviceTableDAO {
             }
 
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
         return devices;
     }
@@ -196,7 +221,9 @@ public class DeviceTableDAO {
             }
             return first;
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 }

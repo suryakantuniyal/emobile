@@ -17,6 +17,7 @@ import util.StringUtil;
 
 public class VolumePricesHandler {
 
+    private static final String table_name = "VolumePrices";
     private final String id_key = "id_key";
     private final String prod_id = "prod_id";
     private final String minQty = "minQty";
@@ -24,11 +25,8 @@ public class VolumePricesHandler {
     private final String pricelevel_id = "pricelevel_id";
     private final String price = "price";
     private final String isactive = "isactive";
-
     private final List<String> attr = Arrays
             .asList(id_key, prod_id, minQty, maxQty, price, isactive, pricelevel_id);
-
-    private static final String table_name = "VolumePrices";
     private StringBuilder sb1, sb2;
     private HashMap<String, Integer> attrHash;
 
@@ -105,36 +103,43 @@ public class VolumePricesHandler {
     }
 
     public String[] getVolumePrice(String qty, String prod_id) {
-        StringBuilder sb = new StringBuilder();
-        String priceLevelID;
-        double tempQty = Double.parseDouble(qty);
-        if (tempQty <= 1) {
-            qty = "1";
-            tempQty = 1;
+        Cursor cursor = null;
+        try {
+            StringBuilder sb = new StringBuilder();
+            String priceLevelID;
+            double tempQty = Double.parseDouble(qty);
+            if (tempQty <= 1) {
+                qty = "1";
+                tempQty = 1;
+            }
+            if (myPref.isCustSelected())
+                priceLevelID = myPref.getCustPriceLevel();
+            else {
+                AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+                priceLevelID = StringUtil.nullStringToEmpty(assignEmployee.getPricelevelId());
+            }
+            sb.append("SELECT * From VolumePrices WHERE prod_id = '");
+            sb.append(prod_id).append("' and pricelevel_id = '");
+            sb.append(priceLevelID).append("' ORDER BY minQty");
+            cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
+            String[] values = new String[2];
+            if (cursor.moveToFirst()) {
+                do {
+                    double minQTY = Double.parseDouble(cursor.getString(cursor.getColumnIndex("minQty")));
+                    double maxQTY = Double.parseDouble(cursor.getString(cursor.getColumnIndex("maxQty")));
+                    if (tempQty >= minQTY && tempQty <= maxQTY) {
+                        values[0] = cursor.getString(cursor.getColumnIndex(id_key));
+                        values[1] = cursor.getString(cursor.getColumnIndex(price));
+                        break;
+                    }
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+            return values;
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
         }
-        if (myPref.isCustSelected())
-            priceLevelID = myPref.getCustPriceLevel();
-        else {
-            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
-            priceLevelID = StringUtil.nullStringToEmpty(assignEmployee.getPricelevelId());
-        }
-        sb.append("SELECT * From VolumePrices WHERE prod_id = '");
-        sb.append(prod_id).append("' and pricelevel_id = '");
-        sb.append(priceLevelID).append("' ORDER BY minQty");
-        Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
-        String[] values = new String[2];
-        if (cursor.moveToFirst()) {
-            do {
-                double minQTY = Double.parseDouble(cursor.getString(cursor.getColumnIndex("minQty")));
-                double maxQTY = Double.parseDouble(cursor.getString(cursor.getColumnIndex("maxQty")));
-                if (tempQty >= minQTY && tempQty <= maxQTY) {
-                    values[0] = cursor.getString(cursor.getColumnIndex(id_key));
-                    values[1] = cursor.getString(cursor.getColumnIndex(price));
-                    break;
-                }
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-        return values;
     }
 }

@@ -13,6 +13,9 @@
     <string name="hint_search">"Buscar"</string>
     <string name="enter_name">"Ingrese su nombre"</string>
     <string name="last_saved">"Última actualización"</string>
+    <string name="notification_channel_id">"com.android.emobilepos.NOTIFICATION_ID"</string>
+    <string name="notification_channel_name">"CANAL EMOBILEPOS"</string>
+    <string name="notification_channel_description">"Un canal de notificación para la aplicación eMobilePOS."</string>
 
     <string name="inventory_transfer">"Transferencia inventario"</string>
 
@@ -56,6 +59,11 @@
     <string name="dlog_title_success">"Éxito"</string>
     <string name="dlog_title_choose_action">"Elige la Acción"</string>
     <string name="dlog_title_transaction_failed_to_process">"Algunas transacciones no procesaron"</string>
+    <string name="dlog_title_conn_payment_device">"Conecte el dispositivo de pago"</string>
+    <string name="error_getting_credentials">"Se produjo un error al obtener las credenciales de Ingenico."</string>
+    <string name="dlog_msg_conn_payment_device">"El dispositivo no está disponible, enciéndalo (mantenga presionado el botón verde \ n durante tres segundos) y presione Conectar. \ N \ nNota: espere hasta que aparezca el logotipo de Bluetooth en la esquina superior izquierda de la pantalla del dispositivo para continuar."</string>
+    <string name="dlog_msg_turnon_payment_device">"El dispositivo no está disponible, enciéndalo (mantenga presionado el botón verde \ n durante tres segundos) y vuelva a intentarlo."</string>
+    <string name="dlog_msg_ingenico_login_failed">"El inicio de sesión de Ingenico ha fallado. Por favor, verifique las credenciales y vuelva a intentarlo."</string>
     <string name="dlog_msg_orders_changed_invoice">"Órdenes cambiadas al tipo Invoice"</string>
     <string name="dlog_msg_pending_stored_forward">"Existen transacciones almacenar y reenviar pendientes a procesar"</string>
     <string name="dlog_msg_please_try_again">"Por favor, inténtelo de nuevo más tarde"</string>
@@ -66,6 +74,9 @@
     <string name="dlog_msg_enter_qty">"Introduzca la cantidad que se agregará"</string>
     <string name="dlog_msg_want_to_print">"¿Quieres imprimir?"</string>
     <string name="dlog_msg_transaction_voided">"Se anuló la transacción"</string>
+    <string name="dlog_msg_ingenico_payment_voided">"Ingenico pago cancelado!"</string>
+    <string name="dlog_msg_ingenico_payment_not_found">"Error: Ingenico Pago No encontrado."</string>
+    <string name="dlog_msg_ingenico_payment_error">"Error al anular el pago de Ingenico."</string>
     <string name="dlog_msg_failed_print">"Error de impresión, verifique el estado de la impresora. \n ¿Desea volver a intentar imprimir?"</string>
     <string name="dlog_msg_want_to_reprint">"¿Desea volver a imprimir?"</string>
     <string name="dlog_msg_want_to_make_refund">"¿Quieres hacer un reembolso?"</string>
@@ -162,6 +173,7 @@
     <string name="refund">"Reembolso"</string>
     <string name="route">"Ruta"</string>
     <string name="on_hold">"Registro Cuenta"</string>
+    <string name="hold_offline">"DESCONECTADO"</string>
     <string name="master_counter">"Contador principal"</string>
     <string name="consignment">"Consignación"</string>
 
@@ -172,6 +184,7 @@
     <string name="sync_receive">"Recibir"</string>
     <string name="sync_status">"Estado:"</string>
     <string name="sync_connected_to">"Conectado a "</string>
+    <string name="sync_ethernet_connected">"Cable Ethernet conectado"</string>
     <string name="sync_no_connectivity">"No se detectó ninguna conectividad "</string>
     <string name="sync_pending">"Pendiente:"</string>
     <string name="sync_payments">"Pagos"</string>
@@ -409,15 +422,19 @@
 
     <!-- Clocks Main Tab -->
     <string name="clock_title">"Reloj"</string>
+    <string name="clock_last_status">"Último estado"</string>
+    <string name="clock_clock_in">"Ponche de entrada"</string>
+    <string name="clock_clock_out">"Ponche de salida"</string>
 
     <!-- About Main Tab -->
     <string name="about_title">"Acerca de"</string>
     <string name="about_acct_num">"Número de cuenta"</string>
     <string name="about_employee">"Empleado "</string>
     <string name="about_version">"Versión"</string>
+    <string name="about_android_version">"Android"</string>
     <string name="about_copyright_tag">"Derechos de autor"</string>
     <string name="about_location_tag">"ID de ubicación"</string>
-    <string name="about_copyright">"\u00A9 2015 e-Nabler Corporation"</string>
+    <string name="about_copyright">"\u00A9 %s e-Nabler Corporation"</string>
     <string name="about_footer">"ADVERTENCIA: Este programa está protegido por la ley de derechos de autor y tratados internacionales \ u002E La reproducción o distribución no autorizada de este programa puede resultar en severas sanciones civiles y criminales y será procesada hasta el máximo posible bajo la ley."</string>
 
 
@@ -611,6 +628,7 @@
     <string name="card_information">"Información de Tarjeta"</string>
     <string name="paymethod_due_amount_label">"Monto a Pagar"</string>
     <string name="comments">"Comentarios"</string>
+    <string name="card_swipe_failed">"El deslizamiento de la tarjeta falló, por favor intente de nuevo."</string>
 
 
     <!-- Check Payment/Refund -->
@@ -892,6 +910,7 @@
     <string name="config_mw_with_genius">"Cayan Genius"</string>
     <string name="config_genius_peripheral">"Configurar Genius Peripheral"</string>
     <string name="config_pay_with_boloro">"Pago con Boloro"</string>
+    <string name="config_use_pax">"Usar SecurePay (PAX)"</string>
 
     <string name="config_customer_display">"Terminal de visualización de clientes"</string>
 
@@ -931,6 +950,7 @@
     <string name="config_wholesale_printout">"Impresión al por mayor"</string>
     <string name="config_prompt_customer_copy">"Solicitar copia de recibo de impresión para los pagos de CC"</string>
     <string name="config_print_receipt_transaction_payments">"Imprimir recibo de pagos de transacciones"</string>
+    <string name="config_print_taxes_brake_down">"Imprimir desglose de impuestos"</string>
     <string name="config_handwritten_signature">"Firma manuscrita"</string>
 
     <string name="config_allow_decimal_quantities">"Permitir cantidades decimales"</string>
@@ -1002,6 +1022,7 @@
     <string name="processing_reward">"Procesando recompensa"</string>
     <string name="processing_credit_card">"Procesando tarjeta de crédito"</string>
     <string name="failed_genius_connectivity">"Parece que no hay conectividad con el dispositivo genius"</string>
+    <string name="failed_pax_connectivity">"Al parecer hay problemas de comunicación con el terminal."</string>
     <string name="employee_could_not_be_processed">"No se pudo procesar esta selección de empleados. Vuelve a intentarlo."</string>
     <string name="enter_cash_close_amount">"Introduzca el monto de cierre de efectivo"</string>
     <string name="close_amount_is">"La cantidad de cierre es"</string>
@@ -1038,11 +1059,13 @@
     <string name="paymethod_tax1_amount_label">"Tax1"</string>
     <string name="paymethod_tax2_amount_label">"Tax2"</string>
     <string name="processing_payment_msg">"Procesando el pago…"</string>
+    <string name="error_status_code">"Código: %s\n%s"</string>
     <string name="changeLbl">"Cambio:"</string>
     <string name="cash_invoice_lbl">"Factura en efectivo"</string>
     <string name="card_invoice">"Factura de tarjeta"</string>
     <string name="status_connected">"Conectado"</string>
     <string name="swipe_insert_card">"Deslizar / insertar tarjeta …"</string>
+    <string name="check_ingenico_device">"Siga las instrucciones en el lector de tarjetas móvil…"</string>
     <string name="printing_message">"Imprimiendo…"</string>
     <string name="please_wait_message">"Por favor, espere…"</string>
     <string name="ivu_control">"CONTROL: "</string>
@@ -1053,7 +1076,7 @@
     <string name="amount_zero_lbl">"0,00"</string>
     <string name="none_uppercase_lbl">"NINGUNA"</string>
     <string name="enabler_prefix">"EN"</string>
-    <string name="powered_by_enabler">"Desarrollado por Enabler"</string>
+    <string name="powered_by_enabler">"Desarrollado por e-Nabler"</string>
     <string name="ivuloto_control_label">"CONTROL: "</string>
     <string name="menu_back">"Regresar"</string>
     <string name="selectinvoices">"Seleccionar facturas"</string>
@@ -1074,6 +1097,11 @@
     <string name="config_toggle_elo_bcr">"Elo lector de código de barras on / off"</string>
     <string name="config_use_navigationbar">"Habilitar barra de navegación"</string>
     <string name="genius_application_label">"Etiqueta de la aplicación:"</string>
+    <string name="pax_entry_method">"Método de entrada:"</string>
+    <string name="pax_tvr">"TVR:"</string>
+    <string name="pax_iad">"IAD:"</string>
+    <string name="pax_tsi_atc">"TSI:"</string>
+    <string name="pax_ac">"AC:"</string>
     <string name="receipt_amount">"Cantidad:"</string>
     <string name="modify">"Modificar"</string>
     <string name="config_restaurant_settings">"Configuración de restaurante"</string>
@@ -1186,7 +1214,7 @@
     <string name="eod_report_itemsreturned">"Artículos devueltos"</string>
     <string name="eod_report_dept_sales">"Ventas de departamento"</string>
     <string name="eod_report_dept_returns">"Devoluciones de Departamento"</string>
-    <string name="eod_report_payment">"Pago"</string>
+    <string name="eod_report_payment">"Pagos"</string>
     <string name="eod_report_void">"Anular"</string>
     <string name="eod_report_refund">"Reembolso"</string>
     <string name="eod_report_ar_trans">"AR Trans"</string>
@@ -1328,6 +1356,7 @@
     <string name="elobcr_menu">BCR</string>
     <string name="config_pay_with_card_on_file">Pagar con "Card on File"</string>
     <string name="card_on_file">Card on File</string>
+    <string name="e_secure_pay">e-SecurePay</string>
     <string name="genius">Genius</string>
     <string name="invoice_job_id">Invoice/Job ID</string>
     <string name="fingerprints">Huellas dactilares</string>

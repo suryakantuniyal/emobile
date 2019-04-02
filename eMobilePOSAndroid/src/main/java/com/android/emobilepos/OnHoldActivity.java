@@ -114,9 +114,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         long unsyncOrdersOnHold = ordersHandler.getNumUnsyncOrdersOnHold();
         if (unsyncOrdersOnHold > 0) {
             new SyncOnHolds().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-//            DBManager dbManager = new DBManager(this);
-//            SynchMethods sm = new SynchMethods(dbManager);
-//            sm.synchSendOnHold(false, false, this, null);
         }
         myAdapter = new HoldsCursorAdapter(activity, myCursor, CursorAdapter.NO_SELECTION);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -180,10 +177,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
     @Override
     public void onPause() {
         super.onPause();
-//        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-//        boolean isScreenOn = powerManager.isScreenOn();
-//        if (!isScreenOn && myPref.isExpireUserSession())
-//            Global.loggedIn = false;
         global.startActivityTransitionTimer();
     }
 
@@ -230,7 +223,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
     }
 
     private void claimedTransactionPrompt(boolean isInternetConnected) {
-
         final Dialog dlog = new Dialog(activity, R.style.Theme_TransparentTest);
         dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dlog.setCancelable(true);
@@ -263,12 +255,10 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             }
         });
         dlog.show();
-
     }
 
     private void askForManagerPassDlg()        //type 0 = Change Password, type 1 = Configure Home Menu
     {
-
         final Dialog globalDlog = new Dialog(activity, R.style.Theme_TransparentTest);
         globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         globalDlog.setCancelable(true);
@@ -312,7 +302,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             }
         });
         globalDlog.show();
-
     }
 
     private void openPrintOnHold()        //type 0 = Change Password, type 1 = Configure Home Menu
@@ -346,11 +335,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             public void onClick(View v) {
                 dlog.dismiss();
                 if (myPref.isUseClerks() && !TextUtils.isEmpty(order.assignedTable)) {
-//                    Clerk associate = ClerkDAO.getByEmpId(Integer.parseInt(myPref.getClerkID()), true);
                     boolean hasTable = ClerkDAO.hasAssignedDinningTable(Integer.parseInt(myPref.getClerkID()), order.assignedTable);
-//                    long count = associate == null ? 0 : associate.getAssignedDinningTables()
-//                            .where()
-//                            .equalTo("number", myCursor.getString(myCursor.getColumnIndex("assignedTable"))).count();
                     if (hasTable) {
                         validPassword = true;
                         new checkHoldStatus().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -418,7 +403,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             }
         });
         dlog.show();
-
     }
 
     private void selectCustomer(String custID) {
@@ -605,7 +589,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             if ((myPref.isUse_syncplus_services() && NetworkUtils.isConnectedToLAN(activity))
                     || NetworkUtils.isConnectedToInternet(activity))
                 proceed = true;
-
             return intent;
         }
 
@@ -623,7 +606,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                 int size = c.getCount();
                 if (size > 0) {
                     if (!forPrinting) {
-//                        addOrderProducts(OnHoldActivity.this, c);
                         startActivityForResult(intent, 0);
                         activity.finish();
                     } else {
@@ -697,23 +679,20 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             String seats = cursor.getString(myHolder.i_numberOfSeats);
             String createdTime = cursor.getString(myHolder.i_timeCreated);
             String total = Global.getCurrencyFormat(cursor.getString(myHolder.i_orderTotal));
+            myHolder.orderTotal.setText(total);
             Map<TimeUnit, Long> map = DateUtils.computeDiff(DateUtils.getDateStringAsDate(createdTime, DateUtils.DATE_yyyy_MM_ddTHH_mm_ss), new Date());
             String timeOnSite = String.format(Locale.getDefault(), "%02d:%02d", map.get(TimeUnit.HOURS), map.get(TimeUnit.MINUTES));
             if (TextUtils.isEmpty(table)) {
                 myHolder.tableTextView.setVisibility(View.INVISIBLE);
                 myHolder.guestsNumber.setVisibility(View.INVISIBLE);
                 myHolder.timeOnSite.setVisibility(View.INVISIBLE);
-                myHolder.orderTotal.setVisibility(View.INVISIBLE);
             } else {
-                myHolder.tableTextView.setVisibility(View.VISIBLE);
                 myHolder.tableTextView.setVisibility(View.VISIBLE);
                 myHolder.guestsNumber.setVisibility(View.VISIBLE);
                 myHolder.timeOnSite.setVisibility(View.VISIBLE);
-                myHolder.orderTotal.setVisibility(View.VISIBLE);
                 myHolder.tableTextView.setText(table);
                 myHolder.guestsNumber.setText(seats);
                 myHolder.timeOnSite.setText(timeOnSite);
-                myHolder.orderTotal.setText(total);
             }
         }
 

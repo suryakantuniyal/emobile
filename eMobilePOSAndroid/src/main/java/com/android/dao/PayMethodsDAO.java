@@ -21,7 +21,9 @@ public class PayMethodsDAO {
             }
         } finally {
             realm.commitTransaction();
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -37,7 +39,9 @@ public class PayMethodsDAO {
             }
         } finally {
             realm.commitTransaction();
-            realm.close();
+            if (realm != null) {
+                realm.close();
+            }
         }
     }
 
@@ -50,7 +54,9 @@ public class PayMethodsDAO {
             }
             return paymentMethods;
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -61,7 +67,9 @@ public class PayMethodsDAO {
             realm.delete(PaymentMethod.class);
         } finally {
             realm.commitTransaction();
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 }

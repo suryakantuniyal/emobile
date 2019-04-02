@@ -9,7 +9,6 @@ import android.location.Location;
 import android.media.AudioManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.PowerManager;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -117,6 +116,16 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
     private String email;
     private String phone;
 
+
+    @Override
+    protected void onResumeFragments() {
+        super.onResumeFragments();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -375,7 +384,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
             Intent i = getIntent();
             handleDecodeData(i);
             cardSwipe.setChecked(true);
-        } else if (myPref.isSam4s() || myPref.isPAT100()) {
+        } else if (myPref.isSam4s()) {
             cardSwipe.setChecked(true);
             _msrUsbSams = new EMSIDTechUSB(activity, callBack);
             if (_msrUsbSams.OpenDevice())
@@ -385,6 +394,10 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
                 Global.mainPrinterManager.getCurrentDevice().loadCardReader(callBack, false);
                 cardSwipe.setChecked(true);
             }
+        } else if (MyPreferences.isTeamSable() && Global.embededMSR != null &&
+                Global.embededMSR.getCurrentDevice() != null) {
+            Global.embededMSR.getCurrentDevice().loadCardReader(callBack, false);
+            cardSwipe.setChecked(true);
         } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310() || myPref.isKDC425()) {
             cardSwipe.setChecked(true);
         } else if (myPref.isPAT215() && Global.btSwiper == null) {
@@ -502,7 +515,6 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
 
             payment.setIvuLottoNumber(ivuLottoNum);
             payment.setIvuLottoDrawDate(drawDate);
-            payment.setIvuLottoQR(Global.base64QRCode(ivuLottoNum, drawDate));
             if (!TextUtils.isEmpty(extras.getString("Tax1_amount"))) {
                 payment.setTax1_amount(extras.getString("Tax1_amount"));
                 payment.setTax1_name(extras.getString("Tax1_name"));

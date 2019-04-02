@@ -70,11 +70,11 @@ public class DeviceDefaultValuesHandler {
     }
 
     public void insert(List<String[]> data, List<HashMap<String, Integer>> dictionary) {
+        SQLiteStatement insert=null;
         DBManager.getDatabase().beginTransaction();
         try {
             addrData = data;
             dictionaryListMap = dictionary;
-            SQLiteStatement insert;
             String sb = "INSERT INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() +
                     ")";
             insert = DBManager.getDatabase().compileStatement(sb);
@@ -97,6 +97,9 @@ public class DeviceDefaultValuesHandler {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
+            if(insert!=null) {
+                insert.close();
+            }
             DBManager.getDatabase().endTransaction();
         }
     }

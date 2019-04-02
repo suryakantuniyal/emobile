@@ -70,11 +70,11 @@ public class LocationsInventory_DB {
 
 	public void insert(List<String[]> data, List<HashMap<String, Integer>> dictionary) {
 		DBManager.getDatabase().beginTransaction();
-
+		SQLiteStatement insert = null;
 		try {
 			prodData = data;
 			dictionaryListMap = dictionary;
-			SQLiteStatement insert = null;
+
 			StringBuilder sb = new StringBuilder();
 			sb.append("INSERT INTO ").append(TABLE_NAME).append(" (").append(sb1.toString()).append(") ").append("VALUES (").append(sb2.toString()).append(")");
 			insert = DBManager.getDatabase().compileStatement(sb.toString());
@@ -95,6 +95,10 @@ public class LocationsInventory_DB {
 //			Tracker tracker = EasyTracker.getInstance(activity);
 //			tracker.send(MapBuilder.createException(Log.getStackTraceString(new Exception()), false).build());
 		} finally {
+			if(insert!=null)
+			{
+			insert.close();
+			}
 			DBManager.getDatabase().endTransaction();
 		}
 	}

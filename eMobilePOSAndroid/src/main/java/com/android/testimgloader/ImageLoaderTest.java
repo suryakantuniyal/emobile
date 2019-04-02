@@ -48,9 +48,9 @@ public class ImageLoaderTest {
         {
         	Drawable d =new BitmapDrawable(activity.getResources(),bitmap);
         	if(Double.valueOf(android.os.Build.VERSION.SDK_INT)>=16)
-        		imageView.setBackgroundDrawable(d);
+        		imageView.setBackground(d);
         	else
-        		imageView.setBackgroundDrawable(d);
+        		imageView.setBackground(d);
         }
         else
         {

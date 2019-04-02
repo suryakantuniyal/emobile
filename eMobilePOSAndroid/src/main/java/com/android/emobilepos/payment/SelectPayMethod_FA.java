@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.PowerManager;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
@@ -83,6 +82,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -113,7 +113,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
     private int typeOfProcedure = 0;
 
     private double overAllRemainingBalance = 0.00;
-    //    private double currentPaidAmount = 0.00;
     private double tipPaidAmount = 0.00;
     private MyPreferences myPref;
     private ProgressDialog myProgressDialog;
@@ -123,6 +122,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
     private DisplayImageOptions options;
     private int totalPayCount = 0;
     private String order_email = "";
+    private String order_phone = "";
     private Global.OrderType orderType;
     private boolean skipLogin;
     private Dialog dlog;
@@ -146,8 +146,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         order.ord_id = job_id;
         order.ord_type = orderType;
         voidHandler.insert(order);
-        // Check if Stored&Forward active and delete from record if any payment
-        // were made
+        // Check if Stored&Forward active and delete from record if any payment were made
         MyPreferences myPref = new MyPreferences(activity);
         if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
             handler.updateOrderStoredFwd(job_id, "0");
@@ -197,8 +196,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                             parsedMap.clear();
                         }
                     } else if (paymentType.equals("CASH")) {
-
-                        // payHandler.updateIsVoid(pay_id);
                         payHandler.createVoidPayment(listVoidPayments.get(i), false, null);
                     } else if (!paymentType.equals("CHECK") && !paymentType.equals("WALLET")) {
                         payGate = new EMSPayGate_Default(activity, listVoidPayments.get(i));
@@ -231,7 +228,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             }
             activity.setResult(3);
             activity.finish();
-//            new voidPaymentAsync().execute();
         } else {
             activity.setResult(3);
             activity.finish();
@@ -248,7 +244,8 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         myPref = new MyPreferences(this);
         total = extras.getString("amount");
         paid = extras.getString("paid");
-        order_email = extras.getString("order_email", "");
+        order_email = extras.getString("ord_email", "");
+        order_phone = extras.getString("ord_phone", "");
         isFromMainMenu = extras.getBoolean("isFromMainMenu");
         overAllRemainingBalance = Double.parseDouble(total);
         if (!isFromMainMenu) {
@@ -336,8 +333,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
     @Override
     public void onResume() {
-//        DeviceUtils.registerFingerPrintReader(this);
-//        Toast.makeText(this, "Resume:"+String.valueOf(skipLogin), Toast.LENGTH_LONG).show();
         if (global.isApplicationSentToBackground() && !skipLogin)
             Global.loggedIn = false;
         global.stopActivityTransitionTimer();
@@ -364,16 +359,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
     public void onPause() {
         myListview.setOnItemClickListener(null);
         super.onPause();
-//        DeviceUtils.unregisterFingerPrintReader(this);
-//        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-//        boolean isScreenOn;
-//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT_WATCH) {
-//            isScreenOn = powerManager.isInteractive();
-//        } else {
-//            isScreenOn = powerManager.isScreenOn();
-//        }
-//        if (!isScreenOn && myPref.isExpireUserSession())
-//            Global.loggedIn = false;
         global.startActivityTransitionTimer();
     }
 
@@ -386,9 +371,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
     @Override
     public void onBackPressed() {
-
         if (Global.overallPaidAmount == 0) {
-            // setResult(50);
             setResult(SplittedOrderSummary_FA.NavigationResult.BACK_SELECT_PAYMENT.getCode());
             finish();
         } else {
@@ -473,6 +456,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         intent.putExtra("custidkey", Global.getValidString(extras.getString("custidkey")));
         intent.putExtra("cust_id", Global.getValidString(extras.getString("cust_id")));
         intent.putExtra("order_email", order_email);
+        intent.putExtra("order_phone", order_phone);
 
         if (overAllRemainingBalance != 0)
             payingAmount = Global.formatNumber(true, overAllRemainingBalance);
@@ -542,35 +526,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                         intent.putExtra("Tax1_name", groupTax.size() == 1 ? "" : groupTax.get(1).getTaxName());
                     }
                 }
-//                else {
-//                    BigDecimal tempRate;
-//                    tempRate = new BigDecimal(subtotal * 0.06).setScale(2, BigDecimal.ROUND_UP);
-//                    intent.putExtra("Tax1_amount", tempRate.toPlainString());
-//                    intent.putExtra("Tax1_name", "Estatal");
-//
-//                    tempRate = new BigDecimal(subtotal * 0.01).setScale(2, BigDecimal.ROUND_UP);
-//                    intent.putExtra("Tax2_amount", tempRate.toPlainString());
-//                    intent.putExtra("Tax2_name", "Municipal");
-//                }
             }
-//            else {
-//                BigDecimal tempRate;
-//                double tempAmount = Double.parseDouble(payingAmount);
-//                if (tempAmount > 0) {
-//                    tempRate = new BigDecimal(tempAmount * 0.06).setScale(2, BigDecimal.ROUND_UP);
-//                    intent.putExtra("Tax1_amount", tempRate.toPlainString());
-//                    intent.putExtra("Tax1_name", "Estatal");
-//
-//                    tempRate = new BigDecimal(tempAmount * 0.01).setScale(2, BigDecimal.ROUND_UP);
-//                    intent.putExtra("Tax2_amount", tempRate.toPlainString());
-//                    intent.putExtra("Tax2_name", "Municipal");
-//                } else {
-//                    intent.putExtra("Tax1_amount", "");
-//                    intent.putExtra("Tax1_name", "");
-//                    intent.putExtra("Tax2_amount", "");
-//                    intent.putExtra("Tax2_name", "");
-//                }
-//            }
         }
 
         intent.putExtra("amount", payingAmount);
@@ -689,7 +645,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         myListview.setSelection(0);
         myListview.setSelected(false);
         skipLogin = data != null && data.hasExtra("LocalGeniusResponse");
-//        Toast.makeText(this, "Activity Result:"+String.valueOf(skipLogin), Toast.LENGTH_LONG).show();
 
         EMVContainer emvContainer = null;
         if (data != null && data.hasExtra("emvcontainer"))
@@ -715,7 +670,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             }
 
             Global.overallPaidAmount += Double.parseDouble(Global.amountPaid);
-//            Global.overallPaidAmount = currentPaidAmount;
             tipPaidAmount += Double.parseDouble(Global.tipPaid);
             String overallPaidAmount = Global.formatNumber(true, Global.overallPaidAmount);
 
@@ -746,10 +700,8 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             } else {
                 boolean isReturn = false;
                 if (job_id != null && !job_id.isEmpty()) {
-                    order = ordersHandler.updateIsProcessed(job_id, "1");
-//                    order = ordersHandler.getOrder(job_id);
-                    if (!TextUtils.isEmpty(order.ord_type)
-                            && Global.OrderType.getByCode(Integer.parseInt(order.ord_type)) == Global.OrderType.RETURN) {
+                    ordersHandler.updateIsProcessed(job_id, "1");
+                    if (orderType == Global.OrderType.RETURN) {
                         isReturn = true;
                     }
                 }
@@ -909,11 +861,9 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 boolean wasSwiped = cardInfoManager.getWasSwiped();
                 reqChargeLoyaltyReward = payGate.paymentWithAction(EMSPayGate_Default.EAction.ChargeLoyaltyCardAction, wasSwiped, cardType,
                         cardInfoManager);
-//            loyaltyRewardPayment.setPay_amount(Global.loyaltyAddAmount);
                 payGate = new EMSPayGate_Default(this, loyaltyRewardPayment);
                 String reqAddLoyalty = payGate.paymentWithAction(EMSPayGate_Default.EAction.AddValueLoyaltyCardAction, wasSwiped, cardType,
                         cardInfoManager);
-//            loyaltyRewardPayment.setPay_amount(Global.loyaltyCharge);
                 new ProcessLoyaltyAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
         } else {
@@ -1017,6 +967,12 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());
             intent.putExtras(extras);
             initIntents(extras, intent);
+        } else if (payTypeList.get(position).getPaymentmethod_type().equals("PAX")) {
+            Intent intent = new Intent(this, ProcessPax_FA.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());
+            intent.putExtras(extras);
+            initIntents(extras, intent);
         } else if (payTypeList.get(position).getPaymentmethod_type().equals("Genius")) {
             Intent intent = new Intent(this, ProcessGenius_FA.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
@@ -1091,6 +1047,25 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             myInflater = LayoutInflater.from(context);
 
             payTypeList = PayMethodsDAO.getAllSortByName();
+
+            if (myPref.getPreferences(MyPreferences.pref_use_pax)) {
+                List<PaymentMethod> itemsToDelete = new ArrayList<>();
+                for (PaymentMethod method : payTypeList) {
+                    if (!method.getPaymethod_name().equalsIgnoreCase("Cash")) {
+                        itemsToDelete.add(method);
+                    }
+                }
+                payTypeList.removeAll(itemsToDelete);
+                PaymentMethod paxPaymentMethod = new PaymentMethod();
+                paxPaymentMethod.setOriginalTransid("true");
+                paxPaymentMethod.setIsactive("1");
+                paxPaymentMethod.setPaymentmethod_type("PAX");
+                paxPaymentMethod.setPaymethod_id("SoundPayments");
+                paxPaymentMethod.setPaymethod_name("PAX");
+                paxPaymentMethod.setPaymethod_showOnline("0");
+                paxPaymentMethod.setPriority(0);
+                payTypeList.add(paxPaymentMethod);
+            }
         }
 
         @Override
@@ -1114,7 +1089,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
                 if (TextUtils.isEmpty(img_url)) {
                     if (key == null) {
-                        iconId = R.drawable.debitcard;// context.getResources().getIdentifier("debitcard", "drawable", context.getString(R.string.pkg_name));
+                        iconId = R.drawable.debitcard;
                     } else {
                         Log.d("Logo Name", key);
                         iconId = context.getResources().getIdentifier(key.toLowerCase(), "drawable",
@@ -1139,10 +1114,8 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
                 if (TextUtils.isEmpty(img_url)) {
                     if (key == null) {
-                        iconId = R.drawable.debitcard;//context.getResources().getIdentifier("debitcard", "drawable",
-                    }
-//									context.getString(R.string.pkg_name));
-                    else {
+                        iconId = R.drawable.debitcard;
+                    } else {
                         Log.d("Logo Name", key);
                         iconId = context.getResources().getIdentifier(key.toLowerCase(), "drawable",
                                 context.getPackageName());
@@ -1414,7 +1387,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                         if (parsedMap != null && parsedMap.size() > 0
                                 && parsedMap.get("epayStatusCode").equals("APPROVED")) {
                             wasProcessed = true;
-//                            processInquiry();
                         } else if (parsedMap != null && parsedMap.size() > 0) {
                             errorMsg = "statusCode = " + parsedMap.get("statusCode") + "\n" + parsedMap.get("statusMessage");
                         } else
@@ -1450,71 +1422,5 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 showBalancePrompt(errorMsg);
             }
         }
-
-        private void processInquiry() {
-            String cardType = "Reward";
-            CreditCardInfo creditCardInfo = Global.rewardCardInfo;
-            PaymentMethod paymentMethod = PaymentMethodDAO.getPaymentMethodByType(cardType);
-            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
-            Payment payment = new Payment(SelectPayMethod_FA.this);
-            GenerateNewID generator = new GenerateNewID(SelectPayMethod_FA.this);
-            String tempPay_id;
-            tempPay_id = generator.getNextID(GenerateNewID.IdType.PAYMENT_ID);
-            payment.setPay_id(tempPay_id);
-            payment.setCust_id(myPref.getCustID());
-            payment.setCustidkey(myPref.getCustIDKey());
-            payment.setEmp_id(String.valueOf(assignEmployee.getEmpId()));
-
-            payment.setPay_name(creditCardInfo.getCardOwnerName());
-            payment.setPay_ccnum(creditCardInfo.getCardNumAESEncrypted());
-            payment.setCcnum_last4(creditCardInfo.getCardLast4());
-            payment.setPay_expmonth(creditCardInfo.getCardExpMonth());
-            payment.setPay_expyear(creditCardInfo.getCardExpYear());
-            payment.setPay_seccode(creditCardInfo.getCardEncryptedSecCode());
-            payment.setTrack_one(creditCardInfo.getEncryptedAESTrack1());
-            payment.setTrack_two(creditCardInfo.getEncryptedAESTrack2());
-            payment.setPaymethod_id(paymentMethod.getPaymethod_id());
-            payment.setCard_type(cardType);
-            payment.setPay_type("0");
-            payment.setPaymethod_id(cardType + "Balance");
-            EMSPayGate_Default payGate = new EMSPayGate_Default(SelectPayMethod_FA.this, payment);
-            String generatedURL;
-            generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.AddValueRewardAction, false, cardType, creditCardInfo);
-            Post httpClient = new Post(SelectPayMethod_FA.this);
-            SAXParserFactory spf = SAXParserFactory.newInstance();
-            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
-            try {
-                String xml = httpClient.postData(13, generatedURL);
-                switch (xml) {
-                    case Global.TIME_OUT:
-                        errorMsg = "TIME OUT, would you like to try again?";
-                        break;
-                    case Global.NOT_VALID_URL:
-                        errorMsg = "Can not proceed...";
-                        break;
-                    default:
-                        InputSource inSource = new InputSource(new StringReader(xml));
-
-                        SAXParser sp = spf.newSAXParser();
-                        XMLReader xr = sp.getXMLReader();
-                        xr.setContentHandler(handler);
-                        xr.parse(inSource);
-                        HashMap<String, String> parsedMap = handler.getData();
-
-                        if (parsedMap != null && parsedMap.size() > 0 && parsedMap.get("epayStatusCode").equals("APPROVED"))
-                            wasProcessed = true;
-                        else if (parsedMap != null && parsedMap.size() > 0) {
-                            errorMsg = "statusCode = " + parsedMap.get("statusCode") + "\n" + parsedMap.get("statusMessage");
-                        } else
-                            errorMsg = xml;
-                        break;
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                Crashlytics.logException(e);
-            }
-        }
     }
 }
-

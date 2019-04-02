@@ -1,16 +1,16 @@
 package com.android.support;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.PorterDuff.Mode;
 import android.location.Location;
 import android.os.Build;
@@ -22,6 +22,7 @@ import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.multidex.MultiDexApplication;
+import android.support.v4.app.ActivityCompat;
 import android.text.Html;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -50,6 +51,7 @@ import com.android.emobilepos.holders.Locations_Holder;
 import com.android.emobilepos.holders.TransferInventory_Holder;
 import com.android.emobilepos.holders.TransferLocations_Holder;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
+import com.android.emobilepos.models.OrderSeatProduct;
 import com.android.emobilepos.models.Product;
 import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.orders.OrderProduct;
@@ -69,10 +71,8 @@ import com.crashlytics.android.answers.CustomEvent;
 import com.crashlytics.android.core.CrashlyticsCore;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.WriterException;
-import com.google.zxing.common.BitMatrix;
-import com.google.zxing.qrcode.QRCodeWriter;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import org.springframework.util.support.Base64;
 
@@ -120,7 +120,6 @@ public class Global extends MultiDexApplication {
     public static final int SNBC = 5;
     public static final int POWA = 6;
     public static final int ASURA = 7;
-    public static final int PAT100 = 8;
     public static final int ISMP = 9;
     public static final int EM100 = 10;
     public static final int EM70 = 11;
@@ -137,6 +136,8 @@ public class Global extends MultiDexApplication {
     public static final int BIXOLON_RD = 22;
     public static final int TEAMSABLE = 23;
     public static final int GPRINTER = 24;
+    public static final int MAGTEK_EMBEDDED = 25;
+    public static final int INGENICOMOBY85 = 26;
 
     public static final String AUDIO_MSR_UNIMAG = "0";
     public static final String AUDIO_MSR_MAGTEK = "1";
@@ -222,6 +223,8 @@ public class Global extends MultiDexApplication {
     public final static int FROM_ORDER_ATTRIBUTES_ACTIVITY = 112;
     public final static int FROM_CUSTOMER_SELECTION_ACTIVITY = 113;
     public final static int S_SUBMIT_PAYMENT_SIGNATURES = 114;
+    public final static int S_SUBMIT_SOUNDPAYMENTS = 115;
+    public final static int S_GET_INGENICO_CREDENTIALS = 116;
 
     public final static int BLUEBAMBOO = 0;
     public final static int BLUESTAR = 1;
@@ -236,7 +239,7 @@ public class Global extends MultiDexApplication {
     public static EMSDeviceManager btSwiper;
     public static EMSDeviceManager btSled;
     public static EMSDeviceManager mainPrinterManager;
-    public static Set<Device> printerDevices=new HashSet();
+    public static Set<Device> printerDevices = new HashSet();
     public static EMSDeviceManager embededMSR;
     public static HashMap<String, Integer> multiPrinterMap = new HashMap<>();
     public static List<EMSDeviceManager> multiPrinterManager = new ArrayList<>();
@@ -279,6 +282,8 @@ public class Global extends MultiDexApplication {
     public static Order cons_return_order;
     public static HashMap<String, String> cons_return_qtyCounter = new HashMap<String, String>();
 
+    // Temporary fix: global used to avoid the costly gson serialization, needs refactoring
+    public static List<OrderSeatProduct> globalOrderSeatProductList;
 
     public static String lastOrdID = "";
     // public int discountPos = 0, taxPos = 0;
@@ -291,6 +296,7 @@ public class Global extends MultiDexApplication {
     public static boolean isFromOnHold = false;
     public static Map<String, String> paymentIconsMap = paymentIconMap();
     public static boolean loggedIn = false;
+    public static boolean isPaymentInProgress = false;
     public static Handler handler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
@@ -303,16 +309,17 @@ public class Global extends MultiDexApplication {
                         realm.insertOrUpdate(payment);
                         realm.commitTransaction();
                     } finally {
-                        realm.close();
+                        if (realm != null) {
+                            realm.close();
+                        }
                     }
                     break;
                 }
             }
         }
     };
-    private com.android.support.LocationServices locationServices;
-    private static Dialog popDlog;
     public static long MAX_ACTIVITY_TRANSITION_TIME_MS = 15000;
+    private static Dialog popDlog;
     public String encodedImage = "";
     public int orientation;
     // For new addon views
@@ -328,6 +335,7 @@ public class Global extends MultiDexApplication {
     public String lastInvID = "";
     public int lastProdOrdID = 0;
     public List<HashMap<String, Integer>> dictionary;
+    private com.android.support.LocationServices locationServices;
     // Handle application transition for background
     private Timer mActivityTransitionTimer;
     private TimerTask mActivityTransitionTimerTask;
@@ -367,6 +375,9 @@ public class Global extends MultiDexApplication {
             case MAGTEK:
                 _name = "MAGTEK";
                 break;
+            case MAGTEK_EMBEDDED:
+                _name = "MAGTEK EMBEDDED";
+                break;
             case BAMBOO:
                 _name = "Blue Bamboo";
                 break;
@@ -381,9 +392,6 @@ public class Global extends MultiDexApplication {
                 break;
             case ASURA:
                 _name = "ASURA";
-                break;
-            case PAT100:
-                _name = "PAT100";
                 break;
             case PAT215:
                 _name = "PAT215";
@@ -409,6 +417,9 @@ public class Global extends MultiDexApplication {
             case EM70:
                 _name = "EM70";
                 break;
+            case INGENICOMOBY85:
+                _name = "Ingenico Moby/8500";
+                break;
             case KDC425:
                 _name = "KDC425";
                 break;
@@ -427,25 +438,33 @@ public class Global extends MultiDexApplication {
 
     }
 
-    public static Location getCurrLocation(Context activity, boolean reload) {
+    public static Location getCurrLocation(final Context activity, boolean reload) {
         final Global global = (Global) activity.getApplicationContext();
         if (global.locationServices == null) {
             global.locationServices = new com.android.support.LocationServices(activity, new GoogleApiClient.ConnectionCallbacks() {
                 @Override
                 public void onConnected(@Nullable Bundle bundle) {
-                    Location lastLocation = com.google.android.gms.location.LocationServices.FusedLocationApi.getLastLocation(
-                            global.locationServices.mGoogleApiClient);
-                    if (lastLocation == null) {
-                        LocationServices.mLastLocation = new Location("");
-                    } else {
-                        LocationServices.mLastLocation = lastLocation;
-                    }
-                    global.locationServices.disconnect();
-                    synchronized (global.locationServices)
+                    if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                        FusedLocationProviderClient lastLocation = com.google.android.gms.location.LocationServices.getFusedLocationProviderClient(activity);
+                        lastLocation.getLastLocation().addOnSuccessListener((Activity) activity, new OnSuccessListener<Location>() {
+                            @Override
+                            public void onSuccess(Location location) {
+                                if (location == null) {
+                                    LocationServices.mLastLocation = new Location("");
+                                } else {
+                                    LocationServices.mLastLocation = location;
+                                }
+                                global.locationServices.disconnect();
+                                synchronized (global.locationServices) {
+                                    global.locationServices.notifyAll();
+                                }
 
-                    {
-                        global.locationServices.notifyAll();
+                            }
+                        });
+
                     }
+
+
                 }
 
                 @Override
@@ -461,9 +480,7 @@ public class Global extends MultiDexApplication {
 
         }
 
-        synchronized (global.locationServices)
-
-        {
+        synchronized (global.locationServices) {
             if (LocationServices.mLastLocation == null || reload) {
                 global.locationServices.connect();
                 try {
@@ -483,28 +500,6 @@ public class Global extends MultiDexApplication {
         return LocationServices.mLastLocation;
     }
 
-    public static String base64QRCode(String ivuLottoNumber, String ivuLottoDrawDate) {
-        String finaldata = "CONTROL: " + ivuLottoNumber + ivuLottoDrawDate;
-        com.google.zxing.Writer writer = new QRCodeWriter();
-        try {
-            int width = 200, height = 200;
-            BitMatrix bm = writer.encode(finaldata, BarcodeFormat.QR_CODE, width, height);
-            Bitmap myBitmap = Bitmap.createBitmap(width, height, Config.ARGB_8888);
-            for (int i = 0; i < width; i++) {
-                for (int j = 0; j < height; j++) {
-                    myBitmap.setPixel(i, j, bm.get(i, j) ? Color.BLACK : Color.WHITE);
-                }
-            }
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            myBitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
-            byte[] b = baos.toByteArray();
-            return Base64.encodeBytes(b);
-        } catch (WriterException e) {
-            Crashlytics.logException(e);
-        }
-        return "";
-    }
-
     public static String getValidString(String value) {
         if (value == null)
             return "";
@@ -515,7 +510,9 @@ public class Global extends MultiDexApplication {
         if (popDlog == null)
             popDlog = new Dialog(activity, R.style.Theme_TransparentTest);
         else {
-            popDlog.dismiss();
+            if (popDlog != null && popDlog.isShowing()) {
+                popDlog.dismiss();
+            }
             popDlog = new Dialog(activity, R.style.Theme_TransparentTest);
         }
         popDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -533,7 +530,9 @@ public class Global extends MultiDexApplication {
 
             @Override
             public void onClick(View v) {
-                popDlog.dismiss();
+                if (popDlog != null && popDlog.isShowing()) {
+                    popDlog.dismiss();
+                }
             }
         });
         popDlog.show();
@@ -1202,7 +1201,7 @@ public class Global extends MultiDexApplication {
                 isDestroyed = true;
             }
         }
-        if (dialog != null && activity != null && !activity.isFinishing() && !isDestroyed && dialog.isShowing()) {
+        if (dialog != null && activity != null && !activity.isFinishing() && dialog.isShowing()) {
             dialog.dismiss();
         }
     }
@@ -1407,7 +1406,6 @@ public class Global extends MultiDexApplication {
         Global.overallPaidAmount = 0;
         Global.isFromOnHold = false;
         isConsignment = false;
-        isInventoryTransfer = false;
         consignmentType = OrderType.ORDER;
         consignment_order = null;
         cons_issue_order = null;
@@ -1543,6 +1541,7 @@ public class Global extends MultiDexApplication {
             }
             systemLoginButton.setText(R.string.clerk_login);
             loginInstructionTextView.setText(getString(R.string.login_system_instructions));
+
         }
         viewMsg.setText(R.string.password);
         if (!loggedIn) {
@@ -1681,7 +1680,7 @@ public class Global extends MultiDexApplication {
 
 
     public enum BuildModel {
-        ET1, MC40N0, M2MX60P, M2MX6OP, JE971, Asura, Dolphin_Black_70e, PAT215, PAT100, EM100, EM70, OT_310, PayPoint_ESY13P1;
+        ET1, MC40N0, M2MX60P, M2MX6OP, JE971, Asura, Dolphin_Black_70e, PAT215, EM100, EM70, OT_310, PayPoint_ESY13P1;
 
         @Override
         public String toString() {

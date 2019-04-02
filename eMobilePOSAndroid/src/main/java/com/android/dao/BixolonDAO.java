@@ -25,7 +25,9 @@ public class BixolonDAO {
                 first = realm.copyFromRealm(first);
             }
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
         return first;
     }
@@ -37,7 +39,9 @@ public class BixolonDAO {
             realm.copyToRealmOrUpdate(bixolon);
             realm.commitTransaction();
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -66,7 +70,9 @@ public class BixolonDAO {
                 bixolonTax = realm.copyFromRealm(bixolonTax);
             }
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
         return bixolonTax;
     }
@@ -109,7 +115,9 @@ public class BixolonDAO {
                 return method.getId();
             }
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
         return 1;
     }
@@ -121,7 +129,9 @@ public class BixolonDAO {
             realm.insertOrUpdate(bixolonTransaction);
             realm.commitTransaction();
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 
@@ -134,7 +144,9 @@ public class BixolonDAO {
                 all = realm.copyFromRealm(all);
             }
         } finally {
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
         return all;
     }
@@ -149,7 +161,9 @@ public class BixolonDAO {
             }
         } finally {
             realm.commitTransaction();
-            realm.close();
+            if(realm!=null) {
+                realm.close();
+            }
         }
     }
 }

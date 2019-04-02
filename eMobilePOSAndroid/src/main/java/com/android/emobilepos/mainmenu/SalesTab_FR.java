@@ -90,7 +90,6 @@ import util.json.UIUtils;
 
 public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCallbacks, EMSCallBack {
     EMSCallBack emsCallBack;
-    //    boolean validPassword = true;
     private SalesMenuAdapter myAdapter;
     private GridView myListview;
     private Context thisContext;
@@ -117,9 +116,13 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                 if (Global.btSwiper != null && Global.btSwiper.getCurrentDevice() != null)
                     Global.btSwiper.getCurrentDevice().loadScanner(emsCallBack);
                 if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)
-                    Global.mainPrinterManager.getCurrentDevice().loadScanner(emsCallBack);
+                    if (emsCallBack != null) {
+                        Global.mainPrinterManager.getCurrentDevice().loadScanner(emsCallBack);
+                    }
                 if (Global.btSled != null && Global.btSled.getCurrentDevice() != null)
-                    Global.btSled.getCurrentDevice().loadScanner(emsCallBack);
+                    if (emsCallBack != null) {
+                        Global.btSled.getCurrentDevice().loadScanner(emsCallBack);
+                    }
             }
         }
     };
@@ -134,7 +137,31 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                     activity.startActivityForResult(intent, 0);
                 }
         }
+    }
 
+    private static boolean validateClerkShift(Global.TransactionType transactionType, Context context) {
+        SecurityManager.SecurityResponse response = SecurityManager.validateClerkShift(context, transactionType);
+        switch (response) {
+            case CHECK_USER_CLERK_REQUIRED_SETTING:
+                Global.showPrompt(context, R.string.dlog_title_error, context.getString(R.string.use_clerk_check_required));
+                return false;
+            case OPEN_SHIFT_REQUIRED:
+                if (transactionType != Global.TransactionType.SHIFTS) {
+                    Global.showPrompt(context, R.string.dlog_title_error, context.getString(R.string.dlog_msg_error_shift_needs_to_be_open));
+                    return false;
+                }
+                break;
+            case SHIFT_ALREADY_OPEN:
+                Shift openShift = ShiftDAO.getOpenShift();
+                Clerk clerk = null;
+                if (openShift != null) {
+                    clerk = ClerkDAO.getByEmpId(openShift.getClerkId());
+                }
+                Global.showPrompt(context, R.string.dlog_title_error,
+                        String.format(context.getString(R.string.dlog_msg_error_shift_already_open), clerk != null ? clerk.getEmpName() : ""));
+                return false;
+        }
+        return true;
     }
 
     @Override
@@ -809,31 +836,6 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
         dialog.show();
     }
 
-    private static boolean validateClerkShift(Global.TransactionType transactionType, Context context) {
-        SecurityManager.SecurityResponse response = SecurityManager.validateClerkShift(context, transactionType);
-        switch (response) {
-            case CHECK_USER_CLERK_REQUIRED_SETTING:
-                Global.showPrompt(context, R.string.dlog_title_error, context.getString(R.string.use_clerk_check_required));
-                return false;
-            case OPEN_SHIFT_REQUIRED:
-                if (transactionType != Global.TransactionType.SHIFTS) {
-                    Global.showPrompt(context, R.string.dlog_title_error, context.getString(R.string.dlog_msg_error_shift_needs_to_be_open));
-                    return false;
-                }
-                break;
-            case SHIFT_ALREADY_OPEN:
-                Shift openShift = ShiftDAO.getOpenShift();
-                Clerk clerk = null;
-                if (openShift != null) {
-                    clerk = ClerkDAO.getByEmpId(openShift.getClerkId());
-                }
-                Global.showPrompt(context, R.string.dlog_title_error,
-                        String.format(context.getString(R.string.dlog_msg_error_shift_already_open), clerk != null ? clerk.getEmpName() : ""));
-                return false;
-        }
-        return true;
-    }
-
     private void askEatInToGo() {
         final Dialog popDlog = new Dialog(getActivity(), R.style.TransparentDialog);
         popDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -856,9 +858,6 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
             @Override
             public void onClick(View v) {
                 popDlog.dismiss();
-//                if (myPref.getPreferences(MyPreferences.pref_require_waiter_signin)) {
-//                showWaiterSignin();
-//                } else
                 if (myPref.getPreferences(MyPreferences.pref_enable_table_selection)) {
                     selectDinnerTable();
                 } else if (myPref.getPreferences(MyPreferences.pref_ask_seats)) {
@@ -872,64 +871,6 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
         });
         popDlog.show();
     }
-
-//    private void showWaiterSignin() {
-////        final Dialog popDlog = new Dialog(getActivity(), R.style.TransparentDialogFullScreen);
-////        popDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-////        popDlog.setCancelable(true);
-////        popDlog.setCanceledOnTouchOutside(false);
-////        popDlog.setContentView(R.layout.dlog_field_single_layout);
-////        final EditText viewField = (EditText) popDlog.findViewById(R.id.dlogFieldSingle);
-////        viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD | InputType.TYPE_CLASS_NUMBER);
-////        TextView viewTitle = (TextView) popDlog.findViewById(R.id.dlogTitle);
-////        TextView viewMsg = (TextView) popDlog.findViewById(R.id.dlogMessage);
-////        viewTitle.setText(R.string.dlog_title_waiter_signin);
-////        if (!validPassword)
-////            viewMsg.setText(R.string.invalid_password);
-////        else
-////            viewMsg.setText(R.string.enter_password);
-////        Button btnOk = (Button) popDlog.findViewById(R.id.btnDlogSingle);
-////        Button btnCancel = (Button) popDlog.findViewById(R.id.btnCancelDlogSingle);
-////
-////        btnOk.setText(R.string.button_ok);
-////        btnOk.setOnClickListener(new View.OnClickListener() {
-////
-////            @Override
-////            public void onClick(View v) {
-////                popDlog.dismiss();
-////                MyPreferences myPref = new MyPreferences(activity);
-////                String enteredPass = viewField.getText().toString().trim();
-////                enteredPass = TextUtils.isEmpty(enteredPass) ? "0" : enteredPass;
-//        int empId = ShiftDAO.getOpenShift(AssignEmployeeDAO.getAssignEmployee(false).getEmpId()).getAssigneeId();
-//        Clerk salesAssociates = ClerkDAO.getByEmpId(empId, true); //SalesAssociateHandler.getSalesAssociate(enteredPass);
-//        if (salesAssociates != null) {
-////            validPassword = true;
-////            associateId = enteredPass;
-//            if (myPref.getPreferences(MyPreferences.pref_enable_table_selection)) {
-//                selectDinnerTable();
-//            } else if (myPref.getPreferences(MyPreferences.pref_ask_seats)) {
-//                selectedDinningTable = DinningTable.getDefaultDinningTable();
-//                selectSeatAmount();
-//            } else {
-//                selectedDinningTable = DinningTable.getDefaultDinningTable();
-//                startSaleRceipt(Global.RestaurantSaleType.EAT_IN, selectedDinningTable.getSeats(), selectedDinningTable.getNumber());
-//            }
-//        }
-////        else {
-////            validPassword = false;
-////            showWaiterSignin();
-////        }
-////            }
-////        });
-////
-////        btnCancel.setOnClickListener(new View.OnClickListener() {
-////            @Override
-////            public void onClick(View v) {
-////                popDlog.dismiss();
-////            }
-////        });
-////        popDlog.show();
-//    }
 
     private void selectSeatAmount() {
         final int[] seats = this.getResources().getIntArray(R.array.dinningTableSeatsArray);
@@ -1007,9 +948,7 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                 myListview.setOnItemClickListener(new MyListener());
             }
 
-//            if (myPref.isSam4s(true, true) || myPref.isPAT100() || myPref.isPAT215()) {
             Global.showCDTDefault(activity);
-//            }
         }
     }
 
@@ -1055,49 +994,6 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
         globalDlog.show();
     }
 
-//    private void promptClerkPassword(final int adapterPos) {
-//
-//        final Dialog globalDlog = new Dialog(activity, R.style.Theme_TransparentTest);
-//        globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-//        globalDlog.setCancelable(true);
-//        globalDlog.setCanceledOnTouchOutside(true);
-//        globalDlog.setContentView(R.layout.dlog_field_single_layout);
-//
-//        final EditText viewField = (EditText) globalDlog.findViewById(R.id.dlogFieldSingle);
-//        viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-//        TextView viewTitle = (TextView) globalDlog.findViewById(R.id.dlogTitle);
-//        TextView viewMsg = (TextView) globalDlog.findViewById(R.id.dlogMessage);
-//        viewTitle.setText(R.string.dlog_title_confirm);
-//
-//        viewMsg.setText(R.string.dlog_title_enter_clerk_password);
-//        Button btnCancel = (Button) globalDlog.findViewById(R.id.btnCancelDlogSingle);
-//        btnCancel.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                globalDlog.dismiss();
-//            }
-//        });
-//        Button btnOk = (Button) globalDlog.findViewById(R.id.btnDlogSingle);
-//        btnOk.setText(R.string.button_ok);
-//        btnOk.setOnClickListener(new View.OnClickListener() {
-//
-//            @Override
-//            public void onClick(View v) {
-//                globalDlog.dismiss();
-//                String enteredPass = viewField.getText().toString().trim();
-//                ClerksHandler clerkHandler = new ClerksHandler(activity);
-//                String[] clerkData = clerkHandler.getClerkID(enteredPass);
-//                if (clerkData != null && !clerkData[0].isEmpty()) {
-//                    myPref.setClerkID(clerkData[0]);
-//                    myPref.setClerkName(clerkData[1]);
-//                    performListViewClick(adapterPos);
-//                } else
-//                    promptClerkPassword(adapterPos);
-//            }
-//        });
-//        globalDlog.show();
-//    }
-
     private void startSaleRceipt(Global.RestaurantSaleType restaurantSaleType, int selectedSeatsAmount, String tableNumber) {
         Intent intent = new Intent(getActivity(), OrderingMain_FA.class);
         intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
@@ -1120,7 +1016,6 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
 
     private void promptWithCustomer() {
         if (!myPref.getPreferences(MyPreferences.pref_direct_customer_selection)) {
-            //final Intent intent = new Intent(activity, SalesReceiptSplitActivity.class);
             final Dialog dialog = new Dialog(getActivity(), R.style.Theme_TransparentTest);
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             dialog.setCancelable(true);
@@ -1202,9 +1097,6 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
         } else if (model.equals("Dolphin Black 70e")) {
             myPref.isDolphin(false, true);
             return false;
-        } else if (model.equals("PAT100")) {
-            myPref.setIsPAT100(true);
-            return true;
         } else if (model.equals("PAT-215")) {
             myPref.setIsPAT215(true);
             return true;
@@ -1246,12 +1138,6 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                         SalesTaxCodesHandler taxHandler = new SalesTaxCodesHandler(getActivity());
                         SalesTaxCodesHandler.TaxableCode taxable = taxHandler.checkIfCustTaxable(map.get("cust_taxable"));
                         myPref.setCustTaxCode(taxable, map.get("cust_taxable"));
-
-//                        if (taxHandler.checkIfCustTaxable(map.get("cust_taxable")))
-//                            myPref.setCustTaxCode(map.get("cust_salestaxcode"));
-//                        else
-//                            myPref.setCustTaxCode("");
-
                         myPref.setCustID(map.get("cust_id"));    //getting cust_id as _id
                         myPref.setCustName(map.get("cust_name"));
                         myPref.setCustIDKey(map.get("custidkey"));
@@ -1371,28 +1257,6 @@ public class SalesTab_FR extends Fragment implements BiometricCallbacks, BCRCall
                 BCRMacro bcrMacro = gson.fromJson(data, BCRMacro.class);
                 if (bcrMacro != null) {
                     startOrderWithCustomer(bcrMacro.getBcrMacroParams().getCustId(), data);
-//                    CustomersHandler customersHandler = new CustomersHandler(getActivity());
-//                    Customer customer = customersHandler.getCustomer(bcrMacro.getBcrMacroParams().getCustId());
-//                    SalesTaxCodesHandler taxHandler = new SalesTaxCodesHandler(getActivity());
-//                    SalesTaxCodesHandler.TaxableCode taxable = taxHandler.checkIfCustTaxable(customer.getCust_taxable());
-//
-//                    myPref.setCustTaxCode(taxable, customer.getCust_taxable());
-//                    myPref.setCustID(customer.getCust_id());
-//                    myPref.setCustName(customer.getCust_name());
-//                    myPref.setCustIDKey(customer.getCustIdKey());
-//                    myPref.setCustSelected(true);
-//                    myPref.setCustPriceLevel(customer.getPricelevel_id());
-//                    myPref.setCustEmail(customer.getCust_email());
-//                    selectedCust.setText(customer.getCust_name());
-//                    salesInvoices.setVisibility(View.VISIBLE);
-//                    isCustomerSelected = true;
-//                    myAdapter = new SalesMenuAdapter(getActivity(), true);
-//                    myListview.setAdapter(myAdapter);
-//                    myListview.setOnItemClickListener(new MyListener());
-//                    Intent intent = new Intent(getActivity(), OrderingMain_FA.class);
-//                    intent.putExtra("BCRMacro", data);
-//                    intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
-//                    startActivityForResult(intent, 0);
                 }
             }
         }

@@ -8,12 +8,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.PowerManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -24,7 +22,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.dao.ClerkDAO;
 import com.android.emobilepos.R;
@@ -35,7 +32,6 @@ import com.android.emobilepos.firebase.RegistrationIntentService;
 import com.android.emobilepos.models.realms.Clerk;
 import com.android.emobilepos.security.SecurityManager;
 import com.android.emobilepos.service.SyncConfigServerService;
-import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
@@ -47,9 +43,6 @@ import com.microsoft.windowsazure.notifications.NotificationsManager;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
-import drivers.EMSsnbc;
-import main.EMSDeviceManager;
-
 import static com.android.emobilepos.models.firebase.NotificationEvent.NotificationEventAction;
 
 public class MainMenu_FA extends BaseFragmentActivityActionBar {
@@ -59,10 +52,6 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
     public static final String NOTIFICATION_LOGIN_STATECHANGE = "NOTIFICATION_LOGIN_STATECHANGE";
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
-
-    static {
-        System.loadLibrary("serial_port");
-    }
 
     private MyPreferences myPref;
     private Global global;
@@ -124,6 +113,47 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         }
     };
 
+    /**
+     * Check the device to make sure it has the Google Play Services APK. If
+     * it doesn't, display a dialog that allows users to download the APK from
+     * the Google Play Store or enable it in the device's system settings.
+     */
+    public static boolean checkPlayServices(Context context) {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(context);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+            } else {
+                Log.i("checkPlayServices", "This device is not supported by Google Play Services.");
+            }
+            return false;
+        }
+        return true;
+    }
+
+//    public void ToastNotify(final String notificationMessage) {
+//        runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                Toast.makeText(MainMenu_FA.this, notificationMessage, Toast.LENGTH_LONG).show();
+////                TextView helloText = (TextView) findViewById(R.id.);
+////                helloText.setText(notificationMessage);
+//            }
+//        });
+//    }
+
+    private static void startPollingService(Context context) {
+        MyPreferences myPref = new MyPreferences(context);
+        int flags = 0;
+        if (myPref.isPollingHoldsEnable()) {
+            flags = PollingNotificationService.PollingServicesFlag.ONHOLDS.getCode() | PollingNotificationService.PollingServicesFlag.DINING_TABLES.getCode();
+        }
+        if (myPref.isAutoSyncEnable()) {
+            flags = flags | PollingNotificationService.PollingServicesFlag.AUTO_SYNC.getCode();
+        }
+        PollingNotificationService.start(context, flags);
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
@@ -142,12 +172,12 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
         getTabsAdapter().addTab(myBar.newTab().setText(R.string.sales_title), SalesTab_FR.class, null);
         myBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        getTabsAdapter().addTab(myBar.newTab().setText(R.string.sync_title), SyncTab_FR.class, null);
-        myBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         getTabsAdapter().addTab(myBar.newTab().setText(R.string.hist_title), HistoryTab_FR.class, null);
         myBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        getTabsAdapter().addTab(myBar.newTab().setText(R.string.routes_title), RoutesTab_FR.class, null);
+        getTabsAdapter().addTab(myBar.newTab().setText(R.string.sync_title), SyncTab_FR.class, null);
         myBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+//        getTabsAdapter().addTab(myBar.newTab().setText(R.string.routes_title), RoutesTab_FR.class, null);
+//        myBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         // tabsAdapter.addTab(myBar.newTab().setText(R.string.admin_title),
         // SettingsMenuActivity.class, null);
         getTabsAdapter().addTab(myBar.newTab().setText(R.string.admin_title), SettingsTab_FR.class, null);
@@ -164,7 +194,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
         Bundle extras = getIntent().getExtras();
         if (extras != null && extras.getBoolean("unsynched_items", false))
-            myBar.setSelectedNavigationItem(1);
+            myBar.setSelectedNavigationItem(2);
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -174,35 +204,6 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
         hasBeenCreated = true;
 
-    }
-
-//    public void ToastNotify(final String notificationMessage) {
-//        runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                Toast.makeText(MainMenu_FA.this, notificationMessage, Toast.LENGTH_LONG).show();
-////                TextView helloText = (TextView) findViewById(R.id.);
-////                helloText.setText(notificationMessage);
-//            }
-//        });
-//    }
-
-    /**
-     * Check the device to make sure it has the Google Play Services APK. If
-     * it doesn't, display a dialog that allows users to download the APK from
-     * the Google Play Store or enable it in the device's system settings.
-     */
-    public static boolean checkPlayServices(Context context) {
-        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
-        int resultCode = apiAvailability.isGooglePlayServicesAvailable(context);
-        if (resultCode != ConnectionResult.SUCCESS) {
-            if (apiAvailability.isUserResolvableError(resultCode)) {
-            } else {
-                Log.i("checkPlayServices", "This device is not supported by Google Play Services.");
-            }
-            return false;
-        }
-        return true;
     }
 
     public void registerWithNotificationHubs() {
@@ -245,7 +246,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         if ((myPref.isPollingHoldsEnable() || myPref.isAutoSyncEnable()) && !PollingNotificationService.isServiceRunning(this)) {
             startPollingService(this);
         }
-        if(myPref.isUse_syncplus_services() && myPref.isSyncplus_AutoScan()) {
+        if (myPref.isUse_syncplus_services() && myPref.isSyncplus_AutoScan()) {
             SyncConfigServerService.startService(this);
         }
 //        Intent service = new Intent(this, SyncConfigServerService.class);
@@ -269,7 +270,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         else
             tvStoreForward.setVisibility(View.GONE);
 
-        new AutoConnectPrinter().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        new AutoConnectPrinter().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
         super.onResume();
     }
 
@@ -277,18 +278,6 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         forceTabs();
-    }
-
-    private static void startPollingService(Context context) {
-        MyPreferences myPref = new MyPreferences(context);
-        int flags = 0;
-        if (myPref.isPollingHoldsEnable()) {
-            flags = PollingNotificationService.PollingServicesFlag.ONHOLDS.getCode() | PollingNotificationService.PollingServicesFlag.DINING_TABLES.getCode();
-        }
-        if (myPref.isAutoSyncEnable()) {
-            flags = flags | PollingNotificationService.PollingServicesFlag.AUTO_SYNC.getCode();
-        }
-        PollingNotificationService.start(context, flags);
     }
 
     private void stopPollingService() {
@@ -314,7 +303,6 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         }
         return super.onKeyDown(keyCode, event);
     }
-
 
 
     private void dismissProgressDialog() {
@@ -362,7 +350,6 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
     public TextView getSynchTextView() {
         return synchTextView;
     }
-
 
 
     private class AdapterTabs extends FragmentPagerAdapter

@@ -10,10 +10,10 @@ import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
 import android.hardware.usb.UsbDevice;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.PowerManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.text.TextUtils;
@@ -322,12 +322,16 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
 
     private void loadFingerPrintReader(Context context) {
         if (isReaderConnected) {
-            ReaderCollection readers;
             try {
-                readers = UareUGlobal.GetReaderCollection(context);
-                readers.GetReaders();
-                if (readers.size() > 0) {
-                    this.reader = readers.get(0);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    ReaderCollection readers;
+                    readers = UareUGlobal.GetReaderCollection(context);
+                    readers.GetReaders();
+                    if (readers.size() > 0) {
+                        this.reader = readers.get(0);
+                    } else {
+                        return;
+                    }
                 } else {
                     return;
                 }
@@ -349,7 +353,11 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar implem
                 Crashlytics.logException(e);
                 e.printStackTrace();
             } catch (DPFPDDUsbException e) {
-
+                Crashlytics.logException(e);
+                e.printStackTrace();
+            } catch (UnsatisfiedLinkError e) {
+                Crashlytics.logException(e);
+                e.printStackTrace();
             }
         }
     }

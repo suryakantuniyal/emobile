@@ -34,7 +34,6 @@ public class ProductAddonsHandler {
     private List<String[]> addrData;
     private List<HashMap<String, Integer>> dictionaryListMap;
     private MyPreferences myPref;
-
     private static final String table_name = "Product_addons";
 
     public ProductAddonsHandler(Context activity) {
@@ -77,8 +76,9 @@ public class ProductAddonsHandler {
 
     public void insert(List<ProductAddons> addons) {
         DBManager.getDatabase().beginTransaction();
+        SQLiteStatement insert=null;
         try {
-            SQLiteStatement insert;
+
             insert = DBManager.getDatabase().compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
             for (ProductAddons addon : addons) {
                 insert.bindString(index(rest_addons), String.valueOf(addon.getRestAddons()));
@@ -89,12 +89,16 @@ public class ProductAddonsHandler {
                 insert.execute();
                 insert.clearBindings();
             }
-            insert.close();
+           // insert.close();
             DBManager.getDatabase().setTransactionSuccessful();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
+            if(insert!=null) {
+                insert.close();
+            }
             DBManager.getDatabase().endTransaction();
+
         }
     }
 
@@ -143,29 +147,31 @@ public class ProductAddonsHandler {
 
 
     public List<ParentAddon> getParentAddons(String prodID) {
-        String sb = "SELECT c.cat_id,c.cat_name,c.url_icon as 'url',Count(*) as 'qty' FROM Product_addons pa LEFT OUTER JOIN Products p " +
-                "ON pa.cat_id = p.cat_id LEFT OUTER JOIN Categories c ON pa.cat_id = c.cat_id WHERE pa.prod_id = '" +
-                prodID + "'  GROUP BY cat_name ORDER BY pa.rest_addons ASC";
-        Cursor cursor = DBManager.getDatabase().rawQuery(sb, null);
+        Cursor cursor=null;
+        try {
+            String sb = "SELECT c.cat_id,c.cat_name,c.url_icon as 'url',Count(*) as 'qty' FROM Product_addons pa LEFT OUTER JOIN Products p " +
+                    "ON pa.cat_id = p.cat_id LEFT OUTER JOIN Categories c ON pa.cat_id = c.cat_id WHERE pa.prod_id = '" +
+                    prodID + "'  GROUP BY cat_name ORDER BY pa.rest_addons ASC";
+            cursor = DBManager.getDatabase().rawQuery(sb, null);
 //        List<HashMap<String, String>> listHashMap = new ArrayList<>();
 //        HashMap<String, String> hashMap = new HashMap<>();
 //        Global.productParentAddonsDictionary = new HashMap<String, Integer>();
-        List<ParentAddon> parentAddons = new ArrayList<>();
-        if (cursor.moveToFirst()) {
-            int i_cat_id = cursor.getColumnIndex(cat_id);
-            int i_cat_name = cursor.getColumnIndex("cat_name");
-            int i_url = cursor.getColumnIndex("url");
-            int i_qty = cursor.getColumnIndex("qty");
-            int i = 0;
-            int count = 0;
-            do {
-                ParentAddon parentAddon = new ParentAddon();
-                parentAddon.setCategoryName(cursor.getString(i_cat_name));
-                parentAddon.setUrl(cursor.getString(i_url));
-                parentAddon.setQty(cursor.getString(i_qty));
-                parentAddon.setCategoryId(cursor.getString(i_cat_id));
+            List<ParentAddon> parentAddons = new ArrayList<>();
+            if (cursor.moveToFirst()) {
+                int i_cat_id = cursor.getColumnIndex(cat_id);
+                int i_cat_name = cursor.getColumnIndex("cat_name");
+                int i_url = cursor.getColumnIndex("url");
+                int i_qty = cursor.getColumnIndex("qty");
+                int i = 0;
+                int count = 0;
+                do {
+                    ParentAddon parentAddon = new ParentAddon();
+                    parentAddon.setCategoryName(cursor.getString(i_cat_name));
+                    parentAddon.setUrl(cursor.getString(i_url));
+                    parentAddon.setQty(cursor.getString(i_qty));
+                    parentAddon.setCategoryId(cursor.getString(i_cat_id));
 
-                parentAddons.add(parentAddon);
+                    parentAddons.add(parentAddon);
 //                hashMap.put(cat_id, cursor.getString(i_cat_id));
 //                hashMap.put("cat_name", cursor.getString(i_cat_name));
 //                hashMap.put("url", cursor.getString(i_url));
@@ -174,15 +180,21 @@ public class ProductAddonsHandler {
 //                listHashMap.add(hashMap);
 //                Global.productParentAddonsDictionary.put(cursor.getString(i_cat_id), i);
 //                hashMap = new HashMap<>();
-                try {
-                    count += Integer.parseInt(cursor.getString(i_qty));
-                } catch (Exception e) {
-                }
-                i++;
-            } while (cursor.moveToNext());
+                    try {
+                        count += Integer.parseInt(cursor.getString(i_qty));
+                    } catch (Exception e) {
+                    }
+                    i++;
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+            return parentAddons;
+        }finally {
+            if(cursor!=null && !cursor.isClosed())
+            {
+                cursor.close();
+            }
         }
-        cursor.close();
-        return parentAddons;
     }
 
 

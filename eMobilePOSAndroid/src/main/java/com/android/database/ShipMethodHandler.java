@@ -12,25 +12,20 @@ import java.util.List;
 
 public class ShipMethodHandler {
 
+    public static final String table_name = "ShipMethod";
+    public final String empStr = "";
     private final String shipmethod_id = "shipmethod_id";
     private final String shipmethod_name = "shipmethod_name";
     private final String isactive = "isactive";
     private final String shipmethod_update = "shipmethod_update";
-
     public final List<String> attr = Arrays.asList(shipmethod_id, shipmethod_name, isactive, shipmethod_update);
-
     public StringBuilder sb1, sb2;
-    public final String empStr = "";
     public HashMap<String, Integer> attrHash;
     //	public Global global;
     private List<String[]> addrData;
-
-
     private List<String> dataList;
     private HashMap<String, Integer> dictionaryMap;
     private List<HashMap<String, Integer>> dictionaryListMap;
-
-    public static final String table_name = "ShipMethod";
 
     public ShipMethodHandler(Context activity) {
 //		global = (Global) activity.getApplication();
@@ -122,11 +117,12 @@ public class ShipMethodHandler {
 
     public void insert(List<String[]> data, List<HashMap<String, Integer>> dictionary) {
         DBManager.getDatabase().beginTransaction();
+        SQLiteStatement insert = null;
         try {
 
             addrData = data;
             dictionaryListMap = dictionary;
-            SQLiteStatement insert = null;
+
             StringBuilder sb = new StringBuilder();
             sb.append("INSERT INTO ").append(table_name).append(" (").append(sb1.toString()).append(") ").append("VALUES (").append(sb2.toString()).append(")");
             insert = DBManager.getDatabase().compileStatement(sb.toString());
@@ -151,6 +147,10 @@ public class ShipMethodHandler {
 //			Tracker tracker = EasyTracker.getInstance(activity);
 //			tracker.send(MapBuilder.createException(sb.toString(), false).build());
         } finally {
+            if(insert!=null)
+            {
+                insert.close();
+            }
             DBManager.getDatabase().endTransaction();
         }
     }
@@ -158,11 +158,12 @@ public class ShipMethodHandler {
 
     public void insert(List<String> data, HashMap<String, Integer> dictionary) {
         DBManager.getDatabase().beginTransaction();
+        SQLiteStatement insert = null;
         try {
 
             dataList = data;
             dictionaryMap = dictionary;
-            SQLiteStatement insert = null;
+
             StringBuilder sb = new StringBuilder();
             sb.append("INSERT INTO ").append(table_name).append(" (").append(sb1.toString()).append(") ").append("VALUES (").append(sb2.toString()).append(")");
             insert = DBManager.getDatabase().compileStatement(sb.toString());
@@ -183,6 +184,10 @@ public class ShipMethodHandler {
 //			Tracker tracker = EasyTracker.getInstance(activity);
 //			tracker.send(MapBuilder.createException(sb.toString(), false).build());
         } finally {
+            if(insert!=null)
+            {
+                insert.close();
+            }
             DBManager.getDatabase().endTransaction();
         }
     }
@@ -196,25 +201,31 @@ public class ShipMethodHandler {
 
     public List<String[]> getShipmentMethods() {
         //SQLiteDatabase db = dbManager.openReadableDB();
+        Cursor cursor = null;
+        try {
+            String query = "SELECT shipmethod_name,shipmethod_id FROM ShipMethod WHERE isactive='1' ORDER BY shipmethod_name";
+            cursor = DBManager.getDatabase().rawQuery(query, null);
+            List<String[]> arrayList = new ArrayList<String[]>();
+            String[] arrayValues = new String[2];
+            //int i = 0;
+            if (cursor.moveToFirst()) {
+                int nameColumnIndex = cursor.getColumnIndex(shipmethod_name);
+                int idColumnIndex = cursor.getColumnIndex(shipmethod_id);
+                do {
+                    arrayValues[0] = cursor.getString(nameColumnIndex);
+                    arrayValues[1] = cursor.getString(idColumnIndex);
+                    arrayList.add(arrayValues);
+                    arrayValues = new String[2];
+                } while (cursor.moveToNext());
+            }
 
-        String query = "SELECT shipmethod_name,shipmethod_id FROM ShipMethod WHERE isactive='1' ORDER BY shipmethod_name";
-        Cursor cursor = DBManager.getDatabase().rawQuery(query, null);
-        List<String[]> arrayList = new ArrayList<String[]>();
-        String[] arrayValues = new String[2];
-        //int i = 0;
-        if (cursor.moveToFirst()) {
-            int nameColumnIndex = cursor.getColumnIndex(shipmethod_name);
-            int idColumnIndex = cursor.getColumnIndex(shipmethod_id);
-            do {
-                arrayValues[0] = cursor.getString(nameColumnIndex);
-                arrayValues[1] = cursor.getString(idColumnIndex);
-                arrayList.add(arrayValues);
-                arrayValues = new String[2];
-            } while (cursor.moveToNext());
+            cursor.close();
+            //db.close();
+            return arrayList;
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
         }
-
-        cursor.close();
-        //db.close();
-        return arrayList;
     }
 }

@@ -317,6 +317,10 @@
             android:key="pref_pay_with_card_on_file"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_pay_with_card_on_file" />
+        <CheckBoxPreference
+            android:key="pref_use_pax"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_use_pax" />
         <Preference
             android:key="pref_config_genius_peripheral"
             android:layout="@layout/settings_custom_layout"
@@ -436,6 +440,10 @@
             android:key="pref_print_receipt_transaction_payment"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_print_receipt_transaction_payments" />
+        <CheckBoxPreference
+            android:key="pref_print_taxes_brake_down"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_print_taxes_brake_down" />
         <Preference
             android:key="pref_printek_info"
             android:layout="@layout/settings_custom_layout"

@@ -18,6 +18,9 @@
     <string name="hint_search">Search</string>
     <string name="enter_name">Enter Name</string>
     <string name="last_saved">Last Saved</string>
+    <string name="notification_channel_id">com.android.emobilepos.NOTIFICATION_ID</string>
+    <string name="notification_channel_name">EMOBILEPOS CHANNEL</string>
+    <string name="notification_channel_description">A notification channel for eMobilePOS application.</string>
 
     <string name="inventory_transfer">Inventory Transfer</string>
 
@@ -61,6 +64,11 @@
     <string name="dlog_title_success">Success</string>
     <string name="dlog_title_choose_action">Choose Action</string>
     <string name="dlog_title_transaction_failed_to_process">Some transactions failed to process</string>
+    <string name="dlog_title_conn_payment_device">Connect Payment Device</string>
+    <string name="error_getting_credentials">An error occurred while getting Ingenico\'s credentials.</string>
+    <string name="dlog_msg_conn_payment_device">Device not available, please turn it on (keep green\nbutton pressed for three seconds) and hit Connect.\n\nNote: Wait until the Bluetooth logo appears in the\nupper left corner of the device\'s screen to continue.</string>
+    <string name="dlog_msg_turnon_payment_device">Please turn the payment device on (keep green\nbutton pressed for three seconds) and try again.</string>
+    <string name="dlog_msg_ingenico_login_failed">Ingenico\'s user login failed. Please check credentials and try again.</string>
     <string name="dlog_msg_orders_changed_invoice">Orders changed to type Invoice</string>
     <string name="dlog_msg_pending_stored_forward">There are pending Store \u0026 Forward transactions to be processed</string>
     <string name="dlog_msg_please_try_again">Please, try again later</string>
@@ -71,6 +79,9 @@
     <string name="dlog_msg_enter_qty">Enter the quantity to be added</string>
     <string name="dlog_msg_want_to_print">Do you want to print?</string>
     <string name="dlog_msg_transaction_voided">Transaction was voided</string>
+    <string name="dlog_msg_ingenico_payment_voided">Ingenico payment voided!</string>
+    <string name="dlog_msg_ingenico_payment_not_found">Error: Ingenico Payment Not Found.</string>
+    <string name="dlog_msg_ingenico_payment_error">Error voiding Ingenico payment.</string>
     <string name="dlog_msg_failed_print">Printing failed please verify printer status.\nWould you like to retry printing?</string>
     <string name="dlog_msg_want_to_reprint">Do you want to re-print?</string>
     <string name="dlog_msg_want_to_make_refund">Do you want to make a refund?</string>
@@ -167,6 +178,7 @@
     <string name="refund">Refund</string>
     <string name="route">Route</string>
     <string name="on_hold">Recall Check</string>
+    <string name="hold_offline">OFFLINE</string>
     <string name="master_counter">Master Counter</string>
     <string name="consignment">Consignment</string>
 
@@ -177,6 +189,7 @@
     <string name="sync_receive">Receive</string>
     <string name="sync_status">Status:</string>
     <string name="sync_connected_to">Connected to </string>
+    <string name="sync_ethernet_connected">Ethernet Cable Connected</string>
     <string name="sync_no_connectivity">No connectivity detected </string>
     <string name="sync_pending">Pending:</string>
     <string name="sync_payments">Payments</string>
@@ -415,15 +428,19 @@
 
     <!-- Clocks Main Tab -->
     <string name="clock_title">Clock</string>
+    <string name="clock_last_status">Last Status</string>
+    <string name="clock_clock_in">Clock In</string>
+    <string name="clock_clock_out">Clock Out</string>
 
     <!-- About Main Tab -->
     <string name="about_title">About</string>
     <string name="about_acct_num">Account Num.</string>
     <string name="about_employee">Employee</string>
     <string name="about_version">Version</string>
+    <string name="about_android_version">Android</string>
     <string name="about_copyright_tag">Copyright</string>
     <string name="about_location_tag">Location ID</string>
-    <string name="about_copyright">\u00A9 2015 e-Nabler Corporation</string>
+    <string name="about_copyright">\u00A9 %s e-Nabler Corporation</string>
     <string name="about_footer">WARNING: This program is protected by copyright law and international treaties\u002E Unauthorized reproduction
 	    or distribution of this program may result in severe civil and criminal penalties, and will be prosecuted to the maximum 
 	    extent possible under law\u002E</string>
@@ -619,6 +636,7 @@
     <string name="card_information">Card Information</string>
     <string name="paymethod_due_amount_label">Amount Due</string>
     <string name="comments">Comments</string>
+    <string name="card_swipe_failed">Card swipe failed, please try again.</string>
 
 
     <!-- Check Payment/Refund -->
@@ -902,6 +920,7 @@
     <string name="config_mw_with_genius">Cayan Genius</string>
     <string name="config_genius_peripheral">Configure Genius Peripheral</string>
     <string name="config_pay_with_boloro">Pay with Boloro</string>
+    <string name="config_use_pax">Use SecurePay (PAX)</string>
 
     <string name="config_customer_display">Customer Display Terminal</string>
 
@@ -941,6 +960,7 @@
     <string name="config_wholesale_printout">Wholesale Printout</string>
     <string name="config_prompt_customer_copy">Prompt print receipt copy for CC payments</string>
     <string name="config_print_receipt_transaction_payments">Print receipt of transaction payments</string>
+    <string name="config_print_taxes_brake_down">Print taxes brake down</string>
     <string name="config_handwritten_signature">Handwritten signature</string>
 
     <string name="config_allow_decimal_quantities">Allow Decimal Quantities</string>
@@ -1012,6 +1032,7 @@
     <string name="processing_reward">Processing reward\u002E\u002E\u002E</string>
     <string name="processing_credit_card">Processing credit card\u002E\u002E\u002E</string>
     <string name="failed_genius_connectivity">There appears to be no connectivity with the genius device</string>
+    <string name="failed_pax_connectivity">Apparently there are communication problems with the terminal.</string>
     <string name="employee_could_not_be_processed">This employee selection could not be processed. Please try again.</string>
     <string name="enter_cash_close_amount">Enter cash close amount</string>
     <string name="close_amount_is">Close amount is</string>
@@ -1048,11 +1069,13 @@
     <string name="paymethod_tax1_amount_label">Tax1</string>
     <string name="paymethod_tax2_amount_label">Tax2</string>
     <string name="processing_payment_msg">Processing Payment…</string>
+    <string name="error_status_code">Code: %s\n%s</string>
     <string name="changeLbl">Change:</string>
     <string name="cash_invoice_lbl">Cash Invoice</string>
     <string name="card_invoice">Card Invoice</string>
     <string name="status_connected">Connected</string>
     <string name="swipe_insert_card">Swipe/Insert Card…</string>
+    <string name="check_ingenico_device">Follow intructions in the mobile card reader…</string>
     <string name="printing_message">Printing...</string>
     <string name="please_wait_message">Please wait…</string>
     <string name="ivu_control">"CONTROL: "</string>
@@ -1064,7 +1087,7 @@
     <string name="none_uppercase_lbl">NONE</string>
     <string name="enabler_prefix">EN</string>
     <string name="enabler_website" translatable="false">www.emobilepos.com/</string>
-    <string name="powered_by_enabler">Powered by Enabler</string>
+    <string name="powered_by_enabler">Powered by e-Nabler</string>
     <string name="ivuloto_control_label">"CONTROL: "</string>
     <string name="menu_back">Back</string>
     <string name="selectinvoices">Select Invoices</string>
@@ -1089,6 +1112,11 @@
     <string name="config_toggle_elo_bcr">Elo barcode reader on/off</string>
     <string name="config_use_navigationbar">Enable Navigation Bar</string>
     <string name="genius_application_label">Application Label:</string>
+    <string name="pax_entry_method">Entry Method:</string>
+    <string name="pax_tvr">TVR:</string>
+    <string name="pax_iad">IAD:</string>
+    <string name="pax_tsi_atc">TSI:</string>
+    <string name="pax_ac">AC:</string>
     <string name="receipt_amount">Amount:</string>
     <string name="modify">Modify</string>
     <string name="config_restaurant_settings">Restaurant Settings</string>
@@ -1117,7 +1145,7 @@
     <string name="voiding_payments">Voiding Payments…</string>
     <string name="processing_refund">Processing Refund…</string>
     <string name="coundnot_proceess_payment">Could not process the payment.</string>
-    <string name="endofday_report">End of day report</string>
+    <string name="endofday_report">End Of Day Report</string>
     <string name="subtotal_receipt">Subtotal:</string>
     <string name="move_product_seat">Change product seat</string>
     <string name="join_seats">Join Seats</string>
@@ -1202,7 +1230,7 @@
     <string name="eod_report_itemsreturned">Items Returned</string>
     <string name="eod_report_dept_sales">Dept Sales</string>
     <string name="eod_report_dept_returns">Dept Returns</string>
-    <string name="eod_report_payment">Payment</string>
+    <string name="eod_report_payment">Payments</string>
     <string name="eod_report_void">Void</string>
     <string name="eod_report_refund">Refund</string>
     <string name="eod_report_ar_trans">AR Trans</string>
@@ -1369,6 +1397,7 @@
     <string name="elobcr_menu">BCR</string>
     <string name="admin_process_live_cash">"Process cash on line"</string>
     <string name="card_on_file">Card on File</string>
+    <string name="e_secure_pay">e-SecurePay</string>
     <string name="genius">Genius</string>
     <string name="invoice_job_id">Invoice/Job ID</string>
     <string name="fingerprint_enrollment">Place any finger to start enrollment.</string>

@@ -94,10 +94,12 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
         Collection<UsbDevice> usbDevices = DeviceUtils.getUSBDevices(this);
         isReaderConnected = usbDevices.size() > 0;
         handler = new CustomersHandler(this);
+        if (myCursor != null) {
+            myCursor.close();
+        }
         myCursor = handler.getCursorAllCust();
         adap2 = new CustomCursorAdapter(this, myCursor, CursorAdapter.NO_SELECTION);
         myListView.setAdapter(adap2);
-
         Button addNewCust = findViewById(R.id.addCustButton);
         if (myPref.getPreferences(MyPreferences.pref_allow_customer_creation))
             addNewCust.setOnClickListener(this);
@@ -171,6 +173,9 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
     @Override
     public void onDestroy() {
         releaseReader();
+        if (myCursor != null && !myCursor.isClosed()) {
+            myCursor.close();
+        }
         super.onDestroy();
     }
 
@@ -289,16 +294,6 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
     }
 
     @Override
-    public void onBackPressed() {
-        if (!myPref.isCustSelected()) {
-            Intent data = getIntent();
-            data.putExtra("GOTO_MAIN", true);
-            setResult(Global.FROM_CUSTOMER_SELECTION_ACTIVITY, data);
-        }
-        finish();
-    }
-
-    @Override
     public void onPause() {
         super.onPause();
 //        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
@@ -370,7 +365,9 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements B
     }
 
     private String getSelectedCustomerPhone() {
-        myCursor.moveToPosition(selectedCustPosition);
+        if (0 <= selectedCustPosition && selectedCustPosition < myCursor.getCount()) {
+            myCursor.moveToPosition(selectedCustPosition);
+        }
         String phone = myCursor.getString(myCursor.getColumnIndex("cust_phone"));
         if (phone != null) return phone;
         return "";

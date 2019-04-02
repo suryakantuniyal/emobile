@@ -15,7 +15,7 @@ public class LocationServices {
     public GoogleApiClient mGoogleApiClient;
     public static Location mLastLocation;
 
-//    public LocationServices(Context context) {
+/*//    public LocationServices(Context context) {
 //        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 //        LocationListener locationListener = new LocationListener() {
 //            public void onLocationChanged(Location location) {
@@ -33,7 +33,7 @@ public class LocationServices {
 //        };
 //
 //        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-//    }
+//    }*/
 
     public LocationServices(Context context, GoogleApiClient.ConnectionCallbacks connectionCallbacks, GoogleApiClient.OnConnectionFailedListener onConnectionFailedListener) {
         this.context = context;

@@ -17,18 +17,22 @@ import com.android.emobilepos.models.SplittedOrder;
 import com.android.emobilepos.models.orders.Order;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.ShiftExpense;
+import com.android.emobilepos.payment.ProcessCreditCard_FA;
 import com.android.support.CardParser;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
-import com.magtek.mobile.android.libDynamag.MagTeklibDynamag;
+import com.magtek.mobile.android.mtlib.MTConnectionType;
 import com.magtek.mobile.android.mtlib.MTEMVEvent;
+import com.magtek.mobile.android.mtlib.MTSCRA;
 import com.magtek.mobile.android.mtlib.MTSCRAEvent;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import interfaces.EMSCallBack;
 import interfaces.EMSDeviceManagerPrinterDelegate;
@@ -42,10 +46,9 @@ public class EMSMagtekSwiper extends EMSDeviceDriver implements EMSDeviceManager
     private Encrypt encrypt;
     private EMSDeviceManager edm;
     private EMSMagtekSwiper thisInstance;
-    private boolean didConnect;
     private Handler m_scraHandler;
-    private EMSCallBack msrCallBack;
-    private MagTeklibDynamag dynamag;
+    private EMSCallBack scannerCallBack;
+    private MTSCRA m_scra;
 
     @Override
     public void connect(Context activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
@@ -184,41 +187,15 @@ public class EMSMagtekSwiper extends EMSDeviceDriver implements EMSDeviceManager
 
     @Override
     public void loadCardReader(final EMSCallBack callBack, boolean isDebitCard) {
-        msrCallBack = callBack;
-        if (dynamag == null) {
+        this.scannerCallBack = callBack;
+        if (m_scra == null) {
             m_scraHandler = new Handler(new SCRAHandlerCallback());
-            dynamag = new MagTeklibDynamag(activity, m_scraHandler);
-            dynamag.clearCardData();
-            dynamag.openDevice();
-//            m_scraHandler = new Handler(new SCRAHandlerCallback());
-//            m_scra = new MTSCRA(activity, m_scraHandler);
-//            m_scra.setConnectionType(MTConnectionType.USB);
-//            m_scra.setAddress(null);
-//            m_scra.setConnectionRetry(true);
-//            m_scra.openDevice();
+            m_scra = new MTSCRA(activity, m_scraHandler);
+            m_scra.setConnectionType(MTConnectionType.USB);
+            m_scra.setAddress(null);
+            m_scra.setConnectionRetry(true);
+            m_scra.openDevice();
         }
-//        eloCardSwiper = new MagStripDriver(activity);
-//        eloCardSwiper.startDevice();
-//        eloCardSwiper.registerMagStripeListener(new MagStripDriver.MagStripeListener() { //MageStripe Reader's Listener for notifying various events.
-//
-//            @Override
-//            public void OnDeviceDisconnected() { //Fired when the Device has been Disconnected.
-//                Toast.makeText(activity, "Magnetic-Stripe Device Disconnected !", Toast.LENGTH_SHORT).show();
-//            }
-//
-//            @Override
-//            public void OnDeviceConnected() { //Fired when the Device has been Connected.
-//                Toast.makeText(activity, "Magnetic-Stripe Device Connected !", Toast.LENGTH_SHORT).show();
-//            }
-//
-//            @Override
-//            public void OnCardSwiped(MagTeklibDynamag cardData) { //Fired when a card has been swiped on the device.
-//                Log.d("Card Data", cardData.toString());
-//                CreditCardInfo creditCardInfo = new CreditCardInfo();
-//                boolean parsed = CardParser.parseCreditCard(activity, cardData.getCardData(), creditCardInfo);
-//                callBack.cardWasReadSuccessfully(parsed, creditCardInfo);
-//            }
-//        });
     }
 
     @Override
@@ -300,7 +277,7 @@ public class EMSMagtekSwiper extends EMSDeviceDriver implements EMSDeviceManager
 
     @Override
     public boolean isConnected() {
-        return dynamag.isDeviceConnected();
+        return m_scra.isDeviceConnected();
     }
 
     @Override
@@ -326,34 +303,60 @@ public class EMSMagtekSwiper extends EMSDeviceDriver implements EMSDeviceManager
 //                        OnCardDataStateChanged((MTCardDataState) msg.obj);
                         break;
                     case MTSCRAEvent.OnDataReceived:
-                        if (dynamag.getCardData() != null) {
-                            CreditCardInfo cardInfo = new CreditCardInfo();
-                            if (dynamag.getKSN().equals("00000000000000000000")) {
-                                CardParser.parseCreditCard(activity, dynamag.getMaskedTracks(), cardInfo);
-                            } else {
-//                                cardInfo.setCardOwnerName(dynamag.getCardName());
-//                                if (dynamag.getCardExpDate() != null && !dynamag.getCardExpDate().isEmpty()) {
-//                                    String year = m_scra.getCardExpDate().substring(0, 2);
-//                                    String month = m_scra.getCardExpDate().substring(2, 4);
-//                                    cardInfo.setCardExpYear(year);
-//                                    cardInfo.setCardExpMonth(month);
-//                                }
-//                                cardInfo.setCardType(ProcessCreditCard_FA.getCardType(dynamag.getCardIIN()));
-//                                cardInfo.setCardLast4(dynamag.getCardLast4());
-                                cardInfo.setEncryptedTrack1(dynamag.getTrack1());
-                                cardInfo.setEncryptedTrack2(dynamag.getTrack2());
-//                                cardInfo.setCardNumAESEncrypted(encrypt.encryptWithAES(dynamag.getCardPAN()));
-                                if (dynamag.getTrack1Masked() != null && !dynamag.getTrack1Masked().isEmpty())
-                                    cardInfo.setEncryptedAESTrack1(encrypt.encryptWithAES(dynamag.getTrack1Masked()));
-                                if (dynamag.getTrack2Masked() != null && !dynamag.getTrack2Masked().isEmpty())
-                                    cardInfo.setEncryptedAESTrack2(encrypt.encryptWithAES(dynamag.getTrack2Masked()));
-                                cardInfo.setDeviceSerialNumber(dynamag.getDeviceSerial());
-                                cardInfo.setMagnePrint(dynamag.getMagnePrint());
-//                                cardInfo.setCardNumUnencrypted(dynamag.getCardPAN());
-                                cardInfo.setMagnePrintStatus(dynamag.getMagnePrintStatus());
-                                cardInfo.setTrackDataKSN(dynamag.getKSN());
+                        if (m_scra.getResponseData() != null) {
+                            if (m_scra.getTrackDecodeStatus().contains("01")) {
+                                scannerCallBack.cardWasReadSuccessfully(false, null);
+                                break;
                             }
-                            msrCallBack.cardWasReadSuccessfully(true, cardInfo);
+                            CreditCardInfo cardInfo = new CreditCardInfo();
+                            if (m_scra.getKSN().equals("00000000000000000000")) {
+                                CardParser.parseCreditCard(activity, m_scra.getMaskedTracks(), cardInfo);
+                            } else {
+                                cardInfo.setCardOwnerName(m_scra.getCardName());
+                                if (m_scra.getCardExpDate() != null && !m_scra.getCardExpDate().isEmpty()) {
+                                    String year = m_scra.getCardExpDate().substring(0, 2);
+                                    String month = m_scra.getCardExpDate().substring(2, 4);
+                                    cardInfo.setCardExpYear(year);
+                                    cardInfo.setCardExpMonth(month);
+                                }
+                                cardInfo.setCardType(ProcessCreditCard_FA.getCardType(m_scra.getCardIIN()));
+                                cardInfo.setCardLast4(m_scra.getCardLast4());
+                                cardInfo.setEncryptedTrack1(m_scra.getTrack1());
+                                cardInfo.setEncryptedTrack2(m_scra.getTrack2());
+                                cardInfo.setCardNumAESEncrypted(encrypt.encryptWithAES(m_scra.getCardPAN()));
+                                if (m_scra.getTrack1Masked() != null && !m_scra.getTrack1Masked().isEmpty())
+                                    cardInfo.setEncryptedAESTrack1(encrypt.encryptWithAES(m_scra.getTrack1Masked()));
+                                if (m_scra.getTrack2Masked() != null && !m_scra.getTrack2Masked().isEmpty())
+                                    cardInfo.setEncryptedAESTrack2(encrypt.encryptWithAES(m_scra.getTrack2Masked()));
+                                cardInfo.setDeviceSerialNumber(m_scra.getDeviceSerial());
+                                cardInfo.setMagnePrint(m_scra.getMagnePrint());
+                                cardInfo.setCardNumUnencrypted(m_scra.getCardPAN());
+                                cardInfo.setMagnePrintStatus(m_scra.getMagnePrintStatus());
+                                cardInfo.setTrackDataKSN(m_scra.getKSN());
+                            }
+
+//                            // debug
+//                            Log.d("eMobilePOS", "@@@@@ READER @@@@@");
+//                            Log.d("eMobilePOS", "TrackDecodeStatus: " + m_scra.getTrackDecodeStatus());
+//                            Log.d("eMobilePOS", "ksn: " + cardInfo.getTrackDataKSN());
+//                            Log.d("eMobilePOS", "magnePrint: " + cardInfo.getMagnePrint());
+//                            Log.d("eMobilePOS", "magnePrintStatus: " + cardInfo.getMagnePrintStatus());
+//                            Log.d("eMobilePOS", "deviceSerialNumber: " + cardInfo.getDeviceSerialNumber());
+//                            Log.d("eMobilePOS", "encryptedTrack1: " + cardInfo.getEncryptedTrack1());
+//                            Log.d("eMobilePOS", "encryptedTrack2: " + cardInfo.getEncryptedTrack2());
+//                            Log.d("eMobilePOS", "@@@@@ READER @@@@@");
+
+                            // bad swipe manual detection (when invalid, it returns weird
+                            // characters in the serial number, ex: "10518AA����<?>"F")
+                            Pattern pattern = Pattern.compile("[^A-Za-z0-9]", Pattern.CASE_INSENSITIVE);
+                            Matcher matcher = pattern.matcher(cardInfo.getDeviceSerialNumber());
+                            boolean containsWeirdCharacters = matcher.find();
+                            if (containsWeirdCharacters) {
+                                scannerCallBack.cardWasReadSuccessfully(false, null);
+                                break;
+                            }
+
+                            scannerCallBack.cardWasReadSuccessfully(true, cardInfo);
                         }
                         break;
                     case MTSCRAEvent.OnDeviceResponse:

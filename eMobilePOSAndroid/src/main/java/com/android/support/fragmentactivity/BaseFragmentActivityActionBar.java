@@ -31,11 +31,11 @@ import main.EMSDeviceManager;
  * Created by Guarionex on 12/9/2015.
  */
 public class BaseFragmentActivityActionBar extends FragmentActivity {
+    static Clerk clerk;
     private static MyPreferences myPref;
     private static String[] navigationbarByModels;
     public Menu menu;
     protected ActionBar myBar;
-    static Clerk clerk;
     private boolean showNavigationbar = false;
 
     protected void setActionBar() {
@@ -122,6 +122,11 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
     }
 
     @Override
+    protected void onPostResume() {
+        super.onPostResume();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         switch (id) {
@@ -141,11 +146,18 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
     }
 
     @Override
+    protected void onDestroy() {
+
+        super.onDestroy();
+    }
+
+    @Override
     protected void onResume() {
         if (BuildConfig.DEBUG) {
             int count = 0;
             if (Realm.getDefaultConfiguration() != null) {
                 count = Realm.getGlobalInstanceCount(Realm.getDefaultConfiguration());
+
                 Toast.makeText(this, "Realms count: " + String.valueOf(count), Toast.LENGTH_LONG).show();
 
             }
@@ -164,8 +176,8 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
 
     public class AutoConnectPrinter extends AsyncTask<String, String, String> {
         boolean isUSB = false;
-        private boolean loadMultiPrinter;
         ProgressDialog driversProgressDialog;
+        private boolean loadMultiPrinter;
 
         @Override
         protected void onPreExecute() {
@@ -223,6 +235,7 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
                 driversProgressDialog.setCancelable(true);
             }
             driversProgressDialog.show();
+
         }
     }
 

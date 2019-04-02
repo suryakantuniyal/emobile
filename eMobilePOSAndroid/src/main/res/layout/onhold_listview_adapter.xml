@@ -1,87 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:orientation="horizontal"
-              android:padding="15dp"
-              android:gravity="center_vertical">
-    
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="15dp">
 
-        <TextView
+    <TextView
         android:id="@+id/onHoldID"
         style="@style/text_shadow"
-        android:layout_width="0dp"
+        android:layout_width="180dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="TextView"
+        android:layout_marginEnd="10dp"
+        android:layout_marginRight="10dp"
         android:textAppearance="@style/black_text_appearance_unbold"
-        android:textSize="@dimen/listview_text_size" />
-        
-        
-        
+        android:textSize="@dimen/listview_text_size"
+        tools:text="999-999999-9999" />
+
     <TextView
         android:id="@+id/onHoldOfflineFlag"
         style="@style/text_shadow"
-        android:layout_width="wrap_content"
+        android:layout_width="90dp"
         android:layout_height="wrap_content"
-        android:text="OFFLINE"
+        android:layout_marginEnd="10dp"
+        android:layout_marginRight="10dp"
         android:textAppearance="@style/red_text_appearance_bold"
-        android:textSize="@dimen/listview_text_size" />
-
-
+        android:textSize="@dimen/listview_text_size"
+        android:text="@string/hold_offline" />
 
     <TextView
         android:id="@+id/onHoldName"
         style="@style/text_shadow"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:layout_marginRight="10dp"
         android:layout_weight="1"
-        android:gravity="right"
-        android:text="TextView"
+        android:gravity="start"
         android:textAppearance="@style/black_text_appearance_unbold"
-        android:textSize="@dimen/listview_text_size" />
+        android:textSize="@dimen/listview_text_size"
+        tools:text="Table #1" />
 
     <TextView
-        android:text="4"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
         android:id="@+id/guestNumbertextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:layout_marginRight="20dp"
+        android:drawableStart="@drawable/ic_group_black_18dp"
         android:drawableLeft="@drawable/ic_group_black_18dp"
-        android:layout_marginLeft="10dp"
-        android:layout_weight="1" />
+        android:drawablePadding="3dp"
+        android:minWidth="60dp"
+        android:textSize="@dimen/listview_text_size"
+        tools:text="99" />
 
     <TextView
-        android:text="0:24"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
         android:id="@+id/timeOnSitetextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:layout_marginRight="20dp"
+        android:drawableStart="@drawable/ic_access_time_black_18dp"
         android:drawableLeft="@drawable/ic_access_time_black_18dp"
-        android:layout_marginLeft="10dp"
-        android:layout_weight="1" />
+        android:drawablePadding="3dp"
+        android:minWidth="60dp"
+        android:textSize="@dimen/listview_text_size"
+        tools:text="99:99" />
 
     <TextView
-        android:text="$24.54"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
         android:id="@+id/orderTotaltextView"
-        android:drawableLeft="@drawable/ic_attach_money_black_18dp"
-        android:layout_marginLeft="10dp"
-        android:layout_weight="1" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:layout_marginRight="20dp"
+        android:gravity="right"
+        android:minWidth="60dp"
+        android:textSize="@dimen/listview_text_size"
+        tools:text="$99.99" />
 
     <FrameLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        >
+        android:layout_height="wrap_content">
 
         <TextView
-            android:text="TextView"
+            android:id="@+id/restaurantTabletextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/restaurantTabletextView"
-            android:gravity="center"
+            android:drawableStart="@drawable/ic_local_dining_black_18dp"
             android:drawableLeft="@drawable/ic_local_dining_black_18dp"
-            android:layout_marginLeft="10dp"/>
+            android:drawablePadding="3dp"
+            android:minWidth="60dp"
+            android:textSize="@dimen/listview_text_size"
+            tools:text="#99" />
 
     </FrameLayout>
 
