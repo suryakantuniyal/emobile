@@ -95,22 +95,24 @@ public class EMSHPEngageOnePrimePrinter extends EMSDeviceDriver implements EMSDe
 
     @Override
     public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
+        hpPrinter = new POSPrinter();
         printReceipt(ordID, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, emvContainer);
         return true;
     }
 
     @Override
     public boolean printTransaction(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
+        hpPrinter = new POSPrinter();
         printReceipt(order, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, emvContainer);
         return true;
     }
 
     @Override
     public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
+        hpPrinter = new POSPrinter();
         return printTransaction(ordID, saleTypes, isFromHistory, fromOnHold, null);
     }
 
-    //!!!!!!!!!
     @Override
     public boolean printTransaction(Order order, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
         hpPrinter = new POSPrinter();
@@ -120,40 +122,47 @@ public class EMSHPEngageOnePrimePrinter extends EMSDeviceDriver implements EMSDe
 
     @Override
     public boolean printPaymentDetails(String payID, int isFromMainMenu, boolean isReprint, EMVContainer emvContainer) {
+        hpPrinter = new POSPrinter();
         printPaymentDetailsReceipt(payID, isFromMainMenu, isReprint, LINE_WIDTH, emvContainer);
         return true;
     }
 
     @Override
     public boolean printBalanceInquiry(HashMap<String, String> values) {
+        hpPrinter = new POSPrinter();
         return printBalanceInquiry(values, LINE_WIDTH);
     }
 
     @Override
     public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSignature) {
+        hpPrinter = new POSPrinter();
         printConsignmentReceipt(myConsignment, encodedSignature, LINE_WIDTH);
         return true;
     }
 
     @Override
     public boolean printConsignmentPickup(List<ConsignmentTransaction> myConsignment, String encodedSignature) {
+        hpPrinter = new POSPrinter();
         printConsignmentPickupReceipt(myConsignment, encodedSignature, LINE_WIDTH);
         return true;
     }
 
     @Override
     public boolean printConsignmentHistory(HashMap<String, String> map, Cursor c, boolean isPickup) {
+        hpPrinter = new POSPrinter();
         printConsignmentHistoryReceipt(map, c, isPickup, LINE_WIDTH);
         return true;
     }
 
     @Override
     public String printStationPrinter(List<Orders> orderProducts, String ordID, boolean cutPaper, boolean printHeader) {
+        hpPrinter = new POSPrinter();
         return printStationPrinterReceipt(orderProducts, ordID, LINE_WIDTH, cutPaper, printHeader);
     }
 
     @Override
     public boolean printOpenInvoices(String invID) {
+        hpPrinter = new POSPrinter();
         printOpenInvoicesReceipt(invID, LINE_WIDTH);
         return true;
     }
@@ -185,17 +194,20 @@ public class EMSHPEngageOnePrimePrinter extends EMSDeviceDriver implements EMSDe
 
     @Override
     public boolean printReport(String curDate) {
+        hpPrinter = new POSPrinter();
         printReportReceipt(curDate, LINE_WIDTH);
         return true;
     }
 
     @Override
     public void printShiftDetailsReport(String shiftID) {
+        hpPrinter = new POSPrinter();
         printShiftDetailsReceipt(LINE_WIDTH, shiftID);
     }
 
     @Override
     public void printEndOfDayReport(String date, String clerk_id, boolean printDetails) {
+        hpPrinter = new POSPrinter();
         printEndOfDayReportReceipt(date, LINE_WIDTH, printDetails);
     }
 
@@ -256,6 +268,7 @@ public class EMSHPEngageOnePrimePrinter extends EMSDeviceDriver implements EMSDe
 
     @Override
     public void printReceiptPreview(SplittedOrder splitedOrder) {
+        hpPrinter = new POSPrinter();
         try {
             setPaperWidth(LINE_WIDTH);
             super.printReceiptPreview(splitedOrder, LINE_WIDTH);
@@ -313,11 +326,13 @@ public class EMSHPEngageOnePrimePrinter extends EMSDeviceDriver implements EMSDe
 
     @Override
     public void printClockInOut(List<ClockInOut> clockInOuts, String clerkID) {
+        hpPrinter = new POSPrinter();
         super.printClockInOut(clockInOuts, LINE_WIDTH, clerkID);
     }
 
     @Override
     public void printExpenseReceipt(ShiftExpense expense) {
+        hpPrinter = new POSPrinter();
         printExpenseReceipt(LINE_WIDTH, expense);
     }
 

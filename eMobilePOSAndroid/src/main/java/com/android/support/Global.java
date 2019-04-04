@@ -375,7 +375,7 @@ public class Global extends MultiDexApplication {
                 _name = "Star Micronics";
                 break;
             case HP_EONEPRIME:
-                _name = "HP Engage One Prime Printer";
+                _name = "HPEngageOnePrimePrinter";
                 break;
             case MAGTEK:
                 _name = "MAGTEK";
