@@ -11,9 +11,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 
 import com.android.database.DBManager;
 import com.android.emobilepos.BuildConfig;
@@ -43,6 +43,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 import util.json.JsonUtils;
 
@@ -69,9 +70,17 @@ public class PollingNotificationService extends Service {
 
     public static boolean isServiceRunning(Context context) {
         ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (PollingNotificationService.class.getName().equals(service.service.getClassName())) {
-                return true;
+        if (manager != null) {
+            for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+                if (PollingNotificationService.class.getName().equals(service.service.getClassName())) {
+                    long serviceUpTime = TimeUnit.MILLISECONDS.toMinutes(
+                            SystemClock.elapsedRealtime() - service.activeSince);
+                    if (!service.started || serviceUpTime > BuildConfig.AUTOSYNC_RESTART_MINUTES) {
+                        stop(context);
+                        return false;
+                    }
+                    return true;
+                }
             }
         }
         return false;
@@ -82,14 +91,12 @@ public class PollingNotificationService extends Service {
         startIntent.setAction(PollingNotificationService.START_ACTION);
         startIntent.setFlags(flags);
         context.startService(startIntent);
-        Log.d("Polling service started", new Date().toString());
     }
 
     public static void stop(Context context) {
         Intent stopIntent = new Intent(context, PollingNotificationService.class);
         stopIntent.setAction(PollingNotificationService.STOP_ACTION);
         context.startService(stopIntent);
-        Log.d("Polling service stoped", new Date().toString());
     }
 
     @Override
@@ -110,8 +117,6 @@ public class PollingNotificationService extends Service {
     public int onStartCommand(final Intent intent, int flags, int startId) {
         if (intent != null) {
             if (intent.getAction().equals(START_ACTION)) {
-                Log.i(TAG, "Received Start Foreground Intent");
-
                 Intent notificationIntent = new Intent(this, MainMenu_FA.class);
                 notificationIntent.setAction(MAIN_ACTION);
                 notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
@@ -122,7 +127,6 @@ public class PollingNotificationService extends Service {
                         timer.schedule(new TimerTask() {
                             @Override
                             public void run() {
-                                Log.i(TAG, "Timer");
                                 if (((intent.getFlags() & PollingServicesFlag.ONHOLDS.getCode()) == PollingServicesFlag.ONHOLDS.getCode()) ||
                                         ((intent.getFlags() & PollingServicesFlag.DINING_TABLES.getCode()) == PollingServicesFlag.DINING_TABLES.getCode())) {
                                     pollNotificationEvents(PollingNotificationService.this);
@@ -136,7 +140,6 @@ public class PollingNotificationService extends Service {
                     autoSyncTimer.schedule(new TimerTask() {
                         @Override
                         public void run() {
-                            Log.i(TAG, "autoSyncTimer");
                             if ((intent.getFlags() & PollingServicesFlag.AUTO_SYNC.getCode()) == PollingServicesFlag.AUTO_SYNC.getCode()) {
                                 DBManager dbManager = new DBManager(PollingNotificationService.this, Global.FROM_SYNCH_ACTIVITY);
                                 SynchMethods sm = new SynchMethods(dbManager);
@@ -165,24 +168,15 @@ public class PollingNotificationService extends Service {
                         .setSmallIcon(R.drawable.emobile_icon_notification)
                         .setLargeIcon(
                                 Bitmap.createScaledBitmap(icon, 128, 128, false))
-//                    .setContentIntent(pendingIntent)
                         .setOngoing(true).build();
 
-                startForeground(FOREGROUND_SERVICE,
-                        notification);
+                startForeground(FOREGROUND_SERVICE, notification);
             } else if (intent.getAction().equals(STOP_ACTION)) {
-                Log.i(TAG, "Received Stop Foreground Intent");
                 stopForeground(true);
                 stopSelf();
             }
         }
         return START_STICKY;
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.i(TAG, "Destroy polling service");
     }
 
     void broadcastMessage(String message) {
