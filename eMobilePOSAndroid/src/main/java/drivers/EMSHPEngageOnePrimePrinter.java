@@ -6,9 +6,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
-import android.util.Log;
-import android.widget.Toast;
-
 import com.StarMicronics.jasura.JAException;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.ClockInOut;
@@ -22,28 +19,21 @@ import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
-
 import com.hp.android.possdk.IJPOSInitCompleteCallBack;
 import com.starmicronics.stario.StarIOPortException;
-
 import java.util.HashMap;
 import java.util.List;
-
 import interfaces.EMSCallBack;
 import interfaces.EMSDeviceManagerPrinterDelegate;
-
 import jpos.JPOSApp;
 import jpos.JposException;
 import jpos.POSPrinter;
 import main.EMSDeviceManager;
 
-import static jpos.JposConst.JPOS_PN_ENABLED;
-
 public class EMSHPEngageOnePrimePrinter extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate, IJPOSInitCompleteCallBack {
 
     private int LINE_WIDTH = 32;
     private EMSDeviceManager edm;
-    private boolean isConnected = false;
     private ProgressDialog myProgressDialog;
     private EMSDeviceDriver thisInstance;
 
@@ -55,7 +45,6 @@ public class EMSHPEngageOnePrimePrinter extends EMSDeviceDriver implements EMSDe
         myPref = new MyPreferences(this.activity);
         JPOSApp.start(activity, (IJPOSInitCompleteCallBack) this);
         edm.driverDidConnectToDevice(thisInstance, false, activity);
-//        new processConnectionAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, 0);
     }
 
     @Override
@@ -67,31 +56,11 @@ public class EMSHPEngageOnePrimePrinter extends EMSDeviceDriver implements EMSDe
         myPref = new MyPreferences(this.activity);
         JPOSApp.start(activity, (IJPOSInitCompleteCallBack) this);
         edm.driverDidConnectToDevice(thisInstance, false, activity);
-        return true;//initializePrinter();
+        return true;
     }
-
-    public boolean initializePrinter() {
-       try{
-           JPOSApp.start(activity, (IJPOSInitCompleteCallBack) this);
-           if (hpPrinter == null) {
-               hpPrinter = new POSPrinter();
-           }
-           isConnected = true;
-       }catch(Exception e){Log.e("HPPrinter",e.toString());}
-
-        if (isConnected) {
-            edm.driverDidConnectToDevice(thisInstance, false, activity);
-        } else {
-            edm.driverDidNotConnectToDevice(thisInstance, "HP did not initialize", true, activity);
-        }
-
-        return isConnected;
-    }
-
 
     @Override
-    public void onComplete() {
-    }
+    public void onComplete() {}
 
     @Override
     public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
@@ -335,50 +304,4 @@ public class EMSHPEngageOnePrimePrinter extends EMSDeviceDriver implements EMSDe
         hpPrinter = new POSPrinter();
         printExpenseReceipt(LINE_WIDTH, expense);
     }
-
-
-    public class processConnectionAsync extends
-            AsyncTask<Integer, String, String> {
-
-        String msg = "";
-        boolean didConnect = false;
-
-        @Override
-        protected void onPreExecute() {
-            myProgressDialog = new ProgressDialog(activity);
-            myProgressDialog.setMessage(activity.getString(R.string.progress_connecting_printer));
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            myProgressDialog.show();
-
-        }
-
-        @Override
-        protected String doInBackground(Integer... params) {
-            JPOSApp.start(activity, (IJPOSInitCompleteCallBack) this);
-            if (hpPrinter == null) {
-                hpPrinter = new POSPrinter();
-            }
-            try {
-                hpPrinter.close();
-                didConnect = true;
-            } catch (JposException e) {
-                e.printStackTrace();
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String unused) {
-            myProgressDialog.dismiss();
-            if (didConnect) {
-                edm.driverDidConnectToDevice(thisInstance, false, activity);
-            } else {
-                edm.driverDidNotConnectToDevice(thisInstance, msg, false, activity);
-            }
-
-        }
-    }
-
 }
