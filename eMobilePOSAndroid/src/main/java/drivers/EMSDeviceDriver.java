@@ -129,6 +129,9 @@ import plaintext.EMSPlainTextHelper;
 import util.StringUtil;
 
 import static drivers.EMSGPrinterPT380.PRINTER_ID;
+import static jpos.POSPrinterConst.PTR_BM_ASIS;
+import static jpos.POSPrinterConst.PTR_BM_CENTER;
+import static jpos.POSPrinterConst.PTR_S_RECEIPT;
 
 public class EMSDeviceDriver {
     private static final boolean PRINT_TO_LOG = BuildConfig.PRINT_TO_LOG;
@@ -1590,227 +1593,253 @@ public class EMSDeviceDriver {
         }
     }
 
-    /**
-     * METHODS FOR INSTANCES OF HPENGAGEONEPRIMEPRINTER
-     *
-     * storeImage(imageData,fname)
-     * @imageData Bitmap you want to save
-     * @fname Name that will be assigned to image. Include the format of image(image.png, image.jpeg, image.bmp, etc...)
-     *
-     * changeImageHeaders(orgBitmap, filePath)
-     * @orgBitmap
-     *
+    /** METHODS FOR INSTANCES OF HPENGAGEONEPRIMEPRINTER
+     * storeImage() -> Copies logo.png from data/data/com.emobilepos.app/files/logo.png
+     *                                  to a public directory called eMobileAssets.
+     * @param imageData Bitmap you want to save
+     * @param fname Name that will be assigned to image. Include the format of image(image.png, image.jpeg, image.bmp, etc...)
      */
-//    public void storeImage(Bitmap imageData, String fname) {
-//        String Path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/eMobileAssets/";
-//        File dir = new File(Path);
-//        if (!dir.exists()) {
-//            dir.mkdirs();
-//        }
-//        try {
-//            String filePath = dir.getAbsolutePath() + "/" + fname;
-//            FileOutputStream fileOutputStream = new FileOutputStream(filePath);
-//            BufferedOutputStream bos = new BufferedOutputStream(fileOutputStream);
-//
-//            imageData.compress(Bitmap.CompressFormat.JPEG, 0, bos);
-//            bos.flush();
-//            bos.close();
-//        } catch (FileNotFoundException e) {
-//            Log.w("TAG", "Error saving image file: " + e.getMessage());
-//        } catch (IOException e) {
-//            Log.w("TAG", "Error saving image file: " + e.getMessage());
-//        }
-//    }
-//
-//    public static boolean changeImageHeaders(Bitmap orgBitmap, String filePath) throws IOException {
-//        long start = System.currentTimeMillis();
-//        if (orgBitmap == null) {
-//            return false;
-//        }
-//
-//        if (filePath == null) {
-//            return false;
-//        }
-//
-//        boolean isSaveSuccess = true;
-//
-//        //image size
-//        int width = orgBitmap.getWidth();
-//        int height = orgBitmap.getHeight();
-//
-//        //image dummy data size
-//        //reason : the amount of bytes per image row must be a multiple of 4 (requirements of bmp format)
-//        byte[] dummyBytesPerRow = null;
-//        boolean hasDummy = false;
-//        int rowWidthInBytes = BYTE_PER_PIXEL * width; //source image width * number of bytes to encode one pixel.
-//        if (rowWidthInBytes % BMP_WIDTH_OF_TIMES > 0) {
-//            hasDummy = true;
-//            //the number of dummy bytes we need to add on each row
-//            dummyBytesPerRow = new byte[(BMP_WIDTH_OF_TIMES - (rowWidthInBytes % BMP_WIDTH_OF_TIMES))];
-//            //just fill an array with the dummy bytes we need to append at the end of each row
-//            for (int i = 0; i < dummyBytesPerRow.length; i++) {
-//                dummyBytesPerRow[i] = (byte) 0xFF;
-//            }
-//        }
-//
-//        //an array to receive the pixels from the source image
-//        int[] pixels = new int[width * height];
-//
-//        //the number of bytes used in the file to store raw image data (excluding file headers)
-//        int imageSize = (rowWidthInBytes + (hasDummy ? dummyBytesPerRow.length : 0)) * height;
-//        //file headers size
-//        int imageDataOffset = 0x36;
-//
-//        //final size of the file
-//        int fileSize = imageSize + imageDataOffset;
-//
-//        //Android Bitmap Image Data
-//        orgBitmap.getPixels(pixels, 0, width, 0, 0, width, height);
-//
-//        //ByteArrayOutputStream baos = new ByteArrayOutputStream(fileSize);
-//        ByteBuffer buffer = ByteBuffer.allocate(fileSize);
-//
-//        /**
-//         * BITMAP FILE HEADER Write Start
-//         **/
-//        buffer.put((byte) 0x42);
-//        buffer.put((byte) 0x4D);
-//
-//        //size
-//        buffer.put(writeInt(fileSize));
-//
-//        //reserved
-//        buffer.put(writeShort((short) 0));
-//        buffer.put(writeShort((short) 0));
-//
-//        //image data start offset
-//        buffer.put(writeInt(imageDataOffset));
-//
-//        /** BITMAP FILE HEADER Write End */
-//
-//        //*******************************************
-//
-//        /** BITMAP INFO HEADER Write Start */
-//        //size
-//        buffer.put(writeInt(0x28));
-//
-//        //width, height
-//        //if we add 3 dummy bytes per row : it means we add a pixel (and the image width is modified.
-//        buffer.put(writeInt(width + (hasDummy ? (dummyBytesPerRow.length == 3 ? 1 : 0) : 0)));
-//        buffer.put(writeInt(height));
-//
-//        //planes
-//        buffer.put(writeShort((short) 1));
-//
-//        //bit count
-//        buffer.put(writeShort((short) 24));
-//
-//        //bit compression
-//        buffer.put(writeInt(0));
-//
-//        //image data size
-//        buffer.put(writeInt(imageSize));
-//
-//        //horizontal resolution in pixels per meter
-//        buffer.put(writeInt(0));
-//
-//        //vertical resolution in pixels per meter (unreliable)
-//        buffer.put(writeInt(0));
-//
-//        buffer.put(writeInt(0));
-//
-//        buffer.put(writeInt(0));
-//
-//        /** BITMAP INFO HEADER Write End */
-//
-//        int row = height;
-//        int col = width;
-//        int startPosition = (row - 1) * col;
-//        int endPosition = row * col;
-//        while (row > 0) {
-//            for (int i = startPosition; i < endPosition; i++) {
-//                buffer.put((byte) (pixels[i] & 0x000000FF));
-//                buffer.put((byte) ((pixels[i] & 0x0000FF00) >> 8));
-//                buffer.put((byte) ((pixels[i] & 0x00FF0000) >> 16));
-//            }
-//            if (hasDummy) {
-//                buffer.put(dummyBytesPerRow);
-//            }
-//            row--;
-//            endPosition = startPosition;
-//            startPosition = startPosition - col;
-//        }
-//
-//        FileOutputStream fos = new FileOutputStream(filePath);
-//        fos.write(buffer.array());
-//        fos.close();
-//        Log.v("AndroidBmpUtil", System.currentTimeMillis() - start + " ms");
-//
-//        return isSaveSuccess;
-//    }
-//
-//    private static byte[] writeInt(int value) throws IOException {
-//        byte[] b = new byte[4];
-//
-//        b[0] = (byte) (value & 0x000000FF);
-//        b[1] = (byte) ((value & 0x0000FF00) >> 8);
-//        b[2] = (byte) ((value & 0x00FF0000) >> 16);
-//        b[3] = (byte) ((value & 0xFF000000) >> 24);
-//
-//        return b;
-//    }
-//
-//    private static byte[] writeShort(short value) throws IOException {
-//        byte[] b = new byte[2];
-//
-//        b[0] = (byte) (value & 0x00FF);
-//        b[1] = (byte) ((value & 0xFF00) >> 8);
-//
-//        return b;
-//    }
-//
-//    private Bitmap rescaleBitmap(Bitmap bmp) {
-//        if (bmp.getWidth() > 300) {
-//            int width = bmp.getWidth();
-//            int height = bmp.getHeight();
-//            float scale = 0;
-//            scale = (float) 300 / width;
-//            width = (int) (width * scale);
-//            height = (int) (height * scale);
-//            return Bitmap.createScaledBitmap(bmp, width, height, false);
-//        }
-//        return bmp;
-//    }
+    public void storeImage(Bitmap imageData, String fname) {
+        String Path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/eMobileAssets/";
+        File dir = new File(Path);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        try {
+            String filePath = dir.getAbsolutePath() + "/" + fname;
+            FileOutputStream fileOutputStream = new FileOutputStream(filePath);
+            BufferedOutputStream bos = new BufferedOutputStream(fileOutputStream);
+
+            imageData.compress(Bitmap.CompressFormat.JPEG, 100, bos);
+            bos.flush();
+            bos.close();
+        } catch (FileNotFoundException e) {
+            Log.w("TAG", "Error saving image file: " + e.getMessage());
+        } catch (IOException e) {
+            Log.w("TAG", "Error saving image file: " + e.getMessage());
+        }
+    }
+
+    /** changeImageHeaders()
+     * @param orgBitmap Bitmap to have its header information changed
+     * @param filePath Directory of the bitmap
+     *
+     * writeInt() and writeShort() methods belong and are only used in changeImageHeaders()
+     */
+    public static boolean changeImageHeaders(Bitmap orgBitmap, String filePath) throws IOException {
+        long start = System.currentTimeMillis();
+        if (orgBitmap == null) {
+            return false;
+        }
+
+        if (filePath == null) {
+            return false;
+        }
+
+        boolean isSaveSuccess = true;
+
+        //image size
+        int width = orgBitmap.getWidth();
+        int height = orgBitmap.getHeight();
+
+        //image dummy data size
+        //reason : the amount of bytes per image row must be a multiple of 4 (requirements of bmp format)
+        byte[] dummyBytesPerRow = null;
+        boolean hasDummy = false;
+        int rowWidthInBytes = BYTE_PER_PIXEL * width; //source image width * number of bytes to encode one pixel.
+        if (rowWidthInBytes % BMP_WIDTH_OF_TIMES > 0) {
+            hasDummy = true;
+            //the number of dummy bytes we need to add on each row
+            dummyBytesPerRow = new byte[(BMP_WIDTH_OF_TIMES - (rowWidthInBytes % BMP_WIDTH_OF_TIMES))];
+            //just fill an array with the dummy bytes we need to append at the end of each row
+            for (int i = 0; i < dummyBytesPerRow.length; i++) {
+                dummyBytesPerRow[i] = (byte) 0xFF;
+            }
+        }
+
+        //an array to receive the pixels from the source image
+        int[] pixels = new int[width * height];
+
+        //the number of bytes used in the file to store raw image data (excluding file headers)
+        int imageSize = (rowWidthInBytes + (hasDummy ? dummyBytesPerRow.length : 0)) * height;
+        //file headers size
+        int imageDataOffset = 0x36;
+
+        //final size of the file
+        int fileSize = imageSize + imageDataOffset;
+
+        //Android Bitmap Image Data
+        orgBitmap.getPixels(pixels, 0, width, 0, 0, width, height);
+
+        //ByteArrayOutputStream baos = new ByteArrayOutputStream(fileSize);
+        ByteBuffer buffer = ByteBuffer.allocate(fileSize);
+
+        /**
+         * BITMAP FILE HEADER Write Start
+         **/
+        buffer.put((byte) 0x42);
+        buffer.put((byte) 0x4D);
+
+        //size
+        buffer.put(writeInt(fileSize));
+
+        //reserved
+        buffer.put(writeShort((short) 0));
+        buffer.put(writeShort((short) 0));
+
+        //image data start offset
+        buffer.put(writeInt(imageDataOffset));
+
+        /** BITMAP FILE HEADER Write End */
+
+        //*******************************************
+
+        /** BITMAP INFO HEADER Write Start */
+        //size
+        buffer.put(writeInt(0x28));
+
+        //width, height
+        //if we add 3 dummy bytes per row : it means we add a pixel (and the image width is modified.
+        buffer.put(writeInt(width + (hasDummy ? (dummyBytesPerRow.length == 3 ? 1 : 0) : 0)));
+        buffer.put(writeInt(height));
+
+        //planes
+        buffer.put(writeShort((short) 1));
+
+        //bit count
+        buffer.put(writeShort((short) 24));
+
+        //bit compression
+        buffer.put(writeInt(0));
+
+        //image data size
+        buffer.put(writeInt(imageSize));
+
+        //horizontal resolution in pixels per meter
+        buffer.put(writeInt(0));
+
+        //vertical resolution in pixels per meter (unreliable)
+        buffer.put(writeInt(0));
+
+        buffer.put(writeInt(0));
+
+        buffer.put(writeInt(0));
+
+        /** BITMAP INFO HEADER Write End */
+
+        int row = height;
+        int col = width;
+        int startPosition = (row - 1) * col;
+        int endPosition = row * col;
+        while (row > 0) {
+            for (int i = startPosition; i < endPosition; i++) {
+                buffer.put((byte) (pixels[i] & 0x000000FF));
+                buffer.put((byte) ((pixels[i] & 0x0000FF00) >> 8));
+                buffer.put((byte) ((pixels[i] & 0x00FF0000) >> 16));
+            }
+            if (hasDummy) {
+                buffer.put(dummyBytesPerRow);
+            }
+            row--;
+            endPosition = startPosition;
+            startPosition = startPosition - col;
+        }
+
+        FileOutputStream fos = new FileOutputStream(filePath);
+        fos.write(buffer.array());
+        fos.close();
+        Log.v("AndroidBmpUtil", System.currentTimeMillis() - start + " ms");
+
+        return isSaveSuccess;
+    }
+
+    private static byte[] writeInt(int value) throws IOException {
+        byte[] b = new byte[4];
+
+        b[0] = (byte) (value & 0x000000FF);
+        b[1] = (byte) ((value & 0x0000FF00) >> 8);
+        b[2] = (byte) ((value & 0x00FF0000) >> 16);
+        b[3] = (byte) ((value & 0xFF000000) >> 24);
+
+        return b;
+    }
+
+    private static byte[] writeShort(short value) throws IOException {
+        byte[] b = new byte[2];
+
+        b[0] = (byte) (value & 0x00FF);
+        b[1] = (byte) ((value & 0xFF00) >> 8);
+
+        return b;
+    }
+
+    /**RescaleBitmap()
+     * @param bmp Bitmap to be rescaled and fit a paper width of 300
+     */
+    private Bitmap rescaleBitmap(Bitmap bmp) {
+        if (bmp.getWidth() > 300) {
+            int width = bmp.getWidth();
+            int height = bmp.getHeight();
+            float scale = 0;
+            scale = (float) 300 / width;
+            width = (int) (width * scale);
+            height = (int) (height * scale);
+            return Bitmap.createScaledBitmap(bmp, width, height, false);
+        }
+        return bmp;
+    }
+
+    /**processImageBitmap()
+     *
+     * @param type Type of image to be processed(logo, signature or QRCode)
+     * @param myBitmap Bitmap to be stored and processed
+     * @param bitmapPath Full path directory where bitmap is stored -Should be in the eMobileAssets Folder on the Public directory-
+     */
+    private void processImageBitmap(int type, Bitmap myBitmap, String bitmapPath){
+        String imageName = "";
+        switch(type){
+            case 0:
+                imageName="logo.bmp";
+                break;
+            case 1:
+                imageName = "signature.bmp";
+                break;
+            case 2:
+                imageName="qrCode.bmp";
+                break;
+        }
+        storeImage(myBitmap, imageName);
+        Bitmap bmp = BitmapFactory.decodeFile(bitmapPath);
+        Bitmap newBitmap = rescaleBitmap(bmp);
+        storeImage(newBitmap, imageName);
+        try {
+            changeImageHeaders(newBitmap, bitmapPath);
+        } catch (IOException e) {
+            Log.e("HPPrinter", "Could not change image headers");
+            e.printStackTrace();
+        }
+    }
+    /**------------------------END OF METHODS FOR INSTANCES--------------------------*/
+
 
     protected void printImage(int type) throws JAException {
-//        byte[] dataSignature = null;
-//        byte[] dataQR = null;
-//        String bitmapPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/eMobileAssets/logo.bmp";
+        String bitmapPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/eMobileAssets";
 
         if (PRINT_TO_LOG) {
             Log.d("Print", "*******Image Print***********");
             return;
         }
         Bitmap myBitmap = null;
-//        Bitmap newBitmap = null;
         switch (type) {
             case 0: // Logo
             {
                 File imgFile = new File(myPref.getAccountLogoPath());
                 if (imgFile.exists()) {
                     myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-//                    if (this instanceof EMSHPEngageOnePrimePrinter) {
-//                        storeImage(myBitmap, "logo.bmp");
-//                        Bitmap bmp = BitmapFactory.decodeFile(bitmapPath);
-//                        newBitmap = rescaleBitmap(bmp);
-//                        storeImage(newBitmap, "logo.bmp");
-//                        try {
-//                            changeImageHeaders(newBitmap, bitmapPath);
-//                        } catch (IOException e) {
-//                            Log.e("HPPrinter", "Could not change image headers");
-//                            e.printStackTrace();
-//                        }
-//                    }
+                    if (this instanceof EMSHPEngageOnePrimePrinter) {
+                        bitmapPath = bitmapPath + "/logo.bmp";
+                        processImageBitmap(type,myBitmap,bitmapPath);
+                    }
                 }
                 break;
             }
@@ -1819,7 +1848,10 @@ public class EMSDeviceDriver {
                 if (!TextUtils.isEmpty(encodedSignature)) {
                     byte[] img = Base64.decode(encodedSignature, Base64.DEFAULT);
                     myBitmap = BitmapFactory.decodeByteArray(img, 0, img.length);
-//                    dataSignature = img;
+                    if (this instanceof EMSHPEngageOnePrimePrinter) {
+                        bitmapPath = bitmapPath + "/signature.bmp";
+                        processImageBitmap(type,myBitmap,bitmapPath);
+                    }
                 }
                 break;
             }
@@ -1827,7 +1859,10 @@ public class EMSDeviceDriver {
                 if (!TextUtils.isEmpty(encodedQRCode)) {
                     byte[] img = Base64.decode(encodedQRCode, Base64.DEFAULT);
                     myBitmap = BitmapFactory.decodeByteArray(img, 0, img.length);
-//                    dataQR = img;
+                    if (this instanceof EMSHPEngageOnePrimePrinter) {
+                        bitmapPath = bitmapPath + "/qrCode.bmp";
+                        processImageBitmap(type,myBitmap,bitmapPath);
+                    }
                 }
                 break;
             }
@@ -1948,10 +1983,10 @@ public class EMSDeviceDriver {
                     hpPrinter.open("HPEngageOnePrimePrinter");
                     hpPrinter.claim(10000);
                     hpPrinter.setDeviceEnabled(true);
-//                    hpPrinter.printBitmap(PTR_S_RECEIPT,
-//                            bitmapPath,
-//                            PTR_BM_ASIS,
-//                            PTR_BM_CENTER);
+                    hpPrinter.printBitmap(PTR_S_RECEIPT,
+                            bitmapPath,
+                            PTR_BM_ASIS,
+                            PTR_BM_CENTER);
                 } catch (JposException e) {
                     e.printStackTrace();
                 } finally {
