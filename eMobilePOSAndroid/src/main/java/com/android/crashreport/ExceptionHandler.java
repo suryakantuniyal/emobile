@@ -231,6 +231,11 @@ public class ExceptionHandler implements
 	 * Append the error log with phone & app details
 	 */
 	public void uncaughtException(Thread thread, Throwable exception) {
+		if (exception.getStackTrace().length > 0 && exception.getStackTrace()[0].getFileName()
+				.equalsIgnoreCase("PrintDataConverter.java"))
+			// ignore exception if it comes from the A920 printer.
+			return;
+
 		recoltInformations(myContext);
 		
 		if(DBManager.getDatabase() !=null& DBManager.getDatabase().isOpen()&& DBManager.getDatabase().inTransaction())

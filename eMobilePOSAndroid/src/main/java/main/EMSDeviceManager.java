@@ -44,6 +44,7 @@ import drivers.EMSOT310;
 import drivers.EMSOneil4te;
 
 import drivers.EMSPAT215;
+import drivers.EMSPaxA920;
 import drivers.EMSPowaPOS;
 import drivers.EMSZebraEM220ii;
 import drivers.EMSmePOS;
@@ -169,9 +170,12 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 aDevice = new EMSIngenicoEVO();
                 aDevice.connect(activity, -1, false, this);
                 break;
+            case Global.PAX_A920:
+                aDevice = new EMSPaxA920();
+                aDevice.connect(activity, -1, false, this);
+                break;
         }
     }
-
 
     public boolean loadMultiDriver(Activity activity, int type, int paperSize, boolean isPOSPrinter, String portName, String portNumber) {
         switch (type) {
@@ -250,11 +254,12 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
             case Global.MIURA:
                 aDevice = new EMSMiura();
                 break;
+            case Global.PAX_A920:
+                aDevice = new EMSPaxA920();
+                break;
         }
         return aDevice != null && aDevice.autoConnect(activity, this, paperSize, isPOSPrinter, portName, portNumber);
-
     }
-
 
     private void promptTypeOfStarPrinter(final Context activity) {
         ListView listViewPrinterType = new ListView(activity);
@@ -287,7 +292,6 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
         promptDialog.show();
     }
 
-
     public void promptStarPrinterSize(final boolean isPOSPrinter, final Context activity) {
         ListView listViewPaperSizes = new ListView(activity);
         ArrayAdapter<String> bondedAdapter;
@@ -310,10 +314,10 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 myPref.printerAreaSize(false, paperSize[position]);
                 aDevice.connect(activity, paperSize[position], isPOSPrinter, EMSDeviceManager.this);
                 List<Device> list = new ArrayList<>();
-                Device device = DeviceTableDAO.getByName( myPref.getPrinterName());
+                Device device = DeviceTableDAO.getByName(myPref.getPrinterName());
                 if (device != null) {
                     device.setPOS(isPOSPrinter);
-                    device.setTextAreaSize( paperSize[position]);
+                    device.setTextAreaSize(paperSize[position]);
                     list.add(device);
                     DeviceTableDAO.insert(list);
                     device.setEmsDeviceManager(EMSDeviceManager.this);

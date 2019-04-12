@@ -448,6 +448,7 @@
     <string name="button_global_tax">"Impuesto global"</string>
 
     <string name="button_load">"Cargar"</string>
+    <string name="button_scan">Scan</string>
     <string name="button_checkout">"Finalizar Compra"</string>
     <string name="button_template">"Plantilla"</string>
     <string name="button_hold">"Guardar"</string>
@@ -911,6 +912,7 @@
     <string name="config_genius_peripheral">"Configurar Genius Peripheral"</string>
     <string name="config_pay_with_boloro">"Pago con Boloro"</string>
     <string name="config_use_pax">"Usar SecurePay (PAX)"</string>
+    <string name="config_use_sound_payments">"Usar SecurePay (SP)"</string>
 
     <string name="config_customer_display">"Terminal de visualización de clientes"</string>
 

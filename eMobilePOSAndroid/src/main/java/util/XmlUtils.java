@@ -5,13 +5,21 @@ import com.android.emobilepos.models.pax.SoundPaymentsResponse;
 import com.android.emobilepos.models.xml.EMSPayment;
 import com.crashlytics.android.Crashlytics;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 /**
  * Created by Luis Camayd on 7/24/2018.
@@ -201,5 +209,28 @@ public class XmlUtils {
     public static String replaceAction(String xml, String newAction) {
         return xml.replaceAll("<action>.*?</action>",
                 "<action>" + newAction + "</action>");
+    }
+
+    public static String findXMl(String data, String node) {
+        String extData = "<root>" + data + "</root>";
+        ByteArrayInputStream input;
+        input = new ByteArrayInputStream(extData.getBytes());
+
+        try {
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            Document document = db.parse(input);
+
+            Element rootElement = document.getDocumentElement();
+            NodeList items = rootElement.getChildNodes();
+            for (int i = 0; i < items.getLength(); i++) {
+                Node item = items.item(i);
+                if (item.getNodeName().equals(node))
+                    return item.getFirstChild().getNodeValue();
+            }
+        } catch (Exception e) {
+            Crashlytics.logException(e);
+        }
+        return "";
     }
 }

@@ -84,6 +84,8 @@ import com.honeywell.decodemanager.SymbologyConfigs;
 import com.honeywell.decodemanager.barcode.CommonDefine;
 import com.honeywell.decodemanager.barcode.DecodeResult;
 import com.honeywell.decodemanager.symbologyconfig.SymbologyConfigCodeUPCA;
+import com.pax.poslink.peripheries.POSLinkScanner;
+import com.pax.poslink.peripheries.ProcessResult;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -156,6 +158,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     private ProgressDialog myProgressDialog;
     private CreditCardInfo cardInfoManager;
     private Button btnCheckout;
+    private Button btnScan;
     private Bundle extras;
     private Global.RestaurantSaleType restaurantSaleType = Global.RestaurantSaleType.TO_GO;
     private int selectedSeatsAmount;
@@ -167,6 +170,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     private boolean loyaltySwiped = false;
     private Dialog dlogMSR;
     private SoundManager soundManager;
+    private POSLinkScanner posLinkScanner;
     //    public Handler receiptListHandler;
     private Handler ScanResultHandler = new Handler() {
         public void handleMessage(Message msg) {
@@ -283,17 +287,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
         if (isFromAddon) {
             Global.addonTotalAmount = 0;
-            StringBuilder sb = new StringBuilder();
-            sb.append(orderProduct.getOrdprod_desc());
-            int tempSize = orderProduct.addonsProducts.size();
-            for (int i = 0; i < tempSize; i++) {
-                sb.append("<br/>");
-                if (!orderProduct.addonsProducts.get(i).isAdded()) // Not
-                    sb.append("[NO ").append(orderProduct.addonsProducts.get(i).getOrdprod_name()).append("]");
-                else
-                    sb.append("[").append(orderProduct.addonsProducts.get(i).getOrdprod_name()).append("]");
-            }
-            orderProduct.setOrdprod_desc(sb.toString());
         }
         String row1 = orderProduct.getOrdprod_name();
         String row2 = Global.getCurrencyFormat(orderProduct.getFinalPrice());
@@ -386,6 +379,11 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         invisibleSearchMain = findViewById(R.id.invisibleSearchMain);
         btnCheckout = findViewById(R.id.btnCheckOut);
         btnCheckout.setOnClickListener(this);
+        if (MyPreferences.isPaxA920()) {
+            btnScan = findViewById(R.id.btnScan);
+            btnScan.setVisibility(View.VISIBLE);
+            btnScan.setOnClickListener(this);
+        }
         myPref = new MyPreferences(this);
         if (myPref.isCustSelected()) {
             CustomersHandler customersHandler = new CustomersHandler(this);
@@ -620,6 +618,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                         if (leftFragment != null) {
                             leftFragment.checkoutOrder();
                         }
+                        break;
+                    case R.id.btnScan:
+                        paxScan();
                         break;
                     case R.id.headerMenubutton:
                         showSeatHeaderPopMenu(v);
@@ -1221,6 +1222,45 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         } catch (RemoteException e) {
             Crashlytics.logException(e);
         }
+    }
+
+    private void paxScan() {
+        // open scanner
+        posLinkScanner = POSLinkScanner.getPOSLinkScanner(this, POSLinkScanner.ScannerType.REAR);
+        ProcessResult result = posLinkScanner.open();
+        if (!result.getCode().equals(ProcessResult.CODE_OK)) {
+            paxScanError(result.getMessage());
+        }
+
+        // start scanner
+        invisibleSearchMain.setText("");
+        if (posLinkScanner == null) {
+            paxScanError("Error Starting Scanner.");
+            return;
+        }
+        posLinkScanner.start(new POSLinkScanner.ScannerListener() {
+            @Override
+            public void onRead(String s) {
+                invisibleSearchMain.setText(String.format("%s\n", s));
+            }
+
+            @Override
+            public void onFinish() {
+                // close scanner
+                if (posLinkScanner == null) {
+                    paxScanError("Error Closing Scanner.");
+                    return;
+                }
+                ProcessResult result = posLinkScanner.close();
+                if (!result.getCode().equals(ProcessResult.CODE_OK)) {
+                    paxScanError(result.getMessage());
+                }
+            }
+        });
+    }
+
+    private void paxScanError(String errorMessage) {
+        Crashlytics.log("PAX Scanner Error: " + errorMessage);
     }
 
     private void scanAddItem(String upc) {
