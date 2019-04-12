@@ -543,6 +543,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             case R.id.holdButton:
                 ((OrderingMain_FA) getActivity()).orderingAction = OrderingMain_FA.OrderingAction.HOLD;
                 if (getOrderingMainFa().global.order.getOrderProducts() != null && getOrderingMainFa().global.order.getOrderProducts().size() > 0) {
+                    btnHold.setEnabled(false);
                     Order order = buildOrder(getActivity(), getOrderingMainFa().global, "", ord_HoldName,
                             ((OrderingMain_FA) getActivity()).getSelectedDinningTableNumber(),
                             ((OrderingMain_FA) getActivity()).getAssociateId(), ((OrderingMain_FA) getActivity()).getOrderAttributes(),
@@ -1592,6 +1593,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             @Override
             public void onClick(View v) {
                 getOrderingMainFa().buildOrderStarted = false;
+                btnHold.setEnabled(true);
                 globalDlog.dismiss();
             }
         });
