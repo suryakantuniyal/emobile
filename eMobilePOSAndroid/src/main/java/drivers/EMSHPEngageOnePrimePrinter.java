@@ -1,13 +1,10 @@
 package drivers;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.os.AsyncTask;
 import com.StarMicronics.jasura.JAException;
-import com.android.emobilepos.R;
 import com.android.emobilepos.models.ClockInOut;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
@@ -26,7 +23,6 @@ import java.util.List;
 import interfaces.EMSCallBack;
 import interfaces.EMSDeviceManagerPrinterDelegate;
 import jpos.JPOSApp;
-import jpos.JposException;
 import jpos.POSPrinter;
 import main.EMSDeviceManager;
 
@@ -34,7 +30,6 @@ public class EMSHPEngageOnePrimePrinter extends EMSDeviceDriver implements EMSDe
 
     private int LINE_WIDTH = 32;
     private EMSDeviceManager edm;
-    private ProgressDialog myProgressDialog;
     private EMSDeviceDriver thisInstance;
 
     @Override
