@@ -36,6 +36,7 @@ public class GenerateNewID {
         switch (idType) {
             case ORDER_ID: {
                 String lastOrderID = AssignEmployeeDAO.getAssignEmployee().getMSLastOrderID();
+                if (lastOrderID == null) return true; // it is the first one
                 EmobilePosId newId = new EmobilePosId(id);
                 EmobilePosId lastId = new EmobilePosId(lastOrderID);
                 if (newId.getDeviceId() != null && lastId.getDeviceId() != null &&
