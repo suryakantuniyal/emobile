@@ -430,7 +430,7 @@ public class OrdersHandler {
                 sb.append("SELECT * FROM ").append(table_name).append(" WHERE ord_issync = '0' LIMIT 5");
             else
                 sb.append("SELECT ").append(sb1.toString()).append(" FROM ").append(table_name)
-                        .append(" WHERE ord_issync = '0' AND processed != '0' AND is_stored_fwd = '0' LIMIT 5");
+                        .append(" WHERE ord_issync = '0' AND isOnHold != '1' AND processed != '0' AND is_stored_fwd = '0' LIMIT 5");
 
             cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
             List<Order> orders = getOrders(cursor);
@@ -520,7 +520,7 @@ public class OrdersHandler {
     public long getNumUnsyncOrders() {
         SQLiteStatement stmt = null;
         try {
-            stmt = DBManager.getDatabase().compileStatement("SELECT Count(*) FROM " + table_name + " WHERE ord_issync = '0'");
+            stmt = DBManager.getDatabase().compileStatement("SELECT Count(*) FROM " + table_name + " WHERE ord_issync = '0' AND isOnHold != '1'");
             long count = stmt.simpleQueryForLong();
             stmt.close();
             return count;
