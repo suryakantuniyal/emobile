@@ -1593,7 +1593,7 @@ public class EMSDeviceDriver {
         }
     }
 
-    /** METHODS FOR INSTANCES OF HPENGAGEONEPRIMEPRINTER
+    /** METHODS FOR INSTANCES OF HPENGAGEONEPRIMEPRINTER or BIXOLON
      * storeImage() -> Copies logo.png from data/data/com.emobilepos.app/files/logo.png
      *                                  to a public directory called eMobileAssets.
      * @param imageData Bitmap you want to save
@@ -1958,17 +1958,21 @@ public class EMSDeviceDriver {
                 esc.addQueryPrinterStatus();
                 printGPrinter(esc);
             } else if (this instanceof EMSBixolon) {
-                ByteBuffer buffer = ByteBuffer.allocate(4);
-                buffer.put((byte) POSPrinterConst.PTR_S_RECEIPT);
-                buffer.put((byte) 50);
-                buffer.put((byte) 0x00);
-                buffer.put((byte) 0x00);
+//                ByteBuffer buffer = ByteBuffer.allocate(4);
+//                buffer.put((byte) POSPrinterConst.PTR_S_RECEIPT);
+//                buffer.put((byte) 50);
+//                buffer.put((byte) 0x00);
+//                buffer.put((byte) 0x00);
                 try {
                     bixolonPrinter.open(myPref.getPrinterName());
                     bixolonPrinter.claim(10000);
                     bixolonPrinter.setDeviceEnabled(true);
 //                    bixolonPrinter.printBitmap(buffer.getInt(0), myBitmap,
 //                            bixolonPrinter.getRecLineWidth(), POSPrinterConst.PTR_BM_LEFT);
+                    bixolonPrinter.printBitmap(PTR_S_RECEIPT,
+                            bitmapPath,
+                            PTR_BM_ASIS,
+                            PTR_BM_CENTER);
                 } catch (JposException e) {
                     e.printStackTrace();
                 } finally {
@@ -2090,17 +2094,23 @@ public class EMSDeviceDriver {
                 print("\n\n\n\n");
 
             } else if (this instanceof EMSBixolon) {
-                ByteBuffer buffer = ByteBuffer.allocate(4);
-                buffer.put((byte) POSPrinterConst.PTR_S_RECEIPT);
-                buffer.put((byte) 50);
-                buffer.put((byte) 1);
-                buffer.put((byte) 0x00);
+//                ByteBuffer buffer = ByteBuffer.allocate(4);
+//                buffer.put((byte) POSPrinterConst.PTR_S_RECEIPT);
+//                buffer.put((byte) 50);
+//                buffer.put((byte) 1);
+//                buffer.put((byte) 0x00);
                 try {
+                    String bitmapPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/eMobileAssets/logo.bmp";
+                    processImageBitmap(0,bitmap,bitmapPath);
                     bixolonPrinter.open(myPref.getPrinterName());
                     bixolonPrinter.claim(10000);
                     bixolonPrinter.setDeviceEnabled(true);
 //                    bixolonPrinter.printBitmap(buffer.getInt(0), bitmap,
 //                            bixolonPrinter.getRecLineWidth(), POSPrinterConst.PTR_BM_CENTER);
+                    bixolonPrinter.printBitmap(PTR_S_RECEIPT,
+                            bitmapPath,
+                            PTR_BM_ASIS,
+                            PTR_BM_CENTER);
                 } catch (JposException e) {
                     e.printStackTrace();
                 } finally {
