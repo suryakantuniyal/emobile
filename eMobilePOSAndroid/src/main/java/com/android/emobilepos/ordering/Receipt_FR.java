@@ -2286,7 +2286,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         protected Boolean doInBackground(Void... params) {
             DBManager dbManager = new DBManager(getActivity());
             SynchMethods sm = new SynchMethods(dbManager);
-            return sm.synchSendOnHold(false, false, getActivity(), null);
+            return sm.synchSendOnHold(false, true, getActivity(), Global.lastOrdID);
         }
 
         @Override
