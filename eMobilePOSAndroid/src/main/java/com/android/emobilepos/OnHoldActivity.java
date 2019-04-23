@@ -335,7 +335,10 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             public void onClick(View v) {
                 dlog.dismiss();
                 if (myPref.isUseClerks() && !TextUtils.isEmpty(order.assignedTable)) {
-                    boolean hasTable = ClerkDAO.hasAssignedDinningTable(Integer.parseInt(myPref.getClerkID()), order.assignedTable);
+                    boolean hasTable = true;
+                    if (myPref.getPreferences(MyPreferences.pref_enable_table_selection)) {
+                        hasTable = ClerkDAO.hasAssignedDinningTable(Integer.parseInt(myPref.getClerkID()), order.assignedTable);
+                    }
                     if (hasTable) {
                         validPassword = true;
                         new checkHoldStatus().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
