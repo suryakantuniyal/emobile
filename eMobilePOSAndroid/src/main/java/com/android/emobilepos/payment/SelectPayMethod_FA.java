@@ -973,6 +973,12 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());
             intent.putExtras(extras);
             initIntents(extras, intent);
+        } else if (payTypeList.get(position).getPaymentmethod_type().equals("SoundPayments")) {
+            Intent intent = new Intent(this, ProcessSP_FA.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());
+            intent.putExtras(extras);
+            initIntents(extras, intent);
         } else if (payTypeList.get(position).getPaymentmethod_type().equals("Genius")) {
             Intent intent = new Intent(this, ProcessGenius_FA.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
@@ -1048,7 +1054,8 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
             payTypeList = PayMethodsDAO.getAllSortByName();
 
-            if (myPref.getPreferences(MyPreferences.pref_use_pax)) {
+            if (myPref.getPreferences(MyPreferences.pref_use_pax) ||
+                    myPref.getPreferences(MyPreferences.pref_use_sound_payments)) {
                 List<PaymentMethod> itemsToDelete = new ArrayList<>();
                 for (PaymentMethod method : payTypeList) {
                     if (!method.getPaymethod_name().equalsIgnoreCase("Cash")) {
@@ -1056,15 +1063,32 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                     }
                 }
                 payTypeList.removeAll(itemsToDelete);
-                PaymentMethod paxPaymentMethod = new PaymentMethod();
-                paxPaymentMethod.setOriginalTransid("true");
-                paxPaymentMethod.setIsactive("1");
-                paxPaymentMethod.setPaymentmethod_type("PAX");
-                paxPaymentMethod.setPaymethod_id("SoundPayments");
-                paxPaymentMethod.setPaymethod_name("PAX");
-                paxPaymentMethod.setPaymethod_showOnline("0");
-                paxPaymentMethod.setPriority(0);
-                payTypeList.add(paxPaymentMethod);
+
+                PaymentMethod paymentMethod;
+
+                if (myPref.getPreferences(MyPreferences.pref_use_pax)) {
+                    paymentMethod = new PaymentMethod();
+                    paymentMethod.setOriginalTransid("true");
+                    paymentMethod.setIsactive("1");
+                    paymentMethod.setPaymentmethod_type("PAX");
+                    paymentMethod.setPaymethod_id("PAX");
+                    paymentMethod.setPaymethod_name("PAX");
+                    paymentMethod.setPaymethod_showOnline("0");
+                    paymentMethod.setPriority(0);
+                    payTypeList.add(paymentMethod);
+                }
+
+                if (myPref.getPreferences(MyPreferences.pref_use_sound_payments)) {
+                    paymentMethod = new PaymentMethod();
+                    paymentMethod.setOriginalTransid("true");
+                    paymentMethod.setIsactive("1");
+                    paymentMethod.setPaymentmethod_type("SoundPayments");
+                    paymentMethod.setPaymethod_id("SoundPayments");
+                    paymentMethod.setPaymethod_name("SP");
+                    paymentMethod.setPaymethod_showOnline("0");
+                    paymentMethod.setPriority(0);
+                    payTypeList.add(paymentMethod);
+                }
             }
         }
 

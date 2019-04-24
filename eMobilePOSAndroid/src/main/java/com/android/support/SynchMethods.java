@@ -308,7 +308,7 @@ public class SynchMethods {
     }
 
 
-    public static void synchOrdersOnHoldList(Context context) throws SAXException, IOException, KeyManagementException, NoSuchAlgorithmException {
+    public static synchronized void synchOrdersOnHoldList(Context context) throws SAXException, IOException, KeyManagementException, NoSuchAlgorithmException {
         MyPreferences preferences = new MyPreferences(context);
         Gson gson = JsonUtils.getInstance();
         GenerateXML xml = new GenerateXML(context);

@@ -116,4 +116,8 @@ public class DateUtils {
 
         return Integer.toString(cal.get(Calendar.YEAR));
     }
+
+    public static String getEpochTime() {
+        return String.valueOf(System.currentTimeMillis());
+    }
 }

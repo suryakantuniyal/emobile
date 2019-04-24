@@ -69,6 +69,7 @@ public class MyPreferences {
     public static final String pref_pay_with_tupyx = "pref_pay_with_tupyx";
     public static final String pref_pay_with_card_on_file = "pref_pay_with_card_on_file";
     public static final String pref_use_pax = "pref_use_pax";
+    public static final String pref_use_sound_payments = "pref_use_sound_payments";
     public static final String pref_mw_with_genius = "pref_mw_with_genius";
     public static final String pref_config_genius_peripheral = "pref_config_genius_peripheral";
     public static final String pref_enable_location_inventory = "pref_enable_location_inventory";

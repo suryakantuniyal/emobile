@@ -24,41 +24,33 @@ import com.android.emobilepos.models.genius.AdditionalParameters;
 import com.android.emobilepos.models.genius.ApplicationInformation;
 import com.android.emobilepos.models.genius.EMV;
 import com.android.emobilepos.models.genius.GeniusResponse;
+import com.android.emobilepos.models.pax.SoundPaymentsResponse;
 import com.android.emobilepos.models.realms.Device;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.ivu.MersenneTwisterFast;
-import com.android.support.DateUtils;
+import com.android.payments.EMSPayGate_Default;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NumberUtils;
+import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.google.gson.Gson;
-import com.pax.poslink.POSLinkAndroid;
-import com.pax.poslink.PaymentRequest;
-import com.pax.poslink.PaymentResponse;
-import com.pax.poslink.PosLink;
-import com.pax.poslink.ProcessTransResult;
-import com.pax.poslink.ProcessTransResult.ProcessTransResultCode;
-import com.pax.poslink.poslink.POSLinkCreator;
 
 import java.math.BigDecimal;
 
-import drivers.pax.utils.PosLinkHelper;
 import main.EMSDeviceManager;
-import util.MoneyUtils;
 import util.XmlUtils;
 
-import static drivers.pax.utils.Constant.CARD_EXPIRED;
-import static drivers.pax.utils.Constant.TRANSACTION_CANCELED;
-import static drivers.pax.utils.Constant.TRANSACTION_DECLINED;
-import static drivers.pax.utils.Constant.TRANSACTION_SUCCESS;
-import static drivers.pax.utils.Constant.TRANSACTION_TIMEOUT;
+import static com.android.payments.EMSPayGate_Default.EAction.SoundPaymentsCharge;
+import static com.android.payments.EMSPayGate_Default.EAction.SoundPaymentsRefund;
 
 /**
- * Created by Luis Camayd on 10/11/2018.
+ * Created by Luis Camayd on 3/19/2019.
+ * Copied all from ProcessPax_FA. The hardware is still PAX but the processor is Sound Payments.
+ * ProcessPax_FA will implement a new SDK for payments directly with PAX.
  */
-public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View.OnClickListener {
+public class ProcessSP_FA extends BaseFragmentActivityActionBar implements View.OnClickListener {
 
     private static final String APPROVED = "APPROVED";
     private Global global;
@@ -69,13 +61,11 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
     private boolean hasBeenCreated = false;
     private boolean isRefund = false;
     private MyPreferences myPref;
-    private PosLink poslink;
-    private static ProcessTransResult ptr;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.process_pax_layout);
+        setContentView(R.layout.process_sp_layout);
         global = (Global) getApplication();
         myPref = new MyPreferences(this);
         extras = this.getIntent().getExtras();
@@ -169,102 +159,62 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
         payment.setOriginalTotalAmount("0");
         payment.setPay_type("0");
 
+        EMSPayGate_Default payGate = new EMSPayGate_Default(this, payment);
+        String requestXml;
+
         if (isRefund) {
             payment.setIs_refund("1");
             payment.setPay_type("2");
+            requestXml = payGate.paymentWithAction(
+                    SoundPaymentsRefund, false, "", null);
+        } else {
+            requestXml = payGate.paymentWithAction(
+                    SoundPaymentsCharge, false, "", null);
         }
 
-        startPaxPayment();
+        sendRequest(requestXml);
     }
 
-    private void startPaxPayment() {
-        myProgressDialog = new ProgressDialog(this);
-        myProgressDialog.setMessage(getString(R.string.processing_payment_msg));
-        myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        myProgressDialog.setCancelable(false);
-        myProgressDialog.show();
-
-        POSLinkAndroid.init(getApplicationContext(), PosLinkHelper.getCommSetting());
-        poslink = POSLinkCreator.createPoslink(getApplicationContext());
-        PaymentRequest payrequest = new PaymentRequest();
-        payrequest.TenderType = 1;
-        payrequest.TransType = 2;
-        payrequest.Amount = String.valueOf(
-                MoneyUtils.convertDollarsToCents(
-                        NumberUtils.cleanCurrencyFormatedNumber(amountTextView)));
-        payrequest.ECRRefNum = DateUtils.getEpochTime();
-        poslink.PaymentRequest = payrequest;
-        poslink.SetCommSetting(PosLinkHelper.getCommSetting());
-
-        // as processTrans is blocked, we must run it in an async task
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(500);
-                    // ProcessTrans is Blocking call, will return when the transaction is complete.
-                    ptr = poslink.ProcessTrans();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        processResponse();
-                    }
-                });
+    private void processResponse(String response) {
+        SoundPaymentsResponse spResponse = XmlUtils.getSoundPaymentsResponse(response);
+        if (spResponse.getEpayStatusCode() != null) {
+            if (spResponse.getStatusCode().equalsIgnoreCase("102")) {
+                String errorMsg = String.format(getString(R.string.error_status_code),
+                        spResponse.getStatusCode(), spResponse.getStatusMessage());
+                showErrorDlog(errorMsg);
+                return;
             }
-        }).start();
-    }
-
-    private void processResponse() {
-        Global.dismissDialog(ProcessPax_FA.this, myProgressDialog);
-
-        if (ptr.Code == ProcessTransResultCode.OK) {
-            PaymentResponse response = poslink.PaymentResponse;
             Intent result = new Intent();
-            PaymentsHandler payHandler = new PaymentsHandler(ProcessPax_FA.this);
-            BigDecimal payAmount = BigDecimal.ZERO;
-            if (!response.ApprovedAmount.isEmpty()) {
-                payAmount = MoneyUtils.convertCentsToDollars(response.ApprovedAmount);
-            }
+            PaymentsHandler payHandler = new PaymentsHandler(ProcessSP_FA.this);
+
+            BigDecimal payAmount = new BigDecimal(spResponse.getAuthorizedAmount());
             Global.amountPaid = String.valueOf(Global.getRoundBigDecimal(payAmount));
             payment.setPay_amount(Global.amountPaid);
             payment.setTipAmount("0.00");
             payment.setPay_tip("0.00");
-            payment.setPay_transid("");
-            payment.setAuthcode(response.AuthCode);
-            payment.setCcnum_last4(response.BogusAccountNum);
-            payment.setPay_resultcode(response.ResultCode);
-            payment.setPay_resultmessage(response.Message);
+            payment.setPay_transid(spResponse.getCreditCardTransID());
+            payment.setAuthcode(spResponse.getAuthorizationCode());
+            payment.setCcnum_last4(spResponse.getCCLast4());
+            payment.setPay_resultcode(spResponse.getPay_resultcode());
+            payment.setPay_resultmessage(spResponse.getPay_resultmessage());
             payment.setPay_name("");
-            payment.setCard_type(response.CardType);
-            payment.setProcessed("1");
-            payment.setPaymethod_id(PayMethodsHandler.getPayMethodID(response.CardType));
+            payment.setCard_type(spResponse.getCardType());
+            payment.setProcessed("9");
+            payment.setPaymethod_id(PayMethodsHandler.getPayMethodID(spResponse.getCardType()));
 
             // Set EMV
             ApplicationInformation applicationInformation = new ApplicationInformation();
-            applicationInformation.setAid(
-                    XmlUtils.findXMl(poslink.PaymentResponse.ExtData, "AID"));
-            applicationInformation.setApplicationLabel(
-                    XmlUtils.findXMl(poslink.PaymentResponse.ExtData, "APPLAB"));
+            applicationInformation.setAid(spResponse.getAID());
+            applicationInformation.setApplicationLabel(spResponse.getAPPLAB());
 
             EMV emv = new EMV();
             emv.setApplicationInformation(applicationInformation);
-            emv.setPINStatement(
-                    PosLinkHelper.getCvmMessage(
-                            XmlUtils.findXMl(poslink.PaymentResponse.ExtData, "CVM")));
-            emv.setEntryModeMessage(
-                    PosLinkHelper.getEntryModeValue(
-                            XmlUtils.findXMl(poslink.PaymentResponse.ExtData, "PLEntryMode")));
-            emv.setTVR(
-                    XmlUtils.findXMl(poslink.PaymentResponse.ExtData, "TVR"));
-            emv.setIAD(
-                    XmlUtils.findXMl(poslink.PaymentResponse.ExtData, "IAD"));
-            emv.setTSI(
-                    XmlUtils.findXMl(poslink.PaymentResponse.ExtData, "TSI"));
-            emv.setAC(
-                    XmlUtils.findXMl(poslink.PaymentResponse.ExtData, "AC"));
+            emv.setPINStatement(spResponse.getCVMMSG());
+            emv.setEntryModeMessage(spResponse.getEntryModeMsg());
+            emv.setTVR(spResponse.getTVR());
+            emv.setIAD(spResponse.getIAD());
+            emv.setTSI(spResponse.getATC());
+            emv.setAC(spResponse.getAC());
 
             AdditionalParameters additionalParameters = new AdditionalParameters();
             additionalParameters.setEMV(emv);
@@ -276,49 +226,64 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
 
             payment.setEmvContainer(new EMVContainer(geniusResponse));
 
-            switch (response.ResultCode) {
-                case TRANSACTION_SUCCESS:
-                    payHandler.insert(payment);
-                    String paid_amount = NumberUtils.cleanCurrencyFormatedNumber(
-                            amountTextView.getText().toString());
+            Global.dismissDialog(ProcessSP_FA.this, myProgressDialog);
 
-                    payment.getEmvContainer().getGeniusResponse().setStatus(APPROVED);
+            if (spResponse.getEpayStatusCode().equalsIgnoreCase(APPROVED)) {
+                payHandler.insert(payment);
 
-                    result.putExtra("total_amount", paid_amount);
-                    result.putExtra("emvcontainer",
-                            new Gson().toJson(payment.getEmvContainer(), EMVContainer.class));
-                    setResult(-2, result);
+                String paid_amount = NumberUtils.cleanCurrencyFormatedNumber(
+                        amountTextView.getText().toString());
 
-                    if (myPref.getPreferences(MyPreferences.pref_prompt_customer_copy))
-                        showPrintDlg();
-                    else {
-                        finish();
-                    }
-                    break;
-                case TRANSACTION_DECLINED:
-                    payHandler.insertDeclined(payment);
-                    setResult(0, result);
-                    showErrorDlog("Transaction Declined!");
-                    break;
-                case TRANSACTION_TIMEOUT:
-                    showErrorDlog("Transaction TimeOut!");
-                    break;
-                case TRANSACTION_CANCELED:
-                    showErrorDlog("Transaction Canceled!");
-                    break;
-                case CARD_EXPIRED:
-                    showErrorDlog("Card is expired!");
-                    break;
+                payment.getEmvContainer().getGeniusResponse().setStatus(APPROVED);
+
+                result.putExtra("total_amount", paid_amount);
+                result.putExtra("emvcontainer",
+                        new Gson().toJson(payment.getEmvContainer(), EMVContainer.class));
+                setResult(-2, result);
+
+                if (myPref.getPreferences(MyPreferences.pref_prompt_customer_copy))
+                    showPrintDlg();
+                else {
+                    finish();
+                }
+            } else {
+                payHandler.insertDeclined(payment);
+                setResult(0, result);
+                String errorMsg = String.format(getString(R.string.error_status_code),
+                        spResponse.getStatusCode(), spResponse.getStatusMessage());
+                showErrorDlog(errorMsg);
             }
-        } else if (ptr.Code == ProcessTransResultCode.TimeOut) {
-            showErrorDlog("Transaction TimeOut!\n" + ptr.Msg);
         } else {
-            showErrorDlog("Transaction Error!\n" + ptr.Msg);
+            showErrorDlog(getString(R.string.failed_pax_connectivity));
         }
     }
 
+    private void sendRequest(final String request) {
+        myProgressDialog = new ProgressDialog(this);
+        myProgressDialog.setMessage(getString(R.string.processing_payment_msg));
+        myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        myProgressDialog.setCancelable(false);
+        myProgressDialog.show();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Post post = new Post(ProcessSP_FA.this);
+                final String response = post.postData(Global.S_SUBMIT_SOUNDPAYMENTS, request);
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        processResponse(response);
+                    }
+                });
+
+            }
+        }).start();
+    }
+
     private void showPrintDlg() {
-        final Dialog dlog = new Dialog(ProcessPax_FA.this, R.style.Theme_TransparentTest);
+        final Dialog dlog = new Dialog(ProcessSP_FA.this, R.style.Theme_TransparentTest);
         dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dlog.setCancelable(false);
         dlog.setContentView(R.layout.dlog_btn_left_right_layout);
@@ -419,7 +384,7 @@ public class ProcessPax_FA extends BaseFragmentActivityActionBar implements View
 
         @Override
         protected void onPreExecute() {
-            myProgressDialog = new ProgressDialog(ProcessPax_FA.this);
+            myProgressDialog = new ProgressDialog(ProcessSP_FA.this);
             myProgressDialog.setMessage(getString(R.string.printing_message));
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);

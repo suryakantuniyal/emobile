@@ -15,8 +15,8 @@ android {
         applicationId "com.emobilepos.app"
         minSdkVersion 16
         targetSdkVersion 27
-        versionName "1.2.7.0"
-        versionCode 167
+        versionName "1.2.7.1"
+        versionCode 168
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
         multiDexEnabled = true
     }
@@ -61,11 +61,12 @@ android {
         debug {
             // Disable fabric build ID generation for debug builds
             ext.enableCrashlytics = false
+            buildConfigField "boolean", "PRINT_TO_LOG", "false"
             buildConfigField "String", "OS", "\"Android\""
             buildConfigField "int", "POLLING_PERIOD", "5000"
             buildConfigField "int", "BCR_TIMEOUT", "15000"
-            buildConfigField "int", "AUTOSYNC_PERIOD", "10000"
-            buildConfigField "boolean", "PRINT_TO_LOG", "false"
+            buildConfigField "int", "AUTOSYNC_PERIOD", "60000"
+            buildConfigField "int", "AUTOSYNC_RESTART_MINUTES", "240"
             buildConfigField "boolean", "DELETE_INVALID_HOLDS", "true"
             minifyEnabled false
             multiDexEnabled true
@@ -79,6 +80,7 @@ android {
             buildConfigField "int", "POLLING_PERIOD", "5000"
             buildConfigField "int", "BCR_TIMEOUT", "15000"
             buildConfigField "int", "AUTOSYNC_PERIOD", "60000"
+            buildConfigField "int", "AUTOSYNC_RESTART_MINUTES", "240"
             buildConfigField "boolean", "DELETE_INVALID_HOLDS", "false"
             minifyEnabled false
             multiDexEnabled true

@@ -1,10 +1,8 @@
 package com.android.database;
 
-import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 
-import com.android.dao.PayMethodsDAO;
 import com.android.dao.PaymentMethodDAO;
 import com.android.emobilepos.models.realms.PaymentMethod;
 import com.android.support.MyPreferences;
@@ -51,7 +49,13 @@ public class PayMethodsHandler {
         try {
             String[] fields = new String[]{paymethod_id};
 
-            cursor = DBManager.getDatabase().query(true, table_name, fields, "paymentmethod_type= '" + methodType + "'", null, null, null, null, null);
+            cursor = DBManager.getDatabase().query(
+                    true,
+                    table_name,
+                    fields,
+                    "paymentmethod_type= '" + methodType + "' COLLATE NOCASE",
+                    null, null, null,
+                    null, null);
             String data = "";
             if (cursor.moveToFirst()) {
                 do {
