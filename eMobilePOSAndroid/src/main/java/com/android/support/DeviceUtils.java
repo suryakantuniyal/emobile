@@ -56,6 +56,7 @@ public class DeviceUtils {
         List<Device> devices = DeviceTableDAO.getAll();
         HashMap<String, Integer> tempMap = new HashMap<>();
         EMSDeviceManager edm = null;
+        connectApt50(activity);
         connectStarTS650BT(activity);
         if (forceReload || Global.multiPrinterMap.size() != devices.size()) {
             Global.multiPrinterMap = new HashMap<>();
@@ -396,6 +397,46 @@ public class DeviceUtils {
         context.getApplicationContext().registerReceiver(fingerPrintbroadcastReceiver, intentFilter);
     }
 
+    public static void connectApt50(Activity activity){
+            EMSDeviceManager edm = new EMSDeviceManager();
+            Global.mainPrinterManager = edm.getManager();
+
+            String aptPrinter = "APT50 Printer";
+            if (Global.mainPrinterManager.loadMultiDriver(activity, Global.APT_50,
+                    32, true, "", "")) {
+                Log.e("APT50","Connection Successfull");
+                Device device = DeviceTableDAO.getByName(aptPrinter);
+                List<Device> devices = new ArrayList<>();
+                boolean deviceIsNew = false;
+                if (device == null) {
+                    device = new Device();
+                    deviceIsNew = true;
+                }
+                device.setId(aptPrinter);
+                device.setName(aptPrinter);
+                device.setPOS(true);
+                device.setType(String.valueOf(Global.APT_50));
+                device.setRemoteDevice(false);
+                device.setEmsDeviceManager(Global.mainPrinterManager);
+                device.setTextAreaSize(32);
+                devices.add(device);
+                DeviceTableDAO.insert(devices);
+                Global.printerDevices.add(device);
+                if (deviceIsNew) {
+                    RealmList<RealmString> values = new RealmList<>();
+                    values.add(Device.Printables.PAYMENT_RECEIPT.getRealmString());
+                    values.add(Device.Printables.PAYMENT_RECEIPT_REPRINT.getRealmString());
+                    values.add(Device.Printables.TRANSACTION_RECEIPT.getRealmString());
+                    values.add(Device.Printables.TRANSACTION_RECEIPT_REPRINT.getRealmString());
+                    values.add(Device.Printables.REPORTS.getRealmString());
+                    DeviceTableDAO.remove(values);
+                    device.setSelectedPritables(values);
+                    DeviceTableDAO.upsert(device);
+                }
+            } else {
+                Log.e("APT50","Failed to connect....");
+            }
+    }
 
     public static void connectStarTS650BT(Context context) {
         try {

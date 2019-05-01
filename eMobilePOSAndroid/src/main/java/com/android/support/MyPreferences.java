@@ -985,6 +985,10 @@ public class MyPreferences {
         return false;
     }
 
+    public static boolean isAPT50(){
+        return Build.MODEL.toUpperCase().equals("APT50");
+    }
+
     public boolean isOT310() {
         String device_ot310 = "device_ot310";
         return prefs.getBoolean(device_ot310, false);
