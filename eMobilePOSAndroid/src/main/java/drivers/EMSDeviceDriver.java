@@ -122,6 +122,7 @@ import jpos.POSPrinterConst;
 import main.EMSDeviceManager;
 import plaintext.EMSPlainTextHelper;
 import util.StringUtil;
+import wangpos.sdk4.libbasebinder.Core;
 
 import static drivers.EMSGPrinterPT380.PRINTER_ID;
 
@@ -159,6 +160,7 @@ public class EMSDeviceDriver {
     POSLinkPrinter.PrintDataFormatter printDataFormatter;
 
     wangpos.sdk4.libbasebinder.Printer aptPrinter;
+    Core aptCore;
 
     private static byte[] convertFromListbyteArrayTobyteArray(List<byte[]> ByteArray) {
         int dataLength = 0;
@@ -673,11 +675,39 @@ public class EMSDeviceDriver {
         }
     }
 
+    private void apt50Leds(String led) {
+        try {
+            switch (led) {
+                case "on":
+                    aptCore.led(1, 1, 1, 1, 1);
+                    break;
+                case "off":
+                    aptCore.led(0, 0, 0, 0, 0);
+                    break;
+                case "blue":
+                    aptCore.led(1, 0, 0, 0, 1);
+                    break;
+                case "yellow":
+                    aptCore.led(0, 1, 0, 0, 1);
+                    break;
+                case "green":
+                    aptCore.led(0, 0, 1, 0, 1);
+                    break;
+                case "red":
+                    aptCore.led(0, 0, 0, 1, 1);
+                    break;
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void apt50RasterPrint(String stringToPrint) {
         Bitmap bitmapFromString = EMSBluetoothStarPrinter.createBitmapFromText(
-                stringToPrint, 21, 450, typeface);
+                stringToPrint, 20, 450, typeface);
         if (bitmapFromString.getHeight() > 0 && bitmapFromString.getWidth() > 0) {
             try {
+                apt50Leds("yellow");
                 aptPrinter.printInit();
                 aptPrinter.clearPrintDataCache();
                 aptPrinter.printImageBase(rescaleBitmap(bitmapFromString),
@@ -686,6 +716,8 @@ public class EMSDeviceDriver {
                         wangpos.sdk4.libbasebinder.Printer.Align.LEFT,
                         0);
                 aptPrinter.printFinish();
+                apt50Leds("off");
+                apt50Leds("blue");
             } catch (RemoteException e) {
                 e.printStackTrace();
             }

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.os.RemoteException;
 import android.util.Log;
 
 import com.android.emobilepos.models.ClockInOut;
@@ -24,11 +25,12 @@ import java.util.List;
 import interfaces.EMSCallBack;
 import interfaces.EMSDeviceManagerPrinterDelegate;
 import main.EMSDeviceManager;
+import wangpos.sdk4.libbasebinder.Core;
 import wangpos.sdk4.libbasebinder.Printer;
 
 public class EMSAPT50 extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
 
-    private int LINE_WIDTH = 28;
+    private int LINE_WIDTH = 32;
     private EMSDeviceManager edm;
     int[] status = new int[1];
     int ret = -1;
@@ -43,12 +45,16 @@ public class EMSAPT50 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
     private void initApt50(boolean isAutoConnect) {
         aptPrinter = new Printer(activity);
+        aptCore = new Core(activity);
         try {
+
             ret = aptPrinter.getPrinterStatus(status);
             if (ret == 0) {
                 aptPrinter.printInit();
                 aptPrinter.clearPrintDataCache();
                 if (aptPrinter.printFinish() == 0) {
+                    aptCore.led(0,0,0,0,0);
+                    aptCore.led(1,0,0,0,1);
                     if (!isAutoConnect) {
                         this.edm.driverDidConnectToDevice(this, true, activity);
                     } else {
@@ -57,6 +63,11 @@ public class EMSAPT50 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
                 }
             }
         } catch (Exception e) {
+            try {
+                aptCore.led(0,0,0,1,1);
+            } catch (RemoteException e1) {
+                e1.printStackTrace();
+            }
             Log.e("APT50", e.toString());
             e.printStackTrace();
         }
