@@ -222,8 +222,8 @@ public class ProductsHandler {
                 if (myPref.getPreferences(MyPreferences.pref_enable_multi_category)) {
                     sb.append(
                             "FROM Products p " +
-                                    "INNER JOIN ProdCatXref xr ON p.prod_id = xr.prod_id  " +
-                                    "INNER JOIN Categories c ON c.cat_id = xr.cat_id " +
+                                    "LEFT JOIN ProdCatXref xr ON p.prod_id = xr.prod_id  " +
+                                    "LEFT JOIN Categories c ON c.cat_id = xr.cat_id " +
                                     "LEFT OUTER JOIN EmpInv ei ON ei.prod_id = p.prod_id " +
                                     "LEFT OUTER JOIN VolumePrices vp ON p.prod_id = vp.prod_id AND '1' " +
                                     "BETWEEN vp.minQty AND vp.maxQty  AND ");
@@ -463,8 +463,8 @@ public class ProductsHandler {
                                 "where prod_type != 'Discount' AND  " +
                                 "(prod_sku = '" + value + "' OR pa.prod_alias = '" + value +
                                 "' OR prod_upc = '" + value + "'" + byIdCondition + " )) p " +
-                                "INNER JOIN ProdCatXref xr ON p.prod_id = xr.prod_id  " +
-                                "INNER JOIN Categories c ON c.cat_id = xr.cat_id " +
+                                "LEFT JOIN ProdCatXref xr ON p.prod_id = xr.prod_id  " +
+                                "LEFT JOIN Categories c ON c.cat_id = xr.cat_id " +
                                 "LEFT OUTER JOIN EmpInv ei ON ei.prod_id = p.prod_id " +
                                 "LEFT OUTER JOIN VolumePrices vp ON p.prod_id = vp.prod_id AND '1' " +
                                 "BETWEEN vp.minQty AND vp.maxQty  AND ");
@@ -962,8 +962,8 @@ public class ProductsHandler {
         if (myPref.getPreferences(MyPreferences.pref_enable_multi_category)) {
             sb.append(
                     "FROM Products p " +
-                            "INNER JOIN ProdCatXref xr ON p.prod_id = xr.prod_id  " +
-                            "INNER JOIN Categories c ON c.cat_id = xr.cat_id " +
+                            "LEFT JOIN ProdCatXref xr ON p.prod_id = xr.prod_id  " +
+                            "LEFT JOIN Categories c ON c.cat_id = xr.cat_id " +
                             "LEFT OUTER JOIN EmpInv ei ON ei.prod_id = p.prod_id " +
                             "LEFT OUTER JOIN VolumePrices vp ON p.prod_id = vp.prod_id AND '1' " +
                             "BETWEEN vp.minQty AND vp.maxQty  AND ");
