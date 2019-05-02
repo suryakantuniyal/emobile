@@ -2242,6 +2242,10 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         }
                     }
                 }
+                // mark all as printed (todo: improve this loop)
+                for (OrderProduct op : getOrderingMainFa().global.order.getOrderProducts()) {
+                    op.setPrinted(true);
+                }
             }
             return null;
         }
