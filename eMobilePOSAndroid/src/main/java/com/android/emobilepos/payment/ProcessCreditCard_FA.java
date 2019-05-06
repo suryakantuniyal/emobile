@@ -533,7 +533,8 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar
         this.amountDueField = findViewById(R.id.processCardAmount);
         this.amountDueField.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
         this.amountDueField.setText(
-                Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(extras.getString("amount")))));
+                Global.getCurrencyFormat(Global.formatNumToLocale(
+                        Double.parseDouble(extras.getString("amount", "0")))));
 
         amountDueField.addTextChangedListener(getTextWatcher(amountDueField));
         this.amountDueField.setOnFocusChangeListener(getFocusListener(amountDueField));
