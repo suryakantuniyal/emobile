@@ -2197,7 +2197,18 @@ public class EMSDeviceDriver {
                 Date startedDate = sdf1.parse(anOrder.ord_timecreated);
                 Date sentDate = new Date();
 
-                sb.append(getString(R.string.receipt_sent_by)).append(" ").append(employee.getEmpName()).append(" (");
+                String clerkName = "";
+                if (anOrder.clerk_id != null && !anOrder.clerk_id.isEmpty()) {
+                    try {
+                        Clerk clerk = ClerkDAO.getByEmpId(Integer.parseInt(anOrder.clerk_id));
+                        clerkName = clerk.getEmpName();
+                    } catch (Exception e) {
+                        // invalid clerk id, leave name blank
+                        clerkName = "";
+                    }
+                }
+                sb.append(getString(R.string.receipt_sent_by)).append(" ").append(clerkName).append("\n");
+                sb.append(getString(R.string.receipt_terminal)).append(" ").append(employee.getEmpName()).append(" (");
 
                 if (((float) (sentDate.getTime() - startedDate.getTime()) / 1000) > 60)
                     sb.append(Global.formatToDisplayDate(sdf1.format(sentDate.getTime()), -1)).append(")");

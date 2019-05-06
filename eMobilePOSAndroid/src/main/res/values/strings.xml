@@ -792,6 +792,7 @@
     <string name="receipt_thankyou">Thank You</string>
     <string name="receipt_started">Started:</string>
     <string name="receipt_sent_by">Sent By:</string>
+    <string name="receipt_terminal">Terminal:</string>
     <string name="receipt_name">Name:</string>
     <string name="receipt_cons_trans_id">Consignment ID</string>
     <string name="receipt_consignment_pickup">Consignment Pick-up</string>
