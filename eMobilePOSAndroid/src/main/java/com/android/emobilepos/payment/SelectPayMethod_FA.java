@@ -1058,7 +1058,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                     myPref.getPreferences(MyPreferences.pref_use_sound_payments)) {
                 List<PaymentMethod> itemsToDelete = new ArrayList<>();
                 for (PaymentMethod method : payTypeList) {
-                    if (!method.getPaymethod_name().equalsIgnoreCase("Cash")) {
+                    if (!method.getPaymentmethod_type().equalsIgnoreCase("Cash")) {
                         itemsToDelete.add(method);
                     }
                 }
