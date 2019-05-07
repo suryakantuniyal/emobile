@@ -784,7 +784,7 @@
     <string name="receipt_thankyou">"Gracias"</string>
     <string name="receipt_started">"Empezado:"</string>
     <string name="receipt_sent_by">"Enviado por:"</string>
-    <string name="receipt_terminal">"Terminal:"</string>
+    <string name="receipt_terminal">"Dispositivo:"</string>
     <string name="receipt_name">"Nombre:"</string>
     <string name="receipt_cons_trans_id">"ID de consignación"</string>
     <string name="receipt_consignment_pickup">"Recogida de consignación"</string>
