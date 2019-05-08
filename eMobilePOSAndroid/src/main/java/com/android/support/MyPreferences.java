@@ -876,6 +876,7 @@ public class MyPreferences {
         setIsICMPEVO(false);
         setIsKDC425(false);
         setIsOT310(false);
+        setHPEOnePrime(false);
 
         setPrinterName(""); //clean the printer name
         prefEditor.putInt(sled_type, -1);
@@ -1008,7 +1009,17 @@ public class MyPreferences {
         prefEditor.commit();
         return false;
     }
+    public boolean isHPEOnePrime() {
+        String device_hp = "device_HP_EOnePrime";
+        return prefs.getBoolean(device_hp, false);
+    }
 
+    public boolean setHPEOnePrime(boolean value) {
+        String device_hp = "device_HP_EOnePrime";
+        prefEditor.putBoolean(device_hp, value);
+        prefEditor.commit();
+        return false;
+    }
 
     public boolean isBixolonRD() {
         String device_bixolon = "device_bixolon_rd";

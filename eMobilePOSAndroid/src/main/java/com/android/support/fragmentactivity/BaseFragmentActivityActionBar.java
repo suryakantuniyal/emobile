@@ -200,7 +200,8 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
             if (myPref.getPrinterType() == Global.POWA ||
                     myPref.getPrinterType() == Global.MEPOS ||
                     myPref.getPrinterType() == Global.ELOPAYPOINT ||
-                    myPref.getPrinterType() == Global.SNBC) {
+                    myPref.getPrinterType() == Global.SNBC ||
+                    myPref.getPrinterType() == Global.HP_EONEPRIME) {
                 isUSB = true;
             }
             if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null &&
