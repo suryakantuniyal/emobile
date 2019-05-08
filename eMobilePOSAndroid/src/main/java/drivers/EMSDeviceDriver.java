@@ -166,7 +166,6 @@ public class EMSDeviceDriver {
     private StarIoExt.Emulation emulation = StarIoExt.Emulation.StarGraphic;
     private EscCommand esc;
     POSLinkPrinter.PrintDataFormatter printDataFormatter;
-    POSLinkScanner posLinkScanner;
     private static final int BMP_WIDTH_OF_TIMES = 4;
     private static final int BYTE_PER_PIXEL = 3;
 

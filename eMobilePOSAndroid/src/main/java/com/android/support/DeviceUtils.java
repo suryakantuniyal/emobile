@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+import drivers.EMSAPT50;
 import drivers.EMSBluetoothStarPrinter;
 import drivers.EMSDeviceDriver;
 import drivers.EMSHPEngageOnePrimePrinter;
@@ -57,7 +58,6 @@ public class DeviceUtils {
         List<Device> devices = DeviceTableDAO.getAll();
         HashMap<String, Integer> tempMap = new HashMap<>();
         EMSDeviceManager edm = null;
-        connectApt50(activity);
         connectStarTS650BT(activity);
         if (forceReload || Global.multiPrinterMap.size() != devices.size()) {
             Global.multiPrinterMap = new HashMap<>();
@@ -198,12 +198,9 @@ public class DeviceUtils {
                     }
                 }
             }
-        }
-        if (myPref.isHPEOnePrime() && usbDevice instanceof EMSHPEngageOnePrimePrinter) {
-
-            connectHPEngageOnePrimePrinter(activity,usbDevice);
-
-        } else if (MyPreferences.isPaxA920()) {
+        } else if(MyPreferences.isAPT50()){
+            connectApt50(activity);
+        }else if (MyPreferences.isPaxA920()) {
             if (Global.mainPrinterManager == null || forceReload) {
                 edm = new EMSDeviceManager();
                 Global.mainPrinterManager = edm.getManager();
@@ -277,6 +274,8 @@ public class DeviceUtils {
                     sb.append(myPref.getStarIPAddress()).append(": ").append("Failed to connect\n\r");
                 }
             }
+        }else if (myPref.isHPEOnePrime() && usbDevice instanceof EMSHPEngageOnePrimePrinter) {
+            connectHPEngageOnePrimePrinter(activity,usbDevice);
         }
         ArrayList<Device> connected = new ArrayList(Global.printerDevices);
 
