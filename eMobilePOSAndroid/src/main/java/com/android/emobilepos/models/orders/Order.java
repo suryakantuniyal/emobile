@@ -154,23 +154,33 @@ public class Order implements Cloneable, Serializable {
         final List<OrderProduct> orderProducts = new ArrayList<>(getOrderProducts());
         if (!orderProducts.isEmpty()) {
             for (OrderProduct orderProduct : orderProducts) {
-                setupProductTax(context, orderProduct);
-                if (isVAT) {
-                    setVATTax(tax);
+                if (!orderProduct.isVoid()) {
+                    setupProductTax(context, orderProduct);
+                    if (isVAT) {
+                        setVATTax(tax);
+                    }
+                    totalDetails.setPointsSubTotal(totalDetails.getPointsSubTotal()
+                            .add(Global.getBigDecimalNum(orderProduct.getProd_price_points())));
+                    totalDetails.setPointsAcumulable(totalDetails.getPointsAcumulable()
+                            .add(Global.getBigDecimalNum(orderProduct.getProd_value_points())));
+                    if (Boolean.parseBoolean(orderProduct.getPayWithPoints())) {
+                        totalDetails.setPointsInUse(totalDetails.getPointsInUse().add(new BigDecimal(orderProduct.getProd_price_points())));
+                    }
+                    totalDetails.setSubtotal(totalDetails.getSubtotal()
+                            .add(orderProduct.getItemSubtotalCalculated()).setScale(6, RoundingMode.HALF_UP));
+                    totalDetails.setTax(totalDetails.getTax()
+                            .add(orderProduct.getProd_taxValue()).setScale(6, RoundingMode.HALF_UP));
+                    totalDetails.setGranTotal(totalDetails.getGranTotal()
+                            .add(orderProduct.getGranTotalCalculated()).setScale(6, RoundingMode.HALF_UP));
+                } else {
+                    // voided
+                    orderProduct.setOverwrite_price(BigDecimal.ZERO);
+                    orderProduct.setProd_taxValue(BigDecimal.ZERO);
+                    orderProduct.setItemTotal("0");
+                    orderProduct.setDisTotal("0");
+                    orderProduct.setProd_price("0");
+                    orderProduct.setTaxTotal("0");
                 }
-                totalDetails.setPointsSubTotal(totalDetails.getPointsSubTotal()
-                        .add(Global.getBigDecimalNum(orderProduct.getProd_price_points())));
-                totalDetails.setPointsAcumulable(totalDetails.getPointsAcumulable()
-                        .add(Global.getBigDecimalNum(orderProduct.getProd_value_points())));
-                if (Boolean.parseBoolean(orderProduct.getPayWithPoints())) {
-                    totalDetails.setPointsInUse(totalDetails.getPointsInUse().add(new BigDecimal(orderProduct.getProd_price_points())));
-                }
-                totalDetails.setSubtotal(totalDetails.getSubtotal()
-                        .add(orderProduct.getItemSubtotalCalculated()).setScale(6, RoundingMode.HALF_UP));
-                totalDetails.setTax(totalDetails.getTax()
-                        .add(orderProduct.getProd_taxValue()).setScale(6, RoundingMode.HALF_UP));
-                totalDetails.setGranTotal(totalDetails.getGranTotal()
-                        .add(orderProduct.getGranTotalCalculated()).setScale(6, RoundingMode.HALF_UP));
             }
             if (discount != null) {
                 if (discount.isFixed()) {
