@@ -141,6 +141,8 @@ public class Global extends MultiDexApplication {
     public static final int PAX_A920 = 27;
     public static final int HP_EONEPRIME = 28;
 
+    public static final int APT_50 = 29;
+
     public static final String AUDIO_MSR_UNIMAG = "0";
     public static final String AUDIO_MSR_MAGTEK = "1";
     public static final String AUDIO_MSR_ROVER = "2";

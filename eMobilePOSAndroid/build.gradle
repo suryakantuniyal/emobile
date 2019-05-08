@@ -199,6 +199,9 @@ dependencies {
     implementation 'net.zetetic:android-database-sqlcipher:3.5.9@aar'
     implementation 'com.microsoft.azure.android:azure-storage-android:0.8.0@aar'
     implementation files('libs/jpos_hp.jar')
+    implementation files('libs/SDK4BaseBinderV2.1.3.jar')
+    implementation files('libs/SDK4EmvBinderV2.1.3.jar')
+    implementation files('libs/SDK4KeyManagerBinderV2.1.3.jar')
 }
 
 apply plugin: 'com.google.gms.google-services'

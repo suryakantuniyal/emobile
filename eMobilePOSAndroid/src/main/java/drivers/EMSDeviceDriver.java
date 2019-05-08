@@ -126,6 +126,7 @@ import jpos.POSPrinterConst;
 import main.EMSDeviceManager;
 import plaintext.EMSPlainTextHelper;
 import util.StringUtil;
+import wangpos.sdk4.libbasebinder.Core;
 
 import static drivers.EMSGPrinterPT380.PRINTER_ID;
 import static jpos.POSPrinterConst.PTR_BM_ASIS;
@@ -165,9 +166,11 @@ public class EMSDeviceDriver {
     private StarIoExt.Emulation emulation = StarIoExt.Emulation.StarGraphic;
     private EscCommand esc;
     POSLinkPrinter.PrintDataFormatter printDataFormatter;
-    POSLinkScanner posLinkScanner;
     private static final int BMP_WIDTH_OF_TIMES = 4;
     private static final int BYTE_PER_PIXEL = 3;
+
+    wangpos.sdk4.libbasebinder.Printer aptPrinter;
+    Core aptCore;
 
     private static byte[] convertFromListbyteArrayTobyteArray(List<byte[]> ByteArray) {
         int dataLength = 0;
@@ -356,6 +359,8 @@ public class EMSDeviceDriver {
             for (String line : split) {
                 SendCmd(String.format("80*%s", line));
             }
+        } else if (this instanceof EMSAPT50) {
+            apt50RasterPrint(str);
         } else if (this instanceof EMSGPrinterPT380) {
             // print line
             esc = new EscCommand();
@@ -498,6 +503,9 @@ public class EMSDeviceDriver {
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
+        } else if (this instanceof EMSAPT50) {
+            String str = new String(byteArray);
+            apt50RasterPrint(str);
         } else if (this instanceof EMSBlueBambooP25) {
             try {
                 outputStream.write(byteArray);
@@ -694,6 +702,69 @@ public class EMSDeviceDriver {
         }
     }
 
+    private void apt50PrintPaper() {
+        if (this instanceof EMSAPT50) {
+            try {
+                aptPrinter.printInit();
+                aptPrinter.clearPrintDataCache();
+                aptPrinter.printPaper(30);
+                aptPrinter.printFinish();
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void apt50Leds(String led) {
+        try {
+            switch (led) {
+                case "on":
+                    aptCore.led(1, 1, 1, 1, 1);
+                    break;
+                case "off":
+                    aptCore.led(0, 0, 0, 0, 0);
+                    break;
+                case "blue":
+                    aptCore.led(1, 0, 0, 0, 1);
+                    break;
+                case "yellow":
+                    aptCore.led(0, 1, 0, 0, 1);
+                    break;
+                case "green":
+                    aptCore.led(0, 0, 1, 0, 1);
+                    break;
+                case "red":
+                    aptCore.led(0, 0, 0, 1, 1);
+                    break;
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void apt50RasterPrint(String stringToPrint) {
+        Bitmap bitmapFromString = EMSBluetoothStarPrinter.createBitmapFromText(
+                stringToPrint, 20, 450, typeface);
+        if (bitmapFromString.getHeight() > 0 && bitmapFromString.getWidth() > 0) {
+            try {
+                apt50Leds("yellow");
+                aptPrinter.printInit();
+                aptPrinter.clearPrintDataCache();
+                aptPrinter.printImageBase(rescaleBitmap(bitmapFromString),
+                        bitmapFromString.getWidth(),
+                        bitmapFromString.getHeight(),
+                        wangpos.sdk4.libbasebinder.Printer.Align.LEFT,
+                        0);
+                aptPrinter.printFinish();
+                apt50Leds("off");
+                apt50Leds("blue");
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
     private void posLinkRasterPrint(String stringToPrint) {
         Bitmap bitmapFromString = EMSBluetoothStarPrinter.createBitmapFromText(
                 stringToPrint, 26, 450, typeface);
@@ -821,6 +892,8 @@ public class EMSDeviceDriver {
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
+        } else if (this instanceof EMSAPT50) {
+            print(str);
         } else if (this instanceof EMSBlueBambooP25) {
             print(str);
         } else if (this instanceof EMSOneil4te) {
@@ -1530,6 +1603,7 @@ public class EMSDeviceDriver {
             sb.append(textHandler.centeredString(getString(R.string.enabler_website) + "\n\n\n\n", lineWidth));
             print(sb.toString());
         }
+        apt50PrintPaper();
     }
 
     public void cutPaper() {
@@ -1890,6 +1964,24 @@ public class EMSDeviceDriver {
                 } catch (Exception e) {
                     Crashlytics.logException(e);
                 }
+            } else if (this instanceof EMSAPT50) {
+                try {
+                    int[] status = new int[1];
+                    int ret = aptPrinter.getPrinterStatus(status);
+                    if (ret == 0) {
+                        aptPrinter.printInit();
+                        aptPrinter.clearPrintDataCache();
+                        aptPrinter.printImageBase(rescaleBitmap(myBitmap),
+                                myBitmap.getWidth(),
+                                myBitmap.getHeight(),
+                                wangpos.sdk4.libbasebinder.Printer.Align.CENTER,
+                                0);
+                        aptPrinter.printFinish();
+                    }
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+
             } else if (this instanceof EMSBlueBambooP25) {
                 EMSBambooImageLoader loader = new EMSBambooImageLoader();
                 ArrayList<ArrayList<Byte>> arrayListList = loader.bambooDataWithAlignment(0, myBitmap);
@@ -2047,6 +2139,24 @@ public class EMSDeviceDriver {
                 } catch (Exception e) {
                     Crashlytics.logException(e);
                 }
+            } else if (this instanceof EMSAPT50) {
+                try {
+                    int[] status = new int[1];
+                    int ret = aptPrinter.getPrinterStatus(status);
+                    if (ret == 0) {
+                        aptPrinter.printInit();
+                        aptPrinter.clearPrintDataCache();
+                        aptPrinter.printImageBase(rescaleBitmap(bitmap),
+                                bitmap.getWidth(),
+                                bitmap.getHeight(),
+                                wangpos.sdk4.libbasebinder.Printer.Align.CENTER,
+                                0);
+                        aptPrinter.printFinish();
+                    }
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+
             } else if (this instanceof EMSmePOS) {
                 mePOSReceipt.addLine(new MePOSReceiptImageLine(bitmap));
             } else if (this instanceof EMSBlueBambooP25) {

@@ -21,6 +21,7 @@ import com.android.support.MyPreferences;
 import java.util.ArrayList;
 import java.util.List;
 
+import drivers.EMSAPT50;
 import drivers.EMSAsura;
 import drivers.EMSBixolon;
 import drivers.EMSBixolonRD;
@@ -68,6 +69,10 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
     public void loadDrivers(Context activity, int type, PrinterInterfase interfase) {
 
         switch (type) {
+            case Global.APT_50:
+                aDevice = new EMSAPT50();
+                aDevice.connect(activity, -1, false, this);
+                break;
             case Global.MAGTEK:
                 aDevice = new EMSMagtekAudioCardReader();
                 aDevice.connect(activity, -1, false, this);
@@ -186,6 +191,9 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
         switch (type) {
             case Global.MAGTEK:
                 aDevice = new EMSMagtekAudioCardReader();
+                break;
+            case Global.APT_50:
+                aDevice = new EMSAPT50();
                 break;
             case Global.MAGTEK_EMBEDDED:
                 aDevice = new EMSMagtekSwiper();
