@@ -43,6 +43,7 @@ import drivers.EMSMiura;
 import drivers.EMSNomad;
 import drivers.EMSOT310;
 import drivers.EMSOneil4te;
+import drivers.EMSHPEngageOnePrimePrinter;
 
 import drivers.EMSPAT215;
 import drivers.EMSPaxA920;
@@ -114,6 +115,10 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
             case Global.ONEIL:
                 aDevice = new EMSOneil4te();
                 aDevice.connect(activity, -1, false, this);
+                break;
+            case Global.HP_EONEPRIME:
+                aDevice = new EMSHPEngageOnePrimePrinter();
+                aDevice.connect(activity, -1, true, this);
                 break;
             case Global.SNBC:
                 aDevice = new EMSsnbc();
@@ -210,6 +215,9 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 break;
             case Global.SNBC:
                 aDevice = new EMSsnbc();
+                break;
+            case Global.HP_EONEPRIME:
+                aDevice = new EMSHPEngageOnePrimePrinter();
                 break;
             case Global.POWA:
                 aDevice = new EMSPowaPOS();

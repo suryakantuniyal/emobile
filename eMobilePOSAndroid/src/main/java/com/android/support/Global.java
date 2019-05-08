@@ -139,6 +139,7 @@ public class Global extends MultiDexApplication {
     public static final int MAGTEK_EMBEDDED = 25;
     public static final int INGENICOMOBY85 = 26;
     public static final int PAX_A920 = 27;
+    public static final int HP_EONEPRIME = 28;
 
     public static final int APT_50 = 29;
 
@@ -374,6 +375,9 @@ public class Global extends MultiDexApplication {
         switch (type) {
             case STAR:
                 _name = "Star Micronics";
+                break;
+            case HP_EONEPRIME:
+                _name = "HPEngageOnePrimePrinter";
                 break;
             case MAGTEK:
                 _name = "MAGTEK";

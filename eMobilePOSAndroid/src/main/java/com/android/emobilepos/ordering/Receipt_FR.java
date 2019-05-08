@@ -2242,6 +2242,10 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         }
                     }
                 }
+                // mark all as printed (todo: improve this loop)
+                for (OrderProduct op : getOrderingMainFa().global.order.getOrderProducts()) {
+                    op.setPrinted(true);
+                }
             }
             return null;
         }
@@ -2286,7 +2290,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         protected Boolean doInBackground(Void... params) {
             DBManager dbManager = new DBManager(getActivity());
             SynchMethods sm = new SynchMethods(dbManager);
-            return sm.synchSendOnHold(false, true, getActivity(), Global.lastOrdID);
+            return sm.synchSendOnHold(false, true, getActivity(), null);
         }
 
         @Override
